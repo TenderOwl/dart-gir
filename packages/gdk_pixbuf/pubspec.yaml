@@ -1,0 +1,22 @@
+name: gdk_pixbuf
+description: Generated Dart FFI bindings (gdk_pixbuf), produced by gir_generator.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  ffi: ^2.1.3
+  gir_ffi:
+    path: ../gir_ffi
+  gio:
+    path: ../gio
+  glib:
+    path: ../glib
+  gobject:
+    path: ../gobject
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

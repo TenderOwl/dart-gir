@@ -1,0 +1,26 @@
+name: gir_bindings_workspace
+publish_to: none
+description: GIR-based Dart FFI bindings for GObject libraries (GLib, GTK4, Libadwaita).
+
+environment:
+  sdk: ^3.13.4
+
+workspace:
+  - generator
+  - example
+  - packages/adw
+  - packages/cairo
+  - packages/gdk4
+  - packages/gdk_pixbuf
+  - packages/gio
+  - packages/gir_ffi
+  - packages/glib
+  - packages/gobject
+  - packages/graphene
+  - packages/gsk4
+  - packages/gtk4
+  - packages/pango
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

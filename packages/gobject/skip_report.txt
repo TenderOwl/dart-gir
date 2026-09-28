@@ -1,0 +1,118 @@
+# Skip report for package gobject (GObject 2.0)
+Total skipped: 71
+
+## By category
+callable: 62
+callback: 5
+alias: 3
+bitfield: 1
+
+## By reason
+array types are handled in a later phase: 5
+parameter const_static_values: array types are handled in a later phase: 4
+return: array types are handled in a later phase: 4
+aliases are resolved to their target: 3
+unsupported out parameter info (GTypeInfo): 2
+parameter instance_and_params: array types are handled in a later phase: 2
+caller-allocates out parameter query: 2
+moved to CClosure.marshal_VOID__UINT: 1
+moved to CClosure.marshal_VOID__ENUM: 1
+moved to CClosure.marshal_VOID__FLAGS: 1
+moved to CClosure.marshal_VOID__FLOAT: 1
+moved to CClosure.marshal_VOID__INT: 1
+moved to CClosure.marshal_VOID__LONG: 1
+moved to CClosure.marshal_VOID__OBJECT: 1
+moved to CClosure.marshal_VOID__PARAM: 1
+moved to CClosure.marshal_VOID__POINTER: 1
+moved to CClosure.marshal_VOID__STRING: 1
+moved to CClosure.marshal_VOID__UCHAR: 1
+duplicate declaration owned by an earlier namespace: 1
+moved to CClosure.marshal_VOID__UINT_POINTER: 1
+moved to CClosure.marshal_VOID__ULONG: 1
+moved to CClosure.marshal_VOID__VARIANT: 1
+moved to CClosure.marshal_VOID__VOID: 1
+moved to CClosure.marshal_generic: 1
+moved to CClosure.marshal_BOOLEAN__BOXED_BOXED: 1
+moved to CClosure.marshal_BOOLEAN__FLAGS: 1
+moved to CClosure.marshal_STRING__OBJECT_POINTER: 1
+parameter hook_func: callback SignalEmissionHook has unsupported signature: 1
+moved to CClosure.marshal_VOID__BOOLEAN: 1
+moved to CClosure.marshal_VOID__BOXED: 1
+moved to CClosure.marshal_VOID__CHAR: 1
+moved to Source.set_closure: 1
+moved to Source.set_dummy_callback: 1
+parameter n_children: nullable scalar parameter (guint): 1
+moved to TypeClass.adjust_private_offset: 1
+moved to TypeClass.get: 1
+moved to CClosure.marshal_VOID__DOUBLE: 1
+moved to TypeClass.peek_static: 1
+moved to TypeClass.ref: 1
+moved to TypeInterface.add_prerequisite: 1
+moved to TypeInterface.get_plugin: 1
+moved to TypeInterface.instantiatable_prerequisite: 1
+moved to TypeInterface.peek: 1
+moved to TypeInterface.prerequisites: 1
+parameter n_interfaces: nullable scalar parameter (guint): 1
+moved to Value.type_compatible: 1
+moved to Value.type_transformable: 1
+caller-allocates out parameter return_value: 1
+parameter pspecs: array types are handled in a later phase: 1
+parameter n_prerequisites: nullable scalar parameter (guint): 1
+shadowed by sort_with_data: 1
+shadowed by bind_with_closures: 1
+parameter parameters: array types are handled in a later phase: 1
+shadowed by bind_property_with_closures: 1
+parameter names: array types are handled in a later phase: 1
+moved to TypeClass.peek: 1
+
+## First 50 entries
+[bitfield] GIOCondition — duplicate declaration owned by an earlier namespace
+[callable] GObject.cclosureMarshalBooleanBoxedBoxed — moved to CClosure.marshal_BOOLEAN__BOXED_BOXED
+[callable] GObject.cclosureMarshalBooleanFlags — moved to CClosure.marshal_BOOLEAN__FLAGS
+[callable] GObject.cclosureMarshalStringObjectPointer — moved to CClosure.marshal_STRING__OBJECT_POINTER
+[callable] GObject.cclosureMarshalVoidBoolean — moved to CClosure.marshal_VOID__BOOLEAN
+[callable] GObject.cclosureMarshalVoidBoxed — moved to CClosure.marshal_VOID__BOXED
+[callable] GObject.cclosureMarshalVoidChar — moved to CClosure.marshal_VOID__CHAR
+[callable] GObject.cclosureMarshalVoidDouble — moved to CClosure.marshal_VOID__DOUBLE
+[callable] GObject.cclosureMarshalVoidEnum — moved to CClosure.marshal_VOID__ENUM
+[callable] GObject.cclosureMarshalVoidFlags — moved to CClosure.marshal_VOID__FLAGS
+[callable] GObject.cclosureMarshalVoidFloat — moved to CClosure.marshal_VOID__FLOAT
+[callable] GObject.cclosureMarshalVoidInt — moved to CClosure.marshal_VOID__INT
+[callable] GObject.cclosureMarshalVoidLong — moved to CClosure.marshal_VOID__LONG
+[callable] GObject.cclosureMarshalVoidObject — moved to CClosure.marshal_VOID__OBJECT
+[callable] GObject.cclosureMarshalVoidParam — moved to CClosure.marshal_VOID__PARAM
+[callable] GObject.cclosureMarshalVoidPointer — moved to CClosure.marshal_VOID__POINTER
+[callable] GObject.cclosureMarshalVoidString — moved to CClosure.marshal_VOID__STRING
+[callable] GObject.cclosureMarshalVoidUchar — moved to CClosure.marshal_VOID__UCHAR
+[callable] GObject.cclosureMarshalVoidUint — moved to CClosure.marshal_VOID__UINT
+[callable] GObject.cclosureMarshalVoidUintPointer — moved to CClosure.marshal_VOID__UINT_POINTER
+[callable] GObject.cclosureMarshalVoidUlong — moved to CClosure.marshal_VOID__ULONG
+[callable] GObject.cclosureMarshalVoidVariant — moved to CClosure.marshal_VOID__VARIANT
+[callable] GObject.cclosureMarshalVoidVoid — moved to CClosure.marshal_VOID__VOID
+[callable] GObject.cclosureMarshalGeneric — moved to CClosure.marshal_generic
+[callable] GObject.enumCompleteTypeInfo — unsupported out parameter info (GTypeInfo)
+[callable] GObject.enumRegisterStatic — parameter const_static_values: array types are handled in a later phase
+[callable] GObject.flagsCompleteTypeInfo — unsupported out parameter info (GTypeInfo)
+[callable] GObject.flagsRegisterStatic — parameter const_static_values: array types are handled in a later phase
+[callback] GObject.SignalEmissionHook parameter param_values — array types are handled in a later phase
+[callable] GObject.signalAddEmissionHook — parameter hook_func: callback SignalEmissionHook has unsupported signature
+[callable] GObject.signalChainFromOverridden — parameter instance_and_params: array types are handled in a later phase
+[callable] GObject.signalEmitv — parameter instance_and_params: array types are handled in a later phase
+[callable] GObject.signalListIds — return: array types are handled in a later phase
+[callable] GObject.signalQuery — caller-allocates out parameter query
+[callable] GObject.sourceSetClosure — moved to Source.set_closure
+[callable] GObject.sourceSetDummyCallback — moved to Source.set_dummy_callback
+[callable] GObject.typeChildren — parameter n_children: nullable scalar parameter (guint)
+[callable] GObject.typeClassAdjustPrivateOffset — moved to TypeClass.adjust_private_offset
+[callable] GObject.typeClassGet — moved to TypeClass.get
+[callable] GObject.typeClassPeek — moved to TypeClass.peek
+[callable] GObject.typeClassPeekStatic — moved to TypeClass.peek_static
+[callable] GObject.typeClassRef — moved to TypeClass.ref
+[callable] GObject.typeInterfaceAddPrerequisite — moved to TypeInterface.add_prerequisite
+[callable] GObject.typeInterfaceGetPlugin — moved to TypeInterface.get_plugin
+[callable] GObject.typeInterfaceInstantiatablePrerequisite — moved to TypeInterface.instantiatable_prerequisite
+[callable] GObject.typeInterfacePeek — moved to TypeInterface.peek
+[callable] GObject.typeInterfacePrerequisites — moved to TypeInterface.prerequisites
+[callable] GObject.typeInterfaces — parameter n_interfaces: nullable scalar parameter (guint)
+[callable] GObject.typeQuery — caller-allocates out parameter query
+[callable] GObject.valueTypeCompatible — moved to Value.type_compatible

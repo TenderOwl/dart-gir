@@ -1,0 +1,428 @@
+# Skip report for package gdk4 (Gdk 4.0)
+Total skipped: 386
+
+## By category
+constant: 334
+callable: 49
+method: 2
+renamed: 1
+
+## By reason
+parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 8
+parameter mime_types: array types are handled in a later phase: 3
+parameter destroy: nullable callback parameter (GLib.DestroyNotify): 2
+name collision: keyCH: 2
+name collision: keyCh: 2
+name collision: keyEth: 2
+name collision: keyThorn: 2
+caller-allocates out parameter value: 2
+name collision: 2
+caller-allocates out parameter dest: 2
+parameter data: array types are handled in a later phase: 2
+return: array types are handled in a later phase: 2
+parameter keys: array types are handled in a later phase: 2
+name collision: keyMacedoniaKje: 1
+name collision: keyArmenianKe: 1
+name collision: keyArmenianKen: 1
+name collision: keyArmenianKhe: 1
+name collision: keyArmenianLyun: 1
+name collision: keyArmenianMen: 1
+name collision: keyArmenianNu: 1
+name collision: keyArmenianO: 1
+name collision: keyArmenianPe: 1
+name collision: keyArmenianPyur: 1
+name collision: keyArmenianRa: 1
+name collision: keyArmenianRe: 1
+name collision: keyArmenianSe: 1
+name collision: keyArmenianSha: 1
+name collision: keyArmenianTche: 1
+name collision: keyArmenianTo: 1
+name collision: keyArmenianTsa: 1
+name collision: keyArmenianTso: 1
+name collision: keyArmenianTyun: 1
+name collision: keyArmenianVev: 1
+name collision: keyArmenianVo: 1
+name collision: keyArmenianVyun: 1
+name collision: keyArmenianYech: 1
+name collision: keyArmenianZa: 1
+name collision: keyArmenianZhe: 1
+name collision: keyByelorussianShortu: 1
+name collision: keyArmenianAyb: 1
+name collision: keyArmenianBen: 1
+name collision: keyCyrillicA: 1
+name collision: keyCyrillicBe: 1
+name collision: keyCyrillicChe: 1
+name collision: keyCyrillicCheDescender: 1
+name collision: keyCyrillicCheVertstroke: 1
+name collision: keyCyrillicDe: 1
+name collision: keyCyrillicDzhe: 1
+name collision: keyCyrillicE: 1
+name collision: keyCyrillicEf: 1
+name collision: keyCyrillicEl: 1
+name collision: keyCyrillicEm: 1
+name collision: keyCyrillicEn: 1
+name collision: keyCyrillicEnDescender: 1
+name collision: keyCyrillicEr: 1
+name collision: keyCyrillicEs: 1
+name collision: keyCyrillicGhe: 1
+name collision: keyCyrillicGheBar: 1
+name collision: keyCyrillicHa: 1
+name collision: keyCyrillicHaDescender: 1
+name collision: keyCyrillicHardsign: 1
+name collision: keyCyrillicI: 1
+name collision: keyCyrillicIMacron: 1
+name collision: keyCyrillicIe: 1
+name collision: keyCyrillicIo: 1
+name collision: keyCyrillicJe: 1
+name collision: keyCyrillicKa: 1
+name collision: keyCyrillicKaDescender: 1
+name collision: keyCyrillicKaVertstroke: 1
+name collision: keyCyrillicLje: 1
+name collision: keyCyrillicNje: 1
+name collision: keyCyrillicO: 1
+name collision: keyCyrillicOBar: 1
+name collision: keyCyrillicPe: 1
+name collision: keyCyrillicSchwa: 1
+name collision: keyCyrillicSha: 1
+name collision: keyCyrillicShcha: 1
+name collision: keyCyrillicShha: 1
+name collision: keyCyrillicShorti: 1
+name collision: keyCyrillicSoftsign: 1
+name collision: keyCyrillicTe: 1
+name collision: keyCyrillicTse: 1
+name collision: keyCyrillicU: 1
+name collision: keyCyrillicUMacron: 1
+name collision: keyCyrillicUStraight: 1
+name collision: keyCyrillicUStraightBar: 1
+name collision: keyCyrillicVe: 1
+name collision: keyCyrillicYa: 1
+name collision: keyCyrillicYeru: 1
+name collision: keyCyrillicYu: 1
+name collision: keyCyrillicZe: 1
+name collision: keyCyrillicZhe: 1
+name collision: keyCyrillicZheDescender: 1
+name collision: keyArmenianCha: 1
+name collision: keyGreekAlpha: 1
+name collision: keyGreekBeta: 1
+name collision: keyGreekChi: 1
+name collision: keyGreekDelta: 1
+name collision: keyGreekEpsilon: 1
+name collision: keyGreekEta: 1
+name collision: keyGreekGamma: 1
+name collision: keyGreekIota: 1
+name collision: keyGreekKappa: 1
+name collision: keyGreekLambda: 1
+name collision: keyGreekLamda: 1
+name collision: keyGreekMu: 1
+name collision: keyGreekNu: 1
+name collision: keyGreekOmega: 1
+name collision: keyGreekOmicron: 1
+name collision: keyGreekPhi: 1
+name collision: keyGreekPi: 1
+name collision: keyGreekPsi: 1
+name collision: keyGreekRho: 1
+name collision: keyGreekSigma: 1
+name collision: keyGreekTau: 1
+name collision: keyGreekTheta: 1
+name collision: keyGreekUpsilon: 1
+name collision: keyGreekXi: 1
+name collision: keyGreekZeta: 1
+name collision: keyMacedoniaDse: 1
+name collision: keyMacedoniaGje: 1
+name collision: keyArmenianAt: 1
+name collision: keySerbianDje: 1
+name collision: keySerbianDze: 1
+name collision: keySerbianJe: 1
+name collision: keySerbianLje: 1
+name collision: keySerbianNje: 1
+name collision: keySerbianTshe: 1
+name collision: keyArmenianDa: 1
+name collision: keyUkrainianGheWithUpturn: 1
+name collision: keyUkrainianI: 1
+name collision: keyUkrainianIe: 1
+name collision: keyUkrainianYi: 1
+name collision: keyUkranianI: 1
+name collision: keyUkranianJe: 1
+name collision: keyUkranianYi: 1
+name collision: keyA: 1
+name collision: keyAacute: 1
+name collision: keyAbelowdot: 1
+name collision: keyAbreve: 1
+name collision: keyAbreveacute: 1
+name collision: keyAbrevebelowdot: 1
+name collision: keyAbrevegrave: 1
+name collision: keyAbrevehook: 1
+name collision: keyAbrevetilde: 1
+name collision: keyAcircumflex: 1
+name collision: keyAcircumflexacute: 1
+name collision: keyAcircumflexbelowdot: 1
+name collision: keyAcircumflexgrave: 1
+name collision: keyAcircumflexhook: 1
+name collision: keyAcircumflextilde: 1
+name collision: keyAdiaeresis: 1
+name collision: keyAe: 1
+name collision: keyAgrave: 1
+name collision: keyAhook: 1
+name collision: keyAmacron: 1
+name collision: keyAogonek: 1
+name collision: keyAring: 1
+name collision: keyAtilde: 1
+name collision: keyB: 1
+name collision: keyBabovedot: 1
+name collision: keyC: 1
+name collision: keyCabovedot: 1
+name collision: keyCacute: 1
+name collision: keyCcaron: 1
+name collision: keyCcedilla: 1
+name collision: keyCcircumflex: 1
+name collision: keyD: 1
+name collision: keyDabovedot: 1
+name collision: keyDcaron: 1
+name collision: keyDeadA: 1
+name collision: keyDeadE: 1
+name collision: keyDeadI: 1
+name collision: keyDeadO: 1
+name collision: keyDeadSchwa: 1
+name collision: keyDeadU: 1
+name collision: keyDstroke: 1
+name collision: keyE: 1
+name collision: keyEabovedot: 1
+name collision: keyEacute: 1
+name collision: keyEbelowdot: 1
+name collision: keyEcaron: 1
+name collision: keyEcircumflex: 1
+name collision: keyEcircumflexacute: 1
+name collision: keyEcircumflexbelowdot: 1
+name collision: keyEcircumflexgrave: 1
+name collision: keyEcircumflexhook: 1
+name collision: keyEcircumflextilde: 1
+name collision: keyEdiaeresis: 1
+name collision: keyEgrave: 1
+name collision: keyEhook: 1
+name collision: keyEmacron: 1
+name collision: keyEng: 1
+name collision: keyEogonek: 1
+name collision: keyEtilde: 1
+name collision: keyEzh: 1
+name collision: keyF: 1
+name collision: keyFabovedot: 1
+name collision: keyG: 1
+name collision: keyGabovedot: 1
+name collision: keyGbreve: 1
+name collision: keyGcaron: 1
+name collision: keyGcedilla: 1
+name collision: keyGcircumflex: 1
+name collision: keyH: 1
+name collision: keyHcircumflex: 1
+name collision: keyHstroke: 1
+name collision: keyI: 1
+name collision: keyIacute: 1
+name collision: keyIbelowdot: 1
+name collision: keyIbreve: 1
+name collision: keyIcircumflex: 1
+name collision: keyIdiaeresis: 1
+name collision: keyIgrave: 1
+name collision: keyIhook: 1
+name collision: keyImacron: 1
+name collision: keyIogonek: 1
+name collision: keyItilde: 1
+name collision: keyJ: 1
+name collision: keyJcircumflex: 1
+name collision: keyK: 1
+name collision: keyKanaA: 1
+name collision: keyKanaE: 1
+name collision: keyKanaI: 1
+name collision: keyKanaO: 1
+name collision: keyKanaTsu: 1
+name collision: keyKanaTu: 1
+name collision: keyKanaU: 1
+name collision: keyKanaYa: 1
+name collision: keyKanaYo: 1
+name collision: keyKanaYu: 1
+name collision: keyKcedilla: 1
+name collision: keyL: 1
+name collision: keyLacute: 1
+name collision: keyLbelowdot: 1
+name collision: keyLcaron: 1
+name collision: keyLcedilla: 1
+name collision: keyLstroke: 1
+name collision: keyM: 1
+name collision: keyMabovedot: 1
+name collision: keyN: 1
+name collision: keyNacute: 1
+name collision: keyNcaron: 1
+inout parameter x: 1
+name collision: keyNtilde: 1
+name collision: keyO: 1
+name collision: keyOacute: 1
+name collision: keyObarred: 1
+name collision: keyObelowdot: 1
+name collision: keyOcaron: 1
+name collision: keyOcircumflex: 1
+name collision: keyOcircumflexacute: 1
+name collision: keyOcircumflexbelowdot: 1
+name collision: keyOcircumflexgrave: 1
+name collision: keyOcircumflexhook: 1
+name collision: keyOcircumflextilde: 1
+name collision: keyOdiaeresis: 1
+name collision: keyOdoubleacute: 1
+name collision: keyOe: 1
+name collision: keyOgrave: 1
+name collision: keyOhook: 1
+name collision: keyOhorn: 1
+name collision: keyOhornacute: 1
+name collision: keyOhornbelowdot: 1
+name collision: keyOhorngrave: 1
+name collision: keyOhornhook: 1
+name collision: keyOhorntilde: 1
+name collision: keyOmacron: 1
+name collision: keyOoblique: 1
+name collision: keyOslash: 1
+name collision: keyOtilde: 1
+name collision: keyP: 1
+name collision: keyPabovedot: 1
+name collision: keyQ: 1
+name collision: keyR: 1
+name collision: keyRacute: 1
+name collision: keyRcaron: 1
+name collision: keyRcedilla: 1
+name collision: keyS: 1
+name collision: keySabovedot: 1
+name collision: keySacute: 1
+name collision: keyScaron: 1
+name collision: keyScedilla: 1
+name collision: keySchwa: 1
+name collision: keyScircumflex: 1
+name collision: keyT: 1
+name collision: keyTabovedot: 1
+name collision: keyTcaron: 1
+name collision: keyTcedilla: 1
+name collision: keyTslash: 1
+name collision: keyU: 1
+name collision: keyUacute: 1
+name collision: keyUbelowdot: 1
+name collision: keyUbreve: 1
+name collision: keyUcircumflex: 1
+name collision: keyUdiaeresis: 1
+name collision: keyUdoubleacute: 1
+name collision: keyUgrave: 1
+name collision: keyUhook: 1
+name collision: keyUhorn: 1
+name collision: keyUhornacute: 1
+name collision: keyUhornbelowdot: 1
+name collision: keyUhorngrave: 1
+name collision: keyUhornhook: 1
+name collision: keyUhorntilde: 1
+name collision: keyUmacron: 1
+name collision: keyUogonek: 1
+name collision: keyUring: 1
+name collision: keyUtilde: 1
+name collision: keyV: 1
+name collision: keyW: 1
+name collision: keyWacute: 1
+name collision: keyWcircumflex: 1
+name collision: keyWdiaeresis: 1
+name collision: keyWgrave: 1
+name collision: keyX: 1
+name collision: keyXabovedot: 1
+name collision: keyY: 1
+name collision: keyYacute: 1
+name collision: keyYbelowdot: 1
+name collision: keyYcircumflex: 1
+name collision: keyYdiaeresis: 1
+name collision: keyYgrave: 1
+name collision: keyYhook: 1
+name collision: keyYtilde: 1
+name collision: keyZ: 1
+name collision: keyZabovedot: 1
+name collision: keyZacute: 1
+name collision: keyZcaron: 1
+name collision: keyZstroke: 1
+moved to ColorState.get_oklab: 1
+moved to ColorState.get_oklch: 1
+moved to ColorState.get_rec2100_linear: 1
+moved to ColorState.get_rec2100_pq: 1
+moved to ColorState.get_srgb: 1
+moved to ColorState.get_srgb_linear: 1
+name collision: keyArmenianDza: 1
+name collision: keyArmenianE: 1
+moved to ContentFormats.parse: 1
+moved to DmabufError.quark: 1
+moved to DragAction.is_unique: 1
+moved to GLError.quark: 1
+moved to Paintable.new_empty: 1
+moved to TextureError.quark: 1
+moved to VulkanError.quark: 1
+name collision: keyArmenianFe: 1
+parameter n_gtypes: nullable scalar parameter (gsize): 1
+parameter n_mime_types: nullable scalar parameter (gsize): 1
+name collision: keyArmenianGhat: 1
+parameter files: array types are handled in a later phase: 1
+name collision: keyArmenianGim: 1
+parameter out_offsets: array types are handled in a later phase: 1
+name collision: keyArmenianHi: 1
+override-incompatible with ancestor; renamed to getDisplayAppLaunchContext: 1
+parameter providers: array types are handled in a later phase: 1
+name collision: keyArmenianHo: 1
+parameter win_x: nullable scalar parameter (gdouble): 1
+name collision: keyArmenianIni: 1
+parameter keyval: nullable scalar parameter (guint): 1
+name collision: keyArmenianJe: 1
+parameter axes: array types are handled in a later phase: 1
+parameter refresh_interval_return: nullable scalar parameter (gint64): 1
+parameter major: nullable scalar parameter (gint): 1
+caller-allocates out parameter geometry: 1
+parameter x: nullable scalar parameter (gdouble): 1
+name collision: keyNcedilla: 1
+
+## First 50 entries
+[constant] Gdk.KEY_Armenian_at — name collision: keyArmenianAt
+[constant] Gdk.KEY_Armenian_ayb — name collision: keyArmenianAyb
+[constant] Gdk.KEY_Armenian_ben — name collision: keyArmenianBen
+[constant] Gdk.KEY_Armenian_cha — name collision: keyArmenianCha
+[constant] Gdk.KEY_Armenian_da — name collision: keyArmenianDa
+[constant] Gdk.KEY_Armenian_dza — name collision: keyArmenianDza
+[constant] Gdk.KEY_Armenian_e — name collision: keyArmenianE
+[constant] Gdk.KEY_Armenian_fe — name collision: keyArmenianFe
+[constant] Gdk.KEY_Armenian_ghat — name collision: keyArmenianGhat
+[constant] Gdk.KEY_Armenian_gim — name collision: keyArmenianGim
+[constant] Gdk.KEY_Armenian_hi — name collision: keyArmenianHi
+[constant] Gdk.KEY_Armenian_ho — name collision: keyArmenianHo
+[constant] Gdk.KEY_Armenian_ini — name collision: keyArmenianIni
+[constant] Gdk.KEY_Armenian_je — name collision: keyArmenianJe
+[constant] Gdk.KEY_Armenian_ke — name collision: keyArmenianKe
+[constant] Gdk.KEY_Armenian_ken — name collision: keyArmenianKen
+[constant] Gdk.KEY_Armenian_khe — name collision: keyArmenianKhe
+[constant] Gdk.KEY_Armenian_lyun — name collision: keyArmenianLyun
+[constant] Gdk.KEY_Armenian_men — name collision: keyArmenianMen
+[constant] Gdk.KEY_Armenian_nu — name collision: keyArmenianNu
+[constant] Gdk.KEY_Armenian_o — name collision: keyArmenianO
+[constant] Gdk.KEY_Armenian_pe — name collision: keyArmenianPe
+[constant] Gdk.KEY_Armenian_pyur — name collision: keyArmenianPyur
+[constant] Gdk.KEY_Armenian_ra — name collision: keyArmenianRa
+[constant] Gdk.KEY_Armenian_re — name collision: keyArmenianRe
+[constant] Gdk.KEY_Armenian_se — name collision: keyArmenianSe
+[constant] Gdk.KEY_Armenian_sha — name collision: keyArmenianSha
+[constant] Gdk.KEY_Armenian_tche — name collision: keyArmenianTche
+[constant] Gdk.KEY_Armenian_to — name collision: keyArmenianTo
+[constant] Gdk.KEY_Armenian_tsa — name collision: keyArmenianTsa
+[constant] Gdk.KEY_Armenian_tso — name collision: keyArmenianTso
+[constant] Gdk.KEY_Armenian_tyun — name collision: keyArmenianTyun
+[constant] Gdk.KEY_Armenian_vev — name collision: keyArmenianVev
+[constant] Gdk.KEY_Armenian_vo — name collision: keyArmenianVo
+[constant] Gdk.KEY_Armenian_vyun — name collision: keyArmenianVyun
+[constant] Gdk.KEY_Armenian_yech — name collision: keyArmenianYech
+[constant] Gdk.KEY_Armenian_za — name collision: keyArmenianZa
+[constant] Gdk.KEY_Armenian_zhe — name collision: keyArmenianZhe
+[constant] Gdk.KEY_Byelorussian_shortu — name collision: keyByelorussianShortu
+[constant] Gdk.KEY_C_h — name collision: keyCH
+[constant] Gdk.KEY_Ch — name collision: keyCh
+[constant] Gdk.KEY_Cyrillic_a — name collision: keyCyrillicA
+[constant] Gdk.KEY_Cyrillic_be — name collision: keyCyrillicBe
+[constant] Gdk.KEY_Cyrillic_che — name collision: keyCyrillicChe
+[constant] Gdk.KEY_Cyrillic_che_descender — name collision: keyCyrillicCheDescender
+[constant] Gdk.KEY_Cyrillic_che_vertstroke — name collision: keyCyrillicCheVertstroke
+[constant] Gdk.KEY_Cyrillic_de — name collision: keyCyrillicDe
+[constant] Gdk.KEY_Cyrillic_dzhe — name collision: keyCyrillicDzhe
+[constant] Gdk.KEY_Cyrillic_e — name collision: keyCyrillicE
+[constant] Gdk.KEY_Cyrillic_ef — name collision: keyCyrillicEf
