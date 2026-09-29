@@ -17,7 +17,7 @@
 //     generator; the C signature is small enough to call directly.
 
 import 'dart:ffi' as ffi;
-import 'dart:io' show stderr;
+import 'dart:io' show stderr, exit;
 
 import 'package:adw/adw.dart';
 import 'package:ffi/ffi.dart';
@@ -153,6 +153,12 @@ void _onActivateDart(
   window.present();
 }
 
+void _onQuit(ffi.Pointer<ffi.Void> instance, ffi.Pointer<ffi.Void> userData) {
+  final app = AdwApplication.fromPointer(instance);
+  app.quit();
+  exit(0);
+}
+
 int main(List<String> args) {
   final app = AdwApplication(
     'com.example.gtk4_counter',
@@ -162,6 +168,8 @@ int main(List<String> args) {
   // We connect `activate` first so the window is built when the
   // application's main loop wakes us up.
   _connectSignal(app.handle, 'activate', _onActivateDart, ffi.nullptr);
+
+  _connectSignal(app.handle, 'shutdown', _onQuit, ffi.nullptr);
 
   // `app.run()` is generated — it accepts `argc` plus an optional
   // `argv` and forwards both to `g_application_run` via
