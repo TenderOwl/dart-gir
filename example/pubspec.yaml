@@ -10,12 +10,12 @@ dev_dependencies:
   test: ^1.25.6
 
 dependencies:
-  ffi: ^2.1.3
-  gobject:
-    path: ../packages/gobject
-  glib:
-    path: ../packages/glib
-  gtk4:
-    path: ../packages/gtk4
   adw:
     path: ../packages/adw
+  ffi: ^2.1.3
+  gio:
+    path: ../packages/gio
+  gobject:
+    path: ../packages/gobject
+  gtk4:
+    path: ../packages/gtk4

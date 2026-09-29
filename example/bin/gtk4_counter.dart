@@ -4,26 +4,33 @@
 //   dart run example/bin/gtk4_counter.dart
 //
 // The flow:
-//   1. gtk_init() — generated as `void init()` (no argc/argv variants are
-//      skipped by the generator because the parameter is `allow-none`).
-//   2. Build a GtkWindow → GtkBox → GtkLabel + GtkButton.
-//   3. Hook the button's `clicked` signal to a static Dart callback that
-//      mutates the counter and updates the label; hook `destroy` to quit
-//      the main loop.
-//   4. Show the window and run a GLib main loop.
+//   1. Create an AdwApplication (which is a GApplication subclass).
+//   2. Wire the application's `activate` signal to build the window.
+//   3. Build a GtkWindow → GtkBox → GtkLabel + GtkButton and hook the
+//      button's `clicked` signal to a static Dart callback that mutates
+//      the counter and updates the label.
+//   4. Hand control to GApplication.run(), which returns when the
+//      application quits.
 //
-// The `g_signal_connect_data` call is made through `gobjectLookup` because
-// the generator does not emit signal-helper wrappers; the C signature is
-// simple enough to call directly.
+// Two raw bindings live in this file because the generator doesn't yet
+// emit them:
+//
+//   * `g_signal_connect_data` — signal-helper wrappers are skipped by the
+//     generator; the C signature is small enough to call directly.
+//   * `g_application_run` — the generator rejects this because `argv` is a
+//     `char**` (array handling is "a later phase") and the whole method
+//     gets dropped as a side effect. The C contract accepts `argv = NULL`
+//     when command-line parsing isn't needed, so a no-arg Dart wrapper
+//     covers the common case.
 
 import 'dart:ffi' as ffi;
 import 'dart:io' show stderr;
 
+import 'package:adw/adw.dart';
 import 'package:ffi/ffi.dart';
-import 'package:glib/glib.dart';
+import 'package:gio/gio.dart';
 import 'package:gobject/gobject.dart' show gobjectLookup;
 import 'package:gtk4/gtk4.dart' hide init;
-import 'package:adw/adw.dart';
 
 /// State shared with the static Dart callbacks below. We keep the counter
 /// in a top-level field because `g_signal_connect_data` passes a
@@ -54,14 +61,6 @@ void _onClickedDart(
   final label = GtkLabel.fromPointer(userData.cast());
   final newText = 'Button clicked: $_counter time${_counter == 1 ? '' : 's'}';
   label.setLabel(newText);
-}
-
-void _onDestroyDart(
-  ffi.Pointer<ffi.Void> window,
-  ffi.Pointer<ffi.Void> userData,
-) {
-  final loop = GMainLoop.fromPointer(userData);
-  loop.quit();
 }
 
 /// Raw binding to `g_signal_connect_data`. The generator skips signal
@@ -105,6 +104,49 @@ final _gSignalConnectData =
           )
         >();
 
+/// Raw binding to `g_application_run`.
+///
+/// C signature:
+/// ```c
+/// int g_application_run (GApplication *application,
+///                         int           argc,
+///                         char        **argv);
+/// ```
+///
+/// The generator skips this method because `argv` is a `char**` (arrays
+/// are "handled in a later phase"), and `callable.dart` drops the whole
+/// callable if any parameter fails to bridge. We work around that by
+/// passing `argc = 0, argv = NULL` — the C contract explicitly allows it
+/// ("It is possible to pass %NULL if @argv is not available or commandline
+/// handling is not required."). For apps that need real argv parsing, add
+/// a second variant that builds a `Pointer<Pointer<Utf8>>` from
+/// `List<String>` and frees it in a `finally`.
+final _gApplicationRun =
+    gioLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >
+        >('g_application_run')
+        .asFunction<
+          int Function(
+            ffi.Pointer<ffi.Void>,
+            int,
+            ffi.Pointer<ffi.Pointer<Utf8>>,
+          )
+        >();
+
+/// Adds a `run()` method to `GApplication` so callers can write
+/// `app.run()` even though the generator doesn't emit one. Equivalent to
+/// `g_application_run(app, 0, NULL)` — see [_gApplicationRun] for why
+/// those zeros are safe.
+extension GApplicationRun on GApplication {
+  int run() => _gApplicationRun(handle, 0, ffi.nullptr);
+}
+
 /// Connects [callback] to [signal] on [instance], passing [userData] as the
 /// gpointer. Uses `NativeCallable.isolateLocal` under the hood so the
 /// callback can flow through a Dart closure that captures local state.
@@ -145,13 +187,48 @@ void _connectSignal(
   }
 }
 
-int main(List<String> args) {
-  // `gtk_init` is exposed as a parameterless free function because the
-  // generator skips the argc/argv variants (nullable scalar params).
-  init();
+/// `GApplication::activate` callback. The default void(void) marshaler
+/// calls us as `closure(instance, user_data)`, so the trampoline takes
+/// `(Pointer<Void>, Pointer<Void>)` — see the `clicked` callback above for
+/// the full reasoning.
+void _onActivateDart(
+  ffi.Pointer<ffi.Void> instance,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  // `instance` is the AdwApplication created in main(). We rebuild the
+  // full wrapper around the pointer so `AdwApplicationWindow` accepts it
+  // (the constructor expects a `GtkApplication`, which AdwApplication is).
+  final app = AdwApplication.fromPointer(instance);
+  final window = createWindow(app);
+  window.present();
+}
 
-  final window = AdwWindow();
+int main(List<String> args) {
+  // We could call `gtk_init()` first and then construct the application,
+  // but GApplication::activate triggers its own init on first emission,
+  // so the explicit call is unnecessary when going through `app.run()`.
+
+  final app = AdwApplication(
+    'com.example.gtk4_counter',
+    GApplicationFlags.defaultFlags,
+  );
+
+  // `app.run()` is provided by the [GApplicationRun] extension below; the
+  // generator drops it because `g_application_run`'s `argv` is a `char**`.
+  // We connect `activate` first so the window is built when the
+  // application's main loop wakes us up.
+  _connectSignal(app.handle, 'activate', _onActivateDart, ffi.nullptr);
+
+  // Hand control to GApplication.run(). It returns when the use-count
+  // drops to zero (i.e. when the last window is destroyed and the
+  // application's hold is released).
+  return app.run();
+}
+
+GtkWindow createWindow(GtkApplication app) {
+  final window = AdwApplicationWindow(app);
   window.setTitle('GTK4 Counter');
+  window.setDefaultSize(800, 600);
 
   final toolbarView = AdwToolbarView();
   window.setContent(toolbarView);
@@ -159,9 +236,16 @@ int main(List<String> args) {
   final headerBar = AdwHeaderBar();
   toolbarView.addTopBar(headerBar);
 
+  final clamp = AdwClamp()..setMaximumSize(360);
+  toolbarView.setContent(clamp);
+
   // Box holds the label and the button vertically.
-  final box = GtkBox(GtkOrientation.vertical, 12);
-  toolbarView.setContent(box);
+  final box = GtkBox(GtkOrientation.vertical, 12)
+    ..setVexpand(true)
+    ..setValign(GtkAlign.center)
+    ..setMarginStart(16)
+    ..setMarginEnd(16);
+  clamp.setChild(box);
 
   final label = GtkLabel('Button clicked: 0 times');
   box.append(label);
@@ -174,15 +258,5 @@ int main(List<String> args) {
   // handler can update the label text.
   _connectSignal(button.handle, 'clicked', _onClickedDart, label.handle);
 
-  // Build the main loop up-front so the destroy handler can reference it.
-  final loop = GMainLoop(null, false);
-  _connectSignal(window.handle, 'destroy', _onDestroyDart, loop.handle);
-
-  // GTK4 dropped gtk_widget_show in favor of `present()` on the toplevel
-  // or `setVisible(true)` on any widget. We use `present()` so the window
-  // also gets raised/focused.
-  window.present();
-
-  loop.run();
-  return 0;
+  return window;
 }
