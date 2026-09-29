@@ -394,6 +394,25 @@ class GtkStringFilter extends GtkFilter {
 class GtkStringList extends GObject {
   GtkStringList.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Creates a new `GtkStringList` with the given @strings.
+  static final _gtkStringListNew =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+            >
+          >('gtk_string_list_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  factory GtkStringList([List<String?>? strings]) {
+    return withNativeStringList(strings, (nativeStrings) {
+      return GtkStringList.fromPointer(
+        _gtkStringListNew(nativeStrings),
+        owned: true,
+      );
+    });
+  }
+
   /// Appends @string to @self.
   ///
   /// The @string will be copied. See
@@ -462,6 +481,43 @@ class GtkStringList extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void remove(int position) {
     _gtkStringListRemove(this.handle, position);
+  }
+
+  /// Changes @self by removing @n_removals strings and adding @additions
+  /// to it.
+  ///
+  /// This function is more efficient than [method@Gtk.StringList.append]
+  /// and [method@Gtk.StringList.remove], because it only emits the
+  /// ::items-changed signal once for the change.
+  ///
+  /// This function copies the strings in @additions.
+  ///
+  /// The parameters @position and @n_removals must be correct (ie:
+  /// @position + @n_removals must be less than or equal to the length
+  /// of the list at the time this function is called).
+  static final _gtkStringListSplice =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_string_list_splice')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void splice(int position, int nRemovals, [List<String?>? additions]) {
+    withNativeStringList(additions, (nativeAdditions) {
+      _gtkStringListSplice(this.handle, position, nRemovals, nativeAdditions);
+    });
   }
 
   /// Adds @string to self at the end, and takes

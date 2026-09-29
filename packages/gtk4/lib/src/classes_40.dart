@@ -197,6 +197,68 @@ class GtkIconTheme extends GObject {
     );
   }
 
+  /// Sets the resource paths that will be looked at when
+  /// looking for icons, similar to search paths.
+  ///
+  /// The resources are considered as part of the hicolor icon theme
+  /// and must be located in subdirectories that are defined in the
+  /// hicolor icon theme, such as `@path/16x16/actions/run.png`
+  /// or `@path/scalable/actions/run.svg`.
+  ///
+  /// Icons that are directly placed in the resource path instead
+  /// of a subdirectory are also considered as ultimate fallback,
+  /// but they are treated like unthemed icons.
+  static final _gtkIconThemeSetResourcePath =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_icon_theme_set_resource_path')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setResourcePath([List<String?>? path]) {
+    withNativeStringList(path, (nativePath) {
+      _gtkIconThemeSetResourcePath(this.handle, nativePath);
+    });
+  }
+
+  /// Sets the search path for the icon theme object.
+  ///
+  /// When looking for an icon theme, GTK will search for a subdirectory
+  /// of one or more of the directories in @path with the same name
+  /// as the icon theme containing an index.theme file. (Themes from
+  /// multiple of the path elements are combined to allow themes to be
+  /// extended by adding icons in the user’s home directory.)
+  ///
+  /// In addition if an icon found isn’t found either in the current
+  /// icon theme or the default icon theme, and an image file with
+  /// the right name is found directly in one of the elements of
+  /// @path, then that image will be used for the icon name.
+  /// (This is legacy feature, and new icons should be put
+  /// into the fallback icon theme, which is called hicolor,
+  /// rather than directly on the icon path.)
+  static final _gtkIconThemeSetSearchPath =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_icon_theme_set_search_path')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setSearchPath([List<String?>? path]) {
+    withNativeStringList(path, (nativePath) {
+      _gtkIconThemeSetSearchPath(this.handle, nativePath);
+    });
+  }
+
   /// Sets the name of the icon theme that the `GtkIconTheme` object uses
   /// overriding system configuration.
   ///

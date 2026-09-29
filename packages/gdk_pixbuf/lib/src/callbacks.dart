@@ -40,6 +40,19 @@ typedef GdkPixbufModulePreparedFunc = void Function(
   ffi.Pointer<ffi.Void>,
 );
 
+/// Saves a `GdkPixbuf` into a standard C file stream.
+///
+/// The optional `param_keys` and `param_values` arrays contain the keys and
+/// values (in the same order) for attributes to be saved alongside the image
+/// data.
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GdkPixbufModuleSaveFunc = int Function(
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Pointer<Utf8>>,
+  ffi.Pointer<ffi.Pointer<Utf8>>,
+);
+
 /// Checks whether the given `option_key` is supported when saving.
 /// Pass a top-level or static Dart function. Closures are not supported.
 typedef GdkPixbufModuleSaveOptionSupportedFunc = int Function(

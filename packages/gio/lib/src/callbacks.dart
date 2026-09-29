@@ -227,6 +227,25 @@ typedef GDBusSubtreeDispatchFunc = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<ffi.Void>,
 );
 
+/// The type of the @enumerate function in #GDBusSubtreeVTable.
+///
+/// This function is called when generating introspection data and also
+/// when preparing to dispatch incoming messages in the event that the
+/// %G_DBUS_SUBTREE_FLAGS_DISPATCH_TO_UNENUMERATED_NODES flag is not
+/// specified (ie: to verify that the object path is valid).
+///
+/// Hierarchies are not supported; the items that you return should not
+/// contain the `/` character.
+///
+/// The return value will be freed with g_strfreev().
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GDBusSubtreeEnumerateFunc = ffi.Pointer<ffi.Pointer<Utf8>> Function(
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<Utf8>,
+  ffi.Pointer<Utf8>,
+  ffi.Pointer<ffi.Void>,
+);
+
 /// This is the function type of the callback used for the #GSource
 /// returned by g_datagram_based_create_source().
 /// Pass a top-level or static Dart function. Closures are not supported.

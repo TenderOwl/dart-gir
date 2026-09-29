@@ -438,6 +438,25 @@ class GtkAlertDialog extends GObject {
     return (_gtkAlertDialogGetModal(this.handle)) != 0;
   }
 
+  /// Sets the button labels for the alert.
+  static final _gtkAlertDialogSetButtons =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_alert_dialog_set_buttons')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setButtons([List<String?>? labels]) {
+    withNativeStringList(labels, (nativeLabels) {
+      _gtkAlertDialogSetButtons(this.handle, nativeLabels);
+    });
+  }
+
   /// Sets the index of the cancel button.
   ///
   /// See [property@Gtk.AlertDialog:cancel-button] for

@@ -1356,6 +1356,133 @@ class GdkPixbuf extends GObject {
     );
   }
 
+  /// Saves `pixbuf` to an output stream.
+  ///
+  /// Supported file formats are currently "jpeg", "tiff", "png", "ico" or
+  /// "bmp".
+  ///
+  /// See [method@GdkPixbuf.Pixbuf.save_to_stream] for more details.
+  static final _gdkPixbufSaveToStreamv =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_pixbuf_save_to_streamv')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool saveToStreamv(
+    GOutputStream stream,
+    String type_, [
+    List<String?>? optionKeys,
+    List<String?>? optionValues,
+    GCancellable? cancellable,
+  ]) {
+    return withNativeStringList(optionKeys, (nativeOptionKeys) {
+      return withNativeStringList(optionValues, (nativeOptionValues) {
+        return withNativeString(type_, (nativeType_) {
+          final _error = calloc<ffi.Pointer<ffi.Void>>();
+          try {
+            final _ret = _gdkPixbufSaveToStreamv(
+              this.handle,
+              stream.handle,
+              nativeType_.cast<Utf8>(),
+              nativeOptionKeys,
+              nativeOptionValues,
+              cancellable?.handle ?? ffi.nullptr,
+              _error,
+            );
+            if (_error.value != ffi.nullptr) {
+              throw GlibException.fromError(_error.value);
+            }
+            return (_ret) != 0;
+          } finally {
+            calloc.free(_error);
+          }
+        });
+      });
+    });
+  }
+
+  /// Vector version of `gdk_pixbuf_save()`.
+  ///
+  /// Saves pixbuf to a file in `type`, which is currently "jpeg", "png", "tiff", "ico" or "bmp".
+  ///
+  /// If @error is set, `FALSE` will be returned.
+  ///
+  /// See [method@GdkPixbuf.Pixbuf.save] for more details.
+  static final _gdkPixbufSavev =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_pixbuf_savev')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool savev(
+    String filename,
+    String type_, [
+    List<String?>? optionKeys,
+    List<String?>? optionValues,
+  ]) {
+    return withNativeStringList(optionKeys, (nativeOptionKeys) {
+      return withNativeStringList(optionValues, (nativeOptionValues) {
+        return withNativeString(filename, (nativeFilename) {
+          return withNativeString(type_, (nativeType_) {
+            final _error = calloc<ffi.Pointer<ffi.Void>>();
+            try {
+              final _ret = _gdkPixbufSavev(
+                this.handle,
+                nativeFilename.cast<Utf8>(),
+                nativeType_.cast<Utf8>(),
+                nativeOptionKeys,
+                nativeOptionValues,
+                _error,
+              );
+              if (_error.value != ffi.nullptr) {
+                throw GlibException.fromError(_error.value);
+              }
+              return (_ret) != 0;
+            } finally {
+              calloc.free(_error);
+            }
+          });
+        });
+      });
+    });
+  }
+
   /// Creates a transformation of the source image @src by scaling by
   /// @scale_x and @scale_y then translating by @offset_x and @offset_y,
   /// then renders the rectangle (@dest_x, @dest_y, @dest_width,

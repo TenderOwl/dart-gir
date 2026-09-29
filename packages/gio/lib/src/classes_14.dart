@@ -1032,6 +1032,39 @@ class GFileInfo extends GObject {
 
   /// Sets the @attribute to contain the given @attr_value,
   /// if possible.
+  ///
+  /// Sinze: 2.22
+  static final _gFileInfoSetAttributeStringv =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('g_file_info_set_attribute_stringv')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void setAttributeStringv(String attribute, [List<String?>? attrValue]) {
+    withNativeStringList(attrValue, (nativeAttrValue) {
+      withNativeString(attribute, (nativeAttribute) {
+        _gFileInfoSetAttributeStringv(
+          this.handle,
+          nativeAttribute.cast<Utf8>(),
+          nativeAttrValue,
+        );
+      });
+    });
+  }
+
+  /// Sets the @attribute to contain the given @attr_value,
+  /// if possible.
   static final _gFileInfoSetAttributeUint32 =
       gioLookup<
             ffi.NativeFunction<

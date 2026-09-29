@@ -137,6 +137,73 @@ void main() {
       expect(report.entries.single.reason, 'varargs');
       expect(report.entries.single.name, contains('printf'));
     });
+
+    test(
+      'emits function with argv-style string list via withNativeStringList',
+      () {
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'application_run',
+          cIdentifier: 'g_application_run',
+          returnType: const GirTypeRef(name: 'gint', cType: 'int'),
+          parameters: [
+            const GirParameter(
+              name: 'application',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+            const GirParameter(
+              name: 'argc',
+              type: GirTypeRef(name: 'gint', cType: 'int'),
+            ),
+            const GirParameter(
+              name: 'argv',
+              type: GirTypeRef(
+                cType: 'char**',
+                array: GirArrayInfo(elementType: GirTypeRef(name: 'filename')),
+              ),
+              nullable: true,
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, contains('withNativeStringList(argv, (nativeArgv)'));
+        expect(code, contains('List<String?>? argv'));
+        expect(code, contains('ffi.Pointer<ffi.Pointer<Utf8>>'));
+        expect(report.totalSkipped, 0);
+        expect(ctx.usesGirFfi, isTrue);
+      },
+    );
+
+    test('skips function whose argv-style array has bound length', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'weird_run',
+        cIdentifier: 'g_weird_run',
+        parameters: [
+          const GirParameter(
+            name: 'argv',
+            type: GirTypeRef(
+              cType: 'gchar**',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(name: 'utf8'),
+              ),
+            ),
+          ),
+          const GirParameter(
+            name: 'argc',
+            type: GirTypeRef(name: 'gint'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNull);
+      expect(report.entries.single.reason, contains('array'));
+    });
   });
 
   group('FunctionEmitter.emitConstant', () {
@@ -145,13 +212,15 @@ void main() {
 
     test('emits utf8 string constant as Dart const String', () {
       final report = GenerationReport();
-      final ns = _glibNs(constants: [
-        mkConst(
-          'DIR_SEPARATOR_S',
-          '/',
-          const GirTypeRef(name: 'utf8', cType: 'gchar*'),
-        ),
-      ]);
+      final ns = _glibNs(
+        constants: [
+          mkConst(
+            'DIR_SEPARATOR_S',
+            '/',
+            const GirTypeRef(name: 'utf8', cType: 'gchar*'),
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = FunctionEmitter(ctx).emitConstant(ns.constants.single)!;
       expect(code, contains("const dirSeparatorS = '/'"));
@@ -160,13 +229,15 @@ void main() {
 
     test('escapes backslashes in string constants', () {
       final report = GenerationReport();
-      final ns = _glibNs(constants: [
-        mkConst(
-          'PROBE',
-          r'C:\Users\foo',
-          const GirTypeRef(name: 'utf8', cType: 'gchar*'),
-        ),
-      ]);
+      final ns = _glibNs(
+        constants: [
+          mkConst(
+            'PROBE',
+            r'C:\Users\foo',
+            const GirTypeRef(name: 'utf8', cType: 'gchar*'),
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = FunctionEmitter(ctx).emitConstant(ns.constants.single)!;
       // A literal `\` in GIR becomes `\\` in Dart source so the value
@@ -177,13 +248,15 @@ void main() {
     test('skips non-primitive, non-string constant types', () {
       final report = GenerationReport();
       // `time_t` resolves to unsupported — should be skipped with reason.
-      final ns = _glibNs(constants: [
-        mkConst(
-          'WHEN',
-          '1234',
-          const GirTypeRef(name: 'time_t', cType: 'time_t'),
-        ),
-      ]);
+      final ns = _glibNs(
+        constants: [
+          mkConst(
+            'WHEN',
+            '1234',
+            const GirTypeRef(name: 'time_t', cType: 'time_t'),
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = FunctionEmitter(ctx).emitConstant(ns.constants.single);
       expect(code, isNull);
@@ -192,13 +265,15 @@ void main() {
 
     test('skips integer constants that overflow Dart int', () {
       final report = GenerationReport();
-      final ns = _glibNs(constants: [
-        mkConst(
-          'MAXUINT64',
-          '18446744073709551615',
-          const GirTypeRef(name: 'guint64', cType: 'guint64'),
-        ),
-      ]);
+      final ns = _glibNs(
+        constants: [
+          mkConst(
+            'MAXUINT64',
+            '18446744073709551615',
+            const GirTypeRef(name: 'guint64', cType: 'guint64'),
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = FunctionEmitter(ctx).emitConstant(ns.constants.single);
       expect(code, isNull);
@@ -212,33 +287,34 @@ void main() {
       String? cType,
       GirTypeRef? returnType,
       List<GirParameter> parameters = const [],
-    }) =>
-        GirCallback(
-          name: name,
-          cType: cType,
-          returnType: returnType ?? const GirTypeRef(name: 'none'),
-          parameters: parameters,
-        );
+    }) => GirCallback(
+      name: name,
+      cType: cType,
+      returnType: returnType ?? const GirTypeRef(name: 'none'),
+      parameters: parameters,
+    );
 
     test('emits typedef for a callback with primitive parameters and return', () {
       final report = GenerationReport();
-      final ns = _glibNs(callbacks: [
-        cb(
-          name: 'CompareDataFunc',
-          cType: 'GCompareDataFunc',
-          returnType: const GirTypeRef(name: 'gint'),
-          parameters: const [
-            GirParameter(
-              name: 'a',
-              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-            ),
-            GirParameter(
-              name: 'b',
-              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-            ),
-          ],
-        ),
-      ]);
+      final ns = _glibNs(
+        callbacks: [
+          cb(
+            name: 'CompareDataFunc',
+            cType: 'GCompareDataFunc',
+            returnType: const GirTypeRef(name: 'gint'),
+            parameters: const [
+              GirParameter(
+                name: 'a',
+                type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              ),
+              GirParameter(
+                name: 'b',
+                type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              ),
+            ],
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = CallbackEmitter(ctx).emit(ns.callbacks.single)!;
       // User-facing typedef uses Dart convenience types (`int`) for primitives
@@ -252,31 +328,33 @@ void main() {
 
     test('emits typedef with Pointer<Utf8> for utf8 parameters', () {
       final report = GenerationReport();
-      final ns = _glibNs(callbacks: [
-        cb(
-          name: 'LogFunc',
-          cType: 'GLogFunc',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
-            GirParameter(
-              name: 'domain',
-              type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
-            ),
-            GirParameter(
-              name: 'level',
-              type: GirTypeRef(name: 'gint'),
-            ),
-            GirParameter(
-              name: 'message',
-              type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
-            ),
-            GirParameter(
-              name: 'user_data',
-              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-            ),
-          ],
-        ),
-      ]);
+      final ns = _glibNs(
+        callbacks: [
+          cb(
+            name: 'LogFunc',
+            cType: 'GLogFunc',
+            returnType: const GirTypeRef(name: 'none'),
+            parameters: const [
+              GirParameter(
+                name: 'domain',
+                type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
+              ),
+              GirParameter(
+                name: 'level',
+                type: GirTypeRef(name: 'gint'),
+              ),
+              GirParameter(
+                name: 'message',
+                type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
+              ),
+              GirParameter(
+                name: 'user_data',
+                type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              ),
+            ],
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = CallbackEmitter(ctx).emit(ns.callbacks.single)!;
       expect(code, contains('typedef GLogFunc'));
@@ -284,51 +362,55 @@ void main() {
       expect(report.totalSkipped, 0);
     });
 
-    test('renders boolean return as `int` (Dart FFI does not unify bool ↔ Int32)',
-        () {
-      final report = GenerationReport();
-      final ns = _glibNs(callbacks: [
-        cb(
-          name: 'HRFunc',
-          cType: 'GHRFunc',
-          returnType: const GirTypeRef(name: 'gboolean'),
-          parameters: const [
-            GirParameter(
-              name: 'key',
-              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+    test(
+      'renders boolean return as `int` (Dart FFI does not unify bool ↔ Int32)',
+      () {
+        final report = GenerationReport();
+        final ns = _glibNs(
+          callbacks: [
+            cb(
+              name: 'HRFunc',
+              cType: 'GHRFunc',
+              returnType: const GirTypeRef(name: 'gboolean'),
+              parameters: const [
+                GirParameter(
+                  name: 'key',
+                  type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+                ),
+              ],
             ),
           ],
-        ),
-      ]);
-      final ctx = _ctx(ns, [ns], report);
-      final code = CallbackEmitter(ctx).emit(ns.callbacks.single)!;
-      // `bool` is exposed as `int` per the documented convention (0 = false,
-      // non-zero = true). The user-facing typedef must not contain `bool`.
-      expect(code, contains('typedef GHRFunc'));
-      expect(code, contains('int Function('));
-      expect(code, isNot(contains('bool')));
-    });
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code = CallbackEmitter(ctx).emit(ns.callbacks.single)!;
+        // `bool` is exposed as `int` per the documented convention (0 = false,
+        // non-zero = true). The user-facing typedef must not contain `bool`.
+        expect(code, contains('typedef GHRFunc'));
+        expect(code, contains('int Function('));
+        expect(code, isNot(contains('bool')));
+      },
+    );
 
     test('skips when an unsupported parameter type is referenced', () {
       final report = GenerationReport();
-      final ns = _glibNs(callbacks: [
-        cb(
-          name: 'WithArray',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
-            GirParameter(
-              name: 'data',
-              // `array types are handled in a later phase` — must skip.
-              type: GirTypeRef(
-                name: 'gint',
-                array: GirArrayInfo(
-                  elementType: GirTypeRef(name: 'gint'),
+      final ns = _glibNs(
+        callbacks: [
+          cb(
+            name: 'WithArray',
+            returnType: const GirTypeRef(name: 'none'),
+            parameters: const [
+              GirParameter(
+                name: 'data',
+                // `array types are handled in a later phase` — must skip.
+                type: GirTypeRef(
+                  name: 'gint',
+                  array: GirArrayInfo(elementType: GirTypeRef(name: 'gint')),
                 ),
               ),
-            ),
-          ],
-        ),
-      ]);
+            ],
+          ),
+        ],
+      );
       final ctx = _ctx(ns, [ns], report);
       final code = CallbackEmitter(ctx).emit(ns.callbacks.single);
       expect(code, isNull);
@@ -338,13 +420,15 @@ void main() {
 
     test('skips a callback declared in a non-emitted package', () {
       final report = GenerationReport();
-      final ns = _glibNs(callbacks: [
-        cb(
-          name: 'ExternalCb',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [],
-        ),
-      ]);
+      final ns = _glibNs(
+        callbacks: [
+          cb(
+            name: 'ExternalCb',
+            returnType: const GirTypeRef(name: 'none'),
+            parameters: const [],
+          ),
+        ],
+      );
       // Mark the glib package as NOT in the emitted set.
       final ctx = EmitContext(
         namespace: ns,

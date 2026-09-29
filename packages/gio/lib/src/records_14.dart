@@ -3631,6 +3631,26 @@ final class GFile {
     }
   }
 
+  /// Constructs a #GFile from a vector of elements using the correct
+  /// separator for filenames.
+  ///
+  /// Using this function is equivalent to calling g_build_filenamev(),
+  /// followed by g_file_new_for_path() on the result.
+  static final _gFileNewBuildFilenamev =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+            >
+          >('g_file_new_build_filenamev')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  static GFile newBuildFilenamev([List<String?>? args]) {
+    return withNativeStringList(args, (nativeArgs) {
+      return GFile.fromPointer(_gFileNewBuildFilenamev(nativeArgs));
+    });
+  }
+
   /// Creates a #GFile with the given argument from the command line.
   /// The value of @arg can be either a URI, an absolute path or a
   /// relative path resolved relative to the current working directory.

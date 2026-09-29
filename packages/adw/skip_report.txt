@@ -7,7 +7,7 @@ renamed: 6
 method: 1
 
 ## By reason
-return: array types are handled in a later phase: 9
+return: string list return type (null): 8
 parameter people: array types are handled in a later phase: 4
 parameter types: array types are handled in a later phase: 3
 parameter artists: array types are handled in a later phase: 2
@@ -34,6 +34,7 @@ override-incompatible with ancestor; renamed to setNamePreferencesPage: 1
 parameter create_item_func: nullable callback parameter (SidebarSectionCreateItemFunc): 1
 override-incompatible with ancestor; renamed to getDirectionSplitButton: 1
 override-incompatible with ancestor; renamed to setDirectionSplitButton: 1
+return: array types are handled in a later phase: 1
 caller-allocates out parameter rect: 1
 
 ## First 50 entries
@@ -47,20 +48,20 @@ caller-allocates out parameter rect: 1
 [method] AdwBreakpointCondition.toString — name collision
 [callable] AdwAboutDialog.addAcknowledgementSection — parameter people: array types are handled in a later phase
 [callable] AdwAboutDialog.addCreditSection — parameter people: array types are handled in a later phase
-[callable] AdwAboutDialog.getArtists — return: array types are handled in a later phase
-[callable] AdwAboutDialog.getDesigners — return: array types are handled in a later phase
-[callable] AdwAboutDialog.getDevelopers — return: array types are handled in a later phase
-[callable] AdwAboutDialog.getDocumenters — return: array types are handled in a later phase
+[callable] AdwAboutDialog.getArtists — return: string list return type (null)
+[callable] AdwAboutDialog.getDesigners — return: string list return type (null)
+[callable] AdwAboutDialog.getDevelopers — return: string list return type (null)
+[callable] AdwAboutDialog.getDocumenters — return: string list return type (null)
 [callable] AdwAboutDialog.setArtists — parameter artists: array types are handled in a later phase
 [callable] AdwAboutDialog.setDesigners — parameter designers: array types are handled in a later phase
 [callable] AdwAboutDialog.setDevelopers — parameter developers: array types are handled in a later phase
 [callable] AdwAboutDialog.setDocumenters — parameter documenters: array types are handled in a later phase
 [callable] AdwAboutWindow.addAcknowledgementSection — parameter people: array types are handled in a later phase
 [callable] AdwAboutWindow.addCreditSection — parameter people: array types are handled in a later phase
-[callable] AdwAboutWindow.getArtists — return: array types are handled in a later phase
-[callable] AdwAboutWindow.getDesigners — return: array types are handled in a later phase
-[callable] AdwAboutWindow.getDevelopers — return: array types are handled in a later phase
-[callable] AdwAboutWindow.getDocumenters — return: array types are handled in a later phase
+[callable] AdwAboutWindow.getArtists — return: string list return type (null)
+[callable] AdwAboutWindow.getDesigners — return: string list return type (null)
+[callable] AdwAboutWindow.getDevelopers — return: string list return type (null)
+[callable] AdwAboutWindow.getDocumenters — return: string list return type (null)
 [callable] AdwAboutWindow.setArtists — parameter artists: array types are handled in a later phase
 [callable] AdwAboutWindow.setDesigners — parameter designers: array types are handled in a later phase
 [callable] AdwAboutWindow.setDevelopers — parameter developers: array types are handled in a later phase

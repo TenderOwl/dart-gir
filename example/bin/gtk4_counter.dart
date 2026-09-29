@@ -12,16 +12,9 @@
 //   4. Hand control to GApplication.run(), which returns when the
 //      application quits.
 //
-// Two raw bindings live in this file because the generator doesn't yet
-// emit them:
-//
+// One raw binding still lives in this file:
 //   * `g_signal_connect_data` — signal-helper wrappers are skipped by the
 //     generator; the C signature is small enough to call directly.
-//   * `g_application_run` — the generator rejects this because `argv` is a
-//     `char**` (array handling is "a later phase") and the whole method
-//     gets dropped as a side effect. The C contract accepts `argv = NULL`
-//     when command-line parsing isn't needed, so a no-arg Dart wrapper
-//     covers the common case.
 
 import 'dart:ffi' as ffi;
 import 'dart:io' show stderr;
@@ -104,49 +97,6 @@ final _gSignalConnectData =
           )
         >();
 
-/// Raw binding to `g_application_run`.
-///
-/// C signature:
-/// ```c
-/// int g_application_run (GApplication *application,
-///                         int           argc,
-///                         char        **argv);
-/// ```
-///
-/// The generator skips this method because `argv` is a `char**` (arrays
-/// are "handled in a later phase"), and `callable.dart` drops the whole
-/// callable if any parameter fails to bridge. We work around that by
-/// passing `argc = 0, argv = NULL` — the C contract explicitly allows it
-/// ("It is possible to pass %NULL if @argv is not available or commandline
-/// handling is not required."). For apps that need real argv parsing, add
-/// a second variant that builds a `Pointer<Pointer<Utf8>>` from
-/// `List<String>` and frees it in a `finally`.
-final _gApplicationRun =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Int32,
-              ffi.Pointer<ffi.Pointer<Utf8>>,
-            )
-          >
-        >('g_application_run')
-        .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            int,
-            ffi.Pointer<ffi.Pointer<Utf8>>,
-          )
-        >();
-
-/// Adds a `run()` method to `GApplication` so callers can write
-/// `app.run()` even though the generator doesn't emit one. Equivalent to
-/// `g_application_run(app, 0, NULL)` — see [_gApplicationRun] for why
-/// those zeros are safe.
-extension GApplicationRun on GApplication {
-  int run() => _gApplicationRun(handle, 0, ffi.nullptr);
-}
-
 /// Connects [callback] to [signal] on [instance], passing [userData] as the
 /// gpointer. Uses `NativeCallable.isolateLocal` under the hood so the
 /// callback can flow through a Dart closure that captures local state.
@@ -204,25 +154,20 @@ void _onActivateDart(
 }
 
 int main(List<String> args) {
-  // We could call `gtk_init()` first and then construct the application,
-  // but GApplication::activate triggers its own init on first emission,
-  // so the explicit call is unnecessary when going through `app.run()`.
-
   final app = AdwApplication(
     'com.example.gtk4_counter',
     GApplicationFlags.defaultFlags,
   );
 
-  // `app.run()` is provided by the [GApplicationRun] extension below; the
-  // generator drops it because `g_application_run`'s `argv` is a `char**`.
   // We connect `activate` first so the window is built when the
   // application's main loop wakes us up.
   _connectSignal(app.handle, 'activate', _onActivateDart, ffi.nullptr);
 
-  // Hand control to GApplication.run(). It returns when the use-count
-  // drops to zero (i.e. when the last window is destroyed and the
-  // application's hold is released).
-  return app.run();
+  // `app.run()` is generated — it accepts `argc` plus an optional
+  // `argv` and forwards both to `g_application_run` via
+  // `withNativeStringList`. We forward Dart's `main` args so that
+  // command-line flags like `--gapplication-service` still flow through.
+  return app.run(args.length, args);
 }
 
 GtkWindow createWindow(GtkApplication app) {

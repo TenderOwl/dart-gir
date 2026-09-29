@@ -1,8 +1,8 @@
 # Skip report for package glib (GLib 2.0)
-Total skipped: 367
+Total skipped: 358
 
 ## By category
-callable: 348
+callable: 339
 alias: 13
 constant: 2
 callback: 2
@@ -10,46 +10,45 @@ method: 1
 constructor: 1
 
 ## By reason
-return: array types are handled in a later phase: 23
 parameter length: nullable scalar parameter (gsize): 18
-aliases are resolved to their target: 13
+return: string list return type (null): 15
 parameter array: array types are handled in a later phase: 13
+aliases are resolved to their target: 13
+return: array types are handled in a later phase: 11
+parameter string: array types are handled in a later phase: 8
 parameter data: array types are handled in a later phase: 8
 parameter str: array types are handled in a later phase: 8
-parameter string: array types are handled in a later phase: 8
-parameter notify: nullable callback parameter (DestroyNotify): 6
 parameter fields: array types are handled in a later phase: 6
+parameter notify: nullable callback parameter (DestroyNotify): 6
 parameter list: array types are handled in a later phase: 5
-parameter argv: array types are handled in a later phase: 5
-parameter str_array: array types are handled in a later phase: 4
-parameter envp: array types are handled in a later phase: 4
-parameter strv: array types are handled in a later phase: 4
-parameter bytes_read: nullable scalar parameter (gsize): 3
-return: unknown type: time_t: 3
-parameter contents: array types are handled in a later phase: 3
+parameter child_setup: nullable callback parameter (SpawnChildSetupFunc): 5
+parameter strv: array types are handled in a later phase: 3
 parameter port: nullable scalar parameter (gint): 3
-parameter count: nullable scalar parameter (guint): 2
-parameter args: array types are handled in a later phase: 2
+return: unknown type: time_t: 3
+parameter bytes_read: nullable scalar parameter (gsize): 3
+parameter contents: array types are handled in a later phase: 3
 parameter children: array types are handled in a later phase: 2
+name collision: 2
+unsupported out parameter match_info (GMatchInfo?): 2
+parameter func: nullable callback parameter (TranslateFunc): 2
+parameter entries: array types are handled in a later phase: 2
+inout parameter location: 2
+parameter start_pos: nullable scalar parameter (gint): 2
+parameter fds: array types are handled in a later phase: 2
+parameter buf: array types are handled in a later phase: 2
+parameter count: nullable scalar parameter (guint): 2
 parameter items_read: nullable scalar parameter (glong): 2
+inout parameter rc: 2
 array types are handled in a later phase: 2
 parameter keys: array types are handled in a later phase: 2
-parameter buf: array types are handled in a later phase: 2
-inout parameter rc: 2
-parameter fds: array types are handled in a later phase: 2
-parameter start_pos: nullable scalar parameter (gint): 2
-inout parameter location: 2
-parameter entries: array types are handled in a later phase: 2
-parameter func: nullable callback parameter (TranslateFunc): 2
-unsupported out parameter match_info (GMatchInfo?): 2
-name collision: 2
 parameter key: array types are handled in a later phase: 2
-moved to Hook.insert_before: 1
+moved to Checksum.type_get_length: 1
+moved to ByteArray.unref: 1
 moved to Date.get_days_in_month: 1
 moved to Date.get_monday_weeks_in_year: 1
 moved to Date.get_sunday_weeks_in_year: 1
+moved to Date.get_weeks_in_year: 1
 parameter out_num: nullable scalar parameter (gint64): 1
-moved to Date.is_leap_year: 1
 moved to Date.strftime: 1
 moved to Date.valid_day: 1
 moved to Date.valid_dmy: 1
@@ -58,11 +57,11 @@ moved to Date.valid_month: 1
 moved to Date.valid_weekday: 1
 moved to Date.valid_year: 1
 moved to Dir.make_tmp: 1
-parameter out: array types are handled in a later phase: 1
+parameter out_num: nullable scalar parameter (guint64): 1
 moved to Error.domain_register: 1
 moved to Error.domain_register_static: 1
-parameter in: array types are handled in a later phase: 1
-parameter out_val: nullable scalar parameter (gint): 1
+moved to ByteArray.steal: 1
+moved to ByteArray.sort_with_data: 1
 parameter filename_charsets: array types are handled in a later phase: 1
 moved to HashTable.add: 1
 moved to HashTable.contains: 1
@@ -97,9 +96,9 @@ moved to KeyFile.error_quark: 1
 moved to List.pop_allocator: 1
 moved to List.push_allocator: 1
 parameter opsysstring: array types are handled in a later phase: 1
-moved to BookmarkFile.error_quark: 1
+moved to ByteArray.sort: 1
 parameter func: callback LogWriterFunc has unsupported signature: 1
-parameter out_num: nullable scalar parameter (guint64): 1
+moved to ByteArray.sized_new: 1
 moved to MainContext.default: 1
 moved to MainContext.get_thread_default: 1
 moved to MainContext.ref_thread_default: 1
@@ -115,7 +114,7 @@ moved to PathBuf.equal: 1
 parameter out_ptr: nullable scalar parameter (guintptr): 1
 inout parameter err: 1
 unsupported out parameter dest (GError?): 1
-moved to ByteArray.append: 1
+moved to ByteArray.set_size: 1
 moved to Regex.check_replacement: 1
 moved to Regex.error_quark: 1
 moved to Regex.escape_nul: 1
@@ -142,13 +141,10 @@ moved to Source.remove: 1
 moved to Source.remove_by_funcs_user_data: 1
 moved to Source.remove_by_user_data: 1
 moved to Source.set_name_by_id: 1
-moved to ByteArray.free: 1
+moved to ByteArray.remove_range: 1
 parameter standard_output: array types are handled in a later phase: 1
 parameter ascii_alternates: array types are handled in a later phase: 1
-moved to ByteArray.free_to_bytes: 1
 parameter delimiters: array types are handled in a later phase: 1
-moved to ByteArray.new: 1
-parameter strv1: array types are handled in a later phase: 1
 moved to Thread.error_quark: 1
 moved to Thread.exit: 1
 moved to ThreadPool.get_max_idle_time: 1
@@ -163,10 +159,10 @@ moved to TimeVal.from_iso8601: 1
 moved to TrashStack.height: 1
 moved to TrashStack.peek: 1
 moved to TrashStack.pop: 1
-moved to ByteArray.new_take: 1
+moved to TrashStack.push: 1
 parameter result: nullable scalar parameter (gunichar): 1
 caller-allocates out parameter outbuf: 1
-moved to ByteArray.prepend: 1
+moved to AsyncQueue.new: 1
 moved to UnicodeScript.from_iso15924: 1
 moved to UnicodeScript.to_iso15924: 1
 moved to Uri.build: 1
@@ -189,7 +185,7 @@ moved to Uri.split_with_user: 1
 moved to Uri.unescape_bytes: 1
 moved to Uri.unescape_segment: 1
 moved to Uri.unescape_string: 1
-moved to ByteArray.ref: 1
+moved to ByteArray.remove_index_fast: 1
 parameter items_written: nullable scalar parameter (glong): 1
 moved to Variant.is_object_path: 1
 moved to Variant.is_signature: 1
@@ -203,45 +199,46 @@ moved to VariantType.string_is_valid: 1
 moved to VariantType.string_scan: 1
 parameter item_free_func: nullable callback parameter (DestroyNotify): 1
 moved to ByteArray.remove_index: 1
-moved to TrashStack.push: 1
-moved to ByteArray.remove_index_fast: 1
+moved to ByteArray.ref: 1
+moved to Hook.insert_before: 1
 parameter added: unknown type: time_t: 1
 parameter stamp: unknown type: time_t: 1
 parameter groups: array types are handled in a later phase: 1
 parameter modified: unknown type: time_t: 1
 parameter visited: unknown type: time_t: 1
-moved to ByteArray.remove_range: 1
+moved to AsyncQueue.new_full: 1
 parameter size: nullable scalar parameter (gsize): 1
 parameter timet: unknown type: time_t: 1
 parameter year: nullable scalar parameter (gint): 1
 parameter length: nullable scalar parameter (gint): 1
-moved to ByteArray.set_size: 1
+moved to ByteArray.prepend: 1
 parameter terminator_pos: nullable scalar parameter (gsize): 1
 parameter str_return: array types are handled in a later phase: 1
 parameter search_dirs: array types are handled in a later phase: 1
-moved to ByteArray.sized_new: 1
-moved to ByteArray.sort: 1
+moved to ByteArray.new_take: 1
+moved to ByteArray.new: 1
 parameter priority: nullable scalar parameter (gint): 1
 parameter line_number: nullable scalar parameter (gint): 1
-moved to ByteArray.sort_with_data: 1
-moved to ByteArray.steal: 1
-moved to ByteArray.unref: 1
+moved to ByteArray.free_to_bytes: 1
+moved to ByteArray.free: 1
+moved to ByteArray.append: 1
 inout parameter argc: 1
 parameter arguments: array types are handled in a later phase: 1
-moved to Checksum.type_get_length: 1
+moved to BookmarkFile.error_quark: 1
 parameter destroy: nullable callback parameter (DestroyNotify): 1
 parameter free_func: nullable callback parameter (DestroyNotify): 1
-moved to AsyncQueue.new: 1
+parameter out_val: nullable scalar parameter (gint): 1
 parameter has_references: nullable scalar parameter (gboolean): 1
 parameter value: array types are handled in a later phase: 1
 caller-allocates out parameter time_: 1
 inout parameter time_: 1
-moved to AsyncQueue.new_full: 1
+parameter in: array types are handled in a later phase: 1
 parameter unescaped: array types are handled in a later phase: 1
-unparseable int value: 18446744073709551615: 1
+parameter out: array types are handled in a later phase: 1
 parameter text: array types are handled in a later phase: 1
+unparseable int value: 18446744073709551615: 1
 parameter items: array types are handled in a later phase: 1
-moved to Date.get_weeks_in_year: 1
+moved to Date.is_leap_year: 1
 
 ## First 50 entries
 [constant] GLib.CSET_a_2_z — name collision: csetA2Z
@@ -257,8 +254,6 @@ moved to Date.get_weeks_in_year: 1
 [callable] GLib.base64EncodeStep — parameter in: array types are handled in a later phase
 [callable] GLib.bitLockAndGet — parameter out_val: nullable scalar parameter (gint)
 [callable] GLib.bookmarkFileErrorQuark — moved to BookmarkFile.error_quark
-[callable] GLib.buildFilenamev — parameter args: array types are handled in a later phase
-[callable] GLib.buildPathv — parameter args: array types are handled in a later phase
 [callable] GLib.byteArrayAppend — moved to ByteArray.append
 [callable] GLib.byteArrayFree — moved to ByteArray.free
 [callable] GLib.byteArrayFreeToBytes — moved to ByteArray.free_to_bytes
@@ -294,3 +289,5 @@ moved to Date.get_weeks_in_year: 1
 [callable] GLib.dateValidJulian — moved to Date.valid_julian
 [callable] GLib.dateValidMonth — moved to Date.valid_month
 [callable] GLib.dateValidWeekday — moved to Date.valid_weekday
+[callable] GLib.dateValidYear — moved to Date.valid_year
+[callable] GLib.dirMakeTmp — moved to Dir.make_tmp

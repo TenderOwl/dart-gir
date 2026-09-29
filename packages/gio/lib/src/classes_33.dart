@@ -96,6 +96,43 @@ class GSubprocessLauncher extends GObject {
     });
   }
 
+  /// Replace the entire environment of processes launched from this
+  /// launcher with the given 'environ' variable.
+  ///
+  /// Typically you will build this variable by using g_listenv() to copy
+  /// the process 'environ' and using the functions g_environ_setenv(),
+  /// g_environ_unsetenv(), etc.
+  ///
+  /// As an alternative, you can use g_subprocess_launcher_setenv(),
+  /// g_subprocess_launcher_unsetenv(), etc.
+  ///
+  /// Pass an empty array to set an empty environment. Pass %NULL to inherit the
+  /// parent process’ environment. As of GLib 2.54, the parent process’ environment
+  /// will be copied when g_subprocess_launcher_set_environ() is called.
+  /// Previously, it was copied when the subprocess was executed. This means the
+  /// copied environment may now be modified (using g_subprocess_launcher_setenv(),
+  /// etc.) before launching the subprocess.
+  ///
+  /// On UNIX, all strings in this array can be arbitrary byte strings.
+  /// On Windows, they should be in UTF-8.
+  static final _gSubprocessLauncherSetEnviron =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('g_subprocess_launcher_set_environ')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setEnviron([List<String?>? env]) {
+    withNativeStringList(env, (nativeEnv) {
+      _gSubprocessLauncherSetEnviron(this.handle, nativeEnv);
+    });
+  }
+
   /// Sets the flags on the launcher.
   ///
   /// The default flags are %G_SUBPROCESS_FLAGS_NONE.
@@ -243,6 +280,43 @@ class GSubprocessLauncher extends GObject {
           overwrite ? 1 : 0,
         );
       });
+    });
+  }
+
+  /// Creates a #GSubprocess given a provided array of arguments.
+  static final _gSubprocessLauncherSpawnv =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_subprocess_launcher_spawnv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  GSubprocess spawnv([List<String?>? argv]) {
+    return withNativeStringList(argv, (nativeArgv) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gSubprocessLauncherSpawnv(
+          this.handle,
+          nativeArgv,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return GSubprocess.fromPointer(_ret);
+      } finally {
+        calloc.free(_error);
+      }
     });
   }
 

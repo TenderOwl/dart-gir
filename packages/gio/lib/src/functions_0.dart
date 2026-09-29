@@ -471,6 +471,40 @@ bool contentTypeIsUnknown(String type_) {
   });
 }
 
+/// Set the list of directories used by GIO to load the MIME database.
+/// If @dirs is %NULL, the directories used are the default:
+///
+/// - the `mime` subdirectory of the directory in `$XDG_DATA_HOME`
+/// - the `mime` subdirectory of every directory in `$XDG_DATA_DIRS`
+///
+/// This function is intended to be used when writing tests that depend on
+/// information stored in the MIME database, in order to control the data.
+///
+/// Typically, in case your tests use %G_TEST_OPTION_ISOLATE_DIRS, but they
+/// depend on the system’s MIME database, you should call this function
+/// with @dirs set to %NULL before calling g_test_init(), for instance:
+///
+/// |[<!-- language="C" -->
+/// // Load MIME data from the system
+/// g_content_type_set_mime_dirs (NULL);
+/// // Isolate the environment
+/// g_test_init (&argc, &argv, G_TEST_OPTION_ISOLATE_DIRS, NULL);
+///
+/// …
+///
+/// return g_test_run ();
+/// ]|
+final _gContentTypeSetMimeDirs =
+    gioLookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Pointer<Utf8>>)>
+        >('g_content_type_set_mime_dirs')
+        .asFunction<void Function(ffi.Pointer<ffi.Pointer<Utf8>>)>();
+void contentTypeSetMimeDirs([List<String?>? dirs]) {
+  withNativeStringList(dirs, (nativeDirs) {
+    _gContentTypeSetMimeDirs(nativeDirs);
+  });
+}
+
 /// Gets a list of strings containing all the registered content types
 /// known to the system. The list and its data should be freed using
 /// `g_list_free_full (list, g_free)`.
@@ -671,84 +705,4 @@ final _gDbusGenerateGuid =
     ).asFunction<ffi.Pointer<Utf8> Function()>();
 String dbusGenerateGuid() {
   return stringFromNative((_gDbusGenerateGuid()).cast(), free: true)!;
-}
-
-/// Converts a #GValue to a #GVariant of the type indicated by the @type
-/// parameter.
-///
-/// The conversion is using the following rules:
-///
-/// - `G_TYPE_STRING`: 's', 'o', 'g' or 'ay'
-/// - `G_TYPE_STRV`: 'as', 'ao' or 'aay'
-/// - `G_TYPE_BOOLEAN`: 'b'
-/// - `G_TYPE_UCHAR`: 'y'
-/// - `G_TYPE_INT`: 'i', 'n'
-/// - `G_TYPE_UINT`: 'u', 'q'
-/// - `G_TYPE_INT64`: 'x'
-/// - `G_TYPE_UINT64`: 't'
-/// - `G_TYPE_DOUBLE`: 'd'
-/// - `G_TYPE_VARIANT`: Any #GVariantType
-///
-/// This can fail if e.g. @gvalue is of type %G_TYPE_STRING and @type
-/// is 'i', i.e. %G_VARIANT_TYPE_INT32. It will also fail for any #GType
-/// (including e.g. %G_TYPE_OBJECT and %G_TYPE_BOXED derived-types) not
-/// in the table above.
-///
-/// Note that if @gvalue is of type %G_TYPE_VARIANT and its value is
-/// %NULL, the empty #GVariant instance (never %NULL) for @type is
-/// returned (e.g. 0 for scalar types, the empty string for string types,
-/// '/' for object path types, the empty array for any array type and so on).
-///
-/// See the g_dbus_gvariant_to_gvalue() function for how to convert a
-/// #GVariant to a #GValue.
-final _gDbusGvalueToGvariant =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_dbus_gvalue_to_gvariant')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-GVariant dbusGvalueToGvariant(GValue gvalue, GVariantType type_) {
-  return GVariant.fromPointer(
-    _gDbusGvalueToGvariant(gvalue.handle, type_.handle),
-  );
-}
-
-/// Checks if @string is a
-/// [D-Bus address](https://dbus.freedesktop.org/doc/dbus-specification.html#addresses).
-///
-/// This doesn't check if @string is actually supported by #GDBusServer
-/// or #GDBusConnection - use g_dbus_is_supported_address() to do more
-/// checks.
-final _gDbusIsAddress =
-    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
-      'g_dbus_is_address',
-    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
-bool dbusIsAddress(String string) {
-  return withNativeString(string, (nativeString) {
-    return (_gDbusIsAddress(nativeString.cast<Utf8>())) != 0;
-  });
-}
-
-/// Check whether @string is a valid D-Bus error name.
-///
-/// This function returns the same result as g_dbus_is_interface_name(),
-/// because D-Bus error names are defined to have exactly the
-/// same syntax as interface names.
-final _gDbusIsErrorName =
-    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
-      'g_dbus_is_error_name',
-    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
-bool dbusIsErrorName(String string) {
-  return withNativeString(string, (nativeString) {
-    return (_gDbusIsErrorName(nativeString.cast<Utf8>())) != 0;
-  });
 }

@@ -1582,6 +1582,43 @@ class GSettings extends GObject {
 
   /// Sets @key in @settings to @value.
   ///
+  /// A convenience variant of [method@Gio.Settings.set] for string arrays.  If
+  /// @value is `NULL`, then @key is set to be the empty array.
+  ///
+  /// It is a programmer error to give a @key that isn’t specified as
+  /// having an `as` type in the schema for @settings (see [struct@GLib.VariantType]).
+  static final _gSettingsSetStrv =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('g_settings_set_strv')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  bool setStrv(String key, [List<String?>? value]) {
+    return withNativeStringList(value, (nativeValue) {
+      return withNativeString(key, (nativeKey) {
+        return (_gSettingsSetStrv(
+              this.handle,
+              nativeKey.cast<Utf8>(),
+              nativeValue,
+            )) !=
+            0;
+      });
+    });
+  }
+
+  /// Sets @key in @settings to @value.
+  ///
   /// A convenience variant of [method@Gio.Settings.set] for 32-bit unsigned
   /// integers.
   ///

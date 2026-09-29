@@ -19,9 +19,9 @@ caller-allocates out parameter value: 2
 name collision: 2
 caller-allocates out parameter dest: 2
 parameter data: array types are handled in a later phase: 2
-return: array types are handled in a later phase: 2
 parameter keys: array types are handled in a later phase: 2
-name collision: keyMacedoniaKje: 1
+name collision: keySerbianDje: 1
+name collision: keyArmenianJe: 1
 name collision: keyArmenianKe: 1
 name collision: keyArmenianKen: 1
 name collision: keyArmenianKhe: 1
@@ -129,8 +129,8 @@ name collision: keyGreekXi: 1
 name collision: keyGreekZeta: 1
 name collision: keyMacedoniaDse: 1
 name collision: keyMacedoniaGje: 1
+name collision: keyMacedoniaKje: 1
 name collision: keyArmenianAt: 1
-name collision: keySerbianDje: 1
 name collision: keySerbianDze: 1
 name collision: keySerbianJe: 1
 name collision: keySerbianLje: 1
@@ -251,8 +251,8 @@ name collision: keyMabovedot: 1
 name collision: keyN: 1
 name collision: keyNacute: 1
 name collision: keyNcaron: 1
+name collision: keyNcedilla: 1
 inout parameter x: 1
-name collision: keyNtilde: 1
 name collision: keyO: 1
 name collision: keyOacute: 1
 name collision: keyObarred: 1
@@ -363,17 +363,18 @@ parameter out_offsets: array types are handled in a later phase: 1
 name collision: keyArmenianHi: 1
 override-incompatible with ancestor; renamed to getDisplayAppLaunchContext: 1
 parameter providers: array types are handled in a later phase: 1
-name collision: keyArmenianHo: 1
+return: string list return type (null): 1
 parameter win_x: nullable scalar parameter (gdouble): 1
-name collision: keyArmenianIni: 1
+name collision: keyArmenianHo: 1
 parameter keyval: nullable scalar parameter (guint): 1
-name collision: keyArmenianJe: 1
+name collision: keyArmenianIni: 1
 parameter axes: array types are handled in a later phase: 1
+return: array types are handled in a later phase: 1
 parameter refresh_interval_return: nullable scalar parameter (gint64): 1
 parameter major: nullable scalar parameter (gint): 1
 caller-allocates out parameter geometry: 1
 parameter x: nullable scalar parameter (gdouble): 1
-name collision: keyNcedilla: 1
+name collision: keyNtilde: 1
 
 ## First 50 entries
 [constant] Gdk.KEY_Armenian_at — name collision: keyArmenianAt

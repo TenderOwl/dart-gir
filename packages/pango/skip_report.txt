@@ -13,7 +13,7 @@ parameter attrs: array types are handled in a later phase: 6
 name collision: 5
 inout parameter pos: 4
 caller-allocates out parameter glyphs: 4
-return: array types are handled in a later phase: 4
+return: array types are handled in a later phase: 3
 aliases are resolved to their target: 3
 parameter width: nullable scalar parameter (gint): 2
 unsupported out parameter attr_list (PangoAttrList?): 2
@@ -23,15 +23,15 @@ inout parameter rect: 2
 parameter families: array types are handled in a later phase: 2
 parameter bytes: array types are handled in a later phase: 2
 caller-allocates out parameter strong_pos: 2
-moved to Language.get_preferred: 1
+moved to LayoutDeserializeError.quark: 1
 moved to Gravity.get_for_matrix: 1
 moved to Gravity.get_for_script: 1
 moved to Gravity.get_for_script_and_width: 1
 moved to Gravity.to_rotation: 1
 moved to Language.from_string: 1
 moved to Language.get_default: 1
+moved to Language.get_preferred: 1
 moved to AttrFontDesc.new: 1
-moved to LayoutDeserializeError.quark: 1
 inout parameter pbase_dir: 1
 moved to AttrFontFeatures.new: 1
 parameter value: nullable scalar parameter (gint): 1
@@ -40,18 +40,19 @@ moved to AttrLanguage.new: 1
 moved to Script.for_unichar: 1
 moved to Script.get_sample_language: 1
 moved to AttrList.from_string: 1
-moved to AttrShape.new: 1
+return: string list return type (null): 1
 moved to TabArray.from_string: 1
 unsupported out parameter language (PangoLanguage?): 1
-moved to AttrShape.new_with_data: 1
+moved to AttrShape.new: 1
 parameter copy_func: nullable callback parameter (AttrDataCopyFunc): 1
 parameter alpha: nullable scalar parameter (guint16): 1
-moved to AttrSize.new: 1
+moved to AttrShape.new_with_data: 1
 parameter log_attrs: array types are handled in a later phase: 1
+moved to AttrSize.new: 1
 moved to AttrSize.new_absolute: 1
-moved to AttrType.get_name: 1
 parameter index_: nullable scalar parameter (gint): 1
 parameter num_scripts: nullable scalar parameter (gint): 1
+moved to AttrType.get_name: 1
 moved to AttrType.register: 1
 parameter y0_: nullable scalar parameter (gint): 1
 parameter height: nullable scalar parameter (gint): 1
@@ -120,7 +121,7 @@ caller-allocates out parameter logical_rect: 1
 [callable] Pango.shapeItem — caller-allocates out parameter glyphs
 [callable] Pango.shapeWithFlags — caller-allocates out parameter glyphs
 [callable] Pango.skipSpace — inout parameter pos
-[callable] Pango.splitFileList — return: array types are handled in a later phase
+[callable] Pango.splitFileList — return: string list return type (null)
 [callable] Pango.tabArrayFromString — moved to TabArray.from_string
 [callable] Pango.tailorBreak — parameter attrs: array types are handled in a later phase
 [callable] PangoAttrIterator.getFont — unsupported out parameter language (PangoLanguage?)

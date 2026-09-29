@@ -67,6 +67,41 @@ part of '../gio.dart';
 class GSubprocess extends GObject {
   GSubprocess.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Create a new process with the given flags and argument list.
+  ///
+  /// The argument list is expected to be %NULL-terminated.
+  static final _gSubprocessNewv =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_subprocess_newv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  factory GSubprocess.newv(List<String?>? argv, GSubprocessFlags flags) {
+    return withNativeStringList(argv, (nativeArgv) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gSubprocessNewv(nativeArgv, flags.value, _error);
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return GSubprocess.fromPointer(_ret, owned: true);
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Like g_subprocess_communicate(), but validates the output of the
   /// process as UTF-8, and returns it as a regular NUL terminated string.
   ///

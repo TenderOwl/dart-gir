@@ -341,6 +341,46 @@ class GtkApplication extends GApplication {
     _gtkApplicationRemoveWindow(this.handle, window.handle);
   }
 
+  /// Sets zero or more keyboard accelerators that will trigger the
+  /// given action.
+  ///
+  /// The first item in @accels will be the primary accelerator,
+  /// which may be displayed in the UI.
+  ///
+  /// To remove all accelerators for an action, use an empty,
+  /// zero-terminated array for @accels.
+  ///
+  /// For the @detailed_action_name, see [func@Gio.Action.parse_detailed_name]
+  /// and [Gio.Action.print_detailed_name].
+  static final _gtkApplicationSetAccelsForAction =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_application_set_accels_for_action')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void setAccelsForAction(String detailedActionName, [List<String?>? accels]) {
+    withNativeStringList(accels, (nativeAccels) {
+      withNativeString(detailedActionName, (nativeDetailedActionName) {
+        _gtkApplicationSetAccelsForAction(
+          this.handle,
+          nativeDetailedActionName.cast<Utf8>(),
+          nativeAccels,
+        );
+      });
+    });
+  }
+
   /// Sets or unsets the menubar for windows of the application.
   ///
   /// This is a menubar in the traditional sense.

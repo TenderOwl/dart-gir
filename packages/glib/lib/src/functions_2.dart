@@ -307,6 +307,60 @@ void blowChunks() {
   _gBlowChunks();
 }
 
+/// Creates a filename from a vector of elements using the correct
+/// separator for the current platform.
+///
+/// This function behaves exactly like g_build_filename(), but takes the path
+/// elements as a string array, instead of varargs. This function is mainly
+/// meant for language bindings.
+///
+/// If you are building a path programmatically you may want to use
+/// #GPathBuf instead.
+final _gBuildFilenamev =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+          >
+        >('g_build_filenamev')
+        .asFunction<
+          ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+        >();
+String buildFilenamev([List<String?>? args]) {
+  return withNativeStringList(args, (nativeArgs) {
+    return stringFromNative((_gBuildFilenamev(nativeArgs)).cast(), free: true)!;
+  });
+}
+
+/// Behaves exactly like g_build_path(), but takes the path elements
+/// as a string array, instead of variadic arguments.
+///
+/// This function is mainly meant for language bindings.
+final _gBuildPathv =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >
+        >('g_build_pathv')
+        .asFunction<
+          ffi.Pointer<Utf8> Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Pointer<Utf8>>,
+          )
+        >();
+String buildPathv(String separator, [List<String?>? args]) {
+  return withNativeStringList(args, (nativeArgs) {
+    return withNativeString(separator, (nativeSeparator) {
+      return stringFromNative(
+        (_gBuildPathv(nativeSeparator.cast<Utf8>(), nativeArgs)).cast(),
+        free: true,
+      )!;
+    });
+  });
+}
+
 /// Gets the canonical file name from @filename. All triple slashes are turned into
 /// single slashes, and all `..` and `.`s resolved against @relative_to.
 ///
@@ -531,68 +585,4 @@ String? computeChecksumForBytes(GChecksumType checksumType, GBytes data) {
     (_gComputeChecksumForBytes(checksumType.value, data.handle)).cast(),
     free: true,
   );
-}
-
-/// Computes the checksum of a string.
-///
-/// The hexadecimal string returned will be in lower case.
-final _gComputeChecksumForString =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<Utf8> Function(ffi.Int32, ffi.Pointer<Utf8>, ffi.IntPtr)
-          >
-        >('g_compute_checksum_for_string')
-        .asFunction<ffi.Pointer<Utf8> Function(int, ffi.Pointer<Utf8>, int)>();
-String? computeChecksumForString(
-  GChecksumType checksumType,
-  String str,
-  int length,
-) {
-  return withNativeString(str, (nativeStr) {
-    return stringFromNative(
-      (_gComputeChecksumForString(
-        checksumType.value,
-        nativeStr.cast<Utf8>(),
-        length,
-      )).cast(),
-      free: true,
-    );
-  });
-}
-
-/// Computes the HMAC for a binary @data. This is a
-/// convenience wrapper for g_hmac_new(), g_hmac_get_string()
-/// and g_hmac_unref().
-///
-/// The hexadecimal string returned will be in lower case.
-final _gComputeHmacForBytes =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<Utf8> Function(
-              ffi.Int32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_compute_hmac_for_bytes')
-        .asFunction<
-          ffi.Pointer<Utf8> Function(
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-String computeHmacForBytes(GChecksumType digestType, GBytes key, GBytes data) {
-  return stringFromNative(
-    (_gComputeHmacForBytes(digestType.value, key.handle, data.handle)).cast(),
-    free: true,
-  )!;
-}
-
-final _gConvertErrorQuark =
-    glibLookup<ffi.NativeFunction<ffi.Uint32 Function()>>(
-      'g_convert_error_quark',
-    ).asFunction<int Function()>();
-int convertErrorQuark() {
-  return _gConvertErrorQuark();
 }

@@ -488,6 +488,28 @@ class GSimpleProxyResolver extends GObject {
     });
   }
 
+  /// Sets the list of ignored hosts.
+  ///
+  /// See #GSimpleProxyResolver:ignore-hosts for more details on how the
+  /// @ignore_hosts argument is interpreted.
+  static final _gSimpleProxyResolverSetIgnoreHosts =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('g_simple_proxy_resolver_set_ignore_hosts')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setIgnoreHosts([List<String?>? ignoreHosts]) {
+    withNativeStringList(ignoreHosts, (nativeIgnoreHosts) {
+      _gSimpleProxyResolverSetIgnoreHosts(this.handle, nativeIgnoreHosts);
+    });
+  }
+
   /// Adds a URI-scheme-specific proxy to @resolver; URIs whose scheme
   /// matches @uri_scheme (and which don't match
   /// #GSimpleProxyResolver:ignore-hosts) will be proxied via @proxy.
@@ -520,6 +542,41 @@ class GSimpleProxyResolver extends GObject {
           this.handle,
           nativeUriScheme.cast<Utf8>(),
           nativeProxy.cast<Utf8>(),
+        );
+      });
+    });
+  }
+
+  /// Creates a new #GSimpleProxyResolver. See
+  /// #GSimpleProxyResolver:default-proxy and
+  /// #GSimpleProxyResolver:ignore-hosts for more details on how the
+  /// arguments are interpreted.
+  static final _gSimpleProxyResolverNew =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('g_simple_proxy_resolver_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  static GProxyResolver new_([
+    String? defaultProxy,
+    List<String?>? ignoreHosts,
+  ]) {
+    return withNativeStringList(ignoreHosts, (nativeIgnoreHosts) {
+      return withNativeString(defaultProxy, (nativeDefaultProxy) {
+        return GProxyResolver.fromPointer(
+          _gSimpleProxyResolverNew(
+            nativeDefaultProxy.cast<Utf8>(),
+            nativeIgnoreHosts,
+          ),
         );
       });
     });

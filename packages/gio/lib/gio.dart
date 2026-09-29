@@ -21,6 +21,7 @@ part 'src/constants_2.dart';
 part 'src/callbacks.dart';
 part 'src/functions_0.dart';
 part 'src/functions_1.dart';
+part 'src/functions_2.dart';
 part 'src/records_0.dart';
 part 'src/records_1.dart';
 part 'src/records_2.dart';

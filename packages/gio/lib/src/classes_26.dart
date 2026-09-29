@@ -97,6 +97,63 @@ class GSettingsBackend extends GObject {
     _gSettingsBackendChangedTree(this.handle, tree.handle, originTag);
   }
 
+  /// Signals that a list of keys have possibly changed.  Backend
+  /// implementations should call this if keys have possibly changed their
+  /// values.
+  ///
+  /// @path must be a valid path (ie starting and ending with a slash and
+  /// not containing '//').  Each string in @items must form a valid key
+  /// name when @path is prefixed to it (ie: each item must not start or
+  /// end with '/' and must not contain '//').
+  ///
+  /// The meaning of this signal is that any of the key names resulting
+  /// from the concatenation of @path with each item in @items may have
+  /// changed.
+  ///
+  /// The same rules for when notifications must occur apply as per
+  /// g_settings_backend_changed().  These two calls can be used
+  /// interchangeably if exactly one item has changed (although in that
+  /// case g_settings_backend_changed() is definitely preferred).
+  ///
+  /// For efficiency reasons, the implementation should strive for @path to
+  /// be as long as possible (ie: the longest common prefix of all of the
+  /// keys that were changed) but this is not strictly required.
+  static final _gSettingsBackendKeysChanged =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_settings_backend_keys_changed')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void keysChanged(
+    String path,
+    List<String?>? items,
+    ffi.Pointer<ffi.Void> originTag,
+  ) {
+    withNativeStringList(items, (nativeItems) {
+      withNativeString(path, (nativePath) {
+        _gSettingsBackendKeysChanged(
+          this.handle,
+          nativePath.cast<Utf8>(),
+          nativeItems,
+          originTag,
+        );
+      });
+    });
+  }
+
   /// Signals that all keys below a given path may have possibly changed.
   /// Backend implementations should call this if an entire path of keys
   /// have possibly changed their values.

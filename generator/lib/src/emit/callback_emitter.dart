@@ -50,13 +50,18 @@ class CallbackEmitter {
   /// accepted there. The FFI boundary in [EmitContext] uses [ffiSignature]
   /// (which is identical to this method for non-callback params).
   String? signature(GirCallback cb, {String label = 'callback'}) {
-    final ret = _userFacingType(cb.returnType,
-        label: '$label return', forReturn: true);
+    final ret = _userFacingType(
+      cb.returnType,
+      label: '$label return',
+      forReturn: true,
+    );
     if (ret == null) return null;
     final params = <String>[];
     for (final p in cb.parameters) {
-      final typeName = _userFacingType(p.type,
-          label: '$label parameter ${p.name}');
+      final typeName = _userFacingType(
+        p.type,
+        label: '$label parameter ${p.name}',
+      );
       if (typeName == null) return null;
       params.add(typeName);
     }
@@ -69,13 +74,15 @@ class CallbackEmitter {
   /// those generic FFI APIs require their type arguments to consist solely
   /// of `dart:ffi` `NativeType`s.
   String? ffiSignature(GirCallback cb, {String label = 'callback'}) {
-    final ret = _ffiTypeFor(cb.returnType,
-        label: '$label return', forReturn: true);
+    final ret = _ffiTypeFor(
+      cb.returnType,
+      label: '$label return',
+      forReturn: true,
+    );
     if (ret == null) return null;
     final params = <String>[];
     for (final p in cb.parameters) {
-      final typeName =
-          _ffiTypeFor(p.type, label: '$label parameter ${p.name}');
+      final typeName = _ffiTypeFor(p.type, label: '$label parameter ${p.name}');
       if (typeName == null) return null;
       params.add(typeName);
     }
@@ -91,8 +98,11 @@ class CallbackEmitter {
     // is not emitting cannot be resolved into a concrete typedef.
     final declPkg = packageNameFor(ctx.namespace);
     if (!ctx.emittedPackages.contains(declPkg)) {
-      ctx.report.skip('callback', label,
-          'callback is in non-generated package $declPkg');
+      ctx.report.skip(
+        'callback',
+        label,
+        'callback is in non-generated package $declPkg',
+      );
       return null;
     }
 
@@ -108,7 +118,8 @@ class CallbackEmitter {
     // inline so users don't have to read source to find out.
     b.write('/// ');
     b.writeln(
-        'Pass a top-level or static Dart function. Closures are not supported.');
+      'Pass a top-level or static Dart function. Closures are not supported.',
+    );
     b.write('typedef $name = $sig;');
     return b.toString();
   }
@@ -129,8 +140,11 @@ class CallbackEmitter {
   /// boolean params/returns render as `int` (with the convention 0 = false).
   ///
   /// Callback-typed references render as the nested callback signature.
-  String? _userFacingType(GirTypeRef? ref,
-      {required String label, bool forReturn = false}) {
+  String? _userFacingType(
+    GirTypeRef? ref, {
+    required String label,
+    bool forReturn = false,
+  }) {
     if (ref == null) return 'void';
     if (ref.name != null) {
       final nested = _resolveCallback(ref);
@@ -138,8 +152,7 @@ class CallbackEmitter {
     }
     final m = ctx.resolve(ref);
     if (m.kind == TypeKind.unsupported) {
-      ctx.report.skip('callback', label,
-          m.reason ?? 'unsupported type');
+      ctx.report.skip('callback', label, m.reason ?? 'unsupported type');
       return null;
     }
     switch (m.kind) {
@@ -162,6 +175,8 @@ class CallbackEmitter {
       case TypeKind.callback:
         // Already handled above by _resolveCallback.
         return null;
+      case TypeKind.stringList:
+        return 'ffi.Pointer<ffi.Pointer<Utf8>>';
       case TypeKind.voidType:
         return 'void';
       case TypeKind.unsupported:
@@ -172,8 +187,11 @@ class CallbackEmitter {
   /// Returns the FFI-typed parameter/return string for [ref] when building
   /// an inline FFI signature. All types must be `dart:ffi` `NativeType`s.
   /// Callback-typed references render as their nested FFI inline signature.
-  String? _ffiTypeFor(GirTypeRef? ref,
-      {required String label, bool forReturn = false}) {
+  String? _ffiTypeFor(
+    GirTypeRef? ref, {
+    required String label,
+    bool forReturn = false,
+  }) {
     if (ref == null) return 'ffi.Void';
     if (ref.name != null) {
       final nested = _resolveFfiCallback(ref);
@@ -213,9 +231,7 @@ class CallbackEmitter {
     );
     final emitter = CallbackEmitter(cbCtx);
     return useFfi
-        ? emitter.ffiSignature(declObj,
-            label: '${declNs.name}.${declObj.name}')
-        : emitter.signature(declObj,
-            label: '${declNs.name}.${declObj.name}');
+        ? emitter.ffiSignature(declObj, label: '${declNs.name}.${declObj.name}')
+        : emitter.signature(declObj, label: '${declNs.name}.${declObj.name}');
   }
 }

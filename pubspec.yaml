@@ -7,7 +7,6 @@ environment:
 
 workspace:
   - generator
-  - example
   - packages/adw
   - packages/cairo
   - packages/gdk4

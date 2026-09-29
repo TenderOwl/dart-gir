@@ -10,14 +10,14 @@ class _InParam {
   final String name;
   final TypeBridge bridge;
 
-  String get nativeVar =>
-      'native${name[0].toUpperCase()}${name.substring(1)}';
+  String get nativeVar => 'native${name[0].toUpperCase()}${name.substring(1)}';
 }
 
 /// Metadata for a callback parameter that needs a `NativeCallable.isolateLocal`
 /// wrapper (and a matching `.close()` after the call).
 class _CallbackAlloc {
   _CallbackAlloc(this.varName, this.inParam);
+
   /// Local variable name holding the [ffi.NativeCallable] instance.
   final String varName;
   final _InParam inParam;
@@ -107,12 +107,18 @@ class CallableEmitter {
         case GirParameterDirection.out:
           if (p.callerAllocates) {
             ctx.report.skip(
-                'callable', label, 'caller-allocates out parameter ${p.name}');
+              'callable',
+              label,
+              'caller-allocates out parameter ${p.name}',
+            );
             return null;
           }
           if (bridge.outPointee == null) {
-            ctx.report.skip('callable', label,
-                'unsupported out parameter ${p.name} (${bridge.wrapperType})');
+            ctx.report.skip(
+              'callable',
+              label,
+              'unsupported out parameter ${p.name} (${bridge.wrapperType})',
+            );
             return null;
           }
           outs.add(_OutParam('_out${outs.length}', p.name, bridge));
@@ -160,9 +166,15 @@ class CallableEmitter {
         nativeParams.add(bridge.nativeType);
         dartParams.add(bridge.dartFfiType);
         final inP = ins.firstWhere(
-            (x) => x.name == escapeKeyword(toLowerCamel(p.name)));
+          (x) => x.name == escapeKeyword(toLowerCamel(p.name)),
+        );
         if (bridge.isString) {
           argExprs.add('${inP.nativeVar}.cast<Utf8>()');
+        } else if (bridge.isStringList) {
+          // The native signature uses `Pointer<Pointer<Utf8>>`, but the
+          // wrapped pointer we get out of `withNativeStringList` is typed
+          // as `Pointer<Pointer<Utf8>>` already — no cast needed here.
+          argExprs.add(inP.nativeVar);
         } else if (callbackByParam.containsKey(i)) {
           // We allocated `_ncN` above; the native call uses its pointer.
           argExprs.add('${callbackByParam[i]!.varName}.nativeFunction');
@@ -180,7 +192,8 @@ class CallableEmitter {
     final cId = fn.cIdentifier!;
     final nativeSig =
         'ffi.NativeFunction<${retBridge.nativeType} Function(${nativeParams.join(', ')})>';
-    final dartSig = '${retBridge.dartFfiType} Function(${dartParams.join(', ')})';
+    final dartSig =
+        '${retBridge.dartFfiType} Function(${dartParams.join(', ')})';
     final lookupVar = '_${toLowerCamel(cId)}';
     final staticPrefix = staticMember ? 'static ' : '';
     // Inside a class the binding must be static so factory constructors and
@@ -195,7 +208,8 @@ class CallableEmitter {
     final optionalParams = <String>[];
     for (var i = 0; i < ins.length; i++) {
       final p = ins[i];
-      final isOptional = p.bridge.wrapperType.endsWith('?') &&
+      final isOptional =
+          p.bridge.wrapperType.endsWith('?') &&
           ins.sublist(i).every((q) => q.bridge.wrapperType.endsWith('?'));
       final decl = '${p.bridge.wrapperType} ${p.name}';
       if (isOptional) {
@@ -237,8 +251,9 @@ class CallableEmitter {
         converted = retBridge.fromNative(raw);
       }
       if (outs.isEmpty) return converted;
-      final outExprs =
-          outs.map((o) => o.bridge.outExtract!(o.varName)).join(', ');
+      final outExprs = outs
+          .map((o) => o.bridge.outExtract!(o.varName))
+          .join(', ');
       return '($converted, $outExprs)';
     }
 
@@ -247,7 +262,8 @@ class CallableEmitter {
     if (hasCallbacks) {
       for (final c in callbackAllocs) {
         core.add(
-            'final ${c.varName} = ${c.inParam.bridge.toNative(c.inParam.name)};');
+          'final ${c.varName} = ${c.inParam.bridge.toNative(c.inParam.name)};',
+        );
       }
     }
 
@@ -265,8 +281,7 @@ class CallableEmitter {
         core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
       }
       if (fn.throws) {
-        core.add(
-            'final _error = calloc<ffi.Pointer<ffi.Void>>();');
+        core.add('final _error = calloc<ffi.Pointer<ffi.Void>>();');
       }
       core.add('try {');
       if (retBridge.isVoid) {
@@ -303,11 +318,27 @@ class CallableEmitter {
     var bodyLines = core;
     for (var i = stringIns.length - 1; i >= 0; i--) {
       final p = stringIns[i];
-      final inner =
-          bodyLines.map((l) => l.isEmpty ? l : '  $l').join('\n');
+      final inner = bodyLines.map((l) => l.isEmpty ? l : '  $l').join('\n');
       final ret = returnsValue ? 'return ' : '';
       bodyLines = [
         '$ret withNativeString(${p.name}, (${p.nativeVar}) {',
+        inner,
+        '});',
+      ];
+    }
+
+    // Wrap argv-style string-list parameters in withNativeStringList
+    // scopes. Done after withNativeString so the nesting reflects the
+    // user-facing call order: outer-most call corresponds to the first
+    // (leftmost) string-list param. The lambda param type is inferred
+    // from the helper signature.
+    final listIns = ins.where((p) => p.bridge.isStringList).toList();
+    for (var i = listIns.length - 1; i >= 0; i--) {
+      final p = listIns[i];
+      final inner = bodyLines.map((l) => l.isEmpty ? l : '  $l').join('\n');
+      final ret = returnsValue ? 'return ' : '';
+      bodyLines = [
+        '$ret withNativeStringList(${p.name}, (${p.nativeVar}) {',
         inner,
         '});',
       ];
@@ -338,19 +369,40 @@ class CallableEmitter {
       return '(${outs.map((o) => o.bridge.wrapperType).join(', ')})';
     }
     if (outs.isEmpty) return ret.wrapperType;
-    return '(${[
-      ret.wrapperType,
-      ...outs.map((o) => o.bridge.wrapperType),
-    ].join(', ')})';
+    return '(${[ret.wrapperType, ...outs.map((o) => o.bridge.wrapperType)].join(', ')})';
   }
 
   /// `dart:core` type names that a class member must not shadow (a member
   /// named `int` makes the type `int` unusable inside the class body).
   static const _coreTypes = {
-    'int', 'double', 'num', 'bool', 'String', 'Object', 'Null', 'Function',
-    'Record', 'Iterable', 'List', 'Map', 'Set', 'Future', 'Stream', 'void',
-    'Enum', 'Type', 'Symbol', 'BigInt', 'DateTime', 'Duration', 'RegExp',
-    'StringBuffer', 'Pattern', 'Error', 'Exception', 'StackTrace',
+    'int',
+    'double',
+    'num',
+    'bool',
+    'String',
+    'Object',
+    'Null',
+    'Function',
+    'Record',
+    'Iterable',
+    'List',
+    'Map',
+    'Set',
+    'Future',
+    'Stream',
+    'void',
+    'Enum',
+    'Type',
+    'Symbol',
+    'BigInt',
+    'DateTime',
+    'Duration',
+    'RegExp',
+    'StringBuffer',
+    'Pattern',
+    'Error',
+    'Exception',
+    'StackTrace',
   };
 
   /// True when [bridge] carries a callback parameter that needs a

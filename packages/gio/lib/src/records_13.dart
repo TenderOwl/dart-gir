@@ -399,6 +399,34 @@ final class GDtlsConnection {
     }
   }
 
+  /// Sets the list of application-layer protocols to advertise that the
+  /// caller is willing to speak on this connection. The
+  /// Application-Layer Protocol Negotiation (ALPN) extension will be
+  /// used to negotiate a compatible protocol with the peer; use
+  /// g_dtls_connection_get_negotiated_protocol() to find the negotiated
+  /// protocol after the handshake.  Specifying %NULL for the the value
+  /// of @protocols will disable ALPN negotiation.
+  ///
+  /// See [IANA TLS ALPN Protocol IDs](https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml#alpn-protocol-ids)
+  /// for a list of registered protocol IDs.
+  static final _gDtlsConnectionSetAdvertisedProtocols =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('g_dtls_connection_set_advertised_protocols')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setAdvertisedProtocols([List<String?>? protocols]) {
+    withNativeStringList(protocols, (nativeProtocols) {
+      _gDtlsConnectionSetAdvertisedProtocols(this.handle, nativeProtocols);
+    });
+  }
+
   /// This sets the certificate that @conn will present to its peer
   /// during the TLS handshake. For a #GDtlsServerConnection, it is
   /// mandatory to set this, and that will normally be done at construct

@@ -16,6 +16,7 @@ class TypeBridge {
     required this.toNative,
     required this.fromNative,
     this.isString = false,
+    this.isStringList = false,
     this.isVoid = false,
     this.outPointee,
     this.outExtract,
@@ -38,6 +39,11 @@ class TypeBridge {
 
   /// String parameters are marshalled via `withNativeString` nesting.
   final bool isString;
+
+  /// argv-style string-list parameters are marshalled via
+  /// `withNativeStringList` nesting. The wrapper signature takes
+  /// `List<String?>?`; the native call gets `Pointer<Pointer<Utf8>>`.
+  final bool isStringList;
 
   /// `void` return.
   final bool isVoid;
@@ -151,8 +157,10 @@ class EmitContext {
   /// Finds a type declaration by (possibly qualified) GIR name, searching
   /// [relativeTo] (default: current namespace) first, then all others.
   /// Aliases are returned as-is; callers unwrap.
-  (GirNamespace, Object)? findDeclaration(String? name,
-      {GirNamespace? relativeTo}) {
+  (GirNamespace, Object)? findDeclaration(
+    String? name, {
+    GirNamespace? relativeTo,
+  }) {
     if (name == null || name.isEmpty) return null;
     final current = relativeTo ?? namespace;
     final dot = name.indexOf('.');
@@ -244,11 +252,9 @@ class EmitContext {
         // → Gdk.Rectangle); an alias to a built-in resolves via the resolver.
         var guard = 0;
         while (decl is GirAlias && guard++ < 10) {
-          final target =
-              findDeclaration(decl.target.name, relativeTo: declNs);
+          final target = findDeclaration(decl.target.name, relativeTo: declNs);
           if (target == null) {
-            return resolver.resolve(decl.target,
-                currentNamespace: declNs);
+            return resolver.resolve(decl.target, currentNamespace: declNs);
           }
           declNs = target.$1;
           decl = target.$2;
@@ -294,7 +300,8 @@ class EmitContext {
         if (requiredImport != null &&
             !emittedPackages.contains(requiredImport)) {
           return TypeMapping.unsupported(
-              'type ${ref.name} is in non-generated package $requiredImport');
+            'type ${ref.name} is in non-generated package $requiredImport',
+          );
         }
         return TypeMapping(
           dartType: dartTypeName(declNs.name, decl.name),
@@ -394,8 +401,24 @@ class EmitContext {
             fromNative: fromNative,
             isString: true,
             outPointee: 'ffi.Pointer<Utf8>',
-            outExtract: (v) =>
-                'stringFromNative($v.value.cast(), free: true)!',
+            outExtract: (v) => 'stringFromNative($v.value.cast(), free: true)!',
+          ),
+          null,
+        );
+      case TypeKind.stringList:
+        if (forReturn) {
+          return (null, 'string list return type (${ref.name})');
+        }
+        usesFfiString = true;
+        usesGirFfi = true;
+        return (
+          TypeBridge(
+            wrapperType: 'List<String?>?',
+            nativeType: 'ffi.Pointer<ffi.Pointer<Utf8>>',
+            dartFfiType: 'ffi.Pointer<ffi.Pointer<Utf8>>',
+            toNative: _id, // handled via withNativeStringList
+            fromNative: (e) => e, // never returned by GLib in the corpus
+            isStringList: true,
           ),
           null,
         );
@@ -503,7 +526,10 @@ class EmitContext {
     }
     final owningPkg = packageNameFor(declNs);
     if (!emittedPackages.contains(owningPkg)) {
-      return (null, 'callback ${ref.name} is in non-generated package $owningPkg');
+      return (
+        null,
+        'callback ${ref.name} is in non-generated package $owningPkg',
+      );
     }
     // Build the signature against the *declaring* namespace, not the
     // current one — the typedef is being generated there.
@@ -514,8 +540,10 @@ class EmitContext {
       emittedPackages: emittedPackages,
     );
     final emitter = CallbackEmitter(cbCtx);
-    final sig = emitter.ffiSignature(declObj,
-        label: '${declNs.name}.${ref.name}');
+    final sig = emitter.ffiSignature(
+      declObj,
+      label: '${declNs.name}.${ref.name}',
+    );
     if (sig == null) {
       // The signature builder already recorded a skip with a precise reason.
       return (null, 'callback ${ref.name} has unsupported signature');
@@ -538,13 +566,15 @@ class EmitContext {
     // wrapper parameter uses the inline signature so that callers can pass
     // either an inline-typed function or a typedef-typed variable.
     final userSig = emitter.signature(declObj, label: cbName) ?? 'void';
-    final retSig = emitter.ffiSignature(declObj,
-        label: '${declNs.name}.${ref.name} (return)');
+    final retSig = emitter.ffiSignature(
+      declObj,
+      label: '${declNs.name}.${ref.name} (return)',
+    );
     final hasSentinel = _callbackExceptionalReturn(retSig) != null;
     final String Function(String) toNative;
     toNative = (e) => hasSentinel
         ? 'ffi.NativeCallable<$sig>.isolateLocal($e, '
-            'exceptionalReturn: ${_callbackExceptionalReturn(retSig)})'
+              'exceptionalReturn: ${_callbackExceptionalReturn(retSig)})'
         : 'ffi.NativeCallable<$sig>.isolateLocal($e)';
     return (
       TypeBridge(
@@ -573,7 +603,9 @@ class EmitContext {
     // Anything starting with Pointer (incl. Pointer<NativeFunction<...>>) is
     // treated as void-like for sentinel purposes.
     final head = ffiReturnSig.split(' ').first;
-    if (head == 'Handle' || head.startsWith('ffi.Pointer') || head == 'Pointer') {
+    if (head == 'Handle' ||
+        head.startsWith('ffi.Pointer') ||
+        head == 'Pointer') {
       return null;
     }
     if (head.startsWith('ffi.Int') ||

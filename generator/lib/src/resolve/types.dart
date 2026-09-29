@@ -7,6 +7,7 @@ import '../gir/gir.dart';
 enum TypeKind {
   primitive,
   string,
+  stringList,
   boolean,
   enumeration,
   bitfield,
@@ -33,13 +34,13 @@ class TypeMapping {
   });
 
   const TypeMapping.unsupported(String reason)
-      : this(
-          dartType: 'Object',
-          nativeType: 'Pointer<ffi.Void>',
-          kind: TypeKind.unsupported,
-          isPointer: true,
-          reason: reason,
-        );
+    : this(
+        dartType: 'Object',
+        nativeType: 'Pointer<ffi.Void>',
+        kind: TypeKind.unsupported,
+        isPointer: true,
+        reason: reason,
+      );
 
   /// The public Dart type, e.g. `int`, `bool`, `String`, `GtkWidget`.
   final String dartType;
@@ -109,7 +110,7 @@ String _snakeCase(String input) {
 /// namespaces plus a built-in table of GLib/C scalar types.
 class TypeResolver {
   TypeResolver(List<GirNamespace> namespaces)
-      : namespaces = List.unmodifiable(namespaces);
+    : namespaces = List.unmodifiable(namespaces);
 
   final List<GirNamespace> namespaces;
 
@@ -129,57 +130,125 @@ class TypeResolver {
       kind: TypeKind.boolean,
     ),
     'gint': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int32',
+      kind: TypeKind.primitive,
+    ),
     'gint32': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int32',
+      kind: TypeKind.primitive,
+    ),
     'guint': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'guint32': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'gint64': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int64', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int64',
+      kind: TypeKind.primitive,
+    ),
     'guint64': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint64', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint64',
+      kind: TypeKind.primitive,
+    ),
     'glong': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Long', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Long',
+      kind: TypeKind.primitive,
+    ),
     'gulong': TypeMapping(
-        dartType: 'int',
-        nativeType: 'ffi.UnsignedLong',
-        kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.UnsignedLong',
+      kind: TypeKind.primitive,
+    ),
     'gshort': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int16', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int16',
+      kind: TypeKind.primitive,
+    ),
     'gushort': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint16', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint16',
+      kind: TypeKind.primitive,
+    ),
     'gint16': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int16', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int16',
+      kind: TypeKind.primitive,
+    ),
     'guint16': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint16', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint16',
+      kind: TypeKind.primitive,
+    ),
     'gintptr': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.IntPtr', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.IntPtr',
+      kind: TypeKind.primitive,
+    ),
     'guintptr': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Size', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Size',
+      kind: TypeKind.primitive,
+    ),
     'gint8': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int8', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int8',
+      kind: TypeKind.primitive,
+    ),
     'guint8': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint8', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint8',
+      kind: TypeKind.primitive,
+    ),
     'guchar': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint8', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint8',
+      kind: TypeKind.primitive,
+    ),
     'gchar': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int8', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int8',
+      kind: TypeKind.primitive,
+    ),
     'gsize': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Size', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Size',
+      kind: TypeKind.primitive,
+    ),
     'gssize': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.IntPtr', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.IntPtr',
+      kind: TypeKind.primitive,
+    ),
     'gfloat': TypeMapping(
-        dartType: 'double', nativeType: 'ffi.Float', kind: TypeKind.primitive),
+      dartType: 'double',
+      nativeType: 'ffi.Float',
+      kind: TypeKind.primitive,
+    ),
     'gdouble': TypeMapping(
-        dartType: 'double',
-        nativeType: 'ffi.Double',
-        kind: TypeKind.primitive),
+      dartType: 'double',
+      nativeType: 'ffi.Double',
+      kind: TypeKind.primitive,
+    ),
     'gunichar': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'GType': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Size', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Size',
+      kind: TypeKind.primitive,
+    ),
     'utf8': TypeMapping(
       dartType: 'String',
       nativeType: 'Pointer<ffi.Utf8>',
@@ -215,45 +284,90 @@ class TypeResolver {
       kind: TypeKind.boolean,
     ),
     'gint': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int32',
+      kind: TypeKind.primitive,
+    ),
     'int': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int32',
+      kind: TypeKind.primitive,
+    ),
     'gint32': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int32',
+      kind: TypeKind.primitive,
+    ),
     'guint': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'unsigned int': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'guint32': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'gint64': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Int64', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Int64',
+      kind: TypeKind.primitive,
+    ),
     'guint64': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint64', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint64',
+      kind: TypeKind.primitive,
+    ),
     'glong': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Long', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Long',
+      kind: TypeKind.primitive,
+    ),
     'gulong': TypeMapping(
-        dartType: 'int',
-        nativeType: 'ffi.UnsignedLong',
-        kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.UnsignedLong',
+      kind: TypeKind.primitive,
+    ),
     'gsize': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Size', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Size',
+      kind: TypeKind.primitive,
+    ),
     'gssize': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.IntPtr', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.IntPtr',
+      kind: TypeKind.primitive,
+    ),
     'gfloat': TypeMapping(
-        dartType: 'double', nativeType: 'ffi.Float', kind: TypeKind.primitive),
+      dartType: 'double',
+      nativeType: 'ffi.Float',
+      kind: TypeKind.primitive,
+    ),
     'gdouble': TypeMapping(
-        dartType: 'double',
-        nativeType: 'ffi.Double',
-        kind: TypeKind.primitive),
+      dartType: 'double',
+      nativeType: 'ffi.Double',
+      kind: TypeKind.primitive,
+    ),
     'double': TypeMapping(
-        dartType: 'double',
-        nativeType: 'ffi.Double',
-        kind: TypeKind.primitive),
+      dartType: 'double',
+      nativeType: 'ffi.Double',
+      kind: TypeKind.primitive,
+    ),
     'gunichar': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Uint32', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
     'GType': TypeMapping(
-        dartType: 'int', nativeType: 'ffi.Size', kind: TypeKind.primitive),
+      dartType: 'int',
+      nativeType: 'ffi.Size',
+      kind: TypeKind.primitive,
+    ),
     'gchar*': TypeMapping(
       dartType: 'String',
       nativeType: 'Pointer<ffi.Utf8>',
@@ -280,18 +394,66 @@ class TypeResolver {
     ),
   };
 
-  static const Set<String> _unsupportedNames = {
-    'va_list',
-    girVarargsName,
+  /// Mapping for argv-style arrays of strings (`gchar**`). Always
+  /// nullable at the Dart layer because GLib APIs accept either a NULL
+  /// argv or a NULL-terminated array. The runtime helper
+  /// `gir_ffi.withNativeStringList` handles the per-call marshalling.
+  static const _stringListMapping = TypeMapping(
+    dartType: 'List<String?>?',
+    nativeType: 'ffi.Pointer<ffi.Pointer<Utf8>>',
+    kind: TypeKind.stringList,
+    isPointer: true,
+  );
+
+  static const Set<String> _unsupportedNames = {'va_list', girVarargsName};
+
+  /// `c:type` strings we accept for argv-style string arrays. The C ABI
+  /// for `gchar**` and `const gchar* const*` is identical on every
+  /// platform we target (the `const` is a C-level qualifier that does not
+  /// change the pointer representation), so we accept both.
+  static const Set<String> _stringListCtypes = {
+    'gchar**',
+    'const gchar* const*',
+    'char**',
+    'const char* const*',
   };
+
+  /// Whether [type] is an argv-style array of strings we can marshal.
+  ///
+  /// Currently restricted to input-only arrays: bound-length arrays
+  /// (`<array length="N">` with N > 0) are rejected because the C side
+  /// reads `N` slots rather than scanning for a NULL terminator, and
+  /// strv-by-reference (`gchar***`) is rejected because it needs
+  /// bidirectional marshalling.
+  static bool isStringListArray(GirTypeRef type) {
+    final array = type.array;
+    if (array == null) return false;
+    // `length="0"` in GLib's GIR files is the conventional way to mark a
+    // NULL-terminated string list (it shows up in `g_application_run`,
+    // `g_subprocess_*`, `g_spawn_*`). Treat it as "no length binding".
+    if (array.lengthParameterIndex != null && array.lengthParameterIndex! > 0) {
+      return false;
+    }
+    final cType = type.cType;
+    if (cType == null || !_stringListCtypes.contains(cType)) return false;
+    final elem = array.elementType;
+    final elemName = elem.name;
+    return elemName == 'utf8' ||
+        elemName == 'filename' ||
+        elem.cType == 'gchar*';
+  }
 
   /// Resolves [type] to a [TypeMapping]. Never throws: unknown or
   /// unmappable types yield `kind == TypeKind.unsupported` with a [reason].
-  TypeMapping resolve(GirTypeRef type,
-      {required GirNamespace currentNamespace}) {
+  TypeMapping resolve(
+    GirTypeRef type, {
+    required GirNamespace currentNamespace,
+  }) {
     if (type.isArray) {
+      if (isStringListArray(type)) return _stringListMapping;
       return const TypeMapping.unsupported(
-          'array types are handled in a later phase');
+        'array types are handled in a later phase',
+      );
     }
     final name = type.name;
     if (name != null && _unsupportedNames.contains(name)) {
@@ -308,7 +470,8 @@ class TypeResolver {
     }
     if (name == null || name.isEmpty) {
       return TypeMapping.unsupported(
-          'no GIR name${cType != null ? ' (c:type $cType)' : ''}');
+        'no GIR name${cType != null ? ' (c:type $cType)' : ''}',
+      );
     }
 
     final found = _lookup(name, currentNamespace);
@@ -316,19 +479,20 @@ class TypeResolver {
       return TypeMapping.unsupported('unknown type: $name');
     }
     final (declaredIn, target) = found;
-    final requiredImport = identical(declaredIn, currentNamespace) ||
+    final requiredImport =
+        identical(declaredIn, currentNamespace) ||
             declaredIn.name == currentNamespace.name
         ? null
         : packageNameFor(declaredIn);
     final dartName = name.contains('.') ? name.split('.').last : name;
 
     TypeMapping mappingFor(TypeKind kind) => TypeMapping(
-          dartType: dartName,
-          nativeType: 'Pointer<ffi.Void>',
-          kind: kind,
-          isPointer: true,
-          requiredImport: requiredImport,
-        );
+      dartType: dartName,
+      nativeType: 'Pointer<ffi.Void>',
+      kind: kind,
+      isPointer: true,
+      requiredImport: requiredImport,
+    );
 
     switch (target) {
       case GirClass():
@@ -363,8 +527,10 @@ class TypeResolver {
 
   /// The public Dart type name for [type] (class name only; callers use
   /// [TypeMapping.requiredImport] to add the import prefix).
-  String dartTypeName(GirTypeRef type, {required GirNamespace currentNamespace}) =>
-      resolve(type, currentNamespace: currentNamespace).dartType;
+  String dartTypeName(
+    GirTypeRef type, {
+    required GirNamespace currentNamespace,
+  }) => resolve(type, currentNamespace: currentNamespace).dartType;
 
   /// Finds [name] (qualified `Ns.Type` or unqualified `Type`) in the
   /// current namespace first, then all other loaded namespaces.
