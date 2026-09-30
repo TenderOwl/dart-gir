@@ -42,6 +42,20 @@ extension FfiShapeExt on FfiShape {
         FfiShape.string => 'ffi.Pointer<Utf8>',
       };
 
+  /// Dart-side type of the trampoline parameter. `NativeCallable<T>`
+  /// requires the callback function to use the Dart representation of
+  /// each native type: `bool` for `ffi.Bool`, `int` for `ffi.Int32` /
+  /// `ffi.Uint32`, `double` for `ffi.Double`.
+  String get dartType => switch (this) {
+        FfiShape.void_ => 'void',
+        FfiShape.pointer => 'ffi.Pointer<ffi.Void>',
+        FfiShape.int32 => 'int',
+        FfiShape.uint32 => 'int',
+        FfiShape.bool_ => 'bool',
+        FfiShape.double_ => 'double',
+        FfiShape.string => 'ffi.Pointer<Utf8>',
+      };
+
   bool get needsFree => this == FfiShape.string;
 }
 
@@ -78,7 +92,7 @@ class SignalSignature {
     required this.bucketId,
     required this.marshallerReturn,
     required this.shapes,
-    required this.ffiReturnType,
+    required this.dartReturnType,
     required this.trampolineFfiType,
     required this.callbackType,
     required this.argNames,
@@ -96,8 +110,9 @@ class SignalSignature {
   /// Per-arg shapes in source order.
   final List<FfiShape> shapes;
 
-  /// FFI return type for the trampoline, e.g. `'ffi.Void'`.
-  final String ffiReturnType;
+  /// Dart return type of the trampoline function, e.g. `'void'` — the
+  /// Dart representation of the trampoline's native return type.
+  final String dartReturnType;
 
   /// Full FFI type for the trampoline's NativeCallable, e.g.
   /// `'ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)'`.
@@ -386,10 +401,10 @@ SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? rel
   final bucketId =
       dartSuffix.isEmpty ? ffiBucketId : '${ffiBucketId}_$dartSuffix';
 
-  // Build the trampoline's Dart function type. NativeCallable<T>
-  // requires T to be a Dart function type whose parameters and return
-  // use `dart:ffi` native types. The callback's Dart representation
-  // (e.g. `int` for `ffi.Int32`) is what the user actually writes.
+  // Build the NativeCallable type argument. NativeCallable<T> requires T
+  // to be written with `dart:ffi` native types; the trampoline function
+  // itself is declared with the Dart representation of each (see
+  // FfiShape.dartType / ReturnShape.dartReturnType).
   final ffArgs = <String>[
     for (var i = 0; i < shapes.length; i++) shapes[i].ffiType,
     'ffi.Pointer<ffi.Void>', // user_data
@@ -401,7 +416,7 @@ SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? rel
     bucketId: bucketId,
     marshallerReturn: marshallerReturn,
     shapes: shapes,
-    ffiReturnType: retFfi,
+    dartReturnType: retShape.dartReturnType,
     trampolineFfiType: trampolineFfiType,
     callbackType: callbackType,
     argNames: argNames,
@@ -423,15 +438,13 @@ String _argMarshal(String pname, FfiShape shape, TypeBridge bridge, bool nullabl
     case FfiShape.uint32:
       // Enums/bitfields/primitives all need the bridge's fromNative so
       // the user gets `GtkTextDirection` instead of `int`, etc. The
-      // trampoline parameter's static type is the FFI typedef (Int32);
-      // at runtime it decodes to a Dart int, but the analyzer sees the
-      // typedef — cast through `int` so fromNative's signature accepts
-      // it without a lint ignore.
-      return bridge.fromNative('($pname as int)');
+      // trampoline parameter is already the Dart representation (`int`).
+      return bridge.fromNative(pname);
     case FfiShape.double_:
-      return bridge.fromNative('($pname as double)');
+      return bridge.fromNative(pname);
     case FfiShape.bool_:
-      return '$pname != 0';
+      // The trampoline parameter is the Dart representation (`bool`).
+      return pname;
     case FfiShape.string:
       // Receiver-side string: read + null-check. The trampoline body
       // calls `g_free(pname)` after the callback returns. Match the

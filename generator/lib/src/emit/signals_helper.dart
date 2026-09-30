@@ -56,11 +56,6 @@ String? emitSignalsHelper(EmitContext ctx) {
   if (pkg != 'gir_ffi') ctx.imports.add('gir_ffi');
 
   final b = StringBuffer()..writeln(generatedHeader);
-  // Suppress Dart FFI analyzer false positives on NativeCallable<T>:
-  //   * `must_be_a_subtype` for exact-match trampoline types
-  //   * `non_native_function_type_argument_to_pointer` for nested types
-  b.writeln('// ignore_for_file: must_be_a_subtype');
-  b.writeln('// ignore_for_file: non_native_function_type_argument_to_pointer');
   b.writeln("part of '../$pkg.dart';");
   b.writeln();
   b.writeln('/// `g_signal_connect_data` is `introspectable="0"` in the GIR,');
@@ -136,7 +131,7 @@ SignalSignature _voidVoidSignature() => SignalSignature(
       bucketId: 'v_0_',
       marshallerReturn: ReturnShape.void_,
       shapes: const [FfiShape.pointer],
-      ffiReturnType: 'ffi.Void',
+      dartReturnType: 'void',
       trampolineFfiType:
           'ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)',
       callbackType: 'void Function()',
@@ -243,40 +238,25 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
   b.writeln('/// Trampoline invoked by GObject for bucket `$bucketId`. Reads');
   b.writeln('/// the handler id from `user_data`, converts the FFI args, and');
   b.writeln('/// runs the Dart callback.');
-  b.writeln('${sig.ffiReturnType} _signalTrampoline_$bucketId(');
+  b.writeln('${sig.dartReturnType} _signalTrampoline_$bucketId(');
   final ffParams = <String>[];
   for (var i = 0; i < sig.shapes.length; i++) {
     final pname = sig.argNames[i];
-    final ftype = sig.shapes[i].ffiType;
-    ffParams.add('$ftype $pname');
+    final dtype = sig.shapes[i].dartType;
+    ffParams.add('$dtype $pname');
   }
   ffParams.add('ffi.Pointer<ffi.Void> userData');
   b.writeln('  ${ffParams.join(',\n  ')},');
   b.writeln(') {');
   b.writeln('  final id = userData.cast<ffi.IntPtr>().value;');
   b.writeln('  final cb = _signalRegistry_$bucketId[id]!;');
+  final hasFrees = sig.shapes.contains(FfiShape.string);
   if (sig.marshallerReturn == ReturnShape.void_) {
     b.writeln('  cb(${sig.argMarshals.join(', ')});');
-    // `ffi.Void` is non-nullable; the analyzer rejects a bare `return;`.
-    // Cast `null` through dynamic — at runtime NativeCallable expects nothing.
-    b.writeln('  // ignore: return_of_invalid_type');
-    b.writeln('  return (null as dynamic) as ffi.Void;');
-  } else if (sig.marshallerReturn == ReturnShape.bool_) {
-    // Dart callback returns `bool`; the trampoline's FFI return type is
-    // `ffi.Bool` — encode the bool as 0/1, cast to `ffi.Bool`.
-    b.writeln(
-      '  return (cb(${sig.argMarshals.join(', ')}) ? 1 : 0) as ffi.Bool;',
-    );
-  } else if (sig.marshallerReturn == ReturnShape.int ||
-      sig.marshallerReturn == ReturnShape.uint) {
-    final cast = sig.marshallerReturn == ReturnShape.uint
-        ? 'ffi.Uint32'
-        : 'ffi.Int32';
-    b.writeln('  return cb(${sig.argMarshals.join(', ')}) as $cast;');
-  } else if (sig.marshallerReturn == ReturnShape.double_) {
-    b.writeln('  return cb(${sig.argMarshals.join(', ')}) as ffi.Double;');
-  } else {
-    b.writeln('  return cb(${sig.argMarshals.join(', ')});');
+  } else if (hasFrees) {
+    // Capture the result so transfer-none strings can still be freed
+    // before returning (a bare `return cb(...)` would skip the frees).
+    b.writeln('  final result = cb(${sig.argMarshals.join(', ')});');
   }
   // Free `transfer-none` strings after the callback returns: the closure
   // owns the receiver's string-args. Per the GIR convention,
@@ -289,19 +269,26 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
       b.writeln('  if (($pname) != ffi.nullptr) gFree(($pname).cast());');
     }
   }
+  if (sig.marshallerReturn != ReturnShape.void_ && hasFrees) {
+    b.writeln('  return result;');
+  } else if (sig.marshallerReturn != ReturnShape.void_) {
+    b.writeln('  return cb(${sig.argMarshals.join(', ')});');
+  }
   b.writeln('}');
   b.writeln();
 
-  // 3. Per-bucket NativeCallable — app-lifetime singleton.
+  // 3. Per-bucket NativeCallable — app-lifetime singleton. A non-void
+  //    return type requires an `exceptionalReturn` fallback.
   b.writeln('/// Per-package singleton. Never closed — must stay reachable for');
   b.writeln('/// as long as any connection in this bucket is alive.');
-  // Dart's analyzer incorrectly rejects exact-match NativeCallable<T>
-  // for many bucket trampolines (variance false positive). Suppress.
+  final exceptionalReturn = switch (sig.marshallerReturn) {
+    ReturnShape.void_ => '',
+    ReturnShape.int || ReturnShape.uint => ', exceptionalReturn: 0',
+    ReturnShape.bool_ => ', exceptionalReturn: false',
+    ReturnShape.double_ => ', exceptionalReturn: 0.0',
+  };
   b.writeln(
-    '// ignore: must_be_a_subtype',
-  );
-  b.writeln(
-    'final _signalCallable_$bucketId = ffi.NativeCallable<${sig.trampolineFfiType}>.isolateLocal(_signalTrampoline_$bucketId);',
+    'final _signalCallable_$bucketId = ffi.NativeCallable<${sig.trampolineFfiType}>.isolateLocal(_signalTrampoline_$bucketId$exceptionalReturn);',
   );
   b.writeln();
 

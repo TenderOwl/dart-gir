@@ -97,15 +97,16 @@ registry.
 // 1. Typed registry
 final _signalRegistry_<id> = <int, TCallback>{};
 
-// 2. Trampoline — receives FFI args + user_data, looks up the callback,
+// 2. Trampoline — receives the args (already decoded by dart:ffi into
+//    their Dart representations) + user_data, looks up the callback,
 //    converts args to Dart wrapper types, invokes, frees transfer-none
 //    strings.
-<RetFfi> _signalTrampoline_<id>(
-  <ffiArgType> <arg>, ..., ffi.Pointer<ffi.Void> userData,
+<RetDart> _signalTrampoline_<id>(
+  <dartArgType> <arg>, ..., ffi.Pointer<ffi.Void> userData,
 ) {
   final id = userData.cast<ffi.IntPtr>().value;
   final cb = _signalRegistry_<id>[id]!;
-  return <invokeCallbackOrCastReturn>;
+  cb(<args>); // or: final result = cb(<args>); ...; return result;
   if (... != ffi.nullptr) gFree((... ).cast()); // per string arg
 }
 
@@ -124,14 +125,20 @@ int _connectSignal_<id>(
 //    userData) from g_cclosure_marshal_VOID__VOID and ignores instance.
 ```
 
-`NativeCallable<T>.isolateLocal` requires T to be a Dart function type
-with all parameters and the return position using `dart:ffi` native
-types (`ffi.Void` / `ffi.Int32` / `ffi.Uint32` / `ffi.Bool` /
-`ffi.Double`). The user's callback (typed with Dart primitives like
-`bool` / `int` / `double`) is the Dart representation of T — NativeCallable
-matches the inline signature when constructing. The trampoline body
-casts return values back to the FFI native type so the static call
-type-checks.
+`NativeCallable<T>.isolateLocal` is constructed with T written in
+`dart:ffi` native types (`ffi.Void` / `ffi.Int32` / `ffi.Uint32` /
+`ffi.Bool` / `ffi.Double`), but the trampoline function itself must be
+declared with the **Dart representation** of each type (`void` / `int` /
+`int` / `bool` / `double`) — dart:ffi decodes native values into Dart
+primitives when invoking the callback, and the compiler rejects a
+trampoline declared with the FFI typedefs (e.g. a `ffi.Bool` parameter
+is a compile error: the expected Dart type is `bool`). Non-void
+trampolines also pass an `exceptionalReturn` fallback (`0` / `false` /
+`0.0`) to `isolateLocal`, which dart:ffi requires for non-void return
+types. When a bucket has `transfer-none` string args and a non-void
+return, the trampoline stores the callback's value in a local, frees
+the strings, then returns it — a bare `return cb(...)` would skip the
+frees.
 
 The trampoline is wrapped in a `dart:ffi` `NativeCallable`. GLib's
 `g_signal_connect_data` accepts the callback pointer as
