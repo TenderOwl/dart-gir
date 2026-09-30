@@ -64,6 +64,21 @@ final class GValue {
     return stringFromNative((_gValueDupString(this.handle)).cast(), free: true);
   }
 
+  /// Get the contents of a variant #GValue, increasing its refcount. The returned
+  /// #GVariant is never floating.
+  static final _gValueDupVariant =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_value_dup_variant')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? dupVariant() {
+    return (_gValueDupVariant(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_gValueDupVariant(this.handle));
+  }
+
   /// Determines if @value will fit inside the size of a pointer value.
   ///
   /// This is an internal function introduced mainly for C marshallers.
@@ -290,6 +305,20 @@ final class GValue {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getUlong() {
     return _gValueGetUlong(this.handle);
+  }
+
+  /// Get the contents of a variant #GValue.
+  static final _gValueGetVariant =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_value_get_variant')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? getVariant() {
+    return (_gValueGetVariant(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_gValueGetVariant(this.handle));
   }
 
   /// Initializes @value to store values of the given @type, and sets its value
@@ -736,6 +765,21 @@ final class GValue {
     _gValueSetUlong(this.handle, vUlong);
   }
 
+  /// Set the contents of a variant #GValue to @variant.
+  /// If the variant is floating, it is consumed.
+  static final _gValueSetVariant =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_value_set_variant')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setVariant([GVariant? variant]) {
+    _gValueSetVariant(this.handle, variant?.handle ?? ffi.nullptr);
+  }
+
   /// Steal ownership on contents of a %G_TYPE_STRING #GValue.
   /// As a result of this operation the value's contents will be reset to %NULL.
   ///
@@ -789,6 +833,31 @@ final class GValue {
     withNativeString(vString, (nativeVString) {
       _gValueTakeString(this.handle, nativeVString.cast<Utf8>());
     });
+  }
+
+  /// Set the contents of a variant #GValue to @variant, and takes over
+  /// the ownership of the caller's reference to @variant;
+  /// the caller doesn't have to unref it any more (i.e. the reference
+  /// count of the variant is not increased).
+  ///
+  /// If @variant was floating then its floating reference is converted to
+  /// a hard reference.
+  ///
+  /// If you want the #GValue to hold its own reference to @variant, use
+  /// g_value_set_variant() instead.
+  ///
+  /// This is an internal function introduced mainly for C marshallers.
+  static final _gValueTakeVariant =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_value_take_variant')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void takeVariant([GVariant? variant]) {
+    _gValueTakeVariant(this.handle, variant?.handle ?? ffi.nullptr);
   }
 
   /// Tries to cast the contents of @src_value into a type appropriate

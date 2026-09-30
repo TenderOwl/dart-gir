@@ -463,16 +463,8 @@ class AdwBottomSheet extends GtkWidget {
 /// <setter object="page" property="title" translatable="yes">Example</setter>
 /// </object>
 /// ```
-class AdwBreakpoint implements ffi.Finalizable {
-  AdwBreakpoint.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwBreakpoint extends GObject {
+  AdwBreakpoint.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `AdwBreakpoint` with @condition.
   static final _adwBreakpointNew =
@@ -487,6 +479,72 @@ class AdwBreakpoint implements ffi.Finalizable {
       _adwBreakpointNew(condition.handle),
       owned: true,
     );
+  }
+
+  /// Adds a setter to @self.
+  ///
+  /// The setter will automatically set @property on @object to @value when
+  /// applying the breakpoint, and set it back to its original value upon
+  /// unapplying it.
+  ///
+  /// ::: note
+  /// Setting properties to their original values does not work for properties
+  /// that have irreversible side effects. For example, changing
+  /// [property@Gtk.Button:label] while [property@Gtk.Button:icon-name] is set
+  /// will reset the icon. However, resetting the label will not set
+  /// `icon-name` to its original value.
+  ///
+  /// Use the [signal@Breakpoint::apply] and [signal@Breakpoint::unapply] signals
+  /// for those properties instead, as follows:
+  ///
+  /// ```c
+  /// static void
+  /// breakpoint_apply_cb (MyWidget *self)
+  /// {
+  /// gtk_button_set_icon_name (self->button, "go-previous-symbolic");
+  /// }
+  ///
+  /// static void
+  /// breakpoint_apply_cb (MyWidget *self)
+  /// {
+  /// gtk_button_set_label (self->button, _("_Back"));
+  /// }
+  ///
+  /// // ...
+  ///
+  /// g_signal_connect_swapped (breakpoint, "apply",
+  /// G_CALLBACK (breakpoint_apply_cb), self);
+  /// g_signal_connect_swapped (breakpoint, "unapply",
+  /// G_CALLBACK (breakpoint_unapply_cb), self);
+  /// ```
+  static final _adwBreakpointAddSetter =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('adw_breakpoint_add_setter')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void addSetter(GObject object, String property, [GValue? value]) {
+    withNativeString(property, (nativeProperty) {
+      _adwBreakpointAddSetter(
+        this.handle,
+        object.handle,
+        nativeProperty.cast<Utf8>(),
+        value?.handle ?? ffi.nullptr,
+      );
+    });
   }
 
   /// Gets the condition for @self.

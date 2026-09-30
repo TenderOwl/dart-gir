@@ -169,16 +169,9 @@ part of '../gio.dart';
 ///
 /// The complete example can be found here:
 /// [gapplication-example-cmdline3.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gapplication-example-cmdline3.c)
-class GApplicationCommandLine implements ffi.Finalizable {
-  GApplicationCommandLine.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GApplicationCommandLine extends GObject {
+  GApplicationCommandLine.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a #GFile corresponding to a filename that was given as part
   /// of the invocation of @cmdline.
@@ -274,6 +267,57 @@ class GApplicationCommandLine implements ffi.Finalizable {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getIsRemote() {
     return (_gApplicationCommandLineGetIsRemote(this.handle)) != 0;
+  }
+
+  /// Gets the options that were passed to g_application_command_line().
+  ///
+  /// If you did not override local_command_line() then these are the same
+  /// options that were parsed according to the #GOptionEntrys added to the
+  /// application with g_application_add_main_option_entries() and possibly
+  /// modified from your GApplication::handle-local-options handler.
+  ///
+  /// If no options were sent then an empty dictionary is returned so that
+  /// you don't need to check for %NULL.
+  ///
+  /// The data has been passed via an untrusted external process, so the types of
+  /// all values must be checked before being used.
+  static final _gApplicationCommandLineGetOptionsDict =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_application_command_line_get_options_dict')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariantDict getOptionsDict() {
+    return GVariantDict.fromPointer(
+      _gApplicationCommandLineGetOptionsDict(this.handle),
+    );
+  }
+
+  /// Gets the platform data associated with the invocation of @cmdline.
+  ///
+  /// This is a #GVariant dictionary containing information about the
+  /// context in which the invocation occurred.  It typically contains
+  /// information like the current working directory and the startup
+  /// notification ID.
+  ///
+  /// It comes from an untrusted external process and hence the types of all
+  /// values must be validated before being used.
+  ///
+  /// For local invocation, it will be %NULL.
+  static final _gApplicationCommandLineGetPlatformData =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_application_command_line_get_platform_data')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? getPlatformData() {
+    return (_gApplicationCommandLineGetPlatformData(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(
+            _gApplicationCommandLineGetPlatformData(this.handle),
+          );
   }
 
   /// Gets the stdin of the invoking process.

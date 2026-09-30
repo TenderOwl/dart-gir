@@ -12,6 +12,8 @@ dependencies:
     path: ../gir_ffi
   gdk4:
     path: ../gdk4
+  gdk_pixbuf:
+    path: ../gdk_pixbuf
   gio:
     path: ../gio
   glib:

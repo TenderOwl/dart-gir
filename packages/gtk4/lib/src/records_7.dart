@@ -348,6 +348,57 @@ final class GtkTreeRowReference {
     );
   }
 
+  /// You do not need to use this function.
+  ///
+  /// Creates a row reference based on @path.
+  ///
+  /// This reference will keep pointing to the node pointed to
+  /// by @path, so long as it exists. If @path isn’t a valid
+  /// path in @model, then %NULL is returned. However, unlike
+  /// references created with gtk_tree_row_reference_new(), it
+  /// does not listen to the model for changes. The creator of
+  /// the row reference must do this explicitly using
+  /// gtk_tree_row_reference_inserted(), gtk_tree_row_reference_deleted(),
+  /// gtk_tree_row_reference_reordered().
+  ///
+  /// These functions must be called exactly once per proxy when the
+  /// corresponding signal on the model is emitted. This single call
+  /// updates all row references for that proxy. Since built-in GTK
+  /// objects like `GtkTreeView` already use this mechanism internally,
+  /// using them as the proxy object will produce unpredictable results.
+  /// Further more, passing the same object as @model and @proxy
+  /// doesn’t work for reasons of internal implementation.
+  ///
+  /// This type of row reference is primarily meant by structures that
+  /// need to carefully monitor exactly when a row reference updates
+  /// itself, and is not generally needed by most applications.
+  static final _gtkTreeRowReferenceNewProxy =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_row_reference_new_proxy')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  factory GtkTreeRowReference.proxy(
+    GObject proxy,
+    GtkTreeModel model,
+    GtkTreePath path,
+  ) {
+    return GtkTreeRowReference.fromPointer(
+      _gtkTreeRowReferenceNewProxy(proxy.handle, model.handle, path.handle),
+    );
+  }
+
   /// Copies a `GtkTreeRowReference`.
   static final _gtkTreeRowReferenceCopy =
       gtk4Lookup<
@@ -406,6 +457,38 @@ final class GtkTreeRowReference {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool valid() {
     return (_gtkTreeRowReferenceValid(this.handle)) != 0;
+  }
+
+  /// Lets a set of row reference created by
+  /// gtk_tree_row_reference_new_proxy() know that the
+  /// model emitted the ::row-deleted signal.
+  static final _gtkTreeRowReferenceDeleted =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_tree_row_reference_deleted')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  static void deleted(GObject proxy, GtkTreePath path) {
+    _gtkTreeRowReferenceDeleted(proxy.handle, path.handle);
+  }
+
+  /// Lets a set of row reference created by
+  /// gtk_tree_row_reference_new_proxy() know that the
+  /// model emitted the ::row-inserted signal.
+  static final _gtkTreeRowReferenceInserted =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_tree_row_reference_inserted')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  static void inserted(GObject proxy, GtkTreePath path) {
+    _gtkTreeRowReferenceInserted(proxy.handle, path.handle);
   }
 }
 

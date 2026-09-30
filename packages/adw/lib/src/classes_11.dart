@@ -302,16 +302,9 @@ class AdwEntryRow extends AdwPreferencesRow {
 }
 
 /// `AdwEnumListItem` is the type of items in a [class@EnumListModel].
-class AdwEnumListItem implements ffi.Finalizable {
-  AdwEnumListItem.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwEnumListItem extends GObject {
+  AdwEnumListItem.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Gets the enum value name.
   static final _adwEnumListItemGetName =
@@ -356,16 +349,9 @@ class AdwEnumListItem implements ffi.Finalizable {
 /// A [iface@Gio.ListModel] representing values of a given enum.
 ///
 /// `AdwEnumListModel` contains objects of type [class@EnumListItem].
-class AdwEnumListModel implements ffi.Finalizable {
-  AdwEnumListModel.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwEnumListModel extends GObject {
+  AdwEnumListModel.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new `AdwEnumListModel` for @enum_type.
   static final _adwEnumListModelNew =

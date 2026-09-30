@@ -9,16 +9,9 @@ part of '../gio.dart';
 /// it as an argument to the `handle_method_call()` function in a
 /// [type@Gio.DBusInterfaceVTable] that was passed to
 /// [method@Gio.DBusConnection.register_object].
-class GDBusMethodInvocation implements ffi.Finalizable {
-  GDBusMethodInvocation.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GDBusMethodInvocation extends GObject {
+  GDBusMethodInvocation.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Gets the #GDBusConnection the method was invoked on.
   static final _gDbusMethodInvocationGetConnection =
@@ -132,6 +125,21 @@ class GDBusMethodInvocation implements ffi.Finalizable {
     )!;
   }
 
+  /// Gets the parameters of the method invocation. If there are no input
+  /// parameters then this will return a GVariant with 0 children rather than NULL.
+  static final _gDbusMethodInvocationGetParameters =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_method_invocation_get_parameters')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant getParameters() {
+    return GVariant.fromPointer(
+      _gDbusMethodInvocationGetParameters(this.handle),
+    );
+  }
+
   /// Gets information about the property that this method call is for, if
   /// any.
   ///
@@ -239,6 +247,105 @@ class GDBusMethodInvocation implements ffi.Finalizable {
       );
     });
   }
+
+  /// Like g_dbus_method_invocation_return_error() but takes a #GError
+  /// instead of the error domain, error code and message.
+  ///
+  /// This method will take ownership of @invocation. See
+  /// #GDBusInterfaceVTable for more information about the ownership of
+  /// @invocation.
+  static final _gDbusMethodInvocationReturnGerror =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_method_invocation_return_gerror')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void returnGerror(GError error) {
+    _gDbusMethodInvocationReturnGerror(this.handle, error.handle);
+  }
+
+  /// Finishes handling a D-Bus method call by returning @parameters.
+  /// If the @parameters GVariant is floating, it is consumed.
+  ///
+  /// It is an error if @parameters is not of the right format: it must be a tuple
+  /// containing the out-parameters of the D-Bus method. Even if the method has a
+  /// single out-parameter, it must be contained in a tuple. If the method has no
+  /// out-parameters, @parameters may be %NULL or an empty tuple.
+  ///
+  /// |[<!-- language="C" -->
+  /// GDBusMethodInvocation *invocation = some_invocation;
+  /// g_autofree gchar *result_string = NULL;
+  /// g_autoptr (GError) error = NULL;
+  ///
+  /// result_string = calculate_result (&error);
+  ///
+  /// if (error != NULL)
+  /// g_dbus_method_invocation_return_gerror (invocation, error);
+  /// else
+  /// g_dbus_method_invocation_return_value (invocation,
+  /// g_variant_new ("(s)", result_string));
+  ///
+  /// // Do not free @invocation here; returning a value does that
+  /// ]|
+  ///
+  /// This method will take ownership of @invocation. See
+  /// #GDBusInterfaceVTable for more information about the ownership of
+  /// @invocation.
+  ///
+  /// Since 2.48, if the method call requested for a reply not to be sent
+  /// then this call will sink @parameters and free @invocation, but
+  /// otherwise do nothing (as per the recommendations of the D-Bus
+  /// specification).
+  static final _gDbusMethodInvocationReturnValue =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_method_invocation_return_value')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void returnValue([GVariant? parameters]) {
+    _gDbusMethodInvocationReturnValue(
+      this.handle,
+      parameters?.handle ?? ffi.nullptr,
+    );
+  }
+
+  /// Like g_dbus_method_invocation_return_value() but also takes a #GUnixFDList.
+  ///
+  /// This method is only available on UNIX.
+  ///
+  /// This method will take ownership of @invocation. See
+  /// #GDBusInterfaceVTable for more information about the ownership of
+  /// @invocation.
+  static final _gDbusMethodInvocationReturnValueWithUnixFdList =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_dbus_method_invocation_return_value_with_unix_fd_list')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void returnValueWithUnixFdList([GVariant? parameters, GUnixFDList? fdList]) {
+    _gDbusMethodInvocationReturnValueWithUnixFdList(
+      this.handle,
+      parameters?.handle ?? ffi.nullptr,
+      fdList?.handle ?? ffi.nullptr,
+    );
+  }
 }
 
 /// `GDBusObjectManagerClient` is used to create, monitor and delete object
@@ -319,16 +426,9 @@ class GDBusMethodInvocation implements ffi.Finalizable {
 /// originating from the `GDBusObjectManagerClient` object will be created in
 /// the same context and, consequently, will deliver signals in the
 /// same main loop.
-class GDBusObjectManagerClient implements ffi.Finalizable {
-  GDBusObjectManagerClient.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GDBusObjectManagerClient extends GObject {
+  GDBusObjectManagerClient.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Finishes an operation started with g_dbus_object_manager_client_new().
   static final _gDbusObjectManagerClientNewFinish =
@@ -469,16 +569,9 @@ class GDBusObjectManagerClient implements ffi.Finalizable {
 /// See [class@Gio.DBusObjectManagerClient] for the client-side code that is
 /// intended to be used with `GDBusObjectManagerServer` or any D-Bus
 /// object implementing the `org.freedesktop.DBus.ObjectManager` interface.
-class GDBusObjectManagerServer implements ffi.Finalizable {
-  GDBusObjectManagerServer.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GDBusObjectManagerServer extends GObject {
+  GDBusObjectManagerServer.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new #GDBusObjectManagerServer object.
   ///
@@ -612,61 +705,5 @@ class GDBusObjectManagerServer implements ffi.Finalizable {
           )) !=
           0;
     });
-  }
-}
-
-/// A `GDBusObjectProxy` is an object used to represent a remote object
-/// with one or more D-Bus interfaces. Normally, you don’t instantiate
-/// a `GDBusObjectProxy` yourself — typically [class@Gio.DBusObjectManagerClient]
-/// is used to obtain it.
-class GDBusObjectProxy implements ffi.Finalizable {
-  GDBusObjectProxy.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
-
-  /// Creates a new #GDBusObjectProxy for the given connection and
-  /// object path.
-  static final _gDbusObjectProxyNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_object_proxy_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  factory GDBusObjectProxy(GDBusConnection connection, String objectPath) {
-    return withNativeString(objectPath, (nativeObjectPath) {
-      return GDBusObjectProxy.fromPointer(
-        _gDbusObjectProxyNew(connection.handle, nativeObjectPath.cast<Utf8>()),
-        owned: true,
-      );
-    });
-  }
-
-  /// Gets the connection that @proxy is for.
-  static final _gDbusObjectProxyGetConnection =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_proxy_get_connection')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusConnection getConnection() {
-    return GDBusConnection.fromPointer(
-      _gDbusObjectProxyGetConnection(this.handle),
-    );
   }
 }

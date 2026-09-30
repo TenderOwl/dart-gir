@@ -46,16 +46,8 @@ part of '../adw.dart';
 /// If there's a chance the previous animation for the same target hasn't yet
 /// finished, the previous animation should be stopped first, or the existing
 /// `AdwAnimation` object can be reused.
-class AdwAnimation implements ffi.Finalizable {
-  AdwAnimation.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwAnimation extends GObject {
+  AdwAnimation.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Gets whether @self should be skipped when animations are globally disabled.
   static final _adwAnimationGetFollowEnableAnimationsSetting =
@@ -237,16 +229,9 @@ class AdwAnimation implements ffi.Finalizable {
 }
 
 /// Represents a value [class@Animation] can animate.
-class AdwAnimationTarget implements ffi.Finalizable {
-  AdwAnimationTarget.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwAnimationTarget extends GObject {
+  AdwAnimationTarget.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 }
 
 /// A base class for Adwaita applications.

@@ -1,88 +1,78 @@
 # Skip report for package pango (Pango 1.0)
-Total skipped: 129
+Total skipped: 106
 
 ## By category
-callable: 111
-class: 9
+callable: 97
 method: 5
 alias: 3
 renamed: 1
 
 ## By reason
 caller-allocates out parameter ink_rect: 11
-parent GObject.Object is in non-generated package gobject: 9
 parameter attrs: array types are handled in a later phase: 6
-return: type GLib.SList is in non-generated package glib: 5
 name collision: 5
 inout parameter pos: 4
 caller-allocates out parameter glyphs: 4
 return: array types are handled in a later phase: 3
 aliases are resolved to their target: 3
 parameter width: nullable scalar parameter (gint): 2
-return: type GLib.List is in non-generated package glib: 2
+unsupported out parameter attr_list (PangoAttrList?): 2
 parameter logical_widths: array types are handled in a later phase: 2
 parameter x_pos: nullable scalar parameter (gint): 2
 inout parameter rect: 2
 parameter families: array types are handled in a later phase: 2
 parameter bytes: array types are handled in a later phase: 2
-return: type GLib.Bytes is in non-generated package glib: 2
-parameter bytes: type GLib.Bytes is in non-generated package glib: 2
 caller-allocates out parameter strong_pos: 2
-inout parameter pbase_dir: 1
-moved to AttrFontDesc.new: 1
+moved to LayoutDeserializeError.quark: 1
+moved to Gravity.get_for_matrix: 1
+moved to Gravity.get_for_script: 1
+moved to Gravity.get_for_script_and_width: 1
+moved to Gravity.to_rotation: 1
 moved to Language.from_string: 1
 moved to Language.get_default: 1
 moved to Language.get_preferred: 1
-moved to LayoutDeserializeError.quark: 1
+moved to AttrFontDesc.new: 1
+inout parameter pbase_dir: 1
 moved to AttrFontFeatures.new: 1
-parameter context: type GLib.MarkupParseContext is in non-generated package glib: 1
-return: type GLib.MarkupParseContext is in non-generated package glib: 1
 parameter value: nullable scalar parameter (gint): 1
-unsupported out parameter attr_list (PangoAttrList?): 1
 inout parameter thickness: 1
-parameter str: type GLib.String is in non-generated package glib: 1
-parameter items: type GLib.List is in non-generated package glib: 1
 moved to AttrLanguage.new: 1
 moved to Script.for_unichar: 1
 moved to Script.get_sample_language: 1
 moved to AttrList.from_string: 1
 return: string list return type (null): 1
 moved to TabArray.from_string: 1
-moved to AttrShape.new: 1
 unsupported out parameter language (PangoLanguage?): 1
-moved to AttrShape.new_with_data: 1
+moved to AttrShape.new: 1
 parameter copy_func: nullable callback parameter (AttrDataCopyFunc): 1
 parameter alpha: nullable scalar parameter (guint16): 1
-moved to AttrSize.new: 1
+moved to AttrShape.new_with_data: 1
 parameter log_attrs: array types are handled in a later phase: 1
+moved to AttrSize.new: 1
 moved to AttrSize.new_absolute: 1
-moved to AttrType.get_name: 1
 parameter index_: nullable scalar parameter (gint): 1
 parameter num_scripts: nullable scalar parameter (gint): 1
+moved to AttrType.get_name: 1
 moved to AttrType.register: 1
-moved to BidiType.for_unichar: 1
 parameter y0_: nullable scalar parameter (gint): 1
 parameter height: nullable scalar parameter (gint): 1
 parameter ranges: array types are handled in a later phase: 1
 parameter xscale: nullable scalar parameter (gdouble): 1
 inout parameter dx: 1
-inout parameter inclusive: 1
+moved to BidiType.for_unichar: 1
 inout parameter x: 1
 parameter script: nullable scalar parameter (Script): 1
 parameter alignment: nullable scalar parameter (TabAlign): 1
 parameter alignments: nullable scalar parameter (TabAlign): 1
-parameter paragraph_delimiter_index: nullable scalar parameter (gint): 1
-moved to FontDescription.from_string: 1
+inout parameter inclusive: 1
 override-incompatible with ancestor; renamed to refCoverage: 1
-parameter mirrored_ch: nullable scalar parameter (gunichar): 1
+parameter paragraph_delimiter_index: nullable scalar parameter (gint): 1
 parameter features: array types are handled in a later phase: 1
-moved to Gravity.get_for_matrix: 1
 parameter descs: array types are handled in a later phase: 1
-moved to Gravity.get_for_script: 1
 parameter sizes: array types are handled in a later phase: 1
 parameter faces: array types are handled in a later phase: 1
-moved to Gravity.get_for_script_and_width: 1
-moved to Gravity.to_rotation: 1
+moved to FontDescription.from_string: 1
+parameter mirrored_ch: nullable scalar parameter (gunichar): 1
 parameter line: nullable scalar parameter (gint): 1
 caller-allocates out parameter pos: 1
 parameter accel_char: nullable scalar parameter (gunichar): 1
@@ -112,20 +102,15 @@ caller-allocates out parameter logical_rect: 1
 [callable] Pango.gravityGetForScript — moved to Gravity.get_for_script
 [callable] Pango.gravityGetForScriptAndWidth — moved to Gravity.get_for_script_and_width
 [callable] Pango.gravityToRotation — moved to Gravity.to_rotation
-[callable] Pango.itemize — return: type GLib.List is in non-generated package glib
-[callable] Pango.itemizeWithBaseDir — return: type GLib.List is in non-generated package glib
 [callable] Pango.languageFromString — moved to Language.from_string
 [callable] Pango.languageGetDefault — moved to Language.get_default
 [callable] Pango.languageGetPreferred — moved to Language.get_preferred
 [callable] Pango.layoutDeserializeErrorQuark — moved to LayoutDeserializeError.quark
 [callable] Pango.log2visGetEmbeddingLevels — inout parameter pbase_dir
-[callable] Pango.markupParserFinish — parameter context: type GLib.MarkupParseContext is in non-generated package glib
-[callable] Pango.markupParserNew — return: type GLib.MarkupParseContext is in non-generated package glib
+[callable] Pango.markupParserFinish — unsupported out parameter attr_list (PangoAttrList?)
 [callable] Pango.parseEnum — parameter value: nullable scalar parameter (gint)
 [callable] Pango.parseMarkup — unsupported out parameter attr_list (PangoAttrList?)
 [callable] Pango.quantizeLineGeometry — inout parameter thickness
-[callable] Pango.readLine — parameter str: type GLib.String is in non-generated package glib
-[callable] Pango.reorderItems — parameter items: type GLib.List is in non-generated package glib
 [callable] Pango.scanInt — inout parameter pos
 [callable] Pango.scanString — inout parameter pos
 [callable] Pango.scanWord — inout parameter pos
@@ -139,3 +124,8 @@ caller-allocates out parameter logical_rect: 1
 [callable] Pango.splitFileList — return: string list return type (null)
 [callable] Pango.tabArrayFromString — moved to TabArray.from_string
 [callable] Pango.tailorBreak — parameter attrs: array types are handled in a later phase
+[callable] PangoAttrIterator.getFont — unsupported out parameter language (PangoLanguage?)
+[method] PangoAttrList.toString — name collision
+[callable] PangoAttrShape.newWithData — parameter copy_func: nullable callback parameter (AttrDataCopyFunc)
+[callable] PangoColor.parseWithAlpha — parameter alpha: nullable scalar parameter (guint16)
+[method] PangoColor.toString — name collision

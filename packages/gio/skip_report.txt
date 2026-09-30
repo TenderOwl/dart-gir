@@ -1,84 +1,75 @@
 # Skip report for package gio (Gio 2.0)
-Total skipped: 679
+Total skipped: 431
 
 ## By category
-callable: 521
-class: 72
+callable: 359
 signal: 62
-callback: 15
 method: 6
 renamed: 3
+callback: 1
 
 ## By reason
-parameter callback: nullable callback parameter (AsyncReadyCallback): 109
-parent GObject.Object is in non-generated package gobject: 71
+parameter callback: nullable callback parameter (AsyncReadyCallback): 121
 only void(void) supported in this release: 62
-return: type GLib.List is in non-generated package glib: 29
 return: string list return type (null): 27
-return: type GLib.Variant is in non-generated package glib: 20
 parameter buffer: array types are handled in a later phase: 19
-parameter value: type GLib.Variant is in non-generated package glib: 13
-parameter parameters: type GLib.Variant is in non-generated package glib: 11
-parameter source_object: type GObject.Object is in non-generated package gobject: 10
-return: type GLib.Bytes is in non-generated package glib: 9
 parameter length: nullable scalar parameter (gsize): 9
-type GLib.Variant is in non-generated package glib: 8
 parameter data: array types are handled in a later phase: 7
 return: array types are handled in a later phase: 7
 parameter vectors: array types are handled in a later phase: 7
 name collision: 6
-parameter bytes: type GLib.Bytes is in non-generated package glib: 6
-return: type GLib.DateTime is in non-generated package glib: 6
-parameter condition: type GLib.IOCondition is in non-generated package glib: 6
 parameter contents: array types are handled in a later phase: 5
-return: type GLib.VariantType is in non-generated package glib: 5
-return: type GObject.Object is in non-generated package gobject: 4
 parameter entries: array types are handled in a later phase: 4
+unsupported out parameter out_fd_list (GUnixFDList?): 4
 parameter get_proxy_type_func: nullable callback parameter (DBusProxyTypeFunc): 4
 parameter messages: array types are handled in a later phase: 4
-parameter files: type GLib.List is in non-generated package glib: 3
-parameter bytes: array types are handled in a later phase: 3
-type GObject.Object is in non-generated package gobject: 3
-parameter parameter: type GLib.Variant is in non-generated package glib: 3
-unsupported out parameter address (GSocketAddress?): 3
-parameter parameter_type: type GLib.VariantType is in non-generated package glib: 3
-parameter bytes_written: nullable scalar parameter (gsize): 3
-parameter target_value: type GLib.Variant is in non-generated package glib: 3
-parameter error: type GLib.Error is in non-generated package glib: 3
+unsupported out parameter source_object (GObject?): 4
 parameter out_serial: nullable scalar parameter (guint32): 3
-return: type GLib.Source is in non-generated package glib: 3
+parameter bytes: array types are handled in a later phase: 3
+parameter notify: nullable callback parameter (GLib.DestroyNotify): 3
+parameter position: nullable scalar parameter (guint): 3
+parameter bytes_written: nullable scalar parameter (gsize): 3
+unsupported out parameter address (GSocketAddress?): 3
 unsupported out parameter iostream (GFileIOStream): 2
-parameter name_appeared_closure: type GObject.Closure is in non-generated package gobject: 2
-parameter progress_callback_closure: type GObject.Closure is in non-generated package gobject: 2
-parameter progress_callback: nullable callback parameter (FileProgressCallback): 2
-parameter uris: type GLib.List is in non-generated package glib: 2
-parameter path: array types are handled in a later phase: 2
-parameter length: nullable scalar parameter (gint): 2
-parameter value: array types are handled in a later phase: 2
-parameter issuer_raw_dn: array types are handled in a later phase: 2
-parameter stdin_buf: type GLib.Bytes is in non-generated package glib: 2
-type GLib.IOCondition is in non-generated package glib: 2
-parameter tree: type GLib.Tree is in non-generated package glib: 2
-parameter target: type GLib.Variant is in non-generated package glib: 2
-parameter expected_type: type GLib.VariantType is in non-generated package glib: 2
-parameter compare_func: callback GLib.CompareDataFunc is in non-generated package glib: 2
-parameter blob: array types are handled in a later phase: 2
-parameter method_call_closure: type GObject.Closure is in non-generated package gobject: 2
-unsupported out parameter out_fd_list (GUnixFDList?): 2
-parameter user_data_free_func: callback GLib.DestroyNotify is in non-generated package glib: 2
-parameter func: callback GLib.SourceFunc is in non-generated package glib: 2
-parameter string_builder: type GLib.String is in non-generated package glib: 2
-parameter object: type GObject.Object is in non-generated package gobject: 2
 parameter size: nullable scalar parameter (gsize): 2
-parameter file_error: type GLib.FileError is in non-generated package glib: 1
+parameter blob: array types are handled in a later phase: 2
+unsupported out parameter stdout_buf (GBytes?): 2
+parameter issuer_raw_dn: array types are handled in a later phase: 2
+parameter value: array types are handled in a later phase: 2
+parameter length: nullable scalar parameter (gint): 2
+parameter path: array types are handled in a later phase: 2
+parameter progress_callback: nullable callback parameter (FileProgressCallback): 2
+moved to File.new_for_uri: 1
+moved to DBusError.quark: 1
+moved to DBusError.register_error: 1
+moved to DBusError.register_error_domain: 1
+moved to DBusError.strip_remote_error: 1
+moved to DBusError.unregister_error: 1
+moved to AppInfo.get_all_for_type: 1
+caller-allocates out parameter out_gvalue: 1
+moved to AppInfo.get_default_for_type: 1
+moved to DtlsClientConnection.new: 1
+moved to DtlsServerConnection.new: 1
+moved to File.new_build_filenamev: 1
+moved to File.new_for_commandline_arg: 1
+moved to File.new_for_commandline_arg_and_cwd: 1
+moved to File.new_for_path: 1
+moved to Action.name_is_valid: 1
+moved to File.new_tmp: 1
+moved to File.new_tmp_async: 1
+moved to File.new_tmp_dir_async: 1
+moved to File.new_tmp_dir_finish: 1
+moved to File.new_tmp_finish: 1
+moved to File.parse_name: 1
+moved to Icon.deserialize: 1
+moved to Icon.new_for_string: 1
+moved to Initable.newv: 1
 moved to IOExtensionPoint.implement: 1
 moved to IOExtensionPoint.lookup: 1
-moved to Action.name_is_valid: 1
-parameter notify: nullable callback parameter (GLib.DestroyNotify): 1
+moved to IOExtensionPoint.register: 1
+moved to AppInfo.get_default_for_type_async: 1
 moved to MemoryMonitor.dup_default: 1
 moved to NetworkMonitor.get_default: 1
-parameter pollable_stream: type GObject.Object is in non-generated package gobject: 1
-parameter child_source: type GLib.Source is in non-generated package glib: 1
 moved to AppInfo.get_default_for_type_finish: 1
 moved to PowerProfileMonitor.dup_default: 1
 moved to Proxy.get_default_for_protocol: 1
@@ -86,10 +77,8 @@ moved to ProxyResolver.get_default: 1
 moved to ResolverError.quark: 1
 moved to ResourceError.quark: 1
 moved to Resource.load: 1
-moved to Initable.newv: 1
 moved to AppInfo.get_default_for_uri_scheme: 1
 moved to SettingsSchemaSource.get_default: 1
-moved to Icon.new_for_string: 1
 moved to TlsBackend.get_default: 1
 moved to TlsChannelBindingError.quark: 1
 moved to TlsClientConnection.new: 1
@@ -97,111 +86,64 @@ moved to TlsError.quark: 1
 moved to TlsFileDatabase.new: 1
 moved to TlsServerConnection.new: 1
 parameter annotations: array types are handled in a later phase: 1
-moved to Icon.deserialize: 1
 moved to AppInfo.get_default_for_uri_scheme_async: 1
-moved to File.parse_name: 1
-parameter data: type GLib.Bytes is in non-generated package glib: 1
+parameter non_relocatable: array types are handled in a later phase: 1
 moved to AppInfo.get_default_for_uri_scheme_finish: 1
 moved to AppInfo.get_fallback_for_type: 1
-parameter non_relocatable: array types are handled in a later phase: 1
-moved to AppInfo.get_recommended_for_type: 1
-moved to IOExtensionPoint.register: 1
-moved to AppInfo.launch_default_for_uri: 1
-parameter flags: type GLib.OptionFlags is in non-generated package glib: 1
-moved to AppInfo.launch_default_for_uri_async: 1
-parameter group: type GLib.OptionGroup is in non-generated package glib: 1
 parameter files: array types are handled in a later phase: 1
 parameter argc: nullable scalar parameter (gint): 1
-return: type GLib.VariantDict is in non-generated package glib: 1
-moved to AppInfo.launch_default_for_uri_finish: 1
-parameter callback: callback GObject.Callback is in non-generated package gobject: 1
-parameter pollfd: type GLib.PollFD is in non-generated package glib: 1
-moved to File.new_tmp_finish: 1
+parameter data_destroy_func: nullable callback parameter (GLib.DestroyNotify): 1
 return: unknown type: pid_t: 1
 return: unknown type: uid_t: 1
 parameter uid: unknown type: uid_t: 1
-moved to File.new_tmp_dir_finish: 1
-moved to AppInfo.reset_type_associations: 1
-moved to File.new_tmp_dir_async: 1
+moved to AppInfo.get_recommended_for_type: 1
 shadowed by register_object_with_closures: 1
-moved to File.new_tmp_async: 1
-moved to File.new_tmp: 1
-moved to AsyncInitable.newv_async: 1
-parameter callback: callback DBusSignalCallback has unsupported signature: 1
-moved to File.new_for_uri: 1
-parameter body: type GLib.Variant is in non-generated package glib: 1
-moved to File.new_for_path: 1
-moved to Action.parse_detailed_name: 1
+array types are handled in a later phase: 1
+parameter user_data_free_func: nullable callback parameter (GLib.DestroyNotify): 1
+moved to AppInfo.launch_default_for_uri: 1
+moved to AppInfo.launch_default_for_uri_async: 1
 override-incompatible with ancestor; renamed to readByteDataInputStream: 1
-shadowed by bus_own_name_with_closures: 1
+moved to AppInfo.launch_default_for_uri_finish: 1
 unsupported out parameter out_info (GFileInfo?): 1
-shadowed by bus_own_name_on_connection_with_closures: 1
 parameter type: nullable scalar parameter (FileAttributeType): 1
-type GObject.Value is in non-generated package gobject: 1
-parameter result: type GLib.TimeVal is in non-generated package glib: 1
-parameter atime: type GLib.DateTime is in non-generated package glib: 1
-parameter attr_value: type GObject.Object is in non-generated package gobject: 1
-parameter creation_time: type GLib.DateTime is in non-generated package glib: 1
-parameter mtime: type GLib.DateTime is in non-generated package glib: 1
-parameter mtime: type GLib.TimeVal is in non-generated package glib: 1
-parent GObject.TypeModule is in non-generated package gobject: 1
-parameter position: nullable scalar parameter (guint): 1
-parameter equal_func: callback GLib.EqualFunc is in non-generated package glib: 1
-parameter equal_func: callback GLib.EqualFuncFull is in non-generated package glib: 1
-moved to File.new_for_commandline_arg_and_cwd: 1
+caller-allocates out parameter result: 1
+moved to AppInfo.reset_type_associations: 1
 parameter additions: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getDataMemoryOutputStream: 1
 override-incompatible with ancestor; renamed to stealDataMemoryOutputStream: 1
-moved to File.new_for_commandline_arg: 1
-moved to File.new_build_filenamev: 1
+unsupported out parameter value (GVariant?): 1
 unsupported out parameter value (GMenuModel?): 1
-moved to DtlsServerConnection.new: 1
-moved to DtlsClientConnection.new: 1
-parameter name_acquired_closure: type GObject.Closure is in non-generated package gobject: 1
-parameter mapping: callback SettingsGetMapping has unsupported signature: 1
-moved to AppInfo.get_default_for_type_async: 1
-moved to AppInfo.get_default_for_type: 1
-parameter state_hint: type GLib.Variant is in non-generated package glib: 1
-parameter bus_acquired_closure: type GObject.Closure is in non-generated package gobject: 1
-parameter source: type GObject.Object is in non-generated package gobject: 1
-shadowed by bus_watch_name_with_closures: 1
-parameter gvalue: type GObject.Value is in non-generated package gobject: 1
+moved to AsyncInitable.newv_async: 1
+moved to Action.parse_detailed_name: 1
+parameter keys: array types are handled in a later phase: 1
+shadowed by bus_own_name_with_closures: 1
+shadowed by bus_own_name_on_connection_with_closures: 1
+moved to Action.print_detailed_name: 1
+unsupported out parameter effective_address (GSocketAddress?): 1
 shadowed by bus_watch_name_on_connection_with_closures: 1
-moved to DBusError.unregister_error: 1
-parameter stdout_buf: type GLib.Bytes is in non-generated package glib: 1
-return: type GLib.MainContext is in non-generated package glib: 1
-parameter value: type GObject.Value is in non-generated package gobject: 1
+caller-allocates out parameter value: 1
 parameter result_destroy: nullable callback parameter (GLib.DestroyNotify): 1
-parameter result: type GObject.Value is in non-generated package gobject: 1
 parameter task_data_destroy: nullable callback parameter (GLib.DestroyNotify): 1
 parameter iconnames: array types are handled in a later phase: 1
-moved to DBusError.strip_remote_error: 1
-moved to DBusError.register_error_domain: 1
+moved to AppInfo.create_from_commandline: 1
+moved to AppInfo.get_all: 1
 parameter fds: array types are handled in a later phase: 1
-moved to DBusError.register_error: 1
-moved to DBusError.quark: 1
-parameter uri_func: nullable callback parameter (VfsFileLookupFunc): 1
-moved to DBusError.new_for_dbus_error: 1
-parameter state: type GLib.Variant is in non-generated package glib: 1
-moved to DBusError.is_remote_error: 1
-parameter parameters: type GObject.Parameter is in non-generated package gobject: 1
-parameter inbuf: array types are handled in a later phase: 1
-moved to AppInfo.get_all_for_type: 1
-shadowed by copy_async_with_closures: 1
-moved to DBusError.encode_gerror: 1
 moved to DBusAnnotationInfo.lookup: 1
+moved to DBusError.encode_gerror: 1
+parameter uri_func: nullable callback parameter (VfsFileLookupFunc): 1
+unsupported out parameter target_value (GVariant?): 1
+unsupported out parameter parameter_type (GVariantType?): 1
+parameter inbuf: array types are handled in a later phase: 1
+moved to DBusError.get_remote_error: 1
+shadowed by copy_async_with_closures: 1
+moved to DBusError.is_remote_error: 1
 parameter progress_callback: nullable callback parameter (FileMeasureProgressCallback): 1
 parameter disk_usage: nullable scalar parameter (guint64): 1
 shadowed by move_async_with_closures: 1
-parameter contents: type GLib.Bytes is in non-generated package glib: 1
 unsupported out parameter info (GFileInfo): 1
-moved to AppInfo.get_all: 1
+moved to DBusError.new_for_dbus_error: 1
 parameter parameters: array types are handled in a later phase: 1
-parameter type: type GLib.SeekType is in non-generated package glib: 1
-moved to AppInfo.create_from_commandline: 1
-array types are handled in a later phase: 1
-moved to Action.print_detailed_name: 1
-moved to DBusError.get_remote_error: 1
+shadowed by bus_watch_name_with_closures: 1
 
 ## First 50 entries
 [callable] Gio.actionNameIsValid — moved to Action.name_is_valid
@@ -226,16 +168,11 @@ moved to DBusError.get_remote_error: 1
 [callable] Gio.busGet — parameter callback: nullable callback parameter (AsyncReadyCallback)
 [callable] Gio.busOwnName — shadowed by bus_own_name_with_closures
 [callable] Gio.busOwnNameOnConnection — shadowed by bus_own_name_on_connection_with_closures
-[callable] Gio.busOwnNameOnConnectionWithClosures — parameter name_acquired_closure: type GObject.Closure is in non-generated package gobject
-[callable] Gio.busOwnNameWithClosures — parameter bus_acquired_closure: type GObject.Closure is in non-generated package gobject
 [callable] Gio.busWatchName — shadowed by bus_watch_name_with_closures
 [callable] Gio.busWatchNameOnConnection — shadowed by bus_watch_name_on_connection_with_closures
-[callable] Gio.busWatchNameOnConnectionWithClosures — parameter name_appeared_closure: type GObject.Closure is in non-generated package gobject
-[callable] Gio.busWatchNameWithClosures — parameter name_appeared_closure: type GObject.Closure is in non-generated package gobject
 [callable] Gio.contentTypeGetMimeDirs — return: string list return type (null)
 [callable] Gio.contentTypeGuess — parameter data: array types are handled in a later phase
 [callable] Gio.contentTypeGuessForTree — return: string list return type (null)
-[callable] Gio.contentTypesGetRegistered — return: type GLib.List is in non-generated package glib
 [callable] Gio.dbusAddressGetStream — parameter callback: nullable callback parameter (AsyncReadyCallback)
 [callable] Gio.dbusAnnotationInfoLookup — moved to DBusAnnotationInfo.lookup
 [callable] Gio.dbusErrorEncodeGerror — moved to DBusError.encode_gerror
@@ -248,9 +185,14 @@ moved to DBusError.get_remote_error: 1
 [callable] Gio.dbusErrorStripRemoteError — moved to DBusError.strip_remote_error
 [callable] Gio.dbusErrorUnregisterError — moved to DBusError.unregister_error
 [callable] Gio.dbusEscapeObjectPathBytestring — parameter bytes: array types are handled in a later phase
-[callable] Gio.dbusGvalueToGvariant — parameter gvalue: type GObject.Value is in non-generated package gobject
-[callable] Gio.dbusGvariantToGvalue — parameter value: type GLib.Variant is in non-generated package glib
+[callable] Gio.dbusGvariantToGvalue — caller-allocates out parameter out_gvalue
 [callable] Gio.dbusUnescapeObjectPath — return: array types are handled in a later phase
 [callable] Gio.dtlsClientConnectionNew — moved to DtlsClientConnection.new
 [callable] Gio.dtlsServerConnectionNew — moved to DtlsServerConnection.new
 [callable] Gio.fileNewBuildFilenamev — moved to File.new_build_filenamev
+[callable] Gio.fileNewForCommandlineArg — moved to File.new_for_commandline_arg
+[callable] Gio.fileNewForCommandlineArgAndCwd — moved to File.new_for_commandline_arg_and_cwd
+[callable] Gio.fileNewForPath — moved to File.new_for_path
+[callable] Gio.fileNewForUri — moved to File.new_for_uri
+[callable] Gio.fileNewTmp — moved to File.new_tmp
+[callable] Gio.fileNewTmpAsync — moved to File.new_tmp_async

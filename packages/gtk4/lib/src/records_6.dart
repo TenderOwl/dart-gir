@@ -1011,6 +1011,24 @@ final class GtkTextIter {
     return _gtkTextIterGetLineOffset(this.handle);
   }
 
+  /// Returns a list of all `GtkTextMark` at this location.
+  ///
+  /// Because marks are not iterable (they don’t take up any "space"
+  /// in the buffer, they are just marks in between iterable locations),
+  /// multiple marks can exist in the same place.
+  ///
+  /// The returned list is not in any meaningful order.
+  static final _gtkTextIterGetMarks =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_text_iter_get_marks')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GSList getMarks() {
+    return GSList.fromPointer(_gtkTextIterGetMarks(this.handle));
+  }
+
   /// Returns the character offset of an iterator.
   ///
   /// Each character in a `GtkTextBuffer` has an offset,
@@ -1073,6 +1091,24 @@ final class GtkTextIter {
     )!;
   }
 
+  /// Returns a list of tags that apply to @iter, in ascending order of
+  /// priority.
+  ///
+  /// The highest-priority tags are last.
+  ///
+  /// The `GtkTextTag`s in the list don’t have a reference added,
+  /// but you have to free the list itself.
+  static final _gtkTextIterGetTags =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_text_iter_get_tags')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GSList getTags() {
+    return GSList.fromPointer(_gtkTextIterGetTags(this.handle));
+  }
+
   /// Returns text in the given range.
   ///
   /// If the range
@@ -1100,6 +1136,29 @@ final class GtkTextIter {
       (_gtkTextIterGetText(this.handle, end.handle)).cast(),
       free: true,
     )!;
+  }
+
+  /// Returns a list of `GtkTextTag` that are toggled on or off at this
+  /// point.
+  ///
+  /// If @toggled_on is %TRUE, the list contains tags that are
+  /// toggled on. If a tag is toggled on at @iter, then some non-empty
+  /// range of characters following @iter has that tag applied to it.  If
+  /// a tag is toggled off, then some non-empty range following @iter
+  /// does not have the tag applied to it.
+  static final _gtkTextIterGetToggledTags =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_text_iter_get_toggled_tags')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  GSList getToggledTags(bool toggledOn) {
+    return GSList.fromPointer(
+      _gtkTextIterGetToggledTags(this.handle, toggledOn ? 1 : 0),
+    );
   }
 
   /// Returns the number of bytes from the start of the

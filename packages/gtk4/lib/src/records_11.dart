@@ -485,6 +485,110 @@ final class GtkEditable {
     _gtkEditableSetWidthChars(this.handle, nChars);
   }
 
+  /// Gets a property of the `GtkEditable` delegate for @object.
+  ///
+  /// This is helper function that should be called in the `get_property`
+  /// function of your `GtkEditable` implementation, before handling your
+  /// own properties.
+  static final _gtkEditableDelegateGetProperty =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_editable_delegate_get_property')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static bool delegateGetProperty(
+    GObject object,
+    int propId,
+    GValue value,
+    GParamSpec pspec,
+  ) {
+    return (_gtkEditableDelegateGetProperty(
+          object.handle,
+          propId,
+          value.handle,
+          pspec.handle,
+        )) !=
+        0;
+  }
+
+  /// Sets a property on the `GtkEditable` delegate for @object.
+  ///
+  /// This is a helper function that should be called in the `set_property`
+  /// function of your `GtkEditable` implementation, before handling your
+  /// own properties.
+  static final _gtkEditableDelegateSetProperty =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_editable_delegate_set_property')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static bool delegateSetProperty(
+    GObject object,
+    int propId,
+    GValue value,
+    GParamSpec pspec,
+  ) {
+    return (_gtkEditableDelegateSetProperty(
+          object.handle,
+          propId,
+          value.handle,
+          pspec.handle,
+        )) !=
+        0;
+  }
+
+  /// Overrides the `GtkEditable` properties for @class.
+  ///
+  /// This is a helper function that should be called in class_init,
+  /// after installing your own properties.
+  ///
+  /// Note that your class must have "text", "cursor-position",
+  /// "selection-bound", "editable", "width-chars", "max-width-chars",
+  /// "xalign" and "enable-undo" properties for this function to work.
+  ///
+  /// To handle the properties in your set_property and get_property
+  /// functions, you can either use [func@Gtk.Editable.delegate_set_property]
+  /// and [func@Gtk.Editable.delegate_get_property] (if you are using
+  /// a delegate), or remember the @first_prop offset and add it to the
+  /// values in the [enum@Gtk.EditableProperties] enumeration to get the
+  /// property IDs for these properties.
+  static final _gtkEditableInstallProperties =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Uint32 Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
+            >
+          >('gtk_editable_install_properties')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
+  static int installProperties(GObjectClass objectClass, int firstProp) {
+    return _gtkEditableInstallProperties(objectClass.handle, firstProp);
+  }
+
   /// Emitted at the end of a single user-visible operation on the
   /// contents.
   ///

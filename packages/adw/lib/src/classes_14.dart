@@ -600,16 +600,8 @@ class AdwLeaflet extends GtkWidget {
 }
 
 /// An auxiliary class used by [class@Leaflet].
-class AdwLeafletPage implements ffi.Finalizable {
-  AdwLeafletPage.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwLeafletPage extends GObject {
+  AdwLeafletPage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Gets the leaflet child to which @self belongs.
   static final _adwLeafletPageGetChild =

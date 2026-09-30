@@ -346,16 +346,9 @@ class AdwSqueezer extends GtkWidget {
 }
 
 /// An auxiliary class used by [class@Squeezer].
-class AdwSqueezerPage implements ffi.Finalizable {
-  AdwSqueezerPage.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwSqueezerPage extends GObject {
+  AdwSqueezerPage.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Returns the squeezer child to which @self belongs.
   static final _adwSqueezerPageGetChild =

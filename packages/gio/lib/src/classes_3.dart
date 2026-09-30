@@ -326,14 +326,33 @@ class GBufferedOutputStream extends GFilterOutputStream {
 
 /// `GBytesIcon` specifies an image held in memory in a common format (usually
 /// PNG) to be used as icon.
-class GBytesIcon implements ffi.Finalizable {
-  GBytesIcon.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
+class GBytesIcon extends GObject {
+  GBytesIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Creates a new icon for a bytes.
+  ///
+  /// This cannot fail, but loading and interpreting the bytes may fail later on
+  /// (for example, if g_loadable_icon_load() is called) if the image is invalid.
+  static final _gBytesIconNew =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_bytes_icon_new')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  factory GBytesIcon(GBytes bytes) {
+    return GBytesIcon.fromPointer(_gBytesIconNew(bytes.handle), owned: true);
   }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+
+  /// Gets the #GBytes associated with the given @icon.
+  static final _gBytesIconGetBytes =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_bytes_icon_get_bytes')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GBytes getBytes() {
+    return GBytes.fromPointer(_gBytesIconGetBytes(this.handle));
+  }
 }

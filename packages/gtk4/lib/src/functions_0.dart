@@ -249,6 +249,70 @@ void disableSetlocale() {
   _gtkDisableSetlocale();
 }
 
+/// Calls a function for all printers that are known to GTK.
+///
+/// If @func returns true, the enumeration is stopped.
+final _gtkEnumeratePrinters =
+    gtk4Lookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+              ffi.Int32,
+            )
+          >
+        >('gtk_enumerate_printers')
+        .asFunction<
+          void Function(
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+            >,
+            int,
+          )
+        >();
+void enumeratePrinters(
+  int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func,
+  ffi.Pointer<ffi.Void> data,
+  void Function(ffi.Pointer<ffi.Void>) destroy,
+  bool wait,
+) {
+  final _nc1 =
+      ffi.NativeCallable<
+        ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      >.isolateLocal(func, exceptionalReturn: 0);
+  final _nc3 =
+      ffi.NativeCallable<ffi.Void Function(ffi.Pointer<ffi.Void>)>.isolateLocal(
+        destroy,
+      );
+  try {
+    _gtkEnumeratePrinters(
+      _nc1.nativeFunction,
+      data,
+      _nc3.nativeFunction,
+      wait ? 1 : 0,
+    );
+  } finally {
+    _nc1.close();
+    _nc3.close();
+  }
+}
+
 /// Returns the binary age as passed to `libtool`.
 ///
 /// If `libtool` means nothing to you, don't worry about it.
@@ -478,6 +542,50 @@ bool isInitialized() {
   return (_gtkIsInitialized()) != 0;
 }
 
+/// Creates a new `GParamSpec` instance for a property holding a `GtkExpression`.
+///
+/// See `g_param_spec_internal()` for details on the property strings.
+final _gtkParamSpecExpression =
+    gtk4Lookup<
+          ffi.NativeFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Uint32,
+            )
+          >
+        >('gtk_param_spec_expression')
+        .asFunction<
+          ffi.Pointer<ffi.Void> Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<Utf8>,
+            int,
+          )
+        >();
+GParamSpec paramSpecExpression(
+  String name,
+  String nick,
+  String blurb,
+  GParamFlags flags,
+) {
+  return withNativeString(name, (nativeName) {
+    return withNativeString(nick, (nativeNick) {
+      return withNativeString(blurb, (nativeBlurb) {
+        return GParamSpec.fromPointer(
+          _gtkParamSpecExpression(
+            nativeName.cast<Utf8>(),
+            nativeNick.cast<Utf8>(),
+            nativeBlurb.cast<Utf8>(),
+            flags.value,
+          ),
+        );
+      });
+    });
+  });
+}
+
 /// Runs a page setup dialog, letting the user modify the values from @page_setup.
 ///
 /// If the user cancels the dialog, the returned `GtkPageSetup` is identical
@@ -579,109 +687,78 @@ void printRunPageSetupDialogAsync(
   }
 }
 
-/// Converts a color from RGB space to HSV.
-///
-/// Input values must be in the [0.0, 1.0] range;
-/// output values will be in the same range.
-final _gtkRgbToHsv =
+/// Renders an activity indicator (such as in `GtkSpinner`).
+/// The state %GTK_STATE_FLAG_CHECKED determines whether there is
+/// activity going on.
+final _gtkRenderActivity =
     gtk4Lookup<
           ffi.NativeFunction<
             ffi.Void Function(
-              ffi.Float,
-              ffi.Float,
-              ffi.Float,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Double,
+              ffi.Double,
+              ffi.Double,
+              ffi.Double,
             )
           >
-        >('gtk_rgb_to_hsv')
+        >('gtk_render_activity')
         .asFunction<
           void Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
             double,
             double,
             double,
-            ffi.Pointer<ffi.Float>,
-            ffi.Pointer<ffi.Float>,
-            ffi.Pointer<ffi.Float>,
+            double,
           )
         >();
-(double, double, double) rgbToHsv(double r, double g, double b) {
-  final _out0 = malloc<ffi.Float>();
-  final _out1 = malloc<ffi.Float>();
-  final _out2 = malloc<ffi.Float>();
-  try {
-    _gtkRgbToHsv(r, g, b, _out0, _out1, _out2);
-    return (_out0.value, _out1.value, _out2.value);
-  } finally {
-    malloc.free(_out0);
-    malloc.free(_out1);
-    malloc.free(_out2);
-  }
+void renderActivity(
+  GtkStyleContext context,
+  CairoContext cr,
+  double x,
+  double y,
+  double width,
+  double height,
+) {
+  _gtkRenderActivity(context.handle, cr.handle, x, y, width, height);
 }
 
-/// Sets the GTK debug flags.
-final _gtkSetDebugFlags =
-    gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Uint32)>>(
-      'gtk_set_debug_flags',
-    ).asFunction<void Function(int)>();
-void setDebugFlags(GtkDebugFlags flags) {
-  _gtkSetDebugFlags(flags.value);
-}
-
-/// This function launches the default application for showing
-/// a given uri, or shows an error dialog if that fails.
-final _gtkShowUri =
+/// Renders an arrow pointing to @angle.
+///
+/// Typical arrow rendering at 0, 1⁄2 π;, π; and 3⁄2 π:
+///
+/// ![](arrows.png)
+final _gtkRenderArrow =
     gtk4Lookup<
           ffi.NativeFunction<
             ffi.Void Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Double,
+              ffi.Double,
+              ffi.Double,
+              ffi.Double,
             )
           >
-        >('gtk_show_uri')
+        >('gtk_render_arrow')
         .asFunction<
-          void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
-        >();
-void showUri(GtkWindow? parent, String uri, int timestamp) {
-  withNativeString(uri, (nativeUri) {
-    _gtkShowUri(
-      parent?.handle ?? ffi.nullptr,
-      nativeUri.cast<Utf8>(),
-      timestamp,
-    );
-  });
-}
-
-/// Finishes the gtk_show_uri() call and returns the result
-/// of the operation.
-final _gtkShowUriFullFinish =
-    gtk4Lookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >
-        >('gtk_show_uri_full_finish')
-        .asFunction<
-          int Function(
+          void Function(
             ffi.Pointer<ffi.Void>,
             ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            double,
+            double,
+            double,
+            double,
           )
         >();
-bool showUriFullFinish(GtkWindow parent, GAsyncResult result) {
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gtkShowUriFullFinish(parent.handle, result.handle, _error);
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
-    }
-    return (_ret) != 0;
-  } finally {
-    calloc.free(_error);
-  }
+void renderArrow(
+  GtkStyleContext context,
+  CairoContext cr,
+  double angle,
+  double x,
+  double y,
+  double size,
+) {
+  _gtkRenderArrow(context.handle, cr.handle, angle, x, y, size);
 }

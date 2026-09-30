@@ -208,7 +208,7 @@ final gobjectFinalizer = ffi.NativeFinalizer(
 }
 
 /// Rewrites the `workspace:` list of the root pubspec to contain `generator`
-/// plus every package under `packages/`.
+/// plus every package under `packages/` and the `example/` app when present.
 void syncRootPubspec(String rootDir) {
   final file = File('$rootDir/pubspec.yaml');
   if (!file.existsSync()) return;
@@ -224,6 +224,10 @@ void syncRootPubspec(String rootDir) {
       ..sort();
     paths.addAll(dirs);
   }
+  if (File('$rootDir/example/pubspec.yaml').existsSync()) {
+    paths.add('example');
+  }
+  paths.sort();
   final lines = file.readAsLinesSync();
   final out = <String>[];
   var i = 0;

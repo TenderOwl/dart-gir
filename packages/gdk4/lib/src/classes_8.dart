@@ -11,16 +11,9 @@ part of '../gdk4.dart';
 ///
 /// `GdkGLTextureBuilder` can be used for quick one-shot construction of
 /// textures as well as kept around and reused to construct multiple textures.
-class GdkGLTextureBuilder implements ffi.Finalizable {
-  GdkGLTextureBuilder.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GdkGLTextureBuilder extends GObject {
+  GdkGLTextureBuilder.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new texture builder.
   static final _gdkGlTextureBuilderNew =
@@ -114,6 +107,23 @@ class GdkGLTextureBuilder implements ffi.Finalizable {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void> getSync() {
     return _gdkGlTextureBuilderGetSync(this.handle);
+  }
+
+  /// Gets the region previously set via gdk_gl_texture_builder_set_update_region() or
+  /// %NULL if none was set.
+  static final _gdkGlTextureBuilderGetUpdateRegion =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_gl_texture_builder_get_update_region')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  CairoRegion? getUpdateRegion() {
+    return (_gdkGlTextureBuilderGetUpdateRegion(this.handle)) == ffi.nullptr
+        ? null
+        : CairoRegion.fromPointer(
+            _gdkGlTextureBuilderGetUpdateRegion(this.handle),
+          );
   }
 
   /// Gets the texture previously set via gdk_gl_texture_builder_set_update_texture() or
@@ -268,6 +278,32 @@ class GdkGLTextureBuilder implements ffi.Finalizable {
           >();
   void setSync(ffi.Pointer<ffi.Void> sync_) {
     _gdkGlTextureBuilderSetSync(this.handle, sync_);
+  }
+
+  /// Sets the region to be updated by this texture. Together with
+  /// [property@Gdk.GLTextureBuilder:update-texture] this describes an
+  /// update of a previous texture.
+  ///
+  /// When rendering animations of large textures, it is possible that
+  /// consecutive textures are only updating contents in parts of the texture.
+  /// It is then possible to describe this update via these two properties,
+  /// so that GTK can avoid rerendering parts that did not change.
+  ///
+  /// An example would be a screen recording where only the mouse pointer moves.
+  static final _gdkGlTextureBuilderSetUpdateRegion =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_gl_texture_builder_set_update_region')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setUpdateRegion([CairoRegion? region]) {
+    _gdkGlTextureBuilderSetUpdateRegion(
+      this.handle,
+      region?.handle ?? ffi.nullptr,
+    );
   }
 
   /// Sets the texture to be updated by this texture. See
@@ -454,271 +490,42 @@ class GdkKeyEvent extends GdkEvent {
 class GdkMemoryTexture extends GdkTexture {
   GdkMemoryTexture.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
-}
 
-/// Constructs [class@Gdk.Texture] objects from system memory provided
-/// via [struct@GLib.Bytes].
-///
-/// The operation is quite simple: Create a texture builder, set all the necessary
-/// properties - keep in mind that the properties [property@Gdk.MemoryTextureBuilder:bytes],
-/// [property@Gdk.MemoryTextureBuilder:stride], [property@Gdk.MemoryTextureBuilder:width],
-/// and [property@Gdk.MemoryTextureBuilder:height] are mandatory - and then call
-/// [method@Gdk.MemoryTextureBuilder.build] to create the new texture.
-///
-/// `GdkMemoryTextureBuilder` can be used for quick one-shot construction of
-/// textures as well as kept around and reused to construct multiple textures.
-class GdkMemoryTextureBuilder implements ffi.Finalizable {
-  GdkMemoryTextureBuilder.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
-
-  /// Creates a new texture builder.
-  static final _gdkMemoryTextureBuilderNew =
-      gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gdk_memory_texture_builder_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GdkMemoryTextureBuilder() {
-    return GdkMemoryTextureBuilder.fromPointer(
-      _gdkMemoryTextureBuilderNew(),
+  /// Creates a new texture for a blob of image data.
+  ///
+  /// The `GBytes` must contain @stride × @height pixels
+  /// in the given format.
+  static final _gdkMemoryTextureNew =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gdk_memory_texture_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GdkMemoryTexture(
+    int width,
+    int height,
+    GdkMemoryFormat format,
+    GBytes bytes,
+    int stride,
+  ) {
+    return GdkMemoryTexture.fromPointer(
+      _gdkMemoryTextureNew(width, height, format.value, bytes.handle, stride),
       owned: true,
     );
-  }
-
-  /// Builds a new `GdkTexture` with the values set up in the builder.
-  ///
-  /// Note that it is a programming error to call this function if any mandatory
-  /// property has not been set.
-  ///
-  /// It is possible to call this function multiple times to create multiple textures,
-  /// possibly with changing properties in between.
-  static final _gdkMemoryTextureBuilderBuild =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_memory_texture_builder_build')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkTexture build() {
-    return GdkTexture.fromPointer(_gdkMemoryTextureBuilderBuild(this.handle));
-  }
-
-  /// Gets the colorstate previously set via gdk_memory_texture_builder_set_color_state().
-  static final _gdkMemoryTextureBuilderGetColorState =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_memory_texture_builder_get_color_state')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkColorState getColorState() {
-    return GdkColorState.fromPointer(
-      _gdkMemoryTextureBuilderGetColorState(this.handle),
-    );
-  }
-
-  /// Gets the format previously set via gdk_memory_texture_builder_set_format().
-  static final _gdkMemoryTextureBuilderGetFormat =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_memory_texture_builder_get_format',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GdkMemoryFormat getFormat() {
-    return GdkMemoryFormat.fromValue(
-      _gdkMemoryTextureBuilderGetFormat(this.handle),
-    );
-  }
-
-  /// Gets the height previously set via gdk_memory_texture_builder_set_height()
-  /// or 0 if the height wasn't set.
-  static final _gdkMemoryTextureBuilderGetHeight =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_memory_texture_builder_get_height',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getHeight() {
-    return _gdkMemoryTextureBuilderGetHeight(this.handle);
-  }
-
-  /// Gets the offset previously set via gdk_memory_texture_builder_set_offset().
-  static final _gdkMemoryTextureBuilderGetOffset =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Size Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('gdk_memory_texture_builder_get_offset')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-  int getOffset(int plane) {
-    return _gdkMemoryTextureBuilderGetOffset(this.handle, plane);
-  }
-
-  /// Gets the stride previously set via gdk_memory_texture_builder_set_stride().
-  static final _gdkMemoryTextureBuilderGetStride =
-      gdk4Lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_memory_texture_builder_get_stride',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getStride() {
-    return _gdkMemoryTextureBuilderGetStride(this.handle);
-  }
-
-  /// Gets the stride previously set via gdk_memory_texture_builder_set_stride_for_plane().
-  static final _gdkMemoryTextureBuilderGetStrideForPlane =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Size Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('gdk_memory_texture_builder_get_stride_for_plane')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-  int getStrideForPlane(int plane) {
-    return _gdkMemoryTextureBuilderGetStrideForPlane(this.handle, plane);
-  }
-
-  /// Gets the texture previously set via gdk_memory_texture_builder_set_update_texture()
-  /// or %NULL if none was set.
-  static final _gdkMemoryTextureBuilderGetUpdateTexture =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_memory_texture_builder_get_update_texture')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkTexture? getUpdateTexture() {
-    return (_gdkMemoryTextureBuilderGetUpdateTexture(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkTexture.fromPointer(
-            _gdkMemoryTextureBuilderGetUpdateTexture(this.handle),
-          );
-  }
-
-  /// Gets the width previously set via gdk_memory_texture_builder_set_width()
-  /// or 0 if the width wasn't set.
-  static final _gdkMemoryTextureBuilderGetWidth =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_memory_texture_builder_get_width',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getWidth() {
-    return _gdkMemoryTextureBuilderGetWidth(this.handle);
-  }
-
-  /// Sets the colorstate describing the data.
-  ///
-  /// By default, the sRGB colorstate is used. If you don't know
-  /// what colorstates are, this is probably the right thing.
-  static final _gdkMemoryTextureBuilderSetColorState =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_memory_texture_builder_set_color_state')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setColorState(GdkColorState colorState) {
-    _gdkMemoryTextureBuilderSetColorState(this.handle, colorState.handle);
-  }
-
-  /// Sets the format of the bytes.
-  ///
-  /// The default is `GDK_MEMORY_R8G8B8A8_PREMULTIPLIED`.
-  static final _gdkMemoryTextureBuilderSetFormat =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gdk_memory_texture_builder_set_format')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setFormat(GdkMemoryFormat format) {
-    _gdkMemoryTextureBuilderSetFormat(this.handle, format.value);
-  }
-
-  /// Sets the height of the texture.
-  ///
-  /// The height must be set before calling [method@Gdk.MemoryTextureBuilder.build]
-  /// and conform to size requirements of the provided format.
-  static final _gdkMemoryTextureBuilderSetHeight =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gdk_memory_texture_builder_set_height')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setHeight(int height) {
-    _gdkMemoryTextureBuilderSetHeight(this.handle, height);
-  }
-
-  /// Sets the offset of the texture for @plane.
-  static final _gdkMemoryTextureBuilderSetOffset =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32, ffi.Size)
-            >
-          >('gdk_memory_texture_builder_set_offset')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
-  void setOffset(int plane, int offset) {
-    _gdkMemoryTextureBuilderSetOffset(this.handle, plane, offset);
-  }
-
-  /// Sets the rowstride of the bytes used.
-  ///
-  /// The rowstride must be set before calling [method@Gdk.MemoryTextureBuilder.build].
-  static final _gdkMemoryTextureBuilderSetStride =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Size)
-            >
-          >('gdk_memory_texture_builder_set_stride')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setStride(int stride) {
-    _gdkMemoryTextureBuilderSetStride(this.handle, stride);
-  }
-
-  /// Sets the stride of the texture for @plane.
-  static final _gdkMemoryTextureBuilderSetStrideForPlane =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32, ffi.Size)
-            >
-          >('gdk_memory_texture_builder_set_stride_for_plane')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
-  void setStrideForPlane(int plane, int stride) {
-    _gdkMemoryTextureBuilderSetStrideForPlane(this.handle, plane, stride);
-  }
-
-  /// Sets the texture to be updated by this texture.
-  ///
-  /// See [method@Gdk.MemoryTextureBuilder.set_update_region] for an explanation.
-  static final _gdkMemoryTextureBuilderSetUpdateTexture =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_memory_texture_builder_set_update_texture')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setUpdateTexture([GdkTexture? texture]) {
-    _gdkMemoryTextureBuilderSetUpdateTexture(
-      this.handle,
-      texture?.handle ?? ffi.nullptr,
-    );
-  }
-
-  /// Sets the width of the texture.
-  ///
-  /// The width must be set before calling [method@Gdk.MemoryTextureBuilder.build]
-  /// and conform to size requirements of the provided format.
-  static final _gdkMemoryTextureBuilderSetWidth =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gdk_memory_texture_builder_set_width')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setWidth(int width) {
-    _gdkMemoryTextureBuilderSetWidth(this.handle, width);
   }
 }

@@ -282,6 +282,38 @@ void main() {
       expect(repo.namespace.functions[0].shadowedBy, 'get_full');
       expect(repo.namespace.functions[1].shadows, 'get');
     });
+
+    test('glib:finish-func and parameter scope/closure attributes', () {
+      final repo = parser.parse(gir('''
+    <class name="File" c:type="TestFile">
+      <method name="load_async" c:identifier="test_file_load_async"
+          glib:finish-func="load_finish">
+        <return-value><type name="none" c:type="void"/></return-value>
+        <parameters>
+          <instance-parameter name="self">
+            <type name="File" c:type="TestFile*"/>
+          </instance-parameter>
+          <parameter name="cancellable" nullable="1">
+            <type name="Cancellable" c:type="TestCancellable*"/>
+          </parameter>
+          <parameter name="callback" nullable="1" scope="async" closure="2">
+            <type name="AsyncReadyCallback" c:type="TestAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+    </class>
+'''));
+      final method = repo.namespace.classes.single.methods.single;
+      expect(method.finishFunc, 'load_finish');
+      final callback = method.parameters[1];
+      expect(callback.scope, 'async');
+      expect(callback.closureIndex, 2);
+      expect(method.parameters[0].scope, isNull);
+      expect(method.parameters[0].closureIndex, isNull);
+    });
   });
 
   group('filtering and attributes', () {

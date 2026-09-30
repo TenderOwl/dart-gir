@@ -6,6 +6,7 @@ environment:
   sdk: ^3.13.4
 
 workspace:
+  - example
   - generator
   - packages/adw
   - packages/cairo

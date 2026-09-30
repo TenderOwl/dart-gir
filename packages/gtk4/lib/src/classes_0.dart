@@ -6,16 +6,8 @@ part of '../gtk4.dart';
 /// Each platform supported by GTK implements a `GtkATContext` subclass, and
 /// is responsible for updating the accessible state in response to state
 /// changes in `GtkAccessible`.
-class GtkATContext implements ffi.Finalizable {
-  GtkATContext.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkATContext extends GObject {
+  GtkATContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkATContext` instance for the given accessible role,
   /// accessible instance, and display connection.
@@ -589,16 +581,9 @@ class GtkAboutDialog extends GtkWindow {
 /// A widget that contains one or more links should implement
 /// the [iface@Gtk.AccessibleHypertext] interface and return
 /// `GtkAccessibleHyperlink` objects for each of the links.
-class GtkAccessibleHyperlink implements ffi.Finalizable {
-  GtkAccessibleHyperlink.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkAccessibleHyperlink extends GObject {
+  GtkAccessibleHyperlink.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates an accessible object that represents a hyperlink.
   ///

@@ -57,16 +57,9 @@ part of '../gtk_source5.dart';
 ///
 /// region_iter.next()
 /// ```
-class GtkSourceRegion implements ffi.Finalizable {
-  GtkSourceRegion.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceRegion extends GObject {
+  GtkSourceRegion.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
   static final _gtkSourceRegionNew =
       gtkSource5Lookup<
             ffi.NativeFunction<
@@ -310,16 +303,9 @@ class GtkSourceRegion implements ffi.Finalizable {
 /// In the GtkSourceView source code, there is an example of how to use the
 /// search and replace API: see the tests/test-search.c file. It is a mini
 /// application for the search and replace, with a basic user interface.
-class GtkSourceSearchContext implements ffi.Finalizable {
-  GtkSourceSearchContext.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSearchContext extends GObject {
+  GtkSourceSearchContext.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new search context, associated with @buffer, and customized with
   /// @settings.
@@ -431,6 +417,26 @@ class GtkSourceSearchContext implements ffi.Finalizable {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getOccurrencesCount() {
     return _gtkSourceSearchContextGetOccurrencesCount(this.handle);
+  }
+
+  /// Regular expression patterns must follow certain rules. If
+  /// [property@SearchSettings:search-text] breaks a rule, the error can be
+  /// retrieved with this function.
+  ///
+  /// The error domain is [error@GLib.RegexError].
+  ///
+  /// Free the return value with [method@GLib.Error.free].
+  static final _gtkSourceSearchContextGetRegexError =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_search_context_get_regex_error')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GError? getRegexError() {
+    return (_gtkSourceSearchContextGetRegexError(this.handle)) == ffi.nullptr
+        ? null
+        : GError.fromPointer(_gtkSourceSearchContextGetRegexError(this.handle));
   }
 
   static final _gtkSourceSearchContextGetSettings =
@@ -589,16 +595,9 @@ class GtkSourceSearchContext implements ffi.Finalizable {
 /// A `GtkSourceSearchSettings` object represents the settings of a search. The
 /// search settings can be associated with one or several
 /// [class@SearchContext]s.
-class GtkSourceSearchSettings implements ffi.Finalizable {
-  GtkSourceSearchSettings.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSearchSettings extends GObject {
+  GtkSourceSearchSettings.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new search settings object.
   static final _gtkSourceSearchSettingsNew =

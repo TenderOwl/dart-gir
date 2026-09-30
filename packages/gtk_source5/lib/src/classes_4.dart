@@ -389,6 +389,20 @@ class GtkSourceGutterRendererPixbuf extends GtkSourceGutterRenderer {
           );
   }
 
+  /// Get the pixbuf of the renderer.
+  static final _gtkSourceGutterRendererPixbufGetPixbuf =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_gutter_renderer_pixbuf_get_pixbuf')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkPixbuf getPixbuf() {
+    return GdkPixbuf.fromPointer(
+      _gtkSourceGutterRendererPixbufGetPixbuf(this.handle),
+    );
+  }
+
   /// Allows overlaying a paintable on top of any other image that
   /// has been set for the pixbuf. This will be applied when the
   /// widget is next snapshot.
@@ -455,6 +469,22 @@ class GtkSourceGutterRendererPixbuf extends GtkSourceGutterRenderer {
     _gtkSourceGutterRendererPixbufSetPaintable(
       this.handle,
       paintable?.handle ?? ffi.nullptr,
+    );
+  }
+
+  static final _gtkSourceGutterRendererPixbufSetPixbuf =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_gutter_renderer_pixbuf_set_pixbuf')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setPixbuf([GdkPixbuf? pixbuf]) {
+    _gtkSourceGutterRendererPixbufSetPixbuf(
+      this.handle,
+      pixbuf?.handle ?? ffi.nullptr,
     );
   }
 }
@@ -538,16 +568,8 @@ class GtkSourceGutterRendererText extends GtkSourceGutterRenderer {
 ///
 /// You can change how long to wait to display the interactive tooltip by
 /// setting the [property@Hover:hover-delay] property in milliseconds.
-class GtkSourceHover implements ffi.Finalizable {
-  GtkSourceHover.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceHover extends GObject {
+  GtkSourceHover.fromPointer(super.handle, {super.owned}) : super.fromPointer();
   static final _gtkSourceHoverAddProvider =
       gtkSource5Lookup<
             ffi.NativeFunction<
@@ -586,16 +608,9 @@ class GtkSourceHover implements ffi.Finalizable {
 /// Use [method@HoverContext.get_bounds] to get the word that was
 /// requested. [method@HoverContext.get_iter] will get you the location
 /// of the pointer when the request was made.
-class GtkSourceHoverContext implements ffi.Finalizable {
-  GtkSourceHoverContext.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceHoverContext extends GObject {
+  GtkSourceHoverContext.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// A convenience function to get the buffer.
   static final _gtkSourceHoverContextGetBuffer =
@@ -708,16 +723,9 @@ class GtkSourceHoverDisplay extends GtkWidget {
 ///
 /// Use [class@LanguageManager] to obtain a `GtkSourceLanguage` instance, and
 /// [method@Buffer.set_language] to apply it to a [class@Buffer].
-class GtkSourceLanguage implements ffi.Finalizable {
-  GtkSourceLanguage.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceLanguage extends GObject {
+  GtkSourceLanguage.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Returns whether the language should be hidden from the user.
   static final _gtkSourceLanguageGetHidden =

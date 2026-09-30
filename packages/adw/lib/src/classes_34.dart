@@ -122,16 +122,8 @@ part of '../adw.dart';
 /// <source srcset="toast-undo-dark.png" media="(prefers-color-scheme: dark)">
 /// <img src="toast-undo.png" alt="toast-undo">
 /// </picture>
-class AdwToast implements ffi.Finalizable {
-  AdwToast.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwToast extends GObject {
+  AdwToast.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `AdwToast`.
   ///
@@ -179,6 +171,20 @@ class AdwToast implements ffi.Finalizable {
       (_adwToastGetActionName(this.handle)).cast(),
       free: false,
     );
+  }
+
+  /// Gets the parameter for action invocations.
+  static final _adwToastGetActionTargetValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('adw_toast_get_action_target_value')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? getActionTargetValue() {
+    return (_adwToastGetActionTargetValue(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_adwToastGetActionTargetValue(this.handle));
   }
 
   /// Gets the label to show on the button.
@@ -273,6 +279,26 @@ class AdwToast implements ffi.Finalizable {
     withNativeString(actionName, (nativeActionName) {
       _adwToastSetActionName(this.handle, nativeActionName.cast<Utf8>());
     });
+  }
+
+  /// Sets the parameter for action invocations.
+  ///
+  /// If the @action_target variant has a floating reference this function
+  /// will sink it.
+  static final _adwToastSetActionTargetValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('adw_toast_set_action_target_value')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setActionTargetValue([GVariant? actionTarget]) {
+    _adwToastSetActionTargetValue(
+      this.handle,
+      actionTarget?.handle ?? ffi.nullptr,
+    );
   }
 
   /// Sets the label to show on the button.

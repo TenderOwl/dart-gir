@@ -2,16 +2,8 @@
 part of '../adw.dart';
 
 /// An auxiliary class used by [class@TabView].
-class AdwTabPage implements ffi.Finalizable {
-  AdwTabPage.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwTabPage extends GObject {
+  AdwTabPage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Gets the child of @self.
   static final _adwTabPageGetChild =

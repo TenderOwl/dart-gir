@@ -11,16 +11,9 @@ part of '../gtk_source5.dart';
 /// instance of `GtkSourceLanguageManager`, and
 /// [method@LanguageManager.guess_language] to get a [class@Language] for
 /// given file name and content type.
-class GtkSourceLanguageManager implements ffi.Finalizable {
-  GtkSourceLanguageManager.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceLanguageManager extends GObject {
+  GtkSourceLanguageManager.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new language manager.
   ///
@@ -474,16 +467,9 @@ class GtkSourceMark extends GtkTextMark {
 /// connect to [signal@MarkAttributes::query-tooltip-text] or
 /// [signal@MarkAttributes::query-tooltip-markup] where the latter
 /// takes precedence.
-class GtkSourceMarkAttributes implements ffi.Finalizable {
-  GtkSourceMarkAttributes.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceMarkAttributes extends GObject {
+  GtkSourceMarkAttributes.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new source mark attributes.
   static final _gtkSourceMarkAttributesNew =
@@ -526,6 +512,22 @@ class GtkSourceMarkAttributes implements ffi.Finalizable {
       (_gtkSourceMarkAttributesGetIconName(this.handle)).cast(),
       free: false,
     )!;
+  }
+
+  /// Gets a [class@GdkPixbuf.Pixbuf] to be used as a base for rendered icon.
+  ///
+  /// Note that the pixbuf can be %NULL if it wasn't set earlier.
+  static final _gtkSourceMarkAttributesGetPixbuf =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_mark_attributes_get_pixbuf')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkPixbuf getPixbuf() {
+    return GdkPixbuf.fromPointer(
+      _gtkSourceMarkAttributesGetPixbuf(this.handle),
+    );
   }
 
   /// Queries for a tooltip by emitting a [signal@MarkAttributes::query-tooltip-markup] signal.
@@ -658,5 +660,19 @@ class GtkSourceMarkAttributes implements ffi.Finalizable {
         nativeIconName.cast<Utf8>(),
       );
     });
+  }
+
+  /// Sets a pixbuf to be used as a base for rendered icon.
+  static final _gtkSourceMarkAttributesSetPixbuf =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_mark_attributes_set_pixbuf')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setPixbuf(GdkPixbuf pixbuf) {
+    _gtkSourceMarkAttributesSetPixbuf(this.handle, pixbuf.handle);
   }
 }

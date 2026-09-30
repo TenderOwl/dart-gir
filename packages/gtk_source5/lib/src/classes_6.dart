@@ -15,16 +15,9 @@ part of '../gtk_source5.dart';
 /// specified layout margins are smaller than the "print margins", the latter
 /// ones are used as a fallback by the `GtkSourcePrintCompositor` object, so that
 /// the printed area is not clipped.
-class GtkSourcePrintCompositor implements ffi.Finalizable {
-  GtkSourcePrintCompositor.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourcePrintCompositor extends GObject {
+  GtkSourcePrintCompositor.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new print compositor that can be used to print @buffer.
   static final _gtkSourcePrintCompositorNew =

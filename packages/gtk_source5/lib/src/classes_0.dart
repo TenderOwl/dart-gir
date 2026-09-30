@@ -7,16 +7,9 @@ part of '../gtk_source5.dart';
 /// It will be displayed always at the end of a line.
 ///
 /// If the style is GTK_SOURCE_ANNOTATION_STYLE_NONE it will use the same color as [class@SpaceDrawer].
-class GtkSourceAnnotation implements ffi.Finalizable {
-  GtkSourceAnnotation.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceAnnotation extends GObject {
+  GtkSourceAnnotation.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
   static final _gtkSourceAnnotationNew =
       gtkSource5Lookup<
             ffi.NativeFunction<
@@ -108,16 +101,9 @@ class GtkSourceAnnotation implements ffi.Finalizable {
 /// You can subclass this object and implement [method@AnnotationProvider.populate_hover_async] and
 /// [method@AnnotationProvider.populate_hover_finish] or connect to [signal@AnnotationProvider::populate]
 /// and call [method@AnnotationProvider.populate] or do it asynchronously.
-class GtkSourceAnnotationProvider implements ffi.Finalizable {
-  GtkSourceAnnotationProvider.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceAnnotationProvider extends GObject {
+  GtkSourceAnnotationProvider.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Used to create a new annotation provider.
   static final _gtkSourceAnnotationProviderNew =
@@ -218,16 +204,9 @@ class GtkSourceAnnotationProvider implements ffi.Finalizable {
 ///
 /// Add [class@AnnotationProvider]s with [method@Annotations.add_provider] to
 /// display all the annotations added to each [class@AnnotationProvider].
-class GtkSourceAnnotations implements ffi.Finalizable {
-  GtkSourceAnnotations.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceAnnotations extends GObject {
+  GtkSourceAnnotations.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Adds a new annotation provider.
   static final _gtkSourceAnnotationsAddProvider =

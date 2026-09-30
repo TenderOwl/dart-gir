@@ -409,16 +409,9 @@ class AdwSpinner extends GtkWidget {
 /// <!-- ... -->
 /// </object>
 /// ```
-class AdwSpinnerPaintable implements ffi.Finalizable {
-  AdwSpinnerPaintable.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwSpinnerPaintable extends GObject {
+  AdwSpinnerPaintable.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new `AdwSpinnerPaintable` for @widget.
   static final _adwSpinnerPaintableNew =

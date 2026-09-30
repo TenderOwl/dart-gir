@@ -2,16 +2,9 @@
 part of '../gio.dart';
 
 /// Abstract base class for D-Bus interfaces on the service side.
-class GDBusInterfaceSkeleton implements ffi.Finalizable {
-  GDBusInterfaceSkeleton.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GDBusInterfaceSkeleton extends GObject {
+  GDBusInterfaceSkeleton.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Exports @interface_ at @object_path on @connection.
   ///
@@ -91,6 +84,20 @@ class GDBusInterfaceSkeleton implements ffi.Finalizable {
           );
   }
 
+  /// Gets a list of the connections that @interface_ is exported on.
+  static final _gDbusInterfaceSkeletonGetConnections =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_interface_skeleton_get_connections')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GList getConnections() {
+    return GList.fromPointer(
+      _gDbusInterfaceSkeletonGetConnections(this.handle),
+    );
+  }
+
   /// Gets the #GDBusInterfaceSkeletonFlags that describes what the behavior
   /// of @interface_
   static final _gDbusInterfaceSkeletonGetFlags =
@@ -130,6 +137,20 @@ class GDBusInterfaceSkeleton implements ffi.Finalizable {
     return stringFromNative(
       (_gDbusInterfaceSkeletonGetObjectPath(this.handle)).cast(),
       free: false,
+    );
+  }
+
+  /// Gets all D-Bus properties for @interface_.
+  static final _gDbusInterfaceSkeletonGetProperties =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_interface_skeleton_get_properties')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant getProperties() {
+    return GVariant.fromPointer(
+      _gDbusInterfaceSkeletonGetProperties(this.handle),
     );
   }
 

@@ -53,16 +53,9 @@ part of '../gio.dart';
 ///
 /// Here is an example for exporting a #GObject:
 /// [gdbus-example-export.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gdbus-example-export.c)
-class GDBusConnection implements ffi.Finalizable {
-  GDBusConnection.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GDBusConnection extends GObject {
+  GDBusConnection.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Finishes an operation started with g_dbus_connection_new().
   static final _gDbusConnectionNewFinish =
@@ -252,6 +245,255 @@ class GDBusConnection implements ffi.Finalizable {
     });
   }
 
+  /// Adds a message filter. Filters are handlers that are run on all
+  /// incoming and outgoing messages, prior to standard dispatch. Filters
+  /// are run in the order that they were added.  The same handler can be
+  /// added as a filter more than once, in which case it will be run more
+  /// than once.  Filters added during a filter callback won't be run on
+  /// the message being processed. Filter functions are allowed to modify
+  /// and even drop messages.
+  ///
+  /// Note that filters are run in a dedicated message handling thread so
+  /// they can't block and, generally, can't do anything but signal a
+  /// worker thread. Also note that filters are rarely needed - use API
+  /// such as g_dbus_connection_send_message_with_reply(),
+  /// g_dbus_connection_signal_subscribe() or g_dbus_connection_call() instead.
+  ///
+  /// If a filter consumes an incoming message the message is not
+  /// dispatched anywhere else - not even the standard dispatch machinery
+  /// (that API such as g_dbus_connection_signal_subscribe() and
+  /// g_dbus_connection_send_message_with_reply() relies on) will see the
+  /// message. Similarly, if a filter consumes an outgoing message, the
+  /// message will not be sent to the other peer.
+  ///
+  /// If @user_data_free_func is non-%NULL, it will be called (in the
+  /// thread-default main context of the thread you are calling this
+  /// method from) at some point after @user_data is no longer
+  /// needed. (It is not guaranteed to be called synchronously when the
+  /// filter is removed, and may be called after @connection has been
+  /// destroyed.)
+  static final _gDbusConnectionAddFilter =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Uint32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<ffi.Void> Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Int32,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_dbus_connection_add_filter')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<ffi.Void> Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Int32,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  int addFilter(
+    ffi.Pointer<ffi.Void> Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      int,
+      ffi.Pointer<ffi.Void>,
+    )
+    filterFunction,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) userDataFreeFunc,
+  ) {
+    final _nc1 =
+        ffi.NativeCallable<
+          ffi.Pointer<ffi.Void> Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Int32,
+            ffi.Pointer<ffi.Void>,
+          )
+        >.isolateLocal(filterFunction);
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(userDataFreeFunc);
+    try {
+      final _ret = _gDbusConnectionAddFilter(
+        this.handle,
+        _nc1.nativeFunction,
+        userData,
+        _nc3.nativeFunction,
+      );
+      return _ret;
+    } finally {
+      _nc1.close();
+      _nc3.close();
+    }
+  }
+
+  /// Finishes an operation started with g_dbus_connection_call().
+  static final _gDbusConnectionCallFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_call_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  GVariant callFinish(GAsyncResult res) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusConnectionCallFinish(this.handle, res.handle, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return GVariant.fromPointer(_ret);
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Synchronously invokes the @method_name method on the
+  /// @interface_name D-Bus interface on the remote object at
+  /// @object_path owned by @bus_name.
+  ///
+  /// If @connection is closed then the operation will fail with
+  /// %G_IO_ERROR_CLOSED. If @cancellable is canceled, the
+  /// operation will fail with %G_IO_ERROR_CANCELLED. If @parameters
+  /// contains a value not compatible with the D-Bus protocol, the operation
+  /// fails with %G_IO_ERROR_INVALID_ARGUMENT.
+  ///
+  /// If @reply_type is non-%NULL then the reply will be checked for having
+  /// this type and an error will be raised if it does not match.  Said
+  /// another way, if you give a @reply_type then any non-%NULL return
+  /// value will be of this type.
+  ///
+  /// If the @parameters #GVariant is floating, it is consumed.
+  /// This allows convenient 'inline' use of g_variant_new(), e.g.:
+  /// |[<!-- language="C" -->
+  /// g_dbus_connection_call_sync (connection,
+  /// "org.freedesktop.StringThings",
+  /// "/org/freedesktop/StringThings",
+  /// "org.freedesktop.StringThings",
+  /// "TwoStrings",
+  /// g_variant_new ("(ss)",
+  /// "Thing One",
+  /// "Thing Two"),
+  /// NULL,
+  /// G_DBUS_CALL_FLAGS_NONE,
+  /// -1,
+  /// NULL,
+  /// &error);
+  /// ]|
+  ///
+  /// The calling thread is blocked until a reply is received. See
+  /// g_dbus_connection_call() for the asynchronous version of
+  /// this method.
+  static final _gDbusConnectionCallSync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_call_sync')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  GVariant callSync(
+    String? busName,
+    String objectPath,
+    String interfaceName,
+    String methodName,
+    GVariant? parameters,
+    GVariantType? replyType,
+    GDBusCallFlags flags,
+    int timeoutMsec, [
+    GCancellable? cancellable,
+  ]) {
+    return withNativeString(busName, (nativeBusName) {
+      return withNativeString(objectPath, (nativeObjectPath) {
+        return withNativeString(interfaceName, (nativeInterfaceName) {
+          return withNativeString(methodName, (nativeMethodName) {
+            final _error = calloc<ffi.Pointer<ffi.Void>>();
+            try {
+              final _ret = _gDbusConnectionCallSync(
+                this.handle,
+                nativeBusName.cast<Utf8>(),
+                nativeObjectPath.cast<Utf8>(),
+                nativeInterfaceName.cast<Utf8>(),
+                nativeMethodName.cast<Utf8>(),
+                parameters?.handle ?? ffi.nullptr,
+                replyType?.handle ?? ffi.nullptr,
+                flags.value,
+                timeoutMsec,
+                cancellable?.handle ?? ffi.nullptr,
+                _error,
+              );
+              if (_error.value != ffi.nullptr) {
+                throw GlibException.fromError(_error.value);
+              }
+              return GVariant.fromPointer(_ret);
+            } finally {
+              calloc.free(_error);
+            }
+          });
+        });
+      });
+    });
+  }
+
   /// Finishes an operation started with g_dbus_connection_close().
   static final _gDbusConnectionCloseFinish =
       gioLookup<
@@ -319,6 +561,73 @@ class GDBusConnection implements ffi.Finalizable {
     } finally {
       calloc.free(_error);
     }
+  }
+
+  /// Emits a signal.
+  ///
+  /// If the parameters GVariant is floating, it is consumed.
+  ///
+  /// This can only fail if @parameters is not compatible with the D-Bus protocol
+  /// (%G_IO_ERROR_INVALID_ARGUMENT), or if @connection has been closed
+  /// (%G_IO_ERROR_CLOSED).
+  static final _gDbusConnectionEmitSignal =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_emit_signal')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool emitSignal(
+    String? destinationBusName,
+    String objectPath,
+    String interfaceName,
+    String signalName, [
+    GVariant? parameters,
+  ]) {
+    return withNativeString(destinationBusName, (nativeDestinationBusName) {
+      return withNativeString(objectPath, (nativeObjectPath) {
+        return withNativeString(interfaceName, (nativeInterfaceName) {
+          return withNativeString(signalName, (nativeSignalName) {
+            final _error = calloc<ffi.Pointer<ffi.Void>>();
+            try {
+              final _ret = _gDbusConnectionEmitSignal(
+                this.handle,
+                nativeDestinationBusName.cast<Utf8>(),
+                nativeObjectPath.cast<Utf8>(),
+                nativeInterfaceName.cast<Utf8>(),
+                nativeSignalName.cast<Utf8>(),
+                parameters?.handle ?? ffi.nullptr,
+                _error,
+              );
+              if (_error.value != ffi.nullptr) {
+                throw GlibException.fromError(_error.value);
+              }
+              return (_ret) != 0;
+            } finally {
+              calloc.free(_error);
+            }
+          });
+        });
+      });
+    });
   }
 
   /// Exports @action_group on @connection at @object_path.
@@ -627,6 +936,230 @@ class GDBusConnection implements ffi.Finalizable {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool isClosed() {
     return (_gDbusConnectionIsClosed(this.handle)) != 0;
+  }
+
+  /// Version of g_dbus_connection_register_object() using closures instead of a
+  /// #GDBusInterfaceVTable for easier binding in other languages.
+  ///
+  /// Note that the reference counting semantics of the function wrapped by
+  /// @method_call_closure are the same as those of
+  /// [callback@Gio.DBusInterfaceMethodCallFunc]: ownership of a reference to the
+  /// [class@Gio.DBusMethodInvocation] is transferred to the function.
+  static final _gDbusConnectionRegisterObjectWithClosures =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Uint32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_register_object_with_closures')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int registerObjectWithClosures(
+    String objectPath,
+    GDBusInterfaceInfo interfaceInfo, [
+    GClosure? methodCallClosure,
+    GClosure? getPropertyClosure,
+    GClosure? setPropertyClosure,
+  ]) {
+    return withNativeString(objectPath, (nativeObjectPath) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDbusConnectionRegisterObjectWithClosures(
+          this.handle,
+          nativeObjectPath.cast<Utf8>(),
+          interfaceInfo.handle,
+          methodCallClosure?.handle ?? ffi.nullptr,
+          getPropertyClosure?.handle ?? ffi.nullptr,
+          setPropertyClosure?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Version of [method@Gio.DBusConnection.register_object] using closures instead
+  /// of a [type@Gio.DBusInterfaceVTable] for easier binding in other languages.
+  ///
+  /// In contrast to [method@Gio.DBusConnection.register_object] and
+  /// [method@Gio.DBusConnection.register_object_with_closures], the reference
+  /// counting semantics of the function wrapped by @method_call_closure are *not*
+  /// the same as those of [callback@Gio.DBusInterfaceMethodCallFunc]. Ownership of
+  /// a reference to the [class@Gio.DBusMethodInvocation] is *not* transferred to
+  /// the function. Bindings must ensure that they add a reference to the
+  /// [class@Gio.DBusMethodInvocation] before calling any
+  /// `g_dbus_method_invocation_return_*()` methods on it. This should be automatic
+  /// as a result of the introspection annotations on those methods.
+  static final _gDbusConnectionRegisterObjectWithClosures2 =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Uint32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_register_object_with_closures2')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int registerObjectWithClosures2(
+    String objectPath,
+    GDBusInterfaceInfo interfaceInfo, [
+    GClosure? methodCallClosure,
+    GClosure? getPropertyClosure,
+    GClosure? setPropertyClosure,
+  ]) {
+    return withNativeString(objectPath, (nativeObjectPath) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDbusConnectionRegisterObjectWithClosures2(
+          this.handle,
+          nativeObjectPath.cast<Utf8>(),
+          interfaceInfo.handle,
+          methodCallClosure?.handle ?? ffi.nullptr,
+          getPropertyClosure?.handle ?? ffi.nullptr,
+          setPropertyClosure?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Registers a whole subtree of dynamic objects.
+  ///
+  /// The @enumerate and @introspection functions in @vtable are used to
+  /// convey, to remote callers, what nodes exist in the subtree rooted
+  /// by @object_path.
+  ///
+  /// When handling remote calls into any node in the subtree, first the
+  /// @enumerate function is used to check if the node exists. If the node exists
+  /// or the %G_DBUS_SUBTREE_FLAGS_DISPATCH_TO_UNENUMERATED_NODES flag is set
+  /// the @introspection function is used to check if the node supports the
+  /// requested method. If so, the @dispatch function is used to determine
+  /// where to dispatch the call. The collected #GDBusInterfaceVTable and
+  /// #gpointer will be used to call into the interface vtable for processing
+  /// the request.
+  ///
+  /// All calls into user-provided code will be invoked in the thread-default
+  /// main context (see [method@GLib.MainContext.push_thread_default])
+  /// of the thread you are calling this method from.
+  ///
+  /// If an existing subtree is already registered at @object_path or
+  /// then @error is set to %G_IO_ERROR_EXISTS.
+  ///
+  /// Note that it is valid to register regular objects (using
+  /// g_dbus_connection_register_object()) in a subtree registered with
+  /// g_dbus_connection_register_subtree() - if so, the subtree handler
+  /// is tried as the last resort. One way to think about a subtree
+  /// handler is to consider it a fallback handler for object paths not
+  /// registered via g_dbus_connection_register_object() or other bindings.
+  ///
+  /// Note that @vtable will be copied so you cannot change it after
+  /// registration.
+  ///
+  /// See this [server][class@Gio.DBusConnection#an-example-for-exporting-a-subtree]
+  /// for an example of how to use this method.
+  static final _gDbusConnectionRegisterSubtree =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Uint32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_register_subtree')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int registerSubtree(
+    String objectPath,
+    GDBusSubtreeVTable vtable,
+    GDBusSubtreeFlags flags,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) userDataFreeFunc,
+  ) {
+    return withNativeString(objectPath, (nativeObjectPath) {
+      final _nc5 =
+          ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(userDataFreeFunc);
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDbusConnectionRegisterSubtree(
+          this.handle,
+          nativeObjectPath.cast<Utf8>(),
+          vtable.handle,
+          flags.value,
+          userData,
+          _nc5.nativeFunction,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+        _nc5.close();
+      }
+    });
   }
 
   /// Removes a filter.

@@ -51,6 +51,61 @@ GParamSpec paramSpecUnichar(
   });
 }
 
+/// Creates a new #GParamSpecVariant instance specifying a #GVariant
+/// property.
+///
+/// If @default_value is floating, it is consumed.
+///
+/// See g_param_spec_internal() for details on property names.
+final _gParamSpecVariant =
+    gobjectLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Uint32,
+            )
+          >
+        >('g_param_spec_variant')
+        .asFunction<
+          ffi.Pointer<ffi.Void> Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            int,
+          )
+        >();
+GParamSpec paramSpecVariant(
+  String name,
+  String? nick,
+  String? blurb,
+  GVariantType type_,
+  GVariant? defaultValue,
+  GParamFlags flags,
+) {
+  return withNativeString(name, (nativeName) {
+    return withNativeString(nick, (nativeNick) {
+      return withNativeString(blurb, (nativeBlurb) {
+        return GParamSpec.fromPointer(
+          _gParamSpecVariant(
+            nativeName.cast<Utf8>(),
+            nativeNick.cast<Utf8>(),
+            nativeBlurb.cast<Utf8>(),
+            type_.handle,
+            defaultValue?.handle ?? ffi.nullptr,
+            flags.value,
+          ),
+        );
+      });
+    });
+  });
+}
+
 /// Registers @name as the name of a new static type derived
 /// from %G_TYPE_PARAM.
 ///
@@ -871,61 +926,4 @@ void signalOverrideClassHandler(
       _nc3.close();
     }
   });
-}
-
-/// Internal function to parse a signal name into its @signal_id
-/// and @detail quark.
-final _gSignalParseName =
-    gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<Utf8>,
-              ffi.Size,
-              ffi.Pointer<ffi.Uint32>,
-              ffi.Pointer<ffi.Uint32>,
-              ffi.Int32,
-            )
-          >
-        >('g_signal_parse_name')
-        .asFunction<
-          int Function(
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<ffi.Uint32>,
-            ffi.Pointer<ffi.Uint32>,
-            int,
-          )
-        >();
-(bool, int, int) signalParseName(
-  String detailedSignal,
-  int itype,
-  bool forceDetailQuark,
-) {
-  return withNativeString(detailedSignal, (nativeDetailedSignal) {
-    final _out0 = malloc<ffi.Uint32>();
-    final _out1 = malloc<ffi.Uint32>();
-    try {
-      final _ret = _gSignalParseName(
-        nativeDetailedSignal.cast<Utf8>(),
-        itype,
-        _out0,
-        _out1,
-        forceDetailQuark ? 1 : 0,
-      );
-      return ((_ret) != 0, _out0.value, _out1.value);
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-    }
-  });
-}
-
-/// Deletes an emission hook.
-final _gSignalRemoveEmissionHook =
-    gobjectLookup<
-          ffi.NativeFunction<ffi.Void Function(ffi.Uint32, ffi.UnsignedLong)>
-        >('g_signal_remove_emission_hook')
-        .asFunction<void Function(int, int)>();
-void signalRemoveEmissionHook(int signalId, int hookId) {
-  _gSignalRemoveEmissionHook(signalId, hookId);
 }

@@ -189,16 +189,8 @@ class GtkActivateAction extends GtkShortcutAction {
 ///
 /// The `GtkAdjustment` object does not update the value itself. Instead
 /// it is left up to the owner of the `GtkAdjustment` to control the value.
-class GtkAdjustment implements ffi.Finalizable {
-  GtkAdjustment.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkAdjustment extends GInitiallyUnowned {
+  GtkAdjustment.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkAdjustment`.
   static final _gtkAdjustmentNew =
@@ -521,16 +513,8 @@ class GtkAdjustment implements ffi.Finalizable {
 ///
 /// If you don't need to wait for a button to be clicked, you can use
 /// [method@Gtk.AlertDialog.show].
-class GtkAlertDialog implements ffi.Finalizable {
-  GtkAlertDialog.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkAlertDialog extends GObject {
+  GtkAlertDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Finishes the [method@Gtk.AlertDialog.choose] call.
   static final _gtkAlertDialogChooseFinish =

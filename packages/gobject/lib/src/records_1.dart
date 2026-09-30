@@ -174,6 +174,21 @@ final class GParamSpecPool {
     _gParamSpecPoolInsert(this.handle, pspec.handle, ownerType);
   }
 
+  /// Gets an #GList of all #GParamSpecs owned by @owner_type in
+  /// the pool.
+  static final _gParamSpecPoolListOwned =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
+            >
+          >('g_param_spec_pool_list_owned')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  GList listOwned(int ownerType) {
+    return GList.fromPointer(_gParamSpecPoolListOwned(this.handle, ownerType));
+  }
+
   /// Looks up a #GParamSpec in the pool.
   static final _gParamSpecPoolLookup =
       gobjectLookup<
@@ -596,13 +611,5 @@ final class GTypeModuleClass {
 /// the lifecycle of dynamically loaded types.
 final class GTypePluginClass {
   GTypePluginClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// A structure holding information for a specific type.
-///
-/// See also: g_type_query()
-final class GTypeQuery {
-  GTypeQuery.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

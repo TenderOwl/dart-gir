@@ -263,6 +263,29 @@ final class GDBusInterfaceInfo {
     _gDbusInterfaceInfoCacheRelease(this.handle);
   }
 
+  /// Appends an XML representation of @info (and its children) to @string_builder.
+  ///
+  /// This function is typically used for generating introspection XML
+  /// documents at run-time for handling the
+  /// `org.freedesktop.DBus.Introspectable.Introspect`
+  /// method.
+  static final _gDbusInterfaceInfoGenerateXml =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_dbus_interface_info_generate_xml')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+          >();
+  void generateXml(int indent, GString stringBuilder) {
+    _gDbusInterfaceInfoGenerateXml(this.handle, indent, stringBuilder.handle);
+  }
+
   /// Looks up information about a method.
   ///
   /// The cost of this function is O(n) in number of methods unless

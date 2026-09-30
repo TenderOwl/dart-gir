@@ -118,6 +118,15 @@ final class GtkSourceEncoding {
     )!;
   }
 
+  /// Gets all encodings.
+  static final _gtkSourceEncodingGetAll =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
+        'gtk_source_encoding_get_all',
+      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
+  static GSList getAll() {
+    return GSList.fromPointer(_gtkSourceEncodingGetAll());
+  }
+
   /// Gets the #GtkSourceEncoding for the current locale.
   ///
   /// See also [func@GLib.get_charset].
@@ -127,6 +136,21 @@ final class GtkSourceEncoding {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GtkSourceEncoding getCurrent() {
     return GtkSourceEncoding.fromPointer(_gtkSourceEncodingGetCurrent());
+  }
+
+  /// Gets the list of default candidate encodings to try when loading a file.
+  ///
+  /// See [method@FileLoader.set_candidate_encodings].
+  ///
+  /// This function returns a different list depending on the current locale (i.e.
+  /// language, country and default encoding). The UTF-8 encoding and the current
+  /// locale encoding are guaranteed to be present in the returned list.
+  static final _gtkSourceEncodingGetDefaultCandidates =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
+        'gtk_source_encoding_get_default_candidates',
+      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
+  static GSList getDefaultCandidates() {
+    return GSList.fromPointer(_gtkSourceEncodingGetDefaultCandidates());
   }
 
   /// Gets a #GtkSourceEncoding from a character set such as "UTF-8" or

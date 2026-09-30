@@ -511,4 +511,61 @@ class AdwButtonRow extends AdwPreferencesRow {
 class AdwCallbackAnimationTarget extends AdwAnimationTarget {
   AdwCallbackAnimationTarget.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Creates a new `AdwAnimationTarget` that calls the given @callback during
+  /// the animation.
+  static final _adwCallbackAnimationTargetNew =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(ffi.Double, ffi.Pointer<ffi.Void>)
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('adw_callback_animation_target_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(ffi.Double, ffi.Pointer<ffi.Void>)
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  factory AdwCallbackAnimationTarget(
+    void Function(double, ffi.Pointer<ffi.Void>) callback,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) destroy,
+  ) {
+    final _nc1 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Double, ffi.Pointer<ffi.Void>)
+        >.isolateLocal(callback);
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(destroy);
+    try {
+      final _ret = _adwCallbackAnimationTargetNew(
+        _nc1.nativeFunction,
+        userData,
+        _nc3.nativeFunction,
+      );
+      return AdwCallbackAnimationTarget.fromPointer(_ret, owned: true);
+    } finally {
+      _nc1.close();
+      _nc3.close();
+    }
+  }
 }

@@ -148,6 +148,27 @@ class GdkButtonEvent extends GdkEvent {
 class GdkCairoContext extends GdkDrawContext {
   GdkCairoContext.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Retrieves a Cairo context to be used to draw on the `GdkSurface`
+  /// of @context.
+  ///
+  /// A call to [method@Gdk.DrawContext.begin_frame] with this
+  /// @context must have been done or this function will return %NULL.
+  ///
+  /// The returned context is guaranteed to be valid until
+  /// [method@Gdk.DrawContext.end_frame] is called.
+  static final _gdkCairoContextCairoCreate =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_cairo_context_cairo_create')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  CairoContext? cairoCreate() {
+    return (_gdkCairoContextCairoCreate(this.handle)) == ffi.nullptr
+        ? null
+        : CairoContext.fromPointer(_gdkCairoContextCairoCreate(this.handle));
+  }
 }
 
 /// Contains the parameters that define a colorstate with cicp parameters.
@@ -169,16 +190,8 @@ class GdkCairoContext extends GdkDrawContext {
 /// [method@Gdk.ColorState.create_cicp_params]. This can be used to
 /// create a variant of a color state, by changing just one of the cicp
 /// parameters, or just to obtain information about the color state.
-class GdkCicpParams implements ffi.Finalizable {
-  GdkCicpParams.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GdkCicpParams extends GObject {
+  GdkCicpParams.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GdkCicpParams` object.
   ///
@@ -331,16 +344,8 @@ class GdkCicpParams implements ffi.Finalizable {
 /// [method@Gdk.Clipboard.read_text_async] or
 /// [method@Gdk.Clipboard.read_texture_async]. For other data, use
 /// [method@Gdk.Clipboard.read_async], which provides a `GInputStream` object.
-class GdkClipboard implements ffi.Finalizable {
-  GdkClipboard.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GdkClipboard extends GObject {
+  GdkClipboard.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Returns the `GdkContentProvider` currently set on @clipboard.
   ///
@@ -517,6 +522,43 @@ class GdkClipboard implements ffi.Finalizable {
     }
   }
 
+  /// Finishes an asynchronous clipboard read.
+  ///
+  /// See [method@Gdk.Clipboard.read_value_async].
+  static final _gdkClipboardReadValueFinish =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_clipboard_read_value_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  GValue readValueFinish(GAsyncResult result) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gdkClipboardReadValueFinish(
+        this.handle,
+        result.handle,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return GValue.fromPointer(_ret);
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Sets a new content provider on @clipboard.
   ///
   /// The clipboard will claim the `GdkDisplay`'s resources and advertise
@@ -544,6 +586,20 @@ class GdkClipboard implements ffi.Finalizable {
           provider?.handle ?? ffi.nullptr,
         )) !=
         0;
+  }
+
+  /// Sets the @clipboard to contain the given @value.
+  static final _gdkClipboardSetValue =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_clipboard_set_value')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setValue(GValue value) {
+    _gdkClipboardSetValue(this.handle, value.handle);
   }
 
   /// Finishes an asynchronous clipboard store.

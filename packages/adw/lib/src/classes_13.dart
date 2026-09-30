@@ -530,16 +530,8 @@ class AdwInlineViewSwitcher extends GtkWidget {
 }
 
 /// An individual layout in [class@MultiLayoutView].
-class AdwLayout implements ffi.Finalizable {
-  AdwLayout.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwLayout extends GObject {
+  AdwLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `AdwLayout` that contains @content.
   static final _adwLayoutNew =

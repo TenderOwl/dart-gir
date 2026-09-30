@@ -124,16 +124,8 @@ part of '../gio.dart';
 ///
 /// For an example of using extra D-Bus hooks with `GApplication`, see
 /// [gapplication-example-dbushooks.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gapplication-example-dbushooks.c).
-class GApplication implements ffi.Finalizable {
-  GApplication.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GApplication extends GObject {
+  GApplication.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new #GApplication instance.
   ///
@@ -170,6 +162,107 @@ class GApplication implements ffi.Finalizable {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void activate() {
     _gApplicationActivate(this.handle);
+  }
+
+  /// Add an option to be handled by @application.
+  ///
+  /// Calling this function is the equivalent of calling
+  /// g_application_add_main_option_entries() with a single #GOptionEntry
+  /// that has its arg_data member set to %NULL.
+  ///
+  /// The parsed arguments will be packed into a #GVariantDict which
+  /// is passed to #GApplication::handle-local-options. If
+  /// %G_APPLICATION_HANDLES_COMMAND_LINE is set, then it will also
+  /// be sent to the primary instance. See
+  /// g_application_add_main_option_entries() for more details.
+  ///
+  /// See #GOptionEntry for more documentation of the arguments.
+  static final _gApplicationAddMainOption =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int8,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_application_add_main_option')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  void addMainOption(
+    String longName,
+    int shortName,
+    GOptionFlags flags,
+    GOptionArg arg,
+    String description, [
+    String? argDescription,
+  ]) {
+    withNativeString(longName, (nativeLongName) {
+      withNativeString(description, (nativeDescription) {
+        withNativeString(argDescription, (nativeArgDescription) {
+          _gApplicationAddMainOption(
+            this.handle,
+            nativeLongName.cast<Utf8>(),
+            shortName,
+            flags.value,
+            arg.value,
+            nativeDescription.cast<Utf8>(),
+            nativeArgDescription.cast<Utf8>(),
+          );
+        });
+      });
+    });
+  }
+
+  /// Adds a #GOptionGroup to the commandline handling of @application.
+  ///
+  /// This function is comparable to g_option_context_add_group().
+  ///
+  /// Unlike g_application_add_main_option_entries(), this function does
+  /// not deal with %NULL @arg_data and never transmits options to the
+  /// primary instance.
+  ///
+  /// The reason for that is because, by the time the options arrive at the
+  /// primary instance, it is typically too late to do anything with them.
+  /// Taking the GTK option group as an example: GTK will already have been
+  /// initialised by the time the #GApplication::command-line handler runs.
+  /// In the case that this is not the first-running instance of the
+  /// application, the existing instance may already have been running for
+  /// a very long time.
+  ///
+  /// This means that the options from #GOptionGroup are only really usable
+  /// in the case that the instance of the application being run is the
+  /// first instance.  Passing options like `--display=` or `--gdk-debug=`
+  /// on future runs will have no effect on the existing primary instance.
+  ///
+  /// Calling this function will cause the options in the supplied option
+  /// group to be parsed, but it does not cause you to be "opted in" to the
+  /// new functionality whereby unrecognized options are rejected even if
+  /// %G_APPLICATION_HANDLES_COMMAND_LINE was given.
+  static final _gApplicationAddOptionGroup =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_application_add_option_group')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void addOptionGroup(GOptionGroup group) {
+    _gApplicationAddOptionGroup(this.handle, group.handle);
   }
 
   /// Marks @application as busy (see g_application_mark_busy()) while

@@ -3,16 +3,8 @@ part of '../gio.dart';
 
 /// A type for representing D-Bus messages that can be sent or received
 /// on a [class@Gio.DBusConnection].
-class GDBusMessage implements ffi.Finalizable {
-  GDBusMessage.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GDBusMessage extends GObject {
+  GDBusMessage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new empty #GDBusMessage.
   static final _gDbusMessageNew =
@@ -172,6 +164,20 @@ class GDBusMessage implements ffi.Finalizable {
     );
   }
 
+  /// Gets the body of a message.
+  static final _gDbusMessageGetBody =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_message_get_body')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? getBody() {
+    return (_gDbusMessageGetBody(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_gDbusMessageGetBody(this.handle));
+  }
+
   /// Gets the byte order of @message.
   static final _gDbusMessageGetByteOrder =
       gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -220,6 +226,28 @@ class GDBusMessage implements ffi.Finalizable {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   GDBusMessageFlags getFlags() {
     return GDBusMessageFlags(_gDbusMessageGetFlags(this.handle));
+  }
+
+  /// Gets a header field on @message.
+  ///
+  /// The caller is responsible for checking the type of the returned #GVariant
+  /// matches what is expected.
+  static final _gDbusMessageGetHeader =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('g_dbus_message_get_header')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  GVariant? getHeader(GDBusMessageHeaderField headerField) {
+    return (_gDbusMessageGetHeader(this.handle, headerField.value)) ==
+            ffi.nullptr
+        ? null
+        : GVariant.fromPointer(
+            _gDbusMessageGetHeader(this.handle, headerField.value),
+          );
   }
 
   /// Convenience getter for the %G_DBUS_MESSAGE_HEADER_FIELD_INTERFACE header field.
@@ -467,6 +495,24 @@ class GDBusMessage implements ffi.Finalizable {
     )!;
   }
 
+  /// Sets the body @message. As a side-effect the
+  /// %G_DBUS_MESSAGE_HEADER_FIELD_SIGNATURE header field is set to the
+  /// type string of @body (or cleared if @body is %NULL).
+  ///
+  /// If @body is floating, @message assumes ownership of @body.
+  static final _gDbusMessageSetBody =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_message_set_body')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setBody(GVariant body) {
+    _gDbusMessageSetBody(this.handle, body.handle);
+  }
+
   /// Sets the byte order of @message.
   static final _gDbusMessageSetByteOrder =
       gioLookup<
@@ -521,6 +567,30 @@ class GDBusMessage implements ffi.Finalizable {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setFlags(GDBusMessageFlags flags) {
     _gDbusMessageSetFlags(this.handle, flags.value);
+  }
+
+  /// Sets a header field on @message.
+  ///
+  /// If @value is floating, @message assumes ownership of @value.
+  static final _gDbusMessageSetHeader =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_dbus_message_set_header')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+          >();
+  void setHeader(GDBusMessageHeaderField headerField, [GVariant? value]) {
+    _gDbusMessageSetHeader(
+      this.handle,
+      headerField.value,
+      value?.handle ?? ffi.nullptr,
+    );
   }
 
   /// Convenience setter for the %G_DBUS_MESSAGE_HEADER_FIELD_INTERFACE header field.

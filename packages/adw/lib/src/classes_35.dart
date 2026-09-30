@@ -6,16 +6,8 @@ part of '../adw.dart';
 /// `AdwToggle` can optionally have a name, set with [property@Toggle:name].
 /// If the name is set, [property@ToggleGroup:active-name] can be used to access
 /// toggles instead of index.
-class AdwToggle implements ffi.Finalizable {
-  AdwToggle.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwToggle extends GObject {
+  AdwToggle.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `AdwToggle`.
   static final _adwToggleNew =

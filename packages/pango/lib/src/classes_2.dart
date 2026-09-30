@@ -39,16 +39,8 @@ part of '../pango.dart';
 ///
 /// It is possible, as well, to ignore the 2-D setup,
 /// and simply treat the results of a `PangoLayout` as a list of lines.
-class PangoLayout implements ffi.Finalizable {
-  PangoLayout.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class PangoLayout extends GObject {
+  PangoLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Create a new `PangoLayout` object with attributes initialized to
   /// default values for a particular `PangoContext`.
@@ -331,6 +323,37 @@ class PangoLayout implements ffi.Finalizable {
     return _pangoLayoutGetLineSpacing(this.handle);
   }
 
+  /// Returns the lines of the @layout as a list.
+  ///
+  /// Use the faster [method@Pango.Layout.get_lines_readonly] if you do not
+  /// plan to modify the contents of the lines (glyphs, glyph widths, etc.).
+  static final _pangoLayoutGetLines =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('pango_layout_get_lines')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GSList getLines() {
+    return GSList.fromPointer(_pangoLayoutGetLines(this.handle));
+  }
+
+  /// Returns the lines of the @layout as a list.
+  ///
+  /// This is a faster alternative to [method@Pango.Layout.get_lines],
+  /// but the user is not expected to modify the contents of the lines
+  /// (glyphs, glyph widths, etc.).
+  static final _pangoLayoutGetLinesReadonly =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('pango_layout_get_lines_readonly')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GSList getLinesReadonly() {
+    return GSList.fromPointer(_pangoLayoutGetLinesReadonly(this.handle));
+  }
+
   /// Returns the current serial number of @layout.
   ///
   /// The serial number is initialized to an small number larger than zero
@@ -540,6 +563,27 @@ class PangoLayout implements ffi.Finalizable {
       malloc.free(_out0);
       malloc.free(_out1);
     }
+  }
+
+  /// Serializes the @layout for later deserialization via [func@Pango.Layout.deserialize].
+  ///
+  /// There are no guarantees about the format of the output across different
+  /// versions of Pango and [func@Pango.Layout.deserialize] will reject data
+  /// that it cannot parse.
+  ///
+  /// The intended use of this function is testing, benchmarking and debugging.
+  /// The format is not meant as a permanent storage format.
+  static final _pangoLayoutSerialize =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
+            >
+          >('pango_layout_serialize')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  GBytes serialize(PangoLayoutSerializeFlags flags) {
+    return GBytes.fromPointer(_pangoLayoutSerialize(this.handle, flags.value));
   }
 
   /// Sets the alignment for the layout: how partial lines are
@@ -1021,6 +1065,54 @@ class PangoLayout implements ffi.Finalizable {
     } finally {
       malloc.free(_out0);
       malloc.free(_out1);
+    }
+  }
+
+  /// Loads data previously created via [method@Pango.Layout.serialize].
+  ///
+  /// For a discussion of the supported format, see that function.
+  ///
+  /// Note: to verify that the returned layout is identical to
+  /// the one that was serialized, you can compare @bytes to the
+  /// result of serializing the layout again.
+  static final _pangoLayoutDeserialize =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('pango_layout_deserialize')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  static PangoLayout? deserialize(
+    PangoContext context,
+    GBytes bytes,
+    PangoLayoutDeserializeFlags flags,
+  ) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _pangoLayoutDeserialize(
+        context.handle,
+        bytes.handle,
+        flags.value,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) == ffi.nullptr ? null : PangoLayout.fromPointer(_ret);
+    } finally {
+      calloc.free(_error);
     }
   }
 }

@@ -11,16 +11,9 @@ part of '../gtk_source5.dart';
 ///
 /// Use [method@SnippetManager.get_snippet] to retrieve snippets for
 /// a given snippets.
-class GtkSourceSnippetManager implements ffi.Finalizable {
-  GtkSourceSnippetManager.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSnippetManager extends GObject {
+  GtkSourceSnippetManager.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Queries the known snippets for the first matching @group, @language_id,
   /// and/or @trigger.
@@ -238,16 +231,9 @@ class GtkSourceSnippetManager implements ffi.Finalizable {
 ///
 /// And non-breaking spaces can always be drawn, everywhere, to distinguish them
 /// from normal spaces.
-class GtkSourceSpaceDrawer implements ffi.Finalizable {
-  GtkSourceSpaceDrawer.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSpaceDrawer extends GObject {
+  GtkSourceSpaceDrawer.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new #GtkSourceSpaceDrawer object.
   ///
@@ -315,6 +301,23 @@ class GtkSourceSpaceDrawer implements ffi.Finalizable {
     return (_gtkSourceSpaceDrawerGetEnableMatrix(this.handle)) != 0;
   }
 
+  /// Gets the value of the [property@SpaceDrawer:matrix] property, as a [struct@GLib.Variant].
+  ///
+  /// An empty array can be returned in case the matrix is a zero matrix.
+  ///
+  /// The [method@SpaceDrawer.get_types_for_locations] function may be more
+  /// convenient to use.
+  static final _gtkSourceSpaceDrawerGetMatrix =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_space_drawer_get_matrix')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant getMatrix() {
+    return GVariant.fromPointer(_gtkSourceSpaceDrawerGetMatrix(this.handle));
+  }
+
   /// If only one location is specified, this function returns what kind of
   /// white spaces are drawn at that location.
   ///
@@ -351,6 +354,27 @@ class GtkSourceSpaceDrawer implements ffi.Finalizable {
     _gtkSourceSpaceDrawerSetEnableMatrix(this.handle, enableMatrix ? 1 : 0);
   }
 
+  /// Sets a new value to the [property@SpaceDrawer:matrix] property, as a [struct@GLib.Variant].
+  ///
+  /// If @matrix is %NULL, then an empty array is set.
+  ///
+  /// If @matrix is floating, it is consumed.
+  ///
+  /// The [method@SpaceDrawer.set_types_for_locations] function may be more
+  /// convenient to use.
+  static final _gtkSourceSpaceDrawerSetMatrix =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_source_space_drawer_set_matrix')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setMatrix([GVariant? matrix]) {
+    _gtkSourceSpaceDrawerSetMatrix(this.handle, matrix?.handle ?? ffi.nullptr);
+  }
+
   /// Modifies the [property@SpaceDrawer:matrix] property at the specified
   /// @locations.
   static final _gtkSourceSpaceDrawerSetTypesForLocations =
@@ -376,16 +400,8 @@ class GtkSourceSpaceDrawer implements ffi.Finalizable {
 ///
 /// The `GtkSourceStyle` structure is used to describe text attributes
 /// which are set when given style is used.
-class GtkSourceStyle implements ffi.Finalizable {
-  GtkSourceStyle.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceStyle extends GObject {
+  GtkSourceStyle.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// This function modifies the [class@Gtk.TextTag] properties that are related to the
   /// #GtkSourceStyle properties. Other [class@Gtk.TextTag] properties are left untouched.
@@ -434,16 +450,9 @@ class GtkSourceStyle implements ffi.Finalizable {
 ///
 /// The two style schemes with IDs "classic" and "tango" follow more closely the
 /// GTK theme (for example for the background color).
-class GtkSourceStyleScheme implements ffi.Finalizable {
-  GtkSourceStyleScheme.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceStyleScheme extends GObject {
+  GtkSourceStyleScheme.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
   static final _gtkSourceStyleSchemeGetDescription =
       gtkSource5Lookup<
             ffi.NativeFunction<
@@ -612,16 +621,9 @@ class GtkSourceStyleSchemeChooserWidget extends GtkWidget {
 }
 
 /// Provides access to [class@StyleScheme]s.
-class GtkSourceStyleSchemeManager implements ffi.Finalizable {
-  GtkSourceStyleSchemeManager.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceStyleSchemeManager extends GObject {
+  GtkSourceStyleSchemeManager.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new style manager.
   ///

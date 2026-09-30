@@ -13,16 +13,9 @@ part of '../gtk_source5.dart';
 ///
 /// Snippet chunks can reference other snippet chunks as well as post-process
 /// the values from other chunks such as capitalization.
-class GtkSourceSnippet implements ffi.Finalizable {
-  GtkSourceSnippet.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSnippet extends GObject {
+  GtkSourceSnippet.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new #GtkSourceSnippet
   static final _gtkSourceSnippetNew =
@@ -315,16 +308,9 @@ class GtkSourceSnippet implements ffi.Finalizable {
 /// may or may not be an edit point within the snippet. Chunks that are
 /// an edit point (also called a tab stop) have the
 /// [property@SnippetChunk:focus-position] property set.
-class GtkSourceSnippetChunk implements ffi.Finalizable {
-  GtkSourceSnippetChunk.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSnippetChunk extends GInitiallyUnowned {
+  GtkSourceSnippetChunk.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Create a new `GtkSourceSnippetChunk` that can be added to
   /// a [class@Snippet].
@@ -567,16 +553,9 @@ class GtkSourceSnippetChunk implements ffi.Finalizable {
 ///
 /// The [class@Snippet] will build the context and then expand each of the
 /// chunks during the insertion/edit phase.
-class GtkSourceSnippetContext implements ffi.Finalizable {
-  GtkSourceSnippetContext.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GtkSourceSnippetContext extends GObject {
+  GtkSourceSnippetContext.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new #GtkSourceSnippetContext.
   ///

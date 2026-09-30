@@ -5,6 +5,7 @@ import 'dart:ffi' as ffi;
 import 'package:ffi/ffi.dart';
 import 'package:gir_ffi/gir_ffi.dart';
 import 'package:gdk4/gdk4.dart';
+import 'package:gdk_pixbuf/gdk_pixbuf.dart';
 import 'package:gio/gio.dart';
 import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';

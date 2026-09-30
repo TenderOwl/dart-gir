@@ -11,16 +11,9 @@ part of '../gdk4.dart';
 /// deserialization functions, use [func@content_register_deserializer].
 ///
 /// Also see [class@Gdk.ContentSerializer].
-class GdkContentDeserializer implements ffi.Finalizable {
-  GdkContentDeserializer.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GdkContentDeserializer extends GObject {
+  GdkContentDeserializer.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Gets the cancellable for the current operation.
   ///
@@ -117,6 +110,34 @@ class GdkContentDeserializer implements ffi.Finalizable {
     return _gdkContentDeserializerGetUserData(this.handle);
   }
 
+  /// Gets the `GValue` to store the deserialized object in.
+  static final _gdkContentDeserializerGetValue =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_content_deserializer_get_value')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GValue getValue() {
+    return GValue.fromPointer(_gdkContentDeserializerGetValue(this.handle));
+  }
+
+  /// Indicate that the deserialization has ended with an error.
+  ///
+  /// This function consumes @error.
+  static final _gdkContentDeserializerReturnError =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_content_deserializer_return_error')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void returnError(GError error) {
+    _gdkContentDeserializerReturnError(this.handle, error.handle);
+  }
+
   /// Indicate that the deserialization has been successfully completed.
   static final _gdkContentDeserializerReturnSuccess =
       gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
@@ -124,6 +145,47 @@ class GdkContentDeserializer implements ffi.Finalizable {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void returnSuccess() {
     _gdkContentDeserializerReturnSuccess(this.handle);
+  }
+
+  /// Associate data with the current deserialization operation.
+  static final _gdkContentDeserializerSetTaskData =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gdk_content_deserializer_set_task_data')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setTaskData(
+    ffi.Pointer<ffi.Void> data,
+    void Function(ffi.Pointer<ffi.Void>) notify,
+  ) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(notify);
+    try {
+      _gdkContentDeserializerSetTaskData(
+        this.handle,
+        data,
+        _nc2.nativeFunction,
+      );
+    } finally {
+      _nc2.close();
+    }
   }
 }
 
@@ -136,16 +198,53 @@ class GdkContentDeserializer implements ffi.Finalizable {
 /// GDK knows how to handle common text and image formats out-of-the-box. See
 /// [class@Gdk.ContentSerializer] and [class@Gdk.ContentDeserializer] if you want
 /// to add support for application-specific data formats.
-class GdkContentProvider implements ffi.Finalizable {
-  GdkContentProvider.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
+class GdkContentProvider extends GObject {
+  GdkContentProvider.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
+
+  /// Create a content provider that provides the given @bytes as data for
+  /// the given @mime_type.
+  static final _gdkContentProviderNewForBytes =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_content_provider_new_for_bytes')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  factory GdkContentProvider.forBytes(String mimeType, GBytes bytes) {
+    return withNativeString(mimeType, (nativeMimeType) {
+      return GdkContentProvider.fromPointer(
+        _gdkContentProviderNewForBytes(
+          nativeMimeType.cast<Utf8>(),
+          bytes.handle,
+        ),
+        owned: true,
+      );
+    });
   }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+
+  /// Create a content provider that provides the given @value.
+  static final _gdkContentProviderNewForValue =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_content_provider_new_for_value')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  factory GdkContentProvider.forValue(GValue value) {
+    return GdkContentProvider.fromPointer(
+      _gdkContentProviderNewForValue(value.handle),
+      owned: true,
+    );
+  }
 
   /// Emits the ::content-changed signal.
   static final _gdkContentProviderContentChanged =
@@ -243,16 +342,9 @@ class GdkContentProvider implements ffi.Finalizable {
 /// serialization functions, use [func@Gdk.content_register_serializer].
 ///
 /// Also see [class@Gdk.ContentDeserializer].
-class GdkContentSerializer implements ffi.Finalizable {
-  GdkContentSerializer.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GdkContentSerializer extends GObject {
+  GdkContentSerializer.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Gets the cancellable for the current operation.
   ///
@@ -349,6 +441,34 @@ class GdkContentSerializer implements ffi.Finalizable {
     return _gdkContentSerializerGetUserData(this.handle);
   }
 
+  /// Gets the `GValue` to read the object to serialize from.
+  static final _gdkContentSerializerGetValue =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_content_serializer_get_value')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GValue getValue() {
+    return GValue.fromPointer(_gdkContentSerializerGetValue(this.handle));
+  }
+
+  /// Indicate that the serialization has ended with an error.
+  ///
+  /// This function consumes @error.
+  static final _gdkContentSerializerReturnError =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_content_serializer_return_error')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void returnError(GError error) {
+    _gdkContentSerializerReturnError(this.handle, error.handle);
+  }
+
   /// Indicate that the serialization has been successfully completed.
   static final _gdkContentSerializerReturnSuccess =
       gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
@@ -356,6 +476,43 @@ class GdkContentSerializer implements ffi.Finalizable {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void returnSuccess() {
     _gdkContentSerializerReturnSuccess(this.handle);
+  }
+
+  /// Associate data with the current serialization operation.
+  static final _gdkContentSerializerSetTaskData =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gdk_content_serializer_set_task_data')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setTaskData(
+    ffi.Pointer<ffi.Void> data,
+    void Function(ffi.Pointer<ffi.Void>) notify,
+  ) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(notify);
+    try {
+      _gdkContentSerializerSetTaskData(this.handle, data, _nc2.nativeFunction);
+    } finally {
+      _nc2.close();
+    }
   }
 }
 
@@ -390,266 +547,4 @@ class GdkCrossingEvent extends GdkEvent {
   GdkCrossingMode getMode() {
     return GdkCrossingMode.fromValue(_gdkCrossingEventGetMode(this.handle));
   }
-}
-
-/// Used to create and destroy cursors.
-///
-/// Cursors are immutable objects, so once you created them, there is no way
-/// to modify them later. You should create a new cursor when you want to change
-/// something about it.
-///
-/// Cursors by themselves are not very interesting: they must be bound to a
-/// window for users to see them. This is done with [method@Gdk.Surface.set_cursor]
-/// or [method@Gdk.Surface.set_device_cursor]. Applications will typically
-/// use higher-level GTK functions such as [gtk_widget_set_cursor()](../gtk4/method.Widget.set_cursor.html)
-/// instead.
-///
-/// Cursors are not bound to a given [class@Gdk.Display], so they can be shared.
-/// However, the appearance of cursors may vary when used on different
-/// platforms.
-///
-/// ## Named and texture cursors
-///
-/// There are multiple ways to create cursors. The platform's own cursors
-/// can be created with [ctor@Gdk.Cursor.new_from_name]. That function lists
-/// the commonly available names that are shared with the CSS specification.
-/// Other names may be available, depending on the platform in use. On some
-/// platforms, what images are used for named cursors may be influenced by
-/// the cursor theme.
-///
-/// Another option to create a cursor is to use [ctor@Gdk.Cursor.new_from_texture]
-/// and provide an image to use for the cursor.
-///
-/// To ease work with unsupported cursors, a fallback cursor can be provided.
-/// If a [class@Gdk.Surface] cannot use a cursor because of the reasons mentioned
-/// above, it will try the fallback cursor. Fallback cursors can themselves have
-/// fallback cursors again, so it is possible to provide a chain of progressively
-/// easier to support cursors. If none of the provided cursors can be supported,
-/// the default cursor will be the ultimate fallback.
-class GdkCursor implements ffi.Finalizable {
-  GdkCursor.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
-
-  /// Creates a new cursor by looking up @name in the current cursor
-  /// theme.
-  ///
-  /// A recommended set of cursor names that will work across different
-  /// platforms can be found in the CSS specification:
-  ///
-  /// | | | |
-  /// | --- | --- | --- |
-  /// |                               | "none"          | No cursor |
-  /// | ![](default_cursor.png)       | "default"       | The default cursor |
-  /// | ![](help_cursor.png)          | "help"          | Help is available |
-  /// | ![](pointer_cursor.png)       | "pointer"       | Indicates a link or interactive element |
-  /// | ![](context_menu_cursor.png)  |"context-menu"   | A context menu is available |
-  /// | ![](progress_cursor.png)      | "progress"      | Progress indicator |
-  /// | ![](wait_cursor.png)          | "wait"          | Busy cursor |
-  /// | ![](cell_cursor.png)          | "cell"          | Cell(s) may be selected |
-  /// | ![](crosshair_cursor.png)     | "crosshair"     | Simple crosshair |
-  /// | ![](text_cursor.png)          | "text"          | Text may be selected |
-  /// | ![](vertical_text_cursor.png) | "vertical-text" | Vertical text may be selected |
-  /// | ![](alias_cursor.png)         | "alias"         | DND: Something will be linked |
-  /// | ![](copy_cursor.png)          | "copy"          | DND: Something will be copied |
-  /// | ![](move_cursor.png)          | "move"          | DND: Something will be moved |
-  /// | ![](dnd_ask_cursor.png)       | "dnd-ask"       | DND: User can choose action to be carried out |
-  /// | ![](no_drop_cursor.png)       | "no-drop"       | DND: Can't drop here |
-  /// | ![](not_allowed_cursor.png)   | "not-allowed"   | DND: Action will not be carried out |
-  /// | ![](grab_cursor.png)          | "grab"          | DND: Something can be grabbed |
-  /// | ![](grabbing_cursor.png)      | "grabbing"      | DND: Something is being grabbed |
-  /// | ![](n_resize_cursor.png)      | "n-resize"      | Resizing: Move north border |
-  /// | ![](e_resize_cursor.png)      | "e-resize"      | Resizing: Move east border |
-  /// | ![](s_resize_cursor.png)      | "s-resize"      | Resizing: Move south border |
-  /// | ![](w_resize_cursor.png)      | "w-resize"      | Resizing: Move west border |
-  /// | ![](ne_resize_cursor.png)     | "ne-resize"     | Resizing: Move north-east corner |
-  /// | ![](nw_resize_cursor.png)     | "nw-resize"     | Resizing: Move north-west corner |
-  /// | ![](sw_resize_cursor.png)     | "sw-resize"     | Resizing: Move south-west corner |
-  /// | ![](se_resize_cursor.png)     | "se-resize"     | Resizing: Move south-east corner |
-  /// | ![](col_resize_cursor.png)    | "col-resize"    | Resizing: Move an item or border horizontally |
-  /// | ![](row_resize_cursor.png)    | "row-resize"    | Resizing: Move an item or border vertically |
-  /// | ![](ew_resize_cursor.png)     | "ew-resize"     | Moving: Something can be moved horizontally |
-  /// | ![](ns_resize_cursor.png)     | "ns-resize"     | Moving: Something can be moved vertically |
-  /// | ![](nesw_resize_cursor.png)   | "nesw-resize"   | Moving: Something can be moved diagonally, north-east to south-west |
-  /// | ![](nwse_resize_cursor.png)   | "nwse-resize"   | Moving: something can be moved diagonally, north-west to south-east |
-  /// | ![](all_resize_cursor.png)    | "all-resize"    | Moving: Something can be moved in any direction |
-  /// | ![](all_scroll_cursor.png)    | "all-scroll"    | Can scroll in any direction |
-  /// | ![](zoom_in_cursor.png)       | "zoom-in"       | Zoom in |
-  /// | ![](zoom_out_cursor.png)      | "zoom-out"      | Zoom out |
-  static final _gdkCursorNewFromName =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gdk_cursor_new_from_name')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GdkCursor.fromName(String name, [GdkCursor? fallback]) {
-    return withNativeString(name, (nativeName) {
-      return GdkCursor.fromPointer(
-        _gdkCursorNewFromName(
-          nativeName.cast<Utf8>(),
-          fallback?.handle ?? ffi.nullptr,
-        ),
-        owned: true,
-      );
-    });
-  }
-
-  /// Creates a new cursor from a `GdkTexture`.
-  static final _gdkCursorNewFromTexture =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gdk_cursor_new_from_texture')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              int,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GdkCursor.fromTexture(
-    GdkTexture texture,
-    int hotspotX,
-    int hotspotY, [
-    GdkCursor? fallback,
-  ]) {
-    return GdkCursor.fromPointer(
-      _gdkCursorNewFromTexture(
-        texture.handle,
-        hotspotX,
-        hotspotY,
-        fallback?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
-
-  /// Returns the fallback for this @cursor.
-  ///
-  /// The fallback will be used if this cursor is not available on a given
-  /// `GdkDisplay`. For named cursors, this can happen when using nonstandard
-  /// names or when using an incomplete cursor theme. For textured cursors,
-  /// this can happen when the texture is too large or when the `GdkDisplay`
-  /// it is used on does not support textured cursors.
-  static final _gdkCursorGetFallback =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_cursor_get_fallback')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkCursor? getFallback() {
-    return (_gdkCursorGetFallback(this.handle)) == ffi.nullptr
-        ? null
-        : GdkCursor.fromPointer(_gdkCursorGetFallback(this.handle));
-  }
-
-  /// Returns the horizontal offset of the hotspot.
-  ///
-  /// The hotspot indicates the pixel that will be directly above the cursor.
-  ///
-  /// Note that named cursors may have a nonzero hotspot, but this function
-  /// will only return the hotspot position for cursors created with
-  /// [ctor@Gdk.Cursor.new_from_texture].
-  static final _gdkCursorGetHotspotX =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_cursor_get_hotspot_x',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getHotspotX() {
-    return _gdkCursorGetHotspotX(this.handle);
-  }
-
-  /// Returns the vertical offset of the hotspot.
-  ///
-  /// The hotspot indicates the pixel that will be directly above the cursor.
-  ///
-  /// Note that named cursors may have a nonzero hotspot, but this function
-  /// will only return the hotspot position for cursors created with
-  /// [ctor@Gdk.Cursor.new_from_texture].
-  static final _gdkCursorGetHotspotY =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_cursor_get_hotspot_y',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getHotspotY() {
-    return _gdkCursorGetHotspotY(this.handle);
-  }
-
-  /// Returns the name of the cursor.
-  ///
-  /// If the cursor is not a named cursor, %NULL will be returned.
-  static final _gdkCursorGetName =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_cursor_get_name')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String? getName() {
-    return stringFromNative(
-      (_gdkCursorGetName(this.handle)).cast(),
-      free: false,
-    );
-  }
-
-  /// Returns the texture for the cursor.
-  ///
-  /// If the cursor is a named cursor, %NULL will be returned.
-  static final _gdkCursorGetTexture =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_cursor_get_texture')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkTexture? getTexture() {
-    return (_gdkCursorGetTexture(this.handle)) == ffi.nullptr
-        ? null
-        : GdkTexture.fromPointer(_gdkCursorGetTexture(this.handle));
-  }
-}
-
-/// An event related to drag and drop operations.
-class GdkDNDEvent extends GdkEvent {
-  GdkDNDEvent.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Gets the `GdkDrop` object from a DND event.
-  static final _gdkDndEventGetDrop =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_dnd_event_get_drop')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkDrop? getDrop() {
-    return (_gdkDndEventGetDrop(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDrop.fromPointer(_gdkDndEventGetDrop(this.handle));
-  }
-}
-
-/// An event related to closing a top-level surface.
-class GdkDeleteEvent extends GdkEvent {
-  GdkDeleteEvent.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 }

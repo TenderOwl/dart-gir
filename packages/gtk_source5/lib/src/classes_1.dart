@@ -315,6 +315,70 @@ class GtkSourceBuffer extends GtkTextBuffer {
     )!;
   }
 
+  /// Returns the list of marks of the given category at @iter.
+  ///
+  /// If @category is %NULL it returns all marks at @iter.
+  static final _gtkSourceBufferGetSourceMarksAtIter =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_source_buffer_get_source_marks_at_iter')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GSList getSourceMarksAtIter(GtkTextIter iter, [String? category]) {
+    return withNativeString(category, (nativeCategory) {
+      return GSList.fromPointer(
+        _gtkSourceBufferGetSourceMarksAtIter(
+          this.handle,
+          iter.handle,
+          nativeCategory.cast<Utf8>(),
+        ),
+      );
+    });
+  }
+
+  /// Returns the list of marks of the given category at @line.
+  ///
+  /// If @category is %NULL, all marks at @line are returned.
+  static final _gtkSourceBufferGetSourceMarksAtLine =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_source_buffer_get_source_marks_at_line')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GSList getSourceMarksAtLine(int line, [String? category]) {
+    return withNativeString(category, (nativeCategory) {
+      return GSList.fromPointer(
+        _gtkSourceBufferGetSourceMarksAtLine(
+          this.handle,
+          line,
+          nativeCategory.cast<Utf8>(),
+        ),
+      );
+    });
+  }
+
   /// Returns the [class@StyleScheme] associated with the buffer,
   /// see [method@Buffer.set_style_scheme].
   ///
@@ -577,211 +641,5 @@ class GtkSourceBuffer extends GtkTextBuffer {
   /// The "cursor-moved" signal is emitted when then insertion mark has moved.
   int onCursorMoved(void Function() callback) {
     return _connectVoidSignal(this.handle, 'cursor-moved', callback);
-  }
-}
-
-/// Main Completion Object.
-///
-/// The completion system helps the user when they writes some text,
-/// such as words, command names, functions, and suchlike. Proposals can
-/// be shown, to complete the text the user is writing. Each proposal can
-/// contain an additional piece of information (for example
-/// documentation), that is displayed when the "Details" button is
-/// clicked.
-///
-/// Proposals are created via a [iface@CompletionProvider]. There can
-/// be for example a provider to complete words (see [class@CompletionWords]),
-/// another provider for the completion of
-/// function names, etc. To add a provider, call
-/// [method@Completion.add_provider].
-///
-/// The [iface@CompletionProposal] interface represents a proposal.
-///
-/// If a proposal contains extra information (see
-/// %GTK_SOURCE_COMPLETION_COLUMN_DETAILS), it will be
-/// displayed in a supplemental details window, which appears when
-/// the "Details" button is clicked.
-///
-/// Each [class@View] object is associated with a [class@Completion]
-/// instance. This instance can be obtained with
-/// [method@View.get_completion]. The [class@View] class contains also the
-/// [signal@View::show-completion] signal.
-///
-/// A same [iface@CompletionProvider] object can be used for several
-/// `GtkSourceCompletion`'s.
-class GtkSourceCompletion implements ffi.Finalizable {
-  GtkSourceCompletion.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
-
-  /// Adds a [iface@CompletionProvider] to the list of providers to be queried
-  /// for completion results.
-  static final _gtkSourceCompletionAddProvider =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_add_provider')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void addProvider(GtkSourceCompletionProvider provider) {
-    _gtkSourceCompletionAddProvider(this.handle, provider.handle);
-  }
-
-  static final _gtkSourceCompletionBlockInteractive =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_block_interactive')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void blockInteractive() {
-    _gtkSourceCompletionBlockInteractive(this.handle);
-  }
-
-  /// Gets the connected [class@View]'s [class@Buffer]
-  static final _gtkSourceCompletionGetBuffer =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_get_buffer')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceBuffer getBuffer() {
-    return GtkSourceBuffer.fromPointer(
-      _gtkSourceCompletionGetBuffer(this.handle),
-    );
-  }
-
-  static final _gtkSourceCompletionGetPageSize =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_get_page_size')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getPageSize() {
-    return _gtkSourceCompletionGetPageSize(this.handle);
-  }
-
-  /// Gets the [class@View] that owns the [class@Completion].
-  static final _gtkSourceCompletionGetView =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_get_view')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceView getView() {
-    return GtkSourceView.fromPointer(_gtkSourceCompletionGetView(this.handle));
-  }
-
-  /// Emits the "hide" signal.
-  ///
-  /// When the "hide" signal is emitted, the completion window will be
-  /// dismissed.
-  static final _gtkSourceCompletionHide =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_hide')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void hide_() {
-    _gtkSourceCompletionHide(this.handle);
-  }
-
-  /// Removes a [iface@CompletionProvider] previously added with
-  /// [method@Completion.add_provider].
-  static final _gtkSourceCompletionRemoveProvider =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_remove_provider')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void removeProvider(GtkSourceCompletionProvider provider) {
-    _gtkSourceCompletionRemoveProvider(this.handle, provider.handle);
-  }
-
-  static final _gtkSourceCompletionSetPageSize =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('gtk_source_completion_set_page_size')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setPageSize(int pageSize) {
-    _gtkSourceCompletionSetPageSize(this.handle, pageSize);
-  }
-
-  /// Emits the "show" signal.
-  ///
-  /// When the "show" signal is emitted, the completion window will be
-  /// displayed if there are any results available.
-  static final _gtkSourceCompletionShow =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_show')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void show_() {
-    _gtkSourceCompletionShow(this.handle);
-  }
-
-  static final _gtkSourceCompletionUnblockInteractive =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_unblock_interactive')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unblockInteractive() {
-    _gtkSourceCompletionUnblockInteractive(this.handle);
-  }
-
-  /// This will add `<b>` tags around matched characters in @haystack
-  /// based on @casefold_query.
-  static final _gtkSourceCompletionFuzzyHighlight =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('gtk_source_completion_fuzzy_highlight')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>)
-          >();
-  static PangoAttrList? fuzzyHighlight(String haystack, String casefoldQuery) {
-    return withNativeString(haystack, (nativeHaystack) {
-      return withNativeString(casefoldQuery, (nativeCasefoldQuery) {
-        return (_gtkSourceCompletionFuzzyHighlight(
-                  nativeHaystack.cast<Utf8>(),
-                  nativeCasefoldQuery.cast<Utf8>(),
-                )) ==
-                ffi.nullptr
-            ? null
-            : PangoAttrList.fromPointer(
-                _gtkSourceCompletionFuzzyHighlight(
-                  nativeHaystack.cast<Utf8>(),
-                  nativeCasefoldQuery.cast<Utf8>(),
-                ),
-              );
-      });
-    });
-  }
-
-  /// The "hide" signal is emitted when the completion window should
-  /// be hidden.
-  int onHide(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'hide', callback);
-  }
-
-  /// The "show" signal is emitted when the completion window should
-  /// be shown.
-  int onShow(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'show', callback);
   }
 }

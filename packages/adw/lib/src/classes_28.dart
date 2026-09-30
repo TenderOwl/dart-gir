@@ -11,16 +11,9 @@ part of '../adw.dart';
 /// [property@StyleManager:color-scheme] property, and to query the current
 /// appearance, as well as whether a system-wide color scheme and accent color
 /// preferences exists.
-class AdwStyleManager implements ffi.Finalizable {
-  AdwStyleManager.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwStyleManager extends GObject {
+  AdwStyleManager.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Gets the current system accent color.
   ///
@@ -258,16 +251,9 @@ class AdwStyleManager implements ffi.Finalizable {
 /// property. If they expect to use horizontal orientation,
 /// [property@SwipeTracker:reversed] can be used for supporting RTL text
 /// direction.
-class AdwSwipeTracker implements ffi.Finalizable {
-  AdwSwipeTracker.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class AdwSwipeTracker extends GObject {
+  AdwSwipeTracker.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new `AdwSwipeTracker` for @widget.
   static final _adwSwipeTrackerNew =

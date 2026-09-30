@@ -9,16 +9,8 @@ part of '../pango.dart';
 /// default gravity, or default font.
 ///
 /// To obtain a `PangoContext`, use [method@Pango.FontMap.create_context].
-class PangoContext implements ffi.Finalizable {
-  PangoContext.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class PangoContext extends GObject {
+  PangoContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `PangoContext` initialized to default values.
   ///
@@ -444,16 +436,8 @@ class PangoContext implements ffi.Finalizable {
 /// it can represent that character. The `PangoCoverage` is a data
 /// structure that is used to represent that information. It is an
 /// opaque structure with no public fields.
-class PangoCoverage implements ffi.Finalizable {
-  PangoCoverage.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class PangoCoverage extends GObject {
+  PangoCoverage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Create a new `PangoCoverage`
   static final _pangoCoverageNew =
@@ -542,16 +526,8 @@ class PangoCoverage implements ffi.Finalizable {
 
 /// A `PangoFont` is used to represent a font in a
 /// rendering-system-independent manner.
-class PangoFont implements ffi.Finalizable {
-  PangoFont.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class PangoFont extends GObject {
+  PangoFont.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Returns a description of the font, with font size set in points.
   ///
@@ -687,5 +663,62 @@ class PangoFont implements ffi.Finalizable {
           .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
   bool hasChar(int wc) {
     return (_pangoFontHasChar(this.handle, wc)) != 0;
+  }
+
+  /// Serializes the @font in a way that can be uniquely identified.
+  ///
+  /// There are no guarantees about the format of the output across different
+  /// versions of Pango.
+  ///
+  /// The intended use of this function is testing, benchmarking and debugging.
+  /// The format is not meant as a permanent storage format.
+  ///
+  /// To recreate a font from its serialized form, use [func@Pango.Font.deserialize].
+  static final _pangoFontSerialize =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('pango_font_serialize')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GBytes serialize() {
+    return GBytes.fromPointer(_pangoFontSerialize(this.handle));
+  }
+
+  /// Loads data previously created via [method@Pango.Font.serialize].
+  ///
+  /// For a discussion of the supported format, see that function.
+  ///
+  /// Note: to verify that the returned font is identical to
+  /// the one that was serialized, you can compare @bytes to the
+  /// result of serializing the font again.
+  static final _pangoFontDeserialize =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('pango_font_deserialize')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  static PangoFont? deserialize(PangoContext context, GBytes bytes) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _pangoFontDeserialize(context.handle, bytes.handle, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
+    } finally {
+      calloc.free(_error);
+    }
   }
 }

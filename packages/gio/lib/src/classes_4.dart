@@ -6,16 +6,8 @@ part of '../gio.dart';
 /// `GCancellable` is a thread-safe operation cancellation stack used
 /// throughout GIO to allow for cancellation of synchronous and
 /// asynchronous operations.
-class GCancellable implements ffi.Finalizable {
-  GCancellable.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GCancellable extends GObject {
+  GCancellable.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new #GCancellable object.
   ///
@@ -113,6 +105,42 @@ class GCancellable implements ffi.Finalizable {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool isCancelled() {
     return (_gCancellableIsCancelled(this.handle)) != 0;
+  }
+
+  /// Creates a #GPollFD corresponding to @cancellable; this can be passed
+  /// to g_poll() and used to poll for cancellation. This is useful both
+  /// for unix systems without a native poll and for portability to
+  /// windows.
+  ///
+  /// When this function returns %TRUE, you should use
+  /// g_cancellable_release_fd() to free up resources allocated for the
+  /// @pollfd. After a %FALSE return, do not call g_cancellable_release_fd().
+  ///
+  /// If this function returns %FALSE, either no @cancellable was given or
+  /// resource limits prevent this function from allocating the necessary
+  /// structures for polling. (On Linux, you will likely have reached
+  /// the maximum number of file descriptors.) The suggested way to handle
+  /// these cases is to ignore the @cancellable.
+  ///
+  /// You are not supposed to read from the fd yourself, just check for
+  /// readable status. Reading to unset the readable status is done
+  /// with g_cancellable_reset().
+  ///
+  /// Note that in the event that a [signal@Gio.Cancellable::cancelled] signal handler is
+  /// currently running, this call will block until the handler has finished.
+  /// Calling this function from a signal handler will therefore result in a
+  /// deadlock.
+  static final _gCancellableMakePollfd =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_cancellable_make_pollfd')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  bool makePollfd(GPollFD pollfd) {
+    return (_gCancellableMakePollfd(this.handle, pollfd.handle)) != 0;
   }
 
   /// Pops @cancellable off the cancellable stack (verifying that @cancellable
@@ -217,6 +245,26 @@ class GCancellable implements ffi.Finalizable {
     }
   }
 
+  /// Creates a source that triggers if @cancellable is cancelled and
+  /// calls its callback of type #GCancellableSourceFunc. This is
+  /// primarily useful for attaching to another (non-cancellable) source
+  /// with g_source_add_child_source() to add cancellability to it.
+  ///
+  /// For convenience, you can call this with a %NULL #GCancellable,
+  /// in which case the source will never trigger.
+  ///
+  /// The new #GSource will hold a reference to the #GCancellable.
+  static final _gCancellableSourceNew =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_cancellable_source_new')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GSource sourceNew() {
+    return GSource.fromPointer(_gCancellableSourceNew(this.handle));
+  }
+
   /// Gets the top cancellable from the stack.
   static final _gCancellableGetCurrent =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -286,16 +334,9 @@ class GCancellable implements ffi.Finalizable {
 
 /// `GCharsetConverter` is an implementation of [iface@Gio.Converter] based on
 /// [struct@GLib.IConv].
-class GCharsetConverter implements ffi.Finalizable {
-  GCharsetConverter.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GCharsetConverter extends GObject {
+  GCharsetConverter.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new #GCharsetConverter.
   static final _gCharsetConverterNew =
@@ -461,123 +502,5 @@ class GConverterOutputStream extends GFilterOutputStream {
     return GConverter.fromPointer(
       _gConverterOutputStreamGetConverter(this.handle),
     );
-  }
-}
-
-/// The `GCredentials` type is a reference-counted wrapper for native
-/// credentials.
-///
-/// The information in `GCredentials` is typically used for identifying,
-/// authenticating and authorizing other processes.
-///
-/// Some operating systems supports looking up the credentials of the remote
-/// peer of a communication endpoint - see e.g. [method@Gio.Socket.get_credentials].
-///
-/// Some operating systems supports securely sending and receiving
-/// credentials over a Unix Domain Socket, see [class@Gio.UnixCredentialsMessage],
-/// [method@Gio.UnixConnection.send_credentials] and
-/// [method@Gio.UnixConnection.receive_credentials] for details.
-///
-/// On Linux, the native credential type is a `struct ucred` - see the
-/// [`unix(7)` man page](man:unix(7)) for details. This corresponds to
-/// `G_CREDENTIALS_TYPE_LINUX_UCRED`.
-///
-/// On Apple operating systems (including iOS, tvOS, and macOS), the native credential
-/// type is a `struct xucred`. This corresponds to `G_CREDENTIALS_TYPE_APPLE_XUCRED`.
-///
-/// On FreeBSD, Debian GNU/kFreeBSD, and GNU/Hurd, the native credential type is a
-/// `struct cmsgcred`. This corresponds to `G_CREDENTIALS_TYPE_FREEBSD_CMSGCRED`.
-///
-/// On NetBSD, the native credential type is a `struct unpcbid`.
-/// This corresponds to `G_CREDENTIALS_TYPE_NETBSD_UNPCBID`.
-///
-/// On OpenBSD, the native credential type is a `struct sockpeercred`.
-/// This corresponds to `G_CREDENTIALS_TYPE_OPENBSD_SOCKPEERCRED`.
-///
-/// On Solaris (including OpenSolaris and its derivatives), the native credential type
-/// is a `ucred_t`. This corresponds to `G_CREDENTIALS_TYPE_SOLARIS_UCRED`.
-///
-/// Since GLib 2.72, on Windows, the native credentials may contain the PID of a
-/// process. This corresponds to `G_CREDENTIALS_TYPE_WIN32_PID`.
-class GCredentials implements ffi.Finalizable {
-  GCredentials.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
-
-  /// Creates a new #GCredentials object with credentials matching the
-  /// the current process.
-  static final _gCredentialsNew =
-      gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'g_credentials_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GCredentials() {
-    return GCredentials.fromPointer(_gCredentialsNew(), owned: true);
-  }
-
-  /// Checks if @credentials and @other_credentials is the same user.
-  ///
-  /// This operation can fail if #GCredentials is not supported on the
-  /// the OS.
-  static final _gCredentialsIsSameUser =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_credentials_is_same_user')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool isSameUser(GCredentials otherCredentials) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gCredentialsIsSameUser(
-        this.handle,
-        otherCredentials.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Copies the native credentials of type @native_type from @native
-  /// into @credentials.
-  ///
-  /// It is a programming error (which will cause a warning to be
-  /// logged) to use this method if there is no #GCredentials support for
-  /// the OS or if @native_type isn't supported by the OS.
-  static final _gCredentialsSetNative =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_credentials_set_native')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
-          >();
-  void setNative(GCredentialsType nativeType, ffi.Pointer<ffi.Void> native) {
-    _gCredentialsSetNative(this.handle, nativeType.value, native);
   }
 }

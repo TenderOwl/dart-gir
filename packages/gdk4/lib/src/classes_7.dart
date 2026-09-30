@@ -399,6 +399,65 @@ class GdkGLContext extends GdkDrawContext {
 class GdkGLTexture extends GdkTexture {
   GdkGLTexture.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Creates a new texture for an existing GL texture.
+  ///
+  /// Note that the GL texture must not be modified until @destroy is called,
+  /// which will happen when the GdkTexture object is finalized, or due to
+  /// an explicit call of [method@Gdk.GLTexture.release].
+  static final _gdkGlTextureNew =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_gl_texture_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  factory GdkGLTexture(
+    GdkGLContext context,
+    int id,
+    int width,
+    int height,
+    void Function(ffi.Pointer<ffi.Void>) destroy,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final _nc5 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(destroy);
+    try {
+      final _ret = _gdkGlTextureNew(
+        context.handle,
+        id,
+        width,
+        height,
+        _nc5.nativeFunction,
+        data,
+      );
+      return GdkGLTexture.fromPointer(_ret, owned: true);
+    } finally {
+      _nc5.close();
+    }
+  }
+
   /// Releases the GL resources held by a `GdkGLTexture`.
   ///
   /// The texture contents are still available via the

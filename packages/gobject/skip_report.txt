@@ -1,8 +1,8 @@
 # Skip report for package gobject (GObject 2.0)
-Total skipped: 80
+Total skipped: 73
 
 ## By category
-callable: 69
+callable: 62
 callback: 5
 alias: 3
 signal: 2
@@ -10,16 +10,16 @@ bitfield: 1
 
 ## By reason
 array types are handled in a later phase: 5
-return: array types are handled in a later phase: 4
 parameter const_static_values: array types are handled in a later phase: 4
+return: array types are handled in a later phase: 4
 aliases are resolved to their target: 3
 only void(void) supported in this release: 2
-unsupported out parameter info (GTypeInfo): 2
 parameter instance_and_params: array types are handled in a later phase: 2
+unsupported out parameter info (GTypeInfo): 2
 caller-allocates out parameter query: 2
-return: type GLib.Variant is in non-generated package glib: 2
-parameter variant: type GLib.Variant is in non-generated package glib: 2
-moved to CClosure.marshal_VOID__ULONG: 1
+moved to CClosure.marshal_VOID__UINT_POINTER: 1
+moved to CClosure.marshal_BOOLEAN__BOXED_BOXED: 1
+moved to CClosure.marshal_VOID__FLOAT: 1
 moved to CClosure.marshal_VOID__INT: 1
 moved to CClosure.marshal_VOID__LONG: 1
 moved to CClosure.marshal_VOID__OBJECT: 1
@@ -28,18 +28,17 @@ moved to CClosure.marshal_VOID__POINTER: 1
 moved to CClosure.marshal_VOID__STRING: 1
 moved to CClosure.marshal_VOID__UCHAR: 1
 moved to CClosure.marshal_VOID__UINT: 1
-moved to CClosure.marshal_VOID__UINT_POINTER: 1
 duplicate declaration owned by an earlier namespace: 1
+moved to CClosure.marshal_VOID__ULONG: 1
 moved to CClosure.marshal_VOID__VARIANT: 1
 moved to CClosure.marshal_VOID__VOID: 1
 moved to CClosure.marshal_generic: 1
 moved to CClosure.marshal_BOOLEAN__FLAGS: 1
 moved to CClosure.marshal_STRING__OBJECT_POINTER: 1
-parameter type: type GLib.VariantType is in non-generated package glib: 1
 moved to CClosure.marshal_VOID__BOOLEAN: 1
 parameter hook_func: callback SignalEmissionHook has unsupported signature: 1
+moved to CClosure.marshal_VOID__FLAGS: 1
 moved to CClosure.marshal_VOID__BOXED: 1
-moved to CClosure.marshal_VOID__FLOAT: 1
 moved to CClosure.marshal_VOID__CHAR: 1
 moved to Source.set_closure: 1
 moved to Source.set_dummy_callback: 1
@@ -47,9 +46,9 @@ parameter n_children: nullable scalar parameter (guint): 1
 moved to TypeClass.adjust_private_offset: 1
 moved to TypeClass.get: 1
 moved to TypeClass.peek: 1
-moved to TypeClass.peek_static: 1
-moved to TypeClass.ref: 1
 moved to CClosure.marshal_VOID__DOUBLE: 1
+moved to TypeClass.ref: 1
+moved to TypeInterface.add_prerequisite: 1
 moved to TypeInterface.get_plugin: 1
 moved to TypeInterface.instantiatable_prerequisite: 1
 moved to TypeInterface.peek: 1
@@ -59,18 +58,14 @@ moved to Value.type_compatible: 1
 moved to Value.type_transformable: 1
 caller-allocates out parameter return_value: 1
 parameter pspecs: array types are handled in a later phase: 1
-return: type GLib.List is in non-generated package glib: 1
 parameter n_prerequisites: nullable scalar parameter (guint): 1
-moved to CClosure.marshal_VOID__ENUM: 1
-moved to CClosure.marshal_VOID__FLAGS: 1
 shadowed by sort_with_data: 1
-parameter compare_func: callback GLib.CompareDataFunc is in non-generated package glib: 1
 shadowed by bind_with_closures: 1
 parameter parameters: array types are handled in a later phase: 1
 shadowed by bind_property_with_closures: 1
 parameter names: array types are handled in a later phase: 1
-moved to CClosure.marshal_BOOLEAN__BOXED_BOXED: 1
-moved to TypeInterface.add_prerequisite: 1
+moved to CClosure.marshal_VOID__ENUM: 1
+moved to TypeClass.peek_static: 1
 
 ## First 50 entries
 [bitfield] GIOCondition — duplicate declaration owned by an earlier namespace
@@ -101,7 +96,6 @@ moved to TypeInterface.add_prerequisite: 1
 [callable] GObject.enumRegisterStatic — parameter const_static_values: array types are handled in a later phase
 [callable] GObject.flagsCompleteTypeInfo — unsupported out parameter info (GTypeInfo)
 [callable] GObject.flagsRegisterStatic — parameter const_static_values: array types are handled in a later phase
-[callable] GObject.paramSpecVariant — parameter type: type GLib.VariantType is in non-generated package glib
 [callback] GObject.SignalEmissionHook parameter param_values — array types are handled in a later phase
 [callable] GObject.signalAddEmissionHook — parameter hook_func: callback SignalEmissionHook has unsupported signature
 [callable] GObject.signalChainFromOverridden — parameter instance_and_params: array types are handled in a later phase
@@ -123,3 +117,4 @@ moved to TypeInterface.add_prerequisite: 1
 [callable] GObject.typeInterfacePrerequisites — moved to TypeInterface.prerequisites
 [callable] GObject.typeInterfaces — parameter n_interfaces: nullable scalar parameter (guint)
 [callable] GObject.typeQuery — caller-allocates out parameter query
+[callable] GObject.valueTypeCompatible — moved to Value.type_compatible

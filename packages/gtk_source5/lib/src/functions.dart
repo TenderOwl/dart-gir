@@ -89,6 +89,70 @@ void init() {
   _gtkSourceInit();
 }
 
+/// Adds a new callback that will be executed as time permits on the main thread.
+///
+/// This is useful when you need to do a lot of background work but want to do
+/// it incrementally.
+///
+/// @callback will be provided a deadline that it should complete it's work by
+/// (or near) and can be checked using [func@GLib.get_monotonic_time] for comparison.
+///
+/// Use [func@scheduler_remove] to remove the handler.
+final _gtkSourceSchedulerAddFull =
+    gtkSource5Lookup<
+          ffi.NativeFunction<
+            ffi.Size Function(
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(ffi.Int64, ffi.Pointer<ffi.Void>)
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >
+        >('gtk_source_scheduler_add_full')
+        .asFunction<
+          int Function(
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Int32 Function(ffi.Int64, ffi.Pointer<ffi.Void>)
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+            >,
+          )
+        >();
+int schedulerAddFull(
+  int Function(int, ffi.Pointer<ffi.Void>) callback,
+  ffi.Pointer<ffi.Void> userData,
+  void Function(ffi.Pointer<ffi.Void>) notify,
+) {
+  final _nc1 =
+      ffi.NativeCallable<
+        ffi.Int32 Function(ffi.Int64, ffi.Pointer<ffi.Void>)
+      >.isolateLocal(callback, exceptionalReturn: 0);
+  final _nc3 =
+      ffi.NativeCallable<ffi.Void Function(ffi.Pointer<ffi.Void>)>.isolateLocal(
+        notify,
+      );
+  try {
+    final _ret = _gtkSourceSchedulerAddFull(
+      _nc1.nativeFunction,
+      userData,
+      _nc3.nativeFunction,
+    );
+    return _ret;
+  } finally {
+    _nc1.close();
+    _nc3.close();
+  }
+}
+
 /// Removes a scheduler callback previously registered with
 /// [func@scheduler_add] or [func@scheduler_add_full].
 final _gtkSourceSchedulerRemove =

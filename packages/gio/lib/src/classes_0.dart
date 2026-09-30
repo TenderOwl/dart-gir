@@ -40,16 +40,9 @@ part of '../gio.dart';
 /// The reason for this is that changes to the list of installed applications
 /// often come in groups (like during system updates) and rescanning the list
 /// on every change is pointless and expensive.
-class GAppInfoMonitor implements ffi.Finalizable {
-  GAppInfoMonitor.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GAppInfoMonitor extends GObject {
+  GAppInfoMonitor.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Gets the #GAppInfoMonitor for the current thread-default main
   /// context.
@@ -82,16 +75,9 @@ class GAppInfoMonitor implements ffi.Finalizable {
 /// Integrating the launch with the launching application. This is used to
 /// handle for instance startup notification and launching the new application
 /// on the same screen as the launching window.
-class GAppLaunchContext implements ffi.Finalizable {
-  GAppLaunchContext.fromPointer(this.handle, {this.owned = false}) {
-    if (owned) {
-      _attachFinalizer();
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
-  void _attachFinalizer() =>
-      gobjectFinalizer.attach(this, handle, detach: this);
+class GAppLaunchContext extends GObject {
+  GAppLaunchContext.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
 
   /// Creates a new application launch context. This is not normally used,
   /// instead you instantiate a subclass of this, such as
@@ -102,6 +88,80 @@ class GAppLaunchContext implements ffi.Finalizable {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   factory GAppLaunchContext() {
     return GAppLaunchContext.fromPointer(_gAppLaunchContextNew(), owned: true);
+  }
+
+  /// Gets the display string for the @context. This is used to ensure new
+  /// applications are started on the same display as the launching
+  /// application, by setting the `DISPLAY` environment variable.
+  static final _gAppLaunchContextGetDisplay =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_app_launch_context_get_display')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  String? getDisplay(GAppInfo info, GList files) {
+    return stringFromNative(
+      (_gAppLaunchContextGetDisplay(
+        this.handle,
+        info.handle,
+        files.handle,
+      )).cast(),
+      free: true,
+    );
+  }
+
+  /// Initiates startup notification for the application and returns the
+  /// `XDG_ACTIVATION_TOKEN` or `DESKTOP_STARTUP_ID` for the launched operation,
+  /// if supported.
+  ///
+  /// The returned token may be referred to equivalently as an ‘activation token’
+  /// (using Wayland terminology) or a ‘startup sequence ID’ (using X11 terminology).
+  /// The two [are interoperable](https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/xdg-activation/x11-interoperation.rst).
+  ///
+  /// Activation tokens are defined in the [XDG Activation Protocol](https://wayland.app/protocols/xdg-activation-v1),
+  /// and startup notification IDs are defined in the
+  /// [freedesktop.org Startup Notification Protocol](http://standards.freedesktop.org/startup-notification-spec/startup-notification-latest.txt).
+  ///
+  /// Support for the XDG Activation Protocol was added in GLib 2.76.
+  /// Since GLib 2.82 @info and @files can be `NULL`. If that’s not supported by the backend,
+  /// the returned token will be `NULL`.
+  static final _gAppLaunchContextGetStartupNotifyId =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_app_launch_context_get_startup_notify_id')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  String? getStartupNotifyId([GAppInfo? info, GList? files]) {
+    return stringFromNative(
+      (_gAppLaunchContextGetStartupNotifyId(
+        this.handle,
+        info?.handle ?? ffi.nullptr,
+        files?.handle ?? ffi.nullptr,
+      )).cast(),
+      free: true,
+    );
   }
 
   /// Called when an application has failed to launch, so that it can cancel
