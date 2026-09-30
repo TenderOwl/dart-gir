@@ -391,4 +391,25 @@ final class GdkDragSurface {
   bool present(int width, int height) {
     return (_gdkDragSurfacePresent(this.handle, width, height)) != 0;
   }
+
+  /// Emitted when the size for the surface needs to be computed, when it is
+  /// present.
+  ///
+  /// This signal will normally be emitted during the native surface layout
+  /// cycle when the surface size needs to be recomputed.
+  ///
+  /// It is the responsibility of the drag surface user to handle this signal
+  /// and compute the desired size of the surface, storing the computed size
+  /// in the [struct@Gdk.DragSurfaceSize] object that is passed to the signal
+  /// handler, using [method@Gdk.DragSurfaceSize.set_size].
+  ///
+  /// Failing to set a size so will result in an arbitrary size being used as
+  /// a result.
+  int onComputeSize(void Function(GdkDragSurfaceSize size) callback) {
+    return _connectSignal_v_1_o_gdkdragsurfacesize(
+      this.handle,
+      'compute-size',
+      callback,
+    );
+  }
 }

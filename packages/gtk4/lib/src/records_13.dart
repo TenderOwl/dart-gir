@@ -314,6 +314,15 @@ final class GtkFontChooser {
   void setShowPreviewEntry(bool showPreviewEntry) {
     _gtkFontChooserSetShowPreviewEntry(this.handle, showPreviewEntry ? 1 : 0);
   }
+
+  /// Emitted when a font is activated.
+  ///
+  /// This usually happens when the user double clicks an item,
+  /// or an item is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onFontActivated(void Function(String fontname) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'font-activated', callback);
+  }
 }
 
 /// An interface for widgets that have their own [class@Gdk.Surface].
@@ -521,6 +530,29 @@ final class GtkPrintOperationPreview {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void renderPage(int pageNr) {
     _gtkPrintOperationPreviewRenderPage(this.handle, pageNr);
+  }
+
+  /// Emitted once for each page that gets rendered to the preview.
+  ///
+  /// A handler for this signal should update the @context
+  /// according to @page_setup and set up a suitable cairo
+  /// context, using [method@Gtk.PrintContext.set_cairo_context].
+  int onGotPageSize(
+    void Function(GtkPrintContext context, GtkPageSetup pageSetup) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtkprintcontext_gtkpagesetup(
+      this.handle,
+      'got-page-size',
+      callback,
+    );
+  }
+
+  /// The ::ready signal gets emitted once per preview operation,
+  /// before the first page is rendered.
+  ///
+  /// A handler for this signal can be used for setup tasks.
+  int onReady(void Function(GtkPrintContext context) callback) {
+    return _connectSignal_v_1_o_gtkprintcontext(this.handle, 'ready', callback);
   }
 }
 

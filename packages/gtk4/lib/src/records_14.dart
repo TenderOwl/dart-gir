@@ -228,6 +228,24 @@ final class GtkSectionModel {
   void sectionsChanged(int position, int nItems) {
     _gtkSectionModelSectionsChanged(this.handle, position, nItems);
   }
+
+  /// Emitted when the start-of-section state of some of the items in @model changes.
+  ///
+  /// Note that this signal does not specify the new section state of the
+  /// items, they need to be queried manually. It is also not necessary for
+  /// a model to change the section state of any of the items in the section
+  /// model, though it would be rather useless to emit such a signal.
+  ///
+  /// The [signal@Gio.ListModel::items-changed] implies the effect of the
+  /// [signal@Gtk.SectionModel::sections-changed] signal for all the items
+  /// it covers.
+  int onSectionsChanged(void Function(int position, int nItems) callback) {
+    return _connectSignal_v_2_i_i_int_int(
+      this.handle,
+      'sections-changed',
+      callback,
+    );
+  }
 }
 
 /// An interface that adds support for selection to list models.
@@ -481,6 +499,20 @@ final class GtkSelectionModel {
     return (_gtkSelectionModelUnselectRange(this.handle, position, nItems)) !=
         0;
   }
+
+  /// Emitted when the selection state of some of the items in @model changes.
+  ///
+  /// Note that this signal does not specify the new selection state of the
+  /// items, they need to be queried manually. It is also not necessary for
+  /// a model to change the selection state of any of the items in the selection
+  /// model, though it would be rather useless to emit such a signal.
+  int onSelectionChanged(void Function(int position, int nItems) callback) {
+    return _connectSignal_v_2_i_i_int_int(
+      this.handle,
+      'selection-changed',
+      callback,
+    );
+  }
 }
 
 /// An interface that is used to implement shortcut scopes.
@@ -511,7 +543,7 @@ final class GtkStyleProvider {
   GtkStyleProvider.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
   int onGtkPrivateChanged(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'gtk-private-changed', callback);
+    return _connectSignal_v_0(this.handle, 'gtk-private-changed', callback);
   }
 }
 
@@ -598,72 +630,5 @@ final class GtkTreeDragDest {
           value.handle,
         )) !=
         0;
-  }
-}
-
-/// Interface for Drag-and-Drop destinations in `GtkTreeView`.
-final class GtkTreeDragSource {
-  GtkTreeDragSource.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Asks the `GtkTreeDragSource` to delete the row at @path, because
-  /// it was moved somewhere else via drag-and-drop. Returns %FALSE
-  /// if the deletion fails because @path no longer exists, or for
-  /// some model-specific reason. Should robustly handle a @path no
-  /// longer found in the model!
-  static final _gtkTreeDragSourceDragDataDelete =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_tree_drag_source_drag_data_delete')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool dragDataDelete(GtkTreePath path) {
-    return (_gtkTreeDragSourceDragDataDelete(this.handle, path.handle)) != 0;
-  }
-
-  /// Asks the `GtkTreeDragSource` to return a `GdkContentProvider` representing
-  /// the row at @path. Should robustly handle a @path no
-  /// longer found in the model!
-  static final _gtkTreeDragSourceDragDataGet =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_tree_drag_source_drag_data_get')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GdkContentProvider? dragDataGet(GtkTreePath path) {
-    return (_gtkTreeDragSourceDragDataGet(this.handle, path.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkContentProvider.fromPointer(
-            _gtkTreeDragSourceDragDataGet(this.handle, path.handle),
-          );
-  }
-
-  /// Asks the `GtkTreeDragSource` whether a particular row can be used as
-  /// the source of a DND operation. If the source doesn’t implement
-  /// this interface, the row is assumed draggable.
-  static final _gtkTreeDragSourceRowDraggable =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_tree_drag_source_row_draggable')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool rowDraggable(GtkTreePath path) {
-    return (_gtkTreeDragSourceRowDraggable(this.handle, path.handle)) != 0;
   }
 }

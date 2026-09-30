@@ -68,7 +68,36 @@ class GAppInfoMonitor extends GObject {
   /// Signal emitted when the app info database changes, when applications are
   /// installed or removed.
   int onChanged(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'changed', callback);
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -231,5 +260,105 @@ class GAppLaunchContext extends GObject {
     withNativeString(variable, (nativeVariable) {
       _gAppLaunchContextUnsetenv(this.handle, nativeVariable.cast<Utf8>());
     });
+  }
+
+  /// The [signal@Gio.AppLaunchContext::launch-failed] signal is emitted when a
+  /// [iface@Gio.AppInfo] launch fails. The startup notification id is provided,
+  /// so that the launcher can cancel the startup notification.
+  ///
+  /// Because a launch operation may involve spawning multiple instances of the
+  /// target application, you should expect this signal to be emitted multiple
+  /// times, one for each spawned instance.
+  int onLaunchFailed(void Function(String startupNotifyId) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'launch-failed', callback);
+  }
+
+  /// The [signal@Gio.AppLaunchContext::launch-started] signal is emitted when a
+  /// [iface@Gio.AppInfo] is about to be launched. If non-null the
+  /// @platform_data is an GVariant dictionary mapping strings to variants
+  /// (ie `a{sv}`), which contains additional, platform-specific data about this
+  /// launch. On UNIX, at least the `startup-notification-id` keys will be
+  /// present.
+  ///
+  /// The value of the `startup-notification-id` key (type `s`) is a startup
+  /// notification ID corresponding to the format from the [startup-notification
+  /// specification](https://specifications.freedesktop.org/startup-notification-spec/startup-notification-0.1.txt).
+  /// It allows tracking the progress of the launchee through startup.
+  ///
+  /// It is guaranteed that this signal is followed by either a
+  /// [signal@Gio.AppLaunchContext::launched] or
+  /// [signal@Gio.AppLaunchContext::launch-failed] signal.
+  ///
+  /// Because a launch operation may involve spawning multiple instances of the
+  /// target application, you should expect this signal to be emitted multiple
+  /// times, one for each spawned instance.
+  int onLaunchStarted(
+    void Function(GAppInfo info, GVariant? platformData) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gappinfo_gvariant(
+      this.handle,
+      'launch-started',
+      callback,
+    );
+  }
+
+  /// The [signal@Gio.AppLaunchContext::launched] signal is emitted when a
+  /// [iface@Gio.AppInfo] is successfully launched.
+  ///
+  /// Because a launch operation may involve spawning multiple instances of the
+  /// target application, you should expect this signal to be emitted multiple
+  /// times, one time for each spawned instance.
+  ///
+  /// The @platform_data is an GVariant dictionary mapping
+  /// strings to variants (ie `a{sv}`), which contains additional,
+  /// platform-specific data about this launch. On UNIX, at least the
+  /// `pid` and `startup-notification-id` keys will be present.
+  ///
+  /// Since 2.72 the `pid` may be 0 if the process id wasn’t known (for
+  /// example if the process was launched via D-Bus). The `pid` may not be
+  /// set at all in subsequent releases.
+  ///
+  /// On Windows, `pid` is guaranteed to be valid only for the duration of the
+  /// [signal@Gio.AppLaunchContext::launched] signal emission; after the signal
+  /// is emitted, GLib will call [func@GLib.spawn_close_pid]. If you need to
+  /// keep the [alias@GLib.Pid] after the signal has been emitted, then you can
+  /// duplicate `pid` using `DuplicateHandle()`.
+  int onLaunched(
+    void Function(GAppInfo info, GVariant? platformData) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gappinfo_gvariant(
+      this.handle,
+      'launched',
+      callback,
+    );
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

@@ -231,6 +231,78 @@ class GDBusInterfaceSkeleton extends GObject {
       connection.handle,
     );
   }
+
+  /// Emitted when a method is invoked by a remote caller and used to
+  /// determine if the method call is authorized.
+  ///
+  /// Note that this signal is emitted in a thread dedicated to
+  /// handling the method call so handlers are allowed to perform
+  /// blocking IO. This means that it is appropriate to call e.g.
+  /// [polkit_authority_check_authorization_sync()](http://hal.freedesktop.org/docs/polkit/PolkitAuthority.html#polkit-authority-check-authorization-sync)
+  /// with the
+  /// [POLKIT_CHECK_AUTHORIZATION_FLAGS_ALLOW_USER_INTERACTION](http://hal.freedesktop.org/docs/polkit/PolkitAuthority.html#POLKIT-CHECK-AUTHORIZATION-FLAGS-ALLOW-USER-INTERACTION:CAPS)
+  /// flag set.
+  ///
+  /// If %FALSE is returned then no further handlers are run and the
+  /// signal handler must take a reference to @invocation and finish
+  /// handling the call (e.g. return an error via
+  /// g_dbus_method_invocation_return_error()).
+  ///
+  /// Otherwise, if %TRUE is returned, signal emission continues. If no
+  /// handlers return %FALSE, then the method is dispatched. If
+  /// @interface has an enclosing #GDBusObjectSkeleton, then the
+  /// #GDBusObjectSkeleton::authorize-method signal handlers run before
+  /// the handlers for this signal.
+  ///
+  /// The default class handler just returns %TRUE.
+  ///
+  /// Please note that the common case is optimized: if no signals
+  /// handlers are connected and the default class handler isn't
+  /// overridden (for both @interface and the enclosing
+  /// #GDBusObjectSkeleton, if any) and #GDBusInterfaceSkeleton:g-flags does
+  /// not have the
+  /// %G_DBUS_INTERFACE_SKELETON_FLAGS_HANDLE_METHOD_INVOCATIONS_IN_THREAD
+  /// flags set, no dedicated thread is ever used and the call will be
+  /// handled in the same thread as the object that @interface belongs
+  /// to was exported in.
+  int onGAuthorizeMethod(
+    bool Function(GDBusMethodInvocation invocation) callback,
+  ) {
+    return _connectSignal_b_1_o_gdbusmethodinvocation(
+      this.handle,
+      'g-authorize-method',
+      callback,
+    );
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// `GDBusMenuModel` is an implementation of [class@Gio.MenuModel] that can be
@@ -280,5 +352,64 @@ class GDBusMenuModel extends GMenuModel {
         );
       });
     });
+  }
+
+  /// Emitted when a change has occurred to the menu.
+  ///
+  /// The only changes that can occur to a menu is that items are removed
+  /// or added.  Items may not change (except by being removed and added
+  /// back in the same location).  This signal is capable of describing
+  /// both of those changes (at the same time).
+  ///
+  /// The signal means that starting at the index @position, @removed
+  /// items were removed and @added items were added in their place.  If
+  /// @removed is zero then only items were added.  If @added is zero
+  /// then only items were removed.
+  ///
+  /// As an example, if the menu contains items a, b, c, d (in that
+  /// order) and the signal (2, 1, 3) occurs then the new composition of
+  /// the menu will be a, b, \_, \_, \_, d (with each _ representing some
+  /// new item).
+  ///
+  /// Signal handlers may query the model (particularly the added items)
+  /// and expect to see the results of the modification that is being
+  /// reported.  The signal is emitted after the modification.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

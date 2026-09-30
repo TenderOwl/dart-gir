@@ -85,7 +85,7 @@ final class GtkCellEditable {
   /// gtk_cell_editable_editing_done() is a convenience method
   /// for emitting `GtkCellEditable::editing-done`.
   int onEditingDone(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'editing-done', callback);
+    return _connectSignal_v_0(this.handle, 'editing-done', callback);
   }
 
   /// This signal is meant to indicate that the cell is finished
@@ -101,7 +101,7 @@ final class GtkCellEditable {
   /// gtk_cell_editable_remove_widget() is a convenience method
   /// for emitting `GtkCellEditable::remove-widget`.
   int onRemoveWidget(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'remove-widget', callback);
+    return _connectSignal_v_0(this.handle, 'remove-widget', callback);
   }
 }
 
@@ -418,6 +418,19 @@ final class GtkColorChooser {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setUseAlpha(bool useAlpha) {
     _gtkColorChooserSetUseAlpha(this.handle, useAlpha ? 1 : 0);
+  }
+
+  /// Emitted when a color is activated from the color chooser.
+  ///
+  /// This usually happens when the user clicks a color swatch,
+  /// or a color is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onColorActivated(void Function(GdkRGBA color) callback) {
+    return _connectSignal_v_1_o_gdkrgba(
+      this.handle,
+      'color-activated',
+      callback,
+    );
   }
 }
 

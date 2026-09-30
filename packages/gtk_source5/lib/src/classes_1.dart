@@ -638,8 +638,295 @@ class GtkSourceBuffer extends GtkTextBuffer {
     );
   }
 
+  /// @iter is set to a valid iterator pointing to the matching bracket
+  /// if @state is %GTK_SOURCE_BRACKET_MATCH_FOUND. Otherwise @iter is
+  /// meaningless.
+  ///
+  /// The signal is emitted only when the @state changes, typically when
+  /// the cursor moves.
+  ///
+  /// A use-case for this signal is to show messages in a [class@Gtk.Statusbar].
+  int onBracketMatched(
+    void Function(GtkTextIter? iter, GtkSourceBracketMatchType state) callback,
+  ) {
+    return _connectSignal_v_2_o_i_gtktextiter_gtksourcebracketmatchtype(
+      this.handle,
+      'bracket-matched',
+      callback,
+    );
+  }
+
   /// The "cursor-moved" signal is emitted when then insertion mark has moved.
   int onCursorMoved(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'cursor-moved', callback);
+    return _connectSignal_v_0(this.handle, 'cursor-moved', callback);
+  }
+
+  /// The ::highlight-updated signal is emitted when the syntax
+  /// highlighting and [context classes](./class.Buffer.html#context-classes) are updated in a
+  /// certain region of the @buffer.
+  int onHighlightUpdated(
+    void Function(GtkTextIter start, GtkTextIter end) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktextiter_gtktextiter(
+      this.handle,
+      'highlight-updated',
+      callback,
+    );
+  }
+
+  /// The ::source-mark-updated signal is emitted each time
+  /// a mark is added to, moved or removed from the @buffer.
+  int onSourceMarkUpdated(void Function(GtkTextMark mark) callback) {
+    return _connectSignal_v_1_o_gtktextmark(
+      this.handle,
+      'source-mark-updated',
+      callback,
+    );
+  }
+
+  /// Emitted to apply a tag to a range of text in a `GtkTextBuffer`.
+  ///
+  /// Applying actually occurs in the default handler.
+  ///
+  /// Note that if your handler runs before the default handler
+  /// it must not invalidate the @start and @end iters (or has to
+  /// revalidate them).
+  ///
+  /// See also:
+  /// [method@Gtk.TextBuffer.apply_tag],
+  /// [method@Gtk.TextBuffer.insert_with_tags],
+  /// [method@Gtk.TextBuffer.insert_range].
+  int onApplyTag(
+    void Function(GtkTextTag tag, GtkTextIter start, GtkTextIter end) callback,
+  ) {
+    return _connectSignal_v_3_o_o_o_gtktexttag_gtktextiter_gtktextiter(
+      this.handle,
+      'apply-tag',
+      callback,
+    );
+  }
+
+  /// Emitted at the beginning of a single user-visible
+  /// operation on a `GtkTextBuffer`.
+  ///
+  /// See also:
+  /// [method@Gtk.TextBuffer.begin_user_action],
+  /// [method@Gtk.TextBuffer.insert_interactive],
+  /// [method@Gtk.TextBuffer.insert_range_interactive],
+  /// [method@Gtk.TextBuffer.delete_interactive],
+  /// [method@Gtk.TextBuffer.backspace],
+  /// [method@Gtk.TextBuffer.delete_selection].
+  int onBeginUserAction(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'begin-user-action', callback);
+  }
+
+  /// Emitted when the content of a `GtkTextBuffer` has changed.
+  int onChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// Emitted to delete a range from a `GtkTextBuffer`.
+  ///
+  /// Note that if your handler runs before the default handler
+  /// it must not invalidate the @start and @end iters (or has
+  /// to revalidate them). The default signal handler revalidates
+  /// the @start and @end iters to both point to the location
+  /// where text was deleted. Handlers which run after the default
+  /// handler (see g_signal_connect_after()) do not have access to
+  /// the deleted text.
+  ///
+  /// See also: [method@Gtk.TextBuffer.delete].
+  int onDeleteRange(
+    void Function(GtkTextIter start, GtkTextIter end) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktextiter_gtktextiter(
+      this.handle,
+      'delete-range',
+      callback,
+    );
+  }
+
+  /// Emitted at the end of a single user-visible
+  /// operation on the `GtkTextBuffer`.
+  ///
+  /// See also:
+  /// [method@Gtk.TextBuffer.end_user_action],
+  /// [method@Gtk.TextBuffer.insert_interactive],
+  /// [method@Gtk.TextBuffer.insert_range_interactive],
+  /// [method@Gtk.TextBuffer.delete_interactive],
+  /// [method@Gtk.TextBuffer.backspace],
+  /// [method@Gtk.TextBuffer.delete_selection],
+  /// [method@Gtk.TextBuffer.backspace].
+  int onEndUserAction(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'end-user-action', callback);
+  }
+
+  /// Emitted to insert a `GtkTextChildAnchor` in a `GtkTextBuffer`.
+  ///
+  /// Insertion actually occurs in the default handler.
+  ///
+  /// Note that if your handler runs before the default handler
+  /// it must not invalidate the @location iter (or has to
+  /// revalidate it). The default signal handler revalidates
+  /// it to be placed after the inserted @anchor.
+  ///
+  /// See also: [method@Gtk.TextBuffer.insert_child_anchor].
+  int onInsertChildAnchor(
+    void Function(GtkTextIter location, GtkTextChildAnchor anchor) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktextiter_gtktextchildanchor(
+      this.handle,
+      'insert-child-anchor',
+      callback,
+    );
+  }
+
+  /// Emitted to insert a `GdkPaintable` in a `GtkTextBuffer`.
+  ///
+  /// Insertion actually occurs in the default handler.
+  ///
+  /// Note that if your handler runs before the default handler
+  /// it must not invalidate the @location iter (or has to
+  /// revalidate it). The default signal handler revalidates
+  /// it to be placed after the inserted @paintable.
+  ///
+  /// See also: [method@Gtk.TextBuffer.insert_paintable].
+  int onInsertPaintable(
+    void Function(GtkTextIter location, GdkPaintable paintable) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktextiter_gdkpaintable(
+      this.handle,
+      'insert-paintable',
+      callback,
+    );
+  }
+
+  /// Emitted to insert text in a `GtkTextBuffer`.
+  ///
+  /// Insertion actually occurs in the default handler.
+  ///
+  /// Note that if your handler runs before the default handler
+  /// it must not invalidate the @location iter (or has to
+  /// revalidate it). The default signal handler revalidates
+  /// it to point to the end of the inserted text.
+  ///
+  /// See also: [method@Gtk.TextBuffer.insert],
+  /// [method@Gtk.TextBuffer.insert_range].
+  int onInsertText(
+    void Function(GtkTextIter location, String text, int len) callback,
+  ) {
+    return _connectSignal_v_3_o_s_i_gtktextiter_string_int(
+      this.handle,
+      'insert-text',
+      callback,
+    );
+  }
+
+  /// Emitted as notification after a `GtkTextMark` is deleted.
+  ///
+  /// See also: [method@Gtk.TextBuffer.delete_mark].
+  int onMarkDeleted(void Function(GtkTextMark mark) callback) {
+    return _connectSignal_v_1_o_gtktextmark(
+      this.handle,
+      'mark-deleted',
+      callback,
+    );
+  }
+
+  /// Emitted as notification after a `GtkTextMark` is set.
+  ///
+  /// See also:
+  /// [method@Gtk.TextBuffer.create_mark],
+  /// [method@Gtk.TextBuffer.move_mark].
+  int onMarkSet(
+    void Function(GtkTextIter location, GtkTextMark mark) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktextiter_gtktextmark(
+      this.handle,
+      'mark-set',
+      callback,
+    );
+  }
+
+  /// Emitted when the modified bit of a `GtkTextBuffer` flips.
+  ///
+  /// See also: [method@Gtk.TextBuffer.set_modified].
+  int onModifiedChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'modified-changed', callback);
+  }
+
+  /// Emitted after paste operation has been completed.
+  ///
+  /// This is useful to properly scroll the view to the end
+  /// of the pasted text. See [method@Gtk.TextBuffer.paste_clipboard]
+  /// for more details.
+  int onPasteDone(void Function(GdkClipboard clipboard) callback) {
+    return _connectSignal_v_1_o_gdkclipboard(
+      this.handle,
+      'paste-done',
+      callback,
+    );
+  }
+
+  /// Emitted when a request has been made to redo the
+  /// previously undone operation.
+  int onRedo(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'redo', callback);
+  }
+
+  /// Emitted to remove all occurrences of @tag from a range
+  /// of text in a `GtkTextBuffer`.
+  ///
+  /// Removal actually occurs in the default handler.
+  ///
+  /// Note that if your handler runs before the default handler
+  /// it must not invalidate the @start and @end iters (or has
+  /// to revalidate them).
+  ///
+  /// See also: [method@Gtk.TextBuffer.remove_tag].
+  int onRemoveTag(
+    void Function(GtkTextTag tag, GtkTextIter start, GtkTextIter end) callback,
+  ) {
+    return _connectSignal_v_3_o_o_o_gtktexttag_gtktextiter_gtktextiter(
+      this.handle,
+      'remove-tag',
+      callback,
+    );
+  }
+
+  /// Emitted when a request has been made to undo the
+  /// previous operation or set of operations that have
+  /// been grouped together.
+  int onUndo(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'undo', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

@@ -422,4 +422,25 @@ final class GdkToplevel {
   bool titlebarGesture(GdkTitlebarGesture gesture) {
     return (_gdkToplevelTitlebarGesture(this.handle, gesture.value)) != 0;
   }
+
+  /// Emitted when the size for the surface needs to be computed, when
+  /// it is present.
+  ///
+  /// This signal will normally be emitted during or after a call to
+  /// [method@Gdk.Toplevel.present], depending on the configuration
+  /// received by the windowing system. It may also be emitted at any
+  /// other point in time, in response to the windowing system
+  /// spontaneously changing the configuration of the toplevel surface.
+  ///
+  /// It is the responsibility of the toplevel user to handle this signal
+  /// and compute the desired size of the toplevel, given the information
+  /// passed via the [struct@Gdk.ToplevelSize] object. Failing to do so
+  /// will result in an arbitrary size being used as a result.
+  int onComputeSize(void Function(GdkToplevelSize size) callback) {
+    return _connectSignal_v_1_o_gdktoplevelsize(
+      this.handle,
+      'compute-size',
+      callback,
+    );
+  }
 }

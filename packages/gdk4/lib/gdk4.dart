@@ -47,3 +47,7 @@ part 'src/classes_8.dart';
 part 'src/classes_9.dart';
 part 'src/classes_10.dart';
 part 'src/classes_11.dart';
+part 'src/classes_12.dart';
+part 'src/classes_13.dart';
+part 'src/classes_14.dart';
+part 'src/classes_15.dart';

@@ -460,6 +460,44 @@ final class GActionGroup {
           0;
     });
   }
+
+  /// Signals that a new action was just added to the group.
+  ///
+  /// This signal is emitted after the action has been added
+  /// and is now visible.
+  int onActionAdded(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-added', callback);
+  }
+
+  /// Signals that the enabled status of the named action has changed.
+  int onActionEnabledChanged(
+    void Function(String actionName, bool enabled) callback,
+  ) {
+    return _connectSignal_v_2_s_b_string_bool(
+      this.handle,
+      'action-enabled-changed',
+      callback,
+    );
+  }
+
+  /// Signals that an action is just about to be removed from the group.
+  ///
+  /// This signal is emitted before the action is removed, so the action
+  /// is still visible and can be queried from the signal handler.
+  int onActionRemoved(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-removed', callback);
+  }
+
+  /// Signals that the state of the named action has changed.
+  int onActionStateChanged(
+    void Function(String actionName, GVariant value) callback,
+  ) {
+    return _connectSignal_v_2_s_o_string_gvariant(
+      this.handle,
+      'action-state-changed',
+      callback,
+    );
+  }
 }
 
 /// `GActionMap` is an interface for action containers.

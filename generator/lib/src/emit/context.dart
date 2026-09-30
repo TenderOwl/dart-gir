@@ -233,8 +233,8 @@ class EmitContext {
   /// unwrapped to their target declaration, duplicates canonicalized to the
   /// owning namespace, and types in non-generated packages reported as
   /// unsupported.
-  TypeMapping resolve(GirTypeRef ref) {
-    final m = resolver.resolve(ref, currentNamespace: namespace);
+  TypeMapping resolve(GirTypeRef ref, {GirNamespace? relativeTo}) {
+    final m = resolver.resolve(ref, currentNamespace: relativeTo ?? namespace);
     switch (m.kind) {
       case TypeKind.classType:
       case TypeKind.interface:
@@ -243,7 +243,7 @@ class EmitContext {
       case TypeKind.enumeration:
       case TypeKind.bitfield:
       case TypeKind.callback:
-        final found = findDeclaration(ref.name);
+        final found = findDeclaration(ref.name, relativeTo: relativeTo);
         if (found == null) {
           return TypeMapping.unsupported('unknown type: ${ref.name}');
         }
@@ -316,11 +316,16 @@ class EmitContext {
   }
 
   /// Builds a [TypeBridge] for [ref]. On failure returns `(null, reason)`.
+  /// [relativeTo] overrides the current namespace for type resolution —
+  /// used when emitting inherited signals whose arg types belong to an
+  /// ancestor namespace (e.g. an Adw class emitting a Gtk signal whose
+  /// `Window` arg must resolve against the Gtk namespace).
   (TypeBridge?, String?) bridgeFor(
     GirTypeRef? ref, {
     bool nullable = false,
     GirTransferOwnership transfer = GirTransferOwnership.none,
     bool forReturn = false,
+    GirNamespace? relativeTo,
   }) {
     if (ref == null) {
       return (
@@ -335,7 +340,7 @@ class EmitContext {
         null,
       );
     }
-    final m = resolve(ref);
+    final m = resolve(ref, relativeTo: relativeTo);
     if (m.requiredImport != null) imports.add(m.requiredImport!);
     switch (m.kind) {
       case TypeKind.voidType:

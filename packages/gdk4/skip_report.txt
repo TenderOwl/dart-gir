@@ -1,15 +1,13 @@
 # Skip report for package gdk4 (Gdk 4.0)
-Total skipped: 404
+Total skipped: 386
 
 ## By category
 constant: 334
 callable: 49
-signal: 18
 method: 2
 renamed: 1
 
 ## By reason
-only void(void) supported in this release: 18
 parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 8
 parameter mime_types: array types are handled in a later phase: 3
 parameter destroy: nullable callback parameter (GLib.DestroyNotify): 2
@@ -23,6 +21,7 @@ caller-allocates out parameter dest: 2
 parameter data: array types are handled in a later phase: 2
 parameter keys: array types are handled in a later phase: 2
 name collision: keySerbianDje: 1
+name collision: keyArmenianJe: 1
 name collision: keyArmenianKe: 1
 name collision: keyArmenianKen: 1
 name collision: keyArmenianKhe: 1
@@ -367,9 +366,8 @@ parameter providers: array types are handled in a later phase: 1
 return: string list return type (null): 1
 parameter win_x: nullable scalar parameter (gdouble): 1
 name collision: keyArmenianHo: 1
-name collision: keyArmenianIni: 1
 parameter keyval: nullable scalar parameter (guint): 1
-name collision: keyArmenianJe: 1
+name collision: keyArmenianIni: 1
 parameter axes: array types are handled in a later phase: 1
 return: array types are handled in a later phase: 1
 parameter refresh_interval_return: nullable scalar parameter (gint64): 1

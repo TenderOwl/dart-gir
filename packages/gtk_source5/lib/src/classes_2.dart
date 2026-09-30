@@ -190,13 +190,66 @@ class GtkSourceCompletion extends GObject {
   /// The "hide" signal is emitted when the completion window should
   /// be hidden.
   int onHide(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'hide', callback);
+    return _connectSignal_v_0(this.handle, 'hide', callback);
+  }
+
+  /// The "provided-added" signal is emitted when a new provider is
+  /// added to the completion.
+  int onProviderAdded(
+    void Function(GtkSourceCompletionProvider provider) callback,
+  ) {
+    return _connectSignal_v_1_o_gtksourcecompletionprovider(
+      this.handle,
+      'provider-added',
+      callback,
+    );
+  }
+
+  /// The "provided-removed" signal is emitted when a provider has
+  /// been removed from the completion.
+  int onProviderRemoved(
+    void Function(GtkSourceCompletionProvider provider) callback,
+  ) {
+    return _connectSignal_v_1_o_gtksourcecompletionprovider(
+      this.handle,
+      'provider-removed',
+      callback,
+    );
   }
 
   /// The "show" signal is emitted when the completion window should
   /// be shown.
   int onShow(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'show', callback);
+    return _connectSignal_v_0(this.handle, 'show', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -357,454 +410,175 @@ class GtkSourceCompletionCell extends GtkWidget {
   void setWidget(GtkWidget child) {
     _gtkSourceCompletionCellSetWidget(this.handle, child.handle);
   }
-}
 
-/// The context of a completion.
-///
-/// `GtkSourceCompletionContext` contains information about an attept to display
-/// completion proposals to the user based on typed text in the [class@View].
-///
-/// When typing, [class@Completion] may use registered
-/// [iface@CompletionProvider] to determine if there may be results which
-/// could be displayed. If so, a `GtkSourceCompletionContext` is created with
-/// information that is provided to the [iface@CompletionProvider] to populate
-/// results which might be useful to the user.
-///
-/// [iface@CompletionProvider] are expected to provide [iface@Gio.ListModel] with
-/// [iface@CompletionProposal] which may be joined together in a list of
-/// results for the user. They are also responsible for how the contents are
-/// displayed using [class@CompletionCell] which allows for some level of
-/// customization.
-class GtkSourceCompletionContext extends GObject {
-  GtkSourceCompletionContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Gets the mode for which the context was activated.
-  static final _gtkSourceCompletionContextGetActivation =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_context_get_activation')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceCompletionActivation getActivation() {
-    return GtkSourceCompletionActivation.fromValue(
-      _gtkSourceCompletionContextGetActivation(this.handle),
-    );
-  }
-
-  /// Gets the underlying buffer used by the context.
+  /// Signals that all holders of a reference to the widget should release
+  /// the reference that they hold.
   ///
-  /// This is a convenience function to get the buffer via the #GtkSourceCompletion
-  /// property.
-  static final _gtkSourceCompletionContextGetBuffer =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_context_get_buffer')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceBuffer? getBuffer() {
-    return (_gtkSourceCompletionContextGetBuffer(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceBuffer.fromPointer(
-            _gtkSourceCompletionContextGetBuffer(this.handle),
-          );
-  }
-
-  /// Gets the "busy" property. This is set to %TRUE while the completion
-  /// context is actively fetching proposals from registered
-  /// #GtkSourceCompletionProvider's.
-  static final _gtkSourceCompletionContextGetBusy =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_context_get_busy')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getBusy() {
-    return (_gtkSourceCompletionContextGetBusy(this.handle)) != 0;
-  }
-
-  /// Gets the #GtkSourceCompletion that created the context.
-  static final _gtkSourceCompletionContextGetCompletion =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_context_get_completion')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceCompletion? getCompletion() {
-    return (_gtkSourceCompletionContextGetCompletion(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GtkSourceCompletion.fromPointer(
-            _gtkSourceCompletionContextGetCompletion(this.handle),
-          );
-  }
-
-  /// Checks if any proposals have been provided to the context.
+  /// May result in finalization of the widget if all references are released.
   ///
-  /// Out of convenience, this function will return %TRUE if @self is %NULL.
-  static final _gtkSourceCompletionContextGetEmpty =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_completion_context_get_empty')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getEmpty() {
-    return (_gtkSourceCompletionContextGetEmpty(this.handle)) != 0;
+  /// This signal is not suitable for saving widget state.
+  int onDestroy(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'destroy', callback);
   }
 
-  /// Gets the language of the underlying buffer, if any.
-  static final _gtkSourceCompletionContextGetLanguage =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_context_get_language')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceLanguage? getLanguage() {
-    return (_gtkSourceCompletionContextGetLanguage(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceLanguage.fromPointer(
-            _gtkSourceCompletionContextGetLanguage(this.handle),
-          );
-  }
-
-  /// Gets the #GListModel associated with the provider.
-  ///
-  /// You can connect to #GtkSourceCompletionContext::model-changed to receive
-  /// notifications about when the model has been replaced by a new model.
-  static final _gtkSourceCompletionContextGetProposalsForProvider =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_source_completion_context_get_proposals_for_provider')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GListModel? getProposalsForProvider(GtkSourceCompletionProvider provider) {
-    return (_gtkSourceCompletionContextGetProposalsForProvider(
-              this.handle,
-              provider.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GListModel.fromPointer(
-            _gtkSourceCompletionContextGetProposalsForProvider(
-              this.handle,
-              provider.handle,
-            ),
-          );
-  }
-
-  /// Gets the text view for the context.
-  static final _gtkSourceCompletionContextGetView =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_context_get_view')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceView? getView() {
-    return (_gtkSourceCompletionContextGetView(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceView.fromPointer(
-            _gtkSourceCompletionContextGetView(this.handle),
-          );
-  }
-
-  /// Gets the word that is being completed up to the position of the insert mark.
-  static final _gtkSourceCompletionContextGetWord =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_context_get_word')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getWord() {
-    return stringFromNative(
-      (_gtkSourceCompletionContextGetWord(this.handle)).cast(),
-      free: true,
-    )!;
-  }
-
-  /// Gets the providers that are associated with the context.
-  static final _gtkSourceCompletionContextListProviders =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_context_list_providers')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GListModel listProviders() {
-    return GListModel.fromPointer(
-      _gtkSourceCompletionContextListProviders(this.handle),
-    );
-  }
-
-  /// This function allows providers to update their results for a context
-  /// outside of a call to [method@CompletionProvider.populate_async].
-  ///
-  /// This can be used to immediately return results for a provider while it does
-  /// additional asynchronous work. Doing so will allow the completions to
-  /// update while the operation is in progress.
-  static final _gtkSourceCompletionContextSetProposalsForProvider =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_source_completion_context_set_proposals_for_provider')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void setProposalsForProvider(
-    GtkSourceCompletionProvider provider, [
-    GListModel? results,
-  ]) {
-    _gtkSourceCompletionContextSetProposalsForProvider(
+  /// Emitted when the text direction of a widget changes.
+  int onDirectionChanged(
+    void Function(GtkTextDirection previousDirection) callback,
+  ) {
+    return _connectSignal_v_1_i_gtktextdirection(
       this.handle,
-      provider.handle,
-      results?.handle ?? ffi.nullptr,
-    );
-  }
-}
-
-/// A [iface@CompletionProvider] for the completion of snippets.
-///
-/// The `GtkSourceCompletionSnippets` is an example of an implementation of
-/// the [iface@CompletionProvider] interface. The proposals are snippets
-/// registered with the [class@SnippetManager].
-class GtkSourceCompletionSnippets extends GObject {
-  GtkSourceCompletionSnippets.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-  static final _gtkSourceCompletionSnippetsNew =
-      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_source_completion_snippets_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceCompletionSnippets() {
-    return GtkSourceCompletionSnippets.fromPointer(
-      _gtkSourceCompletionSnippetsNew(),
-      owned: true,
-    );
-  }
-}
-
-/// A [iface@CompletionProvider] for the completion of words.
-///
-/// The `GtkSourceCompletionWords` is an example of an implementation of
-/// the [iface@CompletionProvider] interface. The proposals are words
-/// appearing in the registered [class@Gtk.TextBuffer]s.
-class GtkSourceCompletionWords extends GObject {
-  GtkSourceCompletionWords.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-  static final _gtkSourceCompletionWordsNew =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('gtk_source_completion_words_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  factory GtkSourceCompletionWords([String? title]) {
-    return withNativeString(title, (nativeTitle) {
-      return GtkSourceCompletionWords.fromPointer(
-        _gtkSourceCompletionWordsNew(nativeTitle.cast<Utf8>()),
-        owned: true,
-      );
-    });
-  }
-
-  /// Registers @buffer in the @words provider.
-  static final _gtkSourceCompletionWordsRegister =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_words_register')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void register(GtkTextBuffer buffer) {
-    _gtkSourceCompletionWordsRegister(this.handle, buffer.handle);
-  }
-
-  /// Unregisters @buffer from the @words provider.
-  static final _gtkSourceCompletionWordsUnregister =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_words_unregister')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void unregister(GtkTextBuffer buffer) {
-    _gtkSourceCompletionWordsUnregister(this.handle, buffer.handle);
-  }
-}
-
-/// On-disk representation of a [class@Buffer].
-///
-/// A `GtkSourceFile` object is the on-disk representation of a [class@Buffer].
-/// With a `GtkSourceFile`, you can create and configure a [class@FileLoader]
-/// and [class@FileSaver] which take by default the values of the
-/// `GtkSourceFile` properties (except for the file loader which auto-detect some
-/// properties). On a successful load or save operation, the `GtkSourceFile`
-/// properties are updated. If an operation fails, the `GtkSourceFile` properties
-/// have still the previous valid values.
-class GtkSourceFile extends GObject {
-  GtkSourceFile.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-  static final _gtkSourceFileNew =
-      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_source_file_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceFile() {
-    return GtkSourceFile.fromPointer(_gtkSourceFileNew(), owned: true);
-  }
-
-  /// Checks synchronously the file on disk, to know whether the file is externally
-  /// modified, or has been deleted, and whether the file is read-only.
-  ///
-  /// #GtkSourceFile doesn't create a [class@Gio.FileMonitor] to track those properties, so
-  /// this function needs to be called instead. Creating lots of [class@Gio.FileMonitor]'s
-  /// would take lots of resources.
-  ///
-  /// Since this function is synchronous, it is advised to call it only on local
-  /// files. See [method@File.is_local].
-  static final _gtkSourceFileCheckFileOnDisk =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_check_file_on_disk')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void checkFileOnDisk() {
-    _gtkSourceFileCheckFileOnDisk(this.handle);
-  }
-
-  static final _gtkSourceFileGetCompressionType =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_get_compression_type')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceCompressionType getCompressionType() {
-    return GtkSourceCompressionType.fromValue(
-      _gtkSourceFileGetCompressionType(this.handle),
+      'direction-changed',
+      callback,
     );
   }
 
-  /// The encoding is initially %NULL. After a successful file loading or saving
-  /// operation, the encoding is non-%NULL.
-  static final _gtkSourceFileGetEncoding =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_file_get_encoding')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceEncoding getEncoding() {
-    return GtkSourceEncoding.fromPointer(
-      _gtkSourceFileGetEncoding(this.handle),
+  /// Emitted when @widget is hidden.
+  int onHide(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'hide', callback);
+  }
+
+  /// Emitted if keyboard navigation fails.
+  ///
+  /// See [method@Gtk.Widget.keynav_failed] for details.
+  int onKeynavFailed(bool Function(GtkDirectionType direction) callback) {
+    return _connectSignal_b_1_i_gtkdirectiontype(
+      this.handle,
+      'keynav-failed',
+      callback,
     );
   }
 
-  static final _gtkSourceFileGetLocation =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_file_get_location')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GFile? getLocation() {
-    return (_gtkSourceFileGetLocation(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkSourceFileGetLocation(this.handle));
+  /// Emitted when @widget is going to be mapped.
+  ///
+  /// A widget is mapped when the widget is visible (which is controlled with
+  /// [property@Gtk.Widget:visible]) and all its parents up to the toplevel widget
+  /// are also visible.
+  ///
+  /// The `::map` signal can be used to determine whether a widget will be drawn,
+  /// for instance it can resume an animation that was stopped during the
+  /// emission of [signal@Gtk.Widget::unmap].
+  int onMap(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'map', callback);
   }
 
-  static final _gtkSourceFileGetNewlineType =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_get_newline_type')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceNewlineType getNewlineType() {
-    return GtkSourceNewlineType.fromValue(
-      _gtkSourceFileGetNewlineType(this.handle),
+  /// Emitted when a widget is activated via a mnemonic.
+  ///
+  /// The default handler for this signal activates @widget if @group_cycling
+  /// is false, or just makes @widget grab focus if @group_cycling is true.
+  int onMnemonicActivate(bool Function(bool groupCycling) callback) {
+    return _connectSignal_b_1_b_bool(
+      this.handle,
+      'mnemonic-activate',
+      callback,
     );
   }
 
-  /// Returns whether the file has been deleted. If the
-  /// [property@File:location] is %NULL, returns %FALSE.
+  /// Emitted when the focus is moved.
   ///
-  /// To have an up-to-date value, you must first call
-  /// [method@File.check_file_on_disk].
-  static final _gtkSourceFileIsDeleted =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_is_deleted')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isDeleted() {
-    return (_gtkSourceFileIsDeleted(this.handle)) != 0;
-  }
-
-  /// Returns whether the file is externally modified. If the
-  /// [property@File:location] is %NULL, returns %FALSE.
+  /// The `::move-focus` signal is a [keybinding signal](class.SignalAction.html).
   ///
-  /// To have an up-to-date value, you must first call
-  /// [method@File.check_file_on_disk].
-  static final _gtkSourceFileIsExternallyModified =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_is_externally_modified')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isExternallyModified() {
-    return (_gtkSourceFileIsExternallyModified(this.handle)) != 0;
+  /// The default bindings for this signal are <kbd>Tab</kbd> to move forward,
+  /// and <kbd>Shift</kbd>+<kbd>Tab</kbd> to move backward.
+  int onMoveFocus(void Function(GtkDirectionType direction) callback) {
+    return _connectSignal_v_1_i_gtkdirectiontype(
+      this.handle,
+      'move-focus',
+      callback,
+    );
   }
 
-  /// Returns whether the file is local. If the [property@File:location] is %NULL,
-  /// returns %FALSE.
-  static final _gtkSourceFileIsLocal =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_is_local')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isLocal() {
-    return (_gtkSourceFileIsLocal(this.handle)) != 0;
-  }
-
-  /// Returns whether the file is read-only. If the
-  /// [property@File:location] is %NULL, returns %FALSE.
+  /// Emitted when the widget’s tooltip is about to be shown.
   ///
-  /// To have an up-to-date value, you must first call
-  /// [method@File.check_file_on_disk].
-  static final _gtkSourceFileIsReadonly =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_file_is_readonly')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isReadonly() {
-    return (_gtkSourceFileIsReadonly(this.handle)) != 0;
+  /// This happens when the [property@Gtk.Widget:has-tooltip] property
+  /// is true and the hover timeout has expired with the cursor hovering
+  /// above @widget; or emitted when @widget got focus in keyboard mode.
+  ///
+  /// Using the given coordinates, the signal handler should determine
+  /// whether a tooltip should be shown for @widget. If this is the case
+  /// true should be returned, false otherwise. Note that if @keyboard_mode
+  /// is true, the values of @x and @y are undefined and should not be used.
+  ///
+  /// The signal handler is free to manipulate @tooltip with the therefore
+  /// destined function calls.
+  int onQueryTooltip(
+    bool Function(int x, int y, bool keyboardMode, GtkTooltip tooltip) callback,
+  ) {
+    return _connectSignal_b_4_i_i_b_o_int_int_bool_gtktooltip(
+      this.handle,
+      'query-tooltip',
+      callback,
+    );
   }
 
-  /// Sets the location.
-  static final _gtkSourceFileSetLocation =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_file_set_location')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setLocation([GFile? location]) {
-    _gtkSourceFileSetLocation(this.handle, location?.handle ?? ffi.nullptr);
+  /// Emitted when @widget is associated with a `GdkSurface`.
+  ///
+  /// This means that [method@Gtk.Widget.realize] has been called
+  /// or the widget has been mapped (that is, it is going to be drawn).
+  int onRealize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'realize', callback);
+  }
+
+  /// Emitted when @widget is shown.
+  int onShow(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'show', callback);
+  }
+
+  /// Emitted when the widget state changes.
+  ///
+  /// See [method@Gtk.Widget.get_state_flags].
+  int onStateFlagsChanged(void Function(GtkStateFlags flags) callback) {
+    return _connectSignal_v_1_u_gtkstateflags(
+      this.handle,
+      'state-flags-changed',
+      callback,
+    );
+  }
+
+  /// Emitted when @widget is going to be unmapped.
+  ///
+  /// A widget is unmapped when either it or any of its parents up to the
+  /// toplevel widget have been set as hidden.
+  ///
+  /// As `::unmap` indicates that a widget will not be shown any longer,
+  /// it can be used to, for example, stop an animation on the widget.
+  int onUnmap(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'unmap', callback);
+  }
+
+  /// Emitted when the `GdkSurface` associated with @widget is destroyed.
+  ///
+  /// This means that [method@Gtk.Widget.unrealize] has been called
+  /// or the widget has been unmapped (that is, it is going to be hidden).
+  int onUnrealize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'unrealize', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

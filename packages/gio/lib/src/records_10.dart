@@ -524,116 +524,22 @@ final class GDBusObject {
       free: false,
     )!;
   }
-}
 
-/// The `GDBusObjectManager` type is the base type for service- and
-/// client-side implementations of the standardized
-/// [`org.freedesktop.DBus.ObjectManager`](http://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-objectmanager)
-/// interface.
-///
-/// See [class@Gio.DBusObjectManagerClient] for the client-side implementation
-/// and [class@Gio.DBusObjectManagerServer] for the service-side implementation.
-final class GDBusObjectManager {
-  GDBusObjectManager.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Gets the interface proxy for @interface_name at @object_path, if
-  /// any.
-  static final _gDbusObjectManagerGetInterface =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_object_manager_get_interface')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GDBusInterface? getInterface(String objectPath, String interfaceName) {
-    return withNativeString(objectPath, (nativeObjectPath) {
-      return withNativeString(interfaceName, (nativeInterfaceName) {
-        return (_gDbusObjectManagerGetInterface(
-                  this.handle,
-                  nativeObjectPath.cast<Utf8>(),
-                  nativeInterfaceName.cast<Utf8>(),
-                )) ==
-                ffi.nullptr
-            ? null
-            : GDBusInterface.fromPointer(
-                _gDbusObjectManagerGetInterface(
-                  this.handle,
-                  nativeObjectPath.cast<Utf8>(),
-                  nativeInterfaceName.cast<Utf8>(),
-                ),
-              );
-      });
-    });
+  /// Emitted when @interface is added to @object.
+  int onInterfaceAdded(void Function(GDBusInterface interface_) callback) {
+    return _connectSignal_v_1_o_gdbusinterface(
+      this.handle,
+      'interface-added',
+      callback,
+    );
   }
 
-  /// Gets the #GDBusObject at @object_path, if any.
-  static final _gDbusObjectManagerGetObject =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_object_manager_get_object')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GDBusObject? getObject(String objectPath) {
-    return withNativeString(objectPath, (nativeObjectPath) {
-      return (_gDbusObjectManagerGetObject(
-                this.handle,
-                nativeObjectPath.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusObject.fromPointer(
-              _gDbusObjectManagerGetObject(
-                this.handle,
-                nativeObjectPath.cast<Utf8>(),
-              ),
-            );
-    });
-  }
-
-  /// Gets the object path that @manager is for.
-  static final _gDbusObjectManagerGetObjectPath =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_get_object_path')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getObjectPath() {
-    return stringFromNative(
-      (_gDbusObjectManagerGetObjectPath(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Gets all #GDBusObject objects known to @manager.
-  static final _gDbusObjectManagerGetObjects =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_get_objects')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getObjects() {
-    return GList.fromPointer(_gDbusObjectManagerGetObjects(this.handle));
+  /// Emitted when @interface is removed from @object.
+  int onInterfaceRemoved(void Function(GDBusInterface interface_) callback) {
+    return _connectSignal_v_1_o_gdbusinterface(
+      this.handle,
+      'interface-removed',
+      callback,
+    );
   }
 }

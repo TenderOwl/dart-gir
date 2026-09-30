@@ -1,14 +1,13 @@
 # Skip report for package gtk_source5 (GtkSource 5)
-Total skipped: 75
+Total skipped: 54
 
 ## By category
 callable: 46
-signal: 23
 renamed: 4
 method: 2
+signal: 2
 
 ## By reason
-only void(void) supported in this release: 23
 return: string list return type (null): 10
 parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 5
 inout parameter iter: 5
@@ -19,6 +18,7 @@ caller-allocates out parameter start: 2
 caller-allocates out parameter begin: 2
 parameter progress_callback: nullable callback parameter (Gio.FileProgressCallback): 2
 parameter width: nullable scalar parameter (gint): 2
+unsupported return type: utf8: 2
 return: array types are handled in a later phase: 2
 moved to Encoding.get_all: 1
 moved to Encoding.get_current: 1
@@ -50,21 +50,12 @@ override-incompatible with ancestor; renamed to getGutterView: 1
 [callable] GtkSourceBuffer.getContextClassesAtIter — return: string list return type (null)
 [callable] GtkSourceBuffer.iterBackwardToContextClassToggle — inout parameter iter
 [callable] GtkSourceBuffer.iterForwardToContextClassToggle — inout parameter iter
-[signal] GtkSourceBuffer.bracket-matched — only void(void) supported in this release
-[signal] GtkSourceBuffer.highlight-updated — only void(void) supported in this release
-[signal] GtkSourceBuffer.source-mark-updated — only void(void) supported in this release
 [callable] GtkSourceCompletion.fuzzyMatch — parameter priority: nullable scalar parameter (guint)
-[signal] GtkSourceCompletion.provider-added — only void(void) supported in this release
-[signal] GtkSourceCompletion.provider-removed — only void(void) supported in this release
 [callable] GtkSourceCompletionContext.getBounds — caller-allocates out parameter begin
-[signal] GtkSourceCompletionContext.provider-model-changed — only void(void) supported in this release
 [callable] GtkSourceFileLoader.loadAsync — parameter progress_callback: nullable callback parameter (Gio.FileProgressCallback)
 [callable] GtkSourceFileSaver.saveAsync — parameter progress_callback: nullable callback parameter (Gio.FileProgressCallback)
 [callable] GtkSourceGutterLines.getIterAtLine — caller-allocates out parameter iter
 [renamed] GtkSourceGutterRenderer.activate — override-incompatible with ancestor; renamed to activateGutterRenderer
-[signal] GtkSourceGutterRenderer.activate — only void(void) supported in this release
-[signal] GtkSourceGutterRenderer.query-activatable — only void(void) supported in this release
-[signal] GtkSourceGutterRenderer.query-data — only void(void) supported in this release
 [renamed] GtkSourceGutterRendererText.measure — override-incompatible with ancestor; renamed to measureGutterRendererText
 [callable] GtkSourceGutterRendererText.measureGutterRendererText — parameter width: nullable scalar parameter (gint)
 [callable] GtkSourceGutterRendererText.measureMarkup — parameter width: nullable scalar parameter (gint)
@@ -77,11 +68,20 @@ override-incompatible with ancestor; renamed to getGutterView: 1
 [callable] GtkSourceLanguageManager.getLanguageIds — return: string list return type (null)
 [callable] GtkSourceLanguageManager.getSearchPath — return: string list return type (null)
 [callable] GtkSourceMarkAttributes.getBackground — caller-allocates out parameter background
-[signal] GtkSourceMarkAttributes.query-tooltip-markup — only void(void) supported in this release
-[signal] GtkSourceMarkAttributes.query-tooltip-text — only void(void) supported in this release
+[signal] GtkSourceMarkAttributes.query-tooltip-markup — unsupported return type: utf8
+[signal] GtkSourceMarkAttributes.query-tooltip-text — unsupported return type: utf8
 [callable] GtkSourceRegion.getBounds — caller-allocates out parameter start
 [callable] GtkSourceRegion.getStartRegionIter — caller-allocates out parameter iter
 [method] GtkSourceRegion.toString — name collision
 [callable] GtkSourceSearchContext.backward — caller-allocates out parameter match_start
 [callable] GtkSourceSearchContext.backwardAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
 [callable] GtkSourceSearchContext.backwardFinish — caller-allocates out parameter match_start
+[callable] GtkSourceSearchContext.forward — caller-allocates out parameter match_start
+[callable] GtkSourceSearchContext.forwardAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
+[callable] GtkSourceSearchContext.forwardFinish — caller-allocates out parameter match_start
+[callable] GtkSourceSnippetManager.getSearchPath — return: string list return type (null)
+[callable] GtkSourceSnippetManager.listGroups — return: array types are handled in a later phase
+[callable] GtkSourceStyleScheme.getAuthors — return: string list return type (null)
+[callable] GtkSourceStyleSchemeManager.getSchemeIds — return: string list return type (null)
+[callable] GtkSourceStyleSchemeManager.getSearchPath — return: string list return type (null)
+[renamed] GtkSourceView.getGutter — override-incompatible with ancestor; renamed to getGutterView

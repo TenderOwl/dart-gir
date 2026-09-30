@@ -93,6 +93,35 @@ class GtkSourceAnnotation extends GObject {
       _gtkSourceAnnotationGetStyle(this.handle),
     );
   }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// It is used to provide annotations and display them on [class@View] and also populate
@@ -195,7 +224,36 @@ class GtkSourceAnnotationProvider extends GObject {
   }
 
   int onChanged(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'changed', callback);
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -241,6 +299,35 @@ class GtkSourceAnnotations extends GObject {
   }
 
   int onChanged(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'changed', callback);
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

@@ -26,6 +26,10 @@ class MyApp {
       log('onStartup called', level: 0);
     });
 
+    app.onNotify((pspec) {
+      print('onNotify: ${pspec.getName()}');
+    });
+
     // Connect the 'shutdown' signal to quit the application properly.
     app.onShutdown(onQuit);
     app.setAccelsForAction('window.close', ['<Primary>w']);

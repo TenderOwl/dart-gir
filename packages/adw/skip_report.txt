@@ -1,43 +1,47 @@
 # Skip report for package adw (Adw 1)
-Total skipped: 75
+Total skipped: 54
 
 ## By category
 callable: 39
-signal: 29
+signal: 8
 renamed: 6
 method: 1
 
 ## By reason
-only void(void) supported in this release: 29
 return: string list return type (null): 8
+unsupported return type: Gdk.DragAction: 4
 parameter people: array types are handled in a later phase: 4
 parameter types: array types are handled in a later phase: 3
-parameter artists: array types are handled in a later phase: 2
 parameter designers: array types are handled in a later phase: 2
+parameter artists: array types are handled in a later phase: 2
 parameter developers: array types are handled in a later phase: 2
 parameter documenters: array types are handled in a later phase: 2
 parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 2
+moved to LengthUnit.to_px: 1
+moved to LengthUnit.from_px: 1
 moved to AccentColor.to_rgba: 1
 moved to AccentColor.to_standalone_rgba: 1
-moved to BreakpointCondition.parse: 1
-moved to Easing.ease: 1
-moved to LengthUnit.from_px: 1
-moved to LengthUnit.to_px: 1
 caller-allocates out parameter standalone_rgba: 1
-name collision: 1
 override-incompatible with ancestor; renamed to activateActionRow: 1
+name collision: 1
+unsupported arg type at index 0: gpointer: 1
 override-incompatible with ancestor; renamed to getSizeAvatar: 1
 parameter objects: array types are handled in a later phase: 1
 parameter pages: array types are handled in a later phase: 1
 parameter tags: array types are handled in a later phase: 1
+caller-allocates out parameter rect: 1
 parameter create_row_func: nullable callback parameter (Gtk.ListBoxCreateWidgetFunc): 1
 override-incompatible with ancestor; renamed to getNamePreferencesPage: 1
 override-incompatible with ancestor; renamed to setNamePreferencesPage: 1
+moved to BreakpointCondition.parse: 1
+moved to Easing.ease: 1
 parameter create_item_func: nullable callback parameter (SidebarSectionCreateItemFunc): 1
 override-incompatible with ancestor; renamed to getDirectionSplitButton: 1
 override-incompatible with ancestor; renamed to setDirectionSplitButton: 1
+unsupported return type: TabPage: 1
+unsupported return type: TabView: 1
 return: array types are handled in a later phase: 1
-caller-allocates out parameter rect: 1
+unsupported return type: NavigationPage: 1
 
 ## First 50 entries
 [callable] Adw.accentColorToRgba — moved to AccentColor.to_rgba
@@ -58,7 +62,6 @@ caller-allocates out parameter rect: 1
 [callable] AdwAboutDialog.setDesigners — parameter designers: array types are handled in a later phase
 [callable] AdwAboutDialog.setDevelopers — parameter developers: array types are handled in a later phase
 [callable] AdwAboutDialog.setDocumenters — parameter documenters: array types are handled in a later phase
-[signal] AdwAboutDialog.activate-link — only void(void) supported in this release
 [callable] AdwAboutWindow.addAcknowledgementSection — parameter people: array types are handled in a later phase
 [callable] AdwAboutWindow.addCreditSection — parameter people: array types are handled in a later phase
 [callable] AdwAboutWindow.getArtists — return: string list return type (null)
@@ -69,24 +72,25 @@ caller-allocates out parameter rect: 1
 [callable] AdwAboutWindow.setDesigners — parameter designers: array types are handled in a later phase
 [callable] AdwAboutWindow.setDevelopers — parameter developers: array types are handled in a later phase
 [callable] AdwAboutWindow.setDocumenters — parameter documenters: array types are handled in a later phase
-[signal] AdwAboutWindow.activate-link — only void(void) supported in this release
 [renamed] AdwActionRow.activate — override-incompatible with ancestor; renamed to activateActionRow
 [callable] AdwAlertDialog.choose — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
-[signal] AdwAlertDialog.response — only void(void) supported in this release
+[signal] AdwApplication.open — unsupported arg type at index 0: gpointer
 [renamed] AdwAvatar.getSize — override-incompatible with ancestor; renamed to getSizeAvatar
 [callable] AdwBreakpoint.addSettersv — parameter objects: array types are handled in a later phase
-[signal] AdwCarousel.page-changed — only void(void) supported in this release
 [callable] AdwMessageDialog.choose — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
-[signal] AdwMessageDialog.response — only void(void) supported in this release
 [callable] AdwNavigationView.replace — parameter pages: array types are handled in a later phase
 [callable] AdwNavigationView.replaceWithTags — parameter tags: array types are handled in a later phase
-[signal] AdwNavigationView.get-next-page — only void(void) supported in this release
-[signal] AdwNavigationView.popped — only void(void) supported in this release
+[signal] AdwNavigationView.get-next-page — unsupported return type: NavigationPage
 [callable] AdwPreferencesGroup.bindModel — parameter create_row_func: nullable callback parameter (Gtk.ListBoxCreateWidgetFunc)
 [renamed] AdwPreferencesPage.getName — override-incompatible with ancestor; renamed to getNamePreferencesPage
 [renamed] AdwPreferencesPage.setName — override-incompatible with ancestor; renamed to setNamePreferencesPage
 [callable] AdwSidebar.setupDropTarget — parameter types: array types are handled in a later phase
-[signal] AdwSidebar.activated — only void(void) supported in this release
-[signal] AdwSidebar.drop — only void(void) supported in this release
-[signal] AdwSidebar.drop-enter — only void(void) supported in this release
-[signal] AdwSidebar.drop-value-loaded — only void(void) supported in this release
+[signal] AdwSidebar.drop-enter — unsupported return type: Gdk.DragAction
+[signal] AdwSidebar.drop-value-loaded — unsupported return type: Gdk.DragAction
+[callable] AdwSidebarSection.bindModel — parameter create_item_func: nullable callback parameter (SidebarSectionCreateItemFunc)
+[renamed] AdwSplitButton.getDirection — override-incompatible with ancestor; renamed to getDirectionSplitButton
+[renamed] AdwSplitButton.setDirection — override-incompatible with ancestor; renamed to setDirectionSplitButton
+[callable] AdwTabBar.setupExtraDropTarget — parameter types: array types are handled in a later phase
+[signal] AdwTabBar.extra-drag-value — unsupported return type: Gdk.DragAction
+[callable] AdwTabOverview.setupExtraDropTarget — parameter types: array types are handled in a later phase
+[signal] AdwTabOverview.create-tab — unsupported return type: TabPage

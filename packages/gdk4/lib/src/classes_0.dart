@@ -123,6 +123,106 @@ class GdkAppLaunchContext extends GAppLaunchContext {
   void setTimestamp(int timestamp) {
     _gdkAppLaunchContextSetTimestamp(this.handle, timestamp);
   }
+
+  /// The [signal@Gio.AppLaunchContext::launch-failed] signal is emitted when a
+  /// [iface@Gio.AppInfo] launch fails. The startup notification id is provided,
+  /// so that the launcher can cancel the startup notification.
+  ///
+  /// Because a launch operation may involve spawning multiple instances of the
+  /// target application, you should expect this signal to be emitted multiple
+  /// times, one for each spawned instance.
+  int onLaunchFailed(void Function(String startupNotifyId) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'launch-failed', callback);
+  }
+
+  /// The [signal@Gio.AppLaunchContext::launch-started] signal is emitted when a
+  /// [iface@Gio.AppInfo] is about to be launched. If non-null the
+  /// @platform_data is an GVariant dictionary mapping strings to variants
+  /// (ie `a{sv}`), which contains additional, platform-specific data about this
+  /// launch. On UNIX, at least the `startup-notification-id` keys will be
+  /// present.
+  ///
+  /// The value of the `startup-notification-id` key (type `s`) is a startup
+  /// notification ID corresponding to the format from the [startup-notification
+  /// specification](https://specifications.freedesktop.org/startup-notification-spec/startup-notification-0.1.txt).
+  /// It allows tracking the progress of the launchee through startup.
+  ///
+  /// It is guaranteed that this signal is followed by either a
+  /// [signal@Gio.AppLaunchContext::launched] or
+  /// [signal@Gio.AppLaunchContext::launch-failed] signal.
+  ///
+  /// Because a launch operation may involve spawning multiple instances of the
+  /// target application, you should expect this signal to be emitted multiple
+  /// times, one for each spawned instance.
+  int onLaunchStarted(
+    void Function(GAppInfo info, GVariant? platformData) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gappinfo_gvariant(
+      this.handle,
+      'launch-started',
+      callback,
+    );
+  }
+
+  /// The [signal@Gio.AppLaunchContext::launched] signal is emitted when a
+  /// [iface@Gio.AppInfo] is successfully launched.
+  ///
+  /// Because a launch operation may involve spawning multiple instances of the
+  /// target application, you should expect this signal to be emitted multiple
+  /// times, one time for each spawned instance.
+  ///
+  /// The @platform_data is an GVariant dictionary mapping
+  /// strings to variants (ie `a{sv}`), which contains additional,
+  /// platform-specific data about this launch. On UNIX, at least the
+  /// `pid` and `startup-notification-id` keys will be present.
+  ///
+  /// Since 2.72 the `pid` may be 0 if the process id wasn’t known (for
+  /// example if the process was launched via D-Bus). The `pid` may not be
+  /// set at all in subsequent releases.
+  ///
+  /// On Windows, `pid` is guaranteed to be valid only for the duration of the
+  /// [signal@Gio.AppLaunchContext::launched] signal emission; after the signal
+  /// is emitted, GLib will call [func@GLib.spawn_close_pid]. If you need to
+  /// keep the [alias@GLib.Pid] after the signal has been emitted, then you can
+  /// duplicate `pid` using `DuplicateHandle()`.
+  int onLaunched(
+    void Function(GAppInfo info, GVariant? platformData) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gappinfo_gvariant(
+      this.handle,
+      'launched',
+      callback,
+    );
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// An event related to a button on a pointer device.
@@ -168,6 +268,35 @@ class GdkCairoContext extends GdkDrawContext {
     return (_gdkCairoContextCairoCreate(this.handle)) == ffi.nullptr
         ? null
         : CairoContext.fromPointer(_gdkCairoContextCairoCreate(this.handle));
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -326,317 +455,33 @@ class GdkCicpParams extends GObject {
   void setTransferFunction(int transferFunction) {
     _gdkCicpParamsSetTransferFunction(this.handle, transferFunction);
   }
-}
 
-/// Represents data shared between applications or inside an application.
-///
-/// To get a `GdkClipboard` object, use [method@Gdk.Display.get_clipboard] or
-/// [method@Gdk.Display.get_primary_clipboard]. You can find out about the data
-/// that is currently available in a clipboard using
-/// [method@Gdk.Clipboard.get_formats].
-///
-/// To make text or image data available in a clipboard, use
-/// [method@Gdk.Clipboard.set_text] or [method@Gdk.Clipboard.set_texture].
-/// For other data, you can use [method@Gdk.Clipboard.set_content], which
-/// takes a [class@Gdk.ContentProvider] object.
-///
-/// To read textual or image data from a clipboard, use
-/// [method@Gdk.Clipboard.read_text_async] or
-/// [method@Gdk.Clipboard.read_texture_async]. For other data, use
-/// [method@Gdk.Clipboard.read_async], which provides a `GInputStream` object.
-class GdkClipboard extends GObject {
-  GdkClipboard.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Returns the `GdkContentProvider` currently set on @clipboard.
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
   ///
-  /// If the @clipboard is empty or its contents are not owned by the
-  /// current process, %NULL will be returned.
-  static final _gdkClipboardGetContent =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_clipboard_get_content')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentProvider? getContent() {
-    return (_gdkClipboardGetContent(this.handle)) == ffi.nullptr
-        ? null
-        : GdkContentProvider.fromPointer(_gdkClipboardGetContent(this.handle));
-  }
-
-  /// Gets the `GdkDisplay` that the clipboard was created for.
-  static final _gdkClipboardGetDisplay =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_clipboard_get_display')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkDisplay getDisplay() {
-    return GdkDisplay.fromPointer(_gdkClipboardGetDisplay(this.handle));
-  }
-
-  /// Gets the formats that the clipboard can provide its current contents in.
-  static final _gdkClipboardGetFormats =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_clipboard_get_formats')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats getFormats() {
-    return GdkContentFormats.fromPointer(_gdkClipboardGetFormats(this.handle));
-  }
-
-  /// Returns if the clipboard is local.
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
   ///
-  /// A clipboard is considered local if it was last claimed
-  /// by the running application.
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
   ///
-  /// Note that [method@Gdk.Clipboard.get_content] may return %NULL
-  /// even on a local clipboard. In this case the clipboard is empty.
-  static final _gdkClipboardIsLocal =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_clipboard_is_local',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isLocal() {
-    return (_gdkClipboardIsLocal(this.handle)) != 0;
-  }
-
-  /// Finishes an asynchronous clipboard read.
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
   ///
-  /// See [method@Gdk.Clipboard.read_async].
-  static final _gdkClipboardReadFinish =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<Utf8>>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gdk_clipboard_read_finish')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  (GInputStream?, String?) readFinish(GAsyncResult result) {
-    final _out0 = malloc<ffi.Pointer<Utf8>>();
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkClipboardReadFinish(
-        this.handle,
-        result.handle,
-        _out0,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (
-        (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
-      );
-    } finally {
-      malloc.free(_out0);
-      calloc.free(_error);
-    }
-  }
-
-  /// Finishes an asynchronous clipboard read.
-  ///
-  /// See [method@Gdk.Clipboard.read_text_async].
-  static final _gdkClipboardReadTextFinish =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gdk_clipboard_read_text_finish')
-          .asFunction<
-            ffi.Pointer<Utf8> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  String? readTextFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkClipboardReadTextFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return stringFromNative((_ret).cast(), free: true);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Finishes an asynchronous clipboard read.
-  ///
-  /// See [method@Gdk.Clipboard.read_texture_async].
-  static final _gdkClipboardReadTextureFinish =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gdk_clipboard_read_texture_finish')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GdkTexture? readTextureFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkClipboardReadTextureFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Finishes an asynchronous clipboard read.
-  ///
-  /// See [method@Gdk.Clipboard.read_value_async].
-  static final _gdkClipboardReadValueFinish =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gdk_clipboard_read_value_finish')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GValue readValueFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkClipboardReadValueFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GValue.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Sets a new content provider on @clipboard.
-  ///
-  /// The clipboard will claim the `GdkDisplay`'s resources and advertise
-  /// these new contents to other applications.
-  ///
-  /// In the rare case of a failure, this function will return %FALSE. The
-  /// clipboard will then continue reporting its old contents and ignore
-  /// @provider.
-  ///
-  /// If the contents are read by either an external application or the
-  /// @clipboard's read functions, @clipboard will select the best format to
-  /// transfer the contents and then request that format from @provider.
-  static final _gdkClipboardSetContent =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_clipboard_set_content')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool setContent([GdkContentProvider? provider]) {
-    return (_gdkClipboardSetContent(
-          this.handle,
-          provider?.handle ?? ffi.nullptr,
-        )) !=
-        0;
-  }
-
-  /// Sets the @clipboard to contain the given @value.
-  static final _gdkClipboardSetValue =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_clipboard_set_value')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setValue(GValue value) {
-    _gdkClipboardSetValue(this.handle, value.handle);
-  }
-
-  /// Finishes an asynchronous clipboard store.
-  ///
-  /// See [method@Gdk.Clipboard.store_async].
-  static final _gdkClipboardStoreFinish =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gdk_clipboard_store_finish')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool storeFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkClipboardStoreFinish(this.handle, result.handle, _error);
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Emitted when the clipboard changes ownership.
-  int onChanged(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'changed', callback);
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

@@ -293,6 +293,186 @@ class AdwActionRow extends AdwPreferencesRow {
 
   /// This signal is emitted after the row has been activated.
   int onActivated(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'activated', callback);
+    return _connectSignal_v_0(this.handle, 'activated', callback);
+  }
+
+  /// This is a keybinding signal, which will cause this row to be activated.
+  ///
+  /// If you want to be notified when the user activates a row (by key or not),
+  /// use the [signal@Gtk.ListBox::row-activated] signal on the row’s parent
+  /// `GtkListBox`.
+  int onActivate(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'activate', callback);
+  }
+
+  /// Signals that all holders of a reference to the widget should release
+  /// the reference that they hold.
+  ///
+  /// May result in finalization of the widget if all references are released.
+  ///
+  /// This signal is not suitable for saving widget state.
+  int onDestroy(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'destroy', callback);
+  }
+
+  /// Emitted when the text direction of a widget changes.
+  int onDirectionChanged(
+    void Function(GtkTextDirection previousDirection) callback,
+  ) {
+    return _connectSignal_v_1_i_gtktextdirection(
+      this.handle,
+      'direction-changed',
+      callback,
+    );
+  }
+
+  /// Emitted when @widget is hidden.
+  int onHide(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'hide', callback);
+  }
+
+  /// Emitted if keyboard navigation fails.
+  ///
+  /// See [method@Gtk.Widget.keynav_failed] for details.
+  int onKeynavFailed(bool Function(GtkDirectionType direction) callback) {
+    return _connectSignal_b_1_i_gtkdirectiontype(
+      this.handle,
+      'keynav-failed',
+      callback,
+    );
+  }
+
+  /// Emitted when @widget is going to be mapped.
+  ///
+  /// A widget is mapped when the widget is visible (which is controlled with
+  /// [property@Gtk.Widget:visible]) and all its parents up to the toplevel widget
+  /// are also visible.
+  ///
+  /// The `::map` signal can be used to determine whether a widget will be drawn,
+  /// for instance it can resume an animation that was stopped during the
+  /// emission of [signal@Gtk.Widget::unmap].
+  int onMap(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'map', callback);
+  }
+
+  /// Emitted when a widget is activated via a mnemonic.
+  ///
+  /// The default handler for this signal activates @widget if @group_cycling
+  /// is false, or just makes @widget grab focus if @group_cycling is true.
+  int onMnemonicActivate(bool Function(bool groupCycling) callback) {
+    return _connectSignal_b_1_b_bool(
+      this.handle,
+      'mnemonic-activate',
+      callback,
+    );
+  }
+
+  /// Emitted when the focus is moved.
+  ///
+  /// The `::move-focus` signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are <kbd>Tab</kbd> to move forward,
+  /// and <kbd>Shift</kbd>+<kbd>Tab</kbd> to move backward.
+  int onMoveFocus(void Function(GtkDirectionType direction) callback) {
+    return _connectSignal_v_1_i_gtkdirectiontype(
+      this.handle,
+      'move-focus',
+      callback,
+    );
+  }
+
+  /// Emitted when the widget’s tooltip is about to be shown.
+  ///
+  /// This happens when the [property@Gtk.Widget:has-tooltip] property
+  /// is true and the hover timeout has expired with the cursor hovering
+  /// above @widget; or emitted when @widget got focus in keyboard mode.
+  ///
+  /// Using the given coordinates, the signal handler should determine
+  /// whether a tooltip should be shown for @widget. If this is the case
+  /// true should be returned, false otherwise. Note that if @keyboard_mode
+  /// is true, the values of @x and @y are undefined and should not be used.
+  ///
+  /// The signal handler is free to manipulate @tooltip with the therefore
+  /// destined function calls.
+  int onQueryTooltip(
+    bool Function(int x, int y, bool keyboardMode, GtkTooltip tooltip) callback,
+  ) {
+    return _connectSignal_b_4_i_i_b_o_int_int_bool_gtktooltip(
+      this.handle,
+      'query-tooltip',
+      callback,
+    );
+  }
+
+  /// Emitted when @widget is associated with a `GdkSurface`.
+  ///
+  /// This means that [method@Gtk.Widget.realize] has been called
+  /// or the widget has been mapped (that is, it is going to be drawn).
+  int onRealize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'realize', callback);
+  }
+
+  /// Emitted when @widget is shown.
+  int onShow(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'show', callback);
+  }
+
+  /// Emitted when the widget state changes.
+  ///
+  /// See [method@Gtk.Widget.get_state_flags].
+  int onStateFlagsChanged(void Function(GtkStateFlags flags) callback) {
+    return _connectSignal_v_1_u_gtkstateflags(
+      this.handle,
+      'state-flags-changed',
+      callback,
+    );
+  }
+
+  /// Emitted when @widget is going to be unmapped.
+  ///
+  /// A widget is unmapped when either it or any of its parents up to the
+  /// toplevel widget have been set as hidden.
+  ///
+  /// As `::unmap` indicates that a widget will not be shown any longer,
+  /// it can be used to, for example, stop an animation on the widget.
+  int onUnmap(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'unmap', callback);
+  }
+
+  /// Emitted when the `GdkSurface` associated with @widget is destroyed.
+  ///
+  /// This means that [method@Gtk.Widget.unrealize] has been called
+  /// or the widget has been unmapped (that is, it is going to be hidden).
+  int onUnrealize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'unrealize', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

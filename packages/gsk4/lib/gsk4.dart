@@ -12,6 +12,7 @@ import 'package:graphene/graphene.dart';
 import 'package:pango/pango.dart';
 
 part 'src/lib.dart';
+part 'src/signals.dart';
 part 'src/enums_0.dart';
 part 'src/enums_1.dart';
 part 'src/callbacks.dart';
@@ -25,3 +26,4 @@ part 'src/classes_0.dart';
 part 'src/classes_1.dart';
 part 'src/classes_2.dart';
 part 'src/classes_3.dart';
+part 'src/classes_4.dart';

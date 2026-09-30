@@ -593,12 +593,49 @@ class GSignalGroup extends GObject {
     _gSignalGroupUnblock(this.handle);
   }
 
+  /// This signal is emitted when #GSignalGroup:target is set to a new value
+  /// other than %NULL. It is similar to #GObject::notify on `target` except it
+  /// will not emit when #GSignalGroup:target is %NULL and also allows for
+  /// receiving the #GObject without a data-race.
+  int onBind(void Function(GObject instance) callback) {
+    return _connectSignal_v_1_o_gobject(this.handle, 'bind', callback);
+  }
+
   /// This signal is emitted when the target instance of @self is set to a
   /// new #GObject.
   ///
   /// This signal will only be emitted if the previous target of @self is
   /// non-%NULL.
   int onUnbind(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'unbind', callback);
+    return _connectSignal_v_0(this.handle, 'unbind', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

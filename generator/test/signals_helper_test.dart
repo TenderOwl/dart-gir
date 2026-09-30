@@ -25,13 +25,13 @@ EmitContext _ctx(GirNamespace ns) => EmitContext(
     );
 
 void main() {
-  test('returns null when no class has a kept void(void) signal', () {
+  test('returns null when no class has a kept signal', () {
     final ctx = _ctx(_ns());
     expect(emitSignalsHelper(ctx), isNull);
     expect(ctx.usesGirFfi, isFalse);
   });
 
-  test('emits helper when a class has a kept signal', () {
+  test('emits helper when a class has a kept void(void) signal', () {
     final ns = _ns(
       classes: [
         GirClass(name: 'Foo', signals: [GirSignal(name: 'bar')]),
@@ -40,10 +40,11 @@ void main() {
     final ctx = _ctx(ns);
     final code = emitSignalsHelper(ctx);
     expect(code, isNotNull);
-    expect(code!, contains('_connectVoidSignal'));
-    expect(code, contains('_voidSignalTrampoline'));
-    expect(code, contains('_destroyVoidSignalState'));
+    expect(code!, contains('_connectSignal_v_0'));
+    expect(code, contains('_signalTrampoline_v_0'));
+    expect(code, contains('_destroySignalState'));
     expect(code, contains('_gSignalConnectData'));
+    expect(code, contains('connectSignal'));
     expect(ctx.usesGirFfi, isTrue);
   });
 
@@ -59,7 +60,7 @@ void main() {
     expect(ctx.usesGirFfi, isTrue);
   });
 
-  test('does not emit helper when only non-void signals are present', () {
+  test('does not emit helper when only unsupported signals are present', () {
     final ns = _ns(
       classes: [
         GirClass(
@@ -82,17 +83,74 @@ void main() {
     expect(emitSignalsHelper(ctx), isNull);
   });
 
-  test('isKeptSignal returns true only for void(void)', () {
-    expect(isKeptSignal(GirSignal(name: 'foo')), isTrue);
-    expect(
-      isKeptSignal(GirSignal(
-        name: 'foo',
-        parameters: const [
-          GirParameter(name: 'x', type: GirTypeRef(name: 'gint')),
-        ],
-      )),
-      isFalse,
+  test('emits per-bucket trampoline + registry for typed signals', () {
+    // Build a namespace that has a typed signal AND its argument type
+    // registered as a class in the same namespace. Without an inline GIR
+    // parser, the cleanest path is to use a string argument (which goes
+    // through `bridgeFor` and resolves cleanly via the TypeResolver).
+    final ns = _ns(
+      classes: [
+        GirClass(
+          name: 'Foo',
+          signals: [
+            GirSignal(
+              name: 'with-string',
+              parameters: const [
+                GirParameter(name: 'msg', type: GirTypeRef(name: 'utf8')),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
-    expect(isKeptSignal(GirSignal(name: 'foo', returnType: const GirTypeRef(name: 'gint'))), isFalse);
+    final ctx = _ctx(ns);
+    final code = emitSignalsHelper(ctx);
+    expect(code, isNotNull);
+    // A typed signal must land in its own bucket — `v_1_s` (one string arg).
+    expect(code!, contains('_connectSignal_v_1_s'));
+    expect(code, contains('_signalTrampoline_v_1_s'));
+    expect(code, contains('gFree'));
+  });
+
+  test('emits the synthetic v_0_ bucket for the connectSignal escape hatch',
+      () {
+    // Namespace with only typed signals — no void(void) — must still
+    // emit a v_0_ bucket so `connectSignal` resolves.
+    final ns = _ns(
+      classes: [
+        GirClass(
+          name: 'Foo',
+          signals: [
+            GirSignal(
+              name: 'with-string',
+              parameters: const [
+                GirParameter(name: 'msg', type: GirTypeRef(name: 'utf8')),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+    final ctx = _ctx(ns);
+    final code = emitSignalsHelper(ctx);
+    expect(code, isNotNull);
+    expect(code!, contains('_connectSignal_v_0'));
+    expect(code, contains('connectSignal'));
+  });
+
+  test('isKeptSignal returns true only for supported signatures', () {
+    final ctx = _ctx(_ns());
+    expect(isKeptSignal(GirSignal(name: 'foo'), ctx), isTrue);
+    // Detailed signal names (with `::` detail) are out of scope.
+    expect(
+      isKeptSignal(GirSignal(name: 'notify::name'), ctx),
+      isFalse,
+      reason: 'detailed signals are out of scope; use connectSignal',
+    );
+  });
+
+  test('weak-ref is rejected', () {
+    final ctx = _ctx(_ns());
+    expect(isKeptSignal(GirSignal(name: 'weak-ref'), ctx), isFalse);
   });
 }

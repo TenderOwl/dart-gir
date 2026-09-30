@@ -224,7 +224,36 @@ class AdwAnimation extends GObject {
   /// This signal is emitted when the animation has been completed, either on its
   /// own or via calling [method@Animation.skip].
   int onDone(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'done', callback);
+    return _connectSignal_v_0(this.handle, 'done', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -232,272 +261,33 @@ class AdwAnimation extends GObject {
 class AdwAnimationTarget extends GObject {
   AdwAnimationTarget.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
-}
 
-/// A base class for Adwaita applications.
-///
-/// `AdwApplication` handles library initialization by calling [func@init] in the
-/// default [signal@Gio.Application::startup] signal handler, in turn chaining up
-/// as required by [class@Gtk.Application]. Therefore, any subclass of
-/// `AdwApplication` should always chain up its `startup` handler before using
-/// any Adwaita or GTK API.
-///
-/// ## Automatic Resources
-///
-/// `AdwApplication` will automatically load certain resources located in the
-/// application's resource base path (see
-/// [method@Gio.Application.set_resource_base_path], if they're present.
-///
-/// ### Shortcuts Dialog
-///
-/// If there's a resource located at `shortcuts-dialog.ui` which defines an
-/// [class@ShortcutsDialog] with the ID `shortcuts_dialog`, `AdwApplication`
-/// will set up an `app.shortcuts` action that creates and presents this dialog,
-/// as well as a <kbd>Ctrl</kbd><kbd>?</kbd> accelerator for it.
-///
-/// ### Stylesheet
-///
-/// If there's a resource located at `style.css`, `AdwApplication` will load
-/// styles from it. This can be used to add custom styles to the application.
-///
-/// #### Additional styles (deprecated)
-///
-/// `AdwApplication` will also load the following stylesheets conditionally:
-///
-/// - `style-dark.css` when [property@StyleManager:dark] is `TRUE`.
-///
-/// - `style-hc.css` when the system high contrast preference is enabled.
-///
-/// - `style-hc-dark.css` when the system high contrast preference is enabled and
-/// [property@StyleManager:dark] is `TRUE`.
-///
-/// :::warning
-/// These resources are deprecated since 1.9.
-///
-/// Use `style.css` with the following media queries instead:
-///
-/// - `prefers-color-scheme: dark` for styles used only for dark appearance.
-/// - `prefers-contrast: more` for styles used only when the system high
-/// contrast preference is enabled.
-class AdwApplication extends GtkApplication {
-  AdwApplication.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a new `AdwApplication`.
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
   ///
-  /// If `application_id` is not `NULL`, then it must be valid. See
-  /// [func@Gio.Application.id_is_valid].
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
   ///
-  /// If no application ID is given then some features (most notably application
-  /// uniqueness) will be disabled.
-  static final _adwApplicationNew =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, ffi.Uint32)
-            >
-          >('adw_application_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, int)>();
-  factory AdwApplication(String? applicationId, GApplicationFlags flags) {
-    return withNativeString(applicationId, (nativeApplicationId) {
-      return AdwApplication.fromPointer(
-        _adwApplicationNew(nativeApplicationId.cast<Utf8>(), flags.value),
-        owned: true,
-      );
-    });
-  }
-
-  /// Gets the style manager for @self.
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
   ///
-  /// This is a convenience property allowing to access `AdwStyleManager` through
-  /// property bindings or expressions.
-  static final _adwApplicationGetStyleManager =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_get_style_manager')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  AdwStyleManager getStyleManager() {
-    return AdwStyleManager.fromPointer(
-      _adwApplicationGetStyleManager(this.handle),
-    );
-  }
-}
-
-/// A freeform application window.
-///
-/// <picture>
-/// <source srcset="application-window-dark.png" media="(prefers-color-scheme: dark)">
-/// <img src="application-window.png" alt="application-window">
-/// </picture>
-///
-/// `AdwApplicationWindow` is a [class@Gtk.ApplicationWindow] subclass providing
-/// the same features as [class@Window].
-///
-/// See [class@Window] for details.
-///
-/// Example of an `AdwApplicationWindow` UI definition:
-///
-/// ```xml
-/// <object class="AdwApplicationWindow">
-/// <property name="content">
-/// <object class="AdwToolbarView">
-/// <child type="top">
-/// <object class="AdwHeaderBar"/>
-/// </child>
-/// <property name="content">
-/// <!-- ... -->
-/// </property>
-/// </object>
-/// </property>
-/// </object>
-/// ```
-///
-/// Using [property@Gtk.Application:menubar] is not supported and may result in
-/// visual glitches.
-class AdwApplicationWindow extends GtkApplicationWindow {
-  AdwApplicationWindow.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new `AdwApplicationWindow` for @app.
-  static final _adwApplicationWindowNew =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory AdwApplicationWindow(GtkApplication app) {
-    return AdwApplicationWindow.fromPointer(
-      _adwApplicationWindowNew(app.handle),
-      owned: true,
-    );
-  }
-
-  /// Adds @breakpoint to @self.
-  static final _adwApplicationWindowAddBreakpoint =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_add_breakpoint')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void addBreakpoint(AdwBreakpoint breakpoint) {
-    _adwApplicationWindowAddBreakpoint(this.handle, breakpoint.handle);
-  }
-
-  /// Gets whether adaptive preview for @self is currently open.
-  static final _adwApplicationWindowGetAdaptivePreview =
-      adwLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'adw_application_window_get_adaptive_preview',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getAdaptivePreview() {
-    return (_adwApplicationWindowGetAdaptivePreview(this.handle)) != 0;
-  }
-
-  /// Gets the content widget of @self.
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
   ///
-  /// This method should always be used instead of [method@Gtk.Window.get_child].
-  static final _adwApplicationWindowGetContent =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_get_content')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkWidget? getContent() {
-    return (_adwApplicationWindowGetContent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwApplicationWindowGetContent(this.handle));
-  }
-
-  /// Gets the current breakpoint.
-  static final _adwApplicationWindowGetCurrentBreakpoint =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_get_current_breakpoint')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  AdwBreakpoint? getCurrentBreakpoint() {
-    return (_adwApplicationWindowGetCurrentBreakpoint(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : AdwBreakpoint.fromPointer(
-            _adwApplicationWindowGetCurrentBreakpoint(this.handle),
-          );
-  }
-
-  /// Returns a [iface@Gio.ListModel] that contains the open dialogs of @self.
-  ///
-  /// This can be used to keep an up-to-date view.
-  static final _adwApplicationWindowGetDialogs =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_get_dialogs')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GListModel getDialogs() {
-    return GListModel.fromPointer(_adwApplicationWindowGetDialogs(this.handle));
-  }
-
-  /// Returns the currently visible dialog in @self, if there's one.
-  static final _adwApplicationWindowGetVisibleDialog =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_get_visible_dialog')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  AdwDialog? getVisibleDialog() {
-    return (_adwApplicationWindowGetVisibleDialog(this.handle)) == ffi.nullptr
-        ? null
-        : AdwDialog.fromPointer(
-            _adwApplicationWindowGetVisibleDialog(this.handle),
-          );
-  }
-
-  /// Sets whether adaptive preview for @self is currently open.
-  ///
-  /// Adaptive preview is a debugging tool used for testing the window
-  /// contents at specific screen sizes, simulating mobile environment.
-  ///
-  /// Adaptive preview can always be accessed from inspector. This function
-  /// allows applications to open it manually.
-  ///
-  /// Most applications should not use this function.
-  static final _adwApplicationWindowSetAdaptivePreview =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('adw_application_window_set_adaptive_preview')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setAdaptivePreview(bool adaptivePreview) {
-    _adwApplicationWindowSetAdaptivePreview(
-      this.handle,
-      adaptivePreview ? 1 : 0,
-    );
-  }
-
-  /// Sets the content widget of @self.
-  ///
-  /// This method should always be used instead of [method@Gtk.Window.set_child].
-  static final _adwApplicationWindowSetContent =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('adw_application_window_set_content')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setContent([GtkWidget? content]) {
-    _adwApplicationWindowSetContent(
-      this.handle,
-      content?.handle ?? ffi.nullptr,
-    );
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

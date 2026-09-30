@@ -328,7 +328,36 @@ class GCancellable extends GObject {
   /// the user cancelled from, which may be the main thread. So, the
   /// cancellable signal should not do something that can block.
   int onCancelled(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'cancelled', callback);
+    return _connectSignal_v_0(this.handle, 'cancelled', callback);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -406,101 +435,33 @@ class GCharsetConverter extends GObject {
   void setUseFallback(bool useFallback) {
     _gCharsetConverterSetUseFallback(this.handle, useFallback ? 1 : 0);
   }
-}
 
-/// Converter input stream implements [class@Gio.InputStream] and allows
-/// conversion of data of various types during reading.
-///
-/// As of GLib 2.34, `GConverterInputStream` implements
-/// [iface@Gio.PollableInputStream].
-class GConverterInputStream extends GFilterInputStream {
-  GConverterInputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new converter input stream for the @base_stream.
-  static final _gConverterInputStreamNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_converter_input_stream_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GConverterInputStream(GInputStream baseStream, GConverter converter) {
-    return GConverterInputStream.fromPointer(
-      _gConverterInputStreamNew(baseStream.handle, converter.handle),
-      owned: true,
-    );
-  }
-
-  /// Gets the #GConverter that is used by @converter_stream.
-  static final _gConverterInputStreamGetConverter =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_converter_input_stream_get_converter')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GConverter getConverter() {
-    return GConverter.fromPointer(
-      _gConverterInputStreamGetConverter(this.handle),
-    );
-  }
-}
-
-/// Converter output stream implements [class@Gio.OutputStream] and allows
-/// conversion of data of various types during reading.
-///
-/// As of GLib 2.34, `GConverterOutputStream` implements
-/// [iface@Gio.PollableOutputStream].
-class GConverterOutputStream extends GFilterOutputStream {
-  GConverterOutputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new converter output stream for the @base_stream.
-  static final _gConverterOutputStreamNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_converter_output_stream_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GConverterOutputStream(
-    GOutputStream baseStream,
-    GConverter converter,
-  ) {
-    return GConverterOutputStream.fromPointer(
-      _gConverterOutputStreamNew(baseStream.handle, converter.handle),
-      owned: true,
-    );
-  }
-
-  /// Gets the #GConverter that is used by @converter_stream.
-  static final _gConverterOutputStreamGetConverter =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_converter_output_stream_get_converter')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GConverter getConverter() {
-    return GConverter.fromPointer(
-      _gConverterOutputStreamGetConverter(this.handle),
-    );
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

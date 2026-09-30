@@ -97,7 +97,16 @@ class RecordEmitter {
           dartName: name, ownerName: dartName, staticMember: true);
       if (code != null) b.writeln(_indent(code));
     }
-    final signalCode = emitSignalConnectors(ctx, signals, dartName, memberNames);
+    final entries = <({GirSignal signal, GirNamespace? ns})>[
+      for (final s in signals) (signal: s, ns: ctx.namespace),
+    ];
+    final signalCode = emitSignalConnectors(
+      ctx,
+      signals,
+      dartName,
+      memberNames,
+      buckets: buildSignalBuckets(entries, ctx),
+    );
     if (signalCode.isNotEmpty) b.writeln(_indent(signalCode));
     b.write('}');
     return b.toString();

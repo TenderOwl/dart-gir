@@ -20,6 +20,19 @@ DynamicLibrary openLibrary(List<String> names) {
       : DynamicLibrary.executable();
 }
 
+/// Looks up [symbol] in the running process — used for GLib-internal
+/// helpers (`g_free`) that are loaded globally when libglib is present.
+DynamicLibrary _glibProcessLib() => Platform.isLinux
+    ? DynamicLibrary.process()
+    : DynamicLibrary.executable();
+
+final _gFreeNative = _glibProcessLib()
+    .lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+void gFree(Pointer<Void> ptr) {
+  if (ptr == nullptr) return;
+  _gFreeNative.asFunction<void Function(Pointer<Void>)>().call(ptr);
+}
+
 /// Converts a native NUL-terminated UTF-8 string to a Dart [String].
 String? stringFromNative(Pointer<Char> ptr, {bool free = false}) {
   if (ptr == nullptr) return null;

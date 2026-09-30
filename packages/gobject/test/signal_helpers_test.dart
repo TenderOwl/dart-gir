@@ -1,7 +1,7 @@
 // Runtime test for the generated signal helpers in `lib/src/signals.dart`.
 //
 // Headless: we register a custom `void(void)` signal on GObject via
-// `g_signal_new`, connect it with the generated `connectVoidSignal` escape
+// `g_signal_new`, connect it with the generated `connectSignal` escape
 // hatch (the same code path every `onSignalName` method delegates to), emit
 // it synchronously via `g_signal_emit_by_name`, then disconnect and verify
 // the callback no longer fires (the destroy-notify ran and dropped the
@@ -135,7 +135,7 @@ void main() {
 
   test('connect, emit, disconnect', () {
     var fired = 0;
-    final handlerId = connectVoidSignal(object, 'dartgir-helper-test', () {
+    final handlerId = connectSignal(object, 'dartgir-helper-test', () {
       fired++;
     });
     expect(handlerId, isNonZero);
@@ -150,7 +150,7 @@ void main() {
 
   test('closure capture works through the trampoline', () {
     final seen = <String>[];
-    connectVoidSignal(object, 'dartgir-helper-test', () {
+    connectSignal(object, 'dartgir-helper-test', () {
       seen.add('fired');
     });
     _emitByName(object, 'dartgir-helper-test');
@@ -160,8 +160,8 @@ void main() {
   test('two connections on the same signal both fire', () {
     var a = 0;
     var b = 0;
-    connectVoidSignal(object, 'dartgir-helper-test', () => a++);
-    connectVoidSignal(object, 'dartgir-helper-test', () => b++);
+    connectSignal(object, 'dartgir-helper-test', () => a++);
+    connectSignal(object, 'dartgir-helper-test', () => b++);
     _emitByName(object, 'dartgir-helper-test');
     expect(a, 1);
     expect(b, 1);

@@ -598,6 +598,35 @@ final class GtkEditable {
   /// the new content, and may cause multiple ::notify::text signals
   /// to be emitted).
   int onChanged(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'changed', callback);
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// Emitted when text is deleted from the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible for
+  /// deleting the text, so by connecting to this signal and then stopping
+  /// the signal with g_signal_stop_emission(), it is possible to modify the
+  /// range of deleted text, or prevent it from being deleted entirely.
+  ///
+  /// The @start_pos and @end_pos parameters are interpreted as for
+  /// [method@Gtk.Editable.delete_text].
+  int onDeleteText(void Function(int startPos, int endPos) callback) {
+    return _connectSignal_v_2_i_i_int_int(this.handle, 'delete-text', callback);
+  }
+
+  /// Emitted when text is inserted into the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible
+  /// for inserting the text, so by connecting to this signal and then
+  /// stopping the signal with g_signal_stop_emission(), it is possible
+  /// to modify the inserted text, or prevent it from being inserted entirely.
+  int onInsertText(
+    void Function(String text, int length, int position) callback,
+  ) {
+    return _connectSignal_v_3_s_i_i_string_int_int(
+      this.handle,
+      'insert-text',
+      callback,
+    );
   }
 }

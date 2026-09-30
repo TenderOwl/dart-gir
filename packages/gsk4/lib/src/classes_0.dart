@@ -154,6 +154,35 @@ class GskBroadwayRenderer extends GskRenderer {
       owned: true,
     );
   }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// A render node for a Cairo surface.
@@ -229,6 +258,35 @@ class GskCairoRenderer extends GskRenderer {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   factory GskCairoRenderer() {
     return GskCairoRenderer.fromPointer(_gskCairoRendererNew(), owned: true);
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }
 
@@ -752,132 +810,5 @@ class GskCrossFadeNode extends GskRenderNode {
     return GskRenderNode.fromPointer(
       _gskCrossFadeNodeGetStartChild(this.handle),
     );
-  }
-}
-
-/// A render node that emits a debugging message when drawing its
-/// child node.
-class GskDebugNode extends GskRenderNode {
-  GskDebugNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a `GskRenderNode` that will add debug information about
-  /// the given @child.
-  ///
-  /// Adding this node has no visual effect.
-  static final _gskDebugNodeNew =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('gsk_debug_node_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  factory GskDebugNode(GskRenderNode child, String message) {
-    return withNativeString(message, (nativeMessage) {
-      return GskDebugNode.fromPointer(
-        _gskDebugNodeNew(child.handle, nativeMessage.cast<Utf8>()),
-        owned: true,
-      );
-    });
-  }
-
-  /// Gets the child node that is getting drawn by the given @node.
-  static final _gskDebugNodeGetChild =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_debug_node_get_child')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRenderNode getChild() {
-    return GskRenderNode.fromPointer(_gskDebugNodeGetChild(this.handle));
-  }
-
-  /// Gets the debug message that was set on this node
-  static final _gskDebugNodeGetMessage =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_debug_node_get_message')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getMessage() {
-    return stringFromNative(
-      (_gskDebugNodeGetMessage(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-}
-
-/// A render node filling the area given by [struct@Gsk.Path]
-/// and [enum@Gsk.FillRule] with the child node.
-class GskFillNode extends GskRenderNode {
-  GskFillNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a `GskRenderNode` that will fill the @child in the area
-  /// given by @path and @fill_rule.
-  static final _gskFillNodeNew =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-              )
-            >
-          >('gsk_fill_node_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-            )
-          >();
-  factory GskFillNode(GskRenderNode child, GskPath path, GskFillRule fillRule) {
-    return GskFillNode.fromPointer(
-      _gskFillNodeNew(child.handle, path.handle, fillRule.value),
-      owned: true,
-    );
-  }
-
-  /// Gets the child node that is getting drawn by the given @node.
-  static final _gskFillNodeGetChild =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_fill_node_get_child')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRenderNode getChild() {
-    return GskRenderNode.fromPointer(_gskFillNodeGetChild(this.handle));
-  }
-
-  /// Retrieves the fill rule used to determine how the path is filled.
-  static final _gskFillNodeGetFillRule =
-      gsk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gsk_fill_node_get_fill_rule',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GskFillRule getFillRule() {
-    return GskFillRule.fromValue(_gskFillNodeGetFillRule(this.handle));
-  }
-
-  /// Retrieves the path used to describe the area filled with the contents of
-  /// the @node.
-  static final _gskFillNodeGetPath =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_fill_node_get_path')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskPath getPath() {
-    return GskPath.fromPointer(_gskFillNodeGetPath(this.handle));
   }
 }

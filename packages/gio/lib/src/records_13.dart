@@ -653,49 +653,57 @@ final class GDtlsConnection {
       calloc.free(_error);
     }
   }
-}
 
-/// `GDtlsServerConnection` is the server-side subclass of
-/// [iface@Gio.DtlsConnection], representing a server-side DTLS connection.
-final class GDtlsServerConnection {
-  GDtlsServerConnection.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Creates a new #GDtlsServerConnection wrapping @base_socket.
-  static final _gDtlsServerConnectionNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_dtls_server_connection_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  static GDtlsServerConnection new_(
-    GDatagramBased baseSocket, [
-    GTlsCertificate? certificate,
-  ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDtlsServerConnectionNew(
-        baseSocket.handle,
-        certificate?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GDtlsServerConnection.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
+  /// Emitted during the TLS handshake after the peer certificate has
+  /// been received. You can examine @peer_cert's certification path by
+  /// calling g_tls_certificate_get_issuer() on it.
+  ///
+  /// For a client-side connection, @peer_cert is the server's
+  /// certificate, and the signal will only be emitted if the
+  /// certificate was not acceptable according to @conn's
+  /// #GDtlsClientConnection:validation_flags. If you would like the
+  /// certificate to be accepted despite @errors, return %TRUE from the
+  /// signal handler. Otherwise, if no handler accepts the certificate,
+  /// the handshake will fail with %G_TLS_ERROR_BAD_CERTIFICATE.
+  ///
+  /// GLib guarantees that if certificate verification fails, this signal
+  /// will be emitted with at least one error will be set in @errors, but
+  /// it does not guarantee that all possible errors will be set.
+  /// Accordingly, you may not safely decide to ignore any particular
+  /// type of error. For example, it would be incorrect to ignore
+  /// %G_TLS_CERTIFICATE_EXPIRED if you want to allow expired
+  /// certificates, because this could potentially be the only error flag
+  /// set even if other problems exist with the certificate.
+  ///
+  /// For a server-side connection, @peer_cert is the certificate
+  /// presented by the client, if this was requested via the server's
+  /// #GDtlsServerConnection:authentication_mode. On the server side,
+  /// the signal is always emitted when the client presents a
+  /// certificate, and the certificate will only be accepted if a
+  /// handler returns %TRUE.
+  ///
+  /// Note that if this signal is emitted as part of asynchronous I/O
+  /// in the main thread, then you should not attempt to interact with
+  /// the user before returning from the signal handler. If you want to
+  /// let the user decide whether or not to accept the certificate, you
+  /// would have to return %FALSE from the signal handler on the first
+  /// attempt, and then after the connection attempt returns a
+  /// %G_TLS_ERROR_BAD_CERTIFICATE, you can interact with the user, and
+  /// if the user decides to accept the certificate, remember that fact,
+  /// create a new connection, and return %TRUE from the signal handler
+  /// the next time.
+  ///
+  /// If you are doing I/O in another thread, you do not
+  /// need to worry about this, and can simply block in the signal
+  /// handler until the UI thread returns an answer.
+  int onAcceptCertificate(
+    bool Function(GTlsCertificate peerCert, GTlsCertificateFlags errors)
+    callback,
+  ) {
+    return _connectSignal_b_2_o_u_gtlscertificate_gtlscertificateflags(
+      this.handle,
+      'accept-certificate',
+      callback,
+    );
   }
 }

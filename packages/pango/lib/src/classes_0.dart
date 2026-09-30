@@ -426,6 +426,35 @@ class PangoContext extends GObject {
   void setRoundGlyphPositions(bool roundPositions) {
     _pangoContextSetRoundGlyphPositions(this.handle, roundPositions ? 1 : 0);
   }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// A `PangoCoverage` structure is a map from Unicode characters
@@ -522,203 +551,33 @@ class PangoCoverage extends GObject {
   void unref() {
     _pangoCoverageUnref(this.handle);
   }
-}
 
-/// A `PangoFont` is used to represent a font in a
-/// rendering-system-independent manner.
-class PangoFont extends GObject {
-  PangoFont.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Returns a description of the font, with font size set in points.
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
   ///
-  /// Use [method@Pango.Font.describe_with_absolute_size] if you want
-  /// the font size in device units.
-  static final _pangoFontDescribe =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_font_describe')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoFontDescription describe() {
-    return PangoFontDescription.fromPointer(_pangoFontDescribe(this.handle));
-  }
-
-  /// Returns a description of the font, with absolute font size set
-  /// in device units.
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
   ///
-  /// Use [method@Pango.Font.describe] if you want the font size in points.
-  static final _pangoFontDescribeWithAbsoluteSize =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_font_describe_with_absolute_size')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoFontDescription describeWithAbsoluteSize() {
-    return PangoFontDescription.fromPointer(
-      _pangoFontDescribeWithAbsoluteSize(this.handle),
-    );
-  }
-
-  /// Computes the coverage map for a given font and language tag.
-  static final _pangoFontGetCoverage =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_font_get_coverage')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  PangoCoverage getCoverage(PangoLanguage language) {
-    return PangoCoverage.fromPointer(
-      _pangoFontGetCoverage(this.handle, language.handle),
-    );
-  }
-
-  /// Gets the `PangoFontFace` to which @font belongs.
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
   ///
-  /// Note that this function can return `NULL` in cases
-  /// where the font outlives its font map.
-  static final _pangoFontGetFace =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_font_get_face')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoFontFace? getFace() {
-    return (_pangoFontGetFace(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontFace.fromPointer(_pangoFontGetFace(this.handle));
-  }
-
-  /// Gets the font map for which the font was created.
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
   ///
-  /// Note that the font maintains a *weak* reference to
-  /// the font map, so if all references to font map are
-  /// dropped, the font map will be finalized even if there
-  /// are fonts created with the font map that are still alive.
-  /// In that case this function will return %NULL.
-  ///
-  /// It is the responsibility of the user to ensure that the
-  /// font map is kept alive. In most uses this is not an issue
-  /// as a `PangoContext` holds a reference to the font map.
-  static final _pangoFontGetFontMap =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_font_get_font_map')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoFontMap? getFontMap() {
-    return (_pangoFontGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_pangoFontGetFontMap(this.handle));
-  }
-
-  /// Gets overall metric information for a font.
-  ///
-  /// Since the metrics may be substantially different for different scripts,
-  /// a language tag can be provided to indicate that the metrics should be
-  /// retrieved that correspond to the script(s) used by that language.
-  ///
-  /// If @font is %NULL, this function gracefully sets some sane values in the
-  /// output variables and returns.
-  static final _pangoFontGetMetrics =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_font_get_metrics')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  PangoFontMetrics getMetrics([PangoLanguage? language]) {
-    return PangoFontMetrics.fromPointer(
-      _pangoFontGetMetrics(this.handle, language?.handle ?? ffi.nullptr),
-    );
-  }
-
-  /// Returns whether the font provides a glyph for this character.
-  static final _pangoFontHasChar =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('pango_font_has_char')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-  bool hasChar(int wc) {
-    return (_pangoFontHasChar(this.handle, wc)) != 0;
-  }
-
-  /// Serializes the @font in a way that can be uniquely identified.
-  ///
-  /// There are no guarantees about the format of the output across different
-  /// versions of Pango.
-  ///
-  /// The intended use of this function is testing, benchmarking and debugging.
-  /// The format is not meant as a permanent storage format.
-  ///
-  /// To recreate a font from its serialized form, use [func@Pango.Font.deserialize].
-  static final _pangoFontSerialize =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_font_serialize')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GBytes serialize() {
-    return GBytes.fromPointer(_pangoFontSerialize(this.handle));
-  }
-
-  /// Loads data previously created via [method@Pango.Font.serialize].
-  ///
-  /// For a discussion of the supported format, see that function.
-  ///
-  /// Note: to verify that the returned font is identical to
-  /// the one that was serialized, you can compare @bytes to the
-  /// result of serializing the font again.
-  static final _pangoFontDeserialize =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('pango_font_deserialize')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  static PangoFont? deserialize(PangoContext context, GBytes bytes) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _pangoFontDeserialize(context.handle, bytes.handle, _error);
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

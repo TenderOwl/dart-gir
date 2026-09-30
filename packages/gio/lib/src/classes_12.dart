@@ -166,6 +166,64 @@ class GDBusServer extends GObject {
   void stop() {
     _gDbusServerStop(this.handle);
   }
+
+  /// Emitted when a new authenticated connection has been made. Use
+  /// g_dbus_connection_get_peer_credentials() to figure out what
+  /// identity (if any), was authenticated.
+  ///
+  /// If you want to accept the connection, take a reference to the
+  /// @connection object and return %TRUE. When you are done with the
+  /// connection call g_dbus_connection_close() and give up your
+  /// reference. Note that the other peer may disconnect at any time -
+  /// a typical thing to do when accepting a connection is to listen to
+  /// the #GDBusConnection::closed signal.
+  ///
+  /// If #GDBusServer:flags contains %G_DBUS_SERVER_FLAGS_RUN_IN_THREAD
+  /// then the signal is emitted in a new thread dedicated to the
+  /// connection. Otherwise the signal is emitted in the thread-default
+  /// main context (see [method@GLib.MainContext.push_thread_default])
+  /// of the thread that @server was constructed in.
+  ///
+  /// You are guaranteed that signal handlers for this signal runs
+  /// before incoming messages on @connection are processed. This means
+  /// that it's suitable to call g_dbus_connection_register_object() or
+  /// similar from the signal handler.
+  int onNewConnection(bool Function(GDBusConnection connection) callback) {
+    return _connectSignal_b_1_o_gdbusconnection(
+      this.handle,
+      'new-connection',
+      callback,
+    );
+  }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// Data input stream implements [class@Gio.InputStream] and includes functions
@@ -518,355 +576,33 @@ class GDataInputStream extends GBufferedInputStream {
   void setNewlineType(GDataStreamNewlineType type_) {
     _gDataInputStreamSetNewlineType(this.handle, type_.value);
   }
-}
 
-/// Data output stream implements [class@Gio.OutputStream] and includes functions
-/// for writing data directly to an output stream.
-class GDataOutputStream extends GFilterOutputStream {
-  GDataOutputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new data output stream for @base_stream.
-  static final _gDataOutputStreamNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_data_output_stream_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GDataOutputStream(GOutputStream baseStream) {
-    return GDataOutputStream.fromPointer(
-      _gDataOutputStreamNew(baseStream.handle),
-      owned: true,
-    );
-  }
-
-  /// Gets the byte order for the stream.
-  static final _gDataOutputStreamGetByteOrder =
-      gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'g_data_output_stream_get_byte_order',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GDataStreamByteOrder getByteOrder() {
-    return GDataStreamByteOrder.fromValue(
-      _gDataOutputStreamGetByteOrder(this.handle),
-    );
-  }
-
-  /// Puts a byte into the output stream.
-  static final _gDataOutputStreamPutByte =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint8,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_byte')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putByte(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutByte(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Puts a signed 16-bit integer into the output stream.
-  static final _gDataOutputStreamPutInt16 =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int16,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_int16')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putInt16(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutInt16(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Puts a signed 32-bit integer into the output stream.
-  static final _gDataOutputStreamPutInt32 =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_int32')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putInt32(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutInt32(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Puts a signed 64-bit integer into the stream.
-  static final _gDataOutputStreamPutInt64 =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int64,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_int64')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putInt64(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutInt64(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Puts a string into the output stream.
-  static final _gDataOutputStreamPutString =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_string')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putString(String str, [GCancellable? cancellable]) {
-    return withNativeString(str, (nativeStr) {
-      final _error = calloc<ffi.Pointer<ffi.Void>>();
-      try {
-        final _ret = _gDataOutputStreamPutString(
-          this.handle,
-          nativeStr.cast<Utf8>(),
-          cancellable?.handle ?? ffi.nullptr,
-          _error,
-        );
-        if (_error.value != ffi.nullptr) {
-          throw GlibException.fromError(_error.value);
-        }
-        return (_ret) != 0;
-      } finally {
-        calloc.free(_error);
-      }
-    });
-  }
-
-  /// Puts an unsigned 16-bit integer into the output stream.
-  static final _gDataOutputStreamPutUint16 =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint16,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_uint16')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putUint16(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutUint16(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Puts an unsigned 32-bit integer into the stream.
-  static final _gDataOutputStreamPutUint32 =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint32,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_uint32')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putUint32(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutUint32(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Puts an unsigned 64-bit integer into the stream.
-  static final _gDataOutputStreamPutUint64 =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint64,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_data_output_stream_put_uint64')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool putUint64(int data, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDataOutputStreamPutUint64(
-        this.handle,
-        data,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Sets the byte order of the data output stream to @order.
-  static final _gDataOutputStreamSetByteOrder =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('g_data_output_stream_set_byte_order')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setByteOrder(GDataStreamByteOrder order) {
-    _gDataOutputStreamSetByteOrder(this.handle, order.value);
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

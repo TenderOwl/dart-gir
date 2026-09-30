@@ -291,7 +291,7 @@ final class GdkPaintable {
   /// Examples for such an event would be videos changing to the next frame or
   /// the icon theme for an icon changing.
   int onInvalidateContents(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'invalidate-contents', callback);
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
   }
 
   /// Emitted when the intrinsic size of the @paintable changes.
@@ -305,7 +305,7 @@ final class GdkPaintable {
   /// Examples for such an event would be a paintable displaying
   /// the contents of a toplevel surface being resized.
   int onInvalidateSize(void Function() callback) {
-    return _connectVoidSignal(this.handle, 'invalidate-size', callback);
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
   }
 }
 

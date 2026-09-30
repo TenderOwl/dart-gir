@@ -17,3 +17,4 @@ part 'src/records.dart';
 part 'src/classes_0.dart';
 part 'src/classes_1.dart';
 part 'src/classes_2.dart';
+part 'src/classes_3.dart';

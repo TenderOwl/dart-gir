@@ -346,6 +346,35 @@ class GDBusMethodInvocation extends GObject {
       fdList?.handle ?? ffi.nullptr,
     );
   }
+
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
+  ///
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
 }
 
 /// `GDBusObjectManagerClient` is used to create, monitor and delete object
@@ -546,164 +575,58 @@ class GDBusObjectManagerClient extends GObject {
       free: true,
     );
   }
-}
 
-/// `GDBusObjectManagerServer` is used to export [iface@Gio.DBusObject] instances
-/// using the standardized
-/// [`org.freedesktop.DBus.ObjectManager`](http://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-objectmanager)
-/// interface. For example, remote D-Bus clients can get all objects
-/// and properties in a single call. Additionally, any change in the
-/// object hierarchy is broadcast using signals. This means that D-Bus
-/// clients can keep caches up to date by only listening to D-Bus
-/// signals.
-///
-/// The recommended path to export an object manager at is the path form of the
-/// well-known name of a D-Bus service, or below. For example, if a D-Bus service
-/// is available at the well-known name `net.example.ExampleService1`, the object
-/// manager should typically be exported at `/net/example/ExampleService1`, or
-/// below (to allow for multiple object managers in a service).
-///
-/// It is supported, but not recommended, to export an object manager at the root
-/// path, `/`.
-///
-/// See [class@Gio.DBusObjectManagerClient] for the client-side code that is
-/// intended to be used with `GDBusObjectManagerServer` or any D-Bus
-/// object implementing the `org.freedesktop.DBus.ObjectManager` interface.
-class GDBusObjectManagerServer extends GObject {
-  GDBusObjectManagerServer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new #GDBusObjectManagerServer object.
+  /// Emitted when a D-Bus signal is received on @interface_proxy.
   ///
-  /// The returned server isn't yet exported on any connection. To do so,
-  /// use g_dbus_object_manager_server_set_connection(). Normally you
-  /// want to export all of your objects before doing so to avoid
-  /// [InterfacesAdded](http://dbus.freedesktop.org/doc/dbus-specification.html#standard-interfaces-objectmanager)
-  /// signals being emitted.
-  static final _gDbusObjectManagerServerNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('g_dbus_object_manager_server_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  factory GDBusObjectManagerServer(String objectPath) {
-    return withNativeString(objectPath, (nativeObjectPath) {
-      return GDBusObjectManagerServer.fromPointer(
-        _gDbusObjectManagerServerNew(nativeObjectPath.cast<Utf8>()),
-        owned: true,
-      );
-    });
-  }
-
-  /// Exports @object on @manager.
+  /// This signal exists purely as a convenience to avoid having to
+  /// connect signals to all interface proxies managed by @manager.
   ///
-  /// If there is already a #GDBusObject exported at the object path,
-  /// then the old object is removed.
-  ///
-  /// The object path for @object must be in the hierarchy rooted by the
-  /// object path for @manager.
-  ///
-  /// Note that @manager will take a reference on @object for as long as
-  /// it is exported.
-  static final _gDbusObjectManagerServerExport =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_server_export')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void export_(GDBusObjectSkeleton object) {
-    _gDbusObjectManagerServerExport(this.handle, object.handle);
-  }
-
-  /// Like g_dbus_object_manager_server_export() but appends a string of
-  /// the form _N (with N being a natural number) to @object's object path
-  /// if an object with the given path already exists. As such, the
-  /// #GDBusObjectProxy:g-object-path property of @object may be modified.
-  static final _gDbusObjectManagerServerExportUniquely =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_server_export_uniquely')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void exportUniquely(GDBusObjectSkeleton object) {
-    _gDbusObjectManagerServerExportUniquely(this.handle, object.handle);
-  }
-
-  /// Gets the #GDBusConnection used by @manager.
-  static final _gDbusObjectManagerServerGetConnection =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_server_get_connection')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusConnection? getConnection() {
-    return (_gDbusObjectManagerServerGetConnection(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusConnection.fromPointer(
-            _gDbusObjectManagerServerGetConnection(this.handle),
-          );
-  }
-
-  /// Returns whether @object is currently exported on @manager.
-  static final _gDbusObjectManagerServerIsExported =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_server_is_exported')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool isExported(GDBusObjectSkeleton object) {
-    return (_gDbusObjectManagerServerIsExported(this.handle, object.handle)) !=
-        0;
-  }
-
-  /// Exports all objects managed by @manager on @connection. If
-  /// @connection is %NULL, stops exporting objects.
-  static final _gDbusObjectManagerServerSetConnection =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_manager_server_set_connection')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setConnection([GDBusConnection? connection]) {
-    _gDbusObjectManagerServerSetConnection(
+  /// This signal is emitted in the thread-default main context
+  /// (see [method@GLib.MainContext.push_thread_default])
+  /// that @manager was constructed in.
+  int onInterfaceProxySignal(
+    void Function(
+      GDBusObjectProxy objectProxy,
+      GDBusProxy interfaceProxy,
+      String senderName,
+      String signalName,
+      GVariant parameters,
+    )
+    callback,
+  ) {
+    return _connectSignal_v_5_o_o_s_s_o_gdbusobjectproxy_gdbusproxy_string_string_gvariant(
       this.handle,
-      connection?.handle ?? ffi.nullptr,
+      'interface-proxy-signal',
+      callback,
     );
   }
 
-  /// If @manager has an object at @path, removes the object. Otherwise
-  /// does nothing.
+  /// The notify signal is emitted on an object when one of its properties has
+  /// its value set through g_object_set_property(), g_object_set(), et al.
   ///
-  /// Note that @object_path must be in the hierarchy rooted by the
-  /// object path for @manager.
-  static final _gDbusObjectManagerServerUnexport =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-            >
-          >('g_dbus_object_manager_server_unexport')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)>();
-  bool unexport(String objectPath) {
-    return withNativeString(objectPath, (nativeObjectPath) {
-      return (_gDbusObjectManagerServerUnexport(
-            this.handle,
-            nativeObjectPath.cast<Utf8>(),
-          )) !=
-          0;
-    });
+  /// Note that getting this signal doesn’t itself guarantee that the value of
+  /// the property has actually changed. When it is emitted is determined by the
+  /// derived GObject class. If the implementor did not create the property with
+  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
+  /// in ::notify being emitted, even if the new value is the same as the old.
+  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
+  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
+  /// and common practice is to do that only when the value has actually changed.
+  ///
+  /// This signal is typically used to obtain change notification for a
+  /// single property, by specifying the property name as a detail in the
+  /// g_signal_connect() call, like this:
+  ///
+  /// |[<!-- language="C" -->
+  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
+  /// G_CALLBACK (gtk_text_view_target_list_notify),
+  /// text_view)
+  /// ]|
+  ///
+  /// It is important to note that you must use
+  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
+  /// detail strings for the notify signal.
+  int onNotify(void Function(GParamSpec pspec) callback) {
+    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 }

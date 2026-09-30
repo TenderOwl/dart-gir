@@ -1,69 +1,69 @@
 # Skip report for package gtk4 (Gtk 4.0)
-Total skipped: 511
+Total skipped: 318
 
 ## By category
 callable: 291
-signal: 206
+signal: 13
 renamed: 7
 method: 6
 alias: 1
 
 ## By reason
-only void(void) supported in this release: 206
 caller-allocates out parameter iter: 32
 parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 21
 return: string list return type (null): 11
-unsupported out parameter path (GtkTreePath?): 9
 return: array types are handled in a later phase: 9
+unsupported out parameter path (GtkTreePath?): 9
 parameter width: nullable scalar parameter (gint): 7
 name collision: 6
 parameter types: array types are handled in a later phase: 6
 parameter stops: array types are handled in a later phase: 5
-parameter minimum_width: nullable scalar parameter (gint): 5
 parameter minimum_height: nullable scalar parameter (gint): 5
+parameter minimum_width: nullable scalar parameter (gint): 5
 caller-allocates out parameter rect: 5
 unsupported out parameter model (GtkTreeModel?): 4
+unsupported return type: Gdk.DragAction: 4
 caller-allocates out parameter color: 4
-parameter object_ids: array types are handled in a later phase: 3
 parameter colors: array types are handled in a later phase: 3
 parameter minimum_size: nullable scalar parameter (gint): 3
+parameter object_ids: array types are handled in a later phase: 3
 parameter x: nullable scalar parameter (gdouble): 3
 caller-allocates out parameter value: 3
 parameter destroy: nullable callback parameter (GLib.DestroyNotify): 3
 parameter x_offset: nullable scalar parameter (gint): 3
-parameter value: nullable scalar parameter (guint): 2
 parameter accelerator_key: nullable scalar parameter (guint): 2
-caller-allocates out parameter allocation: 2
+caller-allocates out parameter visible_rect: 2
+caller-allocates out parameter match_start: 2
 caller-allocates out parameter minimum_size: 2
 parameter func: nullable callback parameter (TreeViewRowSeparatorFunc): 2
-parameter match_func: nullable callback parameter (CustomFilterFunc): 2
+unsupported return type: utf8: 2
 parameter length: nullable scalar parameter (gsize): 2
-caller-allocates out parameter match_start: 2
+parameter sort_func: nullable callback parameter (GLib.CompareDataFunc): 2
+parameter value: nullable scalar parameter (guint): 2
 unsupported out parameter start_path (GtkTreePath?): 2
+parameter x: nullable scalar parameter (gint): 2
 parameter minimum: nullable scalar parameter (gint): 2
 parameter new_order: array types are handled in a later phase: 2
 parameter columns: array types are handled in a later phase: 2
 parameter map_func: nullable callback parameter (MapListModelMapFunc): 2
 parameter icons: array types are handled in a later phase: 2
-parameter x: nullable scalar parameter (gint): 2
+caller-allocates out parameter allocation: 2
 caller-allocates out parameter border: 2
 caller-allocates out parameter strong: 2
 caller-allocates out parameter start: 2
-caller-allocates out parameter visible_rect: 2
 caller-allocates out parameter child_iter: 2
-parameter sort_func: nullable callback parameter (GLib.CompareDataFunc): 2
-moved to SvgError.get_start: 1
-moved to DialogError.quark: 1
+parameter match_func: nullable callback parameter (CustomFilterFunc): 2
+caller-allocates out parameter alloc_area: 1
 parameter artists: array types are handled in a later phase: 1
 parameter authors: array types are handled in a later phase: 1
 parameter documenters: array types are handled in a later phase: 1
-parameter portal_interfaces: array types are handled in a later phase: 1
+unsupported arg type at index 0: gpointer: 1
 parameter page_func: nullable callback parameter (AssistantPageFunc): 1
+parameter portal_interfaces: array types are handled in a later phase: 1
 parameter sizes: array types are handled in a later phase: 1
-moved to Editable.delegate_get_property: 1
 parameter marshal: nullable callback parameter (GObject.ClosureMarshal): 1
+moved to Editable.delegate_get_property: 1
 moved to Editable.delegate_set_property: 1
-caller-allocates out parameter alloc_area: 1
 moved to Editable.install_properties: 1
 moved to FileChooserError.quark: 1
 caller-allocates out parameter inner_area: 1
@@ -75,73 +75,81 @@ parameter xpad: nullable scalar parameter (gint): 1
 moved to PaperSize.get_default: 1
 parameter params: array types are handled in a later phase: 1
 moved to PaperSize.get_paper_sizes: 1
-parameter lines: array types are handled in a later phase: 1
 moved to PrintError.quark: 1
-parameter request_mode: nullable callback parameter (CustomRequestModeFunc): 1
+parameter lines: array types are handled in a later phase: 1
 moved to RecentManagerError.quark: 1
+parameter request_mode: nullable callback parameter (CustomRequestModeFunc): 1
+moved to AccessibleProperty.init_value: 1
+unsupported return type: Gdk.ContentProvider: 1
 parameter draw_func: nullable callback parameter (DrawingAreaDrawFunc): 1
 parameter n_types: nullable scalar parameter (gsize): 1
-moved to AccessibleProperty.init_value: 1
+moved to SvgError.get_attribute: 1
+moved to SvgError.get_element: 1
 caller-allocates out parameter icon_area: 1
 parameter mime_types: array types are handled in a later phase: 1
 parameter filter_func: nullable callback parameter (FlowBoxFilterFunc): 1
 parameter sort_func: nullable callback parameter (FlowBoxSortFunc): 1
 unsupported out parameter font_desc (PangoFontDescription): 1
-moved to SvgError.get_attribute: 1
-moved to SvgError.get_element: 1
+unsupported return type: Gdk.GLContext: 1
+moved to SvgError.get_end: 1
+moved to SvgError.get_start: 1
 parameter axes: array types are handled in a later phase: 1
 parameter backlog: array types are handled in a later phase: 1
 parameter column: nullable scalar parameter (gint): 1
 unsupported out parameter attrs (PangoAttrList): 1
 parameter fallbacks: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getCursorIconView: 1
-moved to SvgError.get_end: 1
 moved to AccessibleRelation.init_value: 1
-moved to SvgError.quark: 1
-override-incompatible with ancestor; renamed to setCursorIconView: 1
 moved to AccessibleState.init_value: 1
-parameter start: nullable scalar parameter (gint): 1
 unsupported out parameter tree_model (GtkTreeModel?): 1
+override-incompatible with ancestor; renamed to setCursorIconView: 1
+moved to TreeRowReference.deleted: 1
+parameter start: nullable scalar parameter (gint): 1
+moved to TreeRowReference.inserted: 1
 parameter create_widget_func: nullable callback parameter (ListBoxCreateWidgetFunc): 1
 parameter filter_func: nullable callback parameter (ListBoxFilterFunc): 1
 parameter update_header: nullable callback parameter (ListBoxUpdateHeaderFunc): 1
 parameter sort_func: nullable callback parameter (ListBoxSortFunc): 1
-moved to TreeRowReference.deleted: 1
-moved to TreeRowReference.inserted: 1
 parameter accessibles: array types are handled in a later phase: 1
+moved to BitsetIter.init_at: 1
+moved to BitsetIter.init_first: 1
 override-incompatible with ancestor; renamed to getDirectionMenuButton: 1
 parameter func: nullable callback parameter (MenuButtonCreatePopupFunc): 1
 override-incompatible with ancestor; renamed to setDirectionMenuButton: 1
+unsupported arg type at index 1: ?: 1
 aliases are resolved to their target: 1
-moved to BitsetIter.init_at: 1
+unsupported return type: Notebook: 1
+parameter entries: array types are handled in a later phase: 1
+parameter line_number: nullable scalar parameter (gint): 1
 parameter ranges: array types are handled in a later phase: 1
+unsupported return type: GObject.Object: 1
 parameter page_ranges: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog: 1
 caller-allocates out parameter range_rect: 1
 parameter slider_start: nullable scalar parameter (gint): 1
 parameter func: nullable callback parameter (ScaleFormatValueFunc): 1
-moved to BitsetIter.init_first: 1
+moved to BitsetIter.init_last: 1
 parameter hscrollbar_policy: nullable scalar parameter (PolicyType): 1
 parameter border_width: array types are handled in a later phase: 1
-parameter line_number: nullable scalar parameter (gint): 1
+unsupported out parameter stamp (GDateTime): 1
 parameter shadow: array types are handled in a later phase: 1
 parameter step: nullable scalar parameter (gdouble): 1
 parameter min: nullable scalar parameter (gdouble): 1
-moved to BitsetIter.init_last: 1
-unsupported out parameter stamp (GDateTime): 1
-caller-allocates out parameter margin: 1
-caller-allocates out parameter padding: 1
 moved to BuilderError.quark: 1
 moved to ConstraintVflParserError.quark: 1
+caller-allocates out parameter margin: 1
+caller-allocates out parameter padding: 1
+parameter indices: array types are handled in a later phase: 1
+parameter depth: nullable scalar parameter (gint): 1
 parameter window_x: nullable scalar parameter (gint): 1
 caller-allocates out parameter location: 1
 caller-allocates out parameter target_iter: 1
 parameter x_offset: nullable scalar parameter (gdouble): 1
-parameter indices: array types are handled in a later phase: 1
+unsupported arg type at index 1: GLib.Array: 1
 parameter buffer_x: nullable scalar parameter (gint): 1
 caller-allocates out parameter filter_iter: 1
-parameter depth: nullable scalar parameter (gint): 1
 unsupported out parameter parameter_type (GVariantType?): 1
+parameter people: array types are handled in a later phase: 1
 caller-allocates out parameter sort_iter: 1
 parameter func: nullable callback parameter (TreeSelectionFunc): 1
 override-incompatible with ancestor; renamed to getCursorTreeView: 1
@@ -159,12 +167,12 @@ parameter properties: array types are handled in a later phase: 1
 parameter relations: array types are handled in a later phase: 1
 parameter states: array types are handled in a later phase: 1
 parameter func: nullable callback parameter (CellLayoutDataFunc): 1
-parameter people: array types are handled in a later phase: 1
+moved to DialogError.quark: 1
 parameter start_pos: nullable scalar parameter (gint): 1
 inout parameter position: 1
 parameter options: array types are handled in a later phase: 1
 parameter filter: nullable callback parameter (FontFilterFunc): 1
-parameter entries: array types are handled in a later phase: 1
+moved to SvgError.quark: 1
 
 ## First 50 entries
 [callable] Gtk.acceleratorParse — parameter accelerator_key: nullable scalar parameter (guint)

@@ -147,7 +147,19 @@ class ClassEmitter {
           dartName: name, ownerName: dartName, staticMember: true);
       if (code != null) b.writeln(_indent(code));
     }
-    final signalCode = emitSignalConnectors(ctx, cls.signals, dartName, memberNames);
+    final inherited = inheritedSignals(cls, ctx);
+    final allSignals = [...cls.signals, ...inherited];
+    final entries = <({GirSignal signal, GirNamespace? ns})>[
+      for (final s in cls.signals) (signal: s, ns: ctx.namespace),
+      for (final i in inherited) (signal: i, ns: _signalOwnerNs(cls, i.name, ctx)),
+    ];
+    final signalCode = emitSignalConnectors(
+      ctx,
+      allSignals,
+      dartName,
+      memberNames,
+      buckets: buildSignalBuckets(entries, ctx),
+    );
     if (signalCode.isNotEmpty) {
       b.writeln(_indent(signalCode));
     }
@@ -192,5 +204,31 @@ class ClassEmitter {
             '${p.direction.name}:${typeKey(p.type)}${p.nullable ? '?' : ''}')
         .join(',');
     return '${typeKey(m.returnType)}${m.returnNullable ? '?' : ''}($params)';
+  }
+
+  /// Returns the namespace where [signalName] is declared, walking up
+  /// [cls]'s parent chain. Used to resolve signal arg types against the
+  /// namespace where the signal was authored (Gtk's `Window` arg vs.
+  /// Adw's `Window`).
+  static GirNamespace? _signalOwnerNs(
+    GirClass cls,
+    String signalName,
+    EmitContext ctx,
+  ) {
+    var current = cls;
+    var currentNs = ctx.namespace;
+    final seen = <String>{};
+    while (seen.add('${currentNs.name}.${current.name}')) {
+      if (current.signals.any((s) => s.name == signalName)) {
+        return currentNs;
+      }
+      if (current.parent == null) break;
+      final found = ctx.findClass(current.parent!);
+      if (found == null) break;
+      final (ns, parent) = found;
+      currentNs = ns;
+      current = parent;
+    }
+    return ctx.namespace;
   }
 }

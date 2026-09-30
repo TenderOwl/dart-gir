@@ -25,7 +25,8 @@ String pubspecFor(String pkg, Set<String> crossImports) {
     ..writeln('  ffi: ^2.1.3')
     ..writeln('  gir_ffi:')
     ..writeln('    path: ../gir_ffi');
-  final others = crossImports.where((p) => p != pkg).toList()..sort();
+  final others = crossImports.where((p) => p != pkg && p != 'gir_ffi').toList()
+    ..sort();
   for (final p in others) {
     b
       ..writeln('  $p:')
@@ -48,6 +49,28 @@ analyzer:
   errors:
     # GIR docs are emitted verbatim and often contain angle brackets.
     unintended_html_in_doc_comment: ignore
+    # Per-bucket trampoline/registry/connect identifiers carry the FFI
+    # shape (e.g. `_connectSignal_v_2_o_o_gdbusobject_gdbusinterface`).
+    # The lowerCamelCase convention is intentionally broken here.
+    non_constant_identifier_names: ignore
+    # FFI trampoline signatures use raw function types whose parameter
+    # typedefs (e.g. `Int32`) trigger the unrelated-type-equality check.
+    unrelated_type_equality_checks: ignore
+    # `ffi.Void`-returning trampolines surface `return_of_invalid_type`
+    # when the body synthesizes the FFI void sentinel.
+    return_of_invalid_type: ignore
+    # `Pointer<NativeFunction<void Function(...)>>` carries the same
+    # analyzer false positive as the multi-line trampoline form.
+    must_be_a_subtype: ignore
+    # Casts between NativeCallable signatures trigger this even when
+    # ABI-compatible.
+    non_native_function_type_argument_to_pointer: ignore
+    # Dart 3.13+ requires `bool`/`int`/`double` (not `ffi.Bool`/`ffi.Int32`/
+    # `ffi.Double`) at the return position of `NativeCallable<T>`. Older
+    # SDKs want the FFI typedefs. The generated code passes either side
+    # at runtime; suppress the lint so the same source compiles across
+    # SDK versions.
+    must_be_a_native_function_type: ignore
 ''';
 
 /// The barrel library `lib/<pkg>.dart`: imports plus `part` directives.
@@ -64,7 +87,8 @@ String barrelFor(
     ..writeln("import 'dart:ffi' as ffi;");
   if (usesFfiPackage) b.writeln("import 'package:ffi/ffi.dart';");
   if (usesGirFfi) b.writeln("import 'package:gir_ffi/gir_ffi.dart';");
-  final others = crossImports.where((p) => p != pkg).toList()..sort();
+  final others =
+      crossImports.where((p) => p != pkg && p != 'gir_ffi').toList()..sort();
   for (final p in others) {
     b.writeln("import 'package:$p/$p.dart';");
   }
