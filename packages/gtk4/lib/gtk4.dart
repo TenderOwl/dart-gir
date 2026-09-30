@@ -4,17 +4,14 @@ import 'dart:ffi' as ffi;
 
 import 'package:ffi/ffi.dart';
 import 'package:gir_ffi/gir_ffi.dart';
-import 'package:cairo/cairo.dart';
 import 'package:gdk4/gdk4.dart';
-import 'package:gdk_pixbuf/gdk_pixbuf.dart';
 import 'package:gio/gio.dart';
 import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
-import 'package:graphene/graphene.dart';
-import 'package:gsk4/gsk4.dart';
 import 'package:pango/pango.dart';
 
 part 'src/lib.dart';
+part 'src/signals.dart';
 part 'src/enums_0.dart';
 part 'src/enums_1.dart';
 part 'src/enums_2.dart';

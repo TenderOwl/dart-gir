@@ -362,6 +362,19 @@ class AdwSplitButton extends GtkWidget {
   void setUseUnderline(bool useUnderline) {
     _adwSplitButtonSetUseUnderline(this.handle, useUnderline ? 1 : 0);
   }
+
+  /// Emitted to animate press then release.
+  ///
+  /// This is an action signal. Applications should never connect to this signal,
+  /// but use the [signal@SplitButton::clicked] signal.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
+
+  /// Emitted when the button has been activated (pressed and released).
+  int onClicked(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'clicked', callback);
+  }
 }
 
 /// A spring-based [class@Animation].

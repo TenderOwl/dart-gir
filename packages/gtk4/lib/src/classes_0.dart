@@ -6,8 +6,16 @@ part of '../gtk4.dart';
 /// Each platform supported by GTK implements a `GtkATContext` subclass, and
 /// is responsible for updating the accessible state in response to state
 /// changes in `GtkAccessible`.
-class GtkATContext extends GObject {
-  GtkATContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkATContext implements ffi.Finalizable {
+  GtkATContext.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkATContext` instance for the given accessible role,
   /// accessible instance, and display connection.
@@ -67,6 +75,12 @@ class GtkATContext extends GObject {
     return GtkAccessibleRole.fromValue(
       _gtkAtContextGetAccessibleRole(this.handle),
     );
+  }
+
+  /// Emitted when the attributes of the accessible for the
+  /// `GtkATContext` instance change.
+  int onStateChange(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'state-change', callback);
   }
 }
 
@@ -575,9 +589,16 @@ class GtkAboutDialog extends GtkWindow {
 /// A widget that contains one or more links should implement
 /// the [iface@Gtk.AccessibleHypertext] interface and return
 /// `GtkAccessibleHyperlink` objects for each of the links.
-class GtkAccessibleHyperlink extends GObject {
-  GtkAccessibleHyperlink.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkAccessibleHyperlink implements ffi.Finalizable {
+  GtkAccessibleHyperlink.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates an accessible object that represents a hyperlink.
   ///
@@ -635,162 +656,5 @@ class GtkAccessibleHyperlink extends GObject {
       state.value,
       enabled ? 1 : 0,
     );
-  }
-}
-
-/// Presents contextual actions.
-///
-/// <picture>
-/// <source srcset="action-bar-dark.png" media="(prefers-color-scheme: dark)">
-/// <img alt="An example GtkActionBar" src="action-bar.png">
-/// </picture>
-///
-/// `GtkActionBar` is expected to be displayed below the content and expand
-/// horizontally to fill the area.
-///
-/// It allows placing children at the start or the end. In addition, it
-/// contains an internal centered box which is centered with respect to
-/// the full width of the box, even if the children at either side take
-/// up different amounts of space.
-///
-/// # GtkActionBar as GtkBuildable
-///
-/// The `GtkActionBar` implementation of the `GtkBuildable` interface supports
-/// adding children at the start or end sides by specifying “start” or “end” as
-/// the “type” attribute of a `<child>` element, or setting the center widget
-/// by specifying “center” value.
-///
-/// # CSS nodes
-///
-/// ```
-/// actionbar
-/// ╰── revealer
-/// ╰── box
-/// ├── box.start
-/// │   ╰── [start children]
-/// ├── [center widget]
-/// ╰── box.end
-/// ╰── [end children]
-/// ```
-///
-/// A `GtkActionBar`'s CSS node is called `actionbar`. It contains a `revealer`
-/// subnode, which contains a `box` subnode, which contains two `box` subnodes at
-/// the start and end of the action bar, with `start` and `end` style classes
-/// respectively, as well as a center node that represents the center child.
-///
-/// Each of the boxes contains children packed for that side.
-class GtkActionBar extends GtkWidget {
-  GtkActionBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a new action bar widget.
-  static final _gtkActionBarNew =
-      gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_action_bar_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkActionBar() {
-    return GtkActionBar.fromPointer(
-      gObjectRefSink(_gtkActionBarNew()),
-      owned: true,
-    );
-  }
-
-  /// Retrieves the center bar widget of the bar.
-  static final _gtkActionBarGetCenterWidget =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_get_center_widget')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkWidget? getCenterWidget() {
-    return (_gtkActionBarGetCenterWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkActionBarGetCenterWidget(this.handle));
-  }
-
-  /// Gets whether the contents of the action bar are revealed.
-  static final _gtkActionBarGetRevealed =
-      gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_action_bar_get_revealed',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getRevealed() {
-    return (_gtkActionBarGetRevealed(this.handle)) != 0;
-  }
-
-  /// Adds a child to the action bar, packed with reference to the
-  /// end of the action bar.
-  static final _gtkActionBarPackEnd =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_pack_end')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void packEnd(GtkWidget child) {
-    _gtkActionBarPackEnd(this.handle, child.handle);
-  }
-
-  /// Adds a child to the action, packed with reference to the
-  /// start of the action bar.
-  static final _gtkActionBarPackStart =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_pack_start')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void packStart(GtkWidget child) {
-    _gtkActionBarPackStart(this.handle, child.handle);
-  }
-
-  /// Removes a child from the action bar.
-  static final _gtkActionBarRemove =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_remove')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void remove(GtkWidget child) {
-    _gtkActionBarRemove(this.handle, child.handle);
-  }
-
-  /// Sets the center widget for the action bar.
-  static final _gtkActionBarSetCenterWidget =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_set_center_widget')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setCenterWidget([GtkWidget? centerWidget]) {
-    _gtkActionBarSetCenterWidget(
-      this.handle,
-      centerWidget?.handle ?? ffi.nullptr,
-    );
-  }
-
-  /// Reveals or conceals the content of the action bar.
-  ///
-  /// Note: this does not show or hide the action bar in the
-  /// [property@Gtk.Widget:visible] sense, so revealing has
-  /// no effect if the action bar is hidden.
-  static final _gtkActionBarSetRevealed =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gtk_action_bar_set_revealed')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setRevealed(bool revealed) {
-    _gtkActionBarSetRevealed(this.handle, revealed ? 1 : 0);
   }
 }

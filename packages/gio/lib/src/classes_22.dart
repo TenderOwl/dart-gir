@@ -18,8 +18,16 @@ part of '../gio.dart';
 /// All classes derived from `GOutputStream` *should* implement synchronous
 /// writing, splicing, flushing and closing streams, but *may* implement
 /// asynchronous versions.
-class GOutputStream extends GObject {
-  GOutputStream.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GOutputStream implements ffi.Finalizable {
+  GOutputStream.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Clears the pending flag on @stream.
   static final _gOutputStreamClearPending =
@@ -347,54 +355,6 @@ class GOutputStream extends GObject {
     }
   }
 
-  /// A wrapper function for g_output_stream_write() which takes a
-  /// #GBytes as input.  This can be more convenient for use by language
-  /// bindings or in other cases where the refcounted nature of #GBytes
-  /// is helpful over a bare pointer interface.
-  ///
-  /// However, note that this function may still perform partial writes,
-  /// just like g_output_stream_write().  If that occurs, to continue
-  /// writing, you will need to create a new #GBytes containing just the
-  /// remaining bytes, using g_bytes_new_from_bytes(). Passing the same
-  /// #GBytes instance multiple times potentially can result in duplicated
-  /// data in the output stream.
-  static final _gOutputStreamWriteBytes =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.IntPtr Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_output_stream_write_bytes')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  int writeBytes(GBytes bytes, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gOutputStreamWriteBytes(
-        this.handle,
-        bytes.handle,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
   /// Finishes a stream write-from-#GBytes operation.
   static final _gOutputStreamWriteBytesFinish =
       gioLookup<
@@ -481,8 +441,16 @@ class GOutputStream extends GObject {
 /// could then be used to decide if it is appropriate to show a “Click here to
 /// unlock” button in a dialog and to provide the mechanism to invoke
 /// when that button is clicked.
-class GPermission extends GObject {
-  GPermission.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GPermission implements ffi.Finalizable {
+  GPermission.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Attempts to acquire the permission represented by @permission.
   ///

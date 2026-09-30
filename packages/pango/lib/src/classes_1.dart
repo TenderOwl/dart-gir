@@ -3,8 +3,16 @@ part of '../pango.dart';
 
 /// A `PangoFontFace` is used to represent a group of fonts with
 /// the same family, slant, weight, and width, but varying sizes.
-class PangoFontFace extends GObject {
-  PangoFontFace.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class PangoFontFace implements ffi.Finalizable {
+  PangoFontFace.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Returns a font description that matches the face.
   ///
@@ -75,9 +83,16 @@ class PangoFontFace extends GObject {
 ///
 /// The font faces in a family share a common design, but differ in
 /// slant, weight, width or other aspects.
-class PangoFontFamily extends GObject {
-  PangoFontFamily.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class PangoFontFamily implements ffi.Finalizable {
+  PangoFontFamily.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the `PangoFontFace` of @family with the given name.
   static final _pangoFontFamilyGetFace =
@@ -168,8 +183,16 @@ class PangoFontFamily extends GObject {
 ///
 /// This is a virtual object with implementations being specific to
 /// particular rendering systems.
-class PangoFontMap extends GObject {
-  PangoFontMap.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class PangoFontMap implements ffi.Finalizable {
+  PangoFontMap.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Loads a font file with one or more fonts into the `PangoFontMap`.
   ///
@@ -420,8 +443,16 @@ class PangoFontMap extends GObject {
 /// against a particular `PangoContext`. It has operations for finding the
 /// component font for a particular Unicode character, and for finding a
 /// composite set of metrics for the entire fontset.
-class PangoFontset extends GObject {
-  PangoFontset.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class PangoFontset implements ffi.Finalizable {
+  PangoFontset.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Iterates through all the fonts in a fontset, calling @func for
   /// each one.

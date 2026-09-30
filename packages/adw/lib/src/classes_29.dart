@@ -353,4 +353,17 @@ class AdwTabButton extends GtkWidget {
   void setView([AdwTabView? view]) {
     _adwTabButtonSetView(this.handle, view?.handle ?? ffi.nullptr);
   }
+
+  /// Emitted to animate press then release.
+  ///
+  /// This is an action signal. Applications should never connect to this signal,
+  /// but use the [signal@TabButton::clicked] signal.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
+
+  /// Emitted when the button has been activated (pressed and released).
+  int onClicked(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'clicked', callback);
+  }
 }

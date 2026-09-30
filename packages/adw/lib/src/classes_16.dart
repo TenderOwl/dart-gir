@@ -505,4 +505,40 @@ class AdwNavigationPage extends GtkWidget {
       _adwNavigationPageSetTitle(this.handle, nativeTitle.cast<Utf8>());
     });
   }
+
+  /// Emitted when the navigation view transition has been completed and the page
+  /// is fully hidden.
+  ///
+  /// It will always be preceded by [signal@NavigationPage::hiding] or
+  /// [signal@NavigationPage::showing].
+  int onHidden(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'hidden', callback);
+  }
+
+  /// Emitted when the page starts hiding at the beginning of the navigation view
+  /// transition.
+  ///
+  /// It will always be followed by [signal@NavigationPage::hidden] or
+  /// [signal@NavigationPage::shown].
+  int onHiding(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'hiding', callback);
+  }
+
+  /// Emitted when the page shows at the beginning of the navigation view
+  /// transition.
+  ///
+  /// It will always be followed by [signal@NavigationPage::shown] or
+  /// [signal@NavigationPage::hidden].
+  int onShowing(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'showing', callback);
+  }
+
+  /// Emitted when the navigation view transition has been completed and the page
+  /// is fully shown.
+  ///
+  /// It will always be preceded by [signal@NavigationPage::showing] or
+  /// [signal@NavigationPage::hiding].
+  int onShown(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'shown', callback);
+  }
 }

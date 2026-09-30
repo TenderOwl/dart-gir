@@ -11,9 +11,16 @@ part of '../gio.dart';
 ///
 /// See [iface@Gio.SocketConnectable] for an example of using the connectable
 /// interface.
-class GNetworkAddress extends GObject {
-  GNetworkAddress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GNetworkAddress implements ffi.Finalizable {
+  GNetworkAddress.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new #GSocketConnectable for connecting to the given
   /// @hostname and @port.
@@ -211,9 +218,16 @@ class GNetworkAddress extends GObject {
 /// See [struct@Gio.SrvTarget] for more information about SRV records, and see
 /// [iface@Gio.SocketConnectable] for an example of using the connectable
 /// interface.
-class GNetworkService extends GObject {
-  GNetworkService.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GNetworkService implements ffi.Finalizable {
+  GNetworkService.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new #GNetworkService representing the given @service,
   /// @protocol, and @domain. This will initially be unresolved; use the
@@ -380,8 +394,16 @@ class GNetworkService extends GObject {
 ///
 /// In Windows, notification actions are unsupported, when sending the notification
 /// a warning will be printed if a default action or action buttons were added.
-class GNotification extends GObject {
-  GNotification.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GNotification implements ffi.Finalizable {
+  GNotification.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new #GNotification with @title as its title.
   ///
@@ -437,47 +459,6 @@ class GNotification extends GObject {
           this.handle,
           nativeLabel.cast<Utf8>(),
           nativeDetailedAction.cast<Utf8>(),
-        );
-      });
-    });
-  }
-
-  /// Adds a button to @notification that activates @action when clicked.
-  /// @action must be an application-wide action (it must start with "app.").
-  ///
-  /// If @target is non-%NULL, @action will be activated with @target as
-  /// its parameter.
-  static final _gNotificationAddButtonWithTargetValue =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_notification_add_button_with_target_value')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void addButtonWithTargetValue(
-    String label,
-    String action, [
-    GVariant? target,
-  ]) {
-    withNativeString(label, (nativeLabel) {
-      withNativeString(action, (nativeAction) {
-        _gNotificationAddButtonWithTargetValue(
-          this.handle,
-          nativeLabel.cast<Utf8>(),
-          nativeAction.cast<Utf8>(),
-          target?.handle ?? ffi.nullptr,
         );
       });
     });
@@ -545,42 +526,6 @@ class GNotification extends GObject {
       _gNotificationSetDefaultAction(
         this.handle,
         nativeDetailedAction.cast<Utf8>(),
-      );
-    });
-  }
-
-  /// Sets the default action of @notification to @action. This action is
-  /// activated when the notification is clicked on. It must be an
-  /// application-wide action (start with "app.").
-  ///
-  /// If @target is non-%NULL, @action will be activated with @target as
-  /// its parameter. If @target is floating, it will be consumed.
-  ///
-  /// When no default action is set, the application that the notification
-  /// was sent on is activated.
-  static final _gNotificationSetDefaultActionAndTargetValue =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_notification_set_default_action_and_target_value')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void setDefaultActionAndTargetValue(String action, [GVariant? target]) {
-    withNativeString(action, (nativeAction) {
-      _gNotificationSetDefaultActionAndTargetValue(
-        this.handle,
-        nativeAction.cast<Utf8>(),
-        target?.handle ?? ffi.nullptr,
       );
     });
   }

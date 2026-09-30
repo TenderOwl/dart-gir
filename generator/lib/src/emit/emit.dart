@@ -7,3 +7,5 @@ export 'function_emitter.dart';
 export 'library_emitter.dart';
 export 'record_emitter.dart';
 export 'report.dart';
+export 'signals_emitter.dart';
+export 'signals_helper.dart';

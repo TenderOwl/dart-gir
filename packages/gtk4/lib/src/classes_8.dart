@@ -81,21 +81,6 @@ class GtkCalendar extends GtkWidget {
     _gtkCalendarClearMarks(this.handle);
   }
 
-  /// Returns a `GDateTime` representing the shown
-  /// year, month and the selected day.
-  ///
-  /// The returned date is in the local time zone.
-  static final _gtkCalendarGetDate =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_calendar_get_date')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime getDate() {
-    return GDateTime.fromPointer(_gtkCalendarGetDate(this.handle));
-  }
-
   /// Gets the day of the selected date.
   static final _gtkCalendarGetDay =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -183,34 +168,6 @@ class GtkCalendar extends GtkWidget {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void markDay(int day) {
     _gtkCalendarMarkDay(this.handle, day);
-  }
-
-  /// Switches to @date's year and month and select its day.
-  static final _gtkCalendarSelectDay =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_calendar_select_day')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void selectDay(GDateTime date) {
-    _gtkCalendarSelectDay(this.handle, date.handle);
-  }
-
-  /// Switches to @date's year and month and selects its day.
-  static final _gtkCalendarSetDate =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_calendar_set_date')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setDate(GDateTime date) {
-    _gtkCalendarSetDate(this.handle, date.handle);
   }
 
   /// Sets the day for the selected date.
@@ -308,84 +265,35 @@ class GtkCalendar extends GtkWidget {
   void unmarkDay(int day) {
     _gtkCalendarUnmarkDay(this.handle, day);
   }
+
+  /// Emitted when the user selects a day.
+  int onDaySelected(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'day-selected', callback);
+  }
+
+  /// Emitted when the user switches to the next month.
+  int onNextMonth(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'next-month', callback);
+  }
+
+  /// Emitted when user switches to the next year.
+  int onNextYear(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'next-year', callback);
+  }
+
+  /// Emitted when the user switches to the previous month.
+  int onPrevMonth(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'prev-month', callback);
+  }
+
+  /// Emitted when user switches to the previous year.
+  int onPrevYear(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'prev-year', callback);
+  }
 }
 
 /// Invokes a callback.
 class GtkCallbackAction extends GtkShortcutAction {
   GtkCallbackAction.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
-
-  /// Create a custom action that calls the given @callback when
-  /// activated.
-  static final _gtkCallbackActionNew =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Int32 Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_callback_action_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Int32 Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  factory GtkCallbackAction(
-    int Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )
-    callback,
-    ffi.Pointer<ffi.Void> data,
-    void Function(ffi.Pointer<ffi.Void>) destroy,
-  ) {
-    final _nc1 =
-        ffi.NativeCallable<
-          ffi.Int32 Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(callback, exceptionalReturn: 0);
-    final _nc3 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(destroy);
-    try {
-      final _ret = _gtkCallbackActionNew(
-        _nc1.nativeFunction,
-        data,
-        _nc3.nativeFunction,
-      );
-      return GtkCallbackAction.fromPointer(_ret, owned: true);
-    } finally {
-      _nc1.close();
-      _nc3.close();
-    }
-  }
 }

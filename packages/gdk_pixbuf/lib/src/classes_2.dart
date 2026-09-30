@@ -316,6 +316,25 @@ class GdkPixbufLoader extends GObject {
       calloc.free(_error);
     }
   }
+
+  /// This signal is emitted when the pixbuf loader has allocated the
+  /// pixbuf in the desired size.
+  ///
+  /// After this signal is emitted, applications can call
+  /// gdk_pixbuf_loader_get_pixbuf() to fetch the partially-loaded
+  /// pixbuf.
+  int onAreaPrepared(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'area-prepared', callback);
+  }
+
+  /// This signal is emitted when gdk_pixbuf_loader_close() is called.
+  ///
+  /// It can be used by different parts of an application to receive
+  /// notification when an image loader is closed by the code that
+  /// drives it.
+  int onClosed(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'closed', callback);
+  }
 }
 
 class GdkPixbufNonAnim extends GdkPixbufAnimation {

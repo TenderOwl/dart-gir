@@ -322,4 +322,9 @@ class GtkExpander extends GtkWidget {
   void setUseUnderline(bool useUnderline) {
     _gtkExpanderSetUseUnderline(this.handle, useUnderline ? 1 : 0);
   }
+
+  /// Activates the `GtkExpander`.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
 }

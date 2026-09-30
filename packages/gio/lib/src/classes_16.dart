@@ -49,8 +49,16 @@ part of '../gio.dart';
 /// stream when the wrapper stream is idle. Note that the semantics of such
 /// operations may not be well-defined due to the state the wrapper stream leaves
 /// the base stream in (though they are guaranteed not to crash).
-class GIOStream extends GObject {
-  GIOStream.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GIOStream implements ffi.Finalizable {
+  GIOStream.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Clears the pending flag on @stream.
   static final _gIoStreamClearPending =
@@ -377,8 +385,16 @@ class GIPv6TclassMessage extends GSocketControlMessage {
 /// To actually connect to a remote host, you will need a
 /// [class@Gio.InetSocketAddress] (which includes a `GInetAddress` as well as a
 /// port number).
-class GInetAddress extends GObject {
-  GInetAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GInetAddress implements ffi.Finalizable {
+  GInetAddress.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a #GInetAddress for the "any" address (unassigned/"don't
   /// care") for @family.

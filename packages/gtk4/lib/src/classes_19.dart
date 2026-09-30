@@ -306,6 +306,15 @@ class GtkDialog extends GtkWindow {
   void setResponseSensitive(int responseId, bool setting) {
     _gtkDialogSetResponseSensitive(this.handle, responseId, setting ? 1 : 0);
   }
+
+  /// Emitted when the user uses a keybinding to close the dialog.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default binding for this signal is the Escape key.
+  int onClose(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'close', callback);
+  }
 }
 
 /// A list model that wraps [method@Gio.File.enumerate_children_async].
@@ -330,9 +339,16 @@ class GtkDialog extends GtkWindow {
 /// This means you do not need access to the `GtkDirectoryList`, but can access
 /// the `GFile` directly from the `GFileInfo` when operating with a `GtkListView`
 /// or similar.
-class GtkDirectoryList extends GObject {
-  GtkDirectoryList.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkDirectoryList implements ffi.Finalizable {
+  GtkDirectoryList.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkDirectoryList`.
   ///
@@ -378,27 +394,6 @@ class GtkDirectoryList extends GObject {
       (_gtkDirectoryListGetAttributes(this.handle)).cast(),
       free: false,
     );
-  }
-
-  /// Gets the loading error, if any.
-  ///
-  /// If an error occurs during the loading process, the loading process
-  /// will finish and this property allows querying the error that happened.
-  /// This error will persist until a file is loaded again.
-  ///
-  /// An error being set does not mean that no files were loaded, and all
-  /// successfully queried files will remain in the list.
-  static final _gtkDirectoryListGetError =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_directory_list_get_error')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GError? getError() {
-    return (_gtkDirectoryListGetError(this.handle)) == ffi.nullptr
-        ? null
-        : GError.fromPointer(_gtkDirectoryListGetError(this.handle));
   }
 
   /// Gets the file whose children are currently enumerated.
@@ -587,29 +582,6 @@ class GtkDragIcon extends GtkWidget {
           >();
   void setChild([GtkWidget? child]) {
     _gtkDragIconSetChild(this.handle, child?.handle ?? ffi.nullptr);
-  }
-
-  /// Creates a widget that can be used as a drag icon for the given
-  /// @value.
-  ///
-  /// Supported types include strings, `GdkRGBA` and `GtkTextBuffer`.
-  /// If GTK does not know how to create a widget for a given value,
-  /// it will return %NULL.
-  ///
-  /// This method is used to set the default drag icon on drag-and-drop
-  /// operations started by `GtkDragSource`, so you don't need to set
-  /// a drag icon using this function there.
-  static final _gtkDragIconCreateWidgetForValue =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_drag_icon_create_widget_for_value')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  static GtkWidget? createWidgetForValue(GValue value) {
-    return (_gtkDragIconCreateWidgetForValue(value.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkDragIconCreateWidgetForValue(value.handle));
   }
 
   /// Creates a `GtkDragIcon` that shows @paintable, and associates

@@ -10,10 +10,6 @@ dependencies:
   ffi: ^2.1.3
   gir_ffi:
     path: ../gir_ffi
-  cairo:
-    path: ../cairo
-  gdk_pixbuf:
-    path: ../gdk_pixbuf
   gio:
     path: ../gio
   glib:

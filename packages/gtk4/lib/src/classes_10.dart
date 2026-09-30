@@ -144,9 +144,16 @@ class GtkCellAreaBox extends GtkCellArea {
 /// same context which was used to request sizes for a given `GtkTreeModel`
 /// row also be used for the same row when calling other `GtkCellArea` APIs
 /// such as gtk_cell_area_render() and gtk_cell_area_event().
-class GtkCellAreaContext extends GObject {
-  GtkCellAreaContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkCellAreaContext implements ffi.Finalizable {
+  GtkCellAreaContext.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Allocates a width and/or a height for all rows which are to be
   /// rendered with @context.
@@ -302,9 +309,16 @@ class GtkCellAreaContext extends GObject {
 /// corresponding “set” property, e.g. “cell-background-set” corresponds
 /// to “cell-background”. These “set” properties reflect whether a property
 /// has been set or not. You should not set them independently.
-class GtkCellRenderer extends GInitiallyUnowned {
-  GtkCellRenderer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkCellRenderer implements ffi.Finalizable {
+  GtkCellRenderer.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Passes an activate event to the cell renderer for possible processing.
   /// Some cell renderers may use events; for example, `GtkCellRendererToggle`
@@ -648,6 +662,15 @@ class GtkCellRenderer extends GInitiallyUnowned {
   void stopEditing(bool canceled) {
     _gtkCellRendererStopEditing(this.handle, canceled ? 1 : 0);
   }
+
+  /// This signal gets emitted when the user cancels the process of editing a
+  /// cell.  For example, an editable cell renderer could be written to cancel
+  /// editing when the user presses Escape.
+  ///
+  /// See also: gtk_cell_renderer_stop_editing().
+  int onEditingCanceled(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'editing-canceled', callback);
+  }
 }
 
 /// Renders a keyboard accelerator in a cell
@@ -739,27 +762,6 @@ class GtkCellRendererPixbuf extends GtkCellRenderer {
   factory GtkCellRendererPixbuf() {
     return GtkCellRendererPixbuf.fromPointer(
       gObjectRefSink(_gtkCellRendererPixbufNew()),
-      owned: true,
-    );
-  }
-}
-
-/// Renders numbers as progress bars
-///
-/// `GtkCellRendererProgress` renders a numeric value as a progress par in a cell.
-/// Additionally, it can display a text on top of the progress bar.
-class GtkCellRendererProgress extends GtkCellRenderer {
-  GtkCellRendererProgress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new `GtkCellRendererProgress`.
-  static final _gtkCellRendererProgressNew =
-      gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_cell_renderer_progress_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellRendererProgress() {
-    return GtkCellRendererProgress.fromPointer(
-      gObjectRefSink(_gtkCellRendererProgressNew()),
       owned: true,
     );
   }

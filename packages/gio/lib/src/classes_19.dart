@@ -3,8 +3,16 @@ part of '../gio.dart';
 
 /// #GMenuItem is an opaque structure type.  You must access it using the
 /// functions below.
-class GMenuItem extends GObject {
-  GMenuItem.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GMenuItem implements ffi.Finalizable {
+  GMenuItem.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new #GMenuItem.
   ///
@@ -173,47 +181,6 @@ class GMenuItem extends GObject {
     });
   }
 
-  /// Queries the named @attribute on @menu_item.
-  ///
-  /// If @expected_type is specified and the attribute does not have this
-  /// type, %NULL is returned.  %NULL is also returned if the attribute
-  /// simply does not exist.
-  static final _gMenuItemGetAttributeValue =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_menu_item_get_attribute_value')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GVariant? getAttributeValue(String attribute, [GVariantType? expectedType]) {
-    return withNativeString(attribute, (nativeAttribute) {
-      return (_gMenuItemGetAttributeValue(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gMenuItemGetAttributeValue(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              ),
-            );
-    });
-  }
-
   /// Queries the named @link on @menu_item.
   static final _gMenuItemGetLink =
       gioLookup<
@@ -238,115 +205,6 @@ class GMenuItem extends GObject {
           : GMenuModel.fromPointer(
               _gMenuItemGetLink(this.handle, nativeLink.cast<Utf8>()),
             );
-    });
-  }
-
-  /// Sets or unsets the "action" and "target" attributes of @menu_item.
-  ///
-  /// If @action is %NULL then both the "action" and "target" attributes
-  /// are unset (and @target_value is ignored).
-  ///
-  /// If @action is non-%NULL then the "action" attribute is set.  The
-  /// "target" attribute is then set to the value of @target_value if it is
-  /// non-%NULL or unset otherwise.
-  ///
-  /// Normal menu items (ie: not submenu, section or other custom item
-  /// types) are expected to have the "action" attribute set to identify
-  /// the action that they are associated with.  The state type of the
-  /// action help to determine the disposition of the menu item.  See
-  /// #GAction and #GActionGroup for an overview of actions.
-  ///
-  /// In general, clicking on the menu item will result in activation of
-  /// the named action with the "target" attribute given as the parameter
-  /// to the action invocation.  If the "target" attribute is not set then
-  /// the action is invoked with no parameter.
-  ///
-  /// If the action has no state then the menu item is usually drawn as a
-  /// plain menu item (ie: with no additional decoration).
-  ///
-  /// If the action has a boolean state then the menu item is usually drawn
-  /// as a toggle menu item (ie: with a checkmark or equivalent
-  /// indication).  The item should be marked as 'toggled' or 'checked'
-  /// when the boolean state is %TRUE.
-  ///
-  /// If the action has a string state then the menu item is usually drawn
-  /// as a radio menu item (ie: with a radio bullet or equivalent
-  /// indication).  The item should be marked as 'selected' when the string
-  /// state is equal to the value of the @target property.
-  ///
-  /// See g_menu_item_set_action_and_target() or
-  /// g_menu_item_set_detailed_action() for two equivalent calls that are
-  /// probably more convenient for most uses.
-  static final _gMenuItemSetActionAndTargetValue =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_menu_item_set_action_and_target_value')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void setActionAndTargetValue([String? action, GVariant? targetValue]) {
-    withNativeString(action, (nativeAction) {
-      _gMenuItemSetActionAndTargetValue(
-        this.handle,
-        nativeAction.cast<Utf8>(),
-        targetValue?.handle ?? ffi.nullptr,
-      );
-    });
-  }
-
-  /// Sets or unsets an attribute on @menu_item.
-  ///
-  /// The attribute to set or unset is specified by @attribute. This
-  /// can be one of the standard attribute names %G_MENU_ATTRIBUTE_LABEL,
-  /// %G_MENU_ATTRIBUTE_ACTION, %G_MENU_ATTRIBUTE_TARGET, or a custom
-  /// attribute name.
-  /// Attribute names are restricted to lowercase characters, numbers
-  /// and '-'. Furthermore, the names must begin with a lowercase character,
-  /// must not end with a '-', and must not contain consecutive dashes.
-  ///
-  /// must consist only of lowercase
-  /// ASCII characters, digits and '-'.
-  ///
-  /// If @value is non-%NULL then it is used as the new value for the
-  /// attribute.  If @value is %NULL then the attribute is unset. If
-  /// the @value #GVariant is floating, it is consumed.
-  ///
-  /// See also g_menu_item_set_attribute() for a more convenient way to do
-  /// the same.
-  static final _gMenuItemSetAttributeValue =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_menu_item_set_attribute_value')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void setAttributeValue(String attribute, [GVariant? value]) {
-    withNativeString(attribute, (nativeAttribute) {
-      _gMenuItemSetAttributeValue(
-        this.handle,
-        nativeAttribute.cast<Utf8>(),
-        value?.handle ?? ffi.nullptr,
-      );
     });
   }
 
@@ -503,8 +361,16 @@ class GMenuItem extends GObject {
 
 /// #GMenuLinkIter is an opaque structure type.  You must access it using
 /// the functions below.
-class GMenuLinkIter extends GObject {
-  GMenuLinkIter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GMenuLinkIter implements ffi.Finalizable {
+  GMenuLinkIter.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the name of the link at the current iterator position.
   ///

@@ -75,19 +75,6 @@ typedef GtkCustomMeasureFunc = void Function(
 /// Pass a top-level or static Dart function. Closures are not supported.
 typedef GtkCustomRequestModeFunc = int Function(ffi.Pointer<ffi.Void>);
 
-/// Whenever @drawing_area needs to redraw, this function will be called.
-///
-/// This function should exclusively redraw the contents of the drawing area
-/// and must not call any widget functions that cause changes.
-/// Pass a top-level or static Dart function. Closures are not supported.
-typedef GtkDrawingAreaDrawFunc = void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-  int,
-  int,
-  ffi.Pointer<ffi.Void>,
-);
-
 /// A function which decides whether the row indicated by @iter matches
 /// a given @key, and should be displayed as a possible completion for @key.
 ///
@@ -251,16 +238,6 @@ typedef GtkPageSetupDoneFunc = void Function(
   ffi.Pointer<ffi.Void>,
 );
 
-/// The type of callback that is passed to gtk_print_job_send().
-///
-/// It is called when the print job has been completely sent.
-/// Pass a top-level or static Dart function. Closures are not supported.
-typedef GtkPrintJobCompleteFunc = void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-);
-
 /// Function called by [method@Gtk.PrintSettings.foreach] on every key/value pair
 /// inside a [class@Gtk.PrintSettings].
 /// Pass a top-level or static Dart function. Closures are not supported.
@@ -287,14 +264,6 @@ typedef GtkPrinterFunc = int Function(
 typedef GtkScaleFormatValueFunc = ffi.Pointer<Utf8> Function(
   ffi.Pointer<ffi.Void>,
   double,
-  ffi.Pointer<ffi.Void>,
-);
-
-/// Type for shortcuts based on user callbacks.
-/// Pass a top-level or static Dart function. Closures are not supported.
-typedef GtkShortcutFunc = int Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
   ffi.Pointer<ffi.Void>,
 );
 
@@ -412,21 +381,6 @@ typedef GtkTreeListModelCreateModelFunc = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<ffi.Void>,
 );
 
-/// A function which calculates display values from raw values in the model.
-/// It must fill @value with the display value for the column @column in the
-/// row indicated by @iter.
-///
-/// Since this function is called for each data access, it’s not a
-/// particularly efficient operation.
-/// Pass a top-level or static Dart function. Closures are not supported.
-typedef GtkTreeModelFilterModifyFunc = void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-  int,
-  ffi.Pointer<ffi.Void>,
-);
-
 /// A function which decides whether the row indicated by @iter is visible.
 /// Pass a top-level or static Dart function. Closures are not supported.
 typedef GtkTreeModelFilterVisibleFunc = int Function(
@@ -516,16 +470,5 @@ typedef GtkTreeViewSearchEqualFunc = int Function(
   int,
   ffi.Pointer<Utf8>,
   ffi.Pointer<ffi.Void>,
-  ffi.Pointer<ffi.Void>,
-);
-
-/// The type of the callback functions used for activating
-/// actions installed with [method@Gtk.WidgetClass.install_action].
-///
-/// The @parameter must match the @parameter_type of the action.
-/// Pass a top-level or static Dart function. Closures are not supported.
-typedef GtkWidgetActionActivateFunc = void Function(
-  ffi.Pointer<ffi.Void>,
-  ffi.Pointer<Utf8>,
   ffi.Pointer<ffi.Void>,
 );

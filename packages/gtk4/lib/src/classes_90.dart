@@ -11,9 +11,16 @@ part of '../gtk4.dart';
 /// for an overview of all the objects and data types related to the tree widget and
 /// how they work together, and to the [class@Gtk.TreeView] documentation for specifics
 /// about the CSS node structure for treeviews and their headers.
-class GtkTreeViewColumn extends GInitiallyUnowned {
-  GtkTreeViewColumn.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkTreeViewColumn implements ffi.Finalizable {
+  GtkTreeViewColumn.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkTreeViewColumn`.
   static final _gtkTreeViewColumnNew =
@@ -689,6 +696,11 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
   void setWidget([GtkWidget? widget]) {
     _gtkTreeViewColumnSetWidget(this.handle, widget?.handle ?? ffi.nullptr);
   }
+
+  /// Emitted when the column's header has been clicked.
+  int onClicked(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'clicked', callback);
+  }
 }
 
 /// A `GtkExpression` that tries to evaluate each of its expressions until it succeeds.
@@ -697,125 +709,4 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
 class GtkTryExpression extends GtkExpression {
   GtkTryExpression.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
-}
-
-/// Asynchronous API to open a uri with an application.
-///
-/// `GtkUriLauncher` collects the arguments that are needed to open the uri.
-///
-/// Depending on system configuration, user preferences and available APIs, this
-/// may or may not show an app chooser dialog or launch the default application
-/// right away.
-///
-/// The operation is started with the [method@Gtk.UriLauncher.launch] function.
-///
-/// To launch a file, use [class@Gtk.FileLauncher].
-class GtkUriLauncher extends GObject {
-  GtkUriLauncher.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a new `GtkUriLauncher` object.
-  static final _gtkUriLauncherNew =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('gtk_uri_launcher_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  factory GtkUriLauncher([String? uri]) {
-    return withNativeString(uri, (nativeUri) {
-      return GtkUriLauncher.fromPointer(
-        _gtkUriLauncherNew(nativeUri.cast<Utf8>()),
-        owned: true,
-      );
-    });
-  }
-
-  /// Returns whether the launcher is likely to succeed
-  /// in launching an application for its uri.
-  ///
-  /// This can be used to disable controls that trigger
-  /// the launcher when they are known not to work.
-  static final _gtkUriLauncherCanLaunch =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_uri_launcher_can_launch')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool canLaunch([GtkWindow? parent]) {
-    return (_gtkUriLauncherCanLaunch(
-          this.handle,
-          parent?.handle ?? ffi.nullptr,
-        )) !=
-        0;
-  }
-
-  /// Gets the uri that will be opened.
-  static final _gtkUriLauncherGetUri =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_uri_launcher_get_uri')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String? getUri() {
-    return stringFromNative(
-      (_gtkUriLauncherGetUri(this.handle)).cast(),
-      free: false,
-    );
-  }
-
-  /// Finishes the [method@Gtk.UriLauncher.launch] call and
-  /// returns the result.
-  static final _gtkUriLauncherLaunchFinish =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gtk_uri_launcher_launch_finish')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool launchFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gtkUriLauncherLaunchFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Sets the uri that will be opened.
-  static final _gtkUriLauncherSetUri =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-            >
-          >('gtk_uri_launcher_set_uri')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-          >();
-  void setUri([String? uri]) {
-    withNativeString(uri, (nativeUri) {
-      _gtkUriLauncherSetUri(this.handle, nativeUri.cast<Utf8>());
-    });
-  }
 }

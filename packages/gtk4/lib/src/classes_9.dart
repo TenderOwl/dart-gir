@@ -314,8 +314,16 @@ part of '../gtk4.dart';
 /// [method@Gtk.CellArea.cell_set] or [method@Gtk.CellArea.cell_set_valist]. To obtain
 /// the value of a cell property, use [method@Gtk.CellArea.cell_get_property]
 /// [method@Gtk.CellArea.cell_get] or [method@Gtk.CellArea.cell_get_valist].
-class GtkCellArea extends GInitiallyUnowned {
-  GtkCellArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkCellArea implements ffi.Finalizable {
+  GtkCellArea.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Activates @area, usually by activating the currently focused
   /// cell, however some subclasses which embed widgets in the area
@@ -576,76 +584,6 @@ class GtkCellArea extends GInitiallyUnowned {
         this.handle,
         renderer.handle,
         nativeAttribute.cast<Utf8>(),
-      );
-    });
-  }
-
-  /// Gets the value of a cell property for @renderer in @area.
-  static final _gtkCellAreaCellGetProperty =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_cell_area_cell_get_property')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void cellGetProperty(
-    GtkCellRenderer renderer,
-    String propertyName,
-    GValue value,
-  ) {
-    withNativeString(propertyName, (nativePropertyName) {
-      _gtkCellAreaCellGetProperty(
-        this.handle,
-        renderer.handle,
-        nativePropertyName.cast<Utf8>(),
-        value.handle,
-      );
-    });
-  }
-
-  /// Sets a cell property for @renderer in @area.
-  static final _gtkCellAreaCellSetProperty =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_cell_area_cell_set_property')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void cellSetProperty(
-    GtkCellRenderer renderer,
-    String propertyName,
-    GValue value,
-  ) {
-    withNativeString(propertyName, (nativePropertyName) {
-      _gtkCellAreaCellSetProperty(
-        this.handle,
-        renderer.handle,
-        nativePropertyName.cast<Utf8>(),
-        value.handle,
       );
     });
   }
@@ -982,28 +920,6 @@ class GtkCellArea extends GInitiallyUnowned {
         : GtkCellRenderer.fromPointer(
             _gtkCellAreaGetFocusFromSibling(this.handle, renderer.handle),
           );
-  }
-
-  /// Gets the focus sibling cell renderers for @renderer.
-  static final _gtkCellAreaGetFocusSiblings =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_cell_area_get_focus_siblings')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GList getFocusSiblings(GtkCellRenderer renderer) {
-    return GList.fromPointer(
-      _gtkCellAreaGetFocusSiblings(this.handle, renderer.handle),
-    );
   }
 
   /// Gets whether the area prefers a height-for-width layout

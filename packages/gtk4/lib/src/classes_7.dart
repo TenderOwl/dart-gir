@@ -17,9 +17,16 @@ part of '../gtk4.dart';
 /// Note that unless [method@Gtk.BuilderCScope.add_callback_symbol] is
 /// called for all signal callbacks which are referenced by the loaded XML,
 /// this functionality will require that `GModule` be supported on the platform.
-class GtkBuilderCScope extends GObject {
-  GtkBuilderCScope.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkBuilderCScope implements ffi.Finalizable {
+  GtkBuilderCScope.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkBuilderCScope` object to use with future
   /// `GtkBuilder` instances.
@@ -32,48 +39,6 @@ class GtkBuilderCScope extends GObject {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   factory GtkBuilderCScope() {
     return GtkBuilderCScope.fromPointer(_gtkBuilderCscopeNew(), owned: true);
-  }
-
-  /// Adds the @callback_symbol to the scope of @builder under the
-  /// given @callback_name.
-  ///
-  /// Using this function overrides the behavior of
-  /// [method@Gtk.Builder.create_closure] for any callback symbols that
-  /// are added. Using this method allows for better encapsulation as it
-  /// does not require that callback symbols be declared in the global
-  /// namespace.
-  static final _gtkBuilderCscopeAddCallbackSymbol =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
-              )
-            >
-          >('gtk_builder_cscope_add_callback_symbol')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
-            )
-          >();
-  void addCallbackSymbol(String callbackName, void Function() callbackSymbol) {
-    withNativeString(callbackName, (nativeCallbackName) {
-      final _nc2 = ffi.NativeCallable<ffi.Void Function()>.isolateLocal(
-        callbackSymbol,
-      );
-      try {
-        _gtkBuilderCscopeAddCallbackSymbol(
-          this.handle,
-          nativeCallbackName.cast<Utf8>(),
-          _nc2.nativeFunction,
-        );
-      } finally {
-        _nc2.close();
-      }
-    });
   }
 }
 
@@ -113,36 +78,6 @@ class GtkBuilderListItemFactory extends GtkListItemFactory {
     : super.fromPointer();
 
   /// Creates a new `GtkBuilderListItemFactory` that instantiates widgets
-  /// using @bytes as the data to pass to `GtkBuilder`.
-  static final _gtkBuilderListItemFactoryNewFromBytes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_builder_list_item_factory_new_from_bytes')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GtkBuilderListItemFactory.fromBytes(
-    GtkBuilderScope? scope,
-    GBytes bytes,
-  ) {
-    return GtkBuilderListItemFactory.fromPointer(
-      _gtkBuilderListItemFactoryNewFromBytes(
-        scope?.handle ?? ffi.nullptr,
-        bytes.handle,
-      ),
-      owned: true,
-    );
-  }
-
-  /// Creates a new `GtkBuilderListItemFactory` that instantiates widgets
   /// using data read from the given @resource_path to pass to `GtkBuilder`.
   static final _gtkBuilderListItemFactoryNewFromResource =
       gtk4Lookup<
@@ -172,19 +107,6 @@ class GtkBuilderListItemFactory extends GtkListItemFactory {
         owned: true,
       );
     });
-  }
-
-  /// Gets the data used as the `GtkBuilder` UI template for constructing
-  /// listitems.
-  static final _gtkBuilderListItemFactoryGetBytes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_builder_list_item_factory_get_bytes')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GBytes getBytes() {
-    return GBytes.fromPointer(_gtkBuilderListItemFactoryGetBytes(this.handle));
   }
 
   /// If the data references a resource, gets the path of that resource.
@@ -515,6 +437,22 @@ class GtkButton extends GtkWidget {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setUseUnderline(bool useUnderline) {
     _gtkButtonSetUseUnderline(this.handle, useUnderline ? 1 : 0);
+  }
+
+  /// Emitted to animate press then release.
+  ///
+  /// This is an action signal. Applications should never connect
+  /// to this signal, but use the [signal@Gtk.Button::clicked] signal.
+  ///
+  /// The default bindings for this signal are all forms of the
+  /// <kbd>␣</kbd> and <kbd>Enter</kbd> keys.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
+
+  /// Emitted when the button has been activated (pressed and released).
+  int onClicked(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'clicked', callback);
   }
 }
 

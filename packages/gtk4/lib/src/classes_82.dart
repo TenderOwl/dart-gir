@@ -599,4 +599,74 @@ class GtkText extends GtkWidget {
   void unsetInvisibleChar() {
     _gtkTextUnsetInvisibleChar(this.handle);
   }
+
+  /// Emitted when the user hits the <kbd>Enter</kbd> key.
+  ///
+  /// The default bindings for this signal are all forms
+  /// of the <kbd>Enter</kbd> key.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
+
+  /// Emitted when the user asks for it.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Backspace</kbd> and <kbd>Shift</kbd>+<kbd>Backspace</kbd>.
+  int onBackspace(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'backspace', callback);
+  }
+
+  /// Emitted to copy the selection to the clipboard.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>c</kbd> and
+  /// <kbd>Ctrl</kbd>+<kbd>Insert</kbd>.
+  int onCopyClipboard(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'copy-clipboard', callback);
+  }
+
+  /// Emitted to cut the selection to the clipboard.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>x</kbd> and
+  /// <kbd>Shift</kbd>+<kbd>Delete</kbd>.
+  int onCutClipboard(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'cut-clipboard', callback);
+  }
+
+  /// Emitted to present the Emoji chooser.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>.</kbd> and
+  /// <kbd>Ctrl</kbd>+<kbd>;</kbd>
+  int onInsertEmoji(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'insert-emoji', callback);
+  }
+
+  /// Emitted to paste the contents of the clipboard.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>v</kbd> and <kbd>Shift</kbd>+<kbd>Insert</kbd>.
+  int onPasteClipboard(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'paste-clipboard', callback);
+  }
+
+  /// Emitted to toggle the overwrite mode.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal is <kbd>Insert</kbd>.
+  int onToggleOverwrite(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'toggle-overwrite', callback);
+  }
 }

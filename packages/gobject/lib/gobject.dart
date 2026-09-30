@@ -8,13 +8,13 @@ import 'package:glib/glib.dart';
 
 part 'src/lib.dart';
 part 'src/object_support.dart';
+part 'src/signals.dart';
 part 'src/enums.dart';
 part 'src/constants.dart';
 part 'src/callbacks.dart';
 part 'src/functions_0.dart';
 part 'src/functions_1.dart';
 part 'src/functions_2.dart';
-part 'src/functions_3.dart';
 part 'src/records_0.dart';
 part 'src/records_1.dart';
 part 'src/records_2.dart';

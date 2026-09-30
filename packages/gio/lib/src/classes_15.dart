@@ -107,8 +107,16 @@ class GFileInputStream extends GInputStream {
 /// was created in (though if the global default main context is blocked, this
 /// may cause notifications to be blocked even if the thread-default
 /// context is still running).
-class GFileMonitor extends GObject {
-  GFileMonitor.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GFileMonitor implements ffi.Finalizable {
+  GFileMonitor.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Cancels a file monitor.
   static final _gFileMonitorCancel =
@@ -308,9 +316,16 @@ class GFileOutputStream extends GOutputStream {
 /// Completes partial file and directory names given a partial string by
 /// looking in the file system for clues. Can return a list of possible
 /// completion strings for widget implementations.
-class GFilenameCompleter extends GObject {
-  GFilenameCompleter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GFilenameCompleter implements ffi.Finalizable {
+  GFilenameCompleter.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new filename completer.
   static final _gFilenameCompleterNew =
@@ -366,6 +381,11 @@ class GFilenameCompleter extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setDirsOnly(bool dirsOnly) {
     _gFilenameCompleterSetDirsOnly(this.handle, dirsOnly ? 1 : 0);
+  }
+
+  /// Emitted when the file name completion information comes available.
+  int onGotCompletionData(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'got-completion-data', callback);
   }
 }
 
@@ -462,8 +482,16 @@ class GFilterOutputStream extends GOutputStream {
 /// Provides an interface and default functions for loading and unloading
 /// modules. This is used internally to make GIO extensible, but can also
 /// be used by others to implement module loading.
-class GIOModule extends GTypeModule {
-  GIOModule.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GIOModule implements ffi.Finalizable {
+  GIOModule.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new GIOModule that will load the specific
   /// shared library when in use.

@@ -27,33 +27,6 @@ final class GtkAccessibleInterface {
 final class GtkAccessibleList {
   GtkAccessibleList.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
-
-  /// Allocates a new `GtkAccessibleList`, doing a shallow copy
-  /// of the passed list of accessible objects
-  static final _gtkAccessibleListNewFromList =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_accessible_list_new_from_list')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkAccessibleList.fromList(GList list) {
-    return GtkAccessibleList.fromPointer(
-      _gtkAccessibleListNewFromList(list.handle),
-    );
-  }
-
-  /// Gets the list of objects this boxed type holds.
-  static final _gtkAccessibleListGetObjects =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_accessible_list_get_objects')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getObjects() {
-    return GList.fromPointer(_gtkAccessibleListGetObjects(this.handle));
-  }
 }
 
 final class GtkAccessibleRangeInterface {
@@ -651,5 +624,12 @@ final class GtkBoxClass {
 
 final class GtkBoxLayoutClass {
   GtkBoxLayoutClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+/// Contains methods to let `GtkBuilder` construct an object from
+/// a `GtkBuilder` UI definition.
+final class GtkBuildableIface {
+  GtkBuildableIface.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

@@ -476,4 +476,9 @@ class AdwViewSwitcherSidebar extends GtkWidget {
   void setStack([AdwViewStack? stack]) {
     _adwViewSwitcherSidebarSetStack(this.handle, stack?.handle ?? ffi.nullptr);
   }
+
+  /// Emitted when an item has been activated.
+  int onActivated(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activated', callback);
+  }
 }

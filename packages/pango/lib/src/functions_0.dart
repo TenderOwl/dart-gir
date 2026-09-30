@@ -398,147 +398,6 @@ bool isZeroWidth(int ch) {
   return (_pangoIsZeroWidth(ch)) != 0;
 }
 
-/// Breaks a piece of text into segments with consistent directional
-/// level and font.
-///
-/// Each byte of @text will be contained in exactly one of the items in the
-/// returned list; the generated list of items will be in logical order (the
-/// start offsets of the items are ascending).
-///
-/// @cached_iter should be an iterator over @attrs currently positioned
-/// at a range before or containing @start_index; @cached_iter will be
-/// advanced to the range covering the position just after
-/// @start_index + @length. (i.e. if itemizing in a loop, just keep passing
-/// in the same @cached_iter).
-final _pangoItemize =
-    pangoLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Int32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('pango_itemize')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<Utf8>,
-            int,
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-GList itemize(
-  PangoContext context,
-  String text,
-  int startIndex,
-  int length,
-  PangoAttrList attrs, [
-  PangoAttrIterator? cachedIter,
-]) {
-  return withNativeString(text, (nativeText) {
-    return GList.fromPointer(
-      _pangoItemize(
-        context.handle,
-        nativeText.cast<Utf8>(),
-        startIndex,
-        length,
-        attrs.handle,
-        cachedIter?.handle ?? ffi.nullptr,
-      ),
-    );
-  });
-}
-
-/// Like `pango_itemize()`, but with an explicitly specified base direction.
-///
-/// The base direction is used when computing bidirectional levels.
-/// [func@itemize] gets the base direction from the `PangoContext`
-/// (see [method@Pango.Context.set_base_dir]).
-final _pangoItemizeWithBaseDir =
-    pangoLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Int32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('pango_itemize_with_base_dir')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<ffi.Void>,
-            int,
-            ffi.Pointer<Utf8>,
-            int,
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-GList itemizeWithBaseDir(
-  PangoContext context,
-  PangoDirection baseDir,
-  String text,
-  int startIndex,
-  int length,
-  PangoAttrList attrs, [
-  PangoAttrIterator? cachedIter,
-]) {
-  return withNativeString(text, (nativeText) {
-    return GList.fromPointer(
-      _pangoItemizeWithBaseDir(
-        context.handle,
-        baseDir.value,
-        nativeText.cast<Utf8>(),
-        startIndex,
-        length,
-        attrs.handle,
-        cachedIter?.handle ?? ffi.nullptr,
-      ),
-    );
-  });
-}
-
-/// Incrementally parses marked-up text to create a plain-text string
-/// and an attribute list.
-///
-/// See the [Pango Markup](pango_markup.html) docs for details about the
-/// supported markup.
-///
-/// If @accel_marker is nonzero, the given character will mark the
-/// character following it as an accelerator. For example, @accel_marker
-/// might be an ampersand or underscore. All characters marked
-/// as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
-/// and the first character so marked will be returned in @accel_char,
-/// when calling [func@markup_parser_finish]. Two @accel_marker characters
-/// following each other produce a single literal @accel_marker character.
-///
-/// To feed markup to the parser, use [method@GLib.MarkupParseContext.parse]
-/// on the returned [struct@GLib.MarkupParseContext]. When done with feeding markup
-/// to the parser, use [func@markup_parser_finish] to get the data out
-/// of it, and then use [method@GLib.MarkupParseContext.free] to free it.
-///
-/// This function is designed for applications that read Pango markup
-/// from streams. To simply parse a string containing Pango markup,
-/// the [func@Pango.parse_markup] API is recommended instead.
-final _pangoMarkupParserNew =
-    pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>>(
-      'pango_markup_parser_new',
-    ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-GMarkupParseContext markupParserNew(int accelMarker) {
-  return GMarkupParseContext.fromPointer(_pangoMarkupParserNew(accelMarker));
-}
-
 /// Parses a font stretch.
 ///
 /// The allowed values are
@@ -675,4 +534,71 @@ final _pangoParseWeight =
       malloc.free(_out0);
     }
   });
+}
+
+/// Trims leading and trailing whitespace from a string.
+final _pangoTrimString =
+    pangoLookup<
+          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>
+        >('pango_trim_string')
+        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>();
+String trimString(String str) {
+  return withNativeString(str, (nativeStr) {
+    return stringFromNative(
+      (_pangoTrimString(nativeStr.cast<Utf8>())).cast(),
+      free: true,
+    )!;
+  });
+}
+
+/// Determines the inherent direction of a character.
+///
+/// The inherent direction is either `PANGO_DIRECTION_LTR`, `PANGO_DIRECTION_RTL`,
+/// or `PANGO_DIRECTION_NEUTRAL`.
+///
+/// This function is useful to categorize characters into left-to-right
+/// letters, right-to-left letters, and everything else. If full Unicode
+/// bidirectional type of a character is needed, [func@Pango.BidiType.for_unichar]
+/// can be used instead.
+final _pangoUnicharDirection =
+    pangoLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint32)>>(
+      'pango_unichar_direction',
+    ).asFunction<int Function(int)>();
+PangoDirection unicharDirection(int ch) {
+  return PangoDirection.fromValue(_pangoUnicharDirection(ch));
+}
+
+/// Converts a floating-point number to Pango units.
+///
+/// The conversion is done by multiplying @d by %PANGO_SCALE and
+/// rounding the result to nearest integer.
+final _pangoUnitsFromDouble =
+    pangoLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Double)>>(
+      'pango_units_from_double',
+    ).asFunction<int Function(double)>();
+int unitsFromDouble(double d) {
+  return _pangoUnitsFromDouble(d);
+}
+
+/// Converts a number in Pango units to floating-point.
+///
+/// The conversion is done by dividing @i by %PANGO_SCALE.
+final _pangoUnitsToDouble =
+    pangoLookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32)>>(
+      'pango_units_to_double',
+    ).asFunction<double Function(int)>();
+double unitsToDouble(int i) {
+  return _pangoUnitsToDouble(i);
+}
+
+/// Returns the encoded version of Pango available at run-time.
+///
+/// This is similar to the macro %PANGO_VERSION except that the macro
+/// returns the encoded version available at compile-time. A version
+/// number can be encoded into an integer using PANGO_VERSION_ENCODE().
+final _pangoVersion = pangoLookup<ffi.NativeFunction<ffi.Int32 Function()>>(
+  'pango_version',
+).asFunction<int Function()>();
+int version() {
+  return _pangoVersion();
 }

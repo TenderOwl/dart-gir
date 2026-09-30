@@ -196,6 +196,11 @@ class GtkToggleButton extends GtkButton {
   void toggled() {
     _gtkToggleButtonToggled(this.handle);
   }
+
+  /// Emitted whenever the `GtkToggleButton`'s state is changed.
+  int onToggled(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'toggled', callback);
+  }
 }
 
 /// Represents a widget tooltip.
@@ -225,8 +230,16 @@ class GtkToggleButton extends GtkButton {
 ///
 /// - Return %TRUE from your ::query-tooltip handler. This causes the tooltip
 /// to be show. If you return %FALSE, it will not be shown.
-class GtkTooltip extends GObject {
-  GtkTooltip.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkTooltip implements ffi.Finalizable {
+  GtkTooltip.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Replaces the widget packed into the tooltip with
   /// @custom_widget. @custom_widget does not get destroyed when the tooltip goes

@@ -1,168 +1,240 @@
 # Skip report for package gtk4 (Gtk 4.0)
-Total skipped: 305
+Total skipped: 775
 
 ## By category
-callable: 291
+callable: 464
+signal: 206
+class: 83
+callback: 8
 renamed: 7
 method: 6
 alias: 1
 
 ## By reason
+only void(void) supported in this release: 206
+parent GObject.Object is in non-generated package gobject: 77
 caller-allocates out parameter iter: 32
 parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 21
+parameter value: type GObject.Value is in non-generated package gobject: 17
+return: type GLib.List is in non-generated package glib: 16
+parameter cr: type cairo.Context is in non-generated package cairo: 13
+parameter bounds: type Graphene.Rect is in non-generated package graphene: 11
 return: string list return type (null): 11
 return: array types are handled in a later phase: 9
 unsupported out parameter path (GtkTreePath?): 9
+parameter key_file: type GLib.KeyFile is in non-generated package glib: 8
 parameter width: nullable scalar parameter (gint): 7
 name collision: 6
+return: type GLib.Variant is in non-generated package glib: 6
+parameter object: type GObject.Object is in non-generated package gobject: 6
 parameter types: array types are handled in a later phase: 6
-caller-allocates out parameter rect: 5
+return: type GLib.SList is in non-generated package glib: 5
+parent GObject.InitiallyUnowned is in non-generated package gobject: 5
 parameter minimum_height: nullable scalar parameter (gint): 5
 parameter minimum_width: nullable scalar parameter (gint): 5
-parameter stops: array types are handled in a later phase: 5
-unsupported out parameter model (GtkTreeModel?): 4
+caller-allocates out parameter rect: 5
+return: type GObject.Object is in non-generated package gobject: 4
+parameter bytes: type GLib.Bytes is in non-generated package glib: 4
+parameter string: type GLib.String is in non-generated package glib: 4
+parameter variant: type GLib.Variant is in non-generated package glib: 4
+return: type GLib.DateTime is in non-generated package glib: 4
+type GLib.Variant is in non-generated package glib: 4
+parameter path: type Gsk.Path is in non-generated package gsk4: 4
 caller-allocates out parameter color: 4
-parameter colors: array types are handled in a later phase: 3
+parameter pixbuf: type GdkPixbuf.Pixbuf is in non-generated package gdk_pixbuf: 4
+unsupported out parameter model (GtkTreeModel?): 4
+parameter transform: type Gsk.Transform is in non-generated package gsk4: 4
 parameter object_ids: array types are handled in a later phase: 3
-caller-allocates out parameter value: 3
-parameter minimum_size: nullable scalar parameter (gint): 3
-parameter x: nullable scalar parameter (gdouble): 3
+parameter outline: type Gsk.RoundedRect is in non-generated package gsk4: 3
+parameter args: type GLib.Variant is in non-generated package glib: 3
+return: type GLib.Bytes is in non-generated package glib: 3
 parameter x_offset: nullable scalar parameter (gint): 3
+parameter pspec: type GObject.ParamSpec is in non-generated package gobject: 3
+parameter colors: array types are handled in a later phase: 3
 parameter destroy: nullable callback parameter (GLib.DestroyNotify): 3
-caller-allocates out parameter allocation: 2
+parameter x: nullable scalar parameter (gdouble): 3
+parameter proxy: type GObject.Object is in non-generated package gobject: 3
+return: type GLib.Error is in non-generated package glib: 3
+parameter minimum_size: nullable scalar parameter (gint): 3
+type GLib.Error is in non-generated package glib: 2
+parameter minimum: nullable scalar parameter (gint): 2
+caller-allocates out parameter child_iter: 2
+parameter x: nullable scalar parameter (gint): 2
 parameter value: nullable scalar parameter (guint): 2
+caller-allocates out parameter visible_rect: 2
+unsupported out parameter start_path (GtkTreePath?): 2
 parameter length: nullable scalar parameter (gsize): 2
 caller-allocates out parameter match_start: 2
-caller-allocates out parameter strong: 2
-caller-allocates out parameter border: 2
-parameter icons: array types are handled in a later phase: 2
-parameter map_func: nullable callback parameter (MapListModelMapFunc): 2
 parameter columns: array types are handled in a later phase: 2
 parameter new_order: array types are handled in a later phase: 2
-parameter minimum: nullable scalar parameter (gint): 2
-parameter x: nullable scalar parameter (gint): 2
-caller-allocates out parameter child_iter: 2
-unsupported out parameter start_path (GtkTreePath?): 2
+parameter error: type GLib.Error is in non-generated package glib: 2
+return: type GObject.ParamSpec is in non-generated package gobject: 2
+parameter accelerator_key: nullable scalar parameter (guint): 2
+caller-allocates out parameter start: 2
+parameter icons: array types are handled in a later phase: 2
+return: type Gsk.Transform is in non-generated package gsk4: 2
+parameter user_destroy: callback GLib.DestroyNotify is in non-generated package glib: 2
+parameter point: type Graphene.Point is in non-generated package graphene: 2
 parameter sort_func: nullable callback parameter (GLib.CompareDataFunc): 2
 parameter match_func: nullable callback parameter (CustomFilterFunc): 2
+return: type GObject.Value is in non-generated package gobject: 2
 parameter func: nullable callback parameter (TreeViewRowSeparatorFunc): 2
-caller-allocates out parameter visible_rect: 2
-caller-allocates out parameter start: 2
 caller-allocates out parameter minimum_size: 2
-parameter accelerator_key: nullable scalar parameter (guint): 2
-unsupported out parameter parameter_type (GVariantType?): 1
-parameter people: array types are handled in a later phase: 1
-moved to BitsetIter.init_last: 1
-parameter artists: array types are handled in a later phase: 1
-parameter authors: array types are handled in a later phase: 1
-parameter documenters: array types are handled in a later phase: 1
-parameter page_func: nullable callback parameter (AssistantPageFunc): 1
-moved to BuilderError.quark: 1
-moved to ConstraintVflParserError.quark: 1
+caller-allocates out parameter border: 2
+caller-allocates out parameter allocation: 2
+parameter date: type GLib.DateTime is in non-generated package glib: 2
+parameter map_func: nullable callback parameter (MapListModelMapFunc): 2
+parameter destroy: callback GLib.DestroyNotify is in non-generated package glib: 2
+parameter callback_symbol: callback GObject.Callback is in non-generated package gobject: 2
+parameter current_object: type GObject.Object is in non-generated package gobject: 1
 parameter marshal: nullable callback parameter (GObject.ClosureMarshal): 1
-parameter depth: nullable scalar parameter (gint): 1
+parameter page_func: nullable callback parameter (AssistantPageFunc): 1
+parameter callback: callback ShortcutFunc has unsupported signature: 1
+moved to Editable.install_properties: 1
 caller-allocates out parameter alloc_area: 1
-moved to DialogError.quark: 1
-parameter portal_interfaces: array types are handled in a later phase: 1
+moved to FileChooserError.quark: 1
+moved to IconThemeError.quark: 1
 caller-allocates out parameter inner_area: 1
-parameter sizes: array types are handled in a later phase: 1
-moved to Editable.delegate_get_property: 1
+moved to Editable.delegate_set_property: 1
+moved to Native.get_for_surface: 1
 caller-allocates out parameter aligned_area: 1
 parameter xalign: nullable scalar parameter (gfloat): 1
 parameter xpad: nullable scalar parameter (gint): 1
-parameter indices: array types are handled in a later phase: 1
-parameter params: array types are handled in a later phase: 1
-unsupported out parameter stamp (GDateTime): 1
+parameter documenters: array types are handled in a later phase: 1
+parameter closure: type GObject.Closure is in non-generated package gobject: 1
+parameter authors: array types are handled in a later phase: 1
+parameter artists: array types are handled in a later phase: 1
 parameter lines: array types are handled in a later phase: 1
-moved to BitsetIter.init_first: 1
+parameter data: type GLib.Bytes is in non-generated package glib: 1
+moved to Editable.delegate_get_property: 1
 parameter request_mode: nullable callback parameter (CustomRequestModeFunc): 1
-parameter line_number: nullable scalar parameter (gint): 1
+parameter people: array types are handled in a later phase: 1
+parameter sizes: array types are handled in a later phase: 1
 parameter draw_func: nullable callback parameter (DrawingAreaDrawFunc): 1
 parameter n_types: nullable scalar parameter (gsize): 1
-moved to Editable.delegate_set_property: 1
+moved to PaperSize.get_default: 1
 caller-allocates out parameter icon_area: 1
+parameter func_notify: callback GLib.DestroyNotify is in non-generated package glib: 1
+parameter template_bytes: type GLib.Bytes is in non-generated package glib: 1
 parameter mime_types: array types are handled in a later phase: 1
+parameter parameter_type: type GLib.VariantType is in non-generated package glib: 1
+parameter activate: callback WidgetActionActivateFunc has unsupported signature: 1
+parameter user_data_free_func: callback GLib.DestroyNotify is in non-generated package glib: 1
 parameter filter_func: nullable callback parameter (FlowBoxFilterFunc): 1
 parameter sort_func: nullable callback parameter (FlowBoxSortFunc): 1
 unsupported out parameter font_desc (PangoFontDescription): 1
-moved to SvgError.get_end: 1
-moved to Editable.install_properties: 1
+parameter depth: nullable scalar parameter (gint): 1
+moved to PaperSize.get_paper_sizes: 1
+parameter indices: array types are handled in a later phase: 1
 parameter axes: array types are handled in a later phase: 1
 parameter backlog: array types are handled in a later phase: 1
 parameter column: nullable scalar parameter (gint): 1
 unsupported out parameter attrs (PangoAttrList): 1
 parameter fallbacks: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getCursorIconView: 1
-moved to FileChooserError.quark: 1
-moved to IconThemeError.quark: 1
-moved to BitsetIter.init_at: 1
+parameter flags: type GObject.ParamFlags is in non-generated package gobject: 1
+parameter portal_interfaces: array types are handled in a later phase: 1
+parameter stamp: type GLib.DateTime is in non-generated package glib: 1
 override-incompatible with ancestor; renamed to setCursorIconView: 1
-parameter accessibles: array types are handled in a later phase: 1
+moved to DialogError.quark: 1
+moved to ConstraintVflParserError.quark: 1
 parameter start: nullable scalar parameter (gint): 1
-moved to TreeRowReference.inserted: 1
+moved to BuilderError.quark: 1
 parameter create_widget_func: nullable callback parameter (ListBoxCreateWidgetFunc): 1
 parameter filter_func: nullable callback parameter (ListBoxFilterFunc): 1
 parameter update_header: nullable callback parameter (ListBoxUpdateHeaderFunc): 1
 parameter sort_func: nullable callback parameter (ListBoxSortFunc): 1
-moved to TreeRowReference.deleted: 1
-unsupported out parameter tree_model (GtkTreeModel?): 1
-moved to AccessibleState.init_value: 1
+parameter line_number: nullable scalar parameter (gint): 1
+moved to BitsetIter.init_last: 1
+moved to BitsetIter.init_first: 1
 override-incompatible with ancestor; renamed to getDirectionMenuButton: 1
 parameter func: nullable callback parameter (MenuButtonCreatePopupFunc): 1
 override-incompatible with ancestor; renamed to setDirectionMenuButton: 1
-aliases are resolved to their target: 1
-moved to Native.get_for_surface: 1
+parameter entries: array types are handled in a later phase: 1
+parent GObject.ParamSpec is in non-generated package gobject: 1
+parameter list: type GLib.List is in non-generated package glib: 1
+return: type cairo.Context is in non-generated package cairo: 1
+return: type cairo.Surface is in non-generated package cairo: 1
+parameter accessibles: array types are handled in a later phase: 1
+parameter callback: callback PrintJobCompleteFunc has unsupported signature: 1
 parameter ranges: array types are handled in a later phase: 1
 parameter page_ranges: array types are handled in a later phase: 1
-override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog: 1
+aliases are resolved to their target: 1
 caller-allocates out parameter range_rect: 1
 parameter slider_start: nullable scalar parameter (gint): 1
 parameter func: nullable callback parameter (ScaleFormatValueFunc): 1
-moved to SvgError.quark: 1
+moved to TreeRowReference.inserted: 1
 parameter hscrollbar_policy: nullable scalar parameter (PolicyType): 1
-parameter border_width: array types are handled in a later phase: 1
-moved to PaperSize.get_default: 1
+moved to TreeRowReference.deleted: 1
+moved to BitsetIter.init_at: 1
+moved to PrintError.quark: 1
+moved to AccessibleState.init_value: 1
+parameter node: type Gsk.RenderNode is in non-generated package gsk4: 1
+parameter filter: type Gsk.ScalingFilter is in non-generated package gsk4: 1
+parameter blend_mode: type Gsk.BlendMode is in non-generated package gsk4: 1
+parameter color_matrix: type Graphene.Matrix is in non-generated package graphene: 1
+parameter red: type Gsk.ComponentTransfer is in non-generated package gsk4: 1
+parameter op: type Gsk.PorterDuff is in non-generated package gsk4: 1
+parameter shader: type Gsk.GLShader is in non-generated package gsk4: 1
+parameter features: type Gsk.Isolation is in non-generated package gsk4: 1
+parameter mask_mode: type Gsk.MaskMode is in non-generated package gsk4: 1
+parameter bounds: type Gsk.RoundedRect is in non-generated package gsk4: 1
 parameter shadow: array types are handled in a later phase: 1
+parameter axis: type Graphene.Vec3 is in non-generated package graphene: 1
+return: type Gsk.RenderNode is in non-generated package gsk4: 1
+parameter size: type Graphene.Size is in non-generated package graphene: 1
+parameter matrix: type Graphene.Matrix is in non-generated package graphene: 1
+moved to SvgError.quark: 1
+parameter point: type Graphene.Point3D is in non-generated package graphene: 1
 parameter step: nullable scalar parameter (gdouble): 1
 parameter min: nullable scalar parameter (gdouble): 1
 moved to SvgError.get_start: 1
-moved to PaperSize.get_paper_sizes: 1
+moved to SvgError.get_end: 1
 caller-allocates out parameter margin: 1
 caller-allocates out parameter padding: 1
-moved to AccessibleRelation.init_value: 1
+parameter strong: type Graphene.Rect is in non-generated package graphene: 1
 moved to SvgError.get_element: 1
 parameter window_x: nullable scalar parameter (gint): 1
+caller-allocates out parameter strong: 1
 caller-allocates out parameter location: 1
 caller-allocates out parameter target_iter: 1
 parameter x_offset: nullable scalar parameter (gdouble): 1
 moved to SvgError.get_attribute: 1
 parameter buffer_x: nullable scalar parameter (gint): 1
 caller-allocates out parameter filter_iter: 1
+moved to AccessibleRelation.init_value: 1
 moved to AccessibleProperty.init_value: 1
-moved to PrintError.quark: 1
 caller-allocates out parameter sort_iter: 1
 parameter func: nullable callback parameter (TreeSelectionFunc): 1
 override-incompatible with ancestor; renamed to getCursorTreeView: 1
+parameter dnotify: callback GLib.DestroyNotify is in non-generated package glib: 1
 parameter func: nullable callback parameter (TreeViewColumnDropFunc): 1
 override-incompatible with ancestor; renamed to setCursorTreeView: 1
 parameter search_destroy: nullable callback parameter (GLib.DestroyNotify): 1
 parameter func: nullable callback parameter (TreeCellDataFunc): 1
 parameter expressions: array types are handled in a later phase: 1
-caller-allocates out parameter out_bounds: 1
-caller-allocates out parameter out_point: 1
-caller-allocates out parameter out_transform: 1
+parameter notify: callback GLib.DestroyNotify is in non-generated package glib: 1
+parameter out_bounds: type Graphene.Rect is in non-generated package graphene: 1
+parameter out_transform: type Graphene.Matrix is in non-generated package graphene: 1
+return: type cairo.FontOptions is in non-generated package cairo: 1
 parameter classes: array types are handled in a later phase: 1
+parameter options: type cairo.FontOptions is in non-generated package cairo: 1
 parameter dest_x: nullable scalar parameter (gdouble): 1
 parameter properties: array types are handled in a later phase: 1
 parameter relations: array types are handled in a later phase: 1
 parameter states: array types are handled in a later phase: 1
+parameter target_value: type GLib.Variant is in non-generated package glib: 1
 parameter func: nullable callback parameter (CellLayoutDataFunc): 1
 moved to RecentManagerError.quark: 1
 parameter start_pos: nullable scalar parameter (gint): 1
 inout parameter position: 1
+parameter object_class: type GObject.ObjectClass is in non-generated package gobject: 1
 parameter options: array types are handled in a later phase: 1
 parameter filter: nullable callback parameter (FontFilterFunc): 1
-parameter entries: array types are handled in a later phase: 1
+return: type Gsk.Renderer is in non-generated package gsk4: 1
+type cairo.Context is in non-generated package cairo: 1
+type GObject.Value is in non-generated package gobject: 1
+override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog: 1
 
 ## First 50 entries
 [callable] Gtk.acceleratorParse — parameter accelerator_key: nullable scalar parameter (guint)
@@ -181,13 +253,27 @@ parameter entries: array types are handled in a later phase: 1
 [callable] Gtk.editableDelegateGetProperty — moved to Editable.delegate_get_property
 [callable] Gtk.editableDelegateSetProperty — moved to Editable.delegate_set_property
 [callable] Gtk.editableInstallProperties — moved to Editable.install_properties
+[callable] Gtk.enumeratePrinters — parameter destroy: callback GLib.DestroyNotify is in non-generated package glib
 [callable] Gtk.fileChooserErrorQuark — moved to FileChooserError.quark
 [callable] Gtk.iconThemeErrorQuark — moved to IconThemeError.quark
 [callable] Gtk.nativeGetForSurface — moved to Native.get_for_surface
 [callable] Gtk.paperSizeGetDefault — moved to PaperSize.get_default
 [callable] Gtk.paperSizeGetPaperSizes — moved to PaperSize.get_paper_sizes
+[callable] Gtk.paramSpecExpression — parameter flags: type GObject.ParamFlags is in non-generated package gobject
 [callable] Gtk.printErrorQuark — moved to PrintError.quark
 [callable] Gtk.recentManagerErrorQuark — moved to RecentManagerError.quark
+[callable] Gtk.renderActivity — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderArrow — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderBackground — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderCheck — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderExpander — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderFocus — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderFrame — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderHandle — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderIcon — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderLayout — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderLine — parameter cr: type cairo.Context is in non-generated package cairo
+[callable] Gtk.renderOption — parameter cr: type cairo.Context is in non-generated package cairo
 [callable] Gtk.showUriFull — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
 [callable] Gtk.svgErrorGetAttribute — moved to SvgError.get_attribute
 [callable] Gtk.svgErrorGetElement — moved to SvgError.get_element
@@ -195,23 +281,9 @@ parameter entries: array types are handled in a later phase: 1
 [callable] Gtk.svgErrorGetStart — moved to SvgError.get_start
 [callable] Gtk.svgErrorQuark — moved to SvgError.quark
 [callable] Gtk.testListAllTypes — return: array types are handled in a later phase
-[callable] Gtk.treeGetRowDragData — unsupported out parameter tree_model (GtkTreeModel?)
+[callable] Gtk.treeGetRowDragData — parameter value: type GObject.Value is in non-generated package gobject
 [callable] Gtk.treeRowReferenceDeleted — moved to TreeRowReference.deleted
 [callable] Gtk.treeRowReferenceInserted — moved to TreeRowReference.inserted
-[callable] GtkAccessibleList.fromArray — parameter accessibles: array types are handled in a later phase
-[callable] GtkBitsetIter.next — parameter value: nullable scalar parameter (guint)
-[callable] GtkBitsetIter.previous — parameter value: nullable scalar parameter (guint)
-[callable] GtkBitsetIter.initAt — caller-allocates out parameter iter
-[callable] GtkBitsetIter.initFirst — caller-allocates out parameter iter
-[callable] GtkBitsetIter.initLast — caller-allocates out parameter iter
-[callable] GtkBuildableParseContext.getElementStack — return: array types are handled in a later phase
-[callable] GtkBuildableParseContext.getPosition — parameter line_number: nullable scalar parameter (gint)
-[callable] GtkCellAreaClass.listCellProperties — return: array types are handled in a later phase
-[method] GtkCssSection.toString — name collision
-[callable] GtkRecentInfo.getApplicationInfo — unsupported out parameter stamp (GDateTime)
-[callable] GtkRecentInfo.getApplications — parameter length: nullable scalar parameter (gsize)
-[callable] GtkRecentInfo.getGroups — parameter length: nullable scalar parameter (gsize)
-[callable] GtkTextIter.backwardSearch — caller-allocates out parameter match_start
-[callable] GtkTextIter.forwardSearch — caller-allocates out parameter match_start
-[callable] GtkTreePath.fromIndicesv — parameter indices: array types are handled in a later phase
-[callable] GtkTreePath.getIndicesWithDepth — parameter depth: nullable scalar parameter (gint)
+[callable] Gtk.valueDupExpression — parameter value: type GObject.Value is in non-generated package gobject
+[callable] Gtk.valueGetExpression — parameter value: type GObject.Value is in non-generated package gobject
+[callable] Gtk.valueSetExpression — parameter value: type GObject.Value is in non-generated package gobject

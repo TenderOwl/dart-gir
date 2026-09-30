@@ -13,9 +13,16 @@ part of '../gtk4.dart';
 /// See the chapter on [input handling](input-handling.html) for
 /// an overview of the basic concepts, such as the capture and bubble
 /// phases of event propagation.
-class GtkEventController extends GObject {
-  GtkEventController.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkEventController implements ffi.Finalizable {
+  GtkEventController.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Returns the event that is currently being handled by the controller.
   ///
@@ -246,6 +253,33 @@ class GtkEventControllerFocus extends GtkEventController {
   bool isFocus() {
     return (_gtkEventControllerFocusIsFocus(this.handle)) != 0;
   }
+
+  /// Emitted whenever the focus enters into the widget or one
+  /// of its descendents.
+  ///
+  /// Note that this means you may not get an ::enter signal
+  /// even though the widget becomes the focus location, in
+  /// certain cases (such as when the focus moves from a descendent
+  /// of the widget to the widget itself). If you are interested
+  /// in these cases, you can monitor the
+  /// [property@Gtk.EventControllerFocus:is-focus]
+  /// property for changes.
+  int onEnter(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'enter', callback);
+  }
+
+  /// Emitted whenever the focus leaves the widget hierarchy
+  /// that is rooted at the widget that the controller is attached to.
+  ///
+  /// Note that this means you may not get a ::leave signal
+  /// even though the focus moves away from the widget, in
+  /// certain cases (such as when the focus moves from the widget
+  /// to a descendent). If you are interested in these cases, you
+  /// can monitor the [property@Gtk.EventControllerFocus:is-focus]
+  /// property for changes.
+  int onLeave(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'leave', callback);
+  }
 }
 
 /// Provides access to key events.
@@ -328,6 +362,15 @@ class GtkEventControllerKey extends GtkEventController {
       imContext?.handle ?? ffi.nullptr,
     );
   }
+
+  /// Emitted whenever the input method context filters away
+  /// a keypress and prevents the @controller receiving it.
+  ///
+  /// See [method@Gtk.EventControllerKey.set_im_context] and
+  /// [method@Gtk.IMContext.filter_keypress].
+  int onImUpdate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'im-update', callback);
+  }
 }
 
 /// Provides raw access to the event stream.
@@ -391,6 +434,11 @@ class GtkEventControllerMotion extends GtkEventController {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool isPointer() {
     return (_gtkEventControllerMotionIsPointer(this.handle)) != 0;
+  }
+
+  /// Signals that the pointer has left the widget.
+  int onLeave(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'leave', callback);
   }
 }
 
@@ -481,6 +529,20 @@ class GtkEventControllerScroll extends GtkEventController {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setFlags(GtkEventControllerScrollFlags flags) {
     _gtkEventControllerScrollSetFlags(this.handle, flags.value);
+  }
+
+  /// Signals that a new scrolling operation has begun.
+  ///
+  /// It will only be emitted on devices capable of it.
+  int onScrollBegin(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'scroll-begin', callback);
+  }
+
+  /// Signals that a scrolling operation has finished.
+  ///
+  /// It will only be emitted on devices capable of it.
+  int onScrollEnd(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'scroll-end', callback);
   }
 }
 

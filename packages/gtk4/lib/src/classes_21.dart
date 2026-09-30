@@ -368,6 +368,14 @@ class GtkDropDown extends GtkWidget {
   void setShowArrow(bool showArrow) {
     _gtkDropDownSetShowArrow(this.handle, showArrow ? 1 : 0);
   }
+
+  /// Emitted to when the drop down is activated.
+  ///
+  /// The `::activate` signal on `GtkDropDown` is an action signal and
+  /// emitting it causes the drop down to pop up its dropdown.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
 }
 
 /// An event controller to receive Drag-and-Drop operations.
@@ -530,20 +538,6 @@ class GtkDropTarget extends GtkEventController {
     return (_gtkDropTargetGetPreload(this.handle)) != 0;
   }
 
-  /// Gets the current drop data, as a `GValue`.
-  static final _gtkDropTargetGetValue =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_drop_target_get_value')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GValue? getValue() {
-    return (_gtkDropTargetGetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GValue.fromPointer(_gtkDropTargetGetValue(this.handle));
-  }
-
   /// Rejects the ongoing drop operation.
   ///
   /// If no drop operation is ongoing, i.e when [property@Gtk.DropTarget:current-drop]
@@ -582,5 +576,13 @@ class GtkDropTarget extends GtkEventController {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setPreload(bool preload) {
     _gtkDropTargetSetPreload(this.handle, preload ? 1 : 0);
+  }
+
+  /// Emitted on the drop site when the pointer leaves the widget.
+  ///
+  /// Its main purpose it to undo things done in
+  /// [signal@Gtk.DropTarget::enter].
+  int onLeave(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'leave', callback);
   }
 }

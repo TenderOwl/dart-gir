@@ -120,63 +120,16 @@ part of '../gio.dart';
 /// of the action with the target value as the parameter. The menu item should
 /// be rendered as ‘selected’ when the state of the action is equal to the
 /// target value of the menu item.
-class GMenuModel extends GObject {
-  GMenuModel.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Queries the item at position @item_index in @model for the attribute
-  /// specified by @attribute.
-  ///
-  /// If @expected_type is non-%NULL then it specifies the expected type of
-  /// the attribute.  If it is %NULL then any type will be accepted.
-  ///
-  /// If the attribute exists and matches @expected_type (or if the
-  /// expected type is unspecified) then the value is returned.
-  ///
-  /// If the attribute does not exist, or does not match the expected type
-  /// then %NULL is returned.
-  static final _gMenuModelGetItemAttributeValue =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_menu_model_get_item_attribute_value')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GVariant? getItemAttributeValue(
-    int itemIndex,
-    String attribute, [
-    GVariantType? expectedType,
-  ]) {
-    return withNativeString(attribute, (nativeAttribute) {
-      return (_gMenuModelGetItemAttributeValue(
-                this.handle,
-                itemIndex,
-                nativeAttribute.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gMenuModelGetItemAttributeValue(
-                this.handle,
-                itemIndex,
-                nativeAttribute.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              ),
-            );
-    });
+class GMenuModel implements ffi.Finalizable {
+  GMenuModel.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
   }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Queries the item at position @item_index in @model for the link
   /// specified by @link.
@@ -332,9 +285,16 @@ class GMenuModel extends GObject {
 /// encrypting file containers, partitions or whole disks, typically used with Windows.
 /// [VeraCrypt](https://www.veracrypt.fr/) is a maintained fork of TrueCrypt with various
 /// improvements and auditing fixes.
-class GMountOperation extends GObject {
-  GMountOperation.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GMountOperation implements ffi.Finalizable {
+  GMountOperation.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new mount operation.
   static final _gMountOperationNew =
@@ -579,6 +539,15 @@ class GMountOperation extends GObject {
     withNativeString(username, (nativeUsername) {
       _gMountOperationSetUsername(this.handle, nativeUsername.cast<Utf8>());
     });
+  }
+
+  /// Emitted by the backend when e.g. a device becomes unavailable
+  /// while a mount operation is in progress.
+  ///
+  /// Implementations of GMountOperation should handle this signal
+  /// by dismissing open password dialogs.
+  int onAborted(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'aborted', callback);
   }
 }
 

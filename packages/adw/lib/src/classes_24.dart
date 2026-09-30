@@ -33,8 +33,16 @@ part of '../adw.dart';
 ///
 /// `AdwSidebarItem` is derivable, and applications that need to associate each
 /// page with data can store it in the items themselves  this way.
-class AdwSidebarItem extends GObject {
-  AdwSidebarItem.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class AdwSidebarItem implements ffi.Finalizable {
+  AdwSidebarItem.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `AdwSidebarItem` with @title as its title.
   static final _adwSidebarItemNew =
@@ -454,9 +462,16 @@ class AdwSidebarItem extends GObject {
 /// <source srcset="sidebar-section-dark.png" media="(prefers-color-scheme: dark)">
 /// <img src="sidebar-section.png" alt="sidebar-section">
 /// </picture>
-class AdwSidebarSection extends GObject {
-  AdwSidebarSection.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class AdwSidebarSection implements ffi.Finalizable {
+  AdwSidebarSection.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `AdwSidebarSection`.
   static final _adwSidebarSectionNew =

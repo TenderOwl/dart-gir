@@ -19,3 +19,5 @@ dependencies:
     path: ../packages/gobject
   gtk4:
     path: ../packages/gtk4
+  gtk_source5:
+    path: ../packages/gtk_source5

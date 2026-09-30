@@ -20,9 +20,16 @@ part of '../gtk4.dart';
 /// of recursion when this happens. If you do this however, ensure that the
 /// [property@Gtk.Picture:can-shrink] property is set to %TRUE or you might
 /// end up with an infinitely growing widget.
-class GtkWidgetPaintable extends GObject {
-  GtkWidgetPaintable.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkWidgetPaintable implements ffi.Finalizable {
+  GtkWidgetPaintable.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new widget paintable observing the given widget.
   static final _gtkWidgetPaintableNew =

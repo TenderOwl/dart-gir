@@ -142,19 +142,6 @@ final class PangoAttrIterator {
           );
   }
 
-  /// Gets a list of all attributes at the current position of the
-  /// iterator.
-  static final _pangoAttrIteratorGetAttrs =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_iterator_get_attrs')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSList getAttrs() {
-    return GSList.fromPointer(_pangoAttrIteratorGetAttrs(this.handle));
-  }
-
   /// Advance the iterator until the next change of style.
   static final _pangoAttrIteratorNext =
       pangoLookup<
@@ -351,18 +338,6 @@ final class PangoAttrList {
     } finally {
       _nc1.close();
     }
-  }
-
-  /// Gets a list of all attributes in @list.
-  static final _pangoAttrListGetAttributes =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_get_attributes')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSList getAttributes() {
-    return GSList.fromPointer(_pangoAttrListGetAttributes(this.handle));
   }
 
   /// Create a iterator initialized to the beginning of the list.

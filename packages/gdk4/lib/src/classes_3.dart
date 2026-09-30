@@ -15,8 +15,16 @@ part of '../gdk4.dart';
 ///
 /// Output devices are represented by [class@Gdk.Monitor] objects, which can
 /// be accessed with [method@Gdk.Display.get_monitor_at_surface] and similar APIs.
-class GdkDisplay extends GObject {
-  GdkDisplay.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GdkDisplay implements ffi.Finalizable {
+  GdkDisplay.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Emits a short beep on @display
   static final _gdkDisplayBeep =
@@ -251,36 +259,6 @@ class GdkDisplay extends GObject {
     );
   }
 
-  /// Retrieves a desktop-wide setting such as double-click time
-  /// for the @display.
-  static final _gdkDisplayGetSetting =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gdk_display_get_setting')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  bool getSetting(String name, GValue value) {
-    return withNativeString(name, (nativeName) {
-      return (_gdkDisplayGetSetting(
-            this.handle,
-            nativeName.cast<Utf8>(),
-            value.handle,
-          )) !=
-          0;
-    });
-  }
-
   /// Gets the startup notification ID for a Wayland display, or %NULL
   /// if no ID has been defined.
   static final _gdkDisplayGetStartupNotificationId =
@@ -341,18 +319,6 @@ class GdkDisplay extends GObject {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool isRgba() {
     return (_gdkDisplayIsRgba(this.handle)) != 0;
-  }
-
-  /// Returns the list of seats known to @display.
-  static final _gdkDisplayListSeats =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_display_list_seats')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList listSeats() {
-    return GList.fromPointer(_gdkDisplayListSeats(this.handle));
   }
 
   /// Indicates to the GUI environment that the application has
@@ -514,6 +480,11 @@ class GdkDisplay extends GObject {
             );
     });
   }
+
+  /// Emitted when the connection to the windowing system for @display is opened.
+  int onOpened(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'opened', callback);
+  }
 }
 
 /// Offers notification when displays appear or disappear.
@@ -559,9 +530,16 @@ class GdkDisplay extends GObject {
 /// #endif
 /// g_error ("Unsupported GDK backend");
 /// ```
-class GdkDisplayManager extends GObject {
-  GdkDisplayManager.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GdkDisplayManager implements ffi.Finalizable {
+  GdkDisplayManager.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the default `GdkDisplay`.
   static final _gdkDisplayManagerGetDefaultDisplay =
@@ -577,18 +555,6 @@ class GdkDisplayManager extends GObject {
         : GdkDisplay.fromPointer(
             _gdkDisplayManagerGetDefaultDisplay(this.handle),
           );
-  }
-
-  /// List all currently open displays.
-  static final _gdkDisplayManagerListDisplays =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_display_manager_list_displays')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSList listDisplays() {
-    return GSList.fromPointer(_gdkDisplayManagerListDisplays(this.handle));
   }
 
   /// Opens a display.

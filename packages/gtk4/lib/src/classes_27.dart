@@ -236,37 +236,6 @@ class GtkExpression {
     });
   }
 
-  /// Evaluates the given expression and on success stores the result
-  /// in @value.
-  ///
-  /// The `GType` of `value` will be the type given by
-  /// [method@Gtk.Expression.get_value_type].
-  ///
-  /// It is possible that expressions cannot be evaluated - for example
-  /// when the expression references objects that have been destroyed or
-  /// set to `NULL`. In that case `value` will remain empty and `FALSE`
-  /// will be returned.
-  static final _gtkExpressionEvaluate =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_expression_evaluate')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  bool evaluate(ffi.Pointer<ffi.Void> this_, GValue value) {
-    return (_gtkExpressionEvaluate(this.handle, this_, value.handle)) != 0;
-  }
-
   /// Gets the `GType` that this expression evaluates to.
   ///
   /// This type is constant and will not change over the lifetime
@@ -316,71 +285,5 @@ class GtkExpression {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gtkExpressionUnref(this.handle);
-  }
-
-  /// Watch the given `expression` for changes.
-  ///
-  /// The @notify function will be called whenever the evaluation of `self`
-  /// may have changed.
-  ///
-  /// GTK cannot guarantee that the evaluation did indeed change when the @notify
-  /// gets invoked, but it guarantees the opposite: When it did in fact change,
-  /// the @notify will be invoked.
-  static final _gtkExpressionWatch =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_expression_watch')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  GtkExpressionWatch watch(
-    ffi.Pointer<ffi.Void> this_,
-    void Function(ffi.Pointer<ffi.Void>) notify,
-    ffi.Pointer<ffi.Void> userData,
-    void Function(ffi.Pointer<ffi.Void>) userDestroy,
-  ) {
-    final _nc2 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(notify);
-    final _nc4 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(userDestroy);
-    try {
-      final _ret = _gtkExpressionWatch(
-        this.handle,
-        this_,
-        _nc2.nativeFunction,
-        userData,
-        _nc4.nativeFunction,
-      );
-      return GtkExpressionWatch.fromPointer(_ret);
-    } finally {
-      _nc2.close();
-      _nc4.close();
-    }
   }
 }

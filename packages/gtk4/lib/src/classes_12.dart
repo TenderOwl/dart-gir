@@ -472,6 +472,26 @@ class GtkCheckButton extends GtkWidget {
   void setUseUnderline(bool setting) {
     _gtkCheckButtonSetUseUnderline(this.handle, setting ? 1 : 0);
   }
+
+  /// Emitted to when the check button is activated.
+  ///
+  /// The `::activate` signal on `GtkCheckButton` is an action signal and
+  /// emitting it causes the button to animate press then release.
+  ///
+  /// Applications should never connect to this signal, but use the
+  /// [signal@Gtk.CheckButton::toggled] signal.
+  ///
+  /// The default bindings for this signal are all forms of the
+  /// <kbd>␣</kbd> and <kbd>Enter</kbd> keys.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
+
+  /// Emitted when the buttons's [property@Gtk.CheckButton:active]
+  /// property changes.
+  int onToggled(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'toggled', callback);
+  }
 }
 
 /// An expression using a custom `GClosure` to compute the value from
@@ -589,61 +609,24 @@ class GtkColorButton extends GtkWidget {
       _gtkColorButtonSetTitle(this.handle, nativeTitle.cast<Utf8>());
     });
   }
-}
 
-/// A dialog for choosing a color.
-///
-/// <picture>
-/// <source srcset="colorchooser-dark.png" media="(prefers-color-scheme: dark)">
-/// <img alt="An example GtkColorChooserDialog" src="colorchooser.png">
-/// </picture>
-///
-/// `GtkColorChooserDialog` implements the [iface@Gtk.ColorChooser] interface
-/// and does not provide much API of its own.
-///
-/// To create a `GtkColorChooserDialog`, use [ctor@Gtk.ColorChooserDialog.new].
-///
-/// To change the initially selected color, use
-/// [method@Gtk.ColorChooser.set_rgba]. To get the selected color use
-/// [method@Gtk.ColorChooser.get_rgba].
-///
-/// `GtkColorChooserDialog` has been deprecated in favor of [class@Gtk.ColorDialog].
-///
-/// ## CSS nodes
-///
-/// `GtkColorChooserDialog` has a single CSS node with the name `window` and style
-/// class `.colorchooser`.
-class GtkColorChooserDialog extends GtkDialog {
-  GtkColorChooserDialog.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Emitted to when the color button is activated.
+  ///
+  /// The `::activate` signal on `GtkMenuButton` is an action signal and
+  /// emitting it causes the button to pop up its dialog.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
 
-  /// Creates a new `GtkColorChooserDialog`.
-  static final _gtkColorChooserDialogNew =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_color_chooser_dialog_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GtkColorChooserDialog([String? title, GtkWindow? parent]) {
-    return withNativeString(title, (nativeTitle) {
-      return GtkColorChooserDialog.fromPointer(
-        gObjectRefSink(
-          _gtkColorChooserDialogNew(
-            nativeTitle.cast<Utf8>(),
-            parent?.handle ?? ffi.nullptr,
-          ),
-        ),
-        owned: true,
-      );
-    });
+  /// Emitted when the user selects a color.
+  ///
+  /// When handling this signal, use [method@Gtk.ColorChooser.get_rgba]
+  /// to find out which color was just selected.
+  ///
+  /// Note that this signal is only emitted when the user changes the color.
+  /// If you need to react to programmatic color changes as well, use
+  /// the notify::rgba signal.
+  int onColorSet(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'color-set', callback);
   }
 }

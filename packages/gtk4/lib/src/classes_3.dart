@@ -239,26 +239,6 @@ class GtkApplication extends GApplication {
         : GtkWindow.fromPointer(_gtkApplicationGetWindowById(this.handle, id));
   }
 
-  /// Gets a list of the window associated with the application.
-  ///
-  /// The list is sorted by most recently focused window, such that the first
-  /// element is the currently focused window. (Useful for choosing a parent
-  /// for a transient window.)
-  ///
-  /// The list that is returned should not be modified in any way. It will
-  /// only remain valid until the next focus change or window creation or
-  /// deletion.
-  static final _gtkApplicationGetWindows =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_application_get_windows')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getWindows() {
-    return GList.fromPointer(_gtkApplicationGetWindows(this.handle));
-  }
-
   /// Informs the session manager that certain types of actions should be
   /// inhibited.
   ///
@@ -426,6 +406,15 @@ class GtkApplication extends GApplication {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void uninhibit(int cookie) {
     _gtkApplicationUninhibit(this.handle, cookie);
+  }
+
+  /// Emitted when the session manager is about to end the session.
+  ///
+  /// Applications can connect to this signal and call
+  /// [method@Gtk.Application.inhibit] with [flags@Gtk.ApplicationInhibitFlags.logout]
+  /// to delay the end of the session until state has been saved.
+  int onQueryEnd(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'query-end', callback);
   }
 }
 

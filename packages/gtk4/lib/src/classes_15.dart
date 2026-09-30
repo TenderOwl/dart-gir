@@ -13,9 +13,16 @@ part of '../gtk4.dart';
 /// A sorter can be associated with a column using
 /// [method@Gtk.ColumnViewColumn.set_sorter], to let users influence sorting
 /// by clicking on the column header.
-class GtkColumnViewColumn extends GObject {
-  GtkColumnViewColumn.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkColumnViewColumn implements ffi.Finalizable {
+  GtkColumnViewColumn.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkColumnViewColumn` that uses the given @factory for
   /// mapping items to widgets.
@@ -345,9 +352,16 @@ class GtkColumnViewColumn extends GObject {
 ///
 /// It is not used to set the widgets displayed in the individual cells. For that
 /// see [method@GtkColumnViewColumn.set_factory] and [class@GtkColumnViewCell].
-class GtkColumnViewRow extends GObject {
-  GtkColumnViewRow.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkColumnViewRow implements ffi.Finalizable {
+  GtkColumnViewRow.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the accessible description of @self.
   static final _gtkColumnViewRowGetAccessibleDescription =

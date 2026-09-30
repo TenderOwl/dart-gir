@@ -387,94 +387,6 @@ class AdwPreferencesWindow extends AdwWindow {
 class AdwPropertyAnimationTarget extends AdwAnimationTarget {
   AdwPropertyAnimationTarget.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
-
-  /// Creates a new `AdwPropertyAnimationTarget` for the @property_name property on
-  /// @object.
-  static final _adwPropertyAnimationTargetNew =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('adw_property_animation_target_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  factory AdwPropertyAnimationTarget(GObject object, String propertyName) {
-    return withNativeString(propertyName, (nativePropertyName) {
-      return AdwPropertyAnimationTarget.fromPointer(
-        _adwPropertyAnimationTargetNew(
-          object.handle,
-          nativePropertyName.cast<Utf8>(),
-        ),
-        owned: true,
-      );
-    });
-  }
-
-  /// Creates a new `AdwPropertyAnimationTarget` for the @pspec property on
-  /// @object.
-  static final _adwPropertyAnimationTargetNewForPspec =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('adw_property_animation_target_new_for_pspec')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory AdwPropertyAnimationTarget.forPspec(
-    GObject object,
-    GParamSpec pspec,
-  ) {
-    return AdwPropertyAnimationTarget.fromPointer(
-      _adwPropertyAnimationTargetNewForPspec(object.handle, pspec.handle),
-      owned: true,
-    );
-  }
-
-  /// Gets the object animated by @self.
-  ///
-  /// The `AdwPropertyAnimationTarget` instance does not hold a strong reference on
-  /// the object; make sure the object is kept alive throughout the target's
-  /// lifetime.
-  static final _adwPropertyAnimationTargetGetObject =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_property_animation_target_get_object')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GObject getObject() {
-    return GObject.fromPointer(
-      _adwPropertyAnimationTargetGetObject(this.handle),
-    );
-  }
-
-  /// Gets the `GParamSpec` of the property animated by @self.
-  static final _adwPropertyAnimationTargetGetPspec =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_property_animation_target_get_pspec')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GParamSpec getPspec() {
-    return GParamSpec.fromPointer(
-      _adwPropertyAnimationTargetGetPspec(this.handle),
-    );
-  }
 }
 
 /// A widget that displays a keyboard shortcut.
@@ -628,5 +540,121 @@ class AdwShortcutLabel extends GtkWidget {
         nativeDisabledText.cast<Utf8>(),
       );
     });
+  }
+}
+
+/// A dialog that displays application's keyboard shortcuts.
+///
+/// <picture>
+/// <source srcset="shortcuts-dialog-dark.png" media="(prefers-color-scheme: dark)">
+/// <img src="shortcuts-dialog.png" alt="shortcuts-dialog">
+/// </picture>
+///
+/// Shortcuts are grouped into sections, represented by [class@ShortcutsSection]
+/// objects. Each section has one or more items, represented by
+/// [class@ShortcutsItem] objects.
+///
+/// To add a section to the dialog, use [method@ShortcutsDialog.add], or add it
+/// as a child when using UI files.
+///
+/// Sections without titles can be used to further subdivide each section into
+/// groups.
+///
+/// Example of an `AdwShortcutsDialog` UI definition:
+///
+/// ```xml
+/// <object class="AdwShortcutsDialog" id="shortcuts_dialog">
+/// <child>
+/// <object class="AdwShortcutsSection">
+/// <property name="title" translatable="yes">General</property>
+/// <child>
+/// <object class="AdwShortcutsItem">
+/// <property name="title" translatable="yes">Open Menu</property>
+/// <property name="accelerator">F10</property>
+/// </object>
+/// </child>
+/// <child>
+/// <object class="AdwShortcutsItem">
+/// <property name="title" translatable="yes">Quit</property>
+/// <property name="action-name">app.quit</property>
+/// </object>
+/// </child>
+/// </object>
+/// </child>
+/// <child>
+/// <object class="AdwShortcutsSection">
+/// <child>
+/// <object class="AdwShortcutsItem">
+/// <property name="title" translatable="yes">Move Tab Left</property>
+/// <property name="accelerator">&lt;Shift&gt;&lt;Ctrl&gt;Page_Up</property>
+/// <property name="direction">ltr</property>
+/// </object>
+/// </child>
+/// <child>
+/// <object class="AdwShortcutsItem">
+/// <property name="title" translatable="yes">Move Tab Right</property>
+/// <property name="accelerator">&lt;Shift&gt;&lt;Ctrl&gt;Page_Down</property>
+/// <property name="direction">ltr</property>
+/// </object>
+/// </child>
+/// <child>
+/// <object class="AdwShortcutsItem">
+/// <property name="title" translatable="yes">Move Tab Right</property>
+/// <property name="accelerator">&lt;Shift&gt;&lt;Ctrl&gt;Page_Up</property>
+/// <property name="direction">rtl</property>
+/// </object>
+/// </child>
+/// <child>
+/// <object class="AdwShortcutsItem">
+/// <property name="title" translatable="yes">Move Tab Left</property>
+/// <property name="accelerator">&lt;Shift&gt;&lt;Ctrl&gt;Page_Down</property>
+/// <property name="direction">rtl</property>
+/// </object>
+/// </child>
+/// </object>
+/// </child>
+/// </object>
+/// ```
+///
+/// If the `app.quit` action has the <kbd>Ctrl</kbd><kbd>Q</kbd> accelerator
+/// associated with it, the result will look as follows:
+///
+/// <picture>
+/// <source srcset="shortcuts-dialog-example-dark.png" media="(prefers-color-scheme: dark)">
+/// <img src="shortcuts-dialog-example.png" alt="shortcuts-dialog-example">
+/// </picture>
+///
+/// The recommended way to use `AdwShortcutsDialog` is via [class@Application]'s
+/// automatic resource loading.
+///
+/// See also: [class@ShortcutLabel].
+class AdwShortcutsDialog extends AdwDialog {
+  AdwShortcutsDialog.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
+
+  /// Creates a new `AdwShortcutsDialog`.
+  static final _adwShortcutsDialogNew =
+      adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
+        'adw_shortcuts_dialog_new',
+      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
+  factory AdwShortcutsDialog() {
+    return AdwShortcutsDialog.fromPointer(
+      gObjectRefSink(_adwShortcutsDialogNew()),
+      owned: true,
+    );
+  }
+
+  /// Adds @section to @self.
+  static final _adwShortcutsDialogAdd =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('adw_shortcuts_dialog_add')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void add(AdwShortcutsSection section) {
+    _adwShortcutsDialogAdd(this.handle, section.handle);
   }
 }

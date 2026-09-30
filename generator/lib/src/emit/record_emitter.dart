@@ -5,6 +5,7 @@ import '../gir/gir.dart';
 import '../resolve/naming.dart';
 import 'callable.dart';
 import 'context.dart';
+import 'signals_emitter.dart';
 
 /// Records and unions become opaque pointer wrappers with their GIR
 /// constructors, methods and static functions attached.
@@ -21,15 +22,16 @@ class RecordEmitter {
 
   /// Interfaces are emitted as opaque handle classes (no vtable support yet).
   String? emitInterface(GirInterface i) =>
-      _emit(i, const [], i.methods, i.functions, i.doc);
+      _emit(i, const [], i.methods, i.functions, i.doc, signals: i.signals);
 
   String? _emit(
     GirRegisteredType type,
     List<GirConstructor> constructors,
     List<GirMethod> methods,
     List<GirFunction> functions,
-    String? doc,
-  ) {
+    String? doc, {
+    List<GirSignal> signals = const [],
+  }) {
     final dartName = ctx.dartTypeName(ctx.namespace.name, type.name);
     if (ctx.isDuplicateType(type)) {
       ctx.report.skip('record', dartName,
@@ -95,6 +97,8 @@ class RecordEmitter {
           dartName: name, ownerName: dartName, staticMember: true);
       if (code != null) b.writeln(_indent(code));
     }
+    final signalCode = emitSignalConnectors(ctx, signals, dartName, memberNames);
+    if (signalCode.isNotEmpty) b.writeln(_indent(signalCode));
     b.write('}');
     return b.toString();
   }

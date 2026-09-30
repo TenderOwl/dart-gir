@@ -93,92 +93,6 @@ GDBusConnection busGetSync(GBusType busType, [GCancellable? cancellable]) {
   }
 }
 
-/// Version of [func@Gio.bus_own_name_on_connection] using closures instead of
-/// callbacks for easier binding in other languages.
-final _gBusOwnNameOnConnectionWithClosures =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Uint32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_bus_own_name_on_connection_with_closures')
-        .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-int busOwnNameOnConnectionWithClosures(
-  GDBusConnection connection,
-  String name,
-  GBusNameOwnerFlags flags, [
-  GClosure? nameAcquiredClosure,
-  GClosure? nameLostClosure,
-]) {
-  return withNativeString(name, (nativeName) {
-    return _gBusOwnNameOnConnectionWithClosures(
-      connection.handle,
-      nativeName.cast<Utf8>(),
-      flags.value,
-      nameAcquiredClosure?.handle ?? ffi.nullptr,
-      nameLostClosure?.handle ?? ffi.nullptr,
-    );
-  });
-}
-
-/// Version of [func@Gio.bus_own_name using closures instead of callbacks for
-/// easier binding in other languages.
-final _gBusOwnNameWithClosures =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Uint32 Function(
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_bus_own_name_with_closures')
-        .asFunction<
-          int Function(
-            int,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-int busOwnNameWithClosures(
-  GBusType busType,
-  String name,
-  GBusNameOwnerFlags flags, [
-  GClosure? busAcquiredClosure,
-  GClosure? nameAcquiredClosure,
-  GClosure? nameLostClosure,
-]) {
-  return withNativeString(name, (nativeName) {
-    return _gBusOwnNameWithClosures(
-      busType.value,
-      nativeName.cast<Utf8>(),
-      flags.value,
-      busAcquiredClosure?.handle ?? ffi.nullptr,
-      nameAcquiredClosure?.handle ?? ffi.nullptr,
-      nameLostClosure?.handle ?? ffi.nullptr,
-    );
-  });
-}
-
 /// Stops owning a name.
 ///
 /// Note that there may still be D-Bus traffic to process (relating to owning
@@ -210,88 +124,6 @@ final _gBusUnwatchName =
     ).asFunction<void Function(int)>();
 void busUnwatchName(int watcherId) {
   _gBusUnwatchName(watcherId);
-}
-
-/// Version of g_bus_watch_name_on_connection() using closures instead of callbacks for
-/// easier binding in other languages.
-final _gBusWatchNameOnConnectionWithClosures =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Uint32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_bus_watch_name_on_connection_with_closures')
-        .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-int busWatchNameOnConnectionWithClosures(
-  GDBusConnection connection,
-  String name,
-  GBusNameWatcherFlags flags, [
-  GClosure? nameAppearedClosure,
-  GClosure? nameVanishedClosure,
-]) {
-  return withNativeString(name, (nativeName) {
-    return _gBusWatchNameOnConnectionWithClosures(
-      connection.handle,
-      nativeName.cast<Utf8>(),
-      flags.value,
-      nameAppearedClosure?.handle ?? ffi.nullptr,
-      nameVanishedClosure?.handle ?? ffi.nullptr,
-    );
-  });
-}
-
-/// Version of g_bus_watch_name() using closures instead of callbacks for
-/// easier binding in other languages.
-final _gBusWatchNameWithClosures =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Uint32 Function(
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_bus_watch_name_with_closures')
-        .asFunction<
-          int Function(
-            int,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-int busWatchNameWithClosures(
-  GBusType busType,
-  String name,
-  GBusNameWatcherFlags flags, [
-  GClosure? nameAppearedClosure,
-  GClosure? nameVanishedClosure,
-]) {
-  return withNativeString(name, (nativeName) {
-    return _gBusWatchNameWithClosures(
-      busType.value,
-      nativeName.cast<Utf8>(),
-      flags.value,
-      nameAppearedClosure?.handle ?? ffi.nullptr,
-      nameVanishedClosure?.handle ?? ffi.nullptr,
-    );
-  });
 }
 
 /// Checks if a content type can be executable. Note that for instance
@@ -505,17 +337,6 @@ void contentTypeSetMimeDirs([List<String?>? dirs]) {
   });
 }
 
-/// Gets a list of strings containing all the registered content types
-/// known to the system. The list and its data should be freed using
-/// `g_list_free_full (list, g_free)`.
-final _gContentTypesGetRegistered =
-    gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-      'g_content_types_get_registered',
-    ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-GList contentTypesGetRegistered() {
-  return GList.fromPointer(_gContentTypesGetRegistered());
-}
-
 /// Escape @string so it can appear in a D-Bus address as the value
 /// part of a key-value pair.
 ///
@@ -705,4 +526,82 @@ final _gDbusGenerateGuid =
     ).asFunction<ffi.Pointer<Utf8> Function()>();
 String dbusGenerateGuid() {
   return stringFromNative((_gDbusGenerateGuid()).cast(), free: true)!;
+}
+
+/// Checks if @string is a
+/// [D-Bus address](https://dbus.freedesktop.org/doc/dbus-specification.html#addresses).
+///
+/// This doesn't check if @string is actually supported by #GDBusServer
+/// or #GDBusConnection - use g_dbus_is_supported_address() to do more
+/// checks.
+final _gDbusIsAddress =
+    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
+      'g_dbus_is_address',
+    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
+bool dbusIsAddress(String string) {
+  return withNativeString(string, (nativeString) {
+    return (_gDbusIsAddress(nativeString.cast<Utf8>())) != 0;
+  });
+}
+
+/// Check whether @string is a valid D-Bus error name.
+///
+/// This function returns the same result as g_dbus_is_interface_name(),
+/// because D-Bus error names are defined to have exactly the
+/// same syntax as interface names.
+final _gDbusIsErrorName =
+    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
+      'g_dbus_is_error_name',
+    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
+bool dbusIsErrorName(String string) {
+  return withNativeString(string, (nativeString) {
+    return (_gDbusIsErrorName(nativeString.cast<Utf8>())) != 0;
+  });
+}
+
+/// Checks if @string is a D-Bus GUID.
+///
+/// See the documentation for g_dbus_generate_guid() for more information about
+/// the format of a GUID.
+final _gDbusIsGuid =
+    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
+      'g_dbus_is_guid',
+    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
+bool dbusIsGuid(String string) {
+  return withNativeString(string, (nativeString) {
+    return (_gDbusIsGuid(nativeString.cast<Utf8>())) != 0;
+  });
+}
+
+/// Checks if @string is a valid D-Bus interface name.
+final _gDbusIsInterfaceName =
+    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
+      'g_dbus_is_interface_name',
+    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
+bool dbusIsInterfaceName(String string) {
+  return withNativeString(string, (nativeString) {
+    return (_gDbusIsInterfaceName(nativeString.cast<Utf8>())) != 0;
+  });
+}
+
+/// Checks if @string is a valid D-Bus member (e.g. signal or method) name.
+final _gDbusIsMemberName =
+    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
+      'g_dbus_is_member_name',
+    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
+bool dbusIsMemberName(String string) {
+  return withNativeString(string, (nativeString) {
+    return (_gDbusIsMemberName(nativeString.cast<Utf8>())) != 0;
+  });
+}
+
+/// Checks if @string is a valid D-Bus bus name (either unique or well-known).
+final _gDbusIsName =
+    gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
+      'g_dbus_is_name',
+    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
+bool dbusIsName(String string) {
+  return withNativeString(string, (nativeString) {
+    return (_gDbusIsName(nativeString.cast<Utf8>())) != 0;
+  });
 }

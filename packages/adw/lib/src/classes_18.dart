@@ -542,6 +542,20 @@ class AdwNavigationView extends GtkWidget {
   void setVhomogeneous(bool vhomogeneous) {
     _adwNavigationViewSetVhomogeneous(this.handle, vhomogeneous ? 1 : 0);
   }
+
+  /// Emitted after a page has been pushed to the navigation stack.
+  ///
+  /// See [method@NavigationView.push].
+  int onPushed(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'pushed', callback);
+  }
+
+  /// Emitted after the navigation stack has been replaced.
+  ///
+  /// See [method@NavigationView.replace].
+  int onReplaced(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'replaced', callback);
+  }
 }
 
 /// An [class@AnimationTarget] that doesn't do anything.

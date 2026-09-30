@@ -233,52 +233,6 @@ final class PangoGlyphItem {
   PangoGlyphItem.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
-  /// Splits a shaped item (`PangoGlyphItem`) into multiple items based
-  /// on an attribute list.
-  ///
-  /// The idea is that if you have attributes that don't affect shaping,
-  /// such as color or underline, to avoid affecting shaping, you filter
-  /// them out ([method@Pango.AttrList.filter]), apply the shaping process
-  /// and then reapply them to the result using this function.
-  ///
-  /// All attributes that start or end inside a cluster are applied
-  /// to that cluster; for instance, if half of a cluster is underlined
-  /// and the other-half strikethrough, then the cluster will end
-  /// up with both underline and strikethrough attributes. In these
-  /// cases, it may happen that @item->extra_attrs for some of the
-  /// result items can have multiple attributes of the same type.
-  ///
-  /// This function takes ownership of @glyph_item; it will be reused
-  /// as one of the elements in the list.
-  static final _pangoGlyphItemApplyAttrs =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_glyph_item_apply_attrs')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GSList applyAttrs(String text, PangoAttrList list) {
-    return withNativeString(text, (nativeText) {
-      return GSList.fromPointer(
-        _pangoGlyphItemApplyAttrs(
-          this.handle,
-          nativeText.cast<Utf8>(),
-          list.handle,
-        ),
-      );
-    });
-  }
-
   /// Make a deep copy of an existing `PangoGlyphItem` structure.
   static final _pangoGlyphItemCopy =
       pangoLookup<

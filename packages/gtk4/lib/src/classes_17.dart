@@ -308,33 +308,6 @@ class GtkComboBoxText extends GtkComboBox {
 class GtkConstantExpression extends GtkExpression {
   GtkConstantExpression.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
-
-  /// Creates an expression that always evaluates to the given `value`.
-  static final _gtkConstantExpressionNewForValue =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_constant_expression_new_for_value')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkConstantExpression.forValue(GValue value) {
-    return GtkConstantExpression.fromPointer(
-      _gtkConstantExpressionNewForValue(value.handle),
-      owned: true,
-    );
-  }
-
-  /// Gets the value that a constant expression evaluates to.
-  static final _gtkConstantExpressionGetValue =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_constant_expression_get_value')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GValue getValue() {
-    return GValue.fromPointer(_gtkConstantExpressionGetValue(this.handle));
-  }
 }
 
 /// Describes a constraint between attributes of two widgets,
@@ -352,8 +325,16 @@ class GtkConstantExpression extends GtkExpression {
 ///
 /// The source and target, as well as their attributes, of a `GtkConstraint`
 /// instance are immutable after creation.
-class GtkConstraint extends GObject {
-  GtkConstraint.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkConstraint implements ffi.Finalizable {
+  GtkConstraint.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new constraint representing a relation between a layout
   /// attribute on a source and a layout attribute on a target.
@@ -592,9 +573,16 @@ class GtkConstraint extends GObject {
 /// space*.
 ///
 /// Unlike a `GtkWidget`, a `GtkConstraintGuide` will not be drawn.
-class GtkConstraintGuide extends GObject {
-  GtkConstraintGuide.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkConstraintGuide implements ffi.Finalizable {
+  GtkConstraintGuide.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkConstraintGuide` object.
   static final _gtkConstraintGuideNew =

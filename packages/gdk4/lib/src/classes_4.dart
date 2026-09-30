@@ -59,9 +59,16 @@ part of '../gdk4.dart';
 /// * The Linux kernel [documentation](https://docs.kernel.org/driver-api/dma-buf.html)
 ///
 /// * The header file [drm_fourcc.h](https://gitlab.freedesktop.org/mesa/drm/-/blob/main/include/drm/drm_fourcc.h)
-class GdkDmabufTextureBuilder extends GObject {
-  GdkDmabufTextureBuilder.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GdkDmabufTextureBuilder implements ffi.Finalizable {
+  GdkDmabufTextureBuilder.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new texture builder.
   static final _gdkDmabufTextureBuilderNew =
@@ -193,23 +200,6 @@ class GdkDmabufTextureBuilder extends GObject {
           .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
   int getStride(int plane) {
     return _gdkDmabufTextureBuilderGetStride(this.handle, plane);
-  }
-
-  /// Gets the region previously set via gdk_dmabuf_texture_builder_set_update_region() or
-  /// %NULL if none was set.
-  static final _gdkDmabufTextureBuilderGetUpdateRegion =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_dmabuf_texture_builder_get_update_region')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  CairoRegion? getUpdateRegion() {
-    return (_gdkDmabufTextureBuilderGetUpdateRegion(this.handle)) == ffi.nullptr
-        ? null
-        : CairoRegion.fromPointer(
-            _gdkDmabufTextureBuilderGetUpdateRegion(this.handle),
-          );
   }
 
   /// Gets the texture previously set via gdk_dmabuf_texture_builder_set_update_texture() or
@@ -390,32 +380,6 @@ class GdkDmabufTextureBuilder extends GObject {
     _gdkDmabufTextureBuilderSetStride(this.handle, plane, stride);
   }
 
-  /// Sets the region to be updated by this texture. Together with
-  /// [property@Gdk.DmabufTextureBuilder:update-texture] this describes an
-  /// update of a previous texture.
-  ///
-  /// When rendering animations of large textures, it is possible that
-  /// consecutive textures are only updating contents in parts of the texture.
-  /// It is then possible to describe this update via these two properties,
-  /// so that GTK can avoid rerendering parts that did not change.
-  ///
-  /// An example would be a screen recording where only the mouse pointer moves.
-  static final _gdkDmabufTextureBuilderSetUpdateRegion =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_dmabuf_texture_builder_set_update_region')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setUpdateRegion([CairoRegion? region]) {
-    _gdkDmabufTextureBuilderSetUpdateRegion(
-      this.handle,
-      region?.handle ?? ffi.nullptr,
-    );
-  }
-
   /// Sets the texture to be updated by this texture. See
   /// [method@Gdk.DmabufTextureBuilder.set_update_region] for an explanation.
   static final _gdkDmabufTextureBuilderSetUpdateTexture =
@@ -459,8 +423,16 @@ class GdkDmabufTextureBuilder extends GObject {
 /// GTK provides a higher level abstraction based on top of these functions,
 /// and so they are not normally needed in GTK applications. See the
 /// "Drag and Drop" section of the GTK documentation for more information.
-class GdkDrag extends GObject {
-  GdkDrag.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GdkDrag implements ffi.Finalizable {
+  GdkDrag.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Informs GDK that the drop ended.
   ///
@@ -664,5 +636,95 @@ class GdkDrag extends GObject {
               dy,
             ),
           );
+  }
+
+  /// Emitted when the destination side has finished reading all data.
+  ///
+  /// The drag object can now free all miscellaneous data.
+  int onDndFinished(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'dnd-finished', callback);
+  }
+
+  /// Emitted when the drop operation is performed on an accepting client.
+  int onDropPerformed(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'drop-performed', callback);
+  }
+}
+
+/// Base class for objects implementing different rendering methods.
+///
+/// `GdkDrawContext` is the base object used by contexts implementing different
+/// rendering methods, such as [class@Gdk.CairoContext] or [class@Gdk.GLContext].
+/// It provides shared functionality between those contexts.
+///
+/// You will always interact with one of those subclasses.
+///
+/// A `GdkDrawContext` is always associated with a single toplevel surface.
+class GdkDrawContext implements ffi.Finalizable {
+  GdkDrawContext.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
+
+  /// Ends a drawing operation started with gdk_draw_context_begin_frame().
+  ///
+  /// This makes the drawing available on screen.
+  /// See [method@Gdk.DrawContext.begin_frame] for more details about drawing.
+  ///
+  /// When using a [class@Gdk.GLContext], this function may call `glFlush()`
+  /// implicitly before returning; it is not recommended to call `glFlush()`
+  /// explicitly before calling this function.
+  static final _gdkDrawContextEndFrame =
+      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gdk_draw_context_end_frame',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void endFrame() {
+    _gdkDrawContextEndFrame(this.handle);
+  }
+
+  /// Retrieves the `GdkDisplay` the @context is created for
+  static final _gdkDrawContextGetDisplay =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_draw_context_get_display')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkDisplay? getDisplay() {
+    return (_gdkDrawContextGetDisplay(this.handle)) == ffi.nullptr
+        ? null
+        : GdkDisplay.fromPointer(_gdkDrawContextGetDisplay(this.handle));
+  }
+
+  /// Retrieves the surface that @context is bound to.
+  static final _gdkDrawContextGetSurface =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_draw_context_get_surface')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkSurface? getSurface() {
+    return (_gdkDrawContextGetSurface(this.handle)) == ffi.nullptr
+        ? null
+        : GdkSurface.fromPointer(_gdkDrawContextGetSurface(this.handle));
+  }
+
+  /// Returns %TRUE if @context is in the process of drawing to its surface.
+  ///
+  /// This is the case between calls to [method@Gdk.DrawContext.begin_frame]
+  /// and [method@Gdk.DrawContext.end_frame]. In this situation, drawing commands
+  /// may be effecting the contents of the @context's surface.
+  static final _gdkDrawContextIsInFrame =
+      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
+        'gdk_draw_context_is_in_frame',
+      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+  bool isInFrame() {
+    return (_gdkDrawContextIsInFrame(this.handle)) != 0;
   }
 }

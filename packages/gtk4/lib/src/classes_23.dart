@@ -1098,4 +1098,11 @@ class GtkEntry extends GtkWidget {
   void unsetInvisibleChar() {
     _gtkEntryUnsetInvisibleChar(this.handle);
   }
+
+  /// Emitted when the entry is activated.
+  ///
+  /// The keybindings for this signal are all forms of the Enter key.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
 }

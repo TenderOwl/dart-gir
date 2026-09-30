@@ -7,6 +7,7 @@ import '../resolve/types.dart';
 import 'callable.dart';
 import 'context.dart';
 import 'record_emitter.dart';
+import 'signals_emitter.dart';
 
 /// GIR classes become pointer-wrapper classes mirroring the GType hierarchy.
 class ClassEmitter {
@@ -145,6 +146,10 @@ class ClassEmitter {
       final code = callables.emit(f,
           dartName: name, ownerName: dartName, staticMember: true);
       if (code != null) b.writeln(_indent(code));
+    }
+    final signalCode = emitSignalConnectors(ctx, cls.signals, dartName, memberNames);
+    if (signalCode.isNotEmpty) {
+      b.writeln(_indent(signalCode));
     }
     b.write('}');
     return b.toString();

@@ -344,8 +344,16 @@ class GtkConstraintLayoutChild extends GtkLayoutChild {
 ///
 /// To track errors while loading CSS, connect to the
 /// [signal@Gtk.CssProvider::parsing-error] signal.
-class GtkCssProvider extends GObject {
-  GtkCssProvider.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkCssProvider implements ffi.Finalizable {
+  GtkCssProvider.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Returns a newly created `GtkCssProvider`.
   static final _gtkCssProviderNew =
@@ -354,22 +362,6 @@ class GtkCssProvider extends GObject {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   factory GtkCssProvider() {
     return GtkCssProvider.fromPointer(_gtkCssProviderNew(), owned: true);
-  }
-
-  /// Loads @data into @css_provider.
-  ///
-  /// This clears any previously loaded information.
-  static final _gtkCssProviderLoadFromBytes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_css_provider_load_from_bytes')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void loadFromBytes(GBytes data) {
-    _gtkCssProviderLoadFromBytes(this.handle, data.handle);
   }
 
   /// Loads @data into @css_provider.

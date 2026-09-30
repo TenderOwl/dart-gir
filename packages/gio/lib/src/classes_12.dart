@@ -111,9 +111,16 @@ part of '../gio.dart';
 /// return polkit_authorization_result_get_is_authorized (auth_result);
 /// }
 /// ```
-class GDebugControllerDBus extends GObject {
-  GDebugControllerDBus.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GDebugControllerDBus implements ffi.Finalizable {
+  GDebugControllerDBus.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Create a new #GDebugControllerDBus and synchronously initialize it.
   ///
@@ -190,8 +197,16 @@ class GDebugControllerDBus extends GObject {
 ///
 /// Currently, only metainformation about the emblem's origin is
 /// supported. More may be added in the future.
-class GEmblem extends GObject {
-  GEmblem.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GEmblem implements ffi.Finalizable {
+  GEmblem.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new emblem for @icon.
   static final _gEmblemNew =
@@ -250,8 +265,16 @@ class GEmblem extends GObject {
 ///
 /// Note that `GEmblemedIcon` allows no control over the position
 /// of the emblems. See also [class@Gio.Emblem] for more information.
-class GEmblemedIcon extends GObject {
-  GEmblemedIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GEmblemedIcon implements ffi.Finalizable {
+  GEmblemedIcon.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new emblemed icon for @icon with the emblem @emblem.
   static final _gEmblemedIconNew =
@@ -299,18 +322,6 @@ class GEmblemedIcon extends GObject {
     _gEmblemedIconClearEmblems(this.handle);
   }
 
-  /// Gets the list of emblems for the @icon.
-  static final _gEmblemedIconGetEmblems =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_emblemed_icon_get_emblems')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getEmblems() {
-    return GList.fromPointer(_gEmblemedIconGetEmblems(this.handle));
-  }
-
   /// Gets the main icon for @emblemed.
   static final _gEmblemedIconGetIcon =
       gioLookup<
@@ -350,9 +361,16 @@ class GEmblemedIcon extends GObject {
 /// its asynchronous version, [method@Gio.FileEnumerator.close_async]. Once
 /// a `GFileEnumerator` is closed, no further actions may be performed
 /// on it, and it should be freed with [method@GObject.Object.unref].
-class GFileEnumerator extends GObject {
-  GFileEnumerator.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GFileEnumerator implements ffi.Finalizable {
+  GFileEnumerator.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Releases all resources used by this enumerator, making the
   /// enumerator return %G_IO_ERROR_CLOSED on all calls.
@@ -542,41 +560,6 @@ class GFileEnumerator extends GObject {
         throw GlibException.fromError(_error.value);
       }
       return (_ret) == ffi.nullptr ? null : GFileInfo.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Finishes the asynchronous operation started with g_file_enumerator_next_files_async().
-  static final _gFileEnumeratorNextFilesFinish =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_file_enumerator_next_files_finish')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GList nextFilesFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gFileEnumeratorNextFilesFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GList.fromPointer(_ret);
     } finally {
       calloc.free(_error);
     }

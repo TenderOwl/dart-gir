@@ -1,0 +1,98 @@
+# Skip report for package gtk_source5 (GtkSource 5)
+Total skipped: 116
+
+## By category
+callable: 59
+class: 28
+signal: 23
+renamed: 4
+method: 2
+
+## By reason
+parent GObject.Object is in non-generated package gobject: 27
+only void(void) supported in this release: 23
+return: string list return type (null): 10
+parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 5
+inout parameter iter: 5
+caller-allocates out parameter match_start: 4
+return: type GLib.SList is in non-generated package glib: 4
+caller-allocates out parameter iter: 3
+caller-allocates out parameter begin: 2
+caller-allocates out parameter start: 2
+return: type GdkPixbuf.Pixbuf is in non-generated package gdk_pixbuf: 2
+parameter progress_callback: nullable callback parameter (Gio.FileProgressCallback): 2
+parameter pixbuf: type GdkPixbuf.Pixbuf is in non-generated package gdk_pixbuf: 2
+parameter width: nullable scalar parameter (gint): 2
+name collision: 2
+return: array types are handled in a later phase: 2
+moved to Encoding.get_default_candidates: 1
+moved to Encoding.get_from_charset: 1
+moved to Encoding.get_all: 1
+moved to Encoding.get_utf8: 1
+moved to Encoding.get_current: 1
+moved to FileSaverError.quark: 1
+parameter priority: nullable scalar parameter (guint): 1
+parameter candidate_encodings: type GLib.SList is in non-generated package glib: 1
+parameter notify: callback GLib.DestroyNotify is in non-generated package glib: 1
+override-incompatible with ancestor; renamed to activateGutterRenderer: 1
+override-incompatible with ancestor; renamed to getGutterView: 1
+override-incompatible with ancestor; renamed to measureGutterRendererText: 1
+override-incompatible with ancestor; renamed to insertAfterHoverDisplay: 1
+caller-allocates out parameter background: 1
+return: type GLib.Error is in non-generated package glib: 1
+parent GObject.InitiallyUnowned is in non-generated package gobject: 1
+return: type GLib.Variant is in non-generated package glib: 1
+parameter matrix: type GLib.Variant is in non-generated package glib: 1
+moved to FileLoaderError.quark: 1
+
+## First 50 entries
+[callable] GtkSource.encodingGetAll — moved to Encoding.get_all
+[callable] GtkSource.encodingGetCurrent — moved to Encoding.get_current
+[callable] GtkSource.encodingGetDefaultCandidates — moved to Encoding.get_default_candidates
+[callable] GtkSource.encodingGetFromCharset — moved to Encoding.get_from_charset
+[callable] GtkSource.encodingGetUtf8 — moved to Encoding.get_utf8
+[callable] GtkSource.fileLoaderErrorQuark — moved to FileLoaderError.quark
+[callable] GtkSource.fileSaverErrorQuark — moved to FileSaverError.quark
+[callable] GtkSource.schedulerAddFull — parameter notify: callback GLib.DestroyNotify is in non-generated package glib
+[method] GtkSourceEncoding.toString — name collision
+[callable] GtkSourceEncoding.getAll — return: type GLib.SList is in non-generated package glib
+[callable] GtkSourceEncoding.getDefaultCandidates — return: type GLib.SList is in non-generated package glib
+[callable] GtkSourceRegionIter.getSubregion — caller-allocates out parameter start
+[class] GtkSourceAnnotation — parent GObject.Object is in non-generated package gobject
+[class] GtkSourceAnnotationProvider — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceAnnotationProvider.populateHoverAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
+[class] GtkSourceAnnotations — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceBuffer.backwardIterToSourceMark — inout parameter iter
+[callable] GtkSourceBuffer.forwardIterToSourceMark — inout parameter iter
+[callable] GtkSourceBuffer.getContextClassesAtIter — return: string list return type (null)
+[callable] GtkSourceBuffer.getSourceMarksAtIter — return: type GLib.SList is in non-generated package glib
+[callable] GtkSourceBuffer.getSourceMarksAtLine — return: type GLib.SList is in non-generated package glib
+[callable] GtkSourceBuffer.iterBackwardToContextClassToggle — inout parameter iter
+[callable] GtkSourceBuffer.iterForwardToContextClassToggle — inout parameter iter
+[signal] GtkSourceBuffer.bracket-matched — only void(void) supported in this release
+[signal] GtkSourceBuffer.highlight-updated — only void(void) supported in this release
+[signal] GtkSourceBuffer.source-mark-updated — only void(void) supported in this release
+[class] GtkSourceCompletion — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceCompletion.fuzzyMatch — parameter priority: nullable scalar parameter (guint)
+[signal] GtkSourceCompletion.provider-added — only void(void) supported in this release
+[signal] GtkSourceCompletion.provider-removed — only void(void) supported in this release
+[class] GtkSourceCompletionContext — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceCompletionContext.getBounds — caller-allocates out parameter begin
+[signal] GtkSourceCompletionContext.provider-model-changed — only void(void) supported in this release
+[class] GtkSourceCompletionSnippets — parent GObject.Object is in non-generated package gobject
+[class] GtkSourceCompletionWords — parent GObject.Object is in non-generated package gobject
+[class] GtkSourceFile — parent GObject.Object is in non-generated package gobject
+[class] GtkSourceFileLoader — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceFileLoader.loadAsync — parameter progress_callback: nullable callback parameter (Gio.FileProgressCallback)
+[callable] GtkSourceFileLoader.setCandidateEncodings — parameter candidate_encodings: type GLib.SList is in non-generated package glib
+[class] GtkSourceFileSaver — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceFileSaver.saveAsync — parameter progress_callback: nullable callback parameter (Gio.FileProgressCallback)
+[class] GtkSourceGutterLines — parent GObject.Object is in non-generated package gobject
+[callable] GtkSourceGutterLines.getIterAtLine — caller-allocates out parameter iter
+[renamed] GtkSourceGutterRenderer.activate — override-incompatible with ancestor; renamed to activateGutterRenderer
+[signal] GtkSourceGutterRenderer.activate — only void(void) supported in this release
+[signal] GtkSourceGutterRenderer.query-activatable — only void(void) supported in this release
+[signal] GtkSourceGutterRenderer.query-data — only void(void) supported in this release
+[callable] GtkSourceGutterRendererPixbuf.getPixbuf — return: type GdkPixbuf.Pixbuf is in non-generated package gdk_pixbuf
+[callable] GtkSourceGutterRendererPixbuf.setPixbuf — parameter pixbuf: type GdkPixbuf.Pixbuf is in non-generated package gdk_pixbuf
+[renamed] GtkSourceGutterRendererText.measure — override-incompatible with ancestor; renamed to measureGutterRendererText

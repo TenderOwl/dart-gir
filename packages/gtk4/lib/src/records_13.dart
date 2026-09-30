@@ -334,20 +334,6 @@ final class GtkNative {
   GtkNative.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
-  /// Returns the renderer that is used for this `GtkNative`.
-  static final _gtkNativeGetRenderer =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_native_get_renderer')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRenderer? getRenderer() {
-    return (_gtkNativeGetRenderer(this.handle)) == ffi.nullptr
-        ? null
-        : GskRenderer.fromPointer(_gtkNativeGetRenderer(this.handle));
-  }
-
   /// Returns the surface of this `GtkNative`.
   static final _gtkNativeGetSurface =
       gtk4Lookup<

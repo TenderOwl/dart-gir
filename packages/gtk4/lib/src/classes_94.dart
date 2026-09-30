@@ -1070,21 +1070,6 @@ class GtkWindow extends GtkWidget {
     return GListModel.fromPointer(_gtkWindowGetToplevels());
   }
 
-  /// Returns the list of all existing toplevel windows.
-  ///
-  /// The widgets in the list are not individually referenced.
-  /// If you want to iterate through the list and perform actions
-  /// involving callbacks that might destroy the widgets, you must
-  /// call `g_list_foreach (result, (GFunc)g_object_ref, NULL)` first,
-  /// and then unref all the widgets afterwards.
-  static final _gtkWindowListToplevels =
-      gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_window_list_toplevels',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GList listToplevels() {
-    return GList.fromPointer(_gtkWindowListToplevels());
-  }
-
   /// Sets whether the window should request startup notification.
   ///
   /// By default, after showing the first window, GTK calls
@@ -1138,5 +1123,30 @@ class GtkWindow extends GtkWidget {
       ).asFunction<void Function(int)>();
   static void setInteractiveDebugging(bool enable) {
     _gtkWindowSetInteractiveDebugging(enable ? 1 : 0);
+  }
+
+  /// Emitted when the user activates the default widget.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The keybindings for this signal are all forms of the <kbd>Enter</kbd> key.
+  int onActivateDefault(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate-default', callback);
+  }
+
+  /// Emitted when the user activates the currently focused
+  /// widget of @window.
+  ///
+  /// This is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default binding for this signal is <kbd>␣</kbd>.
+  int onActivateFocus(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate-focus', callback);
+  }
+
+  /// Emitted when the set of accelerators or mnemonics that
+  /// are associated with the window changes.
+  int onKeysChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'keys-changed', callback);
   }
 }

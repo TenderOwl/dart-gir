@@ -1,15 +1,17 @@
 # Skip report for package gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 22
+Total skipped: 24
 
 ## By category
 callable: 17
 callback: 5
+signal: 2
 
 ## By reason
 array types are handled in a later phase: 5
 parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 5
 parameter data: array types are handled in a later phase: 3
 return: string list return type (null): 2
+only void(void) supported in this release: 2
 moved to PixbufError.quark: 1
 shadowed by get_pixels_with_length: 1
 return: array types are handled in a later phase: 1
@@ -37,6 +39,8 @@ parameter buf: array types are handled in a later phase: 1
 [callable] GdkPixbuf.newFromStreamAtScaleAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
 [callable] GdkPixbufAnimation.newFromStreamAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
 [callable] GdkPixbufLoader.write — parameter buf: array types are handled in a later phase
+[signal] GdkPixbufLoader.area-updated — only void(void) supported in this release
+[signal] GdkPixbufLoader.size-prepared — only void(void) supported in this release
 [callback] GdkPixbufDestroyNotify parameter pixels — array types are handled in a later phase
 [callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array types are handled in a later phase
 [callback] GdkPixbufModuleLoadXpmDataFunc parameter data — array types are handled in a later phase

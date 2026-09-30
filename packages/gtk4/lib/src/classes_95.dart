@@ -194,8 +194,16 @@ class GtkWindowControls extends GtkWidget {
 /// be removed from the window group and drop their references on the window
 /// group; when all window have been removed, the window group will be
 /// freed.
-class GtkWindowGroup extends GObject {
-  GtkWindowGroup.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkWindowGroup implements ffi.Finalizable {
+  GtkWindowGroup.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkWindowGroup` object.
   ///
@@ -221,18 +229,6 @@ class GtkWindowGroup extends GObject {
           >();
   void addWindow(GtkWindow window) {
     _gtkWindowGroupAddWindow(this.handle, window.handle);
-  }
-
-  /// Returns a list of the `GtkWindows` that belong to @window_group.
-  static final _gtkWindowGroupListWindows =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_window_group_list_windows')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList listWindows() {
-    return GList.fromPointer(_gtkWindowGroupListWindows(this.handle));
   }
 
   /// Removes a window from a `GtkWindowGroup`.

@@ -550,19 +550,6 @@ class GtkTreeView extends GtkWidget {
         : GtkTreeViewColumn.fromPointer(_gtkTreeViewGetColumn(this.handle, n));
   }
 
-  /// Returns a `GList` of all the `GtkTreeViewColumn`s currently in @tree_view.
-  /// The returned list must be freed with g_list_free ().
-  static final _gtkTreeViewGetColumns =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_tree_view_get_columns')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getColumns() {
-    return GList.fromPointer(_gtkTreeViewGetColumns(this.handle));
-  }
-
   /// Returns whether or not the tree allows to start interactive searching
   /// by typing in text.
   static final _gtkTreeViewGetEnableSearch =
@@ -787,109 +774,6 @@ class GtkTreeView extends GtkWidget {
           >();
   int insertColumn(GtkTreeViewColumn column, int position) {
     return _gtkTreeViewInsertColumn(this.handle, column.handle, position);
-  }
-
-  /// Convenience function that inserts a new column into the `GtkTreeView`
-  /// with the given cell renderer and a `GtkTreeCellDataFunc` to set cell renderer
-  /// attributes (normally using data from the model). See also
-  /// gtk_tree_view_column_set_cell_data_func(), gtk_tree_view_column_pack_start().
-  /// If @tree_view has “fixed_height” mode enabled, then the new column will have its
-  /// “sizing” property set to be GTK_TREE_VIEW_COLUMN_FIXED.
-  static final _gtkTreeViewInsertColumnWithDataFunc =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Void Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_tree_view_insert_column_with_data_func')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  int insertColumnWithDataFunc(
-    int position,
-    String title,
-    GtkCellRenderer cell,
-    void Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )
-    func,
-    ffi.Pointer<ffi.Void> data,
-    void Function(ffi.Pointer<ffi.Void>) dnotify,
-  ) {
-    return withNativeString(title, (nativeTitle) {
-      final _nc4 =
-          ffi.NativeCallable<
-            ffi.Void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >.isolateLocal(func);
-      final _nc6 =
-          ffi.NativeCallable<
-            ffi.Void Function(ffi.Pointer<ffi.Void>)
-          >.isolateLocal(dnotify);
-      try {
-        final _ret = _gtkTreeViewInsertColumnWithDataFunc(
-          this.handle,
-          position,
-          nativeTitle.cast<Utf8>(),
-          cell.handle,
-          _nc4.nativeFunction,
-          data,
-          _nc6.nativeFunction,
-        );
-        return _ret;
-      } finally {
-        _nc4.close();
-        _nc6.close();
-      }
-    });
   }
 
   /// Returns whether a rubber banding operation is currently being done
@@ -1615,5 +1499,15 @@ class GtkTreeView extends GtkWidget {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unsetRowsDragSource() {
     _gtkTreeViewUnsetRowsDragSource(this.handle);
+  }
+
+  /// The number of columns of the treeview has changed.
+  int onColumnsChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'columns-changed', callback);
+  }
+
+  /// The position of the cursor (focused cell) has changed.
+  int onCursorChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'cursor-changed', callback);
   }
 }

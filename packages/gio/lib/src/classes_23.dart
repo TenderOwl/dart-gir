@@ -53,9 +53,16 @@ part of '../gio.dart';
 /// a [iface@Gio.Action] to control a setting stored in [class@Gio.Settings],
 /// see [method@Gio.Settings.create_action] instead, and possibly combine its
 /// use with [method@Gio.Settings.bind].
-class GPropertyAction extends GObject {
-  GPropertyAction.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GPropertyAction implements ffi.Finalizable {
+  GPropertyAction.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a #GAction corresponding to the value of property
   /// @property_name on @object.
@@ -286,4 +293,176 @@ class GProxyAddress extends GInetSocketAddress {
 class GProxyAddressEnumerator extends GSocketAddressEnumerator {
   GProxyAddressEnumerator.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+}
+
+/// The object that handles DNS resolution. Use [func@Gio.Resolver.get_default]
+/// to get the default resolver.
+///
+/// `GResolver` provides cancellable synchronous and asynchronous DNS
+/// resolution, for hostnames ([method@Gio.Resolver.lookup_by_address],
+/// [method@Gio.Resolver.lookup_by_name] and their async variants) and SRV
+/// (service) records ([method@Gio.Resolver.lookup_service]).
+///
+/// [class@Gio.NetworkAddress] and [class@Gio.NetworkService] provide wrappers
+/// around `GResolver` functionality that also implement
+/// [iface@Gio.SocketConnectable], making it easy to connect to a remote
+/// host/service.
+///
+/// The default resolver (see [func@Gio.Resolver.get_default]) has a timeout of
+/// 30s set on it since GLib 2.78. Earlier versions of GLib did not support
+/// resolver timeouts.
+///
+/// This is an abstract type; subclasses of it implement different resolvers for
+/// different platforms and situations.
+class GResolver implements ffi.Finalizable {
+  GResolver.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
+
+  /// Get the timeout applied to all resolver lookups. See #GResolver:timeout.
+  static final _gResolverGetTimeout =
+      gioLookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>>(
+        'g_resolver_get_timeout',
+      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+  int getTimeout() {
+    return _gResolverGetTimeout(this.handle);
+  }
+
+  /// Synchronously reverse-resolves @address to determine its
+  /// associated hostname.
+  ///
+  /// If the DNS resolution fails, @error (if non-%NULL) will be set to
+  /// a value from #GResolverError.
+  ///
+  /// If @cancellable is non-%NULL, it can be used to cancel the
+  /// operation, in which case @error (if non-%NULL) will be set to
+  /// %G_IO_ERROR_CANCELLED.
+  static final _gResolverLookupByAddress =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_resolver_lookup_by_address')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  String lookupByAddress(GInetAddress address, [GCancellable? cancellable]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gResolverLookupByAddress(
+        this.handle,
+        address.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return stringFromNative((_ret).cast(), free: true)!;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Retrieves the result of a previous call to
+  /// g_resolver_lookup_by_address_async().
+  ///
+  /// If the DNS resolution failed, @error (if non-%NULL) will be set to
+  /// a value from #GResolverError. If the operation was cancelled,
+  /// @error will be set to %G_IO_ERROR_CANCELLED.
+  static final _gResolverLookupByAddressFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_resolver_lookup_by_address_finish')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  String lookupByAddressFinish(GAsyncResult result) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gResolverLookupByAddressFinish(
+        this.handle,
+        result.handle,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return stringFromNative((_ret).cast(), free: true)!;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Sets @resolver to be the application's default resolver (reffing
+  /// @resolver, and unreffing the previous default resolver, if any).
+  /// Future calls to g_resolver_get_default() will return this resolver.
+  ///
+  /// This can be used if an application wants to perform any sort of DNS
+  /// caching or "pinning"; it can implement its own #GResolver that
+  /// calls the original default resolver for DNS operations, and
+  /// implements its own cache policies on top of that, and then set
+  /// itself as the default resolver for all later code to use.
+  static final _gResolverSetDefault =
+      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_resolver_set_default',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void setDefault() {
+    _gResolverSetDefault(this.handle);
+  }
+
+  /// Set the timeout applied to all resolver lookups. See #GResolver:timeout.
+  static final _gResolverSetTimeout =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
+            >
+          >('g_resolver_set_timeout')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void setTimeout(int timeoutMs) {
+    _gResolverSetTimeout(this.handle, timeoutMs);
+  }
+
+  /// Gets the default #GResolver. You should unref it when you are done
+  /// with it. #GResolver may use its reference count as a hint about how
+  /// many threads it should allocate for concurrent DNS resolutions.
+  static final _gResolverGetDefault =
+      gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
+        'g_resolver_get_default',
+      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
+  static GResolver getDefault() {
+    return GResolver.fromPointer(_gResolverGetDefault());
+  }
+
+  /// Emitted when the resolver notices that the system resolver
+  /// configuration has changed.
+  int onReload(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'reload', callback);
+  }
 }

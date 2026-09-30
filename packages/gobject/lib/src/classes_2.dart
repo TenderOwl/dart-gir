@@ -592,4 +592,13 @@ class GSignalGroup extends GObject {
   void unblock() {
     _gSignalGroupUnblock(this.handle);
   }
+
+  /// This signal is emitted when the target instance of @self is set to a
+  /// new #GObject.
+  ///
+  /// This signal will only be emitted if the previous target of @self is
+  /// non-%NULL.
+  int onUnbind(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'unbind', callback);
+  }
 }

@@ -429,4 +429,9 @@ class GtkDropControllerMotion extends GtkEventController {
   bool isPointer() {
     return (_gtkDropControllerMotionIsPointer(this.handle)) != 0;
   }
+
+  /// Signals that the pointer has left the widget.
+  int onLeave(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'leave', callback);
+  }
 }

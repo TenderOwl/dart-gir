@@ -580,12 +580,51 @@ class GtkAssistant extends GtkWindow {
   void updateButtonsState() {
     _gtkAssistantUpdateButtonsState(this.handle);
   }
+
+  /// Emitted when the apply button is clicked.
+  ///
+  /// The default behavior of the `GtkAssistant` is to switch to the page
+  /// after the current page, unless the current page is the last one.
+  ///
+  /// A handler for the ::apply signal should carry out the actions for
+  /// which the wizard has collected data. If the action takes a long time
+  /// to complete, you might consider putting a page of type
+  /// %GTK_ASSISTANT_PAGE_PROGRESS after the confirmation page and handle
+  /// this operation within the [signal@Gtk.Assistant::prepare] signal of
+  /// the progress page.
+  int onApply(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'apply', callback);
+  }
+
+  /// Emitted when then the cancel button is clicked.
+  int onCancel(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'cancel', callback);
+  }
+
+  /// Emitted either when the close button of a summary page is clicked,
+  /// or when the apply button in the last page in the flow (of type
+  /// %GTK_ASSISTANT_PAGE_CONFIRM) is clicked.
+  int onClose(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'close', callback);
+  }
+
+  /// The action signal for the Escape binding.
+  int onEscape(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'escape', callback);
+  }
 }
 
 /// `GtkAssistantPage` is an auxiliary object used by `GtkAssistant`.
-class GtkAssistantPage extends GObject {
-  GtkAssistantPage.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkAssistantPage implements ffi.Finalizable {
+  GtkAssistantPage.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Returns the child to which @page belongs.
   static final _gtkAssistantPageGetChild =
@@ -616,131 +655,5 @@ class GtkBinLayout extends GtkLayoutManager {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   factory GtkBinLayout() {
     return GtkBinLayout.fromPointer(_gtkBinLayoutNew(), owned: true);
-  }
-}
-
-/// A list model that wraps `GBookmarkFile`.
-///
-/// It presents a `GListModel` and fills it asynchronously with the
-/// `GFileInfo`s returned from that function.
-///
-/// The `GFileInfo`s in the list have some attributes in the recent
-/// namespace added: `recent::private` (boolean) and `recent:applications`
-/// (stringv).
-class GtkBookmarkList extends GObject {
-  GtkBookmarkList.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new `GtkBookmarkList` with the given @attributes.
-  static final _gtkBookmarkListNew =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('gtk_bookmark_list_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>)
-          >();
-  factory GtkBookmarkList([String? filename, String? attributes]) {
-    return withNativeString(filename, (nativeFilename) {
-      return withNativeString(attributes, (nativeAttributes) {
-        return GtkBookmarkList.fromPointer(
-          _gtkBookmarkListNew(
-            nativeFilename.cast<Utf8>(),
-            nativeAttributes.cast<Utf8>(),
-          ),
-          owned: true,
-        );
-      });
-    });
-  }
-
-  /// Gets the attributes queried on the children.
-  static final _gtkBookmarkListGetAttributes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_bookmark_list_get_attributes')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String? getAttributes() {
-    return stringFromNative(
-      (_gtkBookmarkListGetAttributes(this.handle)).cast(),
-      free: false,
-    );
-  }
-
-  /// Returns the filename of the bookmark file that
-  /// this list is loading.
-  static final _gtkBookmarkListGetFilename =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_bookmark_list_get_filename')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getFilename() {
-    return stringFromNative(
-      (_gtkBookmarkListGetFilename(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Gets the IO priority to use while loading file.
-  static final _gtkBookmarkListGetIoPriority =
-      gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_bookmark_list_get_io_priority',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getIoPriority() {
-    return _gtkBookmarkListGetIoPriority(this.handle);
-  }
-
-  /// Returns %TRUE if the files are currently being loaded.
-  ///
-  /// Files will be added to @self from time to time while loading is
-  /// going on. The order in which are added is undefined and may change
-  /// in between runs.
-  static final _gtkBookmarkListIsLoading =
-      gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_bookmark_list_is_loading',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isLoading() {
-    return (_gtkBookmarkListIsLoading(this.handle)) != 0;
-  }
-
-  /// Sets the @attributes to be enumerated and starts the enumeration.
-  ///
-  /// If @attributes is %NULL, no attributes will be queried, but a list
-  /// of `GFileInfo`s will still be created.
-  static final _gtkBookmarkListSetAttributes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-            >
-          >('gtk_bookmark_list_set_attributes')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-          >();
-  void setAttributes([String? attributes]) {
-    withNativeString(attributes, (nativeAttributes) {
-      _gtkBookmarkListSetAttributes(this.handle, nativeAttributes.cast<Utf8>());
-    });
-  }
-
-  /// Sets the IO priority to use while loading files.
-  ///
-  /// The default IO priority is %G_PRIORITY_DEFAULT.
-  static final _gtkBookmarkListSetIoPriority =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gtk_bookmark_list_set_io_priority')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setIoPriority(int ioPriority) {
-    _gtkBookmarkListSetIoPriority(this.handle, ioPriority);
   }
 }

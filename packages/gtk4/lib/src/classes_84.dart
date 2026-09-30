@@ -4,9 +4,16 @@ part of '../gtk4.dart';
 /// Marks a spot in a `GtkTextBuffer` where child widgets can be “anchored”.
 ///
 /// The anchor can have multiple widgets anchored, to allow for multiple views.
-class GtkTextChildAnchor extends GObject {
-  GtkTextChildAnchor.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkTextChildAnchor implements ffi.Finalizable {
+  GtkTextChildAnchor.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkTextChildAnchor`.
   ///
@@ -95,8 +102,16 @@ class GtkTextChildAnchor extends GObject {
 ///
 /// Marks are typically created using the [method@Gtk.TextBuffer.create_mark]
 /// function.
-class GtkTextMark extends GObject {
-  GtkTextMark.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkTextMark implements ffi.Finalizable {
+  GtkTextMark.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a text mark.
   ///
@@ -228,8 +243,16 @@ class GtkTextMark extends GObject {
 /// whether a property has been set or not.
 ///
 /// They are maintained by GTK and you should not set them independently.
-class GtkTextTag extends GObject {
-  GtkTextTag.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkTextTag implements ffi.Finalizable {
+  GtkTextTag.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a `GtkTextTag`.
   static final _gtkTextTagNew =
@@ -320,9 +343,16 @@ class GtkTextTag extends GObject {
 /// </child>
 /// </object>
 /// ```
-class GtkTextTagTable extends GObject {
-  GtkTextTagTable.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkTextTagTable implements ffi.Finalizable {
+  GtkTextTagTable.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkTextTagTable`.
   ///

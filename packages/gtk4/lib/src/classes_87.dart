@@ -2,88 +2,16 @@
 part of '../gtk4.dart';
 
 /// A list model that can create child models on demand.
-class GtkTreeListModel extends GObject {
-  GtkTreeListModel.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new empty `GtkTreeListModel` displaying @root
-  /// with all rows collapsed.
-  static final _gtkTreeListModelNew =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Int32,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Pointer<ffi.Void> Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_tree_list_model_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              int,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Pointer<ffi.Void> Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  factory GtkTreeListModel(
-    GListModel root,
-    bool passthrough,
-    bool autoexpand,
-    ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-    createFunc,
-    ffi.Pointer<ffi.Void> userData,
-    void Function(ffi.Pointer<ffi.Void>) userDestroy,
-  ) {
-    final _nc4 =
-        ffi.NativeCallable<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(createFunc);
-    final _nc6 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(userDestroy);
-    try {
-      final _ret = _gtkTreeListModelNew(
-        root.handle,
-        passthrough ? 1 : 0,
-        autoexpand ? 1 : 0,
-        _nc4.nativeFunction,
-        userData,
-        _nc6.nativeFunction,
-      );
-      return GtkTreeListModel.fromPointer(_ret, owned: true);
-    } finally {
-      _nc4.close();
-      _nc6.close();
+class GtkTreeListModel implements ffi.Finalizable {
+  GtkTreeListModel.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
     }
   }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets whether the model is set to automatically expand new rows
   /// that get added.
@@ -214,8 +142,16 @@ class GtkTreeListModel extends GObject {
 /// objects, such as the [class@Gtk.TreeExpander] widget that allows displaying
 /// an icon to expand or collapse a row or [class@Gtk.TreeListRowSorter] that
 /// makes it possible to sort trees properly.
-class GtkTreeListRow extends GObject {
-  GtkTreeListRow.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkTreeListRow implements ffi.Finalizable {
+  GtkTreeListRow.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// If @self is not expanded or @position is greater than the
   /// number of children, %NULL is returned.
@@ -497,9 +433,16 @@ class GtkTreeListRowSorter extends GtkSorter {
 /// because it does not implement reference counting, or for models that
 /// do implement reference counting, obtain references on these child levels
 /// yourself.
-class GtkTreeModelFilter extends GObject {
-  GtkTreeModelFilter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkTreeModelFilter implements ffi.Finalizable {
+  GtkTreeModelFilter.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// This function should almost never be called. It clears the @filter
   /// of any cached iterators that haven’t been reffed with

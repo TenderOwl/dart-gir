@@ -10,8 +10,16 @@ part of '../gtk4.dart';
 ///
 /// GtkTextBuffer can support undoing changes to the buffer
 /// content, see [method@Gtk.TextBuffer.set_enable_undo].
-class GtkTextBuffer extends GObject {
-  GtkTextBuffer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkTextBuffer implements ffi.Finalizable {
+  GtkTextBuffer.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new text buffer.
   static final _gtkTextBufferNew =
@@ -26,98 +34,6 @@ class GtkTextBuffer extends GObject {
       _gtkTextBufferNew(table?.handle ?? ffi.nullptr),
       owned: true,
     );
-  }
-
-  /// Adds a [callback@Gtk.TextBufferCommitNotify] to be called when a change
-  /// is to be made to the [type@Gtk.TextBuffer].
-  ///
-  /// Functions are explicitly forbidden from making changes to the
-  /// [type@Gtk.TextBuffer] from this callback. It is intended for tracking
-  /// changes to the buffer only.
-  ///
-  /// It may be advantageous to use [callback@Gtk.TextBufferCommitNotify] over
-  /// connecting to the [signal@Gtk.TextBuffer::insert-text] or
-  /// [signal@Gtk.TextBuffer::delete-range] signals to avoid ordering issues with
-  /// other signal handlers which may further modify the [type@Gtk.TextBuffer].
-  static final _gtkTextBufferAddCommitNotify =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Uint32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint32,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Void Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Uint32,
-                      ffi.Uint32,
-                      ffi.Uint32,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_text_buffer_add_commit_notify')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Uint32,
-                    ffi.Uint32,
-                    ffi.Uint32,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  int addCommitNotify(
-    GtkTextBufferNotifyFlags flags,
-    void Function(ffi.Pointer<ffi.Void>, int, int, int, ffi.Pointer<ffi.Void>)
-    commitNotify,
-    ffi.Pointer<ffi.Void> userData,
-    void Function(ffi.Pointer<ffi.Void>) destroy,
-  ) {
-    final _nc2 =
-        ffi.NativeCallable<
-          ffi.Void Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Uint32,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(commitNotify);
-    final _nc4 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(destroy);
-    try {
-      final _ret = _gtkTextBufferAddCommitNotify(
-        this.handle,
-        flags.value,
-        _nc2.nativeFunction,
-        userData,
-        _nc4.nativeFunction,
-      );
-      return _ret;
-    } finally {
-      _nc2.close();
-      _nc4.close();
-    }
   }
 
   /// Adds the mark at position @where.
@@ -1566,5 +1482,59 @@ class GtkTextBuffer extends GObject {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void undo() {
     _gtkTextBufferUndo(this.handle);
+  }
+
+  /// Emitted at the beginning of a single user-visible
+  /// operation on a `GtkTextBuffer`.
+  ///
+  /// See also:
+  /// [method@Gtk.TextBuffer.begin_user_action],
+  /// [method@Gtk.TextBuffer.insert_interactive],
+  /// [method@Gtk.TextBuffer.insert_range_interactive],
+  /// [method@Gtk.TextBuffer.delete_interactive],
+  /// [method@Gtk.TextBuffer.backspace],
+  /// [method@Gtk.TextBuffer.delete_selection].
+  int onBeginUserAction(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'begin-user-action', callback);
+  }
+
+  /// Emitted when the content of a `GtkTextBuffer` has changed.
+  int onChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'changed', callback);
+  }
+
+  /// Emitted at the end of a single user-visible
+  /// operation on the `GtkTextBuffer`.
+  ///
+  /// See also:
+  /// [method@Gtk.TextBuffer.end_user_action],
+  /// [method@Gtk.TextBuffer.insert_interactive],
+  /// [method@Gtk.TextBuffer.insert_range_interactive],
+  /// [method@Gtk.TextBuffer.delete_interactive],
+  /// [method@Gtk.TextBuffer.backspace],
+  /// [method@Gtk.TextBuffer.delete_selection],
+  /// [method@Gtk.TextBuffer.backspace].
+  int onEndUserAction(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'end-user-action', callback);
+  }
+
+  /// Emitted when the modified bit of a `GtkTextBuffer` flips.
+  ///
+  /// See also: [method@Gtk.TextBuffer.set_modified].
+  int onModifiedChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'modified-changed', callback);
+  }
+
+  /// Emitted when a request has been made to redo the
+  /// previously undone operation.
+  int onRedo(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'redo', callback);
+  }
+
+  /// Emitted when a request has been made to undo the
+  /// previous operation or set of operations that have
+  /// been grouped together.
+  int onUndo(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'undo', callback);
   }
 }

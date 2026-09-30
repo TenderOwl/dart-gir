@@ -393,8 +393,16 @@ part of '../gtk4.dart';
 /// gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), hello_button_clicked);
 /// }
 /// ```
-class GtkWidget extends GInitiallyUnowned {
-  GtkWidget.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkWidget implements ffi.Finalizable {
+  GtkWidget.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Enables or disables an action installed with
   /// [method@Gtk.WidgetClass.install_action].
@@ -441,46 +449,6 @@ class GtkWidget extends GInitiallyUnowned {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool activate() {
     return (_gtkWidgetActivate(this.handle)) != 0;
-  }
-
-  /// Activates an action for the widget.
-  ///
-  /// The action is looked up in the action groups associated with
-  /// @widget and its ancestors.
-  ///
-  /// If the action is in an action group added with
-  /// [method@Gtk.Widget.insert_action_group], the @name is expected
-  /// to be prefixed with the prefix that was used when the group was
-  /// inserted.
-  ///
-  /// The arguments must match the actions expected parameter type,
-  /// as returned by [method@Gio.Action.get_parameter_type].
-  static final _gtkWidgetActivateActionVariant =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_widget_activate_action_variant')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  bool activateActionVariant(String name, [GVariant? args]) {
-    return withNativeString(name, (nativeName) {
-      return (_gtkWidgetActivateActionVariant(
-            this.handle,
-            nativeName.cast<Utf8>(),
-            args?.handle ?? ffi.nullptr,
-          )) !=
-          0;
-    });
   }
 
   /// Activates the `default.activate` action for the widget.
@@ -555,154 +523,6 @@ class GtkWidget extends GInitiallyUnowned {
           >();
   void addMnemonicLabel(GtkWidget label) {
     _gtkWidgetAddMnemonicLabel(this.handle, label.handle);
-  }
-
-  /// Queues an animation frame update and adds a callback to be called
-  /// before each frame.
-  ///
-  /// Until the tick callback is removed, it will be called frequently
-  /// (usually at the frame rate of the output device or as quickly as
-  /// the application can be repainted, whichever is slower). For this
-  /// reason, is most suitable for handling graphics that change every
-  /// frame or every few frames.
-  ///
-  /// The tick callback does not automatically imply a relayout or repaint.
-  /// If you want a repaint or relayout, and aren’t changing widget properties
-  /// that would trigger that (for example, changing the text of a label),
-  /// then you will have to call [method@Gtk.Widget.queue_resize] or
-  /// [method@Gtk.Widget.queue_draw] yourself.
-  ///
-  /// [method@Gdk.FrameClock.get_frame_time] should generally be used
-  /// for timing continuous animations and
-  /// [method@Gdk.FrameTimings.get_predicted_presentation_time] should be
-  /// used if you are trying to display isolated frames at particular times.
-  ///
-  /// This is a more convenient alternative to connecting directly to the
-  /// [signal@Gdk.FrameClock::update] signal of the frame clock, since you
-  /// don't have to worry about when a frame clock is assigned to a widget.
-  ///
-  /// To remove a tick callback, pass the ID that is returned by this function
-  /// to [method@Gtk.Widget.remove_tick_callback].
-  static final _gtkWidgetAddTickCallback =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Uint32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Int32 Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_widget_add_tick_callback')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Int32 Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  int addTickCallback(
-    int Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )
-    callback,
-    ffi.Pointer<ffi.Void> userData,
-    void Function(ffi.Pointer<ffi.Void>) notify,
-  ) {
-    final _nc1 =
-        ffi.NativeCallable<
-          ffi.Int32 Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(callback, exceptionalReturn: 0);
-    final _nc3 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(notify);
-    try {
-      final _ret = _gtkWidgetAddTickCallback(
-        this.handle,
-        _nc1.nativeFunction,
-        userData,
-        _nc3.nativeFunction,
-      );
-      return _ret;
-    } finally {
-      _nc1.close();
-      _nc3.close();
-    }
-  }
-
-  /// Assigns size, position, (optionally) a baseline and transform
-  /// to a child widget.
-  ///
-  /// In this function, the allocation and baseline may be adjusted.
-  /// The given allocation will be forced to be bigger than the
-  /// widget's minimum size, as well as at least 0×0 in size.
-  ///
-  /// This function is only used by widget implementations.
-  ///
-  /// For a version that does not take a transform, see
-  /// [method@Gtk.Widget.size_allocate].
-  static final _gtkWidgetAllocate =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Int32,
-                ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_widget_allocate')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              int,
-              int,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void allocate(
-    int width,
-    int height,
-    int baseline, [
-    GskTransform? transform,
-  ]) {
-    _gtkWidgetAllocate(
-      this.handle,
-      width,
-      height,
-      baseline,
-      transform?.handle ?? ffi.nullptr,
-    );
   }
 
   /// Called by widgets as the user moves around the window using
@@ -1159,22 +979,6 @@ class GtkWidget extends GInitiallyUnowned {
     return (_gtkWidgetGetFontMap(this.handle)) == ffi.nullptr
         ? null
         : PangoFontMap.fromPointer(_gtkWidgetGetFontMap(this.handle));
-  }
-
-  /// Returns the `cairo_font_options_t` of the widget.
-  ///
-  /// Seee [method@Gtk.Widget.set_font_options].
-  static final _gtkWidgetGetFontOptions =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_widget_get_font_options')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  CairoFontOptions? getFontOptions() {
-    return (_gtkWidgetGetFontOptions(this.handle)) == ffi.nullptr
-        ? null
-        : CairoFontOptions.fromPointer(_gtkWidgetGetFontOptions(this.handle));
   }
 
   /// Obtains the frame clock for a widget.
@@ -1689,45 +1493,6 @@ class GtkWidget extends GInitiallyUnowned {
     return GtkStyleContext.fromPointer(_gtkWidgetGetStyleContext(this.handle));
   }
 
-  /// Fetches an object build from the template XML for @widget_type in
-  /// the widget.
-  ///
-  /// This will only report children which were previously declared
-  /// with [method@Gtk.WidgetClass.bind_template_child_full] or one of its
-  /// variants.
-  ///
-  /// This function is only meant to be called for code which is private
-  /// to the @widget_type which declared the child and is meant for language
-  /// bindings which cannot easily make use of the GObject structure offsets.
-  static final _gtkWidgetGetTemplateChild =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Size,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('gtk_widget_get_template_child')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GObject getTemplateChild(int widgetType, String name) {
-    return withNativeString(name, (nativeName) {
-      return GObject.fromPointer(
-        _gtkWidgetGetTemplateChild(
-          this.handle,
-          widgetType,
-          nativeName.cast<Utf8>(),
-        ),
-      );
-    });
-  }
-
   /// Gets the contents of the tooltip for the widget.
   ///
   /// If the tooltip has not been set using
@@ -2192,28 +1957,6 @@ class GtkWidget extends GInitiallyUnowned {
     return (_gtkWidgetKeynavFailed(this.handle, direction.value)) != 0;
   }
 
-  /// Returns the widgets for which this widget is the target of a
-  /// mnemonic.
-  ///
-  /// Typically, these widgets will be labels. See, for example,
-  /// [method@Gtk.Label.set_mnemonic_widget].
-  ///
-  /// The widgets in the list are not individually referenced.
-  /// If you want to iterate through the list and perform actions
-  /// involving callbacks that might destroy the widgets, you
-  /// must call `g_list_foreach (result, (GFunc)g_object_ref, NULL)`
-  /// first, and then unref all the widgets afterwards.
-  static final _gtkWidgetListMnemonicLabels =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_widget_list_mnemonic_labels')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList listMnemonicLabels() {
-    return GList.fromPointer(_gtkWidgetListMnemonicLabels(this.handle));
-  }
-
   /// Causes a widget to be mapped if it isn’t already.
   ///
   /// This function is only for use in widget implementations.
@@ -2674,24 +2417,6 @@ class GtkWidget extends GInitiallyUnowned {
           >();
   void setFontMap([PangoFontMap? fontMap]) {
     _gtkWidgetSetFontMap(this.handle, fontMap?.handle ?? ffi.nullptr);
-  }
-
-  /// Sets the `cairo_font_options_t` used for text rendering
-  /// in the widget.
-  ///
-  /// When not set, the default font options for the `GdkDisplay`
-  /// will be used.
-  static final _gtkWidgetSetFontOptions =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_widget_set_font_options')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setFontOptions([CairoFontOptions? options]) {
-    _gtkWidgetSetFontOptions(this.handle, options?.handle ?? ffi.nullptr);
   }
 
   /// Sets the horizontal alignment of the widget.
@@ -3330,5 +3055,65 @@ class GtkWidget extends GInitiallyUnowned {
       ).asFunction<void Function(int)>();
   static void setDefaultDirection(GtkTextDirection dir) {
     _gtkWidgetSetDefaultDirection(dir.value);
+  }
+
+  /// Signals that all holders of a reference to the widget should release
+  /// the reference that they hold.
+  ///
+  /// May result in finalization of the widget if all references are released.
+  ///
+  /// This signal is not suitable for saving widget state.
+  int onDestroy(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'destroy', callback);
+  }
+
+  /// Emitted when @widget is hidden.
+  int onHide(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'hide', callback);
+  }
+
+  /// Emitted when @widget is going to be mapped.
+  ///
+  /// A widget is mapped when the widget is visible (which is controlled with
+  /// [property@Gtk.Widget:visible]) and all its parents up to the toplevel widget
+  /// are also visible.
+  ///
+  /// The `::map` signal can be used to determine whether a widget will be drawn,
+  /// for instance it can resume an animation that was stopped during the
+  /// emission of [signal@Gtk.Widget::unmap].
+  int onMap(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'map', callback);
+  }
+
+  /// Emitted when @widget is associated with a `GdkSurface`.
+  ///
+  /// This means that [method@Gtk.Widget.realize] has been called
+  /// or the widget has been mapped (that is, it is going to be drawn).
+  int onRealize(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'realize', callback);
+  }
+
+  /// Emitted when @widget is shown.
+  int onShow(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'show', callback);
+  }
+
+  /// Emitted when @widget is going to be unmapped.
+  ///
+  /// A widget is unmapped when either it or any of its parents up to the
+  /// toplevel widget have been set as hidden.
+  ///
+  /// As `::unmap` indicates that a widget will not be shown any longer,
+  /// it can be used to, for example, stop an animation on the widget.
+  int onUnmap(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'unmap', callback);
+  }
+
+  /// Emitted when the `GdkSurface` associated with @widget is destroyed.
+  ///
+  /// This means that [method@Gtk.Widget.unrealize] has been called
+  /// or the widget has been unmapped (that is, it is going to be hidden).
+  int onUnrealize(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'unrealize', callback);
   }
 }

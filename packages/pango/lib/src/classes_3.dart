@@ -7,8 +7,16 @@ part of '../pango.dart';
 /// By subclassing `PangoRenderer` and overriding operations such as
 /// @draw_glyphs and @draw_rectangle, renderers for particular font
 /// backends and destinations can be created.
-class PangoRenderer extends GObject {
-  PangoRenderer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class PangoRenderer implements ffi.Finalizable {
+  PangoRenderer.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Does initial setup before rendering operations on @renderer.
   ///

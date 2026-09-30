@@ -408,6 +408,13 @@ class AdwBanner extends GtkWidget {
   void setUseMarkup(bool useMarkup) {
     _adwBannerSetUseMarkup(this.handle, useMarkup ? 1 : 0);
   }
+
+  /// This signal is emitted after the action button has been clicked.
+  ///
+  /// It can be used as an alternative to setting an action.
+  int onButtonClicked(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'button-clicked', callback);
+  }
 }
 
 /// A widget with one child.

@@ -290,4 +290,9 @@ class AdwActionRow extends AdwPreferencesRow {
   void setTitleLines(int titleLines) {
     _adwActionRowSetTitleLines(this.handle, titleLines);
   }
+
+  /// This signal is emitted after the row has been activated.
+  int onActivated(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activated', callback);
+  }
 }

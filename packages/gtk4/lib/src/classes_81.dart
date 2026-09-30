@@ -139,8 +139,16 @@ part of '../gtk4.dart';
 ///
 /// In contrast to SVG 1.1 and 2.0, we allow the `transform` attribute
 /// to be animated with `<animate>`.
-class GtkSvg extends GObject {
-  GtkSvg.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkSvg implements ffi.Finalizable {
+  GtkSvg.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new, empty SVG paintable.
   static final _gtkSvgNew =
@@ -149,18 +157,6 @@ class GtkSvg extends GObject {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   factory GtkSvg() {
     return GtkSvg.fromPointer(_gtkSvgNew(), owned: true);
-  }
-
-  /// Parses the SVG data in @bytes and creates a paintable.
-  static final _gtkSvgNewFromBytes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_svg_new_from_bytes')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSvg.fromBytes(GBytes bytes) {
-    return GtkSvg.fromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
   }
 
   /// Parses the SVG data in the resource and creates a paintable.
@@ -216,25 +212,6 @@ class GtkSvg extends GObject {
   /// connect to the [signal@Gtk.Svg::error] signal.
   ///
   /// This clears any previously loaded content.
-  static final _gtkSvgLoadFromBytes =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_svg_load_from_bytes')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void loadFromBytes(GBytes bytes) {
-    _gtkSvgLoadFromBytes(this.handle, bytes.handle);
-  }
-
-  /// Loads SVG content into an existing SVG paintable.
-  ///
-  /// To track errors while loading SVG content,
-  /// connect to the [signal@Gtk.Svg::error] signal.
-  ///
-  /// This clears any previously loaded content.
   static final _gtkSvgLoadFromResource =
       gtk4Lookup<
             ffi.NativeFunction<
@@ -270,25 +247,6 @@ class GtkSvg extends GObject {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void play() {
     _gtkSvgPlay(this.handle);
-  }
-
-  /// Serializes the content of the renderer as SVG.
-  ///
-  /// The SVG will be similar to the orignally loaded one,
-  /// but is not guaranteed to be 100% identical.
-  ///
-  /// This function serializes the DOM, i.e. the results
-  /// of parsing the SVG. It does not reflect the effect
-  /// of applying animations.
-  static final _gtkSvgSerialize =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_svg_serialize')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GBytes serialize() {
-    return GBytes.fromPointer(_gtkSvgSerialize(this.handle));
   }
 
   /// Enables or disables features of the SVG paintable.
@@ -497,5 +455,13 @@ class GtkSwitch extends GtkWidget {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setState(bool state) {
     _gtkSwitchSetState(this.handle, state ? 1 : 0);
+  }
+
+  /// Emitted to animate the switch.
+  ///
+  /// Applications should never connect to this signal,
+  /// but use the [property@Gtk.Switch:active] property.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
   }
 }

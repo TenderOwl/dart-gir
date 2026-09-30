@@ -58,19 +58,6 @@ final class GtkRecentInfo {
     return (_gtkRecentInfoExists(this.handle)) != 0;
   }
 
-  /// Gets the time when the resource
-  /// was added to the recently used resources list.
-  static final _gtkRecentInfoGetAdded =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_recent_info_get_added')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime getAdded() {
-    return GDateTime.fromPointer(_gtkRecentInfoGetAdded(this.handle));
-  }
-
   /// Gets the number of days elapsed since the last update
   /// of the resource pointed by @info.
   static final _gtkRecentInfoGetAge =
@@ -143,19 +130,6 @@ final class GtkRecentInfo {
     )!;
   }
 
-  /// Gets the time when the meta-data
-  /// for the resource was last modified.
-  static final _gtkRecentInfoGetModified =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_recent_info_get_modified')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime getModified() {
-    return GDateTime.fromPointer(_gtkRecentInfoGetModified(this.handle));
-  }
-
   /// Gets the value of the “private” flag.
   ///
   /// Resources in the recently used list that have this flag
@@ -220,19 +194,6 @@ final class GtkRecentInfo {
       (_gtkRecentInfoGetUriDisplay(this.handle)).cast(),
       free: true,
     );
-  }
-
-  /// Gets the time when the meta-data
-  /// for the resource was last visited.
-  static final _gtkRecentInfoGetVisited =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_recent_info_get_visited')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime getVisited() {
-    return GDateTime.fromPointer(_gtkRecentInfoGetVisited(this.handle));
   }
 
   /// Checks whether an application registered this resource using @app_name.
@@ -629,5 +590,20 @@ final class GtkStringListClass {
 
 final class GtkStringObjectClass {
   GtkStringObjectClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+final class GtkStringSorterClass {
+  GtkStringSorterClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+final class GtkStyleContextClass {
+  GtkStyleContextClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+final class GtkSvgClass {
+  GtkSvgClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

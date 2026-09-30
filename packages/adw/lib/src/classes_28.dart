@@ -11,9 +11,16 @@ part of '../adw.dart';
 /// [property@StyleManager:color-scheme] property, and to query the current
 /// appearance, as well as whether a system-wide color scheme and accent color
 /// preferences exists.
-class AdwStyleManager extends GObject {
-  AdwStyleManager.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class AdwStyleManager implements ffi.Finalizable {
+  AdwStyleManager.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the current system accent color.
   ///
@@ -251,9 +258,16 @@ class AdwStyleManager extends GObject {
 /// property. If they expect to use horizontal orientation,
 /// [property@SwipeTracker:reversed] can be used for supporting RTL text
 /// direction.
-class AdwSwipeTracker extends GObject {
-  AdwSwipeTracker.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class AdwSwipeTracker implements ffi.Finalizable {
+  AdwSwipeTracker.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `AdwSwipeTracker` for @widget.
   static final _adwSwipeTrackerNew =
@@ -456,6 +470,12 @@ class AdwSwipeTracker extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, double)>();
   void shiftPosition(double delta) {
     _adwSwipeTrackerShiftPosition(this.handle, delta);
+  }
+
+  /// This signal is emitted right before a swipe will be started, after the
+  /// drag threshold has been passed.
+  int onBeginSwipe(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'begin-swipe', callback);
   }
 }
 

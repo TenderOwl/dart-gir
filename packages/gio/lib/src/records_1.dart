@@ -47,27 +47,6 @@ final class GDBusNodeInfo {
     });
   }
 
-  /// Appends an XML representation of @info (and its children) to @string_builder.
-  ///
-  /// This function is typically used for generating introspection XML documents at run-time for
-  /// handling the `org.freedesktop.DBus.Introspectable.Introspect`  method.
-  static final _gDbusNodeInfoGenerateXml =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint32,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_dbus_node_info_generate_xml')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
-          >();
-  void generateXml(int indent, GString stringBuilder) {
-    _gDbusNodeInfoGenerateXml(this.handle, indent, stringBuilder.handle);
-  }
-
   /// Looks up information about an interface.
   ///
   /// The cost of this function is O(n) in number of interfaces.
@@ -643,5 +622,15 @@ final class GFileEnumeratorClass {
 
 final class GFileEnumeratorPrivate {
   GFileEnumeratorPrivate.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+final class GFileIOStreamClass {
+  GFileIOStreamClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+final class GFileIOStreamPrivate {
+  GFileIOStreamPrivate.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

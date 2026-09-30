@@ -11,8 +11,16 @@ part of '../gtk4.dart';
 /// text to be stored in an alternate location, such as non-pageable memory,
 /// useful in the case of important passwords. Or a derived class could
 /// integrate with an application’s concept of undo/redo.
-class GtkEntryBuffer extends GObject {
-  GtkEntryBuffer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkEntryBuffer implements ffi.Finalizable {
+  GtkEntryBuffer.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Create a new `GtkEntryBuffer` object.
   ///
@@ -255,9 +263,16 @@ class GtkEntryBuffer extends GObject {
 /// [method@Gtk.TreeModelFilter.get_model]. Don’t forget to use
 /// [method@Gtk.TreeModelFilter.convert_iter_to_child_iter] to obtain a
 /// matching iter.
-class GtkEntryCompletion extends GObject {
-  GtkEntryCompletion.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkEntryCompletion implements ffi.Finalizable {
+  GtkEntryCompletion.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkEntryCompletion` object.
   static final _gtkEntryCompletionNew =
@@ -480,88 +495,6 @@ class GtkEntryCompletion extends GObject {
     _gtkEntryCompletionSetInlineSelection(this.handle, inlineSelection ? 1 : 0);
   }
 
-  /// Sets the match function for @completion to be @func.
-  ///
-  /// The match function is used to determine if a row should or
-  /// should not be in the completion list.
-  static final _gtkEntryCompletionSetMatchFunc =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Int32 Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<Utf8>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_entry_completion_set_match_func')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Int32 Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<Utf8>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  void setMatchFunc(
-    int Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<Utf8>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )
-    func,
-    ffi.Pointer<ffi.Void> funcData,
-    void Function(ffi.Pointer<ffi.Void>) funcNotify,
-  ) {
-    final _nc1 =
-        ffi.NativeCallable<
-          ffi.Int32 Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(func, exceptionalReturn: 0);
-    final _nc3 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(funcNotify);
-    try {
-      _gtkEntryCompletionSetMatchFunc(
-        this.handle,
-        _nc1.nativeFunction,
-        funcData,
-        _nc3.nativeFunction,
-      );
-    } finally {
-      _nc1.close();
-      _nc3.close();
-    }
-  }
-
   /// Requires the length of the search key for @completion to be at least
   /// @length.
   ///
@@ -661,5 +594,13 @@ class GtkEntryCompletion extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setTextColumn(int column) {
     _gtkEntryCompletionSetTextColumn(this.handle, column);
+  }
+
+  /// Emitted when the filter model has zero
+  /// number of rows in completion_complete method.
+  ///
+  /// In other words when `GtkEntryCompletion` is out of suggestions.
+  int onNoMatches(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'no-matches', callback);
   }
 }

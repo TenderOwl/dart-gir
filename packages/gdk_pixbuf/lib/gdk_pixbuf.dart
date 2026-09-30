@@ -9,6 +9,7 @@ import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
 
 part 'src/lib.dart';
+part 'src/signals.dart';
 part 'src/enums.dart';
 part 'src/constants.dart';
 part 'src/callbacks.dart';

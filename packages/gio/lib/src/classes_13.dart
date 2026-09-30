@@ -137,8 +137,16 @@ class GFileIOStream extends GIOStream {
 /// to be used as icon.
 ///
 /// It implements [iface@Gio.LoadableIcon].
-class GFileIcon extends GObject {
-  GFileIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GFileIcon implements ffi.Finalizable {
+  GFileIcon.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new icon for a file.
   static final _gFileIconNew =

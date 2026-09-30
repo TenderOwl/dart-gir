@@ -16,6 +16,7 @@ import 'function_emitter.dart';
 import 'library_emitter.dart';
 import 'record_emitter.dart';
 import 'report.dart';
+import 'signals_helper.dart';
 
 /// Emits one generated package for a [GirNamespace].
 class PackageEmitter {
@@ -139,6 +140,11 @@ class PackageEmitter {
       parts.add('object_support.dart');
       File(p.join(srcDir, 'object_support.dart'))
           .writeAsStringSync(objectSupportDartFor(pkg));
+    }
+    final signalsCode = emitSignalsHelper(ctx);
+    if (signalsCode != null) {
+      parts.add('signals.dart');
+      File(p.join(srcDir, 'signals.dart')).writeAsStringSync(signalsCode);
     }
 
     for (final entry in categories.entries) {

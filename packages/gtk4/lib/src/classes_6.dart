@@ -358,8 +358,16 @@ part of '../gtk4.dart';
 ///
 /// For more information, see the [`GtkWidget` documentation](class.Widget.html#building-composite-widgets-from-template-xml)
 /// for details.
-class GtkBuilder extends GObject {
-  GtkBuilder.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkBuilder implements ffi.Finalizable {
+  GtkBuilder.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new empty builder object.
   ///
@@ -599,207 +607,6 @@ class GtkBuilder extends GObject {
     });
   }
 
-  /// Creates a closure to invoke the function called @function_name.
-  ///
-  /// This is using the create_closure() implementation of @builder's
-  /// [iface@Gtk.BuilderScope].
-  ///
-  /// If no closure could be created, %NULL will be returned and @error
-  /// will be set.
-  static final _gtkBuilderCreateClosure =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Uint32,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gtk_builder_create_closure')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GClosure? createClosure(
-    String functionName,
-    GtkBuilderClosureFlags flags, [
-    GObject? object,
-  ]) {
-    return withNativeString(functionName, (nativeFunctionName) {
-      final _error = calloc<ffi.Pointer<ffi.Void>>();
-      try {
-        final _ret = _gtkBuilderCreateClosure(
-          this.handle,
-          nativeFunctionName.cast<Utf8>(),
-          flags.value,
-          object?.handle ?? ffi.nullptr,
-          _error,
-        );
-        if (_error.value != ffi.nullptr) {
-          throw GlibException.fromError(_error.value);
-        }
-        return (_ret) == ffi.nullptr ? null : GClosure.fromPointer(_ret);
-      } finally {
-        calloc.free(_error);
-      }
-    });
-  }
-
-  /// Add @object to the @builder object pool so it can be
-  /// referenced just like any other object built by builder.
-  ///
-  /// Only a single object may be added using @name. However,
-  /// it is not an error to expose the same object under multiple
-  /// names. `gtk_builder_get_object()` may be used to determine
-  /// if an object has already been added with @name.
-  static final _gtkBuilderExposeObject =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_builder_expose_object')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void exposeObject(String name, GObject object) {
-    withNativeString(name, (nativeName) {
-      _gtkBuilderExposeObject(
-        this.handle,
-        nativeName.cast<Utf8>(),
-        object.handle,
-      );
-    });
-  }
-
-  /// Main private entry point for building composite components
-  /// from template XML.
-  ///
-  /// Most likely you do not need to call this function in applications as
-  /// templates are handled by `GtkWidget`.
-  static final _gtkBuilderExtendWithTemplate =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Size,
-                ffi.Pointer<Utf8>,
-                ffi.IntPtr,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gtk_builder_extend_with_template')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<Utf8>,
-              int,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool extendWithTemplate(
-    GObject object,
-    int templateType,
-    String buffer,
-    int length,
-  ) {
-    return withNativeString(buffer, (nativeBuffer) {
-      final _error = calloc<ffi.Pointer<ffi.Void>>();
-      try {
-        final _ret = _gtkBuilderExtendWithTemplate(
-          this.handle,
-          object.handle,
-          templateType,
-          nativeBuffer.cast<Utf8>(),
-          length,
-          _error,
-        );
-        if (_error.value != ffi.nullptr) {
-          throw GlibException.fromError(_error.value);
-        }
-        return (_ret) != 0;
-      } finally {
-        calloc.free(_error);
-      }
-    });
-  }
-
-  /// Gets the current object set via gtk_builder_set_current_object().
-  static final _gtkBuilderGetCurrentObject =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_builder_get_current_object')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GObject? getCurrentObject() {
-    return (_gtkBuilderGetCurrentObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkBuilderGetCurrentObject(this.handle));
-  }
-
-  /// Gets the object named @name.
-  ///
-  /// Note that this function does not increment the reference count
-  /// of the returned object.
-  static final _gtkBuilderGetObject =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('gtk_builder_get_object')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GObject? getObject(String name) {
-    return withNativeString(name, (nativeName) {
-      return (_gtkBuilderGetObject(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GObject.fromPointer(
-              _gtkBuilderGetObject(this.handle, nativeName.cast<Utf8>()),
-            );
-    });
-  }
-
-  /// Gets all objects that have been constructed by @builder.
-  ///
-  /// Note that this function does not increment the reference
-  /// counts of the returned objects.
-  static final _gtkBuilderGetObjects =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_builder_get_objects')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSList getObjects() {
-    return GSList.fromPointer(_gtkBuilderGetObjects(this.handle));
-  }
-
   /// Gets the scope in use that was set via gtk_builder_set_scope().
   static final _gtkBuilderGetScope =
       gtk4Lookup<
@@ -846,31 +653,6 @@ class GtkBuilder extends GObject {
         nativeTypeName.cast<Utf8>(),
       );
     });
-  }
-
-  /// Sets the current object for the @builder.
-  ///
-  /// The current object can be thought of as the `this` object that the
-  /// builder is working for and will often be used as the default object
-  /// when an object is optional.
-  ///
-  /// [method@Gtk.Widget.init_template] for example will set the current
-  /// object to the widget the template is inited for. For functions like
-  /// [ctor@Gtk.Builder.new_from_resource], the current object will be %NULL.
-  static final _gtkBuilderSetCurrentObject =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_builder_set_current_object')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setCurrentObject([GObject? currentObject]) {
-    _gtkBuilderSetCurrentObject(
-      this.handle,
-      currentObject?.handle ?? ffi.nullptr,
-    );
   }
 
   /// Sets the scope the builder should operate in.

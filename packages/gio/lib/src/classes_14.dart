@@ -37,8 +37,16 @@ part of '../gio.dart';
 ///
 /// [struct@Gio.FileAttributeMatcher] allows for searching through a `GFileInfo`
 /// for attributes.
-class GFileInfo extends GObject {
-  GFileInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GFileInfo implements ffi.Finalizable {
+  GFileInfo.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new file info structure.
   static final _gFileInfoNew =
@@ -83,29 +91,6 @@ class GFileInfo extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFileInfo dup() {
     return GFileInfo.fromPointer(_gFileInfoDup(this.handle));
-  }
-
-  /// Gets the access time of the current @info and returns it as a
-  /// #GDateTime.
-  ///
-  /// It is an error to call this if the #GFileInfo does not contain
-  /// %G_FILE_ATTRIBUTE_TIME_ACCESS. If %G_FILE_ATTRIBUTE_TIME_ACCESS_USEC is
-  /// provided, the resulting #GDateTime will additionally have microsecond
-  /// precision.
-  ///
-  /// If nanosecond precision is needed, %G_FILE_ATTRIBUTE_TIME_ACCESS_NSEC must
-  /// be queried separately using g_file_info_get_attribute_uint32().
-  static final _gFileInfoGetAccessDateTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_get_access_date_time')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime? getAccessDateTime() {
-    return (_gFileInfoGetAccessDateTime(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetAccessDateTime(this.handle));
   }
 
   /// Gets the value of an attribute, formatted as a human readable string.
@@ -263,40 +248,6 @@ class GFileInfo extends GObject {
     });
   }
 
-  /// Gets the value of a #GObject attribute. If the attribute does
-  /// not contain a #GObject, %NULL will be returned.
-  static final _gFileInfoGetAttributeObject =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_file_info_get_attribute_object')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GObject? getAttributeObject(String attribute) {
-    return withNativeString(attribute, (nativeAttribute) {
-      return (_gFileInfoGetAttributeObject(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GObject.fromPointer(
-              _gFileInfoGetAttributeObject(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-              ),
-            );
-    });
-  }
-
   /// Gets the attribute status for an attribute key.
   static final _gFileInfoGetAttributeStatus =
       gioLookup<
@@ -409,45 +360,6 @@ class GFileInfo extends GObject {
       (_gFileInfoGetContentType(this.handle)).cast(),
       free: false,
     );
-  }
-
-  /// Gets the creation time of the current @info and returns it as a
-  /// #GDateTime.
-  ///
-  /// It is an error to call this if the #GFileInfo does not contain
-  /// %G_FILE_ATTRIBUTE_TIME_CREATED. If %G_FILE_ATTRIBUTE_TIME_CREATED_USEC is
-  /// provided, the resulting #GDateTime will additionally have microsecond
-  /// precision.
-  ///
-  /// If nanosecond precision is needed, %G_FILE_ATTRIBUTE_TIME_CREATED_NSEC must
-  /// be queried separately using g_file_info_get_attribute_uint32().
-  static final _gFileInfoGetCreationDateTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_get_creation_date_time')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime? getCreationDateTime() {
-    return (_gFileInfoGetCreationDateTime(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetCreationDateTime(this.handle));
-  }
-
-  /// Returns the #GDateTime representing the deletion date of the file, as
-  /// available in %G_FILE_ATTRIBUTE_TRASH_DELETION_DATE. If the
-  /// %G_FILE_ATTRIBUTE_TRASH_DELETION_DATE attribute is unset, %NULL is returned.
-  static final _gFileInfoGetDeletionDate =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_get_deletion_date')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime? getDeletionDate() {
-    return (_gFileInfoGetDeletionDate(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetDeletionDate(this.handle));
   }
 
   /// Gets a display name for a file. This is guaranteed to always be set.
@@ -574,29 +486,6 @@ class GFileInfo extends GObject {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getIsSymlink() {
     return (_gFileInfoGetIsSymlink(this.handle)) != 0;
-  }
-
-  /// Gets the modification time of the current @info and returns it as a
-  /// #GDateTime.
-  ///
-  /// It is an error to call this if the #GFileInfo does not contain
-  /// %G_FILE_ATTRIBUTE_TIME_MODIFIED. If %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC is
-  /// provided, the resulting #GDateTime will additionally have microsecond
-  /// precision.
-  ///
-  /// If nanosecond precision is needed, %G_FILE_ATTRIBUTE_TIME_MODIFIED_NSEC must
-  /// be queried separately using g_file_info_get_attribute_uint32().
-  static final _gFileInfoGetModificationDateTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_get_modification_date_time')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDateTime? getModificationDateTime() {
-    return (_gFileInfoGetModificationDateTime(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetModificationDateTime(this.handle));
   }
 
   /// Gets the name for a file. This is guaranteed to always be set.
@@ -730,24 +619,6 @@ class GFileInfo extends GObject {
     withNativeString(attribute, (nativeAttribute) {
       _gFileInfoRemoveAttribute(this.handle, nativeAttribute.cast<Utf8>());
     });
-  }
-
-  /// Sets the %G_FILE_ATTRIBUTE_TIME_ACCESS and
-  /// %G_FILE_ATTRIBUTE_TIME_ACCESS_USEC attributes in the file info to the
-  /// given date/time value.
-  ///
-  /// %G_FILE_ATTRIBUTE_TIME_ACCESS_NSEC will be cleared.
-  static final _gFileInfoSetAccessDateTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_set_access_date_time')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setAccessDateTime(GDateTime atime) {
-    _gFileInfoSetAccessDateTime(this.handle, atime.handle);
   }
 
   /// Sets the @attribute to contain the given value, if possible. To unset the
@@ -940,35 +811,6 @@ class GFileInfo extends GObject {
     _gFileInfoSetAttributeMask(this.handle, mask.handle);
   }
 
-  /// Sets the @attribute to contain the given @attr_value,
-  /// if possible.
-  static final _gFileInfoSetAttributeObject =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_file_info_set_attribute_object')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void setAttributeObject(String attribute, GObject attrValue) {
-    withNativeString(attribute, (nativeAttribute) {
-      _gFileInfoSetAttributeObject(
-        this.handle,
-        nativeAttribute.cast<Utf8>(),
-        attrValue.handle,
-      );
-    });
-  }
-
   /// Sets the attribute status for an attribute key. This is only
   /// needed by external code that implement g_file_set_attributes_from_info()
   /// or similar functions.
@@ -1130,24 +972,6 @@ class GFileInfo extends GObject {
     });
   }
 
-  /// Sets the %G_FILE_ATTRIBUTE_TIME_CREATED and
-  /// %G_FILE_ATTRIBUTE_TIME_CREATED_USEC attributes in the file info to the
-  /// given date/time value.
-  ///
-  /// %G_FILE_ATTRIBUTE_TIME_CREATED_NSEC will be cleared.
-  static final _gFileInfoSetCreationDateTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_set_creation_date_time')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setCreationDateTime(GDateTime creationTime) {
-    _gFileInfoSetCreationDateTime(this.handle, creationTime.handle);
-  }
-
   /// Sets the display name for the current #GFileInfo.
   /// See %G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME.
   static final _gFileInfoSetDisplayName =
@@ -1234,42 +1058,6 @@ class GFileInfo extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setIsSymlink(bool isSymlink) {
     _gFileInfoSetIsSymlink(this.handle, isSymlink ? 1 : 0);
-  }
-
-  /// Sets the %G_FILE_ATTRIBUTE_TIME_MODIFIED and
-  /// %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC attributes in the file info to the
-  /// given date/time value.
-  ///
-  /// %G_FILE_ATTRIBUTE_TIME_MODIFIED_NSEC will be cleared.
-  static final _gFileInfoSetModificationDateTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_set_modification_date_time')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setModificationDateTime(GDateTime mtime) {
-    _gFileInfoSetModificationDateTime(this.handle, mtime.handle);
-  }
-
-  /// Sets the %G_FILE_ATTRIBUTE_TIME_MODIFIED and
-  /// %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC attributes in the file info to the
-  /// given time value.
-  ///
-  /// %G_FILE_ATTRIBUTE_TIME_MODIFIED_NSEC will be cleared.
-  static final _gFileInfoSetModificationTime =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_file_info_set_modification_time')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setModificationTime(GTimeVal mtime) {
-    _gFileInfoSetModificationTime(this.handle, mtime.handle);
   }
 
   /// Sets the name attribute for the current #GFileInfo.

@@ -166,47 +166,6 @@ final class GResource {
   GResource.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
-  /// Creates a [struct@Gio.Resource] from a reference to the binary resource bundle.
-  ///
-  /// This will keep a reference to @data while the resource lives, so
-  /// the data should not be modified or freed.
-  ///
-  /// If you want to use this resource in the global resource namespace you need
-  /// to register it with [func@Gio.resources_register].
-  ///
-  /// Note: @data must be backed by memory that is at least pointer aligned.
-  /// Otherwise this function will internally create a copy of the memory since
-  /// GLib 2.56, or in older versions fail and exit the process.
-  ///
-  /// If @data is empty or corrupt, %G_RESOURCE_ERROR_INTERNAL will be returned.
-  static final _gResourceNewFromData =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_resource_new_from_data')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  factory GResource.fromData(GBytes data) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gResourceNewFromData(data.handle, _error);
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GResource.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
   /// Registers the resource with the process-global set of resources.
   ///
   /// Once a resource is registered the files in it can be accessed
@@ -241,63 +200,6 @@ final class GResource {
   bool hasChildren(String path) {
     return withNativeString(path, (nativePath) {
       return (_gResourceHasChildren(this.handle, nativePath.cast<Utf8>())) != 0;
-    });
-  }
-
-  /// Looks for a file at the specified @path in the resource and
-  /// returns a [struct@GLib.Bytes] that lets you directly access the data in
-  /// memory.
-  ///
-  /// The data is always followed by a zero byte, so you
-  /// can safely use the data as a C string. However, that byte
-  /// is not included in the size of the [struct@GLib.Bytes].
-  ///
-  /// For uncompressed resource files this is a pointer directly into
-  /// the resource bundle, which is typically in some read-only data section
-  /// in the program binary. For compressed files, memory is allocated on
-  /// the heap and the data is automatically uncompressed.
-  ///
-  /// @lookup_flags controls the behaviour of the lookup.
-  ///
-  /// This can return error %G_RESOURCE_ERROR_NOT_FOUND if @path was not found in
-  /// @resource, or %G_RESOURCE_ERROR_INTERNAL if decompression of a compressed
-  /// resource failed.
-  static final _gResourceLookupData =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Uint32,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_resource_lookup_data')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              int,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GBytes lookupData(String path, GResourceLookupFlags lookupFlags) {
-    return withNativeString(path, (nativePath) {
-      final _error = calloc<ffi.Pointer<ffi.Void>>();
-      try {
-        final _ret = _gResourceLookupData(
-          this.handle,
-          nativePath.cast<Utf8>(),
-          lookupFlags.value,
-          _error,
-        );
-        if (_error.value != ffi.nullptr) {
-          throw GlibException.fromError(_error.value);
-        }
-        return GBytes.fromPointer(_ret);
-      } finally {
-        calloc.free(_error);
-      }
     });
   }
 

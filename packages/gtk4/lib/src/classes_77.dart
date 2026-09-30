@@ -487,6 +487,30 @@ class GtkSpinButton extends GtkWidget {
   void update() {
     _gtkSpinButtonUpdate(this.handle);
   }
+
+  /// Emitted when the spin button is activated.
+  ///
+  /// The keybindings for this signal are all forms of the <kbd>Enter</kbd> key.
+  ///
+  /// If the <kbd>Enter</kbd> key results in the value being committed to the
+  /// spin button, then activation does not occur until <kbd>Enter</kbd> is
+  /// pressed again.
+  int onActivate(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'activate', callback);
+  }
+
+  /// Emitted when the value is changed.
+  ///
+  /// Also see the [signal@Gtk.SpinButton::output] signal.
+  int onValueChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'value-changed', callback);
+  }
+
+  /// Emitted right after the spinbutton wraps from its maximum
+  /// to its minimum value or vice-versa.
+  int onWrapped(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'wrapped', callback);
+  }
 }
 
 /// Displays an icon-size spinning animation.

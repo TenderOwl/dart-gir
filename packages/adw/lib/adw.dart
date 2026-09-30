@@ -12,6 +12,7 @@ import 'package:gtk4/gtk4.dart';
 import 'package:pango/pango.dart';
 
 part 'src/lib.dart';
+part 'src/signals.dart';
 part 'src/enums_0.dart';
 part 'src/enums_1.dart';
 part 'src/constants.dart';

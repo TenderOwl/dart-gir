@@ -482,9 +482,16 @@ class AdwViewStack extends GtkWidget {
 }
 
 /// An auxiliary class used by [class@ViewStack].
-class AdwViewStackPage extends GObject {
-  AdwViewStackPage.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class AdwViewStackPage implements ffi.Finalizable {
+  AdwViewStackPage.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the badge number for this page.
   static final _adwViewStackPageGetBadgeNumber =
@@ -755,9 +762,16 @@ class AdwViewStackPage extends GObject {
 /// An auxiliary class used by [class@ViewStack].
 ///
 /// See [property@ViewStack:pages].
-class AdwViewStackPages extends GObject {
-  AdwViewStackPages.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class AdwViewStackPages implements ffi.Finalizable {
+  AdwViewStackPages.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Gets the [class@ViewStackPage] for the visible child of a view stack
   ///

@@ -82,4 +82,11 @@ final class GtkTreeSortable {
   void sortColumnChanged() {
     _gtkTreeSortableSortColumnChanged(this.handle);
   }
+
+  /// The ::sort-column-changed signal is emitted when the sort column
+  /// or sort order of @sortable is changed. The signal is emitted before
+  /// the contents of @sortable are resorted.
+  int onSortColumnChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'sort-column-changed', callback);
+  }
 }

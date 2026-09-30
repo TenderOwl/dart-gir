@@ -329,23 +329,6 @@ final class GdkContentFormats {
     );
   }
 
-  /// Prints the given @formats into a string for human consumption.
-  ///
-  /// The result of this function can later be parsed with
-  /// [func@Gdk.ContentFormats.parse].
-  static final _gdkContentFormatsPrint =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_print')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void print(GString string) {
-    _gdkContentFormatsPrint(this.handle, string.handle);
-  }
-
   /// Increases the reference count of a `GdkContentFormats` by one.
   static final _gdkContentFormatsRef =
       gdk4Lookup<
@@ -597,4 +580,130 @@ final class GdkContentProviderClass {
 final class GdkDevicePadInterface {
   GdkDevicePadInterface.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
+}
+
+/// Provides information about supported DMA buffer formats.
+///
+/// You can query whether a given format is supported with
+/// [method@Gdk.DmabufFormats.contains] and you can iterate
+/// over the list of all supported formats with
+/// [method@Gdk.DmabufFormats.get_n_formats] and
+/// [method@Gdk.DmabufFormats.get_format].
+///
+/// The list of supported formats is sorted by preference,
+/// with the best formats coming first.
+///
+/// The list may contains (format, modifier) pairs where the modifier
+/// is `DMA_FORMAT_MOD_INVALID`, indicating that **_implicit modifiers_**
+/// may be used with this format.
+///
+/// See [class@Gdk.DmabufTextureBuilder] for more information
+/// about DMA buffers.
+///
+/// Note that DMA buffers only exist on Linux.
+final class GdkDmabufFormats {
+  GdkDmabufFormats.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Returns whether a given format is contained in @formats.
+  static final _gdkDmabufFormatsContains =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Uint32, ffi.Uint64)
+            >
+          >('gdk_dmabuf_formats_contains')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, int, int)>();
+  bool contains(int fourcc, int modifier) {
+    return (_gdkDmabufFormatsContains(this.handle, fourcc, modifier)) != 0;
+  }
+
+  /// Returns whether @formats1 and @formats2 contain the
+  /// same dmabuf formats, in the same order.
+  static final _gdkDmabufFormatsEqual =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_dmabuf_formats_equal')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  bool equal([GdkDmabufFormats? formats2]) {
+    return (_gdkDmabufFormatsEqual(
+          this.handle,
+          formats2?.handle ?? ffi.nullptr,
+        )) !=
+        0;
+  }
+
+  /// Gets the fourcc code and modifier for a format
+  /// that is contained in @formats.
+  static final _gdkDmabufFormatsGetFormat =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Uint64>,
+              )
+            >
+          >('gdk_dmabuf_formats_get_format')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Uint64>,
+            )
+          >();
+  (int, int) getFormat(int idx) {
+    final _out0 = malloc<ffi.Uint32>();
+    final _out1 = malloc<ffi.Uint64>();
+    try {
+      _gdkDmabufFormatsGetFormat(this.handle, idx, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Returns the number of formats that the @formats object
+  /// contains.
+  ///
+  /// Note that DMA buffers are a Linux concept, so on other
+  /// platforms, [method@Gdk.DmabufFormats.get_n_formats] will
+  /// always return zero.
+  static final _gdkDmabufFormatsGetNFormats =
+      gdk4Lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<ffi.Void>)>>(
+        'gdk_dmabuf_formats_get_n_formats',
+      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+  int getNFormats() {
+    return _gdkDmabufFormatsGetNFormats(this.handle);
+  }
+
+  /// Increases the reference count of @formats.
+  static final _gdkDmabufFormatsRef =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_dmabuf_formats_ref')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkDmabufFormats ref() {
+    return GdkDmabufFormats.fromPointer(_gdkDmabufFormatsRef(this.handle));
+  }
+
+  /// Decreases the reference count of @formats.
+  ///
+  /// When the reference count reaches zero,
+  /// the object is freed.
+  static final _gdkDmabufFormatsUnref =
+      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gdk_dmabuf_formats_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void unref() {
+    _gdkDmabufFormatsUnref(this.handle);
+  }
 }

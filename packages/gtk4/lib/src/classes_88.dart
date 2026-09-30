@@ -97,9 +97,16 @@ part of '../gtk4.dart';
 /// g_free (modified_data);
 /// }
 /// ```
-class GtkTreeModelSort extends GObject {
-  GtkTreeModelSort.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkTreeModelSort implements ffi.Finalizable {
+  GtkTreeModelSort.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new `GtkTreeModelSort`, with @child_model as the child model.
   static final _gtkTreeModelSortNewWithModel =
@@ -266,9 +273,16 @@ class GtkTreeModelSort extends GObject {
 /// Additionally, it may on occasion emit a `GtkTreeSelection`::changed signal
 /// when nothing has happened (mostly as a result of programmers calling
 /// select_row on an already selected row).
-class GtkTreeSelection extends GObject {
-  GtkTreeSelection.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GtkTreeSelection implements ffi.Finalizable {
+  GtkTreeSelection.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Returns the number of rows that have been selected in @tree.
   static final _gtkTreeSelectionCountSelectedRows =
@@ -532,6 +546,14 @@ class GtkTreeSelection extends GObject {
       endPath.handle,
     );
   }
+
+  /// Emitted whenever the selection has (possibly) changed. Please note that
+  /// this signal is mostly a hint.  It may only be emitted once when a range
+  /// of rows are selected, and it may occasionally be emitted when nothing
+  /// has happened.
+  int onChanged(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'changed', callback);
+  }
 }
 
 /// A tree-like data structure that can be used with the [class@Gtk.TreeView].
@@ -565,8 +587,16 @@ class GtkTreeSelection extends GObject {
 /// </columns>
 /// </object>
 /// ```
-class GtkTreeStore extends GObject {
-  GtkTreeStore.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkTreeStore implements ffi.Finalizable {
+  GtkTreeStore.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Removes all rows from @tree_store
   static final _gtkTreeStoreClear =
@@ -717,33 +747,6 @@ class GtkTreeStore extends GObject {
           >();
   bool remove(GtkTreeIter iter) {
     return (_gtkTreeStoreRemove(this.handle, iter.handle)) != 0;
-  }
-
-  /// Sets the data in the cell specified by @iter and @column.
-  ///
-  /// The type of @value must be convertible to the type of the
-  /// column.
-  static final _gtkTreeStoreSetValue =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_tree_store_set_value')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void setValue(GtkTreeIter iter, int column, GValue value) {
-    _gtkTreeStoreSetValue(this.handle, iter.handle, column, value.handle);
   }
 
   /// Swaps @a and @b in the same level of @tree_store.

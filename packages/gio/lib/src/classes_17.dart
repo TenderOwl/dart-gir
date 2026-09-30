@@ -5,9 +5,16 @@ part of '../gio.dart';
 /// described by a base address and a length indicating how many bits
 /// of the base address are relevant for matching purposes. These are
 /// often given in string form. For example, `10.0.0.0/8`, or `fe80::/10`.
-class GInetAddressMask extends GObject {
-  GInetAddressMask.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+class GInetAddressMask implements ffi.Finalizable {
+  GInetAddressMask.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Creates a new #GInetAddressMask representing all addresses whose
   /// first @length bits match @addr.
@@ -243,8 +250,16 @@ class GInetSocketAddress extends GSocketAddress {
 /// of streaming APIs.
 ///
 /// All of these functions have async variants too.
-class GInputStream extends GObject {
-  GInputStream.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GInputStream implements ffi.Finalizable {
+  GInputStream.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Clears the pending flag on @stream.
   static final _gInputStreamClearPending =
@@ -409,101 +424,6 @@ class GInputStream extends GObject {
     }
   }
 
-  /// Like g_input_stream_read(), this tries to read @count bytes from
-  /// the stream in a blocking fashion. However, rather than reading into
-  /// a user-supplied buffer, this will create a new #GBytes containing
-  /// the data that was read. This may be easier to use from language
-  /// bindings.
-  ///
-  /// If count is zero, returns a zero-length #GBytes and does nothing. A
-  /// value of @count larger than %G_MAXSSIZE will cause a
-  /// %G_IO_ERROR_INVALID_ARGUMENT error.
-  ///
-  /// On success, a new #GBytes is returned. It is not an error if the
-  /// size of this object is not the same as the requested size, as it
-  /// can happen e.g. near the end of a file. A zero-length #GBytes is
-  /// returned on end of file (or if @count is zero), but never
-  /// otherwise.
-  ///
-  /// If @cancellable is not %NULL, then the operation can be cancelled by
-  /// triggering the cancellable object from another thread. If the operation
-  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned. If an
-  /// operation was partially finished when the operation was cancelled the
-  /// partial result will be returned, without an error.
-  ///
-  /// On error %NULL is returned and @error is set accordingly.
-  static final _gInputStreamReadBytes =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Size,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_input_stream_read_bytes')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GBytes readBytes(int count, [GCancellable? cancellable]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gInputStreamReadBytes(
-        this.handle,
-        count,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GBytes.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Finishes an asynchronous stream read-into-#GBytes operation.
-  static final _gInputStreamReadBytesFinish =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_input_stream_read_bytes_finish')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  GBytes readBytesFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gInputStreamReadBytesFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GBytes.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
   /// Finishes an asynchronous stream read operation.
   static final _gInputStreamReadFinish =
       gioLookup<
@@ -646,5 +566,123 @@ class GInputStream extends GObject {
     } finally {
       calloc.free(_error);
     }
+  }
+}
+
+/// `GListStore` is a simple implementation of [iface@Gio.ListModel] that stores
+/// all items in memory.
+///
+/// It provides insertions, deletions, and lookups in logarithmic time
+/// with a fast path for the common case of iterating the list linearly.
+class GListStore implements ffi.Finalizable {
+  GListStore.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
+
+  /// Creates a new #GListStore with items of type @item_type. @item_type
+  /// must be a subclass of #GObject.
+  static final _gListStoreNew =
+      gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
+        'g_list_store_new',
+      ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
+  factory GListStore(int itemType) {
+    return GListStore.fromPointer(_gListStoreNew(itemType), owned: true);
+  }
+
+  /// Appends @item to @store. @item must be of type #GListStore:item-type.
+  ///
+  /// This function takes a ref on @item.
+  ///
+  /// Use g_list_store_splice() to append multiple items at the same time
+  /// efficiently.
+  static final _gListStoreAppend =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_list_store_append')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void append(ffi.Pointer<ffi.Void> item) {
+    _gListStoreAppend(this.handle, item);
+  }
+
+  /// Inserts @item into @store at @position. @item must be of type
+  /// #GListStore:item-type or derived from it. @position must be smaller
+  /// than the length of the list, or equal to it to append.
+  ///
+  /// This function takes a ref on @item.
+  ///
+  /// Use g_list_store_splice() to insert multiple items at the same time
+  /// efficiently.
+  static final _gListStoreInsert =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_list_store_insert')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+          >();
+  void insert(int position, ffi.Pointer<ffi.Void> item) {
+    _gListStoreInsert(this.handle, position, item);
+  }
+
+  /// Removes the item from @store that is at @position. @position must be
+  /// smaller than the current length of the list.
+  ///
+  /// Use g_list_store_splice() to remove multiple items at the same time
+  /// efficiently.
+  static final _gListStoreRemove =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
+            >
+          >('g_list_store_remove')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void remove(int position) {
+    _gListStoreRemove(this.handle, position);
+  }
+
+  /// Removes all items from @store.
+  static final _gListStoreRemoveAll =
+      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_list_store_remove_all',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void removeAll() {
+    _gListStoreRemoveAll(this.handle);
+  }
+}
+
+/// `GMemoryInputStream` is a class for using arbitrary
+/// memory chunks as input for GIO streaming input operations.
+///
+/// As of GLib 2.34, `GMemoryInputStream` implements
+/// [iface@Gio.PollableInputStream].
+class GMemoryInputStream extends GInputStream {
+  GMemoryInputStream.fromPointer(super.handle, {super.owned})
+    : super.fromPointer();
+
+  /// Creates a new empty #GMemoryInputStream.
+  static final _gMemoryInputStreamNew =
+      gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
+        'g_memory_input_stream_new',
+      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
+  factory GMemoryInputStream() {
+    return GMemoryInputStream.fromPointer(
+      _gMemoryInputStreamNew(),
+      owned: true,
+    );
   }
 }

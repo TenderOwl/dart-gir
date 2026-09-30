@@ -1205,4 +1205,90 @@ class GtkTextView extends GtkWidget {
   bool startsDisplayLine(GtkTextIter iter) {
     return (_gtkTextViewStartsDisplayLine(this.handle, iter.handle)) != 0;
   }
+
+  /// Gets emitted when the user asks for it.
+  ///
+  /// The ::backspace signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Backspace</kbd> and <kbd>Shift</kbd>+<kbd>Backspace</kbd>.
+  int onBackspace(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'backspace', callback);
+  }
+
+  /// Gets emitted to copy the selection to the clipboard.
+  ///
+  /// The ::copy-clipboard signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>c</kbd> and
+  /// <kbd>Ctrl</kbd>+<kbd>Insert</kbd>.
+  int onCopyClipboard(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'copy-clipboard', callback);
+  }
+
+  /// Gets emitted to cut the selection to the clipboard.
+  ///
+  /// The ::cut-clipboard signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>x</kbd> and
+  /// <kbd>Shift</kbd>+<kbd>Delete</kbd>.
+  int onCutClipboard(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'cut-clipboard', callback);
+  }
+
+  /// Gets emitted to present the Emoji chooser for the @text_view.
+  ///
+  /// The ::insert-emoji signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>.</kbd> and
+  /// <kbd>Ctrl</kbd>+<kbd>;</kbd>
+  int onInsertEmoji(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'insert-emoji', callback);
+  }
+
+  /// Gets emitted to paste the contents of the clipboard
+  /// into the text view.
+  ///
+  /// The ::paste-clipboard signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default bindings for this signal are
+  /// <kbd>Ctrl</kbd>+<kbd>v</kbd> and
+  /// <kbd>Shift</kbd>+<kbd>Insert</kbd>.
+  int onPasteClipboard(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'paste-clipboard', callback);
+  }
+
+  /// Gets emitted when the user initiates settings the "anchor" mark.
+  ///
+  /// The ::set-anchor signal is a [keybinding signal](class.SignalAction.html)
+  /// which gets emitted when the user initiates setting the "anchor"
+  /// mark. The "anchor" mark gets placed at the same position as the
+  /// "insert" mark.
+  ///
+  /// This signal has no default bindings.
+  int onSetAnchor(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'set-anchor', callback);
+  }
+
+  /// Gets emitted to toggle the `cursor-visible` property.
+  ///
+  /// The ::toggle-cursor-visible signal is a
+  /// [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default binding for this signal is <kbd>F7</kbd>.
+  int onToggleCursorVisible(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'toggle-cursor-visible', callback);
+  }
+
+  /// Gets emitted to toggle the overwrite mode of the text view.
+  ///
+  /// The ::toggle-overwrite signal is a [keybinding signal](class.SignalAction.html).
+  ///
+  /// The default binding for this signal is <kbd>Insert</kbd>.
+  int onToggleOverwrite(void Function() callback) {
+    return _connectVoidSignal(this.handle, 'toggle-overwrite', callback);
+  }
 }

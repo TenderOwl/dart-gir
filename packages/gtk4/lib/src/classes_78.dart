@@ -486,8 +486,16 @@ class GtkStack extends GtkWidget {
 }
 
 /// An auxiliary class used by `GtkStack`.
-class GtkStackPage extends GObject {
-  GtkStackPage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+class GtkStackPage implements ffi.Finalizable {
+  GtkStackPage.fromPointer(this.handle, {this.owned = false}) {
+    if (owned) {
+      _attachFinalizer();
+    }
+  }
+  final ffi.Pointer<ffi.Void> handle;
+  final bool owned;
+  void _attachFinalizer() =>
+      gobjectFinalizer.attach(this, handle, detach: this);
 
   /// Returns the stack child to which @self belongs.
   static final _gtkStackPageGetChild =
