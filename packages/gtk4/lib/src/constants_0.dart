@@ -151,7 +151,7 @@ const accessibleValueUndefined = -1;
 /// Like [func@get_binary_age], but from the headers used at
 /// application compile time, rather than from the library linked
 /// against at application run time.
-const binaryAge = 2205;
+const binaryAge = 2200;
 
 /// The default name of the extension point.
 const imModuleExtensionPointName = 'gtk-im-module';
@@ -165,7 +165,7 @@ const inputError = -1;
 /// Like [func@get_interface_age], but from the headers used at
 /// application compile time, rather than from the library linked
 /// against at application run time.
-const interfaceAge = 5;
+const interfaceAge = 0;
 
 /// The value used to refer to a guaranteed invalid position
 /// in a `GListModel`.
@@ -203,7 +203,7 @@ const mediaFileExtensionPointName = 'gtk-media-file';
 /// Like [func@get_micro_version], but from the headers used at
 /// application compile time, rather than from the library linked
 /// against at application run time.
-const microVersion = 5;
+const microVersion = 0;
 
 /// Like [func@get_minor_version], but from the headers used at
 /// application compile time, rather than from the library linked

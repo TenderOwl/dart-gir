@@ -465,11 +465,19 @@ class ClassEmitter {
       // available — in practice that won't happen because the method
       // emits its own wrapper with the same bridge, but keeping the
       // fallback makes the props layer robust to future refactors.
+      // The `relativeTo: ownerNs` is essential: unqualified `<type>`
+      // names in the typed method's signature resolve against the
+      // namespace where the method was *declared* (e.g. Gtk for
+      // `GtkWindow.set_application`'s `Application` parameter), not
+      // the emission namespace (which would be Adw when emitting
+      // AdwMessageDialogProps, picking up `Adw.Application` by
+      // mistake and breaking the parent's covariant setter).
       final (bridge, _) = ctx.bridgeFor(
         m.returnType,
         nullable: m.returnNullable,
         transfer: m.returnTransfer,
         forReturn: true,
+        relativeTo: ownerNs,
       );
       getterDartType = bridge?.wrapperType ?? propertyType;
       getterCall = _getterName(m);
@@ -519,12 +527,18 @@ class ClassEmitter {
         // for the same nullability reasons as the getter: the props
         // setter signature must accept the same value type the typed
         // method accepts, including nullability (`String` vs
-        // `String?`).
+        // `String?`). The `relativeTo: ownerNs` pins unqualified
+        // `<type>` names to the namespace where the property was
+        // declared; without this, the emission namespace (which can
+        // be a descendant of the owner) would shadow the owner's
+        // type with a same-named child class (e.g. Adw.Application
+        // masking Gtk.Application).
         final param = m.parameters.first;
         final (bridge, _) = ctx.bridgeFor(
           param.type,
           nullable: param.nullable,
           transfer: param.transferOwnership,
+          relativeTo: ownerNs,
         );
         setterDartType = bridge?.wrapperType ?? propertyType;
         setterCall = _setterName(m);

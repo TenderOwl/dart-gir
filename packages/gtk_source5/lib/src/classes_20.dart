@@ -193,8 +193,8 @@ class GtkSourceMapProps extends GtkSourceViewProps {
     _self.setTopMargin(value);
   }
 
-  PangoWrapMode get wrapMode => _self.getWrapMode();
-  set wrapMode(PangoWrapMode value) {
+  GtkWrapMode get wrapMode => _self.getWrapMode();
+  set wrapMode(GtkWrapMode value) {
     _self.setWrapMode(value);
   }
 

@@ -75,10 +75,109 @@ Output for `final class GtkButton extends GtkWidget implements ffi.Finalizable`:
   [Interface mirroring](#interface-mirroring) below for the full rule
   set, the rename-on-conflict logic, and the cross-package import
   heuristic.
+* **Props accessor** — see [Props accessor](#props-accessor) below for
+  the PyGObject-style `widget.props.<name>` namespace.
 
 The set of reserved class member names: `handle`, `owned`, `fromPointer`,
 plus the package's Dart class name. Any GIR member whose lowerCamel
-collides gets a `name collision` skip.
+collides gets a `name collision` skip. The `props` field and getter are
+also reserved — see below.
+
+### Props accessor
+
+GObject classes in PyGObject expose `widget.props.label`, `widget.props.xalign`,
+etc. as a typed namespace that mirrors every GIR `<property>` element.
+This generator emits the same surface: every GObject-rooted class declares
+`late final <ClassName>Props _props = <ClassName>Props(this);` and a
+`getter props => _props` so users can write:
+
+```dart
+final button = GtkButton();
+button.props.label = 'Save';
+print(button.props.label);            // 'Save'
+print(button.props.canShrink);        // false
+print(button.props.canFocus);         // inherited from GtkWidget
+```
+
+The `<ClassName>Props` companion class is emitted alongside its host
+class (in the same part file). Each GIR `<property>` becomes a
+getter/setter pair that delegates to the existing typed `get<Name>()`
+/ `set<Name>(value)` instance methods — no GValue boxing, no extra
+FFI lookups, the same `this.handle` self-arg path the typed methods
+use:
+
+```dart
+class GtkButtonProps extends GtkWidgetProps {
+  GtkButtonProps(GtkButton $self) : _self = $self, super($self);
+  final GtkButton _self;
+
+  bool get canShrink => _self.getCanShrink();
+  set canShrink(bool value) {
+    _self.setCanShrink(value);
+  }
+
+  String get label => _self.getLabel();
+  set label(String value) {
+    _self.setLabel(value);
+  }
+
+  // …inherited canFocus, canTarget, halign, valign, … from GtkWidgetProps
+}
+```
+
+**Inherited properties** surface automatically: child props classes
+`extends` their parent's (`GtkButtonProps extends GtkWidgetProps`),
+so the parent's accessors are inherited without re-declaration.
+Cross-package subclasses (`AdwMessageDialogProps extends GtkWindowProps`)
+follow the same rule — the props class is intentionally `class`
+(not `final class`) and uses public names (no leading underscore) so
+the extends clause resolves across package boundaries.
+
+**Nullability** is propagated from the typed method's bridge, not the
+property's declared `<type>`. A property declared as `<type name="utf8"/>`
+maps to a non-nullable `String` if the typed `get<Name>` returns
+`String`, but to `String?` if the typed method returns `String?` (the
+common case for `gchar*` with `transfer-ownership="none"`). The props
+getter and setter signatures mirror the typed method's nullability so
+assignments and reads never lie at the type level.
+
+**Namespace resolution** for unqualified `<type>` references on the
+backing typed method uses the property's *owner* namespace, not the
+emission namespace. `GtkWindow.set_application` declares its parameter
+as `<type name="Application"/>` — when `AdwMessageDialogProps` emits
+the inherited `application` setter, the resolver pins that lookup to
+`Gtk` (where `Application` resolves to `GtkApplication?`), preventing
+the emission namespace's `Adw.Application` from shadowing it and
+breaking the parent's covariant setter.
+
+**Skip semantics** — properties whose accessor can't be represented as
+a no-arg getter / single-arg setter are recorded in the skip report
+with a precise reason and dropped silently:
+
+* `unsupported type <name>` — array of complex struct, etc.
+* `missing getter <name>` — the property's `getter=` attribute names a
+  C function that isn't in the GIR `<method>` set.
+* `getter <name> takes N args` — typed getter has extra non-self args
+  (e.g. `get_size(orientation)`).
+* `getter <name> was renamed` — the typed method was renamed to
+  disambiguate against an override-incompatible ancestor. The user
+  can still call the renamed method directly.
+* `setter <name> takes N args` — typed setter has extra non-self args
+  (e.g. `set_text(text, length)`).
+* `setter <name> was renamed` — same as the getter case.
+* `setter <name> parameter type does not match property type` —
+  typed setter accepts a narrower subclass than the property declares
+  (e.g. `set_visible_page(AdwPreferencesPage)` for a property typed
+  as `Gtk.Widget`). Without a covariant cast this would need an
+  unsafe `as`; rather than emit it, skip. The typed method is still
+  reachable directly.
+* `construct-only or no public setter` — `construct-only="1"` properties
+  are set via the class constructor; the getter is still emitted but
+  no setter (recorded as a skip on the setter half only).
+
+The companion class itself is suppressed (no `props` field, no
+`<ClassName>Props` declaration) when **every** property was skipped —
+this keeps the public surface from emitting a half-broken object.
 
 ### Interface mirroring
 

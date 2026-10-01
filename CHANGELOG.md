@@ -91,6 +91,41 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   parsed into `GirMethod.finishFunc`, `GirParameter.scope`, and
   `GirParameter.closureIndex`. The parser test that previously failed
   (it referenced these fields) is now green.
+- **Typed `props` accessor** (PyGObject-style) on every GObject-rooted
+  class. Every `<class>` in GIR now exposes a `<ClassName>Props`
+  companion instance via `widget.props.<name>`; each accessor
+  delegates to the existing typed `get<Name>()` / `set<Name>(value)`
+  methods (no GValue boxing, no extra FFI lookup). The props class
+  `extends` its parent's props class so inherited accessors surface
+  automatically (`button.props.canFocus` is declared on `GtkWidget`
+  but reachable on every descendant without re-declaration). The
+  accessor signatures inherit the typed method's nullability
+  (`String?` for gchar* transfer-none), so reads and writes never
+  lie at the type level. Properties whose typed getter/setter can't
+  be represented as a no-arg getter / single-arg setter
+  (`get_size(orientation)`, `set_text(text, length)`,
+  `set_visible_page(NarrowerThanWidget)`, renamed typed methods) are
+  recorded in the skip report with a precise reason; the user can
+  always call the typed method directly. See
+  [emission.md](./docs/emission.md#props-accessor) for the full rule
+  set.
+- **GIR `<property getter="…">` / `<property setter="…">` /
+  `<property transfer-ownership="…">` attributes** are now parsed
+  into `GirProperty.getter`, `GirProperty.setter`, and
+  `GirProperty.transferOwnership`. The parser regression test
+  covers the new fields; the property's `writable` defaults to
+  `true` when `setter=` is present (GIR convention) so the props
+  layer can emit setters without requiring GIR to spell out
+  `writable="1"`.
+- **Runtime test for the props accessor**:
+  [`packages/gtk4/test/gtk4_props_test.dart`](./packages/gtk4/test/gtk4_props_test.dart)
+  exercises `GtkButton.props.label` round-trip through the typed
+  `getLabel` / `setLabel`, `props.canShrink = true` round-trip,
+  inherited `canFocus` reachability via `extends GtkWidgetProps`,
+  compile-time type-safety of the accessor (the Dart type is
+  `String` for label and `bool` for canShrink, not `dynamic`), and
+  the `late final _props` companion-instance stability across
+  repeated accesses.
 - **Caller-allocated OUT parameters are now emitted as typed
   wrappers.** Methods like `gtk_text_buffer_get_start_iter` (which
   take a `GtkTextIter*` OUT parameter that the caller fills in) used
@@ -165,8 +200,57 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   method body references a wrapper type from that package — primitive
   mirrors don't import. See [emission.md](./docs/emission.md#interface-mirroring)
   for the full rule set.
+- **`_emitPropertyAccessor` now resolves the typed method's
+  getter/setter signature via `bridgeFor`** instead of the property's
+  declared type. The previous behaviour emitted non-nullable Dart
+  accessors (`String get label`) for properties whose typed method
+  returns nullable (`String? getLabel()` because `gchar*` with
+  `transfer-ownership="none"` is implicitly nullable), a type lie that
+  would throw at runtime. The fix pins unqualified `<type>` names on
+  the typed method to the property's owner namespace
+  (`relativeTo: ownerNs`) — without this, the emission namespace
+  would shadow the owner's type with a same-named child class
+  (e.g. `Adw.Application` masking `Gtk.Application` when emitting
+  `AdwMessageDialogProps`, breaking the parent's covariant setter
+  with `invalid_override`).
 
 ### Fixed
+- **`late final _props = …` shadowed the parent's late-final with
+  the parent's type**, breaking the child's covariant `props` getter.
+  Dart's late-final inference for a field that shadows a parent's
+  late-final with a different initializer type picks the parent's
+  static type, so `GtkButtonProps get props => _props` rejected
+  `_props` as `GtkWidgetProps` (`A value of type 'GtkWidgetProps'
+  can't be returned from a function with return type 'GtkButtonProps'`).
+  The fix adds an explicit type annotation on `_props`
+  (`late final GtkButtonProps _props = GtkButtonProps(this);`) so
+  the child's static type matches its initializer. Affected every
+  GObject-rooted child class in every package (`invalid_override`
+  on the public `props` getter for hundreds of classes across the
+  12 generated packages).
+- **Cross-package covariant setter on inherited properties** when
+  the emission namespace shadows the owner's type with a same-named
+  child class. `AdwMessageDialogProps.application` was emitted with
+  `set application(AdwApplication?)` overriding
+  `GtkWindowProps.application`'s `set application(GtkApplication?)`,
+  which is an invalid override because `AdwApplication?` is narrower
+  than `GtkApplication?`. The resolver in `bridgeFor` was using
+  `relativeTo ?? namespace`, which fell back to the emission
+  namespace (`Adw`); unqualified `<type name="Application"/>` on
+  the typed `set_application` parameter was then resolved against
+  `Adw.Application` instead of the property's owner namespace
+  (`Gtk.Application`). The fix passes `relativeTo: ownerNs`
+  explicitly so unqualified names resolve against the namespace that
+  actually declared the typed method.
+- **Type lie on props accessors for properties whose typed method
+  returns nullable.** `String get label => _self.getLabel()` was
+  emitted for `GtkButton.props.label` even though `getLabel()` is
+  typed as `String?` (the underlying C function returns `gchar*`
+  with `transfer-ownership="none"`, which the resolver maps to
+  `String?`). Reading the property before assigning would throw a
+  type error at runtime. The fix derives the getter and setter
+  types from the typed method's bridge instead of the property's
+  declared `<type>` element, so nullability always propagates.
 - **Use-after-free in caller-allocated record OUT params.** The
   initial implementation allocated `malloc<Pointer<ffi.Void>>()` (8
   bytes for one pointer) for the buffer and freed it in `finally`,

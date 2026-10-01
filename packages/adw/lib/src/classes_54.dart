@@ -53,8 +53,8 @@ class AdwMessageDialogProps extends GtkWindowProps {
     _self.setHeadingUseMarkup(value);
   }
 
-  AdwApplication? get application => _self.getApplication();
-  set application(AdwApplication? value) {
+  GtkApplication? get application => _self.getApplication();
+  set application(GtkApplication? value) {
     _self.setApplication(value);
   }
 
@@ -155,8 +155,8 @@ class AdwMessageDialogProps extends GtkWindowProps {
     _self.setTitlebar(value);
   }
 
-  AdwWindow? get transientFor => _self.getTransientFor();
-  set transientFor(AdwWindow? value) {
+  GtkWindow? get transientFor => _self.getTransientFor();
+  set transientFor(GtkWindow? value) {
     _self.setTransientFor(value);
   }
 
