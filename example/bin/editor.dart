@@ -24,6 +24,7 @@ class EditorApp {
   late GtkLabel cursorPos;
 
   GtkFileDialog? dlg;
+  GtkFileDialog? saveDlg;
 
   EditorApp(String applicationId) {
     app = AdwApplication(applicationId, .handlesOpen);
@@ -63,8 +64,14 @@ class EditorApp {
         dlg!.openCallback(appWindow, null, onFileDialogClosed);
       });
     appWindow.addAction(GAction.fromPointer(openAction.handle));
-
     app.setAccelsForAction('win.open', ['<Primary>o']);
+
+    final saveAction = GSimpleAction('save-as', null)
+      ..onActivate((_) {
+        saveFileDialog();
+      });
+    appWindow.addAction(GAction.fromPointer(saveAction.handle));
+    app.setAccelsForAction('win.save-as', ['<Primary><Shift>s']);
   }
 
   GtkWidget buildContentView() {
@@ -75,14 +82,9 @@ class EditorApp {
       ..setActionName('win.open');
     header.packStart(openButton);
 
-    final saveButton = GtkButton.fromIconName('document-save-symbolic')
-      ..setTooltipText('Save File')
-      ..onClicked(() {
-        final filePath = appWindow.getTitle();
-        if (filePath != 'Editor') {
-          saveFile(filePath!);
-        }
-      });
+    final saveButton = GtkButton.fromIconName('document-save-as-symbolic')
+      ..setTooltipText('Save as..')
+      ..setActionName('win.save-as');
     header.packStart(saveButton);
 
     cursorPos = GtkLabel('Ln 0, Col 0')
@@ -157,15 +159,17 @@ class EditorApp {
 
   void saveFile(String path) {
     final file = File(path);
-    file.writeAsStringSync(
-      textBuffer.getText(
-        textBuffer.getStartIter(),
-        textBuffer.getEndIter(),
-        false,
-      ),
+    final text = textBuffer.getText(
+      textBuffer.getStartIter(),
+      textBuffer.getEndIter(),
+      false,
     );
-
-    toastOverlay.addToast(AdwToast('Saved to $path'));
+    if (text.isNotEmpty) {
+      file.writeAsStringSync(text);
+      toastOverlay.addToast(AdwToast('Saved to $path'));
+    } else {
+      toastOverlay.addToast(AdwToast('Nothing to save'));
+    }
   }
 
   void updateCursorPos() {
@@ -174,5 +178,19 @@ class EditorApp {
     this.cursorPos.setText(
       'Ln ${iter.getLine() + 1}, Col ${iter.getLineOffset() + 1}',
     );
+  }
+
+  void saveFileDialog() {
+    saveDlg = GtkFileDialog();
+    saveDlg!.saveCallback(appWindow, null, onSaveResponse);
+  }
+
+  void onSaveResponse(GObject? sourceObject, GAsyncResult result) {
+    final path = saveDlg!.saveFinish(result).getPath();
+    if (path != null) {
+      saveFile(path);
+    }
+
+    saveDlg = null;
   }
 }
