@@ -1,8 +1,8 @@
 # Skip report for package glib (GLib 2.0)
-Total skipped: 451
+Total skipped: 445
 
 ## By category
-callable: 432
+callable: 426
 alias: 13
 constant: 2
 callback: 2
@@ -39,10 +39,10 @@ parameter fds: array types are handled in a later phase: 2
 parameter start_pos: nullable scalar parameter (gint): 2
 inout parameter location: 2
 parameter entries: array types are handled in a later phase: 2
-unsupported out parameter match_info (GMatchInfo?): 2
 name collision: 2
 parameter children: array types are handled in a later phase: 2
-moved to Hook.insert_before: 1
+moved to Hook.free: 1
+parameter out_num: nullable scalar parameter (guint64): 1
 moved to AsyncQueue.new: 1
 moved to AsyncQueue.new_full: 1
 moved to Date.get_days_in_month: 1
@@ -86,8 +86,8 @@ moved to HashTable.steal_extended: 1
 moved to HashTable.unref: 1
 moved to Hook.destroy: 1
 moved to Hook.destroy_link: 1
-moved to Hook.free: 1
 name collision: csetA2Z: 1
+moved to Hook.insert_before: 1
 moved to Hook.insert_sorted: 1
 moved to Hook.prepend: 1
 moved to Hook.unref: 1
@@ -117,7 +117,6 @@ moved to Once.init_leave_pointer: 1
 moved to PathBuf.equal: 1
 parameter out_ptr: nullable scalar parameter (guintptr): 1
 inout parameter err: 1
-unsupported out parameter dest (GError?): 1
 parameter out_val: nullable scalar parameter (gint): 1
 moved to Regex.check_replacement: 1
 moved to Regex.error_quark: 1
@@ -137,7 +136,6 @@ moved to Sequence.set: 1
 moved to Sequence.sort_changed: 1
 moved to Sequence.sort_changed_iter: 1
 moved to Sequence.swap: 1
-unsupported out parameter err (GError?): 1
 parameter argcp: nullable scalar parameter (gint): 1
 moved to SList.pop_allocator: 1
 moved to SList.push_allocator: 1
@@ -162,13 +160,12 @@ moved to Thread.self: 1
 moved to Thread.yield: 1
 moved to TimeVal.from_iso8601: 1
 introspectable=0 (C macro; use timeout_add_full): 1
-introspectable=0 (C macro; use timeout_add_seconds_full): 1
 moved to ByteArray.free: 1
+moved to TrashStack.height: 1
 moved to TrashStack.peek: 1
 moved to TrashStack.pop: 1
 moved to TrashStack.push: 1
 parameter result: nullable scalar parameter (gunichar): 1
-caller-allocates out parameter outbuf: 1
 moved to ByteArray.free_to_bytes: 1
 moved to UnicodeScript.from_iso15924: 1
 moved to UnicodeScript.to_iso15924: 1
@@ -230,18 +227,16 @@ moved to ByteArray.sort: 1
 moved to ByteArray.sort_with_data: 1
 inout parameter argc: 1
 parameter arguments: array types are handled in a later phase: 1
-moved to ByteArray.steal: 1
 parameter has_references: nullable scalar parameter (gboolean): 1
 parameter value: array types are handled in a later phase: 1
-caller-allocates out parameter time_: 1
 inout parameter time_: 1
-moved to ByteArray.unref: 1
+moved to ByteArray.steal: 1
 parameter unescaped: array types are handled in a later phase: 1
+moved to ByteArray.unref: 1
 moved to Checksum.type_get_length: 1
 introspectable=0 (C macro; use child_watch_add_full): 1
-parameter out_num: nullable scalar parameter (guint64): 1
 parameter items: array types are handled in a later phase: 1
-moved to TrashStack.height: 1
+introspectable=0 (C macro; use timeout_add_seconds_full): 1
 
 ## First 50 entries
 [constant] GLib.CSET_a_2_z — name collision: csetA2Z

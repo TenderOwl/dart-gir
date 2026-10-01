@@ -225,3 +225,5 @@ part 'src/classes_172.dart';
 part 'src/classes_173.dart';
 part 'src/classes_174.dart';
 part 'src/classes_175.dart';
+part 'src/classes_176.dart';
+part 'src/classes_177.dart';

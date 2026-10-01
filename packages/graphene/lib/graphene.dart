@@ -3,6 +3,7 @@
 import 'dart:ffi' as ffi;
 
 import 'package:ffi/ffi.dart';
+import 'package:gir_ffi/gir_ffi.dart';
 
 part 'src/lib.dart';
 part 'src/enums.dart';
@@ -12,3 +13,9 @@ part 'src/records_1.dart';
 part 'src/records_2.dart';
 part 'src/records_3.dart';
 part 'src/records_4.dart';
+part 'src/records_5.dart';
+part 'src/records_6.dart';
+part 'src/records_7.dart';
+part 'src/records_8.dart';
+part 'src/records_9.dart';
+part 'src/records_10.dart';

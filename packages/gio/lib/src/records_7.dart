@@ -220,6 +220,85 @@ final class GAction {
     });
   }
 
+  /// Parses a detailed action name into its separate name and target
+  /// components.
+  ///
+  /// Detailed action names can have three formats.
+  ///
+  /// The first format is used to represent an action name with no target
+  /// value and consists of just an action name containing no whitespace
+  /// nor the characters `:`, `(` or `)`.  For example: `app.action`.
+  ///
+  /// The second format is used to represent an action with a target value
+  /// that is a non-empty string consisting only of alphanumerics, plus `-`
+  /// and `.`.  In that case, the action name and target value are
+  /// separated by a double colon (`::`).  For example:
+  /// `app.action::target`.
+  ///
+  /// The third format is used to represent an action with any type of
+  /// target value, including strings.  The target value follows the action
+  /// name, surrounded in parens.  For example: `app.action(42)`.  The
+  /// target value is parsed using [func@GLib.Variant.parse].  If a tuple-typed
+  /// value is desired, it must be specified in the same way, resulting in
+  /// two sets of parens, for example: `app.action((1,2,3))`.  A string
+  /// target can be specified this way as well: `app.action('target')`.
+  /// For strings, this third format must be used if target value is
+  /// empty or contains characters other than alphanumerics, `-` and `.`.
+  ///
+  /// If this function returns `TRUE`, a non-`NULL` value is guaranteed to be returned
+  /// in @action_name (if a pointer is passed in). A `NULL` value may still be
+  /// returned in @target_value, as the @detailed_name may not contain a target.
+  ///
+  /// If returned, the [type@GLib.Variant] in @target_value is guaranteed to not be floating.
+  static final _gActionParseDetailedName =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_action_parse_detailed_name')
+          .asFunction<
+            int Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  static (bool, String?, GVariant?) parseDetailedName(String detailedName) {
+    return withNativeString(detailedName, (nativeDetailedName) {
+      final _out0 = malloc<ffi.Pointer<Utf8>>();
+      final _out1Anchor = HeapAnchor.allocate(256);
+      final _out1 = _out1Anchor.buffer;
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gActionParseDetailedName(
+          nativeDetailedName.cast<Utf8>(),
+          _out0,
+          _out1.cast<ffi.Void>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (
+          (_ret) != 0,
+          stringFromNative(_out0.value.cast(), free: true)!,
+          (_out1) == ffi.nullptr
+              ? null
+              : GVariant.fromPointer(_out1.cast<ffi.Void>()),
+        );
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Formats a detailed action name from @action_name and @target_value.
   ///
   /// It is an error to call this function with an invalid action name.

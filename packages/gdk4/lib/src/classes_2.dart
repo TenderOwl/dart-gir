@@ -284,6 +284,49 @@ class GdkContentProvider extends GObject {
     _gdkContentProviderContentChanged(this.handle);
   }
 
+  /// Gets the contents of @provider stored in @value.
+  ///
+  /// The @value will have been initialized to the `GType` the value should be
+  /// provided in. This given `GType` does not need to be listed in the formats
+  /// returned by [method@Gdk.ContentProvider.ref_formats]. However, if the
+  /// given `GType` is not supported, this operation can fail and
+  /// `G_IO_ERROR_NOT_SUPPORTED` will be reported.
+  static final _gdkContentProviderGetValue =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_content_provider_get_value')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GValue) getValue() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gdkContentProviderGetValue(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Gets the formats that the provider can provide its current contents in.
   static final _gdkContentProviderRefFormats =
       gdk4Lookup<
@@ -741,38 +784,5 @@ class GdkContentSerializer extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// An event caused by a pointing device moving between surfaces.
-class GdkCrossingEvent extends GdkEvent {
-  GdkCrossingEvent.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Extracts the notify detail from a crossing event.
-  static final _gdkCrossingEventGetDetail =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_crossing_event_get_detail',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GdkNotifyType getDetail() {
-    return GdkNotifyType.fromValue(_gdkCrossingEventGetDetail(this.handle));
-  }
-
-  /// Checks if the @event surface is the focus surface.
-  static final _gdkCrossingEventGetFocus =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_crossing_event_get_focus',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getFocus() {
-    return (_gdkCrossingEventGetFocus(this.handle)) != 0;
-  }
-
-  /// Extracts the crossing mode from a crossing event.
-  static final _gdkCrossingEventGetMode =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_crossing_event_get_mode',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GdkCrossingMode getMode() {
-    return GdkCrossingMode.fromValue(_gdkCrossingEventGetMode(this.handle));
   }
 }

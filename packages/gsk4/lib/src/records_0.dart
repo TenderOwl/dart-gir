@@ -305,6 +305,142 @@ final class GskPath {
     }
   }
 
+  /// Computes the bounds of the given path.
+  ///
+  /// The returned bounds may be larger than necessary, because this
+  /// function aims to be fast, not accurate. The bounds are guaranteed
+  /// to contain the path. For accurate bounds, use
+  /// [method@Gsk.Path.get_tight_bounds].
+  ///
+  /// It is possible that the returned rectangle has 0 width and/or height.
+  /// This can happen when the path only describes a point or an
+  /// axis-aligned line.
+  ///
+  /// If the path is empty, false is returned and @bounds are set to
+  /// graphene_rect_zero(). This is different from the case where the path
+  /// is a single point at the origin, where the @bounds will also be set to
+  /// the zero rectangle but true will be returned.
+  static final _gskPathGetBounds =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_path_get_bounds')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GrapheneRect) getBounds() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathGetBounds(this.handle, _out0.cast<ffi.Void>());
+      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Gets the end point of the path.
+  ///
+  /// An empty path has no points, so false
+  /// is returned in this case.
+  static final _gskPathGetEndPoint =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_path_get_end_point')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GskPathPoint) getEndPoint() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathGetEndPoint(this.handle, _out0.cast<ffi.Void>());
+      return ((_ret) != 0, GskPathPoint.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Gets the start point of the path.
+  ///
+  /// An empty path has no points, so false
+  /// is returned in this case.
+  static final _gskPathGetStartPoint =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_path_get_start_point')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GskPathPoint) getStartPoint() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathGetStartPoint(this.handle, _out0.cast<ffi.Void>());
+      return ((_ret) != 0, GskPathPoint.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Computes the bounds for stroking the given path with the
+  /// given parameters.
+  ///
+  /// The returned bounds may be larger than necessary, because this
+  /// function aims to be fast, not accurate. The bounds are guaranteed
+  /// to contain the area affected by the stroke, including protrusions
+  /// like miters.
+  static final _gskPathGetStrokeBounds =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_path_get_stroke_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GrapheneRect) getStrokeBounds(GskStroke stroke) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathGetStrokeBounds(
+        this.handle,
+        stroke.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Computes the tight bounds of the given path.
+  ///
+  /// This function works harder than [method@Gsk.Path.get_bounds] to
+  /// produce the smallest possible bounds.
+  static final _gskPathGetTightBounds =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_path_get_tight_bounds')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GrapheneRect) getTightBounds() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathGetTightBounds(this.handle, _out0.cast<ffi.Void>());
+      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Returns whether a point is inside the fill area of a path.
   ///
   /// Note that this function assumes that filling a contour

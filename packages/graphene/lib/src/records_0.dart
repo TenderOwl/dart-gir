@@ -61,6 +61,87 @@ final class GrapheneBox {
     return (_grapheneBoxEqual(this.handle, b.handle)) != 0;
   }
 
+  /// Expands the dimensions of @box to include the coordinates at @point.
+  static final _grapheneBoxExpand =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_expand')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneBox expand(GraphenePoint3D point) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxExpand(this.handle, point.handle, _out0.cast<ffi.Void>());
+      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Expands the dimensions of @box by the given @scalar value.
+  ///
+  /// If @scalar is positive, the #graphene_box_t will grow; if @scalar is
+  /// negative, the #graphene_box_t will shrink.
+  static final _grapheneBoxExpandScalar =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_expand_scalar')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, double, ffi.Pointer<ffi.Void>)
+          >();
+  GrapheneBox expandScalar(double scalar) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxExpandScalar(this.handle, scalar, _out0.cast<ffi.Void>());
+      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Expands the dimensions of @box to include the coordinates of the
+  /// given vector.
+  static final _grapheneBoxExpandVec3 =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_expand_vec3')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneBox expandVec3(GrapheneVec3 vec) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxExpandVec3(this.handle, vec.handle, _out0.cast<ffi.Void>());
+      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Frees the resources allocated by graphene_box_alloc().
   static final _grapheneBoxFree =
       grapheneLookup<
@@ -69,6 +150,45 @@ final class GrapheneBox {
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
     _grapheneBoxFree(this.handle);
+  }
+
+  /// Computes the bounding #graphene_sphere_t capable of containing the given
+  /// #graphene_box_t.
+  static final _grapheneBoxGetBoundingSphere =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('graphene_box_get_bounding_sphere')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GrapheneSphere getBoundingSphere() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxGetBoundingSphere(this.handle, _out0.cast<ffi.Void>());
+      return GrapheneSphere.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Retrieves the coordinates of the center of a #graphene_box_t.
+  static final _grapheneBoxGetCenter =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('graphene_box_get_center')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GraphenePoint3D getCenter() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxGetCenter(this.handle, _out0.cast<ffi.Void>());
+      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Retrieves the size of the @box on the Z axis.
@@ -89,6 +209,66 @@ final class GrapheneBox {
           .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
   double getHeight() {
     return _grapheneBoxGetHeight(this.handle);
+  }
+
+  /// Retrieves the coordinates of the maximum point of the given
+  /// #graphene_box_t.
+  static final _grapheneBoxGetMax =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('graphene_box_get_max')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GraphenePoint3D getMax() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxGetMax(this.handle, _out0.cast<ffi.Void>());
+      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Retrieves the coordinates of the minimum point of the given
+  /// #graphene_box_t.
+  static final _grapheneBoxGetMin =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('graphene_box_get_min')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GraphenePoint3D getMin() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxGetMin(this.handle, _out0.cast<ffi.Void>());
+      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Retrieves the size of the box on all three axes, and stores
+  /// it into the given @size vector.
+  static final _grapheneBoxGetSize =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('graphene_box_get_size')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GrapheneVec3 getSize() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxGetSize(this.handle, _out0.cast<ffi.Void>());
+      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Retrieves the size of the @box on the X axis.
@@ -181,6 +361,72 @@ final class GrapheneBox {
     );
   }
 
+  /// Intersects the two given #graphene_box_t.
+  ///
+  /// If the two boxes do not intersect, @res will contain a degenerate box
+  /// initialized with graphene_box_empty().
+  static final _grapheneBoxIntersection =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_intersection')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GrapheneBox?) intersection(GrapheneBox b) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _grapheneBoxIntersection(
+        this.handle,
+        b.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
+  /// Unions the two given #graphene_box_t.
+  static final _grapheneBoxUnion =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_union')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneBox union(GrapheneBox b) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _grapheneBoxUnion(this.handle, b.handle, _out0.cast<ffi.Void>());
+      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// A degenerate #graphene_box_t that can only be expanded.
   ///
   /// The returned value is owned by Graphene and should not be modified or freed.
@@ -248,532 +494,5 @@ final class GrapheneBox {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GrapheneBox zero() {
     return GrapheneBox.fromPointer(_grapheneBoxZero());
-  }
-}
-
-/// Describe a rotation using Euler angles.
-///
-/// The contents of the #graphene_euler_t structure are private
-/// and should never be accessed directly.
-final class GrapheneEuler {
-  GrapheneEuler.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Allocates a new #graphene_euler_t.
-  ///
-  /// The contents of the returned structure are undefined.
-  static final _grapheneEulerAlloc =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_euler_alloc',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneEuler.alloc() {
-    return GrapheneEuler.fromPointer(_grapheneEulerAlloc());
-  }
-
-  /// Checks if two #graphene_euler_t are equal.
-  static final _grapheneEulerEqual =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_euler_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(GrapheneEuler b) {
-    return (_grapheneEulerEqual(this.handle, b.handle)) != 0;
-  }
-
-  /// Frees the resources allocated by graphene_euler_alloc().
-  static final _grapheneEulerFree =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _grapheneEulerFree(this.handle);
-  }
-
-  /// Retrieves the first component of the Euler angle vector,
-  /// depending on the order of rotation.
-  ///
-  /// See also: graphene_euler_get_x()
-  static final _grapheneEulerGetAlpha =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_alpha')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getAlpha() {
-    return _grapheneEulerGetAlpha(this.handle);
-  }
-
-  /// Retrieves the second component of the Euler angle vector,
-  /// depending on the order of rotation.
-  ///
-  /// See also: graphene_euler_get_y()
-  static final _grapheneEulerGetBeta =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_beta')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getBeta() {
-    return _grapheneEulerGetBeta(this.handle);
-  }
-
-  /// Retrieves the third component of the Euler angle vector,
-  /// depending on the order of rotation.
-  ///
-  /// See also: graphene_euler_get_z()
-  static final _grapheneEulerGetGamma =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_gamma')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getGamma() {
-    return _grapheneEulerGetGamma(this.handle);
-  }
-
-  /// Retrieves the order used to apply the rotations described in the
-  /// #graphene_euler_t structure, when converting to and from other
-  /// structures, like #graphene_quaternion_t and #graphene_matrix_t.
-  ///
-  /// This function does not return the %GRAPHENE_EULER_ORDER_DEFAULT
-  /// enumeration value; it will return the effective order of rotation
-  /// instead.
-  static final _grapheneEulerGetOrder =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_order')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GrapheneEulerOrder getOrder() {
-    return GrapheneEulerOrder.fromValue(_grapheneEulerGetOrder(this.handle));
-  }
-
-  /// Retrieves the rotation angle on the X axis, in degrees.
-  static final _grapheneEulerGetX =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_x')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getX() {
-    return _grapheneEulerGetX(this.handle);
-  }
-
-  /// Retrieves the rotation angle on the Y axis, in degrees.
-  static final _grapheneEulerGetY =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_y')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getY() {
-    return _grapheneEulerGetY(this.handle);
-  }
-
-  /// Retrieves the rotation angle on the Z axis, in degrees.
-  static final _grapheneEulerGetZ =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_euler_get_z')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getZ() {
-    return _grapheneEulerGetZ(this.handle);
-  }
-
-  /// Initializes a #graphene_euler_t using the given angles.
-  ///
-  /// The order of the rotations is %GRAPHENE_EULER_ORDER_DEFAULT.
-  static final _grapheneEulerInit =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-                ffi.Float,
-              )
-            >
-          >('graphene_euler_init')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-              double,
-            )
-          >();
-  GrapheneEuler init(double x, double y, double z) {
-    return GrapheneEuler.fromPointer(_grapheneEulerInit(this.handle, x, y, z));
-  }
-
-  /// Initializes a #graphene_euler_t using the angles and order of
-  /// another #graphene_euler_t.
-  ///
-  /// If the #graphene_euler_t @src is %NULL, this function is equivalent
-  /// to calling graphene_euler_init() with all angles set to 0.
-  static final _grapheneEulerInitFromEuler =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_euler_init_from_euler')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneEuler initFromEuler([GrapheneEuler? src]) {
-    return GrapheneEuler.fromPointer(
-      _grapheneEulerInitFromEuler(this.handle, src?.handle ?? ffi.nullptr),
-    );
-  }
-
-  /// Initializes a #graphene_euler_t using the given rotation matrix.
-  ///
-  /// If the #graphene_matrix_t @m is %NULL, the #graphene_euler_t will
-  /// be initialized with all angles set to 0.
-  static final _grapheneEulerInitFromMatrix =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-              )
-            >
-          >('graphene_euler_init_from_matrix')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-            )
-          >();
-  GrapheneEuler initFromMatrix(GrapheneMatrix? m, GrapheneEulerOrder order) {
-    return GrapheneEuler.fromPointer(
-      _grapheneEulerInitFromMatrix(
-        this.handle,
-        m?.handle ?? ffi.nullptr,
-        order.value,
-      ),
-    );
-  }
-
-  /// Initializes a #graphene_euler_t using the given normalized quaternion.
-  ///
-  /// If the #graphene_quaternion_t @q is %NULL, the #graphene_euler_t will
-  /// be initialized with all angles set to 0.
-  static final _grapheneEulerInitFromQuaternion =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-              )
-            >
-          >('graphene_euler_init_from_quaternion')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-            )
-          >();
-  GrapheneEuler initFromQuaternion(
-    GrapheneQuaternion? q,
-    GrapheneEulerOrder order,
-  ) {
-    return GrapheneEuler.fromPointer(
-      _grapheneEulerInitFromQuaternion(
-        this.handle,
-        q?.handle ?? ffi.nullptr,
-        order.value,
-      ),
-    );
-  }
-
-  /// Initializes a #graphene_euler_t using the given angles
-  /// and order of rotation.
-  static final _grapheneEulerInitFromRadians =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-                ffi.Float,
-                ffi.Int32,
-              )
-            >
-          >('graphene_euler_init_from_radians')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-              double,
-              int,
-            )
-          >();
-  GrapheneEuler initFromRadians(
-    double x,
-    double y,
-    double z,
-    GrapheneEulerOrder order,
-  ) {
-    return GrapheneEuler.fromPointer(
-      _grapheneEulerInitFromRadians(this.handle, x, y, z, order.value),
-    );
-  }
-
-  /// Initializes a #graphene_euler_t using the angles contained in a
-  /// #graphene_vec3_t.
-  ///
-  /// If the #graphene_vec3_t @v is %NULL, the #graphene_euler_t will be
-  /// initialized with all angles set to 0.
-  static final _grapheneEulerInitFromVec3 =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-              )
-            >
-          >('graphene_euler_init_from_vec3')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-            )
-          >();
-  GrapheneEuler initFromVec3(GrapheneVec3? v, GrapheneEulerOrder order) {
-    return GrapheneEuler.fromPointer(
-      _grapheneEulerInitFromVec3(
-        this.handle,
-        v?.handle ?? ffi.nullptr,
-        order.value,
-      ),
-    );
-  }
-
-  /// Initializes a #graphene_euler_t with the given angles and @order.
-  static final _grapheneEulerInitWithOrder =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-                ffi.Float,
-                ffi.Int32,
-              )
-            >
-          >('graphene_euler_init_with_order')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-              double,
-              int,
-            )
-          >();
-  GrapheneEuler initWithOrder(
-    double x,
-    double y,
-    double z,
-    GrapheneEulerOrder order,
-  ) {
-    return GrapheneEuler.fromPointer(
-      _grapheneEulerInitWithOrder(this.handle, x, y, z, order.value),
-    );
-  }
-}
-
-/// A 3D volume delimited by 2D clip planes.
-///
-/// The contents of the `graphene_frustum_t` are private, and should not be
-/// modified directly.
-final class GrapheneFrustum {
-  GrapheneFrustum.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Allocates a new #graphene_frustum_t structure.
-  ///
-  /// The contents of the returned structure are undefined.
-  static final _grapheneFrustumAlloc =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_frustum_alloc',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneFrustum.alloc() {
-    return GrapheneFrustum.fromPointer(_grapheneFrustumAlloc());
-  }
-
-  /// Checks whether a point is inside the volume defined by the given
-  /// #graphene_frustum_t.
-  static final _grapheneFrustumContainsPoint =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_frustum_contains_point')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool containsPoint(GraphenePoint3D point) {
-    return (_grapheneFrustumContainsPoint(this.handle, point.handle)) != 0;
-  }
-
-  /// Checks whether the two given #graphene_frustum_t are equal.
-  static final _grapheneFrustumEqual =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_frustum_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(GrapheneFrustum b) {
-    return (_grapheneFrustumEqual(this.handle, b.handle)) != 0;
-  }
-
-  /// Frees the resources allocated by graphene_frustum_alloc().
-  static final _grapheneFrustumFree =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_frustum_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _grapheneFrustumFree(this.handle);
-  }
-
-  /// Initializes the given #graphene_frustum_t using the provided
-  /// clipping planes.
-  static final _grapheneFrustumInit =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_frustum_init')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneFrustum init(
-    GraphenePlane p0,
-    GraphenePlane p1,
-    GraphenePlane p2,
-    GraphenePlane p3,
-    GraphenePlane p4,
-    GraphenePlane p5,
-  ) {
-    return GrapheneFrustum.fromPointer(
-      _grapheneFrustumInit(
-        this.handle,
-        p0.handle,
-        p1.handle,
-        p2.handle,
-        p3.handle,
-        p4.handle,
-        p5.handle,
-      ),
-    );
-  }
-
-  /// Initializes the given #graphene_frustum_t using the clipping
-  /// planes of another #graphene_frustum_t.
-  static final _grapheneFrustumInitFromFrustum =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_frustum_init_from_frustum')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneFrustum initFromFrustum(GrapheneFrustum src) {
-    return GrapheneFrustum.fromPointer(
-      _grapheneFrustumInitFromFrustum(this.handle, src.handle),
-    );
-  }
-
-  /// Initializes a #graphene_frustum_t using the given @matrix.
-  static final _grapheneFrustumInitFromMatrix =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_frustum_init_from_matrix')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneFrustum initFromMatrix(GrapheneMatrix matrix) {
-    return GrapheneFrustum.fromPointer(
-      _grapheneFrustumInitFromMatrix(this.handle, matrix.handle),
-    );
-  }
-
-  /// Checks whether the given @box intersects a plane of
-  /// a #graphene_frustum_t.
-  static final _grapheneFrustumIntersectsBox =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_frustum_intersects_box')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool intersectsBox(GrapheneBox box) {
-    return (_grapheneFrustumIntersectsBox(this.handle, box.handle)) != 0;
-  }
-
-  /// Checks whether the given @sphere intersects a plane of
-  /// a #graphene_frustum_t.
-  static final _grapheneFrustumIntersectsSphere =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_frustum_intersects_sphere')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool intersectsSphere(GrapheneSphere sphere) {
-    return (_grapheneFrustumIntersectsSphere(this.handle, sphere.handle)) != 0;
   }
 }

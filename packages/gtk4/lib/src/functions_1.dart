@@ -802,6 +802,50 @@ GdkContentProvider treeCreateRowDragContent(
   );
 }
 
+/// Obtains a @tree_model and @path from value of target type
+/// %GTK_TYPE_TREE_ROW_DATA.
+///
+/// The returned path must be freed with gtk_tree_path_free().
+final _gtkTreeGetRowDragData =
+    gtk4Lookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('gtk_tree_get_row_drag_data')
+        .asFunction<
+          int Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+          )
+        >();
+(bool, GtkTreeModel?, GtkTreePath?) treeGetRowDragData(GValue value) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  final _out1Anchor = HeapAnchor.allocate(256);
+  final _out1 = _out1Anchor.buffer;
+  try {
+    final _ret = _gtkTreeGetRowDragData(
+      value.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : GtkTreeModel.fromPointer(_out0.cast<ffi.Void>()),
+      (_out1) == ffi.nullptr
+          ? null
+          : GtkTreePath.fromPointer(_out1.cast<ffi.Void>()),
+    );
+  } finally {}
+}
+
 /// Retrieves the `GtkExpression` stored inside the given `value`, and acquires
 /// a reference to it.
 final _gtkValueDupExpression =

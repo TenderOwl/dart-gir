@@ -302,6 +302,96 @@ class GFileEnumerator extends GObject {
     return (_gFileEnumeratorIsClosed(this.handle)) != 0;
   }
 
+  /// This is a version of g_file_enumerator_next_file() that's easier to
+  /// use correctly from C programs.  With g_file_enumerator_next_file(),
+  /// the gboolean return value signifies "end of iteration or error", which
+  /// requires allocation of a temporary #GError.
+  ///
+  /// In contrast, with this function, a %FALSE return from
+  /// g_file_enumerator_iterate() *always* means
+  /// "error".  End of iteration is signaled by @out_info or @out_child being %NULL.
+  ///
+  /// Another crucial difference is that the references for @out_info and
+  /// @out_child are owned by @direnum (they are cached as hidden
+  /// properties).  You must not unref them in your own code.  This makes
+  /// memory management significantly easier for C code in combination
+  /// with loops.
+  ///
+  /// Finally, this function optionally allows retrieving a #GFile as
+  /// well.
+  ///
+  /// You must specify at least one of @out_info or @out_child.
+  ///
+  /// The code pattern for correctly using g_file_enumerator_iterate() from C
+  /// is:
+  ///
+  /// |[
+  /// direnum = g_file_enumerate_children (file, ...);
+  /// while (TRUE)
+  /// {
+  /// GFileInfo *info;
+  /// if (!g_file_enumerator_iterate (direnum, &info, NULL, cancellable, error))
+  /// goto out;
+  /// if (!info)
+  /// break;
+  /// ... do stuff with "info"; do not unref it! ...
+  /// }
+  ///
+  /// out:
+  /// g_object_unref (direnum); // Note: frees the last @info
+  /// ]|
+  static final _gFileEnumeratorIterate =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_enumerator_iterate')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GFileInfo?, GFile?) iterate([GCancellable? cancellable]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileEnumeratorIterate(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GFileInfo.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GFile.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Returns information for the next file in the enumerated object.
   /// Will block until the information is available. The #GFileInfo
   /// returned from this function will contain attributes that match the

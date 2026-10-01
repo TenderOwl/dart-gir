@@ -66,6 +66,35 @@ final class GskPathMeasure {
     return GskPath.fromPointer(_gskPathMeasureGetPath(this.handle));
   }
 
+  /// Gets the point at the given distance into the path.
+  ///
+  /// An empty path has no points, so false is returned in that case.
+  static final _gskPathMeasureGetPoint =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_path_measure_get_point')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, double, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GskPathPoint) getPoint(double distance) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathMeasureGetPoint(
+        this.handle,
+        distance,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GskPathPoint.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Returns the tolerance that the measure was created with.
   static final _gskPathMeasureGetTolerance =
       gsk4Lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>>(
@@ -172,6 +201,67 @@ final class GskPathPoint {
     _gskPathPointFree(this.handle);
   }
 
+  /// Calculates the curvature of the path at the point.
+  ///
+  /// Optionally, returns the center of the osculating circle as well.
+  /// The curvature is the inverse of the radius of the osculating circle.
+  ///
+  /// Lines have a curvature of zero (indicating an osculating circle of
+  /// infinite radius). In this case, the @center is not modified.
+  ///
+  /// Circles with a radius of zero have `INFINITY` as curvature
+  ///
+  /// Note that certain points on a path may not have a single curvature,
+  /// such as sharp turns. At such points, there are two curvatures — the
+  /// (limit of) the curvature of the path going into the point, and the
+  /// (limit of) the curvature of the path coming out of it. The @direction
+  /// argument lets you choose which one to get.
+  ///
+  /// <picture>
+  /// <source srcset="curvature-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Osculating circle" src="curvature-light.png">
+  /// </picture>
+  static final _gskPathPointGetCurvature =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Float Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_path_point_get_curvature')
+          .asFunction<
+            double Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (double, GraphenePoint?) getCurvature(
+    GskPath path,
+    GskPathDirection direction,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gskPathPointGetCurvature(
+        this.handle,
+        path.handle,
+        direction.value,
+        _out0.cast<ffi.Void>(),
+      );
+      return (
+        _ret,
+        (_out0) == ffi.nullptr
+            ? null
+            : GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Returns the distance from the beginning of the path
   /// to the point.
   static final _gskPathPointGetDistance =
@@ -185,6 +275,37 @@ final class GskPathPoint {
           >();
   double getDistance(GskPathMeasure measure) {
     return _gskPathPointGetDistance(this.handle, measure.handle);
+  }
+
+  /// Gets the position of the point.
+  static final _gskPathPointGetPosition =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_path_point_get_position')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GraphenePoint getPosition(GskPath path) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gskPathPointGetPosition(
+        this.handle,
+        path.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Gets the direction of the tangent at a given point.
@@ -208,6 +329,53 @@ final class GskPathPoint {
           >();
   double getRotation(GskPath path, GskPathDirection direction) {
     return _gskPathPointGetRotation(this.handle, path.handle, direction.value);
+  }
+
+  /// Gets the tangent of the path at the point.
+  ///
+  /// Note that certain points on a path may not have a single
+  /// tangent, such as sharp turns. At such points, there are
+  /// two tangents — the direction of the path going into the
+  /// point, and the direction coming out of it. The @direction
+  /// argument lets you choose which one to get.
+  ///
+  /// If the path is just a single point (e.g. a circle with
+  /// radius zero), then the tangent is set to `0, 0`.
+  ///
+  /// If you want to orient something in the direction of the
+  /// path, [method@Gsk.PathPoint.get_rotation] may be more
+  /// convenient to use.
+  static final _gskPathPointGetTangent =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_path_point_get_tangent')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneVec2 getTangent(GskPath path, GskPathDirection direction) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gskPathPointGetTangent(
+        this.handle,
+        path.handle,
+        direction.value,
+        _out0.cast<ffi.Void>(),
+      );
+      return GrapheneVec2.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 }
 

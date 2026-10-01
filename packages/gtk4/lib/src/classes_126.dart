@@ -62,6 +62,28 @@ class GtkRange extends GtkWidget {
     return (_gtkRangeGetInverted(this.handle)) != 0;
   }
 
+  /// This function returns the area that contains the range’s trough,
+  /// in coordinates relative to @range's origin.
+  ///
+  /// This function is useful mainly for `GtkRange` subclasses.
+  static final _gtkRangeGetRangeRect =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_range_get_range_rect')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GdkRectangle getRangeRect() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkRangeGetRangeRect(this.handle, _out0.cast<ffi.Void>());
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Gets whether the range is restricted to the fill level.
   static final _gtkRangeGetRestrictToFillLevel =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

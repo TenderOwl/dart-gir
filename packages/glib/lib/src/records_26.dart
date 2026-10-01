@@ -342,4 +342,42 @@ final class GTimeVal {
       free: true,
     );
   }
+
+  /// Converts a string containing an ISO 8601 encoded date and time
+  /// to a #GTimeVal and puts it into @time_.
+  ///
+  /// @iso_date must include year, month, day, hours, minutes, and
+  /// seconds. It can optionally include fractions of a second and a time
+  /// zone indicator. (In the absence of any time zone indication, the
+  /// timestamp is assumed to be in local time.)
+  ///
+  /// Any leading or trailing space in @iso_date is ignored.
+  ///
+  /// This function was deprecated, along with #GTimeVal itself, in GLib 2.62.
+  /// Equivalent functionality is available using code like:
+  /// |[
+  /// GDateTime *dt = g_date_time_new_from_iso8601 (iso8601_string, NULL);
+  /// gint64 time_val = g_date_time_to_unix (dt);
+  /// g_date_time_unref (dt);
+  /// ]|
+  static final _gTimeValFromIso8601 =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_time_val_from_iso8601')
+          .asFunction<int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)>();
+  static (bool, GTimeVal) fromIso8601(String isoDate) {
+    return withNativeString(isoDate, (nativeIsoDate) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        final _ret = _gTimeValFromIso8601(
+          nativeIsoDate.cast<Utf8>(),
+          _out0.cast<ffi.Void>(),
+        );
+        return ((_ret) != 0, GTimeVal.fromPointer(_out0.cast<ffi.Void>()));
+      } finally {}
+    });
+  }
 }

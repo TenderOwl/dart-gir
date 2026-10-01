@@ -910,6 +910,157 @@ class GDBusConnection extends GObject {
     });
   }
 
+  /// Finishes an operation started with g_dbus_connection_call_with_unix_fd_list().
+  ///
+  /// The file descriptors normally correspond to %G_VARIANT_TYPE_HANDLE
+  /// values in the body of the message. For example,
+  /// if g_variant_get_handle() returns 5, that is intended to be a reference
+  /// to the file descriptor that can be accessed by
+  /// `g_unix_fd_list_get (*out_fd_list, 5, ...)`.
+  ///
+  /// When designing D-Bus APIs that are intended to be interoperable,
+  /// please note that non-GDBus implementations of D-Bus can usually only
+  /// access file descriptors if they are referenced in this way by a
+  /// value of type %G_VARIANT_TYPE_HANDLE in the body of the message.
+  static final _gDbusConnectionCallWithUnixFdListFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_call_with_unix_fd_list_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GVariant, GUnixFDList?) callWithUnixFdListFinish(GAsyncResult res) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusConnectionCallWithUnixFdListFinish(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        res.handle,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GVariant.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GUnixFDList.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Like g_dbus_connection_call_sync() but also takes and returns #GUnixFDList objects.
+  /// See g_dbus_connection_call_with_unix_fd_list() and
+  /// g_dbus_connection_call_with_unix_fd_list_finish() for more details.
+  ///
+  /// This method is only available on UNIX.
+  static final _gDbusConnectionCallWithUnixFdListSync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_call_with_unix_fd_list_sync')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GVariant, GUnixFDList?) callWithUnixFdListSync(
+    String? busName,
+    String objectPath,
+    String interfaceName,
+    String methodName,
+    GVariant? parameters,
+    GVariantType? replyType,
+    GDBusCallFlags flags,
+    int timeoutMsec, [
+    GUnixFDList? fdList,
+    GCancellable? cancellable,
+  ]) {
+    return withNativeString(busName, (nativeBusName) {
+      return withNativeString(objectPath, (nativeObjectPath) {
+        return withNativeString(interfaceName, (nativeInterfaceName) {
+          return withNativeString(methodName, (nativeMethodName) {
+            final _out0Anchor = HeapAnchor.allocate(256);
+            final _out0 = _out0Anchor.buffer;
+            final _error = calloc<ffi.Pointer<ffi.Void>>();
+            try {
+              final _ret = _gDbusConnectionCallWithUnixFdListSync(
+                this.handle,
+                nativeBusName.cast<Utf8>(),
+                nativeObjectPath.cast<Utf8>(),
+                nativeInterfaceName.cast<Utf8>(),
+                nativeMethodName.cast<Utf8>(),
+                parameters?.handle ?? ffi.nullptr,
+                replyType?.handle ?? ffi.nullptr,
+                flags.value,
+                timeoutMsec,
+                fdList?.handle ?? ffi.nullptr,
+                _out0.cast<ffi.Void>(),
+                cancellable?.handle ?? ffi.nullptr,
+                _error,
+              );
+              if (_error.value != ffi.nullptr) {
+                throw GlibException.fromError(_error.value);
+              }
+              return (
+                GVariant.fromPointer(_ret),
+                (_out0) == ffi.nullptr
+                    ? null
+                    : GUnixFDList.fromPointer(_out0.cast<ffi.Void>()),
+              );
+            } finally {
+              calloc.free(_error);
+            }
+          });
+        });
+      });
+    });
+  }
+
   /// Closes @connection. Note that this never causes the process to
   /// exit (this might only happen if the other end of a shared message
   /// bus connection disconnects, see #GDBusConnection:exit-on-close).

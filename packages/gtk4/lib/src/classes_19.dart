@@ -890,6 +890,107 @@ class GtkCellArea extends GInitiallyUnowned {
     }
   }
 
+  /// Derives the allocation of @renderer inside @area if @area
+  /// were to be rendered in @cell_area.
+  static final _gtkCellAreaGetCellAllocation =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_cell_area_get_cell_allocation')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GdkRectangle getCellAllocation(
+    GtkCellAreaContext context,
+    GtkWidget widget,
+    GtkCellRenderer renderer,
+    GdkRectangle cellArea,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkCellAreaGetCellAllocation(
+        this.handle,
+        context.handle,
+        widget.handle,
+        renderer.handle,
+        cellArea.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Gets the `GtkCellRenderer` at @x and @y coordinates inside @area and optionally
+  /// returns the full cell allocation for it inside @cell_area.
+  static final _gtkCellAreaGetCellAtPosition =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_cell_area_get_cell_at_position')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (GtkCellRenderer, GdkRectangle?) getCellAtPosition(
+    GtkCellAreaContext context,
+    GtkWidget widget,
+    GdkRectangle cellArea,
+    int x,
+    int y,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkCellAreaGetCellAtPosition(
+        this.handle,
+        context.handle,
+        widget.handle,
+        cellArea.handle,
+        x,
+        y,
+        _out0.cast<ffi.Void>(),
+      );
+      return (
+        GtkCellRenderer.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Gets the current `GtkTreePath` string for the currently
   /// applied `GtkTreeIter`, this is implicitly updated when
   /// gtk_cell_area_apply_attributes() is called and can be
@@ -1030,6 +1131,42 @@ class GtkCellArea extends GInitiallyUnowned {
           >();
   bool hasRenderer(GtkCellRenderer renderer) {
     return (_gtkCellAreaHasRenderer(this.handle, renderer.handle)) != 0;
+  }
+
+  /// This is a convenience function for `GtkCellArea` implementations
+  /// to get the inner area where a given `GtkCellRenderer` will be
+  /// rendered. It removes any padding previously added by gtk_cell_area_request_renderer().
+  static final _gtkCellAreaInnerCellArea =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_cell_area_inner_cell_area')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GdkRectangle innerCellArea(GtkWidget widget, GdkRectangle cellArea) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkCellAreaInnerCellArea(
+        this.handle,
+        widget.handle,
+        cellArea.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Returns whether the area can do anything when activated,

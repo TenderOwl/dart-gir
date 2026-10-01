@@ -33,6 +33,30 @@ final class GtkScrollable {
   GtkScrollable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Returns the size of a non-scrolling border around the
+  /// outside of the scrollable.
+  ///
+  /// An example for this would be treeview headers. GTK can use
+  /// this information to display overlaid graphics, like the
+  /// overshoot indication, at the right position.
+  static final _gtkScrollableGetBorder =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_scrollable_get_border')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GtkBorder) getBorder() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
+      return ((_ret) != 0, GtkBorder.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Retrieves the `GtkAdjustment` used for horizontal scrolling.
   static final _gtkScrollableGetHadjustment =
       gtk4Lookup<

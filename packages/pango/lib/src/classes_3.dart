@@ -134,6 +134,59 @@ class PangoLayout extends GObject {
     return _pangoLayoutGetBaseline(this.handle);
   }
 
+  /// Given an index within a layout, determines the positions that of the
+  /// strong and weak cursors if the insertion point is at that index.
+  ///
+  /// This is a variant of [method@Pango.Layout.get_cursor_pos] that applies
+  /// font metric information about caret slope and offset to the positions
+  /// it returns.
+  ///
+  /// <picture>
+  /// <source srcset="caret-metrics-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Caret metrics" src="caret-metrics-light.png">
+  /// </picture>
+  static final _pangoLayoutGetCaretPos =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_layout_get_caret_pos')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) getCaretPos(int index) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoLayoutGetCaretPos(
+        this.handle,
+        index,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Returns the number of Unicode characters in the
   /// the text of @layout.
   static final _pangoLayoutGetCharacterCount =
@@ -155,6 +208,75 @@ class PangoLayout extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoContext getContext() {
     return PangoContext.fromPointer(_pangoLayoutGetContext(this.handle));
+  }
+
+  /// Given an index within a layout, determines the positions that of the
+  /// strong and weak cursors if the insertion point is at that index.
+  ///
+  /// The position of each cursor is stored as a zero-width rectangle
+  /// with the height of the run extents.
+  ///
+  /// <picture>
+  /// <source srcset="cursor-positions-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Cursor positions" src="cursor-positions-light.png">
+  /// </picture>
+  ///
+  /// The strong cursor location is the location where characters of the
+  /// directionality equal to the base direction of the layout are inserted.
+  /// The weak cursor location is the location where characters of the
+  /// directionality opposite to the base direction of the layout are inserted.
+  ///
+  /// The following example shows text with both a strong and a weak cursor.
+  ///
+  /// <picture>
+  /// <source srcset="split-cursor-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Strong and weak cursors" src="split-cursor-light.png">
+  /// </picture>
+  ///
+  /// The strong cursor has a little arrow pointing to the right, the weak
+  /// cursor to the left. Typing a 'c' in this situation will insert the
+  /// character after the 'b', and typing another Hebrew character, like 'ג',
+  /// will insert it at the end.
+  static final _pangoLayoutGetCursorPos =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_layout_get_cursor_pos')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) getCursorPos(int index) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoLayoutGetCursorPos(
+        this.handle,
+        index,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
   }
 
   /// Gets the text direction at the given character position in @layout.
@@ -184,6 +306,55 @@ class PangoLayout extends GObject {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   PangoEllipsizeMode getEllipsize() {
     return PangoEllipsizeMode.fromValue(_pangoLayoutGetEllipsize(this.handle));
+  }
+
+  /// Computes the logical and ink extents of @layout.
+  ///
+  /// Logical extents are usually what you want for positioning things. Note
+  /// that both extents may have non-zero x and y. You may want to use those
+  /// to offset where you render the layout. Not doing that is a very typical
+  /// bug that shows up as right-to-left layouts not being correctly positioned
+  /// in a layout with a set width.
+  ///
+  /// The extents are given in layout coordinates and in Pango units; layout
+  /// coordinates begin at the top left corner of the layout.
+  static final _pangoLayoutGetExtents =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_layout_get_extents')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) getExtents() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoLayoutGetExtents(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
   }
 
   /// Gets the font description for the layout, if any.
@@ -354,6 +525,51 @@ class PangoLayout extends GObject {
     return GSList.fromPointer(_pangoLayoutGetLinesReadonly(this.handle));
   }
 
+  /// Computes the logical and ink extents of @layout in device units.
+  ///
+  /// This function just calls [method@Pango.Layout.get_extents] followed by
+  /// two [func@extents_to_pixels] calls, rounding @ink_rect and @logical_rect
+  /// such that the rounded rectangles fully contain the unrounded one (that is,
+  /// passes them as first argument to [func@Pango.extents_to_pixels]).
+  static final _pangoLayoutGetPixelExtents =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_layout_get_pixel_extents')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) getPixelExtents() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoLayoutGetPixelExtents(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Returns the current serial number of @layout.
   ///
   /// The serial number is initialized to an small number larger than zero
@@ -469,6 +685,35 @@ class PangoLayout extends GObject {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   PangoWrapMode getWrap() {
     return PangoWrapMode.fromValue(_pangoLayoutGetWrap(this.handle));
+  }
+
+  /// Converts from an index within a `PangoLayout` to the onscreen position
+  /// corresponding to the grapheme at that index.
+  ///
+  /// The returns is represented as rectangle. Note that `pos->x` is
+  /// always the leading edge of the grapheme and `pos->x + pos->width` the
+  /// trailing edge of the grapheme. If the directionality of the grapheme
+  /// is right-to-left, then `pos->width` will be negative.
+  static final _pangoLayoutIndexToPos =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_layout_index_to_pos')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+          >();
+  PangoRectangle indexToPos(int index) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _pangoLayoutIndexToPos(this.handle, index, _out0.cast<ffi.Void>());
+      return PangoRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Queries whether the layout had to ellipsize any paragraphs.

@@ -162,6 +162,43 @@ class GtkIconView extends GtkWidget {
     return (_gtkIconViewGetActivateOnSingleClick(this.handle)) != 0;
   }
 
+  /// Fills the bounding rectangle in widget coordinates for the cell specified by
+  /// @path and @cell. If @cell is %NULL the main cell area is used.
+  ///
+  /// This function is only valid if @icon_view is realized.
+  static final _gtkIconViewGetCellRect =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_icon_view_get_cell_rect')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GdkRectangle) getCellRect(GtkTreePath path, [GtkCellRenderer? cell]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkIconViewGetCellRect(
+        this.handle,
+        path.handle,
+        cell?.handle ?? ffi.nullptr,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GdkRectangle.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Returns the value of the ::column-spacing property.
   static final _gtkIconViewGetColumnSpacing =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -178,6 +215,98 @@ class GtkIconView extends GtkWidget {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getColumns() {
     return _gtkIconViewGetColumns(this.handle);
+  }
+
+  /// Fills in @path and @cell with the current cursor path and cell.
+  /// If the cursor isn’t currently set, then *@path will be %NULL.
+  /// If no cell currently has focus, then *@cell will be %NULL.
+  ///
+  /// The returned `GtkTreePath` must be freed with gtk_tree_path_free().
+  static final _gtkIconViewGetCursor =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_icon_view_get_cursor')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkCellRenderer?) getCursorIconView() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      final _ret = _gtkIconViewGetCursor(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkCellRenderer.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
+  /// Gets the path and cell for the icon at the given position.
+  static final _gtkIconViewGetItemAtPos =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_icon_view_get_item_at_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkCellRenderer?) getItemAtPos(int x, int y) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      final _ret = _gtkIconViewGetItemAtPos(
+        this.handle,
+        x,
+        y,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkCellRenderer.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
   }
 
   /// Gets the column in which the item @path is currently
@@ -386,6 +515,121 @@ class GtkIconView extends GtkWidget {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getTooltipColumn() {
     return _gtkIconViewGetTooltipColumn(this.handle);
+  }
+
+  /// This function is supposed to be used in a `GtkWidget::query-tooltip`
+  /// signal handler for `GtkIconView`. The @x, @y and @keyboard_tip values
+  /// which are received in the signal handler, should be passed to this
+  /// function without modification.
+  ///
+  /// The return value indicates whether there is an icon view item at the given
+  /// coordinates (%TRUE) or not (%FALSE) for mouse tooltips. For keyboard
+  /// tooltips the item returned will be the cursor item. When %TRUE, then any of
+  /// @model, @path and @iter which have been provided will be set to point to
+  /// that row and the corresponding model.
+  static final _gtkIconViewGetTooltipContext =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_icon_view_get_tooltip_context')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreeModel?, GtkTreePath?, GtkTreeIter?) getTooltipContext(
+    int x,
+    int y,
+    bool keyboardTip,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2Anchor = HeapAnchor.allocate(256);
+    final _out2 = _out2Anchor.buffer;
+    try {
+      final _ret = _gtkIconViewGetTooltipContext(
+        this.handle,
+        x,
+        y,
+        keyboardTip ? 1 : 0,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreeModel.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out1.cast<ffi.Void>()),
+        (_out2) == ffi.nullptr
+            ? null
+            : GtkTreeIter.fromPointer(_out2.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
+  /// Sets @start_path and @end_path to be the first and last visible path.
+  /// Note that there may be invisible paths in between.
+  ///
+  /// Both paths should be freed with gtk_tree_path_free() after use.
+  static final _gtkIconViewGetVisibleRange =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_icon_view_get_visible_range')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkTreePath?) getVisibleRange() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      final _ret = _gtkIconViewGetVisibleRange(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
   }
 
   /// Activates the item determined by @path.

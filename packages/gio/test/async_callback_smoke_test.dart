@@ -16,31 +16,28 @@ import 'package:glib/glib.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-    'GFile.queryInfoAsyncCallback fires and queries a real file',
-    () async {
-      final file = GFile.newForPath('/etc/hostname');
-      final completer = Completer<GFileInfo>();
-      file.queryInfoAsyncCallback(
-        'standard::type,standard::size',
-        GFileQueryInfoFlags.none,
-        priorityDefault,
-        null,
-        (source, result) {
-          // The trampoline gave us typed `sourceObject` (GObject?) and
-          // `result` (GAsyncResult). We call the canonical `_finish`
-          // sibling to retrieve the result.
-          final info = file.queryInfoFinish(result);
-          completer.complete(info);
-        },
-      );
-      // Drive the default main context until the callback fires.
-      final ctx = GMainContext.default_();
-      while (!completer.isCompleted) {
-        if (!ctx.iteration(true)) break;
-      }
-      final info = await completer.future;
-      expect(info.getFileType(), GFileType.regular);
-    },
-  );
+  test('GFile.queryInfoAsyncCallback fires and queries a real file', () async {
+    final file = GFile.newForPath('/etc/hostname');
+    final completer = Completer<GFileInfo>();
+    file.queryInfoAsyncCallback(
+      'standard::type,standard::size',
+      GFileQueryInfoFlags.none,
+      priorityDefault,
+      null,
+      (source, result) {
+        // The trampoline gave us typed `sourceObject` (GObject?) and
+        // `result` (GAsyncResult). We call the canonical `_finish`
+        // sibling to retrieve the result.
+        final info = file.queryInfoFinish(result);
+        completer.complete(info);
+      },
+    );
+    // Drive the default main context until the callback fires.
+    final ctx = GMainContext.default_();
+    while (!completer.isCompleted) {
+      if (!ctx.iteration(true)) break;
+    }
+    final info = await completer.future;
+    expect(info.getFileType(), GFileType.regular);
+  });
 }

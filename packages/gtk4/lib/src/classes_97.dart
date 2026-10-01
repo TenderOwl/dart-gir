@@ -147,6 +147,27 @@ part of '../gtk4.dart';
 class GtkListStore extends GObject {
   GtkListStore.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Appends a new row to @list_store.  @iter will be changed to point to this new
+  /// row.  The row will be empty after this function is called.  To fill in
+  /// values, you need to call gtk_list_store_set() or gtk_list_store_set_value().
+  static final _gtkListStoreAppend =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_list_store_append')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkTreeIter append() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkListStoreAppend(this.handle, _out0.cast<ffi.Void>());
+      return GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Removes all rows from the list store.
   static final _gtkListStoreClear =
       gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
@@ -154,6 +175,101 @@ class GtkListStore extends GObject {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void clear() {
     _gtkListStoreClear(this.handle);
+  }
+
+  /// Creates a new row at @position.  @iter will be changed to point to this new
+  /// row.  If @position is -1 or is larger than the number of rows on the list,
+  /// then the new row will be appended to the list. The row will be empty after
+  /// this function is called.  To fill in values, you need to call
+  /// gtk_list_store_set() or gtk_list_store_set_value().
+  static final _gtkListStoreInsert =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_list_store_insert')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  GtkTreeIter insert(int position) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkListStoreInsert(this.handle, _out0.cast<ffi.Void>(), position);
+      return GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Inserts a new row after @sibling. If @sibling is %NULL, then the row will be
+  /// prepended to the beginning of the list. @iter will be changed to point to
+  /// this new row. The row will be empty after this function is called. To fill
+  /// in values, you need to call gtk_list_store_set() or gtk_list_store_set_value().
+  static final _gtkListStoreInsertAfter =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_list_store_insert_after')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GtkTreeIter insertAfter([GtkTreeIter? sibling]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkListStoreInsertAfter(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        sibling?.handle ?? ffi.nullptr,
+      );
+      return GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Inserts a new row before @sibling. If @sibling is %NULL, then the row will
+  /// be appended to the end of the list. @iter will be changed to point to this
+  /// new row. The row will be empty after this function is called. To fill in
+  /// values, you need to call gtk_list_store_set() or gtk_list_store_set_value().
+  static final _gtkListStoreInsertBefore =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_list_store_insert_before')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GtkTreeIter insertBefore([GtkTreeIter? sibling]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkListStoreInsertBefore(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        sibling?.handle ?? ffi.nullptr,
+      );
+      return GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Checks if the given iter is a valid iter for this `GtkListStore`.
@@ -227,6 +343,27 @@ class GtkListStore extends GObject {
       iter.handle,
       position?.handle ?? ffi.nullptr,
     );
+  }
+
+  /// Prepends a new row to @list_store. @iter will be changed to point to this new
+  /// row. The row will be empty after this function is called. To fill in
+  /// values, you need to call gtk_list_store_set() or gtk_list_store_set_value().
+  static final _gtkListStorePrepend =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_list_store_prepend')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkTreeIter prepend() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkListStorePrepend(this.handle, _out0.cast<ffi.Void>());
+      return GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Removes the given row from the list store.  After being removed,

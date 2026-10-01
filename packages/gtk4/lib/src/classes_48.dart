@@ -227,6 +227,37 @@ class GtkEntry extends GtkWidget {
     return (_gtkEntryGetIconActivatable(this.handle, iconPos.value)) != 0;
   }
 
+  /// Gets the area where entry’s icon at @icon_pos is drawn.
+  ///
+  /// This function is useful when drawing something to the
+  /// entry in a draw callback.
+  ///
+  /// If the entry is not realized or has no icon at the given
+  /// position, @icon_area is filled with zeros. Otherwise,
+  /// @icon_area will be filled with the icon's allocation,
+  /// relative to @entry's allocation.
+  static final _gtkEntryGetIconArea =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_entry_get_icon_area')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+          >();
+  GdkRectangle getIconArea(GtkEntryIconPosition iconPos) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkEntryGetIconArea(this.handle, iconPos.value, _out0.cast<ffi.Void>());
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Finds the icon at the given position and return its index.
   ///
   /// The position’s coordinates are relative to the @entry’s

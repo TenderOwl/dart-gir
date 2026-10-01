@@ -114,14 +114,12 @@ class CallableEmitter {
           ctx.report.skip('callable', label, 'inout parameter ${p.name}');
           return null;
         case GirParameterDirection.out:
-          if (p.callerAllocates) {
-            ctx.report.skip(
-              'callable',
-              label,
-              'caller-allocates out parameter ${p.name}',
-            );
-            return null;
-          }
+          // Both `caller-allocates="0"` (function allocates) and
+          // `caller-allocates="1"` (caller allocates) reduce to the
+          // same wrapper shape: malloc a buffer, pass its pointer,
+          // read back the value after the call. The wrapper frees
+          // the buffer in `finally` (always — the caller never sees
+          // the raw pointer).
           if (bridge.outPointee == null) {
             ctx.report.skip(
               'callable',
@@ -168,9 +166,16 @@ class CallableEmitter {
       final bridge = bridges[i]!;
       if (p.direction == GirParameterDirection.out) {
         final o = outs.firstWhere((o) => o.name == p.name);
+        // Native FFI parameter: the inner pointer type. For
+        // record/class OUT params allocated as `calloc<Uint8>(N)`, the
+        // buffer is `Pointer<Uint8>` and we cast at the call site.
         nativeParams.add('ffi.Pointer<${bridge.outPointee}>');
         dartParams.add('ffi.Pointer<${bridge.outPointee}>');
-        argExprs.add(o.varName);
+        argExprs.add(
+          o.bridge.outAllocSize != null
+              ? '${o.varName}.cast<ffi.Void>()'
+              : o.varName,
+        );
       } else {
         nativeParams.add(bridge.nativeType);
         dartParams.add(bridge.dartFfiType);
@@ -294,7 +299,24 @@ class CallableEmitter {
       }
     } else {
       for (final o in outs) {
-        core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
+        // Record/class OUT params allocate a fixed-size buffer via a
+        // Dart finalizer-backed heap anchor (`HeapAnchor.allocate`).
+        // The anchor keeps the buffer alive as long as the returned
+        // wrapper (`T.fromPointer(_buffer)`) is reachable — matching
+        // GTK's "iter lives until you drop it" semantics. Primitive
+        // OUT params allocate one slot of the pointee and free it
+        // manually in the finally block.
+        if (o.bridge.outAllocSize != null) {
+          ctx.usesGirFfi = true;
+          core.add(
+            'final ${o.varName}Anchor = HeapAnchor.allocate(${o.bridge.outAllocSize});',
+          );
+          core.add(
+            'final ${o.varName} = ${o.varName}Anchor.buffer;',
+          );
+        } else {
+          core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
+        }
       }
       if (fn.throws) {
         core.add('final _error = calloc<ffi.Pointer<ffi.Void>>();');
@@ -317,7 +339,13 @@ class CallableEmitter {
       }
       core.add('} finally {');
       for (final o in outs) {
-        core.add('  malloc.free(${o.varName});');
+        if (o.bridge.outAllocSize != null) {
+          // HeapAnchor's NativeFinalizer frees the buffer when the
+          // anchor is GC'd; do not free here (would invalidate the
+          // returned wrapper's handle).
+        } else {
+          core.add('  malloc.free(${o.varName});');
+        }
       }
       if (fn.throws) {
         core.add('  calloc.free(_error);');

@@ -479,6 +479,25 @@ final class GtkColorChooser {
   GtkColorChooser.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Gets the currently-selected color.
+  static final _gtkColorChooserGetRgba =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_color_chooser_get_rgba')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GdkRGBA getRgba() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkColorChooserGetRgba(this.handle, _out0.cast<ffi.Void>());
+      return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Returns whether the color chooser shows the alpha channel.
   static final _gtkColorChooserGetUseAlpha =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

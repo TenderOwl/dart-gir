@@ -175,6 +175,65 @@ final class GtkTextIter {
     return (_gtkTextIterBackwardLines(this.handle, count)) != 0;
   }
 
+  /// Same as [method@Gtk.TextIter.forward_search], but moves backward.
+  ///
+  /// @match_end will never be set to a `GtkTextIter` located after @iter,
+  /// even if there is a possible @match_start before or at @iter.
+  static final _gtkTextIterBackwardSearch =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_iter_backward_search')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?) backwardSearch(
+    String str,
+    GtkTextSearchFlags flags, [
+    GtkTextIter? limit,
+  ]) {
+    return withNativeString(str, (nativeStr) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      final _out1Anchor = HeapAnchor.allocate(256);
+      final _out1 = _out1Anchor.buffer;
+      try {
+        final _ret = _gtkTextIterBackwardSearch(
+          this.handle,
+          nativeStr.cast<Utf8>(),
+          flags.value,
+          _out0.cast<ffi.Void>(),
+          _out1.cast<ffi.Void>(),
+          limit?.handle ?? ffi.nullptr,
+        );
+        return (
+          (_ret) != 0,
+          (_out0) == ffi.nullptr
+              ? null
+              : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+          (_out1) == ffi.nullptr
+              ? null
+              : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+        );
+      } finally {}
+    });
+  }
+
   /// Moves backward to the previous sentence start.
   ///
   /// If @iter is already at the start of a sentence, moves backward
@@ -673,6 +732,71 @@ final class GtkTextIter {
           .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
   bool forwardLines(int count) {
     return (_gtkTextIterForwardLines(this.handle, count)) != 0;
+  }
+
+  /// Searches forward for @str.
+  ///
+  /// Any match is returned by setting @match_start to the first character
+  /// of the match and @match_end to the first character after the match.
+  /// The search will not continue past @limit. Note that a search is a
+  /// linear or O(n) operation, so you may wish to use @limit to avoid
+  /// locking up your UI on large buffers.
+  ///
+  /// @match_start will never be set to a `GtkTextIter` located before @iter,
+  /// even if there is a possible @match_end after or at @iter.
+  static final _gtkTextIterForwardSearch =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_iter_forward_search')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?) forwardSearch(
+    String str,
+    GtkTextSearchFlags flags, [
+    GtkTextIter? limit,
+  ]) {
+    return withNativeString(str, (nativeStr) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      final _out1Anchor = HeapAnchor.allocate(256);
+      final _out1 = _out1Anchor.buffer;
+      try {
+        final _ret = _gtkTextIterForwardSearch(
+          this.handle,
+          nativeStr.cast<Utf8>(),
+          flags.value,
+          _out0.cast<ffi.Void>(),
+          _out1.cast<ffi.Void>(),
+          limit?.handle ?? ffi.nullptr,
+        );
+        return (
+          (_ret) != 0,
+          (_out0) == ffi.nullptr
+              ? null
+              : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+          (_out1) == ffi.nullptr
+              ? null
+              : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+        );
+      } finally {}
+    });
   }
 
   /// Moves forward to the next sentence end.

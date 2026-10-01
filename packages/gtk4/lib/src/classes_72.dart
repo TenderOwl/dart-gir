@@ -94,6 +94,38 @@ class GtkGesture extends GtkEventController {
   GtkGesture.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// If there are touch sequences being currently handled by @gesture,
+  /// returns %TRUE and fills in @rect with the bounding box containing
+  /// all active touches.
+  ///
+  /// Otherwise, %FALSE will be returned.
+  ///
+  /// Note: This function will yield unexpected results on touchpad
+  /// gestures. Since there is no correlation between physical and
+  /// pixel distances, these will look as if constrained in an
+  /// infinitely small area, @rect width and height will thus be 0
+  /// regardless of the number of touchpoints.
+  static final _gtkGestureGetBoundingBox =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_gesture_get_bounding_box')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GdkRectangle) getBoundingBox() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkGestureGetBoundingBox(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GdkRectangle.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// If there are touch sequences being currently handled by @gesture,
   /// returns %TRUE and fills in @x and @y with the center of the bounding
   /// box containing all active touches.
   ///

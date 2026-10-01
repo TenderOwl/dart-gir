@@ -461,6 +461,103 @@ final class GActionGroup {
     });
   }
 
+  /// Queries all aspects of the named action within an @action_group.
+  ///
+  /// This function acquires the information available from
+  /// [method@Gio.ActionGroup.has_action], [method@Gio.ActionGroup.get_action_enabled],
+  /// [method@Gio.ActionGroup.get_action_parameter_type],
+  /// [method@Gio.ActionGroup.get_action_state_type],
+  /// [method@Gio.ActionGroup.get_action_state_hint] and
+  /// [method@Gio.ActionGroup.get_action_state] with a single function call.
+  ///
+  /// This provides two main benefits.
+  ///
+  /// The first is the improvement in efficiency that comes with not having
+  /// to perform repeated lookups of the action in order to discover
+  /// different things about it.  The second is that implementing
+  /// [type@Gio.ActionGroup] can now be done by only overriding this one virtual
+  /// function.
+  ///
+  /// The interface provides a default implementation of this function that
+  /// calls the individual functions, as required, to fetch the
+  /// information.  The interface also provides default implementations of
+  /// those functions that call this function.  All implementations,
+  /// therefore, must override either this function or all of the others.
+  ///
+  /// If the action exists, `TRUE` is returned and any of the requested
+  /// fields (as indicated by having a non-`NULL` reference passed in) are
+  /// filled.  If the action doesn’t exist, `FALSE` is returned and the
+  /// fields may or may not have been modified.
+  static final _gActionGroupQueryAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_group_query_action')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, bool, GVariantType?, GVariantType?, GVariant?, GVariant?) queryAction(
+    String actionName,
+  ) {
+    return withNativeString(actionName, (nativeActionName) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1Anchor = HeapAnchor.allocate(256);
+      final _out1 = _out1Anchor.buffer;
+      final _out2Anchor = HeapAnchor.allocate(256);
+      final _out2 = _out2Anchor.buffer;
+      final _out3Anchor = HeapAnchor.allocate(256);
+      final _out3 = _out3Anchor.buffer;
+      final _out4Anchor = HeapAnchor.allocate(256);
+      final _out4 = _out4Anchor.buffer;
+      try {
+        final _ret = _gActionGroupQueryAction(
+          this.handle,
+          nativeActionName.cast<Utf8>(),
+          _out0,
+          _out1.cast<ffi.Void>(),
+          _out2.cast<ffi.Void>(),
+          _out3.cast<ffi.Void>(),
+          _out4.cast<ffi.Void>(),
+        );
+        return (
+          (_ret) != 0,
+          _out0.value != 0,
+          (_out1) == ffi.nullptr
+              ? null
+              : GVariantType.fromPointer(_out1.cast<ffi.Void>()),
+          (_out2) == ffi.nullptr
+              ? null
+              : GVariantType.fromPointer(_out2.cast<ffi.Void>()),
+          (_out3) == ffi.nullptr
+              ? null
+              : GVariant.fromPointer(_out3.cast<ffi.Void>()),
+          (_out4) == ffi.nullptr
+              ? null
+              : GVariant.fromPointer(_out4.cast<ffi.Void>()),
+        );
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
   /// Signals that a new action was just added to the group.
   ///
   /// This signal is emitted after the action has been added

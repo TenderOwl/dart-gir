@@ -507,6 +507,82 @@ final class GdkRectangle {
   bool equal(GdkRectangle rect2) {
     return (_gdkRectangleEqual(this.handle, rect2.handle)) != 0;
   }
+
+  /// Calculates the intersection of two rectangles.
+  ///
+  /// It is allowed for @dest to be the same as either @src1 or @src2.
+  /// If the rectangles do not intersect, @dest’s width and height is set
+  /// to 0 and its x and y values are undefined. If you are only interested
+  /// in whether the rectangles intersect, but not in the intersecting area
+  /// itself, pass %NULL for @dest.
+  static final _gdkRectangleIntersect =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_rectangle_intersect')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GdkRectangle?) intersect(GdkRectangle src2) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gdkRectangleIntersect(
+        this.handle,
+        src2.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
+  /// Calculates the union of two rectangles.
+  ///
+  /// The union of rectangles @src1 and @src2 is the smallest rectangle which
+  /// includes both @src1 and @src2 within it. It is allowed for @dest to be
+  /// the same as either @src1 or @src2.
+  ///
+  /// Note that this function does not ignore 'empty' rectangles (ie. with
+  /// zero width or height).
+  static final _gdkRectangleUnion =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_rectangle_union')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GdkRectangle union(GdkRectangle src2) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gdkRectangleUnion(this.handle, src2.handle, _out0.cast<ffi.Void>());
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
 }
 
 final class GdkSnapshotClass {
@@ -521,194 +597,5 @@ final class GdkSurfaceClass {
 
 final class GdkTextureClass {
   GdkTextureClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Used to download the contents of a [class@Gdk.Texture].
-///
-/// It is intended to be created as a short-term object for a single download,
-/// but can be used for multiple downloads of different textures or with different
-/// settings.
-///
-/// `GdkTextureDownloader` can be used to convert data between different formats.
-/// Create a `GdkTexture` for the existing format and then download it in a
-/// different format.
-final class GdkTextureDownloader {
-  GdkTextureDownloader.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Creates a new texture downloader for @texture.
-  ///
-  /// By default, the downloader will convert the data to
-  /// the default memory format, and to the sRGB color state.
-  static final _gdkTextureDownloaderNew =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_texture_downloader_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkTextureDownloader(GdkTexture texture) {
-    return GdkTextureDownloader.fromPointer(
-      _gdkTextureDownloaderNew(texture.handle),
-    );
-  }
-
-  /// Creates a copy of the downloader.
-  ///
-  /// This function is meant for language bindings.
-  static final _gdkTextureDownloaderCopy =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_texture_downloader_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkTextureDownloader copy() {
-    return GdkTextureDownloader.fromPointer(
-      _gdkTextureDownloaderCopy(this.handle),
-    );
-  }
-
-  /// Downloads the given texture pixels into a `GBytes`. The rowstride will
-  /// be stored in the stride value.
-  ///
-  /// This function will abort if it tries to download a large texture and
-  /// fails to allocate memory. If you think that may happen, you should handle
-  /// memory allocation yourself and use [method@Gdk.TextureDownloader.download_into]
-  /// once allocation succeeded.
-  ///
-  /// This function cannot be used with a multiplanar format. Use
-  /// [method@Gdk.TextureDownloader.download_bytes_with_planes] for that purpose.
-  static final _gdkTextureDownloaderDownloadBytes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Size>,
-              )
-            >
-          >('gdk_texture_downloader_download_bytes')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Size>,
-            )
-          >();
-  (GBytes, int) downloadBytes() {
-    final _out0 = malloc<ffi.Size>();
-    try {
-      final _ret = _gdkTextureDownloaderDownloadBytes(this.handle, _out0);
-      return (GBytes.fromPointer(_ret), _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Frees the given downloader and all its associated resources.
-  static final _gdkTextureDownloaderFree =
-      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_texture_downloader_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _gdkTextureDownloaderFree(this.handle);
-  }
-
-  /// Gets the color state that the data will be downloaded in.
-  static final _gdkTextureDownloaderGetColorState =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_texture_downloader_get_color_state')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkColorState getColorState() {
-    return GdkColorState.fromPointer(
-      _gdkTextureDownloaderGetColorState(this.handle),
-    );
-  }
-
-  /// Gets the format that the data will be downloaded in.
-  static final _gdkTextureDownloaderGetFormat =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_texture_downloader_get_format',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GdkMemoryFormat getFormat() {
-    return GdkMemoryFormat.fromValue(
-      _gdkTextureDownloaderGetFormat(this.handle),
-    );
-  }
-
-  /// Gets the texture that the downloader will download.
-  static final _gdkTextureDownloaderGetTexture =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_texture_downloader_get_texture')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkTexture getTexture() {
-    return GdkTexture.fromPointer(_gdkTextureDownloaderGetTexture(this.handle));
-  }
-
-  /// Sets the color state the downloader will convert the data to.
-  ///
-  /// By default, the sRGB colorstate returned by [func@ColorState.get_srgb]
-  /// is used.
-  static final _gdkTextureDownloaderSetColorState =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_texture_downloader_set_color_state')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setColorState(GdkColorState colorState) {
-    _gdkTextureDownloaderSetColorState(this.handle, colorState.handle);
-  }
-
-  /// Sets the format the downloader will download.
-  ///
-  /// By default, GDK_MEMORY_DEFAULT is set.
-  static final _gdkTextureDownloaderSetFormat =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gdk_texture_downloader_set_format')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setFormat(GdkMemoryFormat format) {
-    _gdkTextureDownloaderSetFormat(this.handle, format.value);
-  }
-
-  /// Changes the texture the downloader will download.
-  static final _gdkTextureDownloaderSetTexture =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_texture_downloader_set_texture')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setTexture(GdkTexture texture) {
-    _gdkTextureDownloaderSetTexture(this.handle, texture.handle);
-  }
-}
-
-/// Stores a single event in a motion history.
-///
-/// To check whether an axis is present, check whether the corresponding
-/// flag from the [flags@Gdk.AxisFlags] enumeration is set in the @flags
-/// To access individual axis values, use the values of the values of
-/// the [enum@Gdk.AxisUse] enumerations as indices.
-final class GdkTimeCoord {
-  GdkTimeCoord.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GdkToplevelInterface {
-  GdkToplevelInterface.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

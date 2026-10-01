@@ -303,6 +303,43 @@ void content_deserialize_asyncCallback(
   });
 }
 
+/// Finishes a content deserialization operation.
+final _gdkContentDeserializeFinish =
+    gdk4Lookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >
+        >('gdk_content_deserialize_finish')
+        .asFunction<
+          int Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+          )
+        >();
+(bool, GValue) contentDeserializeFinish(GAsyncResult result) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  final _error = calloc<ffi.Pointer<ffi.Void>>();
+  try {
+    final _ret = _gdkContentDeserializeFinish(
+      result.handle,
+      _out0.cast<ffi.Void>(),
+      _error,
+    );
+    if (_error.value != ffi.nullptr) {
+      throw GlibException.fromError(_error.value);
+    }
+    return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+  } finally {
+    calloc.free(_error);
+  }
+}
+
 /// Registers a function to deserialize object of a given type.
 ///
 /// Since 4.20, when looking up a deserializer to use, GTK will

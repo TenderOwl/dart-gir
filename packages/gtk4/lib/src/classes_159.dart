@@ -296,6 +296,68 @@ class GtkTextView extends GtkWidget {
     return GtkTextBuffer.fromPointer(_gtkTextViewGetBuffer(this.handle));
   }
 
+  /// Determine the positions of the strong and weak cursors if the
+  /// insertion point is at @iter.
+  ///
+  /// The position of each cursor is stored as a zero-width rectangle.
+  /// The strong cursor location is the location where characters of
+  /// the directionality equal to the base direction of the paragraph
+  /// are inserted. The weak cursor location is the location where
+  /// characters of the directionality opposite to the base direction
+  /// of the paragraph are inserted.
+  ///
+  /// If @iter is %NULL, the actual cursor position is used.
+  ///
+  /// Note that if @iter happens to be the actual cursor position, and
+  /// there is currently an IM preedit sequence being entered, the
+  /// returned locations will be adjusted to account for the preedit
+  /// cursor’s offset within the preedit sequence.
+  ///
+  /// The rectangle position is in buffer coordinates; use
+  /// [method@Gtk.TextView.buffer_to_window_coords] to convert these
+  /// coordinates to coordinates for one of the windows in the text view.
+  static final _gtkTextViewGetCursorLocations =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_view_get_cursor_locations')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (GdkRectangle?, GdkRectangle?) getCursorLocations([GtkTextIter? iter]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _gtkTextViewGetCursorLocations(
+        this.handle,
+        iter?.handle ?? ffi.nullptr,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GdkRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Find out whether the cursor should be displayed.
   static final _gtkTextViewGetCursorVisible =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -383,6 +445,75 @@ class GtkTextView extends GtkWidget {
     return GtkInputPurpose.fromValue(_gtkTextViewGetInputPurpose(this.handle));
   }
 
+  /// Retrieves the iterator at buffer coordinates @x and @y.
+  ///
+  /// Buffer coordinates are coordinates for the entire buffer, not just
+  /// the currently-displayed portion. If you have coordinates from an
+  /// event, you have to convert those to buffer coordinates with
+  /// [method@Gtk.TextView.window_to_buffer_coords].
+  static final _gtkTextViewGetIterAtLocation =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+              )
+            >
+          >('gtk_text_view_get_iter_at_location')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int, int)
+          >();
+  (bool, GtkTextIter) getIterAtLocation(int x, int y) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTextViewGetIterAtLocation(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        x,
+        y,
+      );
+      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Gets a rectangle which roughly contains the character at @iter.
+  ///
+  /// The rectangle position is in buffer coordinates; use
+  /// [method@Gtk.TextView.buffer_to_window_coords] to convert these
+  /// coordinates to coordinates for one of the windows in the text view.
+  static final _gtkTextViewGetIterLocation =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_view_get_iter_location')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GdkRectangle getIterLocation(GtkTextIter iter) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextViewGetIterLocation(
+        this.handle,
+        iter.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Gets the default justification of paragraphs in @text_view.
   ///
   /// Tags in the buffer may override the default.
@@ -405,6 +536,44 @@ class GtkTextView extends GtkWidget {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getLeftMargin() {
     return _gtkTextViewGetLeftMargin(this.handle);
+  }
+
+  /// Gets the `GtkTextIter` at the start of the line containing
+  /// the coordinate @y.
+  ///
+  /// @y is in buffer coordinates, convert from window coordinates with
+  /// [method@Gtk.TextView.window_to_buffer_coords]. If non-%NULL,
+  /// @line_top will be filled with the coordinate of the top edge
+  /// of the line.
+  static final _gtkTextViewGetLineAtY =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_text_view_get_line_at_y')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (GtkTextIter, int) getLineAtY(int y) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkTextViewGetLineAtY(this.handle, _out0.cast<ffi.Void>(), y, _out1);
+      return (GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out1.value);
+    } finally {
+      malloc.free(_out1);
+    }
   }
 
   /// Gets the y coordinate of the top of the line containing @iter,
@@ -561,6 +730,29 @@ class GtkTextView extends GtkWidget {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getTopMargin() {
     return _gtkTextViewGetTopMargin(this.handle);
+  }
+
+  /// Fills @visible_rect with the currently-visible
+  /// region of the buffer, in buffer coordinates.
+  ///
+  /// Convert to window coordinates with
+  /// [method@Gtk.TextView.buffer_to_window_coords].
+  static final _gtkTextViewGetVisibleRect =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_text_view_get_visible_rect')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GdkRectangle getVisibleRect() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextViewGetVisibleRect(this.handle, _out0.cast<ffi.Void>());
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Gets the line wrapping for the view.

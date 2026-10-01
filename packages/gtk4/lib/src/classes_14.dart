@@ -905,6 +905,115 @@ class GtkBuilder extends GObject {
     });
   }
 
+  /// Demarshals a value from a string.
+  ///
+  /// This function calls g_value_init() on the @value argument,
+  /// so it need not be initialised beforehand.
+  ///
+  /// Can handle char, uchar, boolean, int, uint, long,
+  /// ulong, enum, flags, float, double, string, `GdkRGBA` and
+  /// `GtkAdjustment` type values.
+  ///
+  /// Upon errors %FALSE will be returned and @error will be
+  /// assigned a `GError` from the %GTK_BUILDER_ERROR domain.
+  static final _gtkBuilderValueFromString =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_builder_value_from_string')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GValue) valueFromString(GParamSpec pspec, String string) {
+    return withNativeString(string, (nativeString) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gtkBuilderValueFromString(
+          this.handle,
+          pspec.handle,
+          nativeString.cast<Utf8>(),
+          _out0.cast<ffi.Void>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Demarshals a value from a string.
+  ///
+  /// Unlike [method@Gtk.Builder.value_from_string], this function
+  /// takes a `GType` instead of `GParamSpec`.
+  ///
+  /// Calls g_value_init() on the @value argument, so it
+  /// need not be initialised beforehand.
+  ///
+  /// Upon errors %FALSE will be returned and @error will be
+  /// assigned a `GError` from the %GTK_BUILDER_ERROR domain.
+  static final _gtkBuilderValueFromStringType =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_builder_value_from_string_type')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GValue) valueFromStringType(int type_, String string) {
+    return withNativeString(string, (nativeString) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gtkBuilderValueFromStringType(
+          this.handle,
+          type_,
+          nativeString.cast<Utf8>(),
+          _out0.cast<ffi.Void>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

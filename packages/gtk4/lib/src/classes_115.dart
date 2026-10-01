@@ -166,6 +166,33 @@ class GtkPopover extends GtkWidget {
     return (_gtkPopoverGetMnemonicsVisible(this.handle)) != 0;
   }
 
+  /// Gets the rectangle that the popover points to.
+  ///
+  /// If a rectangle to point to has been set, this function will
+  /// return %TRUE and fill in @rect with such rectangle, otherwise
+  /// it will return %FALSE and fill in @rect with the parent
+  /// widget coordinates.
+  static final _gtkPopoverGetPointingTo =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_popover_get_pointing_to')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GdkRectangle) getPointingTo() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkPopoverGetPointingTo(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GdkRectangle.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Returns the preferred position of @popover.
   static final _gtkPopoverGetPosition =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

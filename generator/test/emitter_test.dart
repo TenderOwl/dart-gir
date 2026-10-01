@@ -317,6 +317,108 @@ void main() {
       expect(code, contains('notify == null ? null'));
       expect(code, contains('_nc4?.close();'));
     });
+
+    test(
+      'record OUT param (caller-allocates) uses HeapAnchor, omits manual free',
+      () {
+        final report = GenerationReport();
+        // A function returning void with a single record-typed OUT param
+        // (caller-allocates="1") — the canonical pattern exercised by
+        // GtkTextBuffer.getStartIter.
+        final fn = GirFunction(
+          name: 'get_start_iter',
+          cIdentifier: 'gtk_text_buffer_get_start_iter',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'iter',
+              direction: GirParameterDirection.out,
+              callerAllocates: true,
+              type: GirTypeRef(name: 'TextIter', cType: 'GtkTextIter*'),
+            ),
+          ],
+        );
+        // The OUT param's pointee must be registered in the resolver,
+        // otherwise the bridge will reject it. Build a tiny namespace
+        // that declares `TextIter` as a record.
+        final ns = GirNamespace(
+          name: 'Gtk',
+          version: '4.0',
+          sharedLibrary: 'libgtk-4.so.1',
+          cIdentifierPrefixes: const ['Gtk', 'gtk'],
+          cSymbolPrefixes: const ['gtk'],
+          records: [GirRecord(name: 'TextIter', cType: 'GtkTextIter')],
+          functions: [fn],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+
+        // The wrapper allocates a finalizer-backed buffer (NOT
+        // malloc<T>()) and uses `gir_ffi`'s `HeapAnchor` helper.
+        expect(code, contains('HeapAnchor.allocate('));
+        expect(code, contains('final _out0Anchor = HeapAnchor.allocate(256);'));
+        expect(code, contains('final _out0 = _out0Anchor.buffer;'));
+
+        // The finally block must NOT free the buffer — the
+        // NativeFinalizer attached by HeapAnchor does it on GC.
+        // (A manually freed buffer would invalidate the returned
+        // wrapper's handle and trip the GTK-side null deref that
+        // motivated the fix.)
+        expect(
+          code,
+          isNot(contains('malloc.free(_out0);')),
+        );
+
+        // The C call writes into the buffer via a `cast<ffi.Void>()`.
+        expect(code, contains('_gtkTextBufferGetStartIter('));
+        expect(code, contains('_out0.cast<ffi.Void>()'));
+
+        // The wrapper extracts via `T.fromPointer(_buffer.cast<ffi.Void>())`.
+        expect(code, contains('GtkTextIter.fromPointer(_out0.cast<ffi.Void>())'));
+
+        // The HeapAnchor helper comes from `package:gir_ffi/gir_ffi.dart`
+        // — assert the import was registered so the library emitter
+        // wires it in.
+        expect(ctx.usesGirFfi, isTrue);
+      },
+    );
+
+    test(
+      'caller-allocated primitive OUT still uses malloc/free (size known)',
+      () {
+        // Primitive OUT params know their size at compile time, so we
+        // keep the malloc<T>() path. This guards against a regression
+        // where every OUT param would route through HeapAnchor.
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'get_int',
+          cIdentifier: 'g_get_int',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'value',
+              direction: GirParameterDirection.out,
+              callerAllocates: true,
+              type: GirTypeRef(name: 'gint', cType: 'gint*'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+        // Primitive path: `malloc<ffi.Int32>()` + `malloc.free` in finally.
+        expect(code, contains('malloc<ffi.Int32>'));
+        expect(code, contains('malloc.free(_out0);'));
+        // HeapAnchor is NOT used for primitives — its lifetime model
+        // assumes the buffer is captured by a returned wrapper, which
+        // a primitive isn't.
+        expect(code, isNot(contains('HeapAnchor')));
+      },
+    );
   });
 
   group('FunctionEmitter.emitConstant', () {

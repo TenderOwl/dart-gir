@@ -397,6 +397,34 @@ int poll(GPollFD fds, int nfds, int timeout) {
   return _gPoll(fds.handle, nfds, timeout);
 }
 
+/// If @dest is %NULL, free @src; otherwise, moves @src into `*dest`.
+/// The error variable @dest points to must be %NULL.
+///
+/// @src must be non-%NULL.
+///
+/// Note that @src is no longer valid after this call. If you want
+/// to keep using the same GError*, you need to set it to %NULL
+/// after calling this function on it.
+final _gPropagateError =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >
+        >('g_propagate_error')
+        .asFunction<
+          void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+        >();
+GError? propagateError(GError src) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  try {
+    _gPropagateError(_out0.cast<ffi.Void>(), src.handle);
+    return (_out0) == ffi.nullptr
+        ? null
+        : GError.fromPointer(_out0.cast<ffi.Void>());
+  } finally {}
+}
+
 /// This is just like the standard C [`qsort()`](man:qsort(3)) function, but
 /// the comparison routine accepts a user data argument
 /// (like [`qsort_r()`](man:qsort_r(3))).
@@ -581,32 +609,4 @@ final _gRandomSetSeed =
     ).asFunction<void Function(int)>();
 void randomSetSeed(int seed) {
   _gRandomSetSeed(seed);
-}
-
-/// Acquires a reference on the data pointed by @mem_block.
-final _gRcBoxAcquire =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-          >
-        >('g_rc_box_acquire')
-        .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-ffi.Pointer<ffi.Void> rcBoxAcquire(ffi.Pointer<ffi.Void> memBlock) {
-  return _gRcBoxAcquire(memBlock);
-}
-
-/// Allocates @block_size bytes of memory, and adds reference
-/// counting semantics to it.
-///
-/// The data will be freed when its reference count drops to
-/// zero.
-///
-/// The allocated data is guaranteed to be suitably aligned for any
-/// built-in type.
-final _gRcBoxAlloc =
-    glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
-      'g_rc_box_alloc',
-    ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> rcBoxAlloc(int blockSize) {
-  return _gRcBoxAlloc(blockSize);
 }

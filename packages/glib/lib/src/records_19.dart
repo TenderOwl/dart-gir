@@ -272,6 +272,140 @@ final class GRegex {
     });
   }
 
+  /// Scans for a match in @string for the pattern in @regex.
+  /// The @match_options are combined with the match options specified
+  /// when the @regex structure was created, letting you have more
+  /// flexibility in reusing #GRegex structures.
+  ///
+  /// Unless %G_REGEX_RAW is specified in the options, @string must be valid UTF-8.
+  ///
+  /// A #GMatchInfo structure, used to get information on the match,
+  /// is stored in @match_info if not %NULL. Note that if @match_info
+  /// is not %NULL then it is created even if the function returns %FALSE,
+  /// i.e. you must free it regardless if regular expression actually matched.
+  ///
+  /// To retrieve all the non-overlapping matches of the pattern in
+  /// string you can use g_match_info_next().
+  ///
+  /// |[<!-- language="C" -->
+  /// static void
+  /// print_uppercase_words (const gchar *string)
+  /// {
+  /// // Print all uppercase-only words.
+  /// GRegex *regex;
+  /// GMatchInfo *match_info;
+  ///
+  /// regex = g_regex_new ("[A-Z]+", G_REGEX_DEFAULT, G_REGEX_MATCH_DEFAULT, NULL);
+  /// g_regex_match (regex, string, 0, &match_info);
+  /// while (g_match_info_matches (match_info))
+  /// {
+  /// gchar *word = g_match_info_fetch (match_info, 0);
+  /// g_print ("Found: %s\n", word);
+  /// g_free (word);
+  /// g_match_info_next (match_info, NULL);
+  /// }
+  /// g_match_info_free (match_info);
+  /// g_regex_unref (regex);
+  /// }
+  /// ]|
+  ///
+  /// @string is not copied and is used in #GMatchInfo internally. If
+  /// you use any #GMatchInfo method (except g_match_info_free()) after
+  /// freeing or modifying @string then the behaviour is undefined.
+  static final _gRegexMatch =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_regex_match')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GMatchInfo?) match(String string, GRegexMatchFlags matchOptions) {
+    return withNativeString(string, (nativeString) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        final _ret = _gRegexMatch(
+          this.handle,
+          nativeString.cast<Utf8>(),
+          matchOptions.value,
+          _out0.cast<ffi.Void>(),
+        );
+        return (
+          (_ret) != 0,
+          (_out0) == ffi.nullptr
+              ? null
+              : GMatchInfo.fromPointer(_out0.cast<ffi.Void>()),
+        );
+      } finally {}
+    });
+  }
+
+  /// Using the standard algorithm for regular expression matching only
+  /// the longest match in the string is retrieved. This function uses
+  /// a different algorithm so it can retrieve all the possible matches.
+  /// For more documentation see g_regex_match_all_full().
+  ///
+  /// A #GMatchInfo structure, used to get information on the match, is
+  /// stored in @match_info if not %NULL. Note that if @match_info is
+  /// not %NULL then it is created even if the function returns %FALSE,
+  /// i.e. you must free it regardless if regular expression actually
+  /// matched.
+  ///
+  /// @string is not copied and is used in #GMatchInfo internally. If
+  /// you use any #GMatchInfo method (except g_match_info_free()) after
+  /// freeing or modifying @string then the behaviour is undefined.
+  static final _gRegexMatchAll =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_regex_match_all')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GMatchInfo?) matchAll(String string, GRegexMatchFlags matchOptions) {
+    return withNativeString(string, (nativeString) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        final _ret = _gRegexMatchAll(
+          this.handle,
+          nativeString.cast<Utf8>(),
+          matchOptions.value,
+          _out0.cast<ffi.Void>(),
+        );
+        return (
+          (_ret) != 0,
+          (_out0) == ffi.nullptr
+              ? null
+              : GMatchInfo.fromPointer(_out0.cast<ffi.Void>()),
+        );
+      } finally {}
+    });
+  }
+
   /// Increases reference count of @regex by 1.
   static final _gRegexRef =
       glibLookup<
@@ -387,130 +521,5 @@ final class GRegex {
             0;
       });
     });
-  }
-}
-
-/// A `GRelation` is a table of data which can be indexed on any number
-/// of fields, rather like simple database tables. A `GRelation` contains
-/// a number of records, called tuples. Each record contains a number of
-/// fields. Records are not ordered, so it is not possible to find the
-/// record at a particular index.
-///
-/// Note that `GRelation` tables are currently limited to 2 fields.
-///
-/// To create a `GRelation`, use [func@GLib.Relation.new].
-///
-/// To specify which fields should be indexed, use [method@GLib.Relation.index].
-/// Note that this must be called before any tuples are added to the
-/// `GRelation`.
-///
-/// To add records to a `GRelation` use [method@GLib.Relation.insert].
-///
-/// To determine if a given record appears in a `GRelation`, use
-/// [method@GLib.Relation.exists]. Note that fields are compared directly, so
-/// pointers must point to the exact same position (i.e. different
-/// copies of the same string will not match.)
-///
-/// To count the number of records which have a particular value in a
-/// given field, use [method@GLib.Relation.count].
-///
-/// To get all the records which have a particular value in a given
-/// field, use [method@GLib.Relation.select]. To access fields of the resulting
-/// records, use [method@GLib.Tuples.index]. To free the resulting records use
-/// [method@GLib.Tuples.destroy].
-///
-/// To delete all records which have a particular value in a given
-/// field, use [method@GLib.Relation.delete].
-///
-/// To destroy the `GRelation`, use [method@GLib.Relation.destroy].
-///
-/// To help debug `GRelation` objects, use [method@GLib.Relation.print].
-///
-/// `GRelation` has been marked as deprecated, since this API has never
-/// been fully implemented, is not very actively maintained and rarely
-/// used.
-final class GRelation {
-  GRelation.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Returns the number of tuples in a #GRelation that have the given
-  /// value in the given field.
-  static final _gRelationCount =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-              )
-            >
-          >('g_relation_count')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
-          >();
-  int count(ffi.Pointer<ffi.Void> key, int field) {
-    return _gRelationCount(this.handle, key, field);
-  }
-
-  /// Deletes any records from a #GRelation that have the given key value
-  /// in the given field.
-  static final _gRelationDelete =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-              )
-            >
-          >('g_relation_delete')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
-          >();
-  int delete(ffi.Pointer<ffi.Void> key, int field) {
-    return _gRelationDelete(this.handle, key, field);
-  }
-
-  /// Destroys the #GRelation, freeing all memory allocated. However, it
-  /// does not free memory allocated for the tuple data, so you should
-  /// free that first if appropriate.
-  static final _gRelationDestroy =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_relation_destroy',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void destroy() {
-    _gRelationDestroy(this.handle);
-  }
-
-  /// Outputs information about all records in a #GRelation, as well as
-  /// the indexes. It is for debugging.
-  static final _gRelationPrint =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_relation_print',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void print() {
-    _gRelationPrint(this.handle);
-  }
-}
-
-/// The #GSList struct is used for each element in the singly-linked
-/// list.
-final class GSList {
-  GSList.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-  static final _gSlistPopAllocator =
-      glibLookup<ffi.NativeFunction<ffi.Void Function()>>(
-        'g_slist_pop_allocator',
-      ).asFunction<void Function()>();
-  static void popAllocator() {
-    _gSlistPopAllocator();
-  }
-
-  static final _gSlistPushAllocator =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_slist_push_allocator',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  static void pushAllocator(GAllocator allocator) {
-    _gSlistPushAllocator(allocator.handle);
   }
 }

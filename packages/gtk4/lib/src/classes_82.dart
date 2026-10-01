@@ -179,6 +179,52 @@ class GtkIMContext extends GObject {
     _gtkImContextFocusOut(this.handle);
   }
 
+  /// Retrieve the current preedit string for the input context,
+  /// and a list of attributes to apply to the string.
+  ///
+  /// This string should be displayed inserted at the insertion point.
+  static final _gtkImContextGetPreeditString =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_im_context_get_preedit_string')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (String, PangoAttrList, int) getPreeditString() {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    try {
+      _gtkImContextGetPreeditString(
+        this.handle,
+        _out0,
+        _out1.cast<ffi.Void>(),
+        _out2,
+      );
+      return (
+        stringFromNative(_out0.value.cast(), free: true)!,
+        PangoAttrList.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value,
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out2);
+    }
+  }
+
   /// Retrieves context around the insertion point.
   ///
   /// Input methods typically want context in order to constrain input text

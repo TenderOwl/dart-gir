@@ -422,6 +422,29 @@ class GdkMonitor extends GObject {
     return GdkDisplay.fromPointer(_gdkMonitorGetDisplay(this.handle));
   }
 
+  /// Retrieves the size and position of the monitor within the
+  /// display coordinate space.
+  ///
+  /// The returned geometry is in  ”application pixels”, not in
+  /// ”device pixels” (see [method@Gdk.Monitor.get_scale]).
+  static final _gdkMonitorGetGeometry =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gdk_monitor_get_geometry')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GdkRectangle getGeometry() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gdkMonitorGetGeometry(this.handle, _out0.cast<ffi.Void>());
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Gets the height in millimeters of the monitor.
   static final _gdkMonitorGetHeightMm =
       gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

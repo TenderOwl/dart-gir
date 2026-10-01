@@ -180,6 +180,35 @@ GVariant dbusGvalueToGvariant(GValue gvalue, GVariantType type_) {
   );
 }
 
+/// Converts a #GVariant to a #GValue. If @value is floating, it is consumed.
+///
+/// The rules specified in the g_dbus_gvalue_to_gvariant() function are
+/// used - this function is essentially its reverse form. So, a #GVariant
+/// containing any basic or string array type will be converted to a #GValue
+/// containing a basic value or string array. Any other #GVariant (handle,
+/// variant, tuple, dict entry) will be converted to a #GValue containing that
+/// #GVariant.
+///
+/// The conversion never fails - a valid #GValue is always returned in
+/// @out_gvalue.
+final _gDbusGvariantToGvalue =
+    gioLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >
+        >('g_dbus_gvariant_to_gvalue')
+        .asFunction<
+          void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+        >();
+GValue dbusGvariantToGvalue(GVariant value) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  try {
+    _gDbusGvariantToGvalue(value.handle, _out0.cast<ffi.Void>());
+    return GValue.fromPointer(_out0.cast<ffi.Void>());
+  } finally {}
+}
+
 /// Checks if @string is a
 /// [D-Bus address](https://dbus.freedesktop.org/doc/dbus-specification.html#addresses).
 ///
@@ -631,28 +660,4 @@ GSettingsBackend keyfileSettingsBackendNew(
       });
     });
   });
-}
-
-/// Creates a memory-backed #GSettingsBackend.
-///
-/// This backend allows changes to settings, but does not write them
-/// to any backing storage, so the next time you run your application,
-/// the memory backend will start out with the default values again.
-final _gMemorySettingsBackendNew =
-    gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-      'g_memory_settings_backend_new',
-    ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-GSettingsBackend memorySettingsBackendNew() {
-  return GSettingsBackend.fromPointer(_gMemorySettingsBackendNew());
-}
-
-/// Initializes the platform networking libraries (eg, on Windows, this
-/// calls WSAStartup()). GLib will call this itself if it is needed, so
-/// you only need to call it if you directly call system networking
-/// functions (without calling any GLib networking functions first).
-final _gNetworkingInit = gioLookup<ffi.NativeFunction<ffi.Void Function()>>(
-  'g_networking_init',
-).asFunction<void Function()>();
-void networkingInit() {
-  _gNetworkingInit();
 }

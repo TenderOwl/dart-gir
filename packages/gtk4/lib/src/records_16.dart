@@ -315,6 +315,101 @@ final class GtkTreeModel {
     return GtkTreeModelFlags(_gtkTreeModelGetFlags(this.handle));
   }
 
+  /// Sets @iter to a valid iterator pointing to @path.
+  ///
+  /// If @path does not exist, @iter is set to an invalid
+  /// iterator and %FALSE is returned.
+  static final _gtkTreeModelGetIter =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_model_get_iter')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreeIter) getIter(GtkTreePath path) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTreeModelGetIter(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        path.handle,
+      );
+      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Initializes @iter with the first iterator in the tree
+  /// (the one at the path "0").
+  ///
+  /// Returns %FALSE if the tree is empty, %TRUE otherwise.
+  static final _gtkTreeModelGetIterFirst =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_tree_model_get_iter_first')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GtkTreeIter) getIterFirst() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTreeModelGetIterFirst(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Sets @iter to a valid iterator pointing to @path_string, if it
+  /// exists.
+  ///
+  /// Otherwise, @iter is left invalid and %FALSE is returned.
+  static final _gtkTreeModelGetIterFromString =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_tree_model_get_iter_from_string')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  (bool, GtkTreeIter) getIterFromString(String pathString) {
+    return withNativeString(pathString, (nativePathString) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        final _ret = _gtkTreeModelGetIterFromString(
+          this.handle,
+          _out0.cast<ffi.Void>(),
+          nativePathString.cast<Utf8>(),
+        );
+        return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+      } finally {}
+    });
+  }
+
   /// Returns the number of columns supported by @tree_model.
   static final _gtkTreeModelGetNColumns =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -375,6 +470,81 @@ final class GtkTreeModel {
     );
   }
 
+  /// Initializes and sets @value to that at @column.
+  ///
+  /// When done with @value, g_value_unset() needs to be called
+  /// to free any allocated memory.
+  static final _gtkTreeModelGetValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_model_get_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GValue getValue(GtkTreeIter iter, int column) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTreeModelGetValue(
+        this.handle,
+        iter.handle,
+        column,
+        _out0.cast<ffi.Void>(),
+      );
+      return GValue.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Sets @iter to point to the first child of @parent.
+  ///
+  /// If @parent has no children, %FALSE is returned and @iter is
+  /// set to be invalid. @parent will remain a valid node after this
+  /// function has been called.
+  ///
+  /// If @parent is %NULL returns the first node, equivalent to
+  /// `gtk_tree_model_get_iter_first (tree_model, iter);`
+  static final _gtkTreeModelIterChildren =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_model_iter_children')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreeIter) iterChildren([GtkTreeIter? parent]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTreeModelIterChildren(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        parent?.handle ?? ffi.nullptr,
+      );
+      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Returns %TRUE if @iter has children, %FALSE otherwise.
   static final _gtkTreeModelIterHasChild =
       gtk4Lookup<
@@ -421,6 +591,85 @@ final class GtkTreeModel {
           >();
   bool iterNext(GtkTreeIter iter) {
     return (_gtkTreeModelIterNext(this.handle, iter.handle)) != 0;
+  }
+
+  /// Sets @iter to be the child of @parent, using the given index.
+  ///
+  /// The first index is 0. If @n is too big, or @parent has no children,
+  /// @iter is set to an invalid iterator and %FALSE is returned. @parent
+  /// will remain a valid node after this function has been called. As a
+  /// special case, if @parent is %NULL, then the @n-th root node
+  /// is set.
+  static final _gtkTreeModelIterNthChild =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_tree_model_iter_nth_child')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  (bool, GtkTreeIter) iterNthChild(GtkTreeIter? parent, int n) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTreeModelIterNthChild(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        parent?.handle ?? ffi.nullptr,
+        n,
+      );
+      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Sets @iter to be the parent of @child.
+  ///
+  /// If @child is at the toplevel, and doesn’t have a parent, then
+  /// @iter is set to an invalid iterator and %FALSE is returned.
+  /// @child will remain a valid node after this function has been
+  /// called.
+  ///
+  /// @iter will be initialized before the lookup is performed, so @child
+  /// and @iter cannot point to the same memory location.
+  static final _gtkTreeModelIterParent =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_model_iter_parent')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTreeIter) iterParent(GtkTreeIter child) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTreeModelIterParent(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        child.handle,
+      );
+      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
   }
 
   /// Sets @iter to point to the previous node at the current level.

@@ -101,6 +101,59 @@ class PangoFont extends GObject {
         : PangoFontMap.fromPointer(_pangoFontGetFontMap(this.handle));
   }
 
+  /// Gets the logical and ink extents of a glyph within a font.
+  ///
+  /// The coordinate system for each rectangle has its origin at the
+  /// base line and horizontal origin of the character with increasing
+  /// coordinates extending to the right and down. The macros PANGO_ASCENT(),
+  /// PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING() can be used to convert
+  /// from the extents rectangle to more traditional font metrics. The units
+  /// of the rectangles are in 1/PANGO_SCALE of a device unit.
+  ///
+  /// If @font is %NULL, this function gracefully sets some sane values in the
+  /// output variables and returns.
+  static final _pangoFontGetGlyphExtents =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_font_get_glyph_extents')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) getGlyphExtents(int glyph) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoFontGetGlyphExtents(
+        this.handle,
+        glyph,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Gets overall metric information for a font.
   ///
   /// Since the metrics may be substantially different for different scripts,

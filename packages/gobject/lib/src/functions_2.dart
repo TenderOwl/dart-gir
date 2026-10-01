@@ -48,6 +48,28 @@ final _gSignalParseName =
   });
 }
 
+/// Queries the signal system for in-depth information about a
+/// specific signal. This function will fill in a user-provided
+/// structure to hold signal-specific information. If an invalid
+/// signal id is passed in, the @signal_id member of the #GSignalQuery
+/// is 0. All members filled into the #GSignalQuery structure should
+/// be considered constant and have to be left untouched.
+final _gSignalQuery =
+    gobjectLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(ffi.Uint32, ffi.Pointer<ffi.Void>)
+          >
+        >('g_signal_query')
+        .asFunction<void Function(int, ffi.Pointer<ffi.Void>)>();
+GSignalQuery signalQuery(int signalId) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  try {
+    _gSignalQuery(signalId, _out0.cast<ffi.Void>());
+    return GSignalQuery.fromPointer(_out0.cast<ffi.Void>());
+  } finally {}
+}
+
 /// Deletes an emission hook.
 final _gSignalRemoveEmissionHook =
     gobjectLookup<
@@ -574,118 +596,26 @@ int typeQname(int type_) {
   return _gTypeQname(type_);
 }
 
-/// Registers @type_name as the name of a new dynamic type derived from
-/// @parent_type.  The type system uses the information contained in the
-/// #GTypePlugin structure pointed to by @plugin to manage the type and its
-/// instances (if not abstract).  The value of @flags determines the nature
-/// (e.g. abstract or not) of the type.
-final _gTypeRegisterDynamic =
+/// Queries the type system for information about a specific type.
+///
+/// This function will fill in a user-provided structure to hold
+/// type-specific information. If an invalid #GType is passed in, the
+/// @type member of the #GTypeQuery is 0. All members filled into the
+/// #GTypeQuery structure should be considered constant and have to be
+/// left untouched.
+///
+/// Since GLib 2.78, this function allows queries on dynamic types. Previously
+/// it only supported static types.
+final _gTypeQuery =
     gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Size Function(
-              ffi.Size,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Uint32,
-            )
-          >
-        >('g_type_register_dynamic')
-        .asFunction<
-          int Function(int, ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>, int)
-        >();
-int typeRegisterDynamic(
-  int parentType,
-  String typeName,
-  GTypePlugin plugin,
-  GTypeFlags flags,
-) {
-  return withNativeString(typeName, (nativeTypeName) {
-    return _gTypeRegisterDynamic(
-      parentType,
-      nativeTypeName.cast<Utf8>(),
-      plugin.handle,
-      flags.value,
-    );
-  });
-}
-
-/// Registers @type_id as the predefined identifier and @type_name as the
-/// name of a fundamental type. If @type_id is already registered, or a
-/// type named @type_name is already registered, the behaviour is undefined.
-/// The type system uses the information contained in the #GTypeInfo structure
-/// pointed to by @info and the #GTypeFundamentalInfo structure pointed to by
-/// @finfo to manage the type and its instances. The value of @flags determines
-/// additional characteristics of the fundamental type.
-final _gTypeRegisterFundamental =
-    gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Size Function(
-              ffi.Size,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Uint32,
-            )
-          >
-        >('g_type_register_fundamental')
-        .asFunction<
-          int Function(
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            int,
-          )
-        >();
-int typeRegisterFundamental(
-  int typeId,
-  String typeName,
-  GTypeInfo info,
-  GTypeFundamentalInfo finfo,
-  GTypeFlags flags,
-) {
-  return withNativeString(typeName, (nativeTypeName) {
-    return _gTypeRegisterFundamental(
-      typeId,
-      nativeTypeName.cast<Utf8>(),
-      info.handle,
-      finfo.handle,
-      flags.value,
-    );
-  });
-}
-
-/// Registers @type_name as the name of a new static type derived from
-/// @parent_type. The type system uses the information contained in the
-/// #GTypeInfo structure pointed to by @info to manage the type and its
-/// instances (if not abstract). The value of @flags determines the nature
-/// (e.g. abstract or not) of the type.
-final _gTypeRegisterStatic =
-    gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Size Function(
-              ffi.Size,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Uint32,
-            )
-          >
-        >('g_type_register_static')
-        .asFunction<
-          int Function(int, ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>, int)
-        >();
-int typeRegisterStatic(
-  int parentType,
-  String typeName,
-  GTypeInfo info,
-  GTypeFlags flags,
-) {
-  return withNativeString(typeName, (nativeTypeName) {
-    return _gTypeRegisterStatic(
-      parentType,
-      nativeTypeName.cast<Utf8>(),
-      info.handle,
-      flags.value,
-    );
-  });
+          ffi.NativeFunction<ffi.Void Function(ffi.Size, ffi.Pointer<ffi.Void>)>
+        >('g_type_query')
+        .asFunction<void Function(int, ffi.Pointer<ffi.Void>)>();
+GTypeQuery typeQuery(int type_) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  try {
+    _gTypeQuery(type_, _out0.cast<ffi.Void>());
+    return GTypeQuery.fromPointer(_out0.cast<ffi.Void>());
+  } finally {}
 }

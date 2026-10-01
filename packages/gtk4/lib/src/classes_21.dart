@@ -92,6 +92,48 @@ class GtkCellRenderer extends GInitiallyUnowned {
     });
   }
 
+  /// Gets the aligned area used by @cell inside @cell_area. Used for finding
+  /// the appropriate edit and focus rectangle.
+  static final _gtkCellRendererGetAlignedArea =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_cell_renderer_get_aligned_area')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GdkRectangle getAlignedArea(
+    GtkWidget widget,
+    GtkCellRendererState flags,
+    GdkRectangle cellArea,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkCellRendererGetAlignedArea(
+        this.handle,
+        widget.handle,
+        flags.value,
+        cellArea.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Checks whether the given `GtkCellRenderer` is expanded.
   static final _gtkCellRendererGetIsExpanded =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -108,6 +150,50 @@ class GtkCellRenderer extends GInitiallyUnowned {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getIsExpander() {
     return (_gtkCellRendererGetIsExpander(this.handle)) != 0;
+  }
+
+  /// Retrieves the minimum and natural size of a cell taking
+  /// into account the widget’s preference for height-for-width management.
+  static final _gtkCellRendererGetPreferredSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_cell_renderer_get_preferred_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (GtkRequisition?, GtkRequisition?) getPreferredSize(GtkWidget widget) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _gtkCellRendererGetPreferredSize(
+        this.handle,
+        widget.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkRequisition.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkRequisition.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
   }
 
   /// Gets whether the cell renderer prefers a height-for-width layout

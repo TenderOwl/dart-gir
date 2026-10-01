@@ -6605,6 +6605,46 @@ final class GFile {
     );
   }
 
+  /// Finishes setting an attribute started in g_file_set_attributes_async().
+  static final _gFileSetAttributesFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_set_attributes_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GFileInfo) setAttributesFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileSetAttributesFinish(
+        this.handle,
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, GFileInfo.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Tries to set all attributes in the #GFileInfo on the target
   /// values, not stopping on the first error.
   ///
@@ -7886,6 +7926,57 @@ final class GFile {
     });
   }
 
+  /// Opens a file in the preferred directory for temporary files (as
+  /// returned by g_get_tmp_dir()) and returns a #GFile and
+  /// #GFileIOStream pointing to it.
+  ///
+  /// @tmpl should be a string in the GLib file name encoding
+  /// containing a sequence of six 'X' characters, and containing no
+  /// directory components. If it is %NULL, a default template is used.
+  ///
+  /// Unlike the other #GFile constructors, this will return %NULL if
+  /// a temporary file could not be created.
+  static final _gFileNewTmp =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_new_tmp')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  static (GFile, GFileIOStream) newTmp([String? tmpl]) {
+    return withNativeString(tmpl, (nativeTmpl) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gFileNewTmp(
+          nativeTmpl.cast<Utf8>(),
+          _out0.cast<ffi.Void>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (
+          GFile.fromPointer(_ret),
+          GFileIOStream.fromPointer(_out0.cast<ffi.Void>()),
+        );
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Asynchronously opens a file in the preferred directory for temporary files
   /// (as returned by g_get_tmp_dir()) as g_file_new_tmp().
   ///
@@ -8069,6 +8160,46 @@ final class GFile {
         throw GlibException.fromError(_error.value);
       }
       return GFile.fromPointer(_ret);
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Finishes a temporary file creation started by g_file_new_tmp_async().
+  static final _gFileNewTmpFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_new_tmp_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  static (GFile, GFileIOStream) newTmpFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileNewTmpFinish(
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GFile.fromPointer(_ret),
+        GFileIOStream.fromPointer(_out0.cast<ffi.Void>()),
+      );
     } finally {
       calloc.free(_error);
     }

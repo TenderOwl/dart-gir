@@ -309,6 +309,69 @@ final class GtkWidgetClass {
     });
   }
 
+  /// Returns details about an action that has been
+  /// installed for @widget_class.
+  ///
+  /// See [method@Gtk.WidgetClass.install_action] for details on
+  /// how to install actions.
+  ///
+  /// Note that this function will also return actions defined
+  /// by parent classes. You can identify those by looking
+  /// at @owner.
+  static final _gtkWidgetClassQueryAction =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_widget_class_query_action')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  (bool, int, String, GVariantType?, String?) queryAction(int index) {
+    final _out0 = malloc<ffi.Size>();
+    final _out1 = malloc<ffi.Pointer<Utf8>>();
+    final _out2Anchor = HeapAnchor.allocate(256);
+    final _out2 = _out2Anchor.buffer;
+    final _out3 = malloc<ffi.Pointer<Utf8>>();
+    try {
+      final _ret = _gtkWidgetClassQueryAction(
+        this.handle,
+        index,
+        _out0,
+        _out1,
+        _out2.cast<ffi.Void>(),
+        _out3,
+      );
+      return (
+        (_ret) != 0,
+        _out0.value,
+        stringFromNative(_out1.value.cast(), free: true)!,
+        (_out2) == ffi.nullptr
+            ? null
+            : GVariantType.fromPointer(_out2.cast<ffi.Void>()),
+        stringFromNative(_out3.value.cast(), free: true)!,
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out3);
+    }
+  }
+
   /// Sets the accessible role used by the given widget class.
   ///
   /// Different accessible roles have different states, and are

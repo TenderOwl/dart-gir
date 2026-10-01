@@ -31,6 +31,61 @@ class GSocketListener extends GObject {
     return GSocketListener.fromPointer(_gSocketListenerNew(), owned: true);
   }
 
+  /// Blocks waiting for a client to connect to any of the sockets added
+  /// to the listener. Returns a #GSocketConnection for the socket that was
+  /// accepted.
+  ///
+  /// If @source_object is not %NULL it will be filled out with the source
+  /// object specified when the corresponding socket or address was added
+  /// to the listener.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gSocketListenerAccept =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_listener_accept')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GSocketConnection, GObject?) accept([GCancellable? cancellable]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketListenerAccept(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GSocketConnection.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// This is the asynchronous version of g_socket_listener_accept().
   ///
   /// When the operation is finished @callback will be
@@ -147,6 +202,109 @@ class GSocketListener extends GObject {
     );
   }
 
+  /// Finishes an async accept operation. See g_socket_listener_accept_async()
+  static final _gSocketListenerAcceptFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_listener_accept_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GSocketConnection, GObject?) acceptFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketListenerAcceptFinish(
+        this.handle,
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GSocketConnection.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Blocks waiting for a client to connect to any of the sockets added
+  /// to the listener. Returns the #GSocket that was accepted.
+  ///
+  /// If you want to accept the high-level #GSocketConnection, not a #GSocket,
+  /// which is often the case, then you should use g_socket_listener_accept()
+  /// instead.
+  ///
+  /// If @source_object is not %NULL it will be filled out with the source
+  /// object specified when the corresponding socket or address was added
+  /// to the listener.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gSocketListenerAcceptSocket =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_listener_accept_socket')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GSocket, GObject?) acceptSocket([GCancellable? cancellable]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketListenerAcceptSocket(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GSocket.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// This is the asynchronous version of g_socket_listener_accept_socket().
   ///
   /// When the operation is finished @callback will be
@@ -261,6 +419,132 @@ class GSocketListener extends GObject {
       _acceptSocketAsyncCallbackPtr,
       _data.cast<ffi.Void>(),
     );
+  }
+
+  /// Finishes an async accept operation. See g_socket_listener_accept_socket_async()
+  static final _gSocketListenerAcceptSocketFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_listener_accept_socket_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GSocket, GObject?) acceptSocketFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketListenerAcceptSocketFinish(
+        this.handle,
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GSocket.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Creates a socket of type @type and protocol @protocol, binds
+  /// it to @address and adds it to the set of sockets we're accepting
+  /// sockets from.
+  ///
+  /// Note that adding an IPv6 address, depending on the platform,
+  /// may or may not result in a listener that also accepts IPv4
+  /// connections.  For more deterministic behavior, see
+  /// g_socket_listener_add_inet_port().
+  ///
+  /// @source_object will be passed out in the various calls
+  /// to accept to identify this particular source, which is
+  /// useful if you're listening on multiple addresses and do
+  /// different things depending on what address is connected to.
+  ///
+  /// If successful and @effective_address is non-%NULL then it will
+  /// be set to the address that the binding actually occurred at.  This
+  /// is helpful for determining the port number that was used for when
+  /// requesting a binding to port 0 (ie: "any port").  This address, if
+  /// requested, belongs to the caller and must be freed.
+  ///
+  /// Call g_socket_listener_close() to stop listening on @address; this will not
+  /// be done automatically when you drop your final reference to @listener, as
+  /// references may be held internally.
+  static final _gSocketListenerAddAddress =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_listener_add_address')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GSocketAddress?) addAddress(
+    GSocketAddress address,
+    GSocketType type_,
+    GSocketProtocol protocol, [
+    GObject? sourceObject,
+  ]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketListenerAddAddress(
+        this.handle,
+        address.handle,
+        type_.value,
+        protocol.value,
+        sourceObject?.handle ?? ffi.nullptr,
+        _out0.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GSocketAddress.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
   }
 
   /// Listens for TCP connections on any available port number for both
@@ -448,161 +732,6 @@ class GSocketListener extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setBacklog(int listenBacklog) {
     _gSocketListenerSetBacklog(this.handle, listenBacklog);
-  }
-
-  /// Emitted when @listener's activity on @socket changes state.
-  /// Note that when @listener is used to listen on both IPv4 and
-  /// IPv6, a separate set of signals will be emitted for each, and
-  /// the order they happen in is undefined.
-  int onEvent(
-    void Function(GSocketListenerEvent event, GSocket socket) callback,
-  ) {
-    return _connectSignal_v_2_i_o_gsocketlistenerevent_gsocket(
-      this.handle,
-      'event',
-      callback,
-    );
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// A `GSocketService` is an object that represents a service that
-/// is provided to the network or over local sockets.  When a new
-/// connection is made to the service the [signal@Gio.SocketService::incoming]
-/// signal is emitted.
-///
-/// A `GSocketService` is a subclass of [class@Gio.SocketListener] and you need
-/// to add the addresses you want to accept connections on with the
-/// [class@Gio.SocketListener] APIs.
-///
-/// There are two options for implementing a network service based on
-/// `GSocketService`. The first is to create the service using
-/// [ctor@Gio.SocketService.new] and to connect to the
-/// [signal@Gio.SocketService::incoming] signal. The second is to subclass
-/// `GSocketService` and override the default signal handler implementation.
-///
-/// In either case, the handler must immediately return, or else it
-/// will block additional incoming connections from being serviced.
-/// If you are interested in writing connection handlers that contain
-/// blocking code then see [class@Gio.ThreadedSocketService].
-///
-/// The socket service runs on the main loop of the
-/// thread-default context (see
-/// [method@GLib.MainContext.push_thread_default]) of the thread it is
-/// created in, and is not threadsafe in general. However, the calls to start and
-/// stop the service are thread-safe so these can be used from threads that
-/// handle incoming clients.
-class GSocketService extends GSocketListener {
-  GSocketService.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a new #GSocketService with no sockets to listen for.
-  /// New listeners can be added with e.g. g_socket_listener_add_address()
-  /// or g_socket_listener_add_inet_port().
-  ///
-  /// New services are created active, there is no need to call
-  /// g_socket_service_start(), unless g_socket_service_stop() has been
-  /// called before.
-  static final _gSocketServiceNew =
-      gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'g_socket_service_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GSocketService() {
-    return GSocketService.fromPointer(_gSocketServiceNew(), owned: true);
-  }
-
-  /// Check whether the service is active or not. An active
-  /// service will accept new clients that connect, while
-  /// a non-active service will let connecting clients queue
-  /// up until the service is started.
-  static final _gSocketServiceIsActive =
-      gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'g_socket_service_is_active',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isActive() {
-    return (_gSocketServiceIsActive(this.handle)) != 0;
-  }
-
-  /// Restarts the service, i.e. start accepting connections
-  /// from the added sockets when the mainloop runs. This only needs
-  /// to be called after the service has been stopped from
-  /// g_socket_service_stop().
-  ///
-  /// This call is thread-safe, so it may be called from a thread
-  /// handling an incoming client request.
-  static final _gSocketServiceStart =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_socket_service_start',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void start() {
-    _gSocketServiceStart(this.handle);
-  }
-
-  /// Stops the service, i.e. stops accepting connections
-  /// from the added sockets when the mainloop runs.
-  ///
-  /// This call is thread-safe, so it may be called from a thread
-  /// handling an incoming client request.
-  ///
-  /// Note that this only stops accepting new connections; it does not
-  /// close the listening sockets, and you can call
-  /// g_socket_service_start() again later to begin listening again. To
-  /// close the listening sockets, call g_socket_listener_close(). (This
-  /// will happen automatically when the #GSocketService is finalized.)
-  ///
-  /// This must be called before calling g_socket_listener_close() as
-  /// the socket service will start accepting connections immediately
-  /// when a new socket is added.
-  static final _gSocketServiceStop =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_socket_service_stop',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void stop() {
-    _gSocketServiceStop(this.handle);
-  }
-
-  /// The ::incoming signal is emitted when a new incoming connection
-  /// to @service needs to be handled. The handler must initiate the
-  /// handling of @connection, but may not block; in essence,
-  /// asynchronous operations must be used.
-  ///
-  /// @connection will be unreffed once the signal handler returns,
-  /// so you need to ref it yourself if you are planning to use it.
-  int onIncoming(
-    bool Function(GSocketConnection connection, GObject? sourceObject) callback,
-  ) {
-    return _connectSignal_b_2_o_o_gsocketconnection_gobject(
-      this.handle,
-      'incoming',
-      callback,
-    );
   }
 
   /// Emitted when @listener's activity on @socket changes state.

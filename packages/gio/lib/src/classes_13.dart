@@ -709,6 +709,122 @@ class GDBusProxy extends GObject {
     });
   }
 
+  /// Finishes an operation started with g_dbus_proxy_call_with_unix_fd_list().
+  static final _gDbusProxyCallWithUnixFdListFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_proxy_call_with_unix_fd_list_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GVariant, GUnixFDList?) callWithUnixFdListFinish(GAsyncResult res) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusProxyCallWithUnixFdListFinish(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        res.handle,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GVariant.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GUnixFDList.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Like g_dbus_proxy_call_sync() but also takes and returns #GUnixFDList objects.
+  ///
+  /// This method is only available on UNIX.
+  static final _gDbusProxyCallWithUnixFdListSync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_proxy_call_with_unix_fd_list_sync')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GVariant, GUnixFDList?) callWithUnixFdListSync(
+    String methodName,
+    GVariant? parameters,
+    GDBusCallFlags flags,
+    int timeoutMsec, [
+    GUnixFDList? fdList,
+    GCancellable? cancellable,
+  ]) {
+    return withNativeString(methodName, (nativeMethodName) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDbusProxyCallWithUnixFdListSync(
+          this.handle,
+          nativeMethodName.cast<Utf8>(),
+          parameters?.handle ?? ffi.nullptr,
+          flags.value,
+          timeoutMsec,
+          fdList?.handle ?? ffi.nullptr,
+          _out0.cast<ffi.Void>(),
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (
+          GVariant.fromPointer(_ret),
+          (_out0) == ffi.nullptr
+              ? null
+              : GUnixFDList.fromPointer(_out0.cast<ffi.Void>()),
+        );
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Looks up the value for a property from the cache. This call does no
   /// blocking IO.
   ///

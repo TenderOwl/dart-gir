@@ -613,6 +613,68 @@ class GtkFontDialog extends GObject {
     );
   }
 
+  /// Finishes the [method@Gtk.FontDialog.choose_font_and_features] call.
+  ///
+  /// The selected font and features are returned in @font_desc and
+  /// @font_features.
+  ///
+  /// Note that this function returns a [error@Gtk.DialogError.DISMISSED]
+  /// error if the user cancels the dialog.
+  static final _gtkFontDialogChooseFontAndFeaturesFinish =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_font_dialog_choose_font_and_features_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, PangoFontDescription, String, PangoLanguage)
+  chooseFontAndFeaturesFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Pointer<Utf8>>();
+    final _out2Anchor = HeapAnchor.allocate(256);
+    final _out2 = _out2Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gtkFontDialogChooseFontAndFeaturesFinish(
+        this.handle,
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _out1,
+        _out2.cast<ffi.Void>(),
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        PangoFontDescription.fromPointer(_out0.cast<ffi.Void>()),
+        stringFromNative(_out1.value.cast(), free: true)!,
+        PangoLanguage.fromPointer(_out2.cast<ffi.Void>()),
+      );
+    } finally {
+      malloc.free(_out1);
+      calloc.free(_error);
+    }
+  }
+
   /// Finishes the [method@Gtk.FontDialog.choose_font] call.
   ///
   /// Note that this function returns a [error@Gtk.DialogError.DISMISSED]

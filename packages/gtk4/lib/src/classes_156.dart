@@ -597,6 +597,43 @@ class GtkTextBuffer extends GObject {
     _gtkTextBufferEndUserAction(this.handle);
   }
 
+  /// Retrieves the first and last iterators in the buffer, i.e. the
+  /// entire buffer lies within the range [@start,@end).
+  static final _gtkTextBufferGetBounds =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_buffer_get_bounds')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (GtkTextIter, GtkTextIter) getBounds() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _gtkTextBufferGetBounds(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Gets whether there is a redoable action in the history.
   static final _gtkTextBufferGetCanRedo =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -644,6 +681,32 @@ class GtkTextBuffer extends GObject {
     return (_gtkTextBufferGetEnableUndo(this.handle)) != 0;
   }
 
+  /// Initializes @iter with the “end iterator,” one past the last valid
+  /// character in the text buffer.
+  ///
+  /// If dereferenced with [method@Gtk.TextIter.get_char], the end
+  /// iterator has a character value of 0.
+  /// The entire buffer lies in the range from the first position in
+  /// the buffer (call [method@Gtk.TextBuffer.get_start_iter] to get
+  /// character position 0) to the end iterator.
+  static final _gtkTextBufferGetEndIter =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_text_buffer_get_end_iter')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkTextIter getEndIter() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextBufferGetEndIter(this.handle, _out0.cast<ffi.Void>());
+      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Indicates whether the buffer has some text currently selected.
   static final _gtkTextBufferGetHasSelection =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -667,6 +730,202 @@ class GtkTextBuffer extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextMark getInsert() {
     return GtkTextMark.fromPointer(_gtkTextBufferGetInsert(this.handle));
+  }
+
+  /// Obtains the location of @anchor within @buffer.
+  static final _gtkTextBufferGetIterAtChildAnchor =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_buffer_get_iter_at_child_anchor')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GtkTextIter getIterAtChildAnchor(GtkTextChildAnchor anchor) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextBufferGetIterAtChildAnchor(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        anchor.handle,
+      );
+      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Initializes @iter to the start of the given line.
+  ///
+  /// If @line_number is greater than or equal to the number of lines
+  /// in the @buffer, the end iterator is returned.
+  static final _gtkTextBufferGetIterAtLine =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_text_buffer_get_iter_at_line')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  (bool, GtkTextIter) getIterAtLine(int lineNumber) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTextBufferGetIterAtLine(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        lineNumber,
+      );
+      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Obtains an iterator pointing to @byte_index within the given line.
+  ///
+  /// @byte_index must be the start of a UTF-8 character. Note bytes, not
+  /// characters; UTF-8 may encode one character as multiple bytes.
+  ///
+  /// If @line_number is greater than or equal to the number of lines in the @buffer,
+  /// the end iterator is returned. And if @byte_index is off the
+  /// end of the line, the iterator at the end of the line is returned.
+  static final _gtkTextBufferGetIterAtLineIndex =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+              )
+            >
+          >('gtk_text_buffer_get_iter_at_line_index')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int, int)
+          >();
+  (bool, GtkTextIter) getIterAtLineIndex(int lineNumber, int byteIndex) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTextBufferGetIterAtLineIndex(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        lineNumber,
+        byteIndex,
+      );
+      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Obtains an iterator pointing to @char_offset within the given line.
+  ///
+  /// Note characters, not bytes; UTF-8 may encode one character as multiple
+  /// bytes.
+  ///
+  /// If @line_number is greater than or equal to the number of lines in the @buffer,
+  /// the end iterator is returned. And if @char_offset is off the
+  /// end of the line, the iterator at the end of the line is returned.
+  static final _gtkTextBufferGetIterAtLineOffset =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+              )
+            >
+          >('gtk_text_buffer_get_iter_at_line_offset')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int, int)
+          >();
+  (bool, GtkTextIter) getIterAtLineOffset(int lineNumber, int charOffset) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkTextBufferGetIterAtLineOffset(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        lineNumber,
+        charOffset,
+      );
+      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
+  /// Initializes @iter with the current position of @mark.
+  static final _gtkTextBufferGetIterAtMark =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_buffer_get_iter_at_mark')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GtkTextIter getIterAtMark(GtkTextMark mark) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextBufferGetIterAtMark(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        mark.handle,
+      );
+      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Initializes @iter to a position @char_offset chars from the start
+  /// of the entire buffer.
+  ///
+  /// If @char_offset is -1 or greater than the number
+  /// of characters in the buffer, @iter is initialized to the end iterator,
+  /// the iterator one past the last valid character in the buffer.
+  static final _gtkTextBufferGetIterAtOffset =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_text_buffer_get_iter_at_offset')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  GtkTextIter getIterAtOffset(int charOffset) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextBufferGetIterAtOffset(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        charOffset,
+      );
+      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Obtains the number of lines in the buffer.
@@ -760,6 +1019,49 @@ class GtkTextBuffer extends GObject {
     );
   }
 
+  /// Returns %TRUE if some text is selected; places the bounds
+  /// of the selection in @start and @end.
+  ///
+  /// If the selection has length 0, then @start and @end are filled
+  /// in with the same value. @start and @end will be in ascending order.
+  /// If @start and @end are %NULL, then they are not filled in, but the
+  /// return value still indicates whether text is selected.
+  static final _gtkTextBufferGetSelectionBounds =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_buffer_get_selection_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTextIter, GtkTextIter) getSelectionBounds() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      final _ret = _gtkTextBufferGetSelectionBounds(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Get a content provider for this buffer.
   ///
   /// It can be used to make the content of @buffer available
@@ -816,6 +1118,28 @@ class GtkTextBuffer extends GObject {
       )).cast(),
       free: true,
     )!;
+  }
+
+  /// Initialized @iter with the first position in the text buffer.
+  ///
+  /// This is the same as using [method@Gtk.TextBuffer.get_iter_at_offset]
+  /// to get the iter at character offset 0.
+  static final _gtkTextBufferGetStartIter =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_text_buffer_get_start_iter')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkTextIter getStartIter() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTextBufferGetStartIter(this.handle, _out0.cast<ffi.Void>());
+      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Get the `GtkTextTagTable` associated with this buffer.

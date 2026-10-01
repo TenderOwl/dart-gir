@@ -20,6 +20,7 @@ class TypeBridge {
     this.isVoid = false,
     this.isNullableCallback = false,
     this.outPointee,
+    this.outAllocSize,
     this.outExtract,
   });
 
@@ -58,6 +59,13 @@ class TypeBridge {
   /// Pointee type to `malloc` for an out parameter, null when the type
   /// cannot appear as an out parameter.
   final String? outPointee;
+
+  /// For record/struct/class OUT parameters, GLib writes the entire
+  /// struct (not a pointer to it) into the buffer the wrapper hands it.
+  /// We don't know `sizeof(T)` statically, so allocate a fixed-size
+  /// buffer of this many bytes. `null` means allocate per
+  /// `malloc<outPointee>()` (one slot of the pointee's natural size).
+  final int? outAllocSize;
 
   /// Reads the out value from the allocated pointer variable.
   final String Function(String varName)? outExtract;
@@ -495,6 +503,19 @@ class EmitContext {
             fromNative: nullable
                 ? (e) => '($e) == ffi.nullptr ? null : $t.fromPointer($e)'
                 : (e) => '$t.fromPointer($e)',
+            // OUT params for record/struct types: the C function writes
+            // the entire struct (~32 bytes for GtkTextIter, etc.) into
+            // the buffer the wrapper passes. We don't know the size
+            // statically, so allocate a fixed-size buffer via
+            // `HeapAnchor.allocate` (lifetime tied to the returned
+            // wrapper). The buffer is `Pointer<Uint8>`; cast at the
+            // call/extract sites.
+            outPointee: 'ffi.Void',
+            outAllocSize: 256,
+            outExtract: nullable
+                ? (v) =>
+                    '($v) == ffi.nullptr ? null : $t.fromPointer($v.cast<ffi.Void>())'
+                : (v) => '$t.fromPointer($v.cast<ffi.Void>())',
           ),
           null,
         );

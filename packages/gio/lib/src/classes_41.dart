@@ -1208,6 +1208,74 @@ class GSocket extends GObject {
     }
   }
 
+  /// Receive data (up to @size bytes) from a socket.
+  ///
+  /// This function is a variant of [method@Gio.Socket.receive_from] which returns
+  /// a [struct@GLib.Bytes] rather than a plain buffer.
+  ///
+  /// If @address is non-%NULL then @address will be set equal to the
+  /// source address of the received packet.
+  ///
+  /// The @address is owned by the caller.
+  ///
+  /// Pass `-1` to @timeout_us to block indefinitely until data is received (or
+  /// the connection is closed, or there is an error). Pass `0` to use the default
+  /// timeout from [property@Gio.Socket:timeout], or pass a positive number to wait
+  /// for that many microseconds for data before returning `G_IO_ERROR_TIMED_OUT`.
+  static final _gSocketReceiveBytesFrom =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Int64,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_receive_bytes_from')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GBytes, GSocketAddress?) receiveBytesFrom(
+    int size,
+    int timeoutUs, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketReceiveBytesFrom(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        size,
+        timeoutUs,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GBytes.fromPointer(_ret),
+        (_out0) == ffi.nullptr
+            ? null
+            : GSocketAddress.fromPointer(_out0.cast<ffi.Void>()),
+      );
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Sets the blocking mode of the socket. In blocking mode
   /// all operations (which don’t take an explicit blocking parameter) block until
   /// they succeed or there is an error. In

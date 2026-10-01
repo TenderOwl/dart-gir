@@ -27,6 +27,15 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 - **`g_free` binding in `package:gir_ffi`** via
   `DynamicLibrary.process().lookup('g_free')` for transferring
   ownership of `transfer-none` strings out of the trampoline.
+- **`HeapAnchor` in `package:gir_ffi`** — a `Finalizable` backed by a
+  `NativeFinalizer(malloc.nativeFree)`. Used by the generator's
+  caller-allocated record OUT path to keep the buffer alive as long
+  as the returned wrapper is reachable, and free it on GC. The static
+  `_finalizer` is shared across all anchors; `HeapAnchor.allocate(N)`
+  is the only public constructor (allocates a `calloc<Uint8>(N)`
+  zero-initialized buffer). See
+  [`packages/gir_ffi/test/heap_anchor_test.dart`](./packages/gir_ffi/test/heap_anchor_test.dart)
+  (6 tests) for the lifetime contract.
 - **GLib root-level namespace functions are now surfaced**:
   `g_get_user_data_dir`, `g_get_user_cache_dir`, `g_get_user_config_dir`,
   `g_get_user_name`, `g_get_real_name`, `g_get_home_dir`,
@@ -82,6 +91,19 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   parsed into `GirMethod.finishFunc`, `GirParameter.scope`, and
   `GirParameter.closureIndex`. The parser test that previously failed
   (it referenced these fields) is now green.
+- **Caller-allocated OUT parameters are now emitted as typed
+  wrappers.** Methods like `gtk_text_buffer_get_start_iter` (which
+  take a `GtkTextIter*` OUT parameter that the caller fills in) used
+  to be skipped with `caller-allocates out parameter iter`. The
+  generator now allocates the buffer internally, passes its pointer
+  to the native function, and reads back via the type's `fromPointer`
+  factory. Primitive OUT params (`gint*`, `guint32*`, `gboolean*`)
+  free the buffer in `finally`; record/class OUT params use a
+  `HeapAnchor` (in `package:gir_ffi`) with a `NativeFinalizer` so the
+  buffer's lifetime is tied to the returned wrapper's reachability.
+  The wrapper returns the typed Dart value (`GtkTextIter
+  getStartIter()`) directly. Skipped count across the workspace
+  dropped from 1793 to 1511 (~282 fewer skips) without regressions.
 
 ### Changed
 - **`ClassEmitter` walks the parent chain** to emit inherited typed
@@ -125,6 +147,23 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `<function>` gets the keep-and-skip treatment.
 
 ### Fixed
+- **Use-after-free in caller-allocated record OUT params.** The
+  initial implementation allocated `malloc<Pointer<ffi.Void>>()` (8
+  bytes for one pointer) for the buffer and freed it in `finally`,
+  causing two bugs: (a) `free(): invalid next size` because GTK wrote
+  the full 32-byte `GtkTextIter` into 8 bytes of heap; (b) a SEGV
+  inside `gtk_text_iter_get_buffer` because the wrapper freed the
+  backing buffer before the iter's handle was dereferenced by the
+  next call (e.g. `textBuffer.getText(getStartIter(), getEndIter(),
+  false)` in `EditorApp.saveFile`). The fix uses
+  `HeapAnchor.allocate(256)` from `package:gir_ffi`, a
+  `Finalizable` whose `NativeFinalizer` calls `malloc.nativeFree`
+  when the anchor is GC'd. The wrapper holds the anchor via
+  `T.fromPointer(_buffer)` (`_buffer` is the anchor's `Pointer<Uint8>`
+  field, which the returned wrapper captures as its `handle`); drop
+  the wrapper and GC frees the buffer. End-to-end covered by
+  [`packages/gtk4/test/gtk4_text_iter_test.dart`](./packages/gtk4/test/gtk4_text_iter_test.dart)
+  and [`example/test/editor_savefile_test.dart`](./example/test/editor_savefile_test.dart).
 - **Inheritance walker stop-at-local-name**: `Adw.Application` →
   `Gtk.Application` previously stopped at `Adw.Application` because both
   classes have local name `Application`. Now keyed by qualified name

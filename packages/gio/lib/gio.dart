@@ -105,3 +105,4 @@ part 'src/classes_54.dart';
 part 'src/classes_55.dart';
 part 'src/classes_56.dart';
 part 'src/classes_57.dart';
+part 'src/classes_58.dart';

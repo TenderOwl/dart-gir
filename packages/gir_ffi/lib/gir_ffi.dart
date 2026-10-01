@@ -103,3 +103,35 @@ R withNativeStringList<R>(
     calloc.free(argv);
   }
 }
+
+/// Backing store for caller-allocated OUT parameters (e.g. `GtkTextIter*`,
+/// `GValue*`) emitted by the generator.
+///
+/// Holds a fixed-size zero-initialized buffer and frees it via
+/// [NativeFinalizer] when the anchor is garbage collected. The corresponding
+/// Dart wrapper (e.g. `GtkTextIter.fromPointer(_buffer)`) keeps the
+/// anchor reachable as long as the user holds the wrapper — matching
+/// GTK's "the iter lives until you drop it" semantics.
+///
+/// Use [HeapAnchor.allocate] to create a new anchor with a buffer of the
+/// requested size. The buffer's lifetime is tied to the anchor's
+/// reachability; drop the wrapper and the buffer is freed on the next
+/// GC cycle.
+class HeapAnchor implements Finalizable {
+  HeapAnchor(this.buffer);
+
+  static final _finalizer = NativeFinalizer(malloc.nativeFree);
+
+  /// The heap-allocated buffer. The C function fills this memory; the
+  /// wrapper then exposes it as `Pointer<Void>` (or any struct-typed
+  /// pointer) to its caller.
+  final Pointer<Uint8> buffer;
+
+  /// Allocates a [byteCount]-byte zero-initialized buffer and attaches a
+  /// finalizer that calls `malloc.nativeFree` when the anchor is GC'd.
+  static HeapAnchor allocate(int byteCount) {
+    final anchor = HeapAnchor(calloc<Uint8>(byteCount));
+    _finalizer.attach(anchor, anchor.buffer.cast());
+    return anchor;
+  }
+}

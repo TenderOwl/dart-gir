@@ -155,6 +155,50 @@ final class PangoAttrIterator {
     return GSList.fromPointer(_pangoAttrIteratorGetAttrs(this.handle));
   }
 
+  /// Get the font and other attributes at the current
+  /// iterator position.
+  static final _pangoAttrIteratorGetFont =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_attr_iterator_get_font')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoLanguage?, GSList?) getFont(PangoFontDescription desc) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoAttrIteratorGetFont(
+        this.handle,
+        desc.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoLanguage.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GSList.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Advance the iterator until the next change of style.
   static final _pangoAttrIteratorNext =
       pangoLookup<

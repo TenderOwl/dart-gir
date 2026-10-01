@@ -138,6 +138,58 @@ class GtkText extends GtkWidget {
     );
   }
 
+  /// Determines the positions of the strong and weak cursors for a
+  /// given character position.
+  ///
+  /// The position of each cursor is stored as a zero-width rectangle.
+  /// The strong cursor location is the location where characters of
+  /// the directionality equal to the base direction are inserted.
+  /// The weak cursor location is the location where characters of
+  /// the directionality opposite to the base direction are inserted.
+  ///
+  /// The rectangle positions are in widget coordinates.
+  static final _gtkTextComputeCursorExtents =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_text_compute_cursor_extents')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (GrapheneRect?, GrapheneRect?) computeCursorExtents(int position) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _gtkTextComputeCursorExtents(
+        this.handle,
+        position,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GrapheneRect.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Returns whether pressing <kbd>Enter</kbd> will activate
   /// the default widget for the window containing the widget.
   ///

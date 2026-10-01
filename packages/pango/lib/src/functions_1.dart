@@ -41,6 +41,260 @@ GList reorderItems(GList items) {
   return GList.fromPointer(_pangoReorderItems(items.handle));
 }
 
+/// Convert the characters in @text into glyphs.
+///
+/// Given a segment of text and the corresponding `PangoAnalysis` structure
+/// returned from [func@Pango.itemize], convert the characters into glyphs. You
+/// may also pass in only a substring of the item from [func@Pango.itemize].
+///
+/// It is recommended that you use [func@Pango.shape_full] instead, since
+/// that API allows for shaping interaction happening across text item
+/// boundaries.
+///
+/// Some aspects of hyphen insertion and text transformation (in particular,
+/// capitalization) require log attrs, and thus can only be handled by
+/// [func@Pango.shape_item].
+///
+/// Note that the extra attributes in the @analyis that is returned from
+/// [func@Pango.itemize] have indices that are relative to the entire paragraph,
+/// so you need to subtract the item offset from their indices before
+/// calling [func@Pango.shape].
+final _pangoShape =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('pango_shape')
+        .asFunction<
+          void Function(
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+          )
+        >();
+PangoGlyphString shape(String text, int length, PangoAnalysis analysis) {
+  return withNativeString(text, (nativeText) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _pangoShape(
+        nativeText.cast<Utf8>(),
+        length,
+        analysis.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  });
+}
+
+/// Convert the characters in @text into glyphs.
+///
+/// Given a segment of text and the corresponding `PangoAnalysis` structure
+/// returned from [func@Pango.itemize], convert the characters into glyphs.
+/// You may also pass in only a substring of the item from [func@Pango.itemize].
+///
+/// This is similar to [func@Pango.shape], except it also can optionally take
+/// the full paragraph text as input, which will then be used to perform
+/// certain cross-item shaping interactions. If you have access to the broader
+/// text of which @item_text is part of, provide the broader text as
+/// @paragraph_text. If @paragraph_text is %NULL, item text is used instead.
+///
+/// Some aspects of hyphen insertion and text transformation (in particular,
+/// capitalization) require log attrs, and thus can only be handled by
+/// [func@Pango.shape_item].
+///
+/// Note that the extra attributes in the @analyis that is returned from
+/// [func@Pango.itemize] have indices that are relative to the entire paragraph,
+/// so you do not pass the full paragraph text as @paragraph_text, you need
+/// to subtract the item offset from their indices before calling
+/// [func@Pango.shape_full].
+final _pangoShapeFull =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('pango_shape_full')
+        .asFunction<
+          void Function(
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+          )
+        >();
+PangoGlyphString shapeFull(
+  String itemText,
+  int itemLength,
+  String? paragraphText,
+  int paragraphLength,
+  PangoAnalysis analysis,
+) {
+  return withNativeString(itemText, (nativeItemText) {
+    return withNativeString(paragraphText, (nativeParagraphText) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        _pangoShapeFull(
+          nativeItemText.cast<Utf8>(),
+          itemLength,
+          nativeParagraphText.cast<Utf8>(),
+          paragraphLength,
+          analysis.handle,
+          _out0.cast<ffi.Void>(),
+        );
+        return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
+      } finally {}
+    });
+  });
+}
+
+/// Convert the characters in @item into glyphs.
+///
+/// This is similar to [func@Pango.shape_with_flags], except it takes a
+/// `PangoItem` instead of separate @item_text and @analysis arguments.
+///
+/// It also takes @log_attrs, which are needed for implementing some aspects
+/// of hyphen insertion and text transforms (in particular, capitalization).
+///
+/// Note that the extra attributes in the @analyis that is returned from
+/// [func@Pango.itemize] have indices that are relative to the entire paragraph,
+/// so you do not pass the full paragraph text as @paragraph_text, you need
+/// to subtract the item offset from their indices before calling
+/// [func@Pango.shape_with_flags].
+final _pangoShapeItem =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Uint32,
+            )
+          >
+        >('pango_shape_item')
+        .asFunction<
+          void Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            int,
+          )
+        >();
+PangoGlyphString shapeItem(
+  PangoItem item,
+  String? paragraphText,
+  int paragraphLength,
+  PangoLogAttr? logAttrs,
+  PangoShapeFlags flags,
+) {
+  return withNativeString(paragraphText, (nativeParagraphText) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _pangoShapeItem(
+        item.handle,
+        nativeParagraphText.cast<Utf8>(),
+        paragraphLength,
+        logAttrs?.handle ?? ffi.nullptr,
+        _out0.cast<ffi.Void>(),
+        flags.value,
+      );
+      return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  });
+}
+
+/// Convert the characters in @text into glyphs.
+///
+/// Given a segment of text and the corresponding `PangoAnalysis` structure
+/// returned from [func@Pango.itemize], convert the characters into glyphs.
+/// You may also pass in only a substring of the item from [func@Pango.itemize].
+///
+/// This is similar to [func@Pango.shape_full], except it also takes flags
+/// that can influence the shaping process.
+///
+/// Some aspects of hyphen insertion and text transformation (in particular,
+/// capitalization) require log attrs, and thus can only be handled by
+/// [func@Pango.shape_item].
+///
+/// Note that the extra attributes in the @analyis that is returned from
+/// [func@Pango.itemize] have indices that are relative to the entire paragraph,
+/// so you do not pass the full paragraph text as @paragraph_text, you need
+/// to subtract the item offset from their indices before calling
+/// [func@Pango.shape_with_flags].
+final _pangoShapeWithFlags =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Uint32,
+            )
+          >
+        >('pango_shape_with_flags')
+        .asFunction<
+          void Function(
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            int,
+          )
+        >();
+PangoGlyphString shapeWithFlags(
+  String itemText,
+  int itemLength,
+  String? paragraphText,
+  int paragraphLength,
+  PangoAnalysis analysis,
+  PangoShapeFlags flags,
+) {
+  return withNativeString(itemText, (nativeItemText) {
+    return withNativeString(paragraphText, (nativeParagraphText) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        _pangoShapeWithFlags(
+          nativeItemText.cast<Utf8>(),
+          itemLength,
+          nativeParagraphText.cast<Utf8>(),
+          paragraphLength,
+          analysis.handle,
+          _out0.cast<ffi.Void>(),
+          flags.value,
+        );
+        return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
+      } finally {}
+    });
+  });
+}
+
 /// Trims leading and trailing whitespace from a string.
 final _pangoTrimString =
     pangoLookup<

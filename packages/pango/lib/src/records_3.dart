@@ -537,6 +537,113 @@ final class PangoGlyphString {
         : PangoGlyphString.fromPointer(_pangoGlyphStringCopy(this.handle));
   }
 
+  /// Compute the logical and ink extents of a glyph string.
+  ///
+  /// See the documentation for [method@Pango.Font.get_glyph_extents] for details
+  /// about the interpretation of the rectangles.
+  ///
+  /// Examples of logical (red) and ink (green) rects:
+  ///
+  /// ![](rects1.png) ![](rects2.png)
+  static final _pangoGlyphStringExtents =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_glyph_string_extents')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) extents(PangoFont font) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoGlyphStringExtents(
+        this.handle,
+        font.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
+  /// Computes the extents of a sub-portion of a glyph string.
+  ///
+  /// The extents are relative to the start of the glyph string range
+  /// (the origin of their coordinate system is at the start of the range,
+  /// not at the start of the entire glyph string).
+  static final _pangoGlyphStringExtentsRange =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('pango_glyph_string_extents_range')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (PangoRectangle?, PangoRectangle?) extentsRange(
+    int start,
+    int end,
+    PangoFont font,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      _pangoGlyphStringExtentsRange(
+        this.handle,
+        start,
+        end,
+        font.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   /// Free a glyph string and associated storage.
   static final _pangoGlyphStringFree =
       pangoLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
@@ -572,19 +679,4 @@ final class PangoGlyphString {
   void setSize(int newLen) {
     _pangoGlyphStringSetSize(this.handle, newLen);
   }
-}
-
-/// A `PangoGlyphVisAttr` structure communicates information between
-/// the shaping and rendering phases.
-///
-/// Currently, it contains cluster start and color information.
-/// More attributes may be added in the future.
-///
-/// Clusters are stored in visual order, within the cluster, glyphs
-/// are always ordered in logical order, since visual order is meaningless;
-/// that is, in Arabic text, accent glyphs follow the glyphs for the
-/// base character.
-final class PangoGlyphVisAttr {
-  PangoGlyphVisAttr.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
 }

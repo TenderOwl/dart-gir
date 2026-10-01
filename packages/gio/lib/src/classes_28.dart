@@ -552,6 +552,59 @@ class GMenuLinkIter extends GObject {
     )!;
   }
 
+  /// This function combines g_menu_link_iter_next() with
+  /// g_menu_link_iter_get_name() and g_menu_link_iter_get_value().
+  ///
+  /// First the iterator is advanced to the next (possibly first) link.
+  /// If that fails, then %FALSE is returned and there are no other effects.
+  ///
+  /// If successful, @out_link and @value are set to the name and #GMenuModel
+  /// of the link that has just been advanced to.  At this point,
+  /// g_menu_link_iter_get_name() and g_menu_link_iter_get_value() will return the
+  /// same values again.
+  ///
+  /// The value returned in @out_link remains valid for as long as the iterator
+  /// remains at the current position.  The value returned in @value must
+  /// be unreffed using g_object_unref() when it is no longer in use.
+  static final _gMenuLinkIterGetNext =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_menu_link_iter_get_next')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, String?, GMenuModel?) getNext() {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      final _ret = _gMenuLinkIterGetNext(
+        this.handle,
+        _out0,
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        stringFromNative(_out0.value.cast(), free: true)!,
+        (_out1) == ffi.nullptr
+            ? null
+            : GMenuModel.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Gets the linked #GMenuModel at the current iterator position.
   ///
   /// The iterator is not advanced.

@@ -163,6 +163,73 @@ outlives the source, or use `connectSignal` /
 * Varargs (`...`) parameters → skip with `varargs`.
 * Moved/shadowed functions → skip with the destination.
 
+### Caller-allocated OUT parameters (HeapAnchor)
+
+GIR `direction="out"` parameters with `caller-allocates="1"` are emitted
+in two flavors depending on the pointee type:
+
+**Primitive OUT** (`gint*`, `guint32*`, `gboolean*`, …). The size is
+known at compile time, so the wrapper allocates one slot of the pointee
+with `malloc<T>()` and frees it in `finally`:
+
+```dart
+gint value() {
+  final _out0 = malloc<ffi.Int32>();
+  try {
+    _someFunction(_out0);
+    return _out0.value;
+  } finally {
+    malloc.free(_out0);
+  }
+}
+```
+
+**Record / class / union / interface OUT** (`GtkTextIter*`, `GValue*`,
+…). GLib writes the *entire struct* (not a pointer to it) into the
+caller-provided buffer, but the generator has no static `sizeof(T)` to
+allocate the right amount. The previous implementation under-allocated
+(8 bytes for a 32-byte struct), causing heap corruption, and then freed
+the buffer in `finally` — invalidating the returned wrapper's handle
+and crashing on the next C deref.
+
+The fix uses a `HeapAnchor` from `package:gir_ffi`:
+
+```dart
+GtkTextIter getStartIter() {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  try {
+    _gtkTextBufferGetStartIter(this.handle, _out0.cast<ffi.Void>());
+    return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
+  } finally {
+    // No `malloc.free(_out0)` here: the NativeFinalizer attached in
+    // HeapAnchor.allocate() frees the buffer when the anchor becomes
+    // unreachable.
+  }
+}
+```
+
+The anchor's `Finalizable` + `NativeFinalizer` keeps the buffer alive
+as long as the returned wrapper is reachable (`GtkTextIter.handle`
+holds the `Pointer<Uint8>`). Drop the wrapper, GC reclaims the anchor,
+the finalizer calls `malloc.nativeFree`. `usesGirFfi` is set so the
+package barrel adds `import 'package:gir_ffi/gir_ffi.dart';`
+automatically.
+
+The 256-byte size is a deliberate blanket upper bound — it covers
+every struct currently in the GIR corpus (largest is `PangoLayoutRun`
+at ~176 bytes) and keeps allocation O(1) per call. Per-type sizing
+(using a future GIR `sizeof` annotation or a build-time probe) is a
+known follow-up.
+
+Caveat documented for users: GTK functions that *copy* an OUT struct
+into GTK-owned memory (e.g. `gtk_text_iter_copy`) keep using the
+caller's pointer for the copy; the anchor protects only the buffer we
+handed to GLib. If a returned wrapper's lifetime exceeds the buffer's
+(rare, but possible if GTK holds the pointer past the Dart GC), the
+finalizer will free it and the next access from native code will SEGV.
+Use `Pointer<...>` directly when you need full control.
+
 ## CallbackEmitter — `generator/lib/src/emit/callback_emitter.dart`
 
 Emits `<callback>` declarations as Dart function typedefs:

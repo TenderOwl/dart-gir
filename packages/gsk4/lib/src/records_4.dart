@@ -561,6 +561,27 @@ final class GskTransform {
     }
   }
 
+  /// Computes the 4x4 matrix for the transform.
+  ///
+  /// The previous value of @out_matrix will be ignored.
+  static final _gskTransformToMatrix =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_transform_to_matrix')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GrapheneMatrix toMatrix() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gskTransformToMatrix(this.handle, _out0.cast<ffi.Void>());
+      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Converts a transform to a translation operation.
   ///
   /// @self must be a 2D transformation. If you are not
@@ -629,6 +650,72 @@ final class GskTransform {
           );
   }
 
+  /// Transforms a rectangle using the given transform.
+  ///
+  /// The result is the bounding box containing the coplanar quad.
+  ///
+  /// The input and output rect may point to the same rectangle.
+  static final _gskTransformTransformBounds =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_transform_transform_bounds')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneRect transformBounds(GrapheneRect rect) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gskTransformTransformBounds(
+        this.handle,
+        rect.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Transforms a point using the given transform.
+  static final _gskTransformTransformPoint =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_transform_transform_point')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GraphenePoint transformPoint(GraphenePoint point) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gskTransformTransformPoint(
+        this.handle,
+        point.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Translates @next in 2-dimensional space by @point.
   ///
   /// This function consumes @next. Use [method@Gsk.Transform.ref] first
@@ -693,6 +780,34 @@ final class GskTransform {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gskTransformUnref(this.handle);
+  }
+
+  /// Parses a given into a transform.
+  ///
+  /// Strings printed via [method@Gsk.Transform.to_string]
+  /// can be read in again successfully using this function.
+  ///
+  /// If @string does not describe a valid transform, false
+  /// is returned and `NULL` is put in @out_transform.
+  static final _gskTransformParse =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_transform_parse')
+          .asFunction<int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)>();
+  static (bool, GskTransform) parse(String string) {
+    return withNativeString(string, (nativeString) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        final _ret = _gskTransformParse(
+          nativeString.cast<Utf8>(),
+          _out0.cast<ffi.Void>(),
+        );
+        return ((_ret) != 0, GskTransform.fromPointer(_out0.cast<ffi.Void>()));
+      } finally {}
+    });
   }
 }
 

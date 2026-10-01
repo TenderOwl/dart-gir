@@ -168,6 +168,30 @@ class GtkComboBox extends GtkWidget {
     );
   }
 
+  /// Sets @iter to point to the currently active item.
+  ///
+  /// If no item is active, @iter is left unchanged.
+  static final _gtkComboBoxGetActiveIter =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_combo_box_get_active_iter')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  (bool, GtkTreeIter) getActiveIter() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      final _ret = _gtkComboBoxGetActiveIter(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
+    } finally {}
+  }
+
   /// Returns whether the combo box sets the dropdown button
   /// sensitive or not when there are no items in the model.
   static final _gtkComboBoxGetButtonSensitivity =

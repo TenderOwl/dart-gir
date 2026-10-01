@@ -599,6 +599,30 @@ class GFileInfo extends GObject {
         : GDateTime.fromPointer(_gFileInfoGetModificationDateTime(this.handle));
   }
 
+  /// Gets the modification time of the current @info and sets it
+  /// in @result.
+  ///
+  /// It is an error to call this if the #GFileInfo does not contain
+  /// %G_FILE_ATTRIBUTE_TIME_MODIFIED. If %G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC is
+  /// provided it will be used too.
+  static final _gFileInfoGetModificationTime =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_file_info_get_modification_time')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GTimeVal getModificationTime() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gFileInfoGetModificationTime(this.handle, _out0.cast<ffi.Void>());
+      return GTimeVal.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Gets the name for a file. This is guaranteed to always be set.
   ///
   /// It is an error to call this if the #GFileInfo does not contain

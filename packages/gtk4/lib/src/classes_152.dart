@@ -99,6 +99,44 @@ class GtkStyleContext extends GObject {
     _gtkStyleContextAddProvider(this.handle, provider.handle, priority);
   }
 
+  /// Gets the border for a given state as a `GtkBorder`.
+  static final _gtkStyleContextGetBorder =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_style_context_get_border')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkBorder getBorder() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkStyleContextGetBorder(this.handle, _out0.cast<ffi.Void>());
+      return GtkBorder.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Gets the foreground color for a given state.
+  static final _gtkStyleContextGetColor =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_style_context_get_color')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GdkRGBA getColor() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkStyleContextGetColor(this.handle, _out0.cast<ffi.Void>());
+      return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Returns the `GdkDisplay` to which @context is attached.
   static final _gtkStyleContextGetDisplay =
       gtk4Lookup<
@@ -109,6 +147,44 @@ class GtkStyleContext extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay getDisplay() {
     return GdkDisplay.fromPointer(_gtkStyleContextGetDisplay(this.handle));
+  }
+
+  /// Gets the margin for a given state as a `GtkBorder`.
+  static final _gtkStyleContextGetMargin =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_style_context_get_margin')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkBorder getMargin() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkStyleContextGetMargin(this.handle, _out0.cast<ffi.Void>());
+      return GtkBorder.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
+  /// Gets the padding for a given state as a `GtkBorder`.
+  static final _gtkStyleContextGetPadding =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_style_context_get_padding')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  GtkBorder getPadding() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkStyleContextGetPadding(this.handle, _out0.cast<ffi.Void>());
+      return GtkBorder.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
   }
 
   /// Returns the scale used for assets.
@@ -152,6 +228,39 @@ class GtkStyleContext extends GObject {
             nativeClassName.cast<Utf8>(),
           )) !=
           0;
+    });
+  }
+
+  /// Looks up and resolves a color name in the @context color map.
+  static final _gtkStyleContextLookupColor =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_style_context_lookup_color')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GdkRGBA) lookupColor(String colorName) {
+    return withNativeString(colorName, (nativeColorName) {
+      final _out0Anchor = HeapAnchor.allocate(256);
+      final _out0 = _out0Anchor.buffer;
+      try {
+        final _ret = _gtkStyleContextLookupColor(
+          this.handle,
+          nativeColorName.cast<Utf8>(),
+          _out0.cast<ffi.Void>(),
+        );
+        return ((_ret) != 0, GdkRGBA.fromPointer(_out0.cast<ffi.Void>()));
+      } finally {}
     });
   }
 

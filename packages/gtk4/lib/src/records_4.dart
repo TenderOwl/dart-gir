@@ -81,6 +81,59 @@ final class GtkRecentInfo {
     return _gtkRecentInfoGetAge(this.handle);
   }
 
+  /// Gets the data regarding the application that has registered the resource
+  /// pointed by @info.
+  ///
+  /// If the command line contains any escape characters defined inside the
+  /// storage specification, they will be expanded.
+  static final _gtkRecentInfoGetApplicationInfo =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_recent_info_get_application_info')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, String, int, GDateTime) getApplicationInfo(String appName) {
+    return withNativeString(appName, (nativeAppName) {
+      final _out0 = malloc<ffi.Pointer<Utf8>>();
+      final _out1 = malloc<ffi.Uint32>();
+      final _out2Anchor = HeapAnchor.allocate(256);
+      final _out2 = _out2Anchor.buffer;
+      try {
+        final _ret = _gtkRecentInfoGetApplicationInfo(
+          this.handle,
+          nativeAppName.cast<Utf8>(),
+          _out0,
+          _out1,
+          _out2.cast<ffi.Void>(),
+        );
+        return (
+          (_ret) != 0,
+          stringFromNative(_out0.value.cast(), free: true)!,
+          _out1.value,
+          GDateTime.fromPointer(_out2.cast<ffi.Void>()),
+        );
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+      }
+    });
+  }
+
   /// Gets the (short) description of the resource.
   static final _gtkRecentInfoGetDescription =
       gtk4Lookup<
@@ -608,26 +661,5 @@ final class GtkSnapshotClass {
 
 final class GtkSortListModelClass {
   GtkSortListModelClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// The virtual table for `GtkSorter`.
-final class GtkSorterClass {
-  GtkSorterClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkStringFilterClass {
-  GtkStringFilterClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkStringListClass {
-  GtkStringListClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkStringObjectClass {
-  GtkStringObjectClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }
