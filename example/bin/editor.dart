@@ -21,6 +21,7 @@ class EditorApp {
   late AdwToastOverlay toastOverlay;
   late GtkTextView mainTextView;
   late GtkTextBuffer textBuffer;
+  late GtkLabel cursorPos;
 
   GtkFileDialog? dlg;
 
@@ -50,13 +51,20 @@ class EditorApp {
       ..setTitle('Editor')
       ..setContent(buildContentView());
 
+    setupActions();
+
+    appWindow.present();
+  }
+
+  void setupActions() {
     final openAction = GSimpleAction('open', null)
       ..onActivate((_) {
         dlg = GtkFileDialog();
         dlg!.openCallback(appWindow, null, onFileDialogClosed);
       });
     appWindow.addAction(GAction.fromPointer(openAction.handle));
-    appWindow.present();
+
+    app.setAccelsForAction('win.open', ['<Primary>o']);
   }
 
   GtkWidget buildContentView() {
@@ -77,8 +85,18 @@ class EditorApp {
       });
     header.packStart(saveButton);
 
+    cursorPos = GtkLabel('Ln 0, Col 0')
+      ..addCssClass('dim-label')
+      ..addCssClass('numeric');
+    header.packEnd(cursorPos);
+
     // Initialize text buffer and view
     textBuffer = GtkTextBuffer();
+    textBuffer.onNotify((pspec) {
+      if (pspec.getName() == 'cursor-position') {
+        updateCursorPos();
+      }
+    });
     mainTextView = GtkTextView()
       ..setBuffer(textBuffer)
       ..setMonospace(true);
@@ -110,7 +128,7 @@ class EditorApp {
       print('File: ${file?.getPath()}');
       if (file != null && file.getPath() != null) {
         readFile(file.getPath()!);
-        appWindow.setTitle(file.getPath()!);
+        appWindow.setTitle(file.getBasename()!);
       }
     } on GlibException catch (e) {
       // Includes the GTK_DIALOG_ERROR_DISMISSED case when the user
@@ -130,9 +148,11 @@ class EditorApp {
     // caller-allocates OUT parameters are now generated as returning
     // a typed `GtkTextIter` (the wrapper allocates internally, calls
     // the C function, and reads back via `fromPointer`).
-    // final start = textBuffer.getStartIter();
-    // final end = textBuffer.getEndIter();
-    // print('  start.offset=${start.getOffset()} end.offset=${end.getOffset()}');
+    final start = textBuffer.getStartIter();
+    final end = textBuffer.getEndIter();
+    print('  start.offset=${start.getOffset()} end.offset=${end.getOffset()}');
+
+    textBuffer.placeCursor(start);
   }
 
   void saveFile(String path) {
@@ -146,5 +166,13 @@ class EditorApp {
     );
 
     toastOverlay.addToast(AdwToast('Saved to $path'));
+  }
+
+  void updateCursorPos() {
+    final cursorPos = textBuffer.getInsert();
+    final iter = textBuffer.getIterAtMark(cursorPos);
+    this.cursorPos.setText(
+      'Ln ${iter.getLine() + 1}, Col ${iter.getLineOffset() + 1}',
+    );
   }
 }
