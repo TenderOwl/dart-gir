@@ -5,6 +5,7 @@ import 'package:gio/gio.dart';
 import 'package:gobject/gobject.dart';
 import 'package:gtk4/gtk4.dart' hide init;
 import 'package:glib/glib.dart';
+import 'package:path/path.dart' as p;
 
 void main(List<String> args) {
   init();
@@ -124,38 +125,32 @@ class EditorApp {
   }
 
   void onFileDialogClosed(GObject? sourceObject, GAsyncResult result) {
-    // final dlg = sourceObject as GtkFileDialog;
-    print('File dialog closed');
     try {
       final file = dlg?.openFinish(result); // throws GlibException
       print('File: ${file?.getPath()}');
       if (file != null && file.getPath() != null) {
-        readFile(file.getPath()!);
-        appWindow.setTitle(file.getBasename()!);
+        loadFile(file.getPath()!);
       }
     } on GlibException catch (e) {
-      // Includes the GTK_DIALOG_ERROR_DISMISSED case when the user
-      // cancels.
-      print('Error: ${e.toString()}');
-      toastOverlay.addToast(AdwToast('Error: ${e.toString()}'));
+      toastOverlay.addToast(
+        AdwToast('Error: ${e.code}:${e.domain} -> ${e.message}'),
+      );
     } finally {
       dlg = null;
     }
   }
 
-  void readFile(String path) {
+  void loadFile(String path) {
     final file = File(path);
     final fileContent = file.readAsStringSync();
     textBuffer.setText(fileContent, -1);
-    // Round-trip through the iter API to demonstrate that the
-    // caller-allocates OUT parameters are now generated as returning
-    // a typed `GtkTextIter` (the wrapper allocates internally, calls
-    // the C function, and reads back via `fromPointer`).
-    final start = textBuffer.getStartIter();
-    final end = textBuffer.getEndIter();
-    print('  start.offset=${start.getOffset()} end.offset=${end.getOffset()}');
 
+    final start = textBuffer.getStartIter();
     textBuffer.placeCursor(start);
+
+    final displayName = p.basename(path);
+    appWindow.setTitle(displayName);
+    toastOverlay.addToast(AdwToast('Opened $displayName'));
   }
 
   void saveFile(String path) {
@@ -165,11 +160,16 @@ class EditorApp {
       textBuffer.getEndIter(),
       false,
     );
-    if (text.isNotEmpty) {
-      file.writeAsStringSync(text);
-      toastOverlay.addToast(AdwToast('Saved to $path'));
-    } else {
+    if (text.isEmpty) {
       toastOverlay.addToast(AdwToast('Nothing to save'));
+    }
+
+    var displayName = p.basename(path);
+    try {
+      file.writeAsStringSync(text);
+      toastOverlay.addToast(AdwToast('Saved as “$displayName”'));
+    } catch (e) {
+      toastOverlay.addToast(AdwToast('Unable to save: $displayName'));
     }
   }
 
