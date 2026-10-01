@@ -527,6 +527,11 @@ class AdwSidebar extends GtkWidget {
 
   /// Sets @self's look and behavior.
   ///
+  /// <picture>
+  /// <source srcset="sidebar-modes-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img src="sidebar-modes.png" alt="sidebar-modes">
+  /// </picture>
+  ///
   /// If set to [enum@Adw.SidebarMode.sidebar], behaves like a sidebar: with a
   /// sidebar style and a persistent selection.
   ///

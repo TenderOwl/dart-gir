@@ -224,7 +224,10 @@ enum GtkSvgError {
   missingAttribute(3),
   invalidReference(4),
   failedUpdate(5),
-  failedRendering(6);
+  failedRendering(6),
+  ignoredElement(7),
+  limitsExceeded(8),
+  notImplemented(9);
 
   const GtkSvgError(this.value);
   final int value;
@@ -237,6 +240,9 @@ enum GtkSvgError {
     4 => invalidReference,
     5 => failedUpdate,
     6 => failedRendering,
+    7 => ignoredElement,
+    8 => limitsExceeded,
+    9 => notImplemented,
     _ => throw ArgumentError.value(value, 'value', 'Unknown GtkSvgError value'),
   };
 }
@@ -432,29 +438,6 @@ enum GtkTreeViewDropPosition {
       value,
       'value',
       'Unknown GtkTreeViewDropPosition value',
-    ),
-  };
-}
-
-/// Used to indicate which grid lines to draw in a tree view.
-enum GtkTreeViewGridLines {
-  none(0),
-  horizontal(1),
-  vertical(2),
-  both(3);
-
-  const GtkTreeViewGridLines(this.value);
-  final int value;
-
-  static GtkTreeViewGridLines fromValue(int value) => switch (value) {
-    0 => none,
-    1 => horizontal,
-    2 => vertical,
-    3 => both,
-    _ => throw ArgumentError.value(
-      value,
-      'value',
-      'Unknown GtkTreeViewGridLines value',
     ),
   };
 }

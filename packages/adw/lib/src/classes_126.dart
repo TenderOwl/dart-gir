@@ -144,6 +144,11 @@ class AdwViewSwitcherSidebar extends GtkWidget {
 
   /// Sets @self's look and behavior.
   ///
+  /// <picture>
+  /// <source srcset="view-switcher-sidebar-modes-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img src="view-switcher-sidebar-modes.png" alt="view-switcher-sidebar-modes">
+  /// </picture>
+  ///
   /// If set to [enum@Adw.SidebarMode.sidebar], behaves like a sidebar: with a
   /// sidebar style and a persistent selection.
   ///
