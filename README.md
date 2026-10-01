@@ -1,4 +1,4 @@
-# gir-bindings
+# dart-gir
 
 A [Dart workspace](https://dart.dev/tools/pub/workspaces) monorepo that
 generates type-safe, statically-analysed, idiomatic Dart FFI bindings for

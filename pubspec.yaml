@@ -1,6 +1,6 @@
-name: gir_bindings_workspace
+name: dart_gir
 publish_to: none
-description: GIR-based Dart FFI bindings for GObject libraries (GLib, GTK4, Libadwaita).
+description: GIR-based Dart FFI bindings for GObject libraries (GLib, GTK4, Libadwaita, etc.).
 
 environment:
   sdk: ^3.13.4
