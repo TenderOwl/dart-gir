@@ -50,7 +50,8 @@ class EditorApp {
     appWindow = AdwApplicationWindow(app)
       ..setDefaultSize(800, 600)
       ..setTitle('Editor')
-      ..setContent(buildContentView());
+      ..setContent(buildContentView())
+      ..addCssClass('devel');
 
     setupActions();
 
