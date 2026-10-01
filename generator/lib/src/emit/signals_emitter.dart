@@ -404,8 +404,11 @@ SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? rel
   // Build the NativeCallable type argument. NativeCallable<T> requires T
   // to be written with `dart:ffi` native types; the trampoline function
   // itself is declared with the Dart representation of each (see
-  // FfiShape.dartType / ReturnShape.dartReturnType).
+  // FfiShape.dartType / ReturnShape.dartReturnType). GLib's marshaller
+  // always passes the signal's instance as the first argument, followed
+  // by the signal args and finally the user_data pointer.
   final ffArgs = <String>[
+    'ffi.Pointer<ffi.Void>', // instance
     for (var i = 0; i < shapes.length; i++) shapes[i].ffiType,
     'ffi.Pointer<ffi.Void>', // user_data
   ];

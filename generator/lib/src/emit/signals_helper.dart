@@ -124,18 +124,19 @@ String? emitSignalsHelper(EmitContext ctx) {
   return b.toString();
 }
 
-/// Synthetic `v_0_` signature for the public escape hatch — receives
-/// `(instance, userData)` from `g_cclosure_marshal_VOID__VOID`. The
-/// trampoline ignores the instance.
+/// Synthetic `v_0_` signature for the public escape hatch. Like every
+/// bucket, the trampoline receives `(instance, userData)` from
+/// `g_cclosure_marshal_VOID__VOID` — both parameters are added by the
+/// emission loop, so [shapes] and [argNames] stay empty.
 SignalSignature _voidVoidSignature() => SignalSignature(
       bucketId: 'v_0_',
       marshallerReturn: ReturnShape.void_,
-      shapes: const [FfiShape.pointer],
+      shapes: const [],
       dartReturnType: 'void',
       trampolineFfiType:
           'ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)',
       callbackType: 'void Function()',
-      argNames: const ['instance', 'userData'],
+      argNames: const [],
       argMarshals: const [],
     );
 
@@ -239,7 +240,9 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
   b.writeln('/// the handler id from `user_data`, converts the FFI args, and');
   b.writeln('/// runs the Dart callback.');
   b.writeln('${sig.dartReturnType} _signalTrampoline_$bucketId(');
-  final ffParams = <String>[];
+  // GLib's marshaller passes the instance first, then the signal args,
+  // then the user_data pointer.
+  final ffParams = <String>['ffi.Pointer<ffi.Void> instance_'];
   for (var i = 0; i < sig.shapes.length; i++) {
     final pname = sig.argNames[i];
     final dtype = sig.shapes[i].dartType;

@@ -23,24 +23,29 @@ class MyApp {
     // Connect the 'activate' signal to the `onActivate` callback.
     app.onActivate(onActivate);
     app.onStartup(() {
-      log('onStartup called', level: 0);
+      print('onStartup called');
     });
 
+    print('before onNotify');
     app.onNotify((pspec) {
       print('onNotify: ${pspec.getName()}');
     });
+    print('before onShutdown');
 
     // Connect the 'shutdown' signal to quit the application properly.
     app.onShutdown(onQuit);
     app.setAccelsForAction('window.close', ['<Primary>w']);
+    print('app initialized');
   }
 
   Future<void> run(List<String> args) async {
+    print('before app.run');
     app.run(args.length, args);
+    print('after app.run');
   }
 
   void onActivate() {
-    log('onActivte called');
+    print('onActivte called');
     appWindow = AdwApplicationWindow(app)
       ..setDefaultSize(640, 480)
       ..setTitle('My App')

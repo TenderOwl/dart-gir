@@ -74,7 +74,7 @@ final _signalRegistry_v_0_ = <int, void Function()>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_0_(
-  ffi.Pointer<ffi.Void> instance,
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> userData,
 ) {
   final id = userData.cast<ffi.IntPtr>().value;
@@ -134,6 +134,7 @@ final _signalRegistry_v_1_o_gparamspec =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_o_gparamspec(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> pspec,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -146,7 +147,11 @@ void _signalTrampoline_v_1_o_gparamspec(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_o_gparamspec =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_o_gparamspec);
 
 /// Registers [callback] against [signalName] on [instance] via

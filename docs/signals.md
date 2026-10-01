@@ -147,6 +147,30 @@ at the call site (cast on assignment), since at the C ABI level every
 callback signature is the same — GLib dispatches via the marshaller
 selected for the signal's registered shape (`g_cclosure_marshal_*`).
 
+The marshaller always invokes the handler as
+`(instance, ...signal_args, user_data)` — the trampoline's first
+parameter is the signal's `instance` (named `instance_` to avoid
+colliding with signal parameters that are themselves named
+`instance`), followed by the signal args, then the `user_data` pointer
+carrying the handler id.
+
+`NativeCallable.isolateLocal` is used (not `listener` or
+`isolateGroupBound`) because the trampoline needs synchronous access to
+the isolate's globals (the registry maps) and must support non-void
+returns. Consequences:
+
+* Signals must be emitted on the isolate's thread. GTK delivers signal
+  handlers on the thread running the GLib main context, so the app must
+  call `g_application_run` / pump the main context on the same isolate
+  (and OS thread) that connected the handlers — the normal case for a
+  Dart app whose `main()` drives GTK directly.
+* `listener` would be wrong here: it delivers the callback
+  asynchronously via a `SendPort`, which deadlocks while the isolate is
+  blocked inside the synchronous `g_application_run` FFI call, and it
+  supports only void returns.
+* `isolateGroupBound` runs the callback without access to the isolate's
+  non-shared globals, so the registry lookups fail.
+
 ## Ownership of `transfer-none` strings
 
 Strings in signal callbacks are passed with `transfer-ownership="none"`

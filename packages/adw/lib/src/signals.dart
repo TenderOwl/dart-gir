@@ -74,7 +74,7 @@ final _signalRegistry_v_0_ = <int, void Function()>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_0_(
-  ffi.Pointer<ffi.Void> instance,
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> userData,
 ) {
   final id = userData.cast<ffi.IntPtr>().value;
@@ -133,6 +133,7 @@ final _signalRegistry_b_1_s_string = <int, bool Function(String uri)>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_1_s_string(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<Utf8> uri,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -149,7 +150,11 @@ bool _signalTrampoline_b_1_s_string(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_b_1_s_string =
     ffi.NativeCallable<
-      ffi.Bool Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+      ffi.Bool Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<Utf8>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_b_1_s_string, exceptionalReturn: false);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -195,7 +200,10 @@ final _signalRegistry_v_0 = <int, void Function()>{};
 /// Trampoline invoked by GObject for bucket `v_0`. Reads
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
-void _signalTrampoline_v_0(ffi.Pointer<ffi.Void> userData) {
+void _signalTrampoline_v_0(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<ffi.Void> userData,
+) {
   final id = userData.cast<ffi.IntPtr>().value;
   final cb = _signalRegistry_v_0[id]!;
   cb();
@@ -204,9 +212,9 @@ void _signalTrampoline_v_0(ffi.Pointer<ffi.Void> userData) {
 /// Per-package singleton. Never closed — must stay reachable for
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_0 =
-    ffi.NativeCallable<ffi.Void Function(ffi.Pointer<ffi.Void>)>.isolateLocal(
-      _signalTrampoline_v_0,
-    );
+    ffi.NativeCallable<
+      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+    >.isolateLocal(_signalTrampoline_v_0);
 
 /// Registers [callback] against [signalName] on [instance] via
 /// `g_signal_connect_data`. Returns the handler ID.
@@ -253,6 +261,7 @@ final _signalRegistry_v_1_i_gtktextdirection =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_i_gtktextdirection(
+  ffi.Pointer<ffi.Void> instance_,
   int previousDirection,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -265,7 +274,7 @@ void _signalTrampoline_v_1_i_gtktextdirection(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_i_gtktextdirection =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Pointer<ffi.Void>)
     >.isolateLocal(_signalTrampoline_v_1_i_gtktextdirection);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -313,6 +322,7 @@ final _signalRegistry_b_1_i_gtkdirectiontype =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_1_i_gtkdirectiontype(
+  ffi.Pointer<ffi.Void> instance_,
   int direction,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -325,7 +335,7 @@ bool _signalTrampoline_b_1_i_gtkdirectiontype(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_b_1_i_gtkdirectiontype =
     ffi.NativeCallable<
-      ffi.Bool Function(ffi.Int32, ffi.Pointer<ffi.Void>)
+      ffi.Bool Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Pointer<ffi.Void>)
     >.isolateLocal(
       _signalTrampoline_b_1_i_gtkdirectiontype,
       exceptionalReturn: false,
@@ -375,6 +385,7 @@ final _signalRegistry_b_1_b_bool = <int, bool Function(bool groupCycling)>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_1_b_bool(
+  ffi.Pointer<ffi.Void> instance_,
   bool groupCycling,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -387,7 +398,7 @@ bool _signalTrampoline_b_1_b_bool(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_b_1_b_bool =
     ffi.NativeCallable<
-      ffi.Bool Function(ffi.Bool, ffi.Pointer<ffi.Void>)
+      ffi.Bool Function(ffi.Pointer<ffi.Void>, ffi.Bool, ffi.Pointer<ffi.Void>)
     >.isolateLocal(_signalTrampoline_b_1_b_bool, exceptionalReturn: false);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -435,6 +446,7 @@ final _signalRegistry_v_1_i_gtkdirectiontype =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_i_gtkdirectiontype(
+  ffi.Pointer<ffi.Void> instance_,
   int direction,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -447,7 +459,7 @@ void _signalTrampoline_v_1_i_gtkdirectiontype(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_i_gtkdirectiontype =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Pointer<ffi.Void>)
     >.isolateLocal(_signalTrampoline_v_1_i_gtkdirectiontype);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -495,6 +507,7 @@ final _signalRegistry_b_4_i_i_b_o_int_int_bool_gtktooltip =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_4_i_i_b_o_int_int_bool_gtktooltip(
+  ffi.Pointer<ffi.Void> instance_,
   int x,
   int y,
   bool keyboardMode,
@@ -511,6 +524,7 @@ bool _signalTrampoline_b_4_i_i_b_o_int_int_bool_gtktooltip(
 final _signalCallable_b_4_i_i_b_o_int_int_bool_gtktooltip =
     ffi.NativeCallable<
       ffi.Bool Function(
+        ffi.Pointer<ffi.Void>,
         ffi.Int32,
         ffi.Int32,
         ffi.Bool,
@@ -568,6 +582,7 @@ final _signalRegistry_v_1_u_gtkstateflags =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_u_gtkstateflags(
+  ffi.Pointer<ffi.Void> instance_,
   int flags,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -580,7 +595,11 @@ void _signalTrampoline_v_1_u_gtkstateflags(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_u_gtkstateflags =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Uint32, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Uint32,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_u_gtkstateflags);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -628,6 +647,7 @@ final _signalRegistry_v_1_o_gparamspec =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_o_gparamspec(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> pspec,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -640,7 +660,11 @@ void _signalTrampoline_v_1_o_gparamspec(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_o_gparamspec =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_o_gparamspec);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -686,7 +710,10 @@ final _signalRegistry_b_0 = <int, bool Function()>{};
 /// Trampoline invoked by GObject for bucket `b_0`. Reads
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
-bool _signalTrampoline_b_0(ffi.Pointer<ffi.Void> userData) {
+bool _signalTrampoline_b_0(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<ffi.Void> userData,
+) {
   final id = userData.cast<ffi.IntPtr>().value;
   final cb = _signalRegistry_b_0[id]!;
   return cb();
@@ -695,10 +722,9 @@ bool _signalTrampoline_b_0(ffi.Pointer<ffi.Void> userData) {
 /// Per-package singleton. Never closed — must stay reachable for
 /// as long as any connection in this bucket is alive.
 final _signalCallable_b_0 =
-    ffi.NativeCallable<ffi.Bool Function(ffi.Pointer<ffi.Void>)>.isolateLocal(
-      _signalTrampoline_b_0,
-      exceptionalReturn: false,
-    );
+    ffi.NativeCallable<
+      ffi.Bool Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+    >.isolateLocal(_signalTrampoline_b_0, exceptionalReturn: false);
 
 /// Registers [callback] against [signalName] on [instance] via
 /// `g_signal_connect_data`. Returns the handler ID.
@@ -744,6 +770,7 @@ final _signalRegistry_v_1_s_string = <int, void Function(String response)>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_s_string(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<Utf8> response,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -757,7 +784,11 @@ void _signalTrampoline_v_1_s_string(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_s_string =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<Utf8>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_s_string);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -805,6 +836,7 @@ final _signalRegistry_v_1_o_gtkwindow =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_o_gtkwindow(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> window,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -817,7 +849,11 @@ void _signalTrampoline_v_1_o_gtkwindow(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_o_gtkwindow =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_o_gtkwindow);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -865,6 +901,7 @@ final _signalRegistry_i_1_o_gapplicationcommandline =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 int _signalTrampoline_i_1_o_gapplicationcommandline(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> commandLine,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -877,7 +914,11 @@ int _signalTrampoline_i_1_o_gapplicationcommandline(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_i_1_o_gapplicationcommandline =
     ffi.NativeCallable<
-      ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Int32 Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(
       _signalTrampoline_i_1_o_gapplicationcommandline,
       exceptionalReturn: 0,
@@ -928,6 +969,7 @@ final _signalRegistry_i_1_o_gvariantdict =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 int _signalTrampoline_i_1_o_gvariantdict(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> options,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -940,7 +982,11 @@ int _signalTrampoline_i_1_o_gvariantdict(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_i_1_o_gvariantdict =
     ffi.NativeCallable<
-      ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Int32 Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_i_1_o_gvariantdict, exceptionalReturn: 0);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -986,7 +1032,11 @@ final _signalRegistry_v_1_i_int = <int, void Function(int index)>{};
 /// Trampoline invoked by GObject for bucket `v_1_i_int`. Reads
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
-void _signalTrampoline_v_1_i_int(int index, ffi.Pointer<ffi.Void> userData) {
+void _signalTrampoline_v_1_i_int(
+  ffi.Pointer<ffi.Void> instance_,
+  int index,
+  ffi.Pointer<ffi.Void> userData,
+) {
   final id = userData.cast<ffi.IntPtr>().value;
   final cb = _signalRegistry_v_1_i_int[id]!;
   cb(index);
@@ -996,7 +1046,7 @@ void _signalTrampoline_v_1_i_int(int index, ffi.Pointer<ffi.Void> userData) {
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_i_int =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Pointer<ffi.Void>)
     >.isolateLocal(_signalTrampoline_v_1_i_int);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1044,6 +1094,7 @@ final _signalRegistry_v_1_o_adwnavigationpage =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_o_adwnavigationpage(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> page,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1056,7 +1107,11 @@ void _signalTrampoline_v_1_o_adwnavigationpage(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_o_adwnavigationpage =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_o_adwnavigationpage);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1107,6 +1162,7 @@ final _signalRegistry_b_3_i_o_u_int_gvalue_gdkdragaction =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_3_i_o_u_int_gvalue_gdkdragaction(
+  ffi.Pointer<ffi.Void> instance_,
   int index,
   ffi.Pointer<ffi.Void> value,
   int preferredAction,
@@ -1122,6 +1178,7 @@ bool _signalTrampoline_b_3_i_o_u_int_gvalue_gdkdragaction(
 final _signalCallable_b_3_i_o_u_int_gvalue_gdkdragaction =
     ffi.NativeCallable<
       ffi.Bool Function(
+        ffi.Pointer<ffi.Void>,
         ffi.Int32,
         ffi.Pointer<ffi.Void>,
         ffi.Uint32,
@@ -1178,6 +1235,7 @@ final _signalRegistry_v_1_o_adwsidebaritem =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_o_adwsidebaritem(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> item,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1190,7 +1248,11 @@ void _signalTrampoline_v_1_o_adwsidebaritem(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_o_adwsidebaritem =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_o_adwsidebaritem);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1237,6 +1299,7 @@ final _signalRegistry_i_1_d_double = <int, int Function(double newValue)>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 int _signalTrampoline_i_1_d_double(
+  ffi.Pointer<ffi.Void> instance_,
   double newValue,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1249,7 +1312,11 @@ int _signalTrampoline_i_1_d_double(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_i_1_d_double =
     ffi.NativeCallable<
-      ffi.Int32 Function(ffi.Double, ffi.Pointer<ffi.Void>)
+      ffi.Int32 Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Double,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_i_1_d_double, exceptionalReturn: 0);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1297,6 +1364,7 @@ final _signalRegistry_v_2_d_d_double_double =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_2_d_d_double_double(
+  ffi.Pointer<ffi.Void> instance_,
   double velocity,
   double to,
   ffi.Pointer<ffi.Void> userData,
@@ -1310,7 +1378,12 @@ void _signalTrampoline_v_2_d_d_double_double(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_2_d_d_double_double =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Double, ffi.Double, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Double,
+        ffi.Double,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_2_d_d_double_double);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1358,6 +1431,7 @@ final _signalRegistry_v_1_i_adwnavigationdirection =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_i_adwnavigationdirection(
+  ffi.Pointer<ffi.Void> instance_,
   int direction,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1370,7 +1444,7 @@ void _signalTrampoline_v_1_i_adwnavigationdirection(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_i_adwnavigationdirection =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Int32, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Pointer<ffi.Void>)
     >.isolateLocal(_signalTrampoline_v_1_i_adwnavigationdirection);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1417,6 +1491,7 @@ final _signalRegistry_v_1_d_double = <int, void Function(double progress)>{};
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_d_double(
+  ffi.Pointer<ffi.Void> instance_,
   double progress,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1429,7 +1504,11 @@ void _signalTrampoline_v_1_d_double(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_d_double =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Double, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Double,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_d_double);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1477,6 +1556,7 @@ final _signalRegistry_b_2_o_o_adwtabpage_gvalue =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_2_o_o_adwtabpage_gvalue(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> page,
   ffi.Pointer<ffi.Void> value,
   ffi.Pointer<ffi.Void> userData,
@@ -1491,6 +1571,7 @@ bool _signalTrampoline_b_2_o_o_adwtabpage_gvalue(
 final _signalCallable_b_2_o_o_adwtabpage_gvalue =
     ffi.NativeCallable<
       ffi.Bool Function(
+        ffi.Pointer<ffi.Void>,
         ffi.Pointer<ffi.Void>,
         ffi.Pointer<ffi.Void>,
         ffi.Pointer<ffi.Void>,
@@ -1545,6 +1626,7 @@ final _signalRegistry_b_1_o_adwtabpage =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 bool _signalTrampoline_b_1_o_adwtabpage(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> page,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1557,7 +1639,11 @@ bool _signalTrampoline_b_1_o_adwtabpage(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_b_1_o_adwtabpage =
     ffi.NativeCallable<
-      ffi.Bool Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Bool Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(
       _signalTrampoline_b_1_o_adwtabpage,
       exceptionalReturn: false,
@@ -1608,6 +1694,7 @@ final _signalRegistry_v_1_o_adwtabpage =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_1_o_adwtabpage(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> page,
   ffi.Pointer<ffi.Void> userData,
 ) {
@@ -1620,7 +1707,11 @@ void _signalTrampoline_v_1_o_adwtabpage(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_1_o_adwtabpage =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_1_o_adwtabpage);
 
 /// Registers [callback] against [signalName] on [instance] via
@@ -1668,6 +1759,7 @@ final _signalRegistry_v_2_o_i_adwtabpage_int =
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
 void _signalTrampoline_v_2_o_i_adwtabpage_int(
+  ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> page,
   int position,
   ffi.Pointer<ffi.Void> userData,
@@ -1681,7 +1773,12 @@ void _signalTrampoline_v_2_o_i_adwtabpage_int(
 /// as long as any connection in this bucket is alive.
 final _signalCallable_v_2_o_i_adwtabpage_int =
     ffi.NativeCallable<
-      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Pointer<ffi.Void>)
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Int32,
+        ffi.Pointer<ffi.Void>,
+      )
     >.isolateLocal(_signalTrampoline_v_2_o_i_adwtabpage_int);
 
 /// Registers [callback] against [signalName] on [instance] via
