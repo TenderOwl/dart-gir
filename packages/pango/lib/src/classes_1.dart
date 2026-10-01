@@ -593,4 +593,30 @@ class PangoFontFamily extends GObject {
   void itemsChanged(int position, int removed, int added) {
     _gListModelItemsChanged(this.handle, position, removed, added);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [PangoFontFamilyProps] for the typed
+  /// accessor pair per property.
+  late final PangoFontFamilyProps _props = PangoFontFamilyProps(this);
+  PangoFontFamilyProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [PangoFontFamily].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class PangoFontFamilyProps {
+  PangoFontFamilyProps(this._self);
+  final PangoFontFamily _self;
+
+  bool get isMonospace => _self.isMonospace();
+
+  bool get isVariable => _self.isVariable();
+
+  String get name => _self.getName();
 }

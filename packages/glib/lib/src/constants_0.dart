@@ -380,7 +380,7 @@ const minint8 = -128;
 /// Like #gtk_minor_version, but from the headers used at
 /// application compile time, rather than from the library
 /// linked against at application run time.
-const minorVersion = 88;
+const minorVersion = 87;
 
 const moduleSuffix = 'so';
 

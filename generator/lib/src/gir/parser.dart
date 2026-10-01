@@ -369,10 +369,26 @@ class GirParser {
         name: _name(e),
         type: _parseType(e),
         readable: _bool(e, 'readable', defaultValue: true),
-        writable: _bool(e, 'writable'),
+        // GIR convention: a property is writable when it has a
+        // `setter=` attribute. Defaulting to `true` on a `setter`
+        // presence lets the props layer emit setters without
+        // requiring the GIR to spell out `writable="1"`.
+        writable: _bool(
+          e,
+          'writable',
+          defaultValue: e.getAttribute('setter') != null,
+        ),
         deprecated: _bool(e, 'deprecated'),
         version: e.getAttribute('version'),
         doc: _doc(e),
+        // Captures the GIR `getter="…"` / `setter="…"` C function
+        // names that back this property's read/write accessors. The
+        // typed `get<Name>(...)` / `set<Name>(...)` methods are
+        // already emitted from the `<method>` elements with these
+        // identifiers; the props layer delegates to them.
+        getter: e.getAttribute('getter'),
+        setter: e.getAttribute('setter'),
+        transferOwnership: _transfer(e.getAttribute('transfer-ownership')),
       );
 
   GirSignal _parseSignal(XmlElement e) {

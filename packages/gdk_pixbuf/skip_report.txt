@@ -1,12 +1,14 @@
 # Skip report for package gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 18
+Total skipped: 27
 
 ## By category
 callable: 12
+property: 9
 callback: 5
 method: 1
 
 ## By reason
+construct-only or no public setter; emitting getter only: 7
 array types are handled in a later phase: 5
 parameter data: array types are handled in a later phase: 3
 return: string list return type (null): 2
@@ -17,6 +19,8 @@ parameter buffer: array types are handled in a later phase: 1
 parameter save_func: callback PixbufSaveFunc has unsupported signature: 1
 parameter width: nullable scalar parameter (gint): 1
 name collision: 1
+missing getter get_pixel-bytes: 1
+unsupported type gpointer: 1
 parameter buf: array types are handled in a later phase: 1
 
 ## First 50 entries
@@ -33,6 +37,15 @@ parameter buf: array types are handled in a later phase: 1
 [callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
 [callable] GdkPixbuf.getFileInfo — parameter width: nullable scalar parameter (gint)
 [method] GdkPixbuf.toString — name collision
+[property] GdkPixbuf.bits-per-sample — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.colorspace — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.has-alpha — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.height — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.n-channels — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.pixel-bytes — missing getter get_pixel-bytes
+[property] GdkPixbuf.pixels — unsupported type gpointer
+[property] GdkPixbuf.rowstride — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.width — construct-only or no public setter; emitting getter only
 [callable] GdkPixbufLoader.write — parameter buf: array types are handled in a later phase
 [callback] GdkPixbufDestroyNotify parameter pixels — array types are handled in a later phase
 [callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array types are handled in a later phase

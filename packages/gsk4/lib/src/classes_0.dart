@@ -183,6 +183,32 @@ class GskBroadwayRenderer extends GskRenderer {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GskBroadwayRendererProps] for the typed
+  /// accessor pair per property.
+  late final GskBroadwayRendererProps _props = GskBroadwayRendererProps(this);
+  GskBroadwayRendererProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GskBroadwayRenderer].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GskBroadwayRendererProps extends GskRendererProps {
+  GskBroadwayRendererProps(GskBroadwayRenderer $self)
+    : _self = $self,
+      super($self);
+  final GskBroadwayRenderer _self;
+
+  bool get realized => _self.isRealized();
+
+  GdkSurface? get surface => _self.getSurface();
 }
 
 /// A render node for a Cairo surface.
@@ -288,6 +314,30 @@ class GskCairoRenderer extends GskRenderer {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GskCairoRendererProps] for the typed
+  /// accessor pair per property.
+  late final GskCairoRendererProps _props = GskCairoRendererProps(this);
+  GskCairoRendererProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GskCairoRenderer].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GskCairoRendererProps extends GskRendererProps {
+  GskCairoRendererProps(GskCairoRenderer $self) : _self = $self, super($self);
+  final GskCairoRenderer _self;
+
+  bool get realized => _self.isRealized();
+
+  GdkSurface? get surface => _self.getSurface();
 }
 
 /// A render node applying a rectangular clip to its single child node.
@@ -677,138 +727,5 @@ class GskConicGradientNode extends GskRenderNode {
       ).asFunction<double Function(ffi.Pointer<ffi.Void>)>();
   double getRotation() {
     return _gskConicGradientNodeGetRotation(this.handle);
-  }
-}
-
-/// A render node that can contain other render nodes.
-class GskContainerNode extends GskRenderNode {
-  GskContainerNode.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Gets one of the children of @container.
-  static final _gskContainerNodeGetChild =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('gsk_container_node_get_child')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
-          >();
-  GskRenderNode getChild(int idx) {
-    return GskRenderNode.fromPointer(
-      _gskContainerNodeGetChild(this.handle, idx),
-    );
-  }
-
-  /// Retrieves the number of direct children of @node.
-  static final _gskContainerNodeGetNChildren =
-      gsk4Lookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('gsk_container_node_get_n_children')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getNChildren() {
-    return _gskContainerNodeGetNChildren(this.handle);
-  }
-}
-
-/// A render node that copies the current state of the rendering canvas
-/// so a [class@Gsk.PasteNode] can draw it.
-class GskCopyNode extends GskRenderNode {
-  GskCopyNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
-
-  /// Creates a `GskRenderNode` that copies the current rendering
-  /// canvas for playback by paste nodes that are part of the child.
-  static final _gskCopyNodeNew =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_copy_node_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GskCopyNode(GskRenderNode child) {
-    return GskCopyNode.fromPointer(_gskCopyNodeNew(child.handle), owned: true);
-  }
-
-  /// Gets the child node that is getting drawn by the given @node.
-  static final _gskCopyNodeGetChild =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_copy_node_get_child')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRenderNode getChild() {
-    return GskRenderNode.fromPointer(_gskCopyNodeGetChild(this.handle));
-  }
-}
-
-/// A render node cross fading between two child nodes.
-class GskCrossFadeNode extends GskRenderNode {
-  GskCrossFadeNode.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a `GskRenderNode` that will do a cross-fade between @start and @end.
-  static final _gskCrossFadeNodeNew =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-              )
-            >
-          >('gsk_cross_fade_node_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              double,
-            )
-          >();
-  factory GskCrossFadeNode(
-    GskRenderNode start,
-    GskRenderNode end,
-    double progress,
-  ) {
-    return GskCrossFadeNode.fromPointer(
-      _gskCrossFadeNodeNew(start.handle, end.handle, progress),
-      owned: true,
-    );
-  }
-
-  /// Retrieves the child `GskRenderNode` at the end of the cross-fade.
-  static final _gskCrossFadeNodeGetEndChild =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_cross_fade_node_get_end_child')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRenderNode getEndChild() {
-    return GskRenderNode.fromPointer(_gskCrossFadeNodeGetEndChild(this.handle));
-  }
-
-  /// Retrieves the progress value of the cross fade.
-  static final _gskCrossFadeNodeGetProgress =
-      gsk4Lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>>(
-        'gsk_cross_fade_node_get_progress',
-      ).asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getProgress() {
-    return _gskCrossFadeNodeGetProgress(this.handle);
-  }
-
-  /// Retrieves the child `GskRenderNode` at the beginning of the cross-fade.
-  static final _gskCrossFadeNodeGetStartChild =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_cross_fade_node_get_start_child')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRenderNode getStartChild() {
-    return GskRenderNode.fromPointer(
-      _gskCrossFadeNodeGetStartChild(this.handle),
-    );
   }
 }

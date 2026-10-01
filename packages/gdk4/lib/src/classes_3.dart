@@ -672,6 +672,36 @@ class GdkCursor extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GdkCursorProps] for the typed
+  /// accessor pair per property.
+  late final GdkCursorProps _props = GdkCursorProps(this);
+  GdkCursorProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GdkCursor].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GdkCursorProps {
+  GdkCursorProps(this._self);
+  final GdkCursor _self;
+
+  GdkCursor? get fallback => _self.getFallback();
+
+  int get hotspotX => _self.getHotspotX();
+
+  int get hotspotY => _self.getHotspotY();
+
+  String? get name => _self.getName();
+
+  GdkTexture? get texture => _self.getTexture();
 }
 
 /// An event related to drag and drop operations.
@@ -691,9 +721,4 @@ class GdkDNDEvent extends GdkEvent {
         ? null
         : GdkDrop.fromPointer(_gdkDndEventGetDrop(this.handle));
   }
-}
-
-/// An event related to closing a top-level surface.
-class GdkDeleteEvent extends GdkEvent {
-  GdkDeleteEvent.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 }

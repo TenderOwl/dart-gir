@@ -25,7 +25,9 @@ class PackageEmitter {
     required this.allNamespaces,
     required this.packagesDir,
     required this.emittedPackages,
-  });
+    Set<String>? emittedPropsClassNames,
+  }) : emittedPropsClassNames =
+            emittedPropsClassNames ?? <String>{};
 
   final GirNamespace namespace;
   final List<GirNamespace> allNamespaces;
@@ -35,6 +37,13 @@ class PackageEmitter {
 
   /// Package names generated in this run.
   final Set<String> emittedPackages;
+
+  /// Tracks props class names emitted across the entire workspace run.
+  /// Shared between `PackageEmitter` instances so a child class can
+  /// `extends` a parent props class emitted by a previous package
+  /// (e.g. `AdwAvatarProps extends GtkWidgetProps`).
+  static final Set<String> _emittedPropsClassNames = <String>{};
+  final Set<String> emittedPropsClassNames;
 
   // Roughly halves after `dart format` expansion of long signatures.
   static const _maxLinesPerFile = 400;
@@ -102,9 +111,37 @@ class PackageEmitter {
 
     final classEmitter =
         ClassEmitter(ctx, emittedPackages: emittedPackages);
+    // Track fully-qualified props class names that have been emitted
+    // for at least one accessor across the workspace. Child class
+    // emissions consult this set before emitting `extends <parentProps>`
+    // to avoid referring to a parent props class that was skipped
+    // (every property was skipped because its getter/setter couldn't
+    // be resolved).
+    final emittedPropsClassNames = _emittedPropsClassNames;
+    classEmitter.emittedPropsClasses = emittedPropsClassNames;
+    // Pre-scan the namespace's classes to populate the props-class
+    // set in dependency order. The actual emission loop below then
+    // sees a fully-populated set when deciding whether to add
+    // `extends <parentProps>`. We can't just collect the names
+    // from `pendingPropsClass` because the parent props class may
+    // be declared *after* the child in the classes list.
+    for (final c in namespace.classes) {
+      if (classEmitter.wouldEmitPropsClass(c)) {
+        final dartName = ctx.dartTypeName(ctx.namespace.name, c.name);
+        emittedPropsClassNames.add('${dartName}Props');
+      }
+    }
     for (final c in namespace.classes) {
       final code = classEmitter.emitClass(c);
       if (code != null) categories['classes']!.add(code);
+      // The props companion class is a top-level class (alongside the
+      // class it backs) emitted in the same part file. Add it right
+      // after the class entry so the parts compiler can resolve it
+      // before the class body references it.
+      final propsCode = classEmitter.pendingPropsClass;
+      if (propsCode != null) {
+        categories['classes']!.add(propsCode);
+      }
     }
 
     for (final i in namespace.interfaces) {

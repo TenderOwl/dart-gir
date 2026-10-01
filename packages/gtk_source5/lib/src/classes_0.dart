@@ -122,6 +122,34 @@ class GtkSourceAnnotation extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GtkSourceAnnotationProps] for the typed
+  /// accessor pair per property.
+  late final GtkSourceAnnotationProps _props = GtkSourceAnnotationProps(this);
+  GtkSourceAnnotationProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GtkSourceAnnotation].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GtkSourceAnnotationProps {
+  GtkSourceAnnotationProps(this._self);
+  final GtkSourceAnnotation _self;
+
+  String get description => _self.getDescription();
+
+  GIcon? get icon => _self.getIcon();
+
+  int get line => _self.getLine();
+
+  GtkSourceAnnotationStyle get style => _self.getStyle();
 }
 
 /// It is used to provide annotations and display them on [class@View] and also populate
@@ -158,6 +186,131 @@ class GtkSourceAnnotationProvider extends GObject {
           >();
   void addAnnotation(GtkSourceAnnotation annotation) {
     _gtkSourceAnnotationProviderAddAnnotation(this.handle, annotation.handle);
+  }
+
+  /// Used to populate the [class@HoverDisplay] asynchronously, use
+  /// [method@AnnotationProvider.populate_hover] to do it synchronously.
+  static final _gtkSourceAnnotationProviderPopulateHoverAsync =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_source_annotation_provider_populate_hover_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void populateHoverAsync(
+    GtkSourceAnnotation annotation,
+    GtkSourceHoverDisplay display,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gtkSourceAnnotationProviderPopulateHoverAsync(
+        this.handle,
+        annotation.handle,
+        display.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
+  static final _populateHoverAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _populateHoverAsyncCallbackSeq = 0;
+  static final _populateHoverAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_populateHoverAsyncCallbackTrampoline);
+  static void _populateHoverAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _populateHoverAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [populateHoverAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void populateHoverAsyncCallback(
+    GtkSourceAnnotation annotation,
+    GtkSourceHoverDisplay display,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_populateHoverAsyncCallbackSeq;
+    _populateHoverAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkSourceAnnotationProviderPopulateHoverAsync(
+      this.handle,
+      annotation.handle,
+      display.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _populateHoverAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes populating the [class@HoverDisplay] asynchronously.

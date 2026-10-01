@@ -1,8 +1,8 @@
 # Skip report for package glib (GLib 2.0)
-Total skipped: 445
+Total skipped: 447
 
 ## By category
-callable: 426
+callable: 428
 alias: 13
 constant: 2
 callback: 2
@@ -10,24 +10,24 @@ method: 1
 constructor: 1
 
 ## By reason
-introspectable=0: 98
+introspectable=0: 97
 parameter length: nullable scalar parameter (gsize): 18
 return: string list return type (null): 15
 aliases are resolved to their target: 13
 parameter array: array types are handled in a later phase: 13
 return: array types are handled in a later phase: 11
-parameter data: array types are handled in a later phase: 8
+parameter data: array types are handled in a later phase: 9
 parameter str: array types are handled in a later phase: 8
 parameter string: array types are handled in a later phase: 8
 parameter fields: array types are handled in a later phase: 6
 parameter list: array types are handled in a later phase: 5
 parameter strv: array types are handled in a later phase: 3
+parameter key: array types are handled in a later phase: 3
 parameter contents: array types are handled in a later phase: 3
 parameter bytes_read: nullable scalar parameter (gsize): 3
 parameter child_pid: nullable scalar parameter (Pid): 3
 return: unknown type: time_t: 3
 parameter port: nullable scalar parameter (gint): 3
-parameter key: array types are handled in a later phase: 2
 parameter keys: array types are handled in a later phase: 2
 array types are handled in a later phase: 2
 inout parameter rc: 2
@@ -41,7 +41,7 @@ inout parameter location: 2
 parameter entries: array types are handled in a later phase: 2
 name collision: 2
 parameter children: array types are handled in a later phase: 2
-moved to Hook.free: 1
+moved to Hook.destroy_link: 1
 parameter out_num: nullable scalar parameter (guint64): 1
 moved to AsyncQueue.new: 1
 moved to AsyncQueue.new_full: 1
@@ -85,8 +85,8 @@ moved to HashTable.steal_all: 1
 moved to HashTable.steal_extended: 1
 moved to HashTable.unref: 1
 moved to Hook.destroy: 1
-moved to Hook.destroy_link: 1
 name collision: csetA2Z: 1
+moved to Hook.free: 1
 moved to Hook.insert_before: 1
 moved to Hook.insert_sorted: 1
 moved to Hook.prepend: 1
@@ -160,8 +160,8 @@ moved to Thread.self: 1
 moved to Thread.yield: 1
 moved to TimeVal.from_iso8601: 1
 introspectable=0 (C macro; use timeout_add_full): 1
+introspectable=0 (C macro; use timeout_add_seconds_full): 1
 moved to ByteArray.free: 1
-moved to TrashStack.height: 1
 moved to TrashStack.peek: 1
 moved to TrashStack.pop: 1
 moved to TrashStack.push: 1
@@ -213,6 +213,7 @@ moved to ByteArray.remove_index: 1
 parameter size: nullable scalar parameter (gsize): 1
 parameter timet: unknown type: time_t: 1
 parameter year: nullable scalar parameter (gint): 1
+parameter buffer: array types are handled in a later phase: 1
 parameter length: nullable scalar parameter (gint): 1
 moved to ByteArray.remove_index_fast: 1
 parameter terminator_pos: nullable scalar parameter (gsize): 1
@@ -236,7 +237,7 @@ moved to ByteArray.unref: 1
 moved to Checksum.type_get_length: 1
 introspectable=0 (C macro; use child_watch_add_full): 1
 parameter items: array types are handled in a later phase: 1
-introspectable=0 (C macro; use timeout_add_seconds_full): 1
+moved to TrashStack.height: 1
 
 ## First 50 entries
 [constant] GLib.CSET_a_2_z — name collision: csetA2Z

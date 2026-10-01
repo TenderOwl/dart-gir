@@ -532,4 +532,30 @@ class GdkPixbufSimpleAnim extends GdkPixbufAnimation {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GdkPixbufSimpleAnimProps] for the typed
+  /// accessor pair per property.
+  late final GdkPixbufSimpleAnimProps _props = GdkPixbufSimpleAnimProps(this);
+  GdkPixbufSimpleAnimProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GdkPixbufSimpleAnim].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GdkPixbufSimpleAnimProps {
+  GdkPixbufSimpleAnimProps(this._self);
+  final GdkPixbufSimpleAnim _self;
+
+  // deprecated since 2.18.
+  bool get loop => _self.getLoop();
+  set loop(bool value) {
+    _self.setLoop(value);
+  }
 }

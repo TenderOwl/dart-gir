@@ -56,3 +56,6 @@ part 'src/classes_16.dart';
 part 'src/classes_17.dart';
 part 'src/classes_18.dart';
 part 'src/classes_19.dart';
+part 'src/classes_20.dart';
+part 'src/classes_21.dart';
+part 'src/classes_22.dart';

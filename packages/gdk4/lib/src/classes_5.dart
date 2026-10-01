@@ -572,4 +572,34 @@ class GdkDisplay extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GdkDisplayProps] for the typed
+  /// accessor pair per property.
+  late final GdkDisplayProps _props = GdkDisplayProps(this);
+  GdkDisplayProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GdkDisplay].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GdkDisplayProps {
+  GdkDisplayProps(this._self);
+  final GdkDisplay _self;
+
+  bool get composited => _self.isComposited();
+
+  GdkDmabufFormats get dmabufFormats => _self.getDmabufFormats();
+
+  bool get inputShapes => _self.supportsInputShapes();
+
+  bool get rgba => _self.isRgba();
+
+  bool get shadowWidth => _self.supportsShadowWidth();
 }

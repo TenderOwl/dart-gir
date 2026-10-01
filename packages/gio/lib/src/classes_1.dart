@@ -1825,4 +1825,13 @@ class GApplication extends GObject {
       _gActionMapRemoveAction(this.handle, nativeActionName.cast<Utf8>());
     });
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GApplicationProps] for the typed
+  /// accessor pair per property.
+  late final GApplicationProps _props = GApplicationProps(this);
+  GApplicationProps get props => _props;
 }

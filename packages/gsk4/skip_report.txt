@@ -1,10 +1,11 @@
 # Skip report for package gsk4 (Gsk 4.0)
-Total skipped: 33
+Total skipped: 35
 
 ## By category
 callable: 29
 callback: 2
 method: 2
+property: 2
 
 ## By reason
 parameter color_stops: array types are handled in a later phase: 5
@@ -15,6 +16,7 @@ array types are handled in a later phase: 2
 inout parameter point: 2
 name collision: 2
 parameter children: array types are handled in a later phase: 2
+construct-only or no public setter; emitting getter only: 2
 moved to ComponentTransfer.equal: 1
 moved to Path.parse: 1
 moved to SerializationError.quark: 1
@@ -50,6 +52,8 @@ parameter n_glyphs: nullable scalar parameter (guint): 1
 [callable] GskConicGradientNode. — parameter color_stops: array types are handled in a later phase
 [callable] GskConicGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
 [callable] GskContainerNode. — parameter children: array types are handled in a later phase
+[property] GskGLShader.resource — construct-only or no public setter; emitting getter only
+[property] GskGLShader.source — construct-only or no public setter; emitting getter only
 [callable] GskGLShaderNode. — parameter children: array types are handled in a later phase
 [callable] GskLinearGradientNode. — parameter color_stops: array types are handled in a later phase
 [callable] GskLinearGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)

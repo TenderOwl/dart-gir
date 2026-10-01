@@ -478,19 +478,6 @@ void setPrgname(String prgname) {
   });
 }
 
-/// If g_get_prgname() is not set, this is the same as setting
-/// the name via g_set_prgname() and %TRUE is returned. Otherwise,
-/// does nothing and returns %FALSE. This is thread-safe.
-final _gSetPrgnameOnce =
-    glibLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>)>>(
-      'g_set_prgname_once',
-    ).asFunction<int Function(ffi.Pointer<Utf8>)>();
-bool setPrgnameOnce(String prgname) {
-  return withNativeString(prgname, (nativePrgname) {
-    return (_gSetPrgnameOnce(nativePrgname.cast<Utf8>())) != 0;
-  });
-}
-
 /// Sets an environment variable. On UNIX, both the variable's name and
 /// value can be arbitrary byte strings, except that the variable's name
 /// cannot contain '='. On Windows, they should be in UTF-8.

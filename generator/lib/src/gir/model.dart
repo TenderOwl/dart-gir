@@ -286,6 +286,9 @@ class GirProperty {
     this.deprecated = false,
     this.version,
     this.doc,
+    this.getter,
+    this.setter,
+    this.transferOwnership = GirTransferOwnership.none,
   });
 
   final String name;
@@ -295,6 +298,23 @@ class GirProperty {
   final bool deprecated;
   final String? version;
   final String? doc;
+
+  /// GIR `getter="..."` attribute — the C function backing the read
+  /// accessor (e.g. `get_label` for the `label` property). When set,
+  /// the property accessor in the generated `props` class delegates
+  /// to the existing typed `get<Name>()` instance method.
+  final String? getter;
+
+  /// GIR `setter="..."` attribute — the C function backing the write
+  /// accessor (e.g. `set_label`). Delegates to the existing typed
+  /// `set<Name>(value)` instance method.
+  final String? setter;
+
+  /// `transfer-ownership` for the property's value (the getter's
+  /// return value). Mirrors the value on the backing `<method>`
+  /// element; carried here for convenience so the props layer can
+  /// reason about string ownership without re-resolving the method.
+  final GirTransferOwnership transferOwnership;
 }
 
 class GirSignal {

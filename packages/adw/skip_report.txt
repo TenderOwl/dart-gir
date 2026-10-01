@@ -1,50 +1,63 @@
 # Skip report for package adw (Adw 1)
-Total skipped: 264
+Total skipped: 530
 
 ## By category
+property: 266
 callable: 249
 signal: 8
 renamed: 6
 method: 1
 
 ## By reason
-parameter relations: array types are handled in a later phase: 64
+construct-only or no public setter; emitting getter only: 76
 parameter states: array types are handled in a later phase: 64
 parameter properties: array types are handled in a later phase: 64
+parameter relations: array types are handled in a later phase: 64
+unsupported type null: 62
+missing getter get_height-request: 58
+missing getter get_width-request: 58
 return: string list return type (null): 10
 return: array types are handled in a later phase: 7
-unsupported return type: Gdk.DragAction: 4
-parameter entries: array types are handled in a later phase: 4
-introspectable=0: 4
 parameter people: array types are handled in a later phase: 4
+unsupported return type: Gdk.DragAction: 4
+introspectable=0: 4
+parameter entries: array types are handled in a later phase: 4
 parameter types: array types are handled in a later phase: 3
-inout parameter position: 3
 parameter start_pos: nullable scalar parameter (gint): 3
-parameter artists: array types are handled in a later phase: 2
-parameter designers: array types are handled in a later phase: 2
+missing getter get_n-items: 3
+missing getter get_item-type: 3
+inout parameter position: 3
 parameter documenters: array types are handled in a later phase: 2
 parameter colors: array types are handled in a later phase: 2
+parameter designers: array types are handled in a later phase: 2
 parameter developers: array types are handled in a later phase: 2
+parameter artists: array types are handled in a later phase: 2
 override-incompatible with ancestor; renamed to activateActionRow: 1
+override-incompatible with ancestor; renamed to getSizeAvatar: 1
+getter get_size was renamed; call the renamed method directly: 1
+moved to BreakpointCondition.parse: 1
+parameter objects: array types are handled in a later phase: 1
+unsupported arg type at index 0: gpointer: 1
+moved to AccentColor.to_standalone_rgba: 1
 name collision: 1
 moved to LengthUnit.to_px: 1
-override-incompatible with ancestor; renamed to getSizeAvatar: 1
-moved to LengthUnit.from_px: 1
-parameter objects: array types are handled in a later phase: 1
-moved to Easing.ease: 1
 unsupported return type: TabView: 1
-parameter pages: array types are handled in a later phase: 1
+missing getter get_default-width: 1
+unsupported return type: TabPage: 1
 parameter tags: array types are handled in a later phase: 1
 unsupported return type: NavigationPage: 1
+setter set_visible_page parameter type does not match property type; skipping: 1
 override-incompatible with ancestor; renamed to getNamePreferencesPage: 1
 override-incompatible with ancestor; renamed to setNamePreferencesPage: 1
-unsupported arg type at index 0: gpointer: 1
-moved to BreakpointCondition.parse: 1
-moved to AccentColor.to_standalone_rgba: 1
+getter get_name was renamed; call the renamed method directly: 1
+parameter pages: array types are handled in a later phase: 1
+moved to LengthUnit.from_px: 1
+moved to Easing.ease: 1
 override-incompatible with ancestor; renamed to getDirectionSplitButton: 1
 override-incompatible with ancestor; renamed to setDirectionSplitButton: 1
-unsupported return type: TabPage: 1
+getter get_direction was renamed; call the renamed method directly: 1
 moved to AccentColor.to_rgba: 1
+missing getter get_default-height: 1
 
 ## First 50 entries
 [callable] Adw.accentColorToRgba — moved to AccentColor.to_rgba
@@ -71,6 +84,15 @@ moved to AccentColor.to_rgba: 1
 [callable] AdwAboutDialog.updatePropertyValue — parameter properties: array types are handled in a later phase
 [callable] AdwAboutDialog.updateRelationValue — parameter relations: array types are handled in a later phase
 [callable] AdwAboutDialog.updateStateValue — parameter states: array types are handled in a later phase
+[property] AdwAboutDialog.appdata-resource-path — construct-only or no public setter; emitting getter only
+[property] AdwAboutDialog.artists — unsupported type null
+[property] AdwAboutDialog.designers — unsupported type null
+[property] AdwAboutDialog.developers — unsupported type null
+[property] AdwAboutDialog.documenters — unsupported type null
+[property] AdwAboutDialog.css-classes — unsupported type null
+[property] AdwAboutDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwAboutDialog.height-request — missing getter get_height-request
+[property] AdwAboutDialog.width-request — missing getter get_width-request
 [callable] AdwAboutWindow.addAcknowledgementSection — parameter people: array types are handled in a later phase
 [callable] AdwAboutWindow.addCreditSection — parameter people: array types are handled in a later phase
 [callable] AdwAboutWindow.getArtists — return: string list return type (null)
@@ -88,12 +110,3 @@ moved to AccentColor.to_rgba: 1
 [callable] AdwActionRow.updatePropertyValue — parameter properties: array types are handled in a later phase
 [callable] AdwActionRow.updateRelationValue — parameter relations: array types are handled in a later phase
 [callable] AdwActionRow.updateStateValue — parameter states: array types are handled in a later phase
-[callable] AdwAlertDialog.updatePropertyValue — parameter properties: array types are handled in a later phase
-[callable] AdwAlertDialog.updateRelationValue — parameter relations: array types are handled in a later phase
-[callable] AdwAlertDialog.updateStateValue — parameter states: array types are handled in a later phase
-[signal] AdwApplication.open — unsupported arg type at index 0: gpointer
-[callable] AdwApplication.listActions — return: string list return type (null)
-[callable] AdwApplication.addActionEntries — parameter entries: array types are handled in a later phase
-[callable] AdwApplication.removeActionEntries — parameter entries: array types are handled in a later phase
-[callable] AdwApplicationWindow.listActions — return: string list return type (null)
-[callable] AdwApplicationWindow.addActionEntries — parameter entries: array types are handled in a later phase

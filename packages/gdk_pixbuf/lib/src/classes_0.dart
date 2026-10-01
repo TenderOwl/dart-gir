@@ -2483,4 +2483,13 @@ class GdkPixbuf extends GObject {
       calloc.free(_error);
     }
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GdkPixbufProps] for the typed
+  /// accessor pair per property.
+  late final GdkPixbufProps _props = GdkPixbufProps(this);
+  GdkPixbufProps get props => _props;
 }

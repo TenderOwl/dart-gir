@@ -131,6 +131,26 @@ void main() {
       expect(cls.final_, isFalse);
       expect(cls.virtualMethods.single.name, 'do_thing');
     });
+
+    test('property captures getter, setter, transfer-ownership', () {
+      final repo = parser.parse(gir('''
+    <class name="Button" c:type="TestButton">
+      <property name="label"
+                writable="1"
+                transfer-ownership="none"
+                setter="set_label"
+                getter="get_label">
+        <type name="utf8" c:type="const gchar*"/>
+      </property>
+    </class>
+'''));
+      final prop = repo.namespace.classes.single.properties.single;
+      expect(prop.name, 'label');
+      expect(prop.getter, 'get_label');
+      expect(prop.setter, 'set_label');
+      expect(prop.transferOwnership, GirTransferOwnership.none);
+      expect(prop.writable, isTrue);
+    });
   });
 
   group('enum and bitfield', () {

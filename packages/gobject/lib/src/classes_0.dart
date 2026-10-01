@@ -249,6 +249,36 @@ class GBinding extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GBindingProps] for the typed
+  /// accessor pair per property.
+  late final GBindingProps _props = GBindingProps(this);
+  GBindingProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GBinding].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GBindingProps {
+  GBindingProps(this._self);
+  final GBinding _self;
+
+  GBindingFlags get flags => _self.getFlags();
+
+  GObject? get source => _self.getSource();
+
+  String get sourceProperty => _self.getSourceProperty();
+
+  GObject? get target => _self.getTarget();
+
+  String get targetProperty => _self.getTargetProperty();
 }
 
 /// `GBindingGroup` can be used to bind multiple properties

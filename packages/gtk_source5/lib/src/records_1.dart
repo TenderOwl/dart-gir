@@ -200,6 +200,130 @@ final class GtkSourceCompletionProvider {
         0;
   }
 
+  /// Asynchronously requests that the provider populates the completion
+  /// results for @context.
+  ///
+  /// For providers that would like to populate a [iface@Gio.ListModel] while those
+  /// results are displayed to the user,
+  /// [method@CompletionContext.set_proposals_for_provider] may be used
+  /// to reduce latency until the user sees results.
+  static final _gtkSourceCompletionProviderPopulateAsync =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_source_completion_provider_populate_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void populateAsync(
+    GtkSourceCompletionContext context,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gtkSourceCompletionProviderPopulateAsync(
+        this.handle,
+        context.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
+  static final _populateAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _populateAsyncCallbackSeq = 0;
+  static final _populateAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_populateAsyncCallbackTrampoline);
+  static void _populateAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _populateAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [populateAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void populateAsyncCallback(
+    GtkSourceCompletionContext context,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_populateAsyncCallbackSeq;
+    _populateAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkSourceCompletionProviderPopulateAsync(
+      this.handle,
+      context.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _populateAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Completes an asynchronous operation to populate a completion provider.
   static final _gtkSourceCompletionProviderPopulateFinish =
       gtkSource5Lookup<
@@ -280,6 +404,129 @@ final class GtkSourceCompletionProvider {
 final class GtkSourceHoverProvider {
   GtkSourceHoverProvider.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
+  static final _gtkSourceHoverProviderPopulateAsync =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_source_hover_provider_populate_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void populateAsync(
+    GtkSourceHoverContext context,
+    GtkSourceHoverDisplay display,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gtkSourceHoverProviderPopulateAsync(
+        this.handle,
+        context.handle,
+        display.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
+  static final _populateAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _populateAsyncCallbackSeq = 0;
+  static final _populateAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_populateAsyncCallbackTrampoline);
+  static void _populateAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _populateAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [populateAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void populateAsyncCallback(
+    GtkSourceHoverContext context,
+    GtkSourceHoverDisplay display,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_populateAsyncCallbackSeq;
+    _populateAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkSourceHoverProviderPopulateAsync(
+      this.handle,
+      context.handle,
+      display.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _populateAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   static final _gtkSourceHoverProviderPopulateFinish =
       gtkSource5Lookup<
             ffi.NativeFunction<

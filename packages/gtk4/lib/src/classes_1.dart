@@ -1175,4 +1175,13 @@ class GtkAboutDialog extends GtkWindow {
   void setFocus([GtkWidget? focus]) {
     _gtkRootSetFocus(this.handle, focus?.handle ?? ffi.nullptr);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GtkAboutDialogProps] for the typed
+  /// accessor pair per property.
+  late final GtkAboutDialogProps _props = GtkAboutDialogProps(this);
+  GtkAboutDialogProps get props => _props;
 }

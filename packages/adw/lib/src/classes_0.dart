@@ -1572,4 +1572,13 @@ class AdwAboutDialog extends AdwDialog {
       free: false,
     );
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [AdwAboutDialogProps] for the typed
+  /// accessor pair per property.
+  late final AdwAboutDialogProps _props = AdwAboutDialogProps(this);
+  AdwAboutDialogProps get props => _props;
 }

@@ -20,7 +20,54 @@ class ClassEmitter {
   /// extended.
   final Set<String> emittedPackages;
 
+  /// Set by [emitClass] when the class has at least one emitted
+  /// property accessor. The caller should append this string as a
+  /// top-level class declaration in the same part file, immediately
+  /// before the corresponding class. Reset to `null` before each
+  /// emit.
+  String? pendingPropsClass;
+
+  /// Set of fully-qualified props class names that this class
+  /// emission actually emitted (i.e. the props class has at least
+  /// one accessor). Used by other class emissions to decide whether
+  /// they can `extends` a parent props class. Reset to `null`
+  /// alongside `pendingPropsClass`.
+  Set<String>? emittedPropsClasses;
+
+  /// Returns `true` if [cls] would emit a props companion class —
+  /// i.e. it's GObject-rooted, has at least one property (own or
+  /// inherited), and has at least one property accessor that won't
+  /// be skipped. Used by the package emitter to populate the
+  /// `emittedPropsClasses` set in advance of the main emission
+  /// loop, so that `extends <parentProps>` clauses resolve
+  /// correctly regardless of class declaration order.
+  bool wouldEmitPropsClass(GirClass cls) {
+    if (!ctx.isGObjectRooted(cls)) return false;
+    final inherited = _inheritedProperties(cls);
+    if (inherited.isEmpty) return false;
+    // Walk the inherited properties to check whether at least one
+    // accessor will actually be emitted. We use a lightweight check
+    // (does the typed method exist?) rather than re-running the
+    // full property emission logic. Setters with multiple non-self
+    // args or getters with extra args will still skip during the
+    // actual emission, but the props class declaration stays alive.
+    for (final access in inherited) {
+      final prop = access.property;
+      final owner = access.owner;
+      if (prop.readable) {
+        final getterName = prop.getter ?? 'get_${prop.name}';
+        if (_findMethodByName(owner, getterName) != null) return true;
+      }
+      if (prop.writable) {
+        final setterName = prop.setter ?? 'set_${prop.name}';
+        if (_findMethodByName(owner, setterName) != null) return true;
+      }
+    }
+    return false;
+  }
+
   String? emitClass(GirClass cls) {
+    pendingPropsClass = null;
     final dartName = ctx.dartTypeName(ctx.namespace.name, cls.name);
     if (ctx.isDuplicateType(cls)) {
       ctx.report.skip('class', dartName,
@@ -65,6 +112,18 @@ class ClassEmitter {
     final ancestorSigs = _ancestorMethodSigs(cls);
     final interfaceSigs = _interfaceMethodSigs(cls);
     final inheritedSigs = _inheritedSigs(cls);
+    final inheritedProps = _inheritedProperties(cls);
+    // Reserve the `props` field/getter and the props companion class
+    // name before the property loop runs, so they survive the
+    // `memberNames.add(name)` collision checks below. The companion
+    // class is intentionally public (no leading underscore) so that
+    // cross-package subclasses can `extends` it for covariant return
+    // types — e.g. `_AdwAvatarProps extends _GtkWidgetProps` would
+    // not compile across the package boundary because Dart's part
+    // system hides underscore-prefixed names from other libraries.
+    memberNames.add('props');
+    memberNames.add('_props');
+    final propsClassName = '${dartName}Props';
     var unnamedCtorUsed = false;
     final b = StringBuffer();
     for (final line in ctx.docLines(cls.doc)) {
@@ -200,8 +259,455 @@ class ClassEmitter {
       ));
     }
 
+    // `props` accessor — PyGObject-style typed property namespace. The
+    // helper class `_$<cls>Props` is emitted as a *top-level* class
+    // (alongside the class declaration in the same part file), so only
+    // the field + getter go inside the class body.
+    if (ctx.isGObjectRooted(cls) && inheritedProps.isNotEmpty) {
+      // Stash the props class source for the caller to emit at
+      // top-level alongside this class.
+      pendingPropsClass = _emitPropsClass(dartName, inheritedProps, cls);
+      if (pendingPropsClass != null) {
+        b.writeln('');
+        b.writeln('  /// PyGObject-style typed property accessor. Reads and');
+        b.writeln('  /// writes via the existing `get<Name>` / `set<Name>`');
+        b.writeln('  /// methods; each property here corresponds to a GIR');
+        b.writeln('  /// `<property>` element on this class (or one of its');
+        b.writeln('  /// ancestors). See [$propsClassName] for the typed');
+        b.writeln('  /// accessor pair per property.');
+        // Explicit type annotation on `_props` so the child's late-final
+        // field type is the child props class, not the parent's. Dart's
+        // late-final inference for a field that shadows a parent's
+        // late-final field with a different initializer type picks the
+        // parent's static type, breaking the covariant return on the
+        // public `props` getter below (e.g. `GtkButtonProps get props
+        // => _props` would reject `_props` as `GtkWidgetProps`).
+        b.writeln('  late final $propsClassName _props = '
+            '$propsClassName(this);');
+        b.writeln('  $propsClassName get props => _props;');
+      }
+    }
+
     b.write('}');
     return b.toString();
+  }
+
+  /// Returns the union of this class's properties and its ancestors',
+  /// deduplicated by kebab-case GIR name. Each entry uses the leaf
+  /// class's getter/setter when both exist (matches Dart's name
+  /// resolution rules: parent's property is shadowed by the child's if
+  /// the child declares the same name).
+  List<_PropertyAccess> _inheritedProperties(GirClass cls) {
+    final result = <_PropertyAccess>[];
+    final seen = <String>{};
+    // Walk ancestors first, leaf first so the leaf's access methods
+    // win on dedup collisions.
+    void visit(GirClass c) {
+      for (final p in c.properties) {
+        if (seen.add(p.name)) {
+          result.add(_PropertyAccess(property: p, owner: c));
+        }
+      }
+      if (c.parent != null) {
+        final found = ctx.findClass(c.parent!);
+        if (found != null) visit(found.$2);
+      }
+    }
+
+    visit(cls);
+    return result;
+  }
+
+  /// Emits the `<ClassName>Props` companion class that backs the
+  /// `props` field. Returns `null` if no property accessor could be
+  /// emitted (every property was skipped), so the caller can suppress
+  /// the `props` field rather than emit a half-broken surface.
+  String? _emitPropsClass(
+    String dartName,
+    List<_PropertyAccess> accesses,
+    GirClass cls,
+  ) {
+    final propsClassName = '${dartName}Props';
+    final b = StringBuffer();
+    b.writeln('/// PyGObject-style typed property accessor. Each getter');
+    b.writeln('/// and setter delegates to the existing typed');
+    b.writeln('/// `get<Name>` / `set<Name>` methods on [$dartName].');
+    b.writeln('///');
+    b.writeln('/// Skipped properties (unsupported type, missing getter');
+    b.writeln('/// or setter) are recorded in the generation report.');
+    // If the parent class would emit a props companion class, extend
+    // it so the child's getter can override the parent's with a
+    // covariant narrower type (e.g. `GtkButtonProps extends
+    // GtkWidgetProps`). The check uses [wouldEmitPropsClass] so that
+    // parents with no own properties but inherited ones (e.g.
+    // `GtkGestureDrag`, which has no own `<property>` but inherits
+    // `button` from `GtkGestureSingle`) still get an `extends` clause.
+    String? extendsClause;
+    if (cls.parent != null) {
+      final found = ctx.findClass(cls.parent!);
+      if (found != null && wouldEmitPropsClass(found.$2)) {
+        final parentDartName =
+            ctx.dartTypeName(found.$1.name, found.$2.name);
+        extendsClause = '${parentDartName}Props';
+      }
+    }
+    // `class` (not `final class`) so subclasses in *other* packages can
+    // extend it for cross-package covariant-return override. Within a
+    // single package the props classes are leaf-most classes, but
+    // cross-package subclassing (e.g. `AdwAvatar extends GtkWidget`)
+    // makes them mid-hierarchy.
+    b.writeln('class $propsClassName '
+        '${extendsClause != null ? 'extends $extendsClause ' : ''}{');
+    // Constructor forwards `_self` to the parent props class when
+    // extending one. Use an initializing formal on the super call to
+    // give it the child's `_self` — Dart allows `super.x` only when
+    // `x` is the formal parameter from the constructor's parameter
+    // list, so we capture it in a local first.
+    if (extendsClause != null) {
+      b.writeln(
+        '  $propsClassName($dartName \$self) : _self = \$self, super(\$self);',
+      );
+    } else {
+      b.writeln('  $propsClassName(this._self);');
+    }
+    b.writeln('  final $dartName _self;');
+    var emitted = 0;
+    for (final access in accesses) {
+      final prop = access.property;
+      final owner = access.owner;
+      final accessor = _emitPropertyAccessor(prop, owner, dartName, cls);
+      if (accessor == null) continue;
+      b.writeln('');
+      if (prop.deprecated) {
+        b.writeln('  // deprecated since ${prop.version ?? 'this version'}.');
+      }
+      b.writeln(accessor);
+      emitted++;
+    }
+    if (emitted == 0) return null;
+    b.write('}');
+    return b.toString();
+  }
+
+  /// Emits one `get`/`set` accessor pair (or single accessor for
+  /// read-only / write-only properties) for [prop] on the owner class.
+  /// Returns the accessor source (without surrounding newlines) or
+  /// `null` if the property's getter/setter can't be resolved.
+  String? _emitPropertyAccessor(
+    GirProperty prop,
+    GirClass owner,
+    String dartName,
+    GirClass leaf,
+  ) {
+    // Resolve the property's Dart type for skip-reason reporting only
+    // (e.g. unsupported array types). The accessor signatures below
+    // are derived from the typed method's bridge, not from this, so
+    // nullability propagates correctly: `<type name="utf8"/>` declared
+    // on the property is `String`, but `gtk_button_get_label` returns
+    // `String?` because the C function's `transfer-ownership="none"`
+    // gchar* is nullable — and the props getter must mirror that.
+    final ownerNs = _namespaceOfClass(owner) ?? ctx.namespace;
+    final propertyType = _resolvePropertyType(prop, ownerNs);
+    if (propertyType == null) {
+      ctx.report.skip('property', '$dartName.${prop.name}',
+          'unsupported type ${prop.type?.name ?? prop.type?.cType}');
+      return null;
+    }
+    // Find the backing typed methods. Match by GIR name (the
+    // `<method name="…">` element), not by C identifier — the
+    // generator's normalizer already turned `gtk_button_get_label`
+    // into the method `name="get_label"`.
+    final readable = prop.readable;
+    final writable = prop.writable;
+    if (!readable && !writable) return null;
+    String? getterCall;
+    String? getterDartType;
+    String? setterCall;
+    String? setterDartType;
+    if (readable) {
+      // GIR convention: if `getter=` is omitted, the C function is
+      // `get_<name>`. Many properties omit the attribute explicitly.
+      final effectiveGetterName = prop.getter ?? 'get_${prop.name}';
+      final m = _findMethodByName(owner, effectiveGetterName);
+      if (m == null) {
+        ctx.report.skip('property', '$dartName.${prop.name}',
+            'missing getter $effectiveGetterName');
+        return null;
+      }
+      // The property getter exposes zero non-self arguments. A
+      // typed method like `get_size(orientation)` takes an extra
+      // `GtkOrientation` and can't be represented as a no-arg props
+      // getter.
+      if (m.parameters.isNotEmpty) {
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'getter $effectiveGetterName takes '
+              '${m.parameters.length} args; props layer only supports 0',
+        );
+        return null;
+      }
+      // Skip when the leaf's emission would have renamed the typed
+      // method due to an override-incompatible ancestor — we can't
+      // dispatch to a renamed method without tracking the rename
+      // mapping. The user can still call the renamed method
+      // directly.
+      if (_wasRenamed(m, owner)) {
+        ctx.report.skip('property', '$dartName.${prop.name}',
+            'getter $effectiveGetterName was renamed; '
+            'call the renamed method directly');
+        return null;
+      }
+      // Resolve the typed method's return type via `bridgeFor` so
+      // the props getter inherits the correct nullability (e.g.
+      // `String?` for gchar* transfer-none). Fall back to the
+      // property's declared type only if the method's bridge isn't
+      // available — in practice that won't happen because the method
+      // emits its own wrapper with the same bridge, but keeping the
+      // fallback makes the props layer robust to future refactors.
+      final (bridge, _) = ctx.bridgeFor(
+        m.returnType,
+        nullable: m.returnNullable,
+        transfer: m.returnTransfer,
+        forReturn: true,
+      );
+      getterDartType = bridge?.wrapperType ?? propertyType;
+      getterCall = _getterName(m);
+    }
+    if (writable) {
+      final effectiveSetterName = prop.setter ?? 'set_${prop.name}';
+      final m = _findMethodByName(owner, effectiveSetterName);
+      if (m == null) {
+        // Construct-only properties (`construct-only="1"` in GIR) are
+        // writable but have no public setter — they're set via the
+        // class constructor. Fall back to read-only rather than
+        // dropping the whole property.
+        ctx.report.skip('property', '$dartName.${prop.name}',
+            'construct-only or no public setter; emitting getter only');
+      } else if (m.parameters.length > 1) {
+        // The property setter exposes exactly one value (the
+        // property's own value). C functions that take an extra
+        // `length` / `n_bytes` / `len` parameter — e.g.
+        // `gtk_text_buffer_set_text(text, len)` — can't be
+        // represented as a single-arg props setter. Skip with a
+        // precise reason; the user can still call the typed method
+        // directly.
+        ctx.report.skip('property', '$dartName.${prop.name}',
+            'setter $effectiveSetterName takes '
+            '${m.parameters.length} args; props layer only supports 1');
+      } else if (_wasRenamed(m, owner)) {
+        ctx.report.skip('property', '$dartName.${prop.name}',
+            'setter $effectiveSetterName was renamed; '
+            'call the renamed method directly');
+      } else if (m.parameters.isNotEmpty &&
+          !_matchesPropertyType(
+            m.parameters.first.type,
+            prop.type,
+            owner,
+          )) {
+        // The typed setter's parameter type is narrower than the
+        // property's declared type (e.g. `set_visible_page(Adw…Page)`
+        // when the property type is `Gtk.Widget`). Without a
+        // covariant cast we'd need a Dart `as`; rather than emit an
+        // unsafe cast, skip the property. The user can still call
+        // the typed method directly with the narrower type.
+        ctx.report.skip('property', '$dartName.${prop.name}',
+            'setter $effectiveSetterName parameter type does '
+            'not match property type; skipping');
+      } else {
+        // Resolve the typed setter's parameter type via `bridgeFor`
+        // for the same nullability reasons as the getter: the props
+        // setter signature must accept the same value type the typed
+        // method accepts, including nullability (`String` vs
+        // `String?`).
+        final param = m.parameters.first;
+        final (bridge, _) = ctx.bridgeFor(
+          param.type,
+          nullable: param.nullable,
+          transfer: param.transferOwnership,
+        );
+        setterDartType = bridge?.wrapperType ?? propertyType;
+        setterCall = _setterName(m);
+      }
+    }
+    if (getterCall == null && setterCall == null) return null;
+    final propName = escapeKeyword(toLowerCamel(prop.name));
+    final b = StringBuffer();
+    if (getterCall != null) {
+      b.writeln('  $getterDartType get $propName => _self.$getterCall();');
+    }
+    if (setterCall != null) {
+      b.writeln('  set $propName($setterDartType value) {');
+      b.writeln('    _self.$setterCall(value);');
+      b.writeln('  }');
+    }
+    // Trim the trailing newline — the caller adds blank lines between
+    // accessors for readability.
+    final s = b.toString();
+    return s.endsWith('\n') ? s.substring(0, s.length - 1) : s;
+  }
+
+  /// Resolves the Dart type for [prop]. Returns `null` if the property
+  /// type can't be mapped (e.g. unsupported array). Uses the same
+  /// qualified-name resolution as [CallableEmitter] for class-typed
+  /// parameters: `Widget` in `Gtk` namespace becomes `GtkWidget`,
+  /// not bare `Widget`.
+  String? _resolvePropertyType(GirProperty prop, GirNamespace ownerNs) {
+    if (prop.type == null) return null;
+    final mapping = ctx.resolver.resolve(
+      prop.type!,
+      currentNamespace: ownerNs,
+    );
+    if (mapping.dartType.isEmpty ||
+        mapping.dartType == 'unsupported' ||
+        mapping.kind.toString().contains('unsupported')) {
+      return null;
+    }
+    // For class / interface / record / union / bitfield / enum types,
+    // qualify the Dart name with its namespace so the import resolver
+    // can find it. For built-in scalar types (gboolean → bool, gint
+    // → int, utf8 → String, etc.) `mapping.dartType` is already the
+    // final Dart type and needs no prefix.
+    switch (mapping.kind) {
+      case TypeKind.classType:
+      case TypeKind.interface:
+      case TypeKind.record:
+      case TypeKind.union:
+      case TypeKind.bitfield:
+      case TypeKind.enumeration:
+        // Resolve the declaration namespace: a qualified name
+        // (`Gtk.Align`) points to the namespace named in the prefix;
+        // an unqualified name belongs to the property's owner
+        // namespace. We don't fall back to `ctx.namespace` here
+        // because the emission namespace is often different from the
+        // declaring namespace (Adw classes emitting Gtk-inherited
+        // properties).
+        final declNs = _namespaceOfTypeRef(prop.type!, ownerNs);
+        if (declNs == null) return mapping.dartType;
+        return ctx.dartTypeName(declNs.name, mapping.dartType);
+      case TypeKind.primitive:
+      case TypeKind.boolean:
+      case TypeKind.string:
+      case TypeKind.voidType:
+        return mapping.dartType;
+      default:
+        return null;
+    }
+  }
+
+  /// Returns the namespace that declares [cls] (the namespace the
+  /// class lives in). Used by [_resolvePropertyType] to disambiguate
+  /// unqualified `<type>` names on properties the class declares.
+  GirNamespace? _namespaceOfClass(GirClass cls) {
+    for (final ns in ctx.allNamespaces) {
+      for (final c in ns.classes) {
+        if (identical(c, cls)) return ns;
+      }
+    }
+    return null;
+  }
+
+  /// Walks the namespace tree to find the namespace that declares
+  /// [ref]. Unqualified names resolve to [ownerNs] (the namespace
+  /// that declared the property), not the emission namespace.
+  GirNamespace? _namespaceOfTypeRef(GirTypeRef ref, GirNamespace? ownerNs) {
+    if (ref.name == null) return null;
+    if (ref.name!.contains('.')) {
+      // Already qualified — the first segment names the namespace.
+      final nsName = ref.name!.split('.').first;
+      return _nsByName(nsName);
+    }
+    return ownerNs;
+  }
+
+  GirNamespace? _nsByName(String name) {
+    for (final ns in ctx.allNamespaces) {
+      if (ns.name == name) return ns;
+    }
+    return null;
+  }
+
+  /// Looks up a method on [owner] (or its parent chain) by GIR name.
+  /// Used to find the typed `get<Name>` / `set<Name>` instance methods
+  /// that back each property.
+  GirMethod? _findMethodByName(GirClass owner, String girName) {
+    var current = owner;
+    final seen = <String>{};
+    while (seen.add(current.name)) {
+      for (final m in current.methods) {
+        if (m.name == girName) return m;
+      }
+      if (current.parent == null) return null;
+      final found = ctx.findClass(current.parent!);
+      if (found == null) return null;
+      current = found.$2;
+    }
+    return null;
+  }
+
+  /// Computes the Dart-level getter name (e.g. `getLabel`) from a GIR
+  /// method `get_label`. Falls back to the GIR name when the prefix
+  /// is missing.
+  String _getterName(GirMethod m) =>
+      CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(m.name)),
+      );
+
+  /// Computes the Dart-level setter name (e.g. `setLabel`) from a GIR
+  /// method `set_label`. Falls back to the GIR name when the prefix
+  /// is missing.
+  String _setterName(GirMethod m) =>
+      CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(m.name)),
+      );
+
+  /// Returns `true` when [mType] (the typed setter's first parameter
+  /// type) is the same Dart type as [propType] (the property's
+  /// declared type). Used to filter out properties whose typed
+  /// setter accepts a narrower subclass than the property itself
+  /// declares — e.g. `set_visible_page(AdwPreferencesPage)` when the
+  /// property type is `Gtk.Widget`.
+  bool _matchesPropertyType(
+    GirTypeRef? mType,
+    GirTypeRef? propType,
+    GirClass owner,
+  ) {
+    if (mType == null || propType == null) return true;
+    final ownerNs = _namespaceOfClass(owner) ?? ctx.namespace;
+    final m = ctx.resolver.resolve(mType, currentNamespace: ownerNs);
+    final p = ctx.resolver.resolve(propType, currentNamespace: ownerNs);
+    return m.dartType == p.dartType;
+  }
+
+  /// Returns `true` if [m] would have been renamed in [owner]'s
+  /// emission because its signature differs from an ancestor's
+  /// same-named method. Detected by comparing the candidate's
+  /// signature key against the ancestor chain's combined map.
+  bool _wasRenamed(GirMethod m, GirClass owner) {
+    final name =
+        CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
+    // Walk the owner chain and collect ancestor signatures for the
+    // same Dart name. If any ancestor has a same-named method with
+    // a different signature, the leaf's emission would have renamed.
+    var current = owner;
+    final seen = <String>{};
+    while (current.parent != null && seen.add(current.name)) {
+      final found = ctx.findClass(current.parent!);
+      if (found == null) break;
+      current = found.$2;
+      for (final am in current.methods) {
+        if (am == m) continue; // skip self
+        final amName = CallableEmitter.safeMemberName(
+          escapeKeyword(toLowerCamel(am.name)),
+        );
+        if (amName == name) {
+          // Same Dart name on ancestor; if the ancestor's signature
+          // differs from ours, we were renamed.
+          if (_methodKey(am) != _methodKey(m)) return true;
+        }
+      }
+    }
+    return false;
   }
 
   /// Mirrors instance methods declared on the GIR interfaces that [cls]
@@ -527,4 +1033,15 @@ class ClassEmitter {
     }
     return ctx.namespace;
   }
+}
+
+/// One property's worth of metadata, plus the class that *owns* the
+/// backing getter / setter methods. Used by the `props` accessor
+/// emission to keep the leaf-class's method names (which always win
+/// in Dart's name resolution rules over the parent's, when both
+/// exist).
+class _PropertyAccess {
+  const _PropertyAccess({required this.property, required this.owner});
+  final GirProperty property;
+  final GirClass owner;
 }

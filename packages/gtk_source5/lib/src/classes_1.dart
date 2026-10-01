@@ -929,4 +929,13 @@ class GtkSourceBuffer extends GtkTextBuffer {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GtkSourceBufferProps] for the typed
+  /// accessor pair per property.
+  late final GtkSourceBufferProps _props = GtkSourceBufferProps(this);
+  GtkSourceBufferProps get props => _props;
 }

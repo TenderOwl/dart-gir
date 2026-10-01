@@ -103,4 +103,28 @@ class GtkATContext extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GtkATContextProps] for the typed
+  /// accessor pair per property.
+  late final GtkATContextProps _props = GtkATContextProps(this);
+  GtkATContextProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GtkATContext].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GtkATContextProps {
+  GtkATContextProps(this._self);
+  final GtkATContext _self;
+
+  GtkAccessible get accessible => _self.getAccessible();
+
+  GtkAccessibleRole get accessibleRole => _self.getAccessibleRole();
 }

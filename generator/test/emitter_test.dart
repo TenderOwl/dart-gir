@@ -1118,6 +1118,374 @@ void main() {
     });
   });
 
+  group('ClassEmitter props accessor', () {
+    // Build a "GObject.Object"-rooted namespace pair (Gtk + GObject)
+    // so `isGObjectRooted(cls)` recognises the chain. The props
+    // layer only emits for GObject-rooted classes.
+    GirNamespace gobjectNs() => GirNamespace(
+          name: 'GObject',
+          version: '2.0',
+          sharedLibrary: 'libgobject-2.0.so.0',
+          cIdentifierPrefixes: const ['GObject', 'gobject'],
+          cSymbolPrefixes: const ['gobject'],
+          classes: [
+            GirClass(name: 'Object', cType: 'GObject'),
+          ],
+        );
+
+    // Build a class with a single property whose getter and setter
+    // are present in `cls.methods`. The props layer delegates to
+    // those typed methods.
+    GirClass buttonWithProps(String className, GirInterface iface) {
+      final dartName = className.toLowerCase();
+      return GirClass(
+        name: className,
+        cType: className,
+        parent: 'Widget',
+        implements_: const [],
+        methods: [
+          GirMethod(
+            name: 'get_label',
+            cIdentifier: '${dartName}_get_label',
+            returnType: const GirTypeRef(name: 'utf8'),
+          ),
+          GirMethod(
+            name: 'set_label',
+            cIdentifier: '${dartName}_set_label',
+            parameters: [
+              GirParameter(
+                name: 'label',
+                type: const GirTypeRef(name: 'utf8'),
+              ),
+            ],
+          ),
+        ],
+        properties: [
+          GirProperty(
+            name: 'label',
+            type: const GirTypeRef(name: 'utf8'),
+            writable: true,
+            getter: 'get_label',
+            setter: 'set_label',
+          ),
+        ],
+      );
+    }
+
+    test('class with one property emits a typed accessor pair', () {
+      final report = GenerationReport();
+      final iface = GirInterface(name: 'Actionable', cType: 'IActionable');
+      final cls = buttonWithProps('TestButton', iface);
+      // GObject-rooted: the test must use `GObject.Object` as the
+      // root for `isGObjectRooted` to recognise the chain.
+      final widget = GirClass(
+        name: 'Widget',
+        cType: 'TestWidget',
+        parent: 'GObject.Object',
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, widget, cls],
+        interfaces: [iface],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      final emitter = ClassEmitter(ctx, emittedPackages: const {'gtk4'});
+      final code = emitter.emitClass(cls)!;
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The `props` field and getter are emitted on the class. The
+      // field uses an explicit type annotation so a child class
+      // shadowing its parent's `late final _props` picks the child's
+      // type for the covariant return on the public `props` getter
+      // — without the annotation, Dart would infer the parent's type
+      // and reject the assignment.
+      expect(code, contains('GtkTestButtonProps get props => _props;'));
+      expect(
+          code,
+          contains(
+              'late final GtkTestButtonProps _props = GtkTestButtonProps(this);'));
+      // The props companion class has the typed accessor pair.
+      final propsCode = emitter.pendingPropsClass!;
+      expect(propsCode, contains('String get label'));
+      expect(propsCode, contains('set label(String value)'));
+      // The accessor delegates to the typed methods on the class.
+      expect(propsCode, contains('=> _self.getLabel();'));
+      expect(propsCode, contains('_self.setLabel(value);'));
+    });
+
+    test('read-only property emits only the getter, no setter', () {
+      final report = GenerationReport();
+      final cls = GirClass(
+        name: 'ReadOnly',
+        cType: 'TestReadOnly',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_value',
+            cIdentifier: 'test_get_value',
+            returnType: GirTypeRef(name: 'utf8'),
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'value',
+            type: GirTypeRef(name: 'utf8'),
+            getter: 'get_value',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, cls],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      final emitter = ClassEmitter(ctx, emittedPackages: const {'gtk4'});
+      final code = emitter.emitClass(cls)!;
+      expect(code, isNotNull);
+      // The props class is still emitted — read-only properties are
+      // an important use case (e.g. GtkWidget.has-focus).
+      expect(emitter.pendingPropsClass, isNotNull);
+      final propsCode = emitter.pendingPropsClass!;
+      expect(propsCode, contains('String get value'));
+      expect(propsCode, isNot(contains('set value(')));
+    });
+
+    test('property whose getter has extra args is skipped', () {
+      // `get_size(orientation)` — the typed method takes a
+      // GtkOrientation. The props layer can only emit a no-arg
+      // getter, so the property is recorded as a skip.
+      final report = GenerationReport();
+      final cls = GirClass(
+        name: 'Sized',
+        cType: 'TestSized',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_size',
+            cIdentifier: 'test_get_size',
+            returnType: GirTypeRef(name: 'gint'),
+            parameters: [
+              GirParameter(
+                name: 'orientation',
+                type: GirTypeRef(name: 'Gtk.Orientation'),
+              ),
+            ],
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'size',
+            type: GirTypeRef(name: 'gint'),
+            getter: 'get_size',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, cls],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'gobject'})
+          .emitClass(cls);
+      // The property accessor is skipped; no props class is
+      // emitted because every property failed.
+      expect(
+        report.entries.any(
+          (e) =>
+              e.category == 'property' &&
+              e.reason.contains('takes 1 args'),
+        ),
+        isTrue,
+      );
+    });
+
+    test('inherited property is surfaced on the leaf class', () {
+      // GtkWidget has the `can-focus` property (read-only bool).
+      // The leaf's `props` accessor should expose it via the
+      // inherited signature.
+      final report = GenerationReport();
+      final leaf = GirClass(
+        name: 'Leaf',
+        cType: 'TestLeaf',
+        parent: 'Widget',
+      );
+      final widget = GirClass(
+        name: 'Widget',
+        cType: 'TestWidget',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_can_focus',
+            cIdentifier: 'test_get_can_focus',
+            returnType: GirTypeRef(name: 'gboolean'),
+          ),
+        ],
+        properties: [
+          GirProperty(
+            name: 'can-focus',
+            type: GirTypeRef(name: 'gboolean'),
+            getter: 'get_can_focus',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, widget, leaf],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      final emitter = ClassEmitter(
+          ctx, emittedPackages: const {'gtk4', 'gobject'});
+      emitter.emitClass(leaf);
+      final propsCode = emitter.pendingPropsClass!;
+      expect(propsCode, contains('bool get canFocus'));
+    });
+
+    test('setter with extra length arg is skipped', () {
+      // gtk_text_buffer_set_text(text, len) — the typed setter
+      // takes a length in addition to the text. The props layer
+      // can only emit a single-arg setter, so the property is
+      // skipped with a precise reason.
+      final report = GenerationReport();
+      final cls = GirClass(
+        name: 'Buffer',
+        cType: 'TestBuffer',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_text',
+            cIdentifier: 'test_get_text',
+            returnType: GirTypeRef(name: 'utf8'),
+          ),
+          GirMethod(
+            name: 'set_text',
+            cIdentifier: 'test_set_text',
+            parameters: [
+              GirParameter(
+                name: 'text',
+                type: GirTypeRef(name: 'utf8'),
+              ),
+              GirParameter(
+                name: 'length',
+                type: GirTypeRef(name: 'gint'),
+              ),
+            ],
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'text',
+            type: GirTypeRef(name: 'utf8'),
+            writable: true,
+            getter: 'get_text',
+            setter: 'set_text',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, cls],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'gobject'})
+          .emitClass(cls);
+      expect(
+        report.entries.any(
+          (e) =>
+              e.category == 'property' && e.reason.contains('takes 2 args'),
+        ),
+        isTrue,
+      );
+    });
+
+    test('property whose setter type is narrower than property type is skipped',
+        () {
+      // set_visible_page(AdwPreferencesPage) — the typed setter's
+      // parameter is narrower than the property's declared type
+      // (Gtk.Widget). Casting would be unsafe; skip.
+      final report = GenerationReport();
+      final cls = GirClass(
+        name: 'PageHolder',
+        cType: 'TestPageHolder',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_visible_page',
+            cIdentifier: 'test_get_visible_page',
+            returnType: GirTypeRef(name: 'Gtk.Widget'),
+          ),
+          GirMethod(
+            name: 'set_visible_page',
+            cIdentifier: 'test_set_visible_page',
+            parameters: [
+              GirParameter(
+                name: 'page',
+                type: GirTypeRef(
+                  name: 'Adw.PreferencesPage',
+                  cType: 'AdwPreferencesPage*',
+                ),
+              ),
+            ],
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'visible-page',
+            type: GirTypeRef(name: 'Gtk.Widget'),
+            writable: true,
+            getter: 'get_visible_page',
+            setter: 'set_visible_page',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final widget = GirClass(name: 'Widget', cType: 'GtkWidget');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, widget, cls],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'gobject'})
+          .emitClass(cls);
+      expect(
+        report.entries.any(
+          (e) =>
+              e.category == 'property' &&
+              e.reason.contains('parameter type does not match'),
+        ),
+        isTrue,
+      );
+    });
+  });
+
   group('AsyncCallbackEmitter', () {
     GirCallback asyncReadyCallback() => GirCallback(
           name: 'AsyncReadyCallback',

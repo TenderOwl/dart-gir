@@ -289,6 +289,48 @@ final class GtkSourceRegionClass {
 final class GtkSourceRegionIter {
   GtkSourceRegionIter.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Gets the subregion at this iterator.
+  static final _gtkSourceRegionIterGetSubregion =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_source_region_iter_get_subregion')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?) getSubregion() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    try {
+      final _ret = _gtkSourceRegionIterGetSubregion(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+      );
+    } finally {}
+  }
+
   static final _gtkSourceRegionIterIsEnd =
       gtkSource5Lookup<
             ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>

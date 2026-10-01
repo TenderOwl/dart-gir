@@ -298,6 +298,30 @@ class GdkCairoContext extends GdkDrawContext {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GdkCairoContextProps] for the typed
+  /// accessor pair per property.
+  late final GdkCairoContextProps _props = GdkCairoContextProps(this);
+  GdkCairoContextProps get props => _props;
+}
+
+/// PyGObject-style typed property accessor. Each getter
+/// and setter delegates to the existing typed
+/// `get<Name>` / `set<Name>` methods on [GdkCairoContext].
+///
+/// Skipped properties (unsupported type, missing getter
+/// or setter) are recorded in the generation report.
+class GdkCairoContextProps extends GdkDrawContextProps {
+  GdkCairoContextProps(GdkCairoContext $self) : _self = $self, super($self);
+  final GdkCairoContext _self;
+
+  GdkDisplay? get display => _self.getDisplay();
+
+  GdkSurface? get surface => _self.getSurface();
 }
 
 /// Contains the parameters that define a colorstate with cicp parameters.
@@ -484,4 +508,13 @@ class GdkCicpParams extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// PyGObject-style typed property accessor. Reads and
+  /// writes via the existing `get<Name>` / `set<Name>`
+  /// methods; each property here corresponds to a GIR
+  /// `<property>` element on this class (or one of its
+  /// ancestors). See [GdkCicpParamsProps] for the typed
+  /// accessor pair per property.
+  late final GdkCicpParamsProps _props = GdkCicpParamsProps(this);
+  GdkCicpParamsProps get props => _props;
 }
