@@ -65,6 +65,85 @@ final class GNetworkMonitor {
     }
   }
 
+  /// Asynchronously attempts to determine whether or not the host
+  /// pointed to by @connectable can be reached, without actually
+  /// trying to connect to it.
+  ///
+  /// For more details, see g_network_monitor_can_reach().
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_network_monitor_can_reach_finish()
+  /// to get the result of the operation.
+  static final _gNetworkMonitorCanReachAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_network_monitor_can_reach_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void canReachAsync(
+    GSocketConnectable connectable,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gNetworkMonitorCanReachAsync(
+        this.handle,
+        connectable.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes an async network connectivity test.
   /// See g_network_monitor_can_reach_async().
   static final _gNetworkMonitorCanReachFinish =
@@ -442,6 +521,81 @@ final class GProxy {
     }
   }
 
+  /// Asynchronous version of g_proxy_connect().
+  static final _gProxyConnectAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_proxy_connect_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void connectAsync(
+    GIOStream connection,
+    GProxyAddress proxyAddress,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gProxyConnectAsync(
+        this.handle,
+        connection.handle,
+        proxyAddress.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// See g_proxy_connect().
   static final _gProxyConnectFinish =
       gioLookup<
@@ -532,6 +686,80 @@ final class GProxyResolver {
     return (_gProxyResolverIsSupported(this.handle)) != 0;
   }
 
+  /// Asynchronous lookup of proxy. See g_proxy_resolver_lookup() for more
+  /// details.
+  static final _gProxyResolverLookupAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_proxy_resolver_lookup_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void lookupAsync(
+    String uri,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(uri, (nativeUri) {
+      final _nc3 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gProxyResolverLookupAsync(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          cancellable?.handle ?? ffi.nullptr,
+          _nc3?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc3?.close();
+      }
+    });
+  }
+
   /// Gets the default #GProxyResolver for the system.
   static final _gProxyResolverGetDefault =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -539,117 +767,5 @@ final class GProxyResolver {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GProxyResolver getDefault() {
     return GProxyResolver.fromPointer(_gProxyResolverGetDefault());
-  }
-}
-
-/// The `GRemoteActionGroup` interface is implemented by [iface@Gio.ActionGroup]
-/// instances that either transmit action invocations to other processes
-/// or receive action invocations in the local process from other
-/// processes.
-///
-/// The interface has `_full` variants of the two
-/// methods on [iface@Gio.ActionGroup] used to activate actions:
-/// [method@Gio.ActionGroup.activate_action] and
-/// [method@Gio.ActionGroup.change_action_state]. These variants allow a
-/// ‘platform data’ [struct@GLib.Variant] to be specified: a dictionary providing
-/// context for the action invocation (for example: timestamps, startup
-/// notification IDs, etc).
-///
-/// [class@Gio.DBusActionGroup] implements `GRemoteActionGroup`.  This provides a
-/// mechanism to send platform data for action invocations over D-Bus.
-///
-/// Additionally, [method@Gio.DBusConnection.export_action_group] will check if
-/// the exported [iface@Gio.ActionGroup] implements `GRemoteActionGroup` and use
-/// the `_full` variants of the calls if available.  This
-/// provides a mechanism by which to receive platform data for action
-/// invocations that arrive by way of D-Bus.
-final class GRemoteActionGroup {
-  GRemoteActionGroup.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Activates the remote action.
-  ///
-  /// This is the same as g_action_group_activate_action() except that it
-  /// allows for provision of "platform data" to be sent along with the
-  /// activation request.  This typically contains details such as the user
-  /// interaction timestamp or startup notification information.
-  ///
-  /// @platform_data must be non-%NULL and must have the type
-  /// %G_VARIANT_TYPE_VARDICT.  If it is floating, it will be consumed.
-  static final _gRemoteActionGroupActivateActionFull =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_remote_action_group_activate_action_full')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void activateActionFull(
-    String actionName,
-    GVariant? parameter,
-    GVariant platformData,
-  ) {
-    withNativeString(actionName, (nativeActionName) {
-      _gRemoteActionGroupActivateActionFull(
-        this.handle,
-        nativeActionName.cast<Utf8>(),
-        parameter?.handle ?? ffi.nullptr,
-        platformData.handle,
-      );
-    });
-  }
-
-  /// Changes the state of a remote action.
-  ///
-  /// This is the same as g_action_group_change_action_state() except that
-  /// it allows for provision of "platform data" to be sent along with the
-  /// state change request.  This typically contains details such as the
-  /// user interaction timestamp or startup notification information.
-  ///
-  /// @platform_data must be non-%NULL and must have the type
-  /// %G_VARIANT_TYPE_VARDICT.  If it is floating, it will be consumed.
-  static final _gRemoteActionGroupChangeActionStateFull =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_remote_action_group_change_action_state_full')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void changeActionStateFull(
-    String actionName,
-    GVariant value,
-    GVariant platformData,
-  ) {
-    withNativeString(actionName, (nativeActionName) {
-      _gRemoteActionGroupChangeActionStateFull(
-        this.handle,
-        nativeActionName.cast<Utf8>(),
-        value.handle,
-        platformData.handle,
-      );
-    });
   }
 }

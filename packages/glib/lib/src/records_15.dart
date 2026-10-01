@@ -274,6 +274,82 @@ final class GOptionContext {
     });
   }
 
+  /// Sets the function which is used to translate the contexts
+  /// user-visible strings, for `--help` output. If @func is %NULL,
+  /// strings are not translated.
+  ///
+  /// Note that option groups have their own translation functions,
+  /// this function only affects the @parameter_string (see g_option_context_new()),
+  /// the summary (see g_option_context_set_summary()) and the description
+  /// (see g_option_context_set_description()).
+  ///
+  /// If you are using gettext(), you only need to set the translation
+  /// domain, see g_option_context_set_translation_domain().
+  static final _gOptionContextSetTranslateFunc =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<Utf8> Function(
+                      ffi.Pointer<Utf8>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_option_context_set_translate_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<Utf8> Function(
+                    ffi.Pointer<Utf8>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setTranslateFunc(
+    ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)? func,
+    ffi.Pointer<ffi.Void> data, [
+    void Function(ffi.Pointer<ffi.Void>)? destroyNotify,
+  ]) {
+    final _nc1 = func == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+          >.isolateLocal(func);
+    final _nc3 = destroyNotify == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroyNotify);
+    try {
+      _gOptionContextSetTranslateFunc(
+        this.handle,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        data,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc1?.close();
+      _nc3?.close();
+    }
+  }
+
   /// A convenience function to use gettext() for translating
   /// user-visible strings.
   static final _gOptionContextSetTranslationDomain =
@@ -327,6 +403,69 @@ final class GOptionGroup {
   GOptionGroup.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Creates a new #GOptionGroup.
+  ///
+  /// @description is typically used to provide a title for the group. If so, it
+  /// is recommended that it’s written in title case, and has a trailing colon so
+  /// that it matches the style of built-in GLib group titles such as
+  /// ‘Application Options:’.
+  static final _gOptionGroupNew =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_option_group_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  factory GOptionGroup(
+    String name,
+    String description,
+    String helpDescription,
+    ffi.Pointer<ffi.Void> userData, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    return withNativeString(name, (nativeName) {
+      return withNativeString(description, (nativeDescription) {
+        return withNativeString(helpDescription, (nativeHelpDescription) {
+          final _nc5 = destroy == null
+              ? null
+              : ffi.NativeCallable<
+                  ffi.Void Function(ffi.Pointer<ffi.Void>)
+                >.isolateLocal(destroy);
+          try {
+            final _ret = _gOptionGroupNew(
+              nativeName.cast<Utf8>(),
+              nativeDescription.cast<Utf8>(),
+              nativeHelpDescription.cast<Utf8>(),
+              userData,
+              _nc5?.nativeFunction ?? ffi.nullptr,
+            );
+            return GOptionGroup.fromPointer(_ret);
+          } finally {
+            _nc5?.close();
+          }
+        });
+      });
+    });
+  }
+
   /// Frees a #GOptionGroup. Note that you must not free groups
   /// which have been added to a #GOptionContext.
   static final _gOptionGroupFree =
@@ -347,6 +486,77 @@ final class GOptionGroup {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GOptionGroup ref() {
     return GOptionGroup.fromPointer(_gOptionGroupRef(this.handle));
+  }
+
+  /// Sets the function which is used to translate user-visible strings,
+  /// for `--help` output. Different groups can use different
+  /// #GTranslateFuncs. If @func is %NULL, strings are not translated.
+  ///
+  /// If you are using gettext(), you only need to set the translation
+  /// domain, see g_option_group_set_translation_domain().
+  static final _gOptionGroupSetTranslateFunc =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<Utf8> Function(
+                      ffi.Pointer<Utf8>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_option_group_set_translate_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<Utf8> Function(
+                    ffi.Pointer<Utf8>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setTranslateFunc(
+    ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)? func,
+    ffi.Pointer<ffi.Void> data, [
+    void Function(ffi.Pointer<ffi.Void>)? destroyNotify,
+  ]) {
+    final _nc1 = func == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+          >.isolateLocal(func);
+    final _nc3 = destroyNotify == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroyNotify);
+    try {
+      _gOptionGroupSetTranslateFunc(
+        this.handle,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        data,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc1?.close();
+      _nc3?.close();
+    }
   }
 
   /// A convenience function to use gettext() for translating

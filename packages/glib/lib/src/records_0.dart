@@ -687,4 +687,40 @@ final class GAsyncQueue {
   static GAsyncQueue new_() {
     return GAsyncQueue.fromPointer(_gAsyncQueueNew());
   }
+
+  /// Creates a new asynchronous queue and sets up a destroy notify
+  /// function that is used to free any remaining queue items when
+  /// the queue is destroyed after the final unref.
+  static final _gAsyncQueueNewFull =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_async_queue_new_full')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  static GAsyncQueue newFull([
+    void Function(ffi.Pointer<ffi.Void>)? itemFreeFunc,
+  ]) {
+    final _nc1 = itemFreeFunc == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(itemFreeFunc);
+    try {
+      final _ret = _gAsyncQueueNewFull(_nc1?.nativeFunction ?? ffi.nullptr);
+      return GAsyncQueue.fromPointer(_ret);
+    } finally {
+      _nc1?.close();
+    }
+  }
 }

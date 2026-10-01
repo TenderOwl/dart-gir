@@ -422,256 +422,257 @@ final class GskRenderReplay {
   void free() {
     _gskRenderReplayFree(this.handle);
   }
+
+  /// Sets a filter function to be called by [method@Gsk.RenderReplay.default]
+  /// for nodes that contain fonts.
+  ///
+  /// You can call [method@GskRenderReplay.filter_font] to filter
+  /// a font yourself.
+  static final _gskRenderReplaySetFontFilter =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<ffi.Void> Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gsk_render_replay_set_font_filter')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<ffi.Void> Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setFontFilter(
+    ffi.Pointer<ffi.Void> Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    filter,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) userDestroy,
+  ) {
+    final _nc1 = filter == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(filter);
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(userDestroy);
+    try {
+      _gskRenderReplaySetFontFilter(
+        this.handle,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        userData,
+        _nc3.nativeFunction,
+      );
+    } finally {
+      _nc1?.close();
+      _nc3.close();
+    }
+  }
+
+  /// Sets the function to use as a node filter.
+  ///
+  /// This is the most complex function to use for replaying nodes.
+  /// It can either:
+  ///
+  /// * keep the node and just return it unchanged
+  ///
+  /// * create a replacement node and return that
+  ///
+  /// * discard the node by returning `NULL`
+  ///
+  /// * call [method@Gsk.RenderReplay.default] to have the default handler
+  /// run for this node, which calls your function on its children
+  static final _gskRenderReplaySetNodeFilter =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<ffi.Void> Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gsk_render_replay_set_node_filter')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<ffi.Void> Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setNodeFilter(
+    ffi.Pointer<ffi.Void> Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    filter,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) userDestroy,
+  ) {
+    final _nc1 = filter == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(filter);
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(userDestroy);
+    try {
+      _gskRenderReplaySetNodeFilter(
+        this.handle,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        userData,
+        _nc3.nativeFunction,
+      );
+    } finally {
+      _nc1?.close();
+      _nc3.close();
+    }
+  }
+
+  /// Sets a filter function to be called by [method@Gsk.RenderReplay.default]
+  /// for nodes that contain textures.
+  ///
+  /// You can call [method@GskRenderReplay.filter_texture] to filter
+  /// a texture yourself.
+  static final _gskRenderReplaySetTextureFilter =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<ffi.Void> Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gsk_render_replay_set_texture_filter')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<ffi.Void> Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setTextureFilter(
+    ffi.Pointer<ffi.Void> Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    filter,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) userDestroy,
+  ) {
+    final _nc1 = filter == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(filter);
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(userDestroy);
+    try {
+      _gskRenderReplaySetTextureFilter(
+        this.handle,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        userData,
+        _nc3.nativeFunction,
+      );
+    } finally {
+      _nc1?.close();
+      _nc3.close();
+    }
+  }
 }
 
 final class GskRendererClass {
   GskRendererClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
-}
-
-/// A rectangular region with rounded corners.
-///
-/// Application code should normalize rectangles using
-/// [method@Gsk.RoundedRect.normalize]; this function will ensure that
-/// the bounds of the rectangle are normalized and ensure that the corner
-/// values are positive and the corners do not overlap.
-///
-/// All functions taking a `GskRoundedRect` as an argument will internally
-/// operate on a normalized copy; all functions returning a `GskRoundedRect`
-/// will always return a normalized one.
-///
-/// The algorithm used for normalizing corner sizes is described in
-/// [the CSS specification](https://drafts.csswg.org/css-backgrounds-3/#border-radius).
-final class GskRoundedRect {
-  GskRoundedRect.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Checks if the given point is inside the rounded rectangle.
-  static final _gskRoundedRectContainsPoint =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_rounded_rect_contains_point')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool containsPoint(GraphenePoint point) {
-    return (_gskRoundedRectContainsPoint(this.handle, point.handle)) != 0;
-  }
-
-  /// Checks if the given rectangle is contained inside the rounded rectangle.
-  static final _gskRoundedRectContainsRect =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_rounded_rect_contains_rect')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool containsRect(GrapheneRect rect) {
-    return (_gskRoundedRectContainsRect(this.handle, rect.handle)) != 0;
-  }
-
-  /// Initializes a rounded rectangle with the given values.
-  ///
-  /// This function will implicitly normalize the rounded rectangle
-  /// before returning.
-  static final _gskRoundedRectInit =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gsk_rounded_rect_init')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GskRoundedRect init(
-    GrapheneRect bounds,
-    GrapheneSize topLeft,
-    GrapheneSize topRight,
-    GrapheneSize bottomRight,
-    GrapheneSize bottomLeft,
-  ) {
-    return GskRoundedRect.fromPointer(
-      _gskRoundedRectInit(
-        this.handle,
-        bounds.handle,
-        topLeft.handle,
-        topRight.handle,
-        bottomRight.handle,
-        bottomLeft.handle,
-      ),
-    );
-  }
-
-  /// Initializes a rounded rectangle with a copy.
-  ///
-  /// This function will not normalize the rounded rectangle,
-  /// so make sure the source is normalized.
-  static final _gskRoundedRectInitCopy =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gsk_rounded_rect_init_copy')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GskRoundedRect initCopy(GskRoundedRect src) {
-    return GskRoundedRect.fromPointer(
-      _gskRoundedRectInitCopy(this.handle, src.handle),
-    );
-  }
-
-  /// Initializes a rounded rectangle to the given bounds
-  /// and sets the radius of all four corners equally.
-  static final _gskRoundedRectInitFromRect =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-              )
-            >
-          >('gsk_rounded_rect_init_from_rect')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              double,
-            )
-          >();
-  GskRoundedRect initFromRect(GrapheneRect bounds, double radius) {
-    return GskRoundedRect.fromPointer(
-      _gskRoundedRectInitFromRect(this.handle, bounds.handle, radius),
-    );
-  }
-
-  /// Checks if part a rectangle is contained
-  /// inside the rounded rectangle.
-  static final _gskRoundedRectIntersectsRect =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_rounded_rect_intersects_rect')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool intersectsRect(GrapheneRect rect) {
-    return (_gskRoundedRectIntersectsRect(this.handle, rect.handle)) != 0;
-  }
-
-  /// Checks if all corners of a rounded rectangle are right angles
-  /// and the rectangle covers all of its bounds.
-  ///
-  /// This information can be used to decide if [ctor@Gsk.ClipNode.new]
-  /// or [ctor@Gsk.RoundedClipNode.new] should be called.
-  static final _gskRoundedRectIsRectilinear =
-      gsk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gsk_rounded_rect_is_rectilinear',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isRectilinear() {
-    return (_gskRoundedRectIsRectilinear(this.handle)) != 0;
-  }
-
-  /// Normalizes a rounded rectangle.
-  ///
-  /// This function will ensure that the bounds of the rounded rectangle
-  /// are normalized and ensure that the corner values are positive
-  /// and the corners do not overlap.
-  static final _gskRoundedRectNormalize =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gsk_rounded_rect_normalize')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GskRoundedRect normalize() {
-    return GskRoundedRect.fromPointer(_gskRoundedRectNormalize(this.handle));
-  }
-
-  /// Offsets the rounded rectangle's origin by @dx and @dy.
-  ///
-  /// The size and corners of the rounded rectangle are unchanged.
-  static final _gskRoundedRectOffset =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-              )
-            >
-          >('gsk_rounded_rect_offset')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-            )
-          >();
-  GskRoundedRect offset(double dx, double dy) {
-    return GskRoundedRect.fromPointer(
-      _gskRoundedRectOffset(this.handle, dx, dy),
-    );
-  }
-
-  /// Shrinks (or grows) a rounded rectangle by moving the 4 sides
-  /// according to the offsets given.
-  ///
-  /// The corner radii will be changed in a way that tries to keep
-  /// the center of the corner circle intact. This emulates CSS behavior.
-  ///
-  /// This function also works for growing rounded rectangles
-  /// if you pass negative values for the @top, @right, @bottom or @left.
-  static final _gskRoundedRectShrink =
-      gsk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-                ffi.Float,
-                ffi.Float,
-              )
-            >
-          >('gsk_rounded_rect_shrink')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-              double,
-              double,
-            )
-          >();
-  GskRoundedRect shrink(double top, double right, double bottom, double left) {
-    return GskRoundedRect.fromPointer(
-      _gskRoundedRectShrink(this.handle, top, right, bottom, left),
-    );
-  }
 }

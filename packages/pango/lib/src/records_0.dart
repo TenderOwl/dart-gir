@@ -569,6 +569,76 @@ final class PangoAttrShape {
       _pangoAttrShapeNew(inkRect.handle, logicalRect.handle),
     );
   }
+
+  /// Creates a new shape attribute.
+  ///
+  /// Like [func@Pango.AttrShape.new], but a user data pointer
+  /// is also provided; this pointer can be accessed when later
+  /// rendering the glyph.
+  static final _pangoAttrShapeNewWithData =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+                  >
+                >,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('pango_attr_shape_new_with_data')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+                >
+              >,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  static PangoAttribute newWithData(
+    PangoRectangle inkRect,
+    PangoRectangle logicalRect,
+    ffi.Pointer<ffi.Void> data, [
+    ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)? copyFunc,
+    void Function(ffi.Pointer<ffi.Void>)? destroyFunc,
+  ]) {
+    final _nc4 = copyFunc == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(copyFunc);
+    final _nc5 = destroyFunc == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroyFunc);
+    try {
+      final _ret = _pangoAttrShapeNewWithData(
+        inkRect.handle,
+        logicalRect.handle,
+        data,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+      );
+      return PangoAttribute.fromPointer(_ret);
+    } finally {
+      _nc4?.close();
+      _nc5?.close();
+    }
+  }
 }
 
 /// The `PangoAttrSize` structure is used to represent attributes which

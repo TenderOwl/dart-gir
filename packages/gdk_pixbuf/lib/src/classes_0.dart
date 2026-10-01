@@ -1420,6 +1420,103 @@ class GdkPixbuf extends GObject {
     });
   }
 
+  /// Saves `pixbuf` to an output stream asynchronously.
+  ///
+  /// For more details see gdk_pixbuf_save_to_streamv(), which is the synchronous
+  /// version of this function.
+  ///
+  /// When the operation is finished, `callback` will be called in the main thread.
+  ///
+  /// You can then call gdk_pixbuf_save_to_stream_finish() to get the result of
+  /// the operation.
+  static final _gdkPixbufSaveToStreamvAsync =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_pixbuf_save_to_streamv_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void saveToStreamvAsync(
+    GOutputStream stream,
+    String type_,
+    List<String?>? optionKeys,
+    List<String?>? optionValues,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeStringList(optionKeys, (nativeOptionKeys) {
+      withNativeStringList(optionValues, (nativeOptionValues) {
+        withNativeString(type_, (nativeType_) {
+          final _nc6 = callback == null
+              ? null
+              : ffi.NativeCallable<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >.isolateLocal(callback);
+          try {
+            _gdkPixbufSaveToStreamvAsync(
+              this.handle,
+              stream.handle,
+              nativeType_.cast<Utf8>(),
+              nativeOptionKeys,
+              nativeOptionValues,
+              cancellable?.handle ?? ffi.nullptr,
+              _nc6?.nativeFunction ?? ffi.nullptr,
+              userData,
+            );
+          } finally {
+            _nc6?.close();
+          }
+        });
+      });
+    });
+  }
+
   /// Vector version of `gdk_pixbuf_save()`.
   ///
   /// Saves pixbuf to a file in `type`, which is currently "jpeg", "png", "tiff", "ico" or "bmp".
@@ -1679,6 +1776,84 @@ class GdkPixbuf extends GObject {
     );
   }
 
+  /// Asynchronously parses an image file far enough to determine its
+  /// format and size.
+  ///
+  /// For more details see gdk_pixbuf_get_file_info(), which is the synchronous
+  /// version of this function.
+  ///
+  /// When the operation is finished, @callback will be called in the
+  /// main thread. You can then call gdk_pixbuf_get_file_info_finish() to
+  /// get the result of the operation.
+  static final _gdkPixbufGetFileInfoAsync =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_pixbuf_get_file_info_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void getFileInfoAsync(
+    String filename,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(filename, (nativeFilename) {
+      final _nc3 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gdkPixbufGetFileInfoAsync(
+          nativeFilename.cast<Utf8>(),
+          cancellable?.handle ?? ffi.nullptr,
+          _nc3?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc3?.close();
+      }
+    });
+  }
+
   /// Finishes an asynchronous pixbuf parsing operation started with
   /// gdk_pixbuf_get_file_info_async().
   static final _gdkPixbufGetFileInfoFinish =
@@ -1776,6 +1951,167 @@ class GdkPixbuf extends GObject {
         calloc.free(_error);
       }
     });
+  }
+
+  /// Creates a new pixbuf by asynchronously loading an image from an input stream.
+  ///
+  /// For more details see gdk_pixbuf_new_from_stream(), which is the synchronous
+  /// version of this function.
+  ///
+  /// When the operation is finished, @callback will be called in the main thread.
+  /// You can then call gdk_pixbuf_new_from_stream_finish() to get the result of
+  /// the operation.
+  static final _gdkPixbufNewFromStreamAsync =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_pixbuf_new_from_stream_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void newFromStreamAsync(
+    GInputStream stream,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkPixbufNewFromStreamAsync(
+        stream.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
+  /// Creates a new pixbuf by asynchronously loading an image from an input stream.
+  ///
+  /// For more details see gdk_pixbuf_new_from_stream_at_scale(), which is the synchronous
+  /// version of this function.
+  ///
+  /// When the operation is finished, @callback will be called in the main thread.
+  /// You can then call gdk_pixbuf_new_from_stream_finish() to get the result of the operation.
+  static final _gdkPixbufNewFromStreamAtScaleAsync =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_pixbuf_new_from_stream_at_scale_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void newFromStreamAtScaleAsync(
+    GInputStream stream,
+    int width,
+    int height,
+    bool preserveAspectRatio,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc6 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkPixbufNewFromStreamAtScaleAsync(
+        stream.handle,
+        width,
+        height,
+        preserveAspectRatio ? 1 : 0,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc6?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc6?.close();
+    }
   }
 
   /// Finishes an asynchronous pixbuf save operation started with

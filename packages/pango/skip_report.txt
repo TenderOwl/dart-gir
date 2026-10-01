@@ -1,8 +1,8 @@
 # Skip report for package pango (Pango 1.0)
-Total skipped: 106
+Total skipped: 105
 
 ## By category
-callable: 97
+callable: 96
 method: 5
 alias: 3
 renamed: 1
@@ -23,15 +23,15 @@ inout parameter rect: 2
 parameter families: array types are handled in a later phase: 2
 parameter bytes: array types are handled in a later phase: 2
 caller-allocates out parameter strong_pos: 2
-moved to LayoutDeserializeError.quark: 1
+moved to Language.get_preferred: 1
 moved to Gravity.get_for_matrix: 1
 moved to Gravity.get_for_script: 1
 moved to Gravity.get_for_script_and_width: 1
 moved to Gravity.to_rotation: 1
 moved to Language.from_string: 1
 moved to Language.get_default: 1
-moved to Language.get_preferred: 1
 moved to AttrFontDesc.new: 1
+moved to LayoutDeserializeError.quark: 1
 inout parameter pbase_dir: 1
 moved to AttrFontFeatures.new: 1
 parameter value: nullable scalar parameter (gint): 1
@@ -44,7 +44,6 @@ return: string list return type (null): 1
 moved to TabArray.from_string: 1
 unsupported out parameter language (PangoLanguage?): 1
 moved to AttrShape.new: 1
-parameter copy_func: nullable callback parameter (AttrDataCopyFunc): 1
 parameter alpha: nullable scalar parameter (guint16): 1
 moved to AttrShape.new_with_data: 1
 parameter log_attrs: array types are handled in a later phase: 1
@@ -126,6 +125,6 @@ caller-allocates out parameter logical_rect: 1
 [callable] Pango.tailorBreak — parameter attrs: array types are handled in a later phase
 [callable] PangoAttrIterator.getFont — unsupported out parameter language (PangoLanguage?)
 [method] PangoAttrList.toString — name collision
-[callable] PangoAttrShape.newWithData — parameter copy_func: nullable callback parameter (AttrDataCopyFunc)
 [callable] PangoColor.parseWithAlpha — parameter alpha: nullable scalar parameter (guint16)
 [method] PangoColor.toString — name collision
+[method] PangoFontDescription.toString — name collision

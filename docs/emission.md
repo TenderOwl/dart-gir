@@ -100,7 +100,7 @@ Each `<parameter>` is classified:
 | string list | `List<String?>?` | `Pointer<Pointer<Utf8>>` | `withNativeStringList` outer wrap |
 | class/record/union/interface | wrapper class | `Pointer<Void>` | `.handle` ↔ `fromPointer(ptr)` |
 | enum / bitfield | wrapper class | `Int32` / `Uint32` | `.value` ↔ `Wrapper.fromValue(...)` |
-| callback | inline Dart signature | `Pointer<NativeFunction>` | `NativeCallable.isolateLocal` wrap + `.close()` in `finally` |
+| callback | inline Dart signature (nullable for `nullable="1"`) | `Pointer<NativeFunction>` | `NativeCallable.isolateLocal` wrap + `.close()` in `finally` (conditional on null for nullable callbacks) |
 | out / inout | wrapper type | `Pointer<...>` | `calloc<...>` + `.value` extraction |
 | array | (not yet supported) | — | Skip with `array types are handled in a later phase` |
 
@@ -129,6 +129,35 @@ GIR `c:type`, e.g. `GCompareDataFunc`) so callers can name the type, but
 the call site uses the inline signature for `NativeCallable` to work
 around `Pointer.fromFunction`'s static-function constraint.
 
+Nullable callback parameters (e.g. `notify` on `g_idle_add_full`) take
+the wrapper parameter type with a trailing `?` and become trailing
+positional optional parameters in the Dart signature. The
+`NativeCallable` allocation is conditional on the user passing a
+function, and the call site forwards either `.nativeFunction` or
+`ffi.nullptr`. The `finally` block uses `?.close()` so the cleanup is
+also conditional:
+
+```dart
+final _nc = notify == null
+    ? null
+    : ffi.NativeCallable<...>.isolateLocal(notify);
+try {
+  _native(..., _nc?.nativeFunction ?? ffi.nullptr);
+} finally {
+  _nc?.close();
+}
+```
+
+This pattern is only safe for callbacks invoked **synchronously** inside
+the call — see `g_async_queue_sort` in `packages/glib/test/glib_smoke_test.dart`
+for a working example. Long-lived callbacks (idle sources, timeout
+sources, signal handlers, …) register a C function pointer that GLib
+later invokes from the main loop; the wrapping `NativeCallable` would
+already be `.close()`d by then. For those, build a `Pointer` via
+`Pointer.fromFunction` with a top-level Dart function whose lifetime
+outlives the source, or use `connectSignal` /
+`g_signal_connect_data` directly.
+
 ### Variadic / skipped
 
 * Varargs (`...`) parameters → skip with `varargs`.
@@ -143,9 +172,11 @@ typedef GDestroyNotify = void Function(ffi.Pointer<ffi.Void> data);
 ```
 
 The typedef's name matches the GIR `c:type` so users can refer to the
-canonical C identifier. Nullable callback parameters are skipped (none of
-the GIR files in scope declare one). Callbacks as return types are also
-skipped — see [skip-categories.md](./skip-categories.md).
+canonical C identifier. Nullable callback **return** types are still
+skipped (none of the GIR files in scope declare one) — see
+[skip-categories.md](./skip-categories.md). Nullable callback
+**parameters** are accepted and emitted via the conditional pattern
+described above.
 
 ## SignalHelper — `generator/lib/src/emit/signals_helper.dart`
 

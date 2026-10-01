@@ -53,7 +53,13 @@ class GirParser {
     final constants = <GirConstant>[];
 
     for (final child in ns.childElements) {
-      if (!_isCore(child) || !_introspectable(child)) continue;
+      if (!_isCore(child)) continue;
+      // GIR marks C convenience macros (g_idle_add, g_array_new, …) as
+      // introspectable="0" because they expand to the canonical sibling. We
+      // still parse them so `CallableEmitter` can emit a precise skip entry
+      // naming the canonical sibling, instead of silently dropping them.
+      final isFunction = child.name.local == 'function';
+      if (!isFunction && !_introspectable(child)) continue;
       switch (child.name.local) {
         case 'alias':
           aliases.add(_parseAlias(child));
@@ -238,6 +244,7 @@ class GirParser {
       throws: _bool(e, 'throws'),
       deprecated: _bool(e, 'deprecated'),
       version: e.getAttribute('version'),
+      introspectable: _introspectable(e),
       doc: _doc(e),
     );
   }
@@ -256,6 +263,7 @@ class GirParser {
       throws: _bool(e, 'throws'),
       deprecated: _bool(e, 'deprecated'),
       version: e.getAttribute('version'),
+      introspectable: _introspectable(e),
       shadows: e.getAttribute('shadows'),
       shadowedBy: e.getAttribute('shadowed-by'),
       movedTo: e.getAttribute('moved-to'),
@@ -276,6 +284,7 @@ class GirParser {
       throws: _bool(e, 'throws'),
       deprecated: _bool(e, 'deprecated'),
       version: e.getAttribute('version'),
+      introspectable: _introspectable(e),
       shadows: e.getAttribute('shadows'),
       shadowedBy: e.getAttribute('shadowed-by'),
       doc: _doc(e),
@@ -294,6 +303,7 @@ class GirParser {
       throws: _bool(e, 'throws'),
       deprecated: _bool(e, 'deprecated'),
       version: e.getAttribute('version'),
+      introspectable: _introspectable(e),
       shadows: e.getAttribute('shadows'),
       shadowedBy: e.getAttribute('shadowed-by'),
       doc: _doc(e),

@@ -441,6 +441,95 @@ String? checkVersion(int requiredMajor, int requiredMinor, int requiredMicro) {
   );
 }
 
+/// Sets a function to be called when the child indicated by @pid
+/// exits, at the priority @priority.
+///
+/// If you obtain @pid from [func@GLib.spawn_async] or
+/// [func@GLib.spawn_async_with_pipes] you will need to pass
+/// [flags@GLib.SpawnFlags.DO_NOT_REAP_CHILD] as a flag to the spawn function for
+/// the child watching to work.
+///
+/// In many programs, you will want to call [func@GLib.spawn_check_wait_status]
+/// in the callback to determine whether or not the child exited
+/// successfully.
+///
+/// Also, note that on platforms where [type@GLib.Pid] must be explicitly closed
+/// (see [func@GLib.spawn_close_pid]) @pid must not be closed while the source
+/// is still active.  Typically, you should invoke [func@GLib.spawn_close_pid]
+/// in the callback function for the source.
+///
+/// GLib supports only a single callback per process ID.
+/// On POSIX platforms, the same restrictions mentioned for
+/// [func@GLib.child_watch_source_new] apply to this function.
+///
+/// This internally creates a main loop source using
+/// [func@GLib.child_watch_source_new] and attaches it to the main loop context
+/// using [method@GLib.Source.attach]. You can do these steps manually if you
+/// need greater control.
+final _gChildWatchAddFull =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Uint32 Function(
+              ffi.Int32,
+              ffi.Int32,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(ffi.Int32, ffi.Int32, ffi.Pointer<ffi.Void>)
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >
+        >('g_child_watch_add_full')
+        .asFunction<
+          int Function(
+            int,
+            int,
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Void Function(ffi.Int32, ffi.Int32, ffi.Pointer<ffi.Void>)
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+            >,
+          )
+        >();
+int childWatchAddFull(
+  int priority,
+  int pid,
+  void Function(int, int, ffi.Pointer<ffi.Void>) function_,
+  ffi.Pointer<ffi.Void> data, [
+  void Function(ffi.Pointer<ffi.Void>)? notify,
+]) {
+  final _nc3 =
+      ffi.NativeCallable<
+        ffi.Void Function(ffi.Int32, ffi.Int32, ffi.Pointer<ffi.Void>)
+      >.isolateLocal(function_);
+  final _nc5 = notify == null
+      ? null
+      : ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(notify);
+  try {
+    final _ret = _gChildWatchAddFull(
+      priority,
+      pid,
+      _nc3.nativeFunction,
+      data,
+      _nc5?.nativeFunction ?? ffi.nullptr,
+    );
+    return _ret;
+  } finally {
+    _nc3.close();
+    _nc5?.close();
+  }
+}
+
 /// Creates a new child watch source.
 ///
 /// The source will not initially be associated with any
@@ -529,60 +618,4 @@ void clearError() {
   } finally {
     calloc.free(_error);
   }
-}
-
-/// This wraps the close() call. In case of error, %errno will be
-/// preserved, but the error will also be stored as a #GError in @error.
-/// In case of success, %errno is undefined.
-///
-/// Besides using #GError, there is another major reason to prefer this
-/// function over the call provided by the system; on Unix, it will
-/// attempt to correctly handle %EINTR, which has platform-specific
-/// semantics.
-///
-/// It is a bug to call this function with an invalid file descriptor.
-///
-/// On POSIX platforms since GLib 2.76, this function is async-signal safe
-/// if (and only if) @error is %NULL and @fd is a valid open file descriptor.
-/// This makes it safe to call from a signal handler or a #GSpawnChildSetupFunc
-/// under those conditions.
-/// See [`signal(7)`](man:signal(7)) and
-/// [`signal-safety(7)`](man:signal-safety(7)) for more details.
-final _gClose =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(ffi.Int32, ffi.Pointer<ffi.Pointer<ffi.Void>>)
-          >
-        >('g_close')
-        .asFunction<int Function(int, ffi.Pointer<ffi.Pointer<ffi.Void>>)>();
-bool close(int fd) {
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gClose(fd, _error);
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
-    }
-    return (_ret) != 0;
-  } finally {
-    calloc.free(_error);
-  }
-}
-
-/// Computes the checksum for a binary @data. This is a
-/// convenience wrapper for g_checksum_new(), g_checksum_get_string()
-/// and g_checksum_free().
-///
-/// The hexadecimal string returned will be in lower case.
-final _gComputeChecksumForBytes =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<Utf8> Function(ffi.Int32, ffi.Pointer<ffi.Void>)
-          >
-        >('g_compute_checksum_for_bytes')
-        .asFunction<ffi.Pointer<Utf8> Function(int, ffi.Pointer<ffi.Void>)>();
-String? computeChecksumForBytes(GChecksumType checksumType, GBytes data) {
-  return stringFromNative(
-    (_gComputeChecksumForBytes(checksumType.value, data.handle)).cast(),
-    free: true,
-  );
 }

@@ -121,6 +121,77 @@ class GdkClipboard extends GObject {
     }
   }
 
+  /// Asynchronously request the @clipboard contents converted to a string.
+  ///
+  /// This is a simple wrapper around [method@Gdk.Clipboard.read_value_async].
+  /// Use that function or [method@Gdk.Clipboard.read_async] directly if you
+  /// need more control over the operation.
+  static final _gdkClipboardReadTextAsync =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_clipboard_read_text_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void readTextAsync(
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkClipboardReadTextAsync(
+        this.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc2?.close();
+    }
+  }
+
   /// Finishes an asynchronous clipboard read.
   ///
   /// See [method@Gdk.Clipboard.read_text_async].
@@ -158,6 +229,77 @@ class GdkClipboard extends GObject {
     }
   }
 
+  /// Asynchronously request the @clipboard contents converted to a `GdkPixbuf`.
+  ///
+  /// This is a simple wrapper around [method@Gdk.Clipboard.read_value_async].
+  /// Use that function or [method@Gdk.Clipboard.read_async] directly if you
+  /// need more control over the operation.
+  static final _gdkClipboardReadTextureAsync =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_clipboard_read_texture_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void readTextureAsync(
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkClipboardReadTextureAsync(
+        this.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc2?.close();
+    }
+  }
+
   /// Finishes an asynchronous clipboard read.
   ///
   /// See [method@Gdk.Clipboard.read_texture_async].
@@ -192,6 +334,86 @@ class GdkClipboard extends GObject {
       return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Asynchronously request the @clipboard contents converted to the given
+  /// @type.
+  ///
+  /// For local clipboard contents that are available in the given `GType`,
+  /// the value will be copied directly. Otherwise, GDK will try to use
+  /// [func@content_deserialize_async] to convert the clipboard's data.
+  static final _gdkClipboardReadValueAsync =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_clipboard_read_value_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void readValueAsync(
+    int type_,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkClipboardReadValueAsync(
+        this.handle,
+        type_,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -273,6 +495,88 @@ class GdkClipboard extends GObject {
           >();
   void setValue(GValue value) {
     _gdkClipboardSetValue(this.handle, value.handle);
+  }
+
+  /// Asynchronously instructs the @clipboard to store its contents remotely.
+  ///
+  /// If the clipboard is not local, this function does nothing but report success.
+  ///
+  /// The purpose of this call is to preserve clipboard contents beyond the
+  /// lifetime of an application, so this function is typically called on
+  /// exit. Depending on the platform, the functionality may not be available
+  /// unless a "clipboard manager" is running.
+  ///
+  /// This function is called automatically when a
+  /// [GtkApplication](../gtk4/class.Application.html)
+  /// is shut down, so you likely don't need to call it.
+  static final _gdkClipboardStoreAsync =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_clipboard_store_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void storeAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkClipboardStoreAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
   }
 
   /// Finishes an asynchronous clipboard store.
@@ -528,177 +832,6 @@ class GdkContentDeserializer extends GObject {
     } finally {
       _nc2.close();
     }
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// Provides content for the clipboard or for drag-and-drop operations
-/// in a number of formats.
-///
-/// To create a `GdkContentProvider`, use [ctor@Gdk.ContentProvider.new_for_value]
-/// or [ctor@Gdk.ContentProvider.new_for_bytes].
-///
-/// GDK knows how to handle common text and image formats out-of-the-box. See
-/// [class@Gdk.ContentSerializer] and [class@Gdk.ContentDeserializer] if you want
-/// to add support for application-specific data formats.
-class GdkContentProvider extends GObject {
-  GdkContentProvider.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Create a content provider that provides the given @bytes as data for
-  /// the given @mime_type.
-  static final _gdkContentProviderNewForBytes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gdk_content_provider_new_for_bytes')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GdkContentProvider.forBytes(String mimeType, GBytes bytes) {
-    return withNativeString(mimeType, (nativeMimeType) {
-      return GdkContentProvider.fromPointer(
-        _gdkContentProviderNewForBytes(
-          nativeMimeType.cast<Utf8>(),
-          bytes.handle,
-        ),
-        owned: true,
-      );
-    });
-  }
-
-  /// Create a content provider that provides the given @value.
-  static final _gdkContentProviderNewForValue =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_provider_new_for_value')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkContentProvider.forValue(GValue value) {
-    return GdkContentProvider.fromPointer(
-      _gdkContentProviderNewForValue(value.handle),
-      owned: true,
-    );
-  }
-
-  /// Emits the ::content-changed signal.
-  static final _gdkContentProviderContentChanged =
-      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_provider_content_changed',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void contentChanged() {
-    _gdkContentProviderContentChanged(this.handle);
-  }
-
-  /// Gets the formats that the provider can provide its current contents in.
-  static final _gdkContentProviderRefFormats =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_provider_ref_formats')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats refFormats() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentProviderRefFormats(this.handle),
-    );
-  }
-
-  /// Gets the formats that the provider suggests other applications to store
-  /// the data in.
-  ///
-  /// An example of such an application would be a clipboard manager.
-  ///
-  /// This can be assumed to be a subset of [method@Gdk.ContentProvider.ref_formats].
-  static final _gdkContentProviderRefStorableFormats =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_provider_ref_storable_formats')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats refStorableFormats() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentProviderRefStorableFormats(this.handle),
-    );
-  }
-
-  /// Finishes an asynchronous write operation.
-  ///
-  /// See [method@Gdk.ContentProvider.write_mime_type_async].
-  static final _gdkContentProviderWriteMimeTypeFinish =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('gdk_content_provider_write_mime_type_finish')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  bool writeMimeTypeFinish(GAsyncResult result) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkContentProviderWriteMimeTypeFinish(
-        this.handle,
-        result.handle,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  }
-
-  /// Emitted whenever the content provided by this provider has changed.
-  int onContentChanged(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'content-changed', callback);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

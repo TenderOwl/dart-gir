@@ -1,8 +1,8 @@
 # Skip report for package gsk4 (Gsk 4.0)
-Total skipped: 52
+Total skipped: 48
 
 ## By category
-callable: 48
+callable: 44
 callback: 2
 method: 2
 
@@ -26,9 +26,6 @@ parameter func: callback PathForeachFunc has unsupported signature: 1
 caller-allocates out parameter center: 1
 caller-allocates out parameter position: 1
 caller-allocates out parameter tangent: 1
-parameter filter: nullable callback parameter (RenderReplayFontFilter): 1
-parameter filter: nullable callback parameter (RenderReplayNodeFilter): 1
-parameter filter: nullable callback parameter (RenderReplayTextureFilter): 1
 parameter dash: array types are handled in a later phase: 1
 caller-allocates out parameter out_matrix: 1
 caller-allocates out parameter out_rect: 1
@@ -36,7 +33,6 @@ caller-allocates out parameter out_point: 1
 unsupported out parameter out_transform (GskTransform): 1
 parameter border_width: array types are handled in a later phase: 1
 caller-allocates out parameter out_opaque: 1
-parameter error_func: nullable callback parameter (ParseErrorFunc): 1
 parameter shadows: array types are handled in a later phase: 1
 parameter n_glyphs: nullable scalar parameter (guint): 1
 
@@ -63,9 +59,6 @@ parameter n_glyphs: nullable scalar parameter (guint): 1
 [callable] GskPathPoint.getCurvature — caller-allocates out parameter center
 [callable] GskPathPoint.getPosition — caller-allocates out parameter position
 [callable] GskPathPoint.getTangent — caller-allocates out parameter tangent
-[callable] GskRenderReplay.setFontFilter — parameter filter: nullable callback parameter (RenderReplayFontFilter)
-[callable] GskRenderReplay.setNodeFilter — parameter filter: nullable callback parameter (RenderReplayNodeFilter)
-[callable] GskRenderReplay.setTextureFilter — parameter filter: nullable callback parameter (RenderReplayTextureFilter)
 [callable] GskStroke.getDash — return: array types are handled in a later phase
 [callable] GskStroke.setDash — parameter dash: array types are handled in a later phase
 [callable] GskTransform.toMatrix — caller-allocates out parameter out_matrix
@@ -87,7 +80,8 @@ parameter n_glyphs: nullable scalar parameter (guint): 1
 [callable] GskRenderNode.getBounds — caller-allocates out parameter bounds
 [callable] GskRenderNode.getChildren — return: array types are handled in a later phase
 [callable] GskRenderNode.getOpaqueRect — caller-allocates out parameter out_opaque
-[callable] GskRenderNode.deserialize — parameter error_func: nullable callback parameter (ParseErrorFunc)
 [callable] GskRepeatingLinearGradientNode. — parameter color_stops: array types are handled in a later phase
 [callable] GskRepeatingRadialGradientNode. — parameter color_stops: array types are handled in a later phase
 [callable] GskShadowNode. — parameter shadows: array types are handled in a later phase
+[callable] GskTextNode.getGlyphs — parameter n_glyphs: nullable scalar parameter (guint)
+[callback] GskPathForeachFunc parameter pts — array types are handled in a later phase

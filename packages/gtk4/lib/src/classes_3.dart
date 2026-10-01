@@ -368,6 +368,81 @@ class GtkAdjustment extends GInitiallyUnowned {
 class GtkAlertDialog extends GObject {
   GtkAlertDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Shows the alert to the user.
+  ///
+  /// It is ok to pass `NULL` for the callback if the alert
+  /// does not have more than one button. A simpler API for
+  /// this case is [method@Gtk.AlertDialog.show].
+  static final _gtkAlertDialogChoose =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_alert_dialog_choose')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void choose(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gtkAlertDialogChoose(
+        this.handle,
+        parent?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes the [method@Gtk.AlertDialog.choose] call.
   static final _gtkAlertDialogChooseFinish =
       gtk4Lookup<
@@ -574,111 +649,6 @@ class GtkAlertDialog extends GObject {
           >();
   void show_([GtkWindow? parent]) {
     _gtkAlertDialogShow(this.handle, parent?.handle ?? ffi.nullptr);
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// Combines two shortcut triggers.
-///
-/// The `GtkAlternativeTrigger` triggers when either of the two trigger.
-///
-/// This can be cascaded to combine more than two triggers.
-class GtkAlternativeTrigger extends GtkShortcutTrigger {
-  GtkAlternativeTrigger.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a `GtkShortcutTrigger` that will trigger whenever
-  /// either of the two given triggers gets triggered.
-  ///
-  /// Note that nesting is allowed, so if you want more than two
-  /// alternative, create a new alternative trigger for each option.
-  static final _gtkAlternativeTriggerNew =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_alternative_trigger_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  factory GtkAlternativeTrigger(
-    GtkShortcutTrigger first,
-    GtkShortcutTrigger second,
-  ) {
-    return GtkAlternativeTrigger.fromPointer(
-      _gtkAlternativeTriggerNew(first.handle, second.handle),
-      owned: true,
-    );
-  }
-
-  /// Gets the first of the two alternative triggers that may
-  /// trigger @self.
-  ///
-  /// [method@Gtk.AlternativeTrigger.get_second] will return
-  /// the other one.
-  static final _gtkAlternativeTriggerGetFirst =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_alternative_trigger_get_first')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkShortcutTrigger getFirst() {
-    return GtkShortcutTrigger.fromPointer(
-      _gtkAlternativeTriggerGetFirst(this.handle),
-    );
-  }
-
-  /// Gets the second of the two alternative triggers that may
-  /// trigger @self.
-  ///
-  /// [method@Gtk.AlternativeTrigger.get_first] will return
-  /// the other one.
-  static final _gtkAlternativeTriggerGetSecond =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_alternative_trigger_get_second')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkShortcutTrigger getSecond() {
-    return GtkShortcutTrigger.fromPointer(
-      _gtkAlternativeTriggerGetSecond(this.handle),
-    );
   }
 
   /// The notify signal is emitted on an object when one of its properties has

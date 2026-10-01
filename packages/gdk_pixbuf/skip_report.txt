@@ -1,13 +1,12 @@
 # Skip report for package gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 22
+Total skipped: 17
 
 ## By category
-callable: 17
+callable: 12
 callback: 5
 
 ## By reason
 array types are handled in a later phase: 5
-parameter callback: nullable callback parameter (Gio.AsyncReadyCallback): 5
 parameter data: array types are handled in a later phase: 3
 return: string list return type (null): 2
 moved to PixbufError.quark: 1
@@ -30,12 +29,7 @@ parameter buf: array types are handled in a later phase: 1
 [callable] GdkPixbuf.saveToBufferv — parameter buffer: array types are handled in a later phase
 [callback] GdkPixbuf.PixbufSaveFunc parameter buf — array types are handled in a later phase
 [callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
-[callable] GdkPixbuf.saveToStreamvAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
 [callable] GdkPixbuf.getFileInfo — parameter width: nullable scalar parameter (gint)
-[callable] GdkPixbuf.getFileInfoAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
-[callable] GdkPixbuf.newFromStreamAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
-[callable] GdkPixbuf.newFromStreamAtScaleAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
-[callable] GdkPixbufAnimation.newFromStreamAsync — parameter callback: nullable callback parameter (Gio.AsyncReadyCallback)
 [callable] GdkPixbufLoader.write — parameter buf: array types are handled in a later phase
 [callback] GdkPixbufDestroyNotify parameter pixels — array types are handled in a later phase
 [callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array types are handled in a later phase

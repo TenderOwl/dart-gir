@@ -371,6 +371,100 @@ final class GtkCellLayout {
   void reorder(GtkCellRenderer cell, int position) {
     _gtkCellLayoutReorder(this.handle, cell.handle, position);
   }
+
+  /// Sets the `GtkCellLayout`DataFunc to use for @cell_layout.
+  ///
+  /// This function is used instead of the standard attributes mapping
+  /// for setting the column value, and should set the value of @cell_layout’s
+  /// cell renderer(s) as appropriate.
+  ///
+  /// @func may be %NULL to remove a previously set function.
+  static final _gtkCellLayoutSetCellDataFunc =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gtk_cell_layout_set_cell_data_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setCellDataFunc(
+    GtkCellRenderer cell,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    func,
+    ffi.Pointer<ffi.Void> funcData,
+    void Function(ffi.Pointer<ffi.Void>) destroy,
+  ) {
+    final _nc2 = func == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(func);
+    final _nc4 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(destroy);
+    try {
+      _gtkCellLayoutSetCellDataFunc(
+        this.handle,
+        cell.handle,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        funcData,
+        _nc4.nativeFunction,
+      );
+    } finally {
+      _nc2?.close();
+      _nc4.close();
+    }
+  }
 }
 
 /// `GtkColorChooser` is an interface that is implemented by widgets

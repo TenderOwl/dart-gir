@@ -1,13 +1,15 @@
-import 'dart:developer';
 import 'dart:io' show exit;
 
 import 'package:adw/adw.dart';
 import 'package:gtk4/gtk4.dart' hide init;
+import 'package:glib/glib.dart';
 
 import 'dart:async';
 
 Future<void> main(List<String> args) async {
   init();
+
+  print('UserName: ${getUserName()} .: ${getUserDataDir()}');
 
   final app = MyApp('com.tenderowl.myapp');
   await app.run(args);

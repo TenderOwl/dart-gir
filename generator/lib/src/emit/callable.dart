@@ -62,7 +62,16 @@ class CallableEmitter {
   }) {
     final label = '$ownerName.$dartName';
     String? skipReason;
-    if (fn.cIdentifier == null) {
+    if (!fn.introspectable) {
+      // GIR marks C convenience macros (g_idle_add, g_array_new, …) as
+      // `introspectable="0"` because they expand to the canonical sibling.
+      // Surface the sibling in the skip report so users find the right
+      // call without us duplicating the C ABI.
+      final sibling = fn.shadows ?? fn.shadowedBy;
+      skipReason = sibling != null
+          ? 'introspectable=0 (C macro; use $sibling)'
+          : 'introspectable=0';
+    } else if (fn.cIdentifier == null) {
       skipReason = 'no c:identifier';
     } else if (fn.movedTo != null) {
       skipReason = 'moved to ${fn.movedTo}';
@@ -177,7 +186,14 @@ class CallableEmitter {
           argExprs.add(inP.nativeVar);
         } else if (callbackByParam.containsKey(i)) {
           // We allocated `_ncN` above; the native call uses its pointer.
-          argExprs.add('${callbackByParam[i]!.varName}.nativeFunction');
+          // Nullable callbacks store either a `NativeCallable` or `null`;
+          // the null path passes `ffi.nullptr` to the native side.
+          final cb = callbackByParam[i]!;
+          argExprs.add(
+            cb.inParam.bridge.isNullableCallback
+                ? '${cb.varName}?.nativeFunction ?? ffi.nullptr'
+                : '${cb.varName}.nativeFunction',
+          );
         } else {
           argExprs.add(bridge.toNative(inP.name));
         }
@@ -307,7 +323,12 @@ class CallableEmitter {
         core.add('  calloc.free(_error);');
       }
       for (final c in callbackAllocs) {
-        core.add('  ${c.varName}.close();');
+        // Nullable callback locals are `null` when the user passes nothing;
+        // skip `.close()` in that case.
+        final closeExpr = c.inParam.bridge.isNullableCallback
+            ? '${c.varName}?.close()'
+            : '${c.varName}.close()';
+        core.add('  $closeExpr;');
       }
       core.add('}');
     }

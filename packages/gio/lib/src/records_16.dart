@@ -458,6 +458,79 @@ final class GLoadableIcon {
     }
   }
 
+  /// Loads an icon asynchronously. To finish this function, see
+  /// g_loadable_icon_load_finish(). For the synchronous, blocking
+  /// version of this function, see g_loadable_icon_load().
+  static final _gLoadableIconLoadAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_loadable_icon_load_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void loadAsync(
+    int size,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gLoadableIconLoadAsync(
+        this.handle,
+        size,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes an asynchronous icon load started in g_loadable_icon_load_async().
   static final _gLoadableIconLoadFinish =
       gioLookup<

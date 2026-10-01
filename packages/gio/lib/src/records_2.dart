@@ -355,6 +355,127 @@ final class GIOModuleScope {
 final class GIOSchedulerJob {
   GIOSchedulerJob.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Used from an I/O job to send a callback to be run in the thread
+  /// that the job was started from, waiting for the result (and thus
+  /// blocking the I/O job).
+  static final _gIoSchedulerJobSendToMainloop =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_io_scheduler_job_send_to_mainloop')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  bool sendToMainloop(
+    int Function(ffi.Pointer<ffi.Void>) func,
+    ffi.Pointer<ffi.Void> userData, [
+    void Function(ffi.Pointer<ffi.Void>)? notify,
+  ]) {
+    final _nc1 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(func, exceptionalReturn: 0);
+    final _nc3 = notify == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(notify);
+    try {
+      final _ret = _gIoSchedulerJobSendToMainloop(
+        this.handle,
+        _nc1.nativeFunction,
+        userData,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+      return (_ret) != 0;
+    } finally {
+      _nc1.close();
+      _nc3?.close();
+    }
+  }
+
+  /// Used from an I/O job to send a callback to be run asynchronously in
+  /// the thread that the job was started from. The callback will be run
+  /// when the main loop is available, but at that time the I/O job might
+  /// have finished. The return value from the callback is ignored.
+  ///
+  /// Note that if you are passing the @user_data from g_io_scheduler_push_job()
+  /// on to this function you have to ensure that it is not freed before
+  /// @func is called, either by passing %NULL as @notify to
+  /// g_io_scheduler_push_job() or by using refcounting for @user_data.
+  static final _gIoSchedulerJobSendToMainloopAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_io_scheduler_job_send_to_mainloop_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void sendToMainloopAsync(
+    int Function(ffi.Pointer<ffi.Void>) func,
+    ffi.Pointer<ffi.Void> userData, [
+    void Function(ffi.Pointer<ffi.Void>)? notify,
+  ]) {
+    final _nc1 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(func, exceptionalReturn: 0);
+    final _nc3 = notify == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(notify);
+    try {
+      _gIoSchedulerJobSendToMainloopAsync(
+        this.handle,
+        _nc1.nativeFunction,
+        userData,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc1.close();
+      _nc3?.close();
+    }
+  }
 }
 
 final class GIOStreamAdapter {
@@ -478,42 +599,5 @@ final class GListModelInterface {
 
 final class GListStoreClass {
   GListStoreClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Interface for icons that can be loaded as a stream.
-final class GLoadableIconIface {
-  GLoadableIconIface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GMemoryInputStreamClass {
-  GMemoryInputStreamClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GMemoryInputStreamPrivate {
-  GMemoryInputStreamPrivate.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// The virtual function table for #GMemoryMonitor.
-final class GMemoryMonitorInterface {
-  GMemoryMonitorInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GMemoryOutputStreamClass {
-  GMemoryOutputStreamClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GMemoryOutputStreamPrivate {
-  GMemoryOutputStreamPrivate.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GMenuAttributeIterClass {
-  GMenuAttributeIterClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

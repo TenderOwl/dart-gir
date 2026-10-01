@@ -17,6 +17,40 @@ final class GQueue {
     _gQueueClear(this.handle);
   }
 
+  /// Convenience method, which frees all the memory used by a #GQueue,
+  /// and calls the provided @free_func on each item in the #GQueue.
+  static final _gQueueClearFull =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_queue_clear_full')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void clearFull([void Function(ffi.Pointer<ffi.Void>)? freeFunc]) {
+    final _nc1 = freeFunc == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(freeFunc);
+    try {
+      _gQueueClearFull(this.handle, _nc1?.nativeFunction ?? ffi.nullptr);
+    } finally {
+      _nc1?.close();
+    }
+  }
+
   /// Calls @func for each element in the queue passing @user_data to the
   /// function.
   ///
@@ -638,146 +672,5 @@ final class GRWLock {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void writerUnlock() {
     _gRwLockWriterUnlock(this.handle);
-  }
-}
-
-/// The GRand struct is an opaque data structure. It should only be
-/// accessed through the g_rand_* functions.
-final class GRand {
-  GRand.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Creates a new random number generator initialized with a seed taken
-  /// either from `/dev/urandom` (if existing) or from the current time
-  /// (as a fallback).
-  ///
-  /// On Windows, the seed is taken from rand_s().
-  static final _gRandNew =
-      glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'g_rand_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GRand() {
-    return GRand.fromPointer(_gRandNew());
-  }
-
-  /// Creates a new random number generator initialized with @seed.
-  static final _gRandNewWithSeed =
-      glibLookup<
-            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
-          >('g_rand_new_with_seed')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GRand.withSeed(int seed) {
-    return GRand.fromPointer(_gRandNewWithSeed(seed));
-  }
-
-  /// Creates a new random number generator initialized with @seed.
-  static final _gRandNewWithSeedArray =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Uint32, ffi.Uint32)
-            >
-          >('g_rand_new_with_seed_array')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory GRand.withSeedArray(int seed, int seedLength) {
-    return GRand.fromPointer(_gRandNewWithSeedArray(seed, seedLength));
-  }
-
-  /// Copies a #GRand into a new one with the same exact state as before.
-  /// This way you can take a snapshot of the random number generator for
-  /// replaying later.
-  static final _gRandCopy =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_rand_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GRand copy() {
-    return GRand.fromPointer(_gRandCopy(this.handle));
-  }
-
-  /// Returns the next random #gdouble from @rand_ equally distributed over
-  /// the range [0..1).
-  static final _gRandDouble =
-      glibLookup<
-            ffi.NativeFunction<ffi.Double Function(ffi.Pointer<ffi.Void>)>
-          >('g_rand_double')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double double_() {
-    return _gRandDouble(this.handle);
-  }
-
-  /// Returns the next random #gdouble from @rand_ equally distributed over
-  /// the range [@begin..@end).
-  static final _gRandDoubleRange =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Double Function(ffi.Pointer<ffi.Void>, ffi.Double, ffi.Double)
-            >
-          >('g_rand_double_range')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>, double, double)>();
-  double doubleRange(double begin, double end) {
-    return _gRandDoubleRange(this.handle, begin, end);
-  }
-
-  /// Frees the memory allocated for the #GRand.
-  static final _gRandFree =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_rand_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _gRandFree(this.handle);
-  }
-
-  /// Returns the next random #guint32 from @rand_ equally distributed over
-  /// the range [0..2^32-1].
-  static final _gRandInt =
-      glibLookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('g_rand_int')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int int_() {
-    return _gRandInt(this.handle);
-  }
-
-  /// Returns the next random #gint32 from @rand_ equally distributed over
-  /// the range [@begin..@end-1].
-  static final _gRandIntRange =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Int32, ffi.Int32)
-            >
-          >('g_rand_int_range')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, int, int)>();
-  int intRange(int begin, int end) {
-    return _gRandIntRange(this.handle, begin, end);
-  }
-
-  /// Sets the seed for the random number generator #GRand to @seed.
-  static final _gRandSetSeed =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('g_rand_set_seed')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setSeed(int seed) {
-    _gRandSetSeed(this.handle, seed);
-  }
-
-  /// Initializes the random number generator by an array of longs.
-  /// Array can be of arbitrary size, though only the first 624 values
-  /// are taken.  This function is useful if you have many low entropy
-  /// seeds, or if you require more then 32 bits of actual entropy for
-  /// your application.
-  static final _gRandSetSeedArray =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32, ffi.Uint32)
-            >
-          >('g_rand_set_seed_array')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
-  void setSeedArray(int seed, int seedLength) {
-    _gRandSetSeedArray(this.handle, seed, seedLength);
   }
 }

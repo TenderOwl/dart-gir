@@ -106,6 +106,112 @@ final class GAsyncInitable {
   GAsyncInitable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Starts asynchronous initialization of the object implementing the
+  /// interface. This must be done before any real use of the object after
+  /// initial construction. If the object also implements #GInitable you can
+  /// optionally call g_initable_init() instead.
+  ///
+  /// This method is intended for language bindings. If writing in C,
+  /// g_async_initable_new_async() should typically be used instead.
+  ///
+  /// When the initialization is finished, @callback will be called. You can
+  /// then call g_async_initable_init_finish() to get the result of the
+  /// initialization.
+  ///
+  /// Implementations may also support cancellation. If @cancellable is not
+  /// %NULL, then initialization can be cancelled by triggering the cancellable
+  /// object from another thread. If the operation was cancelled, the error
+  /// %G_IO_ERROR_CANCELLED will be returned. If @cancellable is not %NULL, and
+  /// the object doesn't support cancellable initialization, the error
+  /// %G_IO_ERROR_NOT_SUPPORTED will be returned.
+  ///
+  /// As with #GInitable, if the object is not initialized, or initialization
+  /// returns with an error, then all operations on the object except
+  /// g_object_ref() and g_object_unref() are considered to be invalid, and
+  /// have undefined behaviour. They will often fail with g_critical() or
+  /// g_warning(), but this must not be relied on.
+  ///
+  /// Callers should not assume that a class which implements #GAsyncInitable can
+  /// be initialized multiple times; for more information, see g_initable_init().
+  /// If a class explicitly supports being initialized multiple times,
+  /// implementation requires yielding all subsequent calls to init_async() on the
+  /// results of the first call.
+  ///
+  /// For classes that also support the #GInitable interface, the default
+  /// implementation of this method will run the g_initable_init() function
+  /// in a thread, so if you want to support asynchronous initialization via
+  /// threads, just implement the #GAsyncInitable interface without overriding
+  /// any interface methods.
+  static final _gAsyncInitableInitAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_async_initable_init_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void initAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gAsyncInitableInitAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes asynchronous initialization and returns the result.
   /// See g_async_initable_init_async().
   static final _gAsyncInitableInitFinish =
@@ -167,6 +273,91 @@ final class GAsyncInitable {
       return GObject.fromPointer(_ret);
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Helper function for constructing #GAsyncInitable object. This is
+  /// similar to g_object_newv() but also initializes the object asynchronously.
+  ///
+  /// When the initialization is finished, @callback will be called. You can
+  /// then call g_async_initable_new_finish() to get the new object and check
+  /// for any errors.
+  static final _gAsyncInitableNewvAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Size,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_async_initable_newv_async')
+          .asFunction<
+            void Function(
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void newvAsync(
+    int objectType,
+    int nParameters,
+    GParameter parameters,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc6 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gAsyncInitableNewvAsync(
+        objectType,
+        nParameters,
+        parameters.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc6?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc6?.close();
     }
   }
 }
@@ -453,93 +644,5 @@ final class GDBusInterface {
           >();
   void setObject([GDBusObject? object]) {
     _gDbusInterfaceSetObject(this.handle, object?.handle ?? ffi.nullptr);
-  }
-}
-
-/// The `GDBusObject` type is the base type for D-Bus objects on both
-/// the service side (see [class@Gio.DBusObjectSkeleton]) and the client side
-/// (see [class@Gio.DBusObjectProxy]). It is essentially just a container of
-/// interfaces.
-final class GDBusObject {
-  GDBusObject.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Gets the D-Bus interface with name @interface_name associated with
-  /// @object, if any.
-  static final _gDbusObjectGetInterface =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_object_get_interface')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GDBusInterface? getInterface(String interfaceName) {
-    return withNativeString(interfaceName, (nativeInterfaceName) {
-      return (_gDbusObjectGetInterface(
-                this.handle,
-                nativeInterfaceName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusInterface.fromPointer(
-              _gDbusObjectGetInterface(
-                this.handle,
-                nativeInterfaceName.cast<Utf8>(),
-              ),
-            );
-    });
-  }
-
-  /// Gets the D-Bus interfaces associated with @object.
-  static final _gDbusObjectGetInterfaces =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_get_interfaces')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getInterfaces() {
-    return GList.fromPointer(_gDbusObjectGetInterfaces(this.handle));
-  }
-
-  /// Gets the object path for @object.
-  static final _gDbusObjectGetObjectPath =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_object_get_object_path')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getObjectPath() {
-    return stringFromNative(
-      (_gDbusObjectGetObjectPath(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Emitted when @interface is added to @object.
-  int onInterfaceAdded(void Function(GDBusInterface interface_) callback) {
-    return _connectSignal_v_1_o_gdbusinterface(
-      this.handle,
-      'interface-added',
-      callback,
-    );
-  }
-
-  /// Emitted when @interface is removed from @object.
-  int onInterfaceRemoved(void Function(GDBusInterface interface_) callback) {
-    return _connectSignal_v_1_o_gdbusinterface(
-      this.handle,
-      'interface-removed',
-      callback,
-    );
   }
 }

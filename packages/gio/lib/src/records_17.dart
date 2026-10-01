@@ -130,6 +130,79 @@ final class GMount {
     return (_gMountCanUnmount(this.handle)) != 0;
   }
 
+  /// Ejects a mount. This is an asynchronous operation, and is
+  /// finished by calling g_mount_eject_finish() with the @mount
+  /// and #GAsyncResult data returned in the @callback.
+  static final _gMountEject =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_mount_eject')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void eject(
+    GMountUnmountFlags flags,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gMountEject(
+        this.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes ejecting a mount. If any errors occurred during the operation,
   /// @error will be set to contain the errors and %FALSE will be returned.
   static final _gMountEjectFinish =
@@ -159,6 +232,83 @@ final class GMount {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Ejects a mount. This is an asynchronous operation, and is
+  /// finished by calling g_mount_eject_with_operation_finish() with the @mount
+  /// and #GAsyncResult data returned in the @callback.
+  static final _gMountEjectWithOperation =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_mount_eject_with_operation')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void ejectWithOperation(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gMountEjectWithOperation(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -321,6 +471,87 @@ final class GMount {
         : GVolume.fromPointer(_gMountGetVolume(this.handle));
   }
 
+  /// Tries to guess the type of content stored on @mount. Returns one or
+  /// more textual identifiers of well-known content types (typically
+  /// prefixed with "x-content/"), e.g. x-content/image-dcf for camera
+  /// memory cards. See the
+  /// [shared-mime-info](http://www.freedesktop.org/wiki/Specifications/shared-mime-info-spec)
+  /// specification for more on x-content types.
+  ///
+  /// This is an asynchronous operation (see
+  /// g_mount_guess_content_type_sync() for the synchronous version), and
+  /// is finished by calling g_mount_guess_content_type_finish() with the
+  /// @mount and #GAsyncResult data returned in the @callback.
+  static final _gMountGuessContentType =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_mount_guess_content_type')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void guessContentType(
+    bool forceRescan,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gMountGuessContentType(
+        this.handle,
+        forceRescan ? 1 : 0,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Determines if @mount is shadowed. Applications or libraries should
   /// avoid displaying @mount in the user interface if it is shadowed.
   ///
@@ -350,6 +581,89 @@ final class GMount {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool isShadowed() {
     return (_gMountIsShadowed(this.handle)) != 0;
+  }
+
+  /// Remounts a mount. This is an asynchronous operation, and is
+  /// finished by calling g_mount_remount_finish() with the @mount
+  /// and #GAsyncResults data returned in the @callback.
+  ///
+  /// Remounting is useful when some setting affecting the operation
+  /// of the volume has been changed, as these may need a remount to
+  /// take affect. While this is semantically equivalent with unmounting
+  /// and then remounting not all backends might need to actually be
+  /// unmounted.
+  static final _gMountRemount =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_mount_remount')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void remount(
+    GMountMountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gMountRemount(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
   }
 
   /// Finishes remounting a mount. If any errors occurred during the operation,
@@ -396,6 +710,79 @@ final class GMount {
     _gMountShadow(this.handle);
   }
 
+  /// Unmounts a mount. This is an asynchronous operation, and is
+  /// finished by calling g_mount_unmount_finish() with the @mount
+  /// and #GAsyncResult data returned in the @callback.
+  static final _gMountUnmount =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_mount_unmount')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void unmount(
+    GMountUnmountFlags flags,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gMountUnmount(
+        this.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes unmounting a mount. If any errors occurred during the operation,
   /// @error will be set to contain the errors and %FALSE will be returned.
   static final _gMountUnmountFinish =
@@ -425,6 +812,83 @@ final class GMount {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Unmounts a mount. This is an asynchronous operation, and is
+  /// finished by calling g_mount_unmount_with_operation_finish() with the @mount
+  /// and #GAsyncResult data returned in the @callback.
+  static final _gMountUnmountWithOperation =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_mount_unmount_with_operation')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void unmountWithOperation(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gMountUnmountWithOperation(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 

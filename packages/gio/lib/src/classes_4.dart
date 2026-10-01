@@ -52,6 +52,89 @@ class GCancellable extends GObject {
     _gCancellableCancel(this.handle);
   }
 
+  /// Convenience function to connect to the #GCancellable::cancelled
+  /// signal. Also handles the race condition that may happen
+  /// if the cancellable is cancelled right before connecting.
+  ///
+  /// @callback is called exactly once each time @cancellable is cancelled,
+  /// either directly at the time of the connect if @cancellable is already
+  /// cancelled, or when @cancellable is cancelled in some thread.
+  /// In case the cancellable is reset via [method@Gio.Cancellable.reset]
+  /// then the callback can be called again if the @cancellable is cancelled and
+  /// if it had not been previously cancelled at the time
+  /// [method@Gio.Cancellable.connect] was called (e.g. if the connection actually
+  /// took place, returning a non-zero value).
+  ///
+  /// @data_destroy_func will be called when the handler is
+  /// disconnected, or immediately if the cancellable is already
+  /// cancelled.
+  ///
+  /// See #GCancellable::cancelled for details on how to use this.
+  ///
+  /// Since GLib 2.40, the lock protecting @cancellable is not held when
+  /// @callback is invoked. This lifts a restriction in place for
+  /// earlier GLib versions which now makes it easier to write cleanup
+  /// code that unconditionally invokes e.g. [method@Gio.Cancellable.cancel].
+  /// Note that since 2.82 GLib still holds a lock during the callback but it’s
+  /// designed in a way that most of the [class@Gio.Cancellable] methods can be
+  /// called, including [method@Gio.Cancellable.cancel] or
+  /// [method@GObject.Object.unref].
+  ///
+  /// There are still some methods that will deadlock (by design) when
+  /// called from the [signal@Gio.Cancellable::cancelled] callbacks:
+  /// - [method@Gio.Cancellable.connect]
+  /// - [method@Gio.Cancellable.disconnect]
+  /// - [method@Gio.Cancellable.reset]
+  /// - [method@Gio.Cancellable.make_pollfd]
+  /// - [method@Gio.Cancellable.release_fd]
+  static final _gCancellableConnect =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.UnsignedLong Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_cancellable_connect')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  int connect(
+    void Function() callback,
+    ffi.Pointer<ffi.Void> data, [
+    void Function(ffi.Pointer<ffi.Void>)? dataDestroyFunc,
+  ]) {
+    final _nc1 = ffi.NativeCallable<ffi.Void Function()>.isolateLocal(callback);
+    final _nc3 = dataDestroyFunc == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(dataDestroyFunc);
+    try {
+      final _ret = _gCancellableConnect(
+        this.handle,
+        _nc1.nativeFunction,
+        data,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+      return _ret;
+    } finally {
+      _nc1.close();
+      _nc3?.close();
+    }
+  }
+
   /// Disconnects a handler from a cancellable instance similar to
   /// g_signal_handler_disconnect().  Additionally, in the event that a
   /// signal handler is currently running, this call will block until the
@@ -329,111 +412,6 @@ class GCancellable extends GObject {
   /// cancellable signal should not do something that can block.
   int onCancelled(void Function() callback) {
     return _connectSignal_v_0(this.handle, 'cancelled', callback);
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// `GCharsetConverter` is an implementation of [iface@Gio.Converter] based on
-/// [struct@GLib.IConv].
-class GCharsetConverter extends GObject {
-  GCharsetConverter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Creates a new #GCharsetConverter.
-  static final _gCharsetConverterNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_charset_converter_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  factory GCharsetConverter(String toCharset, String fromCharset) {
-    return withNativeString(toCharset, (nativeToCharset) {
-      return withNativeString(fromCharset, (nativeFromCharset) {
-        final _error = calloc<ffi.Pointer<ffi.Void>>();
-        try {
-          final _ret = _gCharsetConverterNew(
-            nativeToCharset.cast<Utf8>(),
-            nativeFromCharset.cast<Utf8>(),
-            _error,
-          );
-          if (_error.value != ffi.nullptr) {
-            throw GlibException.fromError(_error.value);
-          }
-          return GCharsetConverter.fromPointer(_ret, owned: true);
-        } finally {
-          calloc.free(_error);
-        }
-      });
-    });
-  }
-
-  /// Gets the number of fallbacks that @converter has applied so far.
-  static final _gCharsetConverterGetNumFallbacks =
-      gioLookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>>(
-        'g_charset_converter_get_num_fallbacks',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getNumFallbacks() {
-    return _gCharsetConverterGetNumFallbacks(this.handle);
-  }
-
-  /// Gets the #GCharsetConverter:use-fallback property.
-  static final _gCharsetConverterGetUseFallback =
-      gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'g_charset_converter_get_use_fallback',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getUseFallback() {
-    return (_gCharsetConverterGetUseFallback(this.handle)) != 0;
-  }
-
-  /// Sets the #GCharsetConverter:use-fallback property.
-  static final _gCharsetConverterSetUseFallback =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('g_charset_converter_set_use_fallback')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setUseFallback(bool useFallback) {
-    _gCharsetConverterSetUseFallback(this.handle, useFallback ? 1 : 0);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

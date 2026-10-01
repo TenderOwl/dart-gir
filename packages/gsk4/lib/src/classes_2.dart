@@ -774,4 +774,75 @@ class GskRenderNode {
       }
     });
   }
+
+  /// Loads data previously created via [method@Gsk.RenderNode.serialize].
+  ///
+  /// For a discussion of the supported format, see that function.
+  static final _gskRenderNodeDeserialize =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_render_node_deserialize')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static GskRenderNode? deserialize(
+    GBytes bytes,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    errorFunc,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 = errorFunc == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(errorFunc);
+    try {
+      final _ret = _gskRenderNodeDeserialize(
+        bytes.handle,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+      return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
+    } finally {
+      _nc2?.close();
+    }
+  }
 }

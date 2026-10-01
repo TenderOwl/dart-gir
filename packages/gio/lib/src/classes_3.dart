@@ -114,6 +114,86 @@ class GBufferedInputStream extends GFilterInputStream {
     }
   }
 
+  /// Reads data into @stream's buffer asynchronously, up to @count size.
+  /// @io_priority can be used to prioritize reads. For the synchronous
+  /// version of this function, see [method@Gio.BufferedInputStream.fill].
+  ///
+  /// If @count is `-1` then the attempted read size is equal to the number
+  /// of bytes that are required to fill the buffer.
+  static final _gBufferedInputStreamFillAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_buffered_input_stream_fill_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void fillAsync(
+    int count,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gBufferedInputStreamFillAsync(
+        this.handle,
+        count,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// Finishes an asynchronous read.
   static final _gBufferedInputStreamFillFinish =
       gioLookup<

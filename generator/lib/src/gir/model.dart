@@ -133,6 +133,7 @@ abstract class GirCallable {
     this.deprecated = false,
     this.version,
     this.doc,
+    this.introspectable = true,
   }) : parameters = List.unmodifiable(parameters ?? const []);
 
   final String name;
@@ -145,6 +146,13 @@ abstract class GirCallable {
   final bool deprecated;
   final String? version;
   final String? doc;
+
+  /// Whether the GIR marks this callable `introspectable="0"`/`"false"`.
+  /// Non-introspectable callables are C macros whose real symbol is the
+  /// `shadowed-by`/`shadows` sibling — the parser still parses them so
+  /// the emitter can record an explanatory skip, but no Dart wrapper
+  /// is emitted.
+  final bool introspectable;
 
   /// The varargs marker parameter, if this callable is variadic.
   GirParameter? get varargsParameter {
@@ -169,6 +177,7 @@ class GirFunction extends GirCallable {
     super.deprecated,
     super.version,
     super.doc,
+    super.introspectable,
     this.shadows,
     this.shadowedBy,
     this.movedTo,
@@ -193,6 +202,7 @@ class GirMethod extends GirFunction {
     super.deprecated,
     super.version,
     super.doc,
+    super.introspectable,
     super.shadows,
     super.shadowedBy,
     this.instanceParameter,
@@ -214,6 +224,7 @@ class GirConstructor extends GirFunction {
     super.deprecated,
     super.version,
     super.doc,
+    super.introspectable,
     super.shadows,
     super.shadowedBy,
   });
@@ -542,6 +553,7 @@ class GirCallback extends GirCallable {
     super.deprecated,
     super.version,
     super.doc,
+    super.introspectable,
     this.cType,
   });
 

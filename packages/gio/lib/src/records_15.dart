@@ -153,6 +153,88 @@ final class GFile {
     }
   }
 
+  /// Asynchronously opens @file for appending.
+  ///
+  /// For more details, see g_file_append_to() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_append_to_finish() to get the result
+  /// of the operation.
+  static final _gFileAppendToAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_append_to_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void appendToAsync(
+    GFileCreateFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileAppendToAsync(
+        this.handle,
+        flags.value,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// Finishes an asynchronous file append operation started with
   /// g_file_append_to_async().
   static final _gFileAppendToFinish =
@@ -231,6 +313,116 @@ final class GFile {
       return stringFromNative((_ret).cast(), free: true)!;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Copies the file @source to the location specified by @destination.
+  /// Can not handle recursive copies of directories.
+  ///
+  /// If the flag %G_FILE_COPY_OVERWRITE is specified an already
+  /// existing @destination file is overwritten.
+  ///
+  /// If the flag %G_FILE_COPY_NOFOLLOW_SYMLINKS is specified then symlinks
+  /// will be copied as symlinks, otherwise the target of the
+  /// @source symlink will be copied.
+  ///
+  /// If the flag %G_FILE_COPY_ALL_METADATA is specified then all the metadata
+  /// that is possible to copy is copied, not just the default subset (which,
+  /// for instance, does not include the owner, see #GFileInfo).
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// If @progress_callback is not %NULL, then the operation can be monitored
+  /// by setting this to a #GFileProgressCallback function.
+  /// @progress_callback_data will be passed to this function. It is guaranteed
+  /// that this callback will be called after all data has been transferred with
+  /// the total number of bytes copied during the operation.
+  ///
+  /// If the @source file does not exist, then the %G_IO_ERROR_NOT_FOUND error
+  /// is returned, independent on the status of the @destination.
+  ///
+  /// If %G_FILE_COPY_OVERWRITE is not specified and the target exists, then
+  /// the error %G_IO_ERROR_EXISTS is returned.
+  ///
+  /// If trying to overwrite a file over a directory, the %G_IO_ERROR_IS_DIRECTORY
+  /// error is returned. If trying to overwrite a directory with a directory the
+  /// %G_IO_ERROR_WOULD_MERGE error is returned.
+  ///
+  /// If the source is a directory and the target does not exist, or
+  /// %G_FILE_COPY_OVERWRITE is specified and the target is a file, then the
+  /// %G_IO_ERROR_WOULD_RECURSE error is returned.
+  ///
+  /// If you are interested in copying the #GFile object itself (not the on-disk
+  /// file), see g_file_dup().
+  static final _gFileCopy =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Int64,
+                      ffi.Int64,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_copy')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Void>)
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool copy(
+    GFile destination,
+    GFileCopyFlags flags,
+    GCancellable? cancellable,
+    void Function(int, int, ffi.Pointer<ffi.Void>)? progressCallback,
+    ffi.Pointer<ffi.Void> progressCallbackData,
+  ) {
+    final _nc4 = progressCallback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Void>)
+          >.isolateLocal(progressCallback);
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileCopy(
+        this.handle,
+        destination.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        progressCallbackData,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) != 0;
+    } finally {
+      calloc.free(_error);
+      _nc4?.close();
     }
   }
 
@@ -422,6 +614,89 @@ final class GFile {
     }
   }
 
+  /// Asynchronously creates a new file and returns an output stream
+  /// for writing to it. The file must not already exist.
+  ///
+  /// For more details, see g_file_create() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_create_finish() to get the result
+  /// of the operation.
+  static final _gFileCreateAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_create_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void createAsync(
+    GFileCreateFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileCreateAsync(
+        this.handle,
+        flags.value,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// Finishes an asynchronous file create operation started with
   /// g_file_create_async().
   static final _gFileCreateFinish =
@@ -517,6 +792,89 @@ final class GFile {
     }
   }
 
+  /// Asynchronously creates a new file and returns a stream
+  /// for reading and writing to it. The file must not already exist.
+  ///
+  /// For more details, see g_file_create_readwrite() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_create_readwrite_finish() to get
+  /// the result of the operation.
+  static final _gFileCreateReadwriteAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_create_readwrite_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void createReadwriteAsync(
+    GFileCreateFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileCreateReadwriteAsync(
+        this.handle,
+        flags.value,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// Finishes an asynchronous file create operation started with
   /// g_file_create_readwrite_async().
   static final _gFileCreateReadwriteFinish =
@@ -604,6 +962,79 @@ final class GFile {
     }
   }
 
+  /// Asynchronously delete a file. If the @file is a directory, it will
+  /// only be deleted if it is empty.  This has the same semantics as
+  /// g_unlink().
+  static final _gFileDeleteAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_delete_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void deleteAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileDeleteAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes deleting a file started with g_file_delete_async().
   static final _gFileDeleteFinish =
       gioLookup<
@@ -656,6 +1087,84 @@ final class GFile {
     return GFile.fromPointer(_gFileDup(this.handle));
   }
 
+  /// Starts an asynchronous eject on a mountable.
+  /// When this operation has completed, @callback will be called with
+  /// @user_user data, and the operation can be finalized with
+  /// g_file_eject_mountable_finish().
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gFileEjectMountable =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_eject_mountable')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void ejectMountable(
+    GMountUnmountFlags flags,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileEjectMountable(
+        this.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes an asynchronous eject operation started by
   /// g_file_eject_mountable().
   static final _gFileEjectMountableFinish =
@@ -689,6 +1198,88 @@ final class GFile {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Starts an asynchronous eject on a mountable.
+  /// When this operation has completed, @callback will be called with
+  /// @user_user data, and the operation can be finalized with
+  /// g_file_eject_mountable_with_operation_finish().
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gFileEjectMountableWithOperation =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_eject_mountable_with_operation')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void ejectMountableWithOperation(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileEjectMountableWithOperation(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -799,6 +1390,96 @@ final class GFile {
     });
   }
 
+  /// Asynchronously gets the requested information about the files
+  /// in a directory. The result is a #GFileEnumerator object that will
+  /// give out #GFileInfo objects for all the files in the directory.
+  ///
+  /// For more details, see g_file_enumerate_children() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called. You can
+  /// then call g_file_enumerate_children_finish() to get the result of
+  /// the operation.
+  static final _gFileEnumerateChildrenAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_enumerate_children_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void enumerateChildrenAsync(
+    String attributes,
+    GFileQueryInfoFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(attributes, (nativeAttributes) {
+      final _nc5 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileEnumerateChildrenAsync(
+          this.handle,
+          nativeAttributes.cast<Utf8>(),
+          flags.value,
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc5?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc5?.close();
+      }
+    });
+  }
+
   /// Finishes an async enumerate children operation.
   /// See g_file_enumerate_children_async().
   static final _gFileEnumerateChildrenFinish =
@@ -903,6 +1584,84 @@ final class GFile {
       return GMount.fromPointer(_ret);
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Asynchronously gets the mount for the file.
+  ///
+  /// For more details, see g_file_find_enclosing_mount() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_find_enclosing_mount_finish() to
+  /// get the result of the operation.
+  static final _gFileFindEnclosingMountAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_find_enclosing_mount_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void findEnclosingMountAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileFindEnclosingMountAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
     }
   }
 
@@ -1313,6 +2072,82 @@ final class GFile {
     }
   }
 
+  /// Asynchronously loads the contents of @file as #GBytes.
+  ///
+  /// If @file is a resource:// based URI, the resulting bytes will reference the
+  /// embedded resource instead of a copy. Otherwise, this is equivalent to calling
+  /// g_file_load_contents_async() and g_bytes_new_take().
+  ///
+  /// @callback should call g_file_load_bytes_finish() to get the result of this
+  /// asynchronous operation.
+  ///
+  /// See g_file_load_bytes() for more information.
+  static final _gFileLoadBytesAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_load_bytes_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void loadBytesAsync(
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileLoadBytesAsync(
+        this.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc2?.close();
+    }
+  }
+
   /// Completes an asynchronous request to g_file_load_bytes_async().
   ///
   /// For resources, @etag_out will be set to %NULL.
@@ -1361,6 +2196,85 @@ final class GFile {
     } finally {
       malloc.free(_out0);
       calloc.free(_error);
+    }
+  }
+
+  /// Starts an asynchronous load of the @file's contents.
+  ///
+  /// For more details, see g_file_load_contents() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the load operation has completed, @callback will be called
+  /// with @user data. To finish the operation, call
+  /// g_file_load_contents_finish() with the #GAsyncResult returned by
+  /// the @callback.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gFileLoadContentsAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_load_contents_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void loadContentsAsync(
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileLoadContentsAsync(
+        this.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc2?.close();
     }
   }
 
@@ -1413,6 +2327,77 @@ final class GFile {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Asynchronously creates a directory.
+  static final _gFileMakeDirectoryAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_make_directory_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void makeDirectoryAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileMakeDirectoryAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
     }
   }
 
@@ -1540,6 +2525,84 @@ final class GFile {
         return (_ret) != 0;
       } finally {
         calloc.free(_error);
+      }
+    });
+  }
+
+  /// Asynchronously creates a symbolic link named @file which contains the
+  /// string @symlink_value.
+  static final _gFileMakeSymbolicLinkAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_make_symbolic_link_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void makeSymbolicLinkAsync(
+    String symlinkValue,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(symlinkValue, (nativeSymlinkValue) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileMakeSymbolicLinkAsync(
+          this.handle,
+          nativeSymlinkValue.cast<Utf8>(),
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
       }
     });
   }
@@ -1729,6 +2792,90 @@ final class GFile {
     }
   }
 
+  /// Starts a @mount_operation, mounting the volume that contains
+  /// the file @location.
+  ///
+  /// When this operation has completed, @callback will be called with
+  /// @user_user data, and the operation can be finalized with
+  /// g_file_mount_enclosing_volume_finish().
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gFileMountEnclosingVolume =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_mount_enclosing_volume')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void mountEnclosingVolume(
+    GMountMountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileMountEnclosingVolume(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// Finishes a mount operation started by g_file_mount_enclosing_volume().
   static final _gFileMountEnclosingVolumeFinish =
       gioLookup<
@@ -1761,6 +2908,91 @@ final class GFile {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Mounts a file of type G_FILE_TYPE_MOUNTABLE.
+  /// Using @mount_operation, you can request callbacks when, for instance,
+  /// passwords are needed during authentication.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_mount_mountable_finish() to get
+  /// the result of the operation.
+  static final _gFileMountMountable =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_mount_mountable')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void mountMountable(
+    GMountMountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileMountMountable(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -1799,6 +3031,109 @@ final class GFile {
       return GFile.fromPointer(_ret);
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Tries to move the file or directory @source to the location specified
+  /// by @destination. If native move operations are supported then this is
+  /// used, otherwise a copy + delete fallback is used. The native
+  /// implementation may support moving directories (for instance on moves
+  /// inside the same filesystem), but the fallback code does not.
+  ///
+  /// If the flag %G_FILE_COPY_OVERWRITE is specified an already
+  /// existing @destination file is overwritten.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// If @progress_callback is not %NULL, then the operation can be monitored
+  /// by setting this to a #GFileProgressCallback function.
+  /// @progress_callback_data will be passed to this function. It is
+  /// guaranteed that this callback will be called after all data has been
+  /// transferred with the total number of bytes copied during the operation.
+  ///
+  /// If the @source file does not exist, then the %G_IO_ERROR_NOT_FOUND
+  /// error is returned, independent on the status of the @destination.
+  ///
+  /// If %G_FILE_COPY_OVERWRITE is not specified and the target exists,
+  /// then the error %G_IO_ERROR_EXISTS is returned.
+  ///
+  /// If trying to overwrite a file over a directory, the %G_IO_ERROR_IS_DIRECTORY
+  /// error is returned. If trying to overwrite a directory with a directory the
+  /// %G_IO_ERROR_WOULD_MERGE error is returned.
+  ///
+  /// If the source is a directory and the target does not exist, or
+  /// %G_FILE_COPY_OVERWRITE is specified and the target is a file, then
+  /// the %G_IO_ERROR_WOULD_RECURSE error may be returned (if the native
+  /// move operation isn't available).
+  static final _gFileMove =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Int64,
+                      ffi.Int64,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_move')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Void>)
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool move(
+    GFile destination,
+    GFileCopyFlags flags,
+    GCancellable? cancellable,
+    void Function(int, int, ffi.Pointer<ffi.Void>)? progressCallback,
+    ffi.Pointer<ffi.Void> progressCallbackData,
+  ) {
+    final _nc4 = progressCallback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Void>)
+          >.isolateLocal(progressCallback);
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileMove(
+        this.handle,
+        destination.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        progressCallbackData,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) != 0;
+    } finally {
+      calloc.free(_error);
+      _nc4?.close();
     }
   }
 
@@ -1930,6 +3265,84 @@ final class GFile {
     }
   }
 
+  /// Asynchronously opens @file for reading and writing.
+  ///
+  /// For more details, see g_file_open_readwrite() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_open_readwrite_finish() to get
+  /// the result of the operation.
+  static final _gFileOpenReadwriteAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_open_readwrite_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void openReadwriteAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileOpenReadwriteAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes an asynchronous file read operation started with
   /// g_file_open_readwrite_async().
   static final _gFileOpenReadwriteFinish =
@@ -1978,6 +3391,81 @@ final class GFile {
           .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
   String? peekPath() {
     return stringFromNative((_gFilePeekPath(this.handle)).cast(), free: false);
+  }
+
+  /// Polls a file of type %G_FILE_TYPE_MOUNTABLE.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_mount_mountable_finish() to get
+  /// the result of the operation.
+  static final _gFilePollMountable =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_poll_mountable')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void pollMountable(
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFilePollMountable(
+        this.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc2?.close();
+    }
   }
 
   /// Finishes a poll operation. See g_file_poll_mountable() for details.
@@ -2055,6 +3543,77 @@ final class GFile {
       return GAppInfo.fromPointer(_ret);
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Async version of g_file_query_default_handler().
+  static final _gFileQueryDefaultHandlerAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_query_default_handler_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void queryDefaultHandlerAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileQueryDefaultHandlerAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
     }
   }
 
@@ -2233,6 +3792,93 @@ final class GFile {
     });
   }
 
+  /// Asynchronously gets the requested information about the filesystem
+  /// that the specified @file is on. The result is a #GFileInfo object
+  /// that contains key-value attributes (such as type or size for the
+  /// file).
+  ///
+  /// For more details, see g_file_query_filesystem_info() which is the
+  /// synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called. You can
+  /// then call g_file_query_info_finish() to get the result of the
+  /// operation.
+  static final _gFileQueryFilesystemInfoAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_query_filesystem_info_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void queryFilesystemInfoAsync(
+    String attributes,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(attributes, (nativeAttributes) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileQueryFilesystemInfoAsync(
+          this.handle,
+          nativeAttributes.cast<Utf8>(),
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
+      }
+    });
+  }
+
   /// Finishes an asynchronous filesystem info query.
   /// See g_file_query_filesystem_info_async().
   static final _gFileQueryFilesystemInfoFinish =
@@ -2354,6 +4000,95 @@ final class GFile {
         return GFileInfo.fromPointer(_ret);
       } finally {
         calloc.free(_error);
+      }
+    });
+  }
+
+  /// Asynchronously gets the requested information about specified @file.
+  /// The result is a #GFileInfo object that contains key-value attributes
+  /// (such as type or size for the file).
+  ///
+  /// For more details, see g_file_query_info() which is the synchronous
+  /// version of this call.
+  ///
+  /// When the operation is finished, @callback will be called. You can
+  /// then call g_file_query_info_finish() to get the result of the operation.
+  static final _gFileQueryInfoAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_query_info_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void queryInfoAsync(
+    String attributes,
+    GFileQueryInfoFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(attributes, (nativeAttributes) {
+      final _nc5 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileQueryInfoAsync(
+          this.handle,
+          nativeAttributes.cast<Utf8>(),
+          flags.value,
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc5?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc5?.close();
       }
     });
   }
@@ -2520,6 +4255,84 @@ final class GFile {
     }
   }
 
+  /// Asynchronously opens @file for reading.
+  ///
+  /// For more details, see g_file_read() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_read_finish() to get the result
+  /// of the operation.
+  static final _gFileReadAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_read_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void readAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileReadAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes an asynchronous file read operation started with
   /// g_file_read_async().
   static final _gFileReadFinish =
@@ -2639,6 +4452,191 @@ final class GFile {
         return GFileOutputStream.fromPointer(_ret);
       } finally {
         calloc.free(_error);
+      }
+    });
+  }
+
+  /// Asynchronously overwrites the file, replacing the contents,
+  /// possibly creating a backup copy of the file first.
+  ///
+  /// For more details, see g_file_replace() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_replace_finish() to get the result
+  /// of the operation.
+  static final _gFileReplaceAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_replace_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void replaceAsync(
+    String? etag,
+    bool makeBackup,
+    GFileCreateFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(etag, (nativeEtag) {
+      final _nc6 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileReplaceAsync(
+          this.handle,
+          nativeEtag.cast<Utf8>(),
+          makeBackup ? 1 : 0,
+          flags.value,
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc6?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc6?.close();
+      }
+    });
+  }
+
+  /// Same as g_file_replace_contents_async() but takes a #GBytes input instead.
+  /// This function will keep a ref on @contents until the operation is done.
+  /// Unlike g_file_replace_contents_async() this allows forgetting about the
+  /// content without waiting for the callback.
+  ///
+  /// When this operation has completed, @callback will be called with
+  /// @user_user data, and the operation can be finalized with
+  /// g_file_replace_contents_finish().
+  static final _gFileReplaceContentsBytesAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_replace_contents_bytes_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void replaceContentsBytesAsync(
+    GBytes contents,
+    String? etag,
+    bool makeBackup,
+    GFileCreateFlags flags,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(etag, (nativeEtag) {
+      final _nc6 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileReplaceContentsBytesAsync(
+          this.handle,
+          contents.handle,
+          nativeEtag.cast<Utf8>(),
+          makeBackup ? 1 : 0,
+          flags.value,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc6?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc6?.close();
       }
     });
   }
@@ -2773,6 +4771,100 @@ final class GFile {
         return GFileIOStream.fromPointer(_ret);
       } finally {
         calloc.free(_error);
+      }
+    });
+  }
+
+  /// Asynchronously overwrites the file in read-write mode,
+  /// replacing the contents, possibly creating a backup copy
+  /// of the file first.
+  ///
+  /// For more details, see g_file_replace_readwrite() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_replace_readwrite_finish() to get
+  /// the result of the operation.
+  static final _gFileReplaceReadwriteAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_replace_readwrite_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void replaceReadwriteAsync(
+    String? etag,
+    bool makeBackup,
+    GFileCreateFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(etag, (nativeEtag) {
+      final _nc6 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileReplaceReadwriteAsync(
+          this.handle,
+          nativeEtag.cast<Utf8>(),
+          makeBackup ? 1 : 0,
+          flags.value,
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc6?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc6?.close();
       }
     });
   }
@@ -3245,6 +5337,92 @@ final class GFile {
     });
   }
 
+  /// Asynchronously sets the attributes of @file with @info.
+  ///
+  /// For more details, see g_file_set_attributes_from_info(),
+  /// which is the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_set_attributes_finish() to get
+  /// the result of the operation.
+  static final _gFileSetAttributesAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_set_attributes_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void setAttributesAsync(
+    GFileInfo info,
+    GFileQueryInfoFlags flags,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileSetAttributesAsync(
+        this.handle,
+        info.handle,
+        flags.value,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  }
+
   /// Tries to set all attributes in the #GFileInfo on the target
   /// values, not stopping on the first error.
   ///
@@ -3355,6 +5533,90 @@ final class GFile {
     });
   }
 
+  /// Asynchronously sets the display name for a given #GFile.
+  ///
+  /// For more details, see g_file_set_display_name() which is
+  /// the synchronous version of this call.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_set_display_name_finish() to get
+  /// the result of the operation.
+  static final _gFileSetDisplayNameAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_set_display_name_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void setDisplayNameAsync(
+    String displayName,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(displayName, (nativeDisplayName) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileSetDisplayNameAsync(
+          this.handle,
+          nativeDisplayName.cast<Utf8>(),
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
+      }
+    });
+  }
+
   /// Finishes setting a display name started with
   /// g_file_set_display_name_async().
   static final _gFileSetDisplayNameFinish =
@@ -3384,6 +5646,91 @@ final class GFile {
       return GFile.fromPointer(_ret);
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Starts a file of type %G_FILE_TYPE_MOUNTABLE.
+  /// Using @start_operation, you can request callbacks when, for instance,
+  /// passwords are needed during authentication.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_mount_mountable_finish() to get
+  /// the result of the operation.
+  static final _gFileStartMountable =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_start_mountable')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void startMountable(
+    GDriveStartFlags flags,
+    GMountOperation? startOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileStartMountable(
+        this.handle,
+        flags.value,
+        startOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -3422,6 +5769,89 @@ final class GFile {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Stops a file of type %G_FILE_TYPE_MOUNTABLE.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_stop_mountable_finish() to get
+  /// the result of the operation.
+  static final _gFileStopMountable =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_stop_mountable')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void stopMountable(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileStopMountable(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -3522,6 +5952,77 @@ final class GFile {
     }
   }
 
+  /// Asynchronously sends @file to the Trash location, if possible.
+  static final _gFileTrashAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_trash_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void trashAsync(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileTrashAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Finishes an asynchronous file trashing operation, started with
   /// g_file_trash_async().
   static final _gFileTrashFinish =
@@ -3551,6 +6052,85 @@ final class GFile {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Unmounts a file of type G_FILE_TYPE_MOUNTABLE.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_unmount_mountable_finish() to get
+  /// the result of the operation.
+  static final _gFileUnmountMountable =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_unmount_mountable')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void unmountMountable(
+    GMountUnmountFlags flags,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileUnmountMountable(
+        this.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
     }
   }
 
@@ -3589,6 +6169,89 @@ final class GFile {
       return (_ret) != 0;
     } finally {
       calloc.free(_error);
+    }
+  }
+
+  /// Unmounts a file of type %G_FILE_TYPE_MOUNTABLE.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  ///
+  /// When the operation is finished, @callback will be called.
+  /// You can then call g_file_unmount_mountable_finish() to get
+  /// the result of the operation.
+  static final _gFileUnmountMountableWithOperation =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_unmount_mountable_with_operation')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void unmountMountableWithOperation(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gFileUnmountMountableWithOperation(
+        this.handle,
+        flags.value,
+        mountOperation?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
     }
   }
 
@@ -3746,6 +6409,164 @@ final class GFile {
   static GFile newForUri(String uri) {
     return withNativeString(uri, (nativeUri) {
       return GFile.fromPointer(_gFileNewForUri(nativeUri.cast<Utf8>()));
+    });
+  }
+
+  /// Asynchronously opens a file in the preferred directory for temporary files
+  /// (as returned by g_get_tmp_dir()) as g_file_new_tmp().
+  ///
+  /// @tmpl should be a string in the GLib file name encoding
+  /// containing a sequence of six 'X' characters, and containing no
+  /// directory components. If it is %NULL, a default template is used.
+  static final _gFileNewTmpAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_new_tmp_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void newTmpAsync(
+    String? tmpl,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(tmpl, (nativeTmpl) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileNewTmpAsync(
+          nativeTmpl.cast<Utf8>(),
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
+      }
+    });
+  }
+
+  /// Asynchronously creates a directory in the preferred directory for
+  /// temporary files (as returned by g_get_tmp_dir()) as g_dir_make_tmp().
+  ///
+  /// @tmpl should be a string in the GLib file name encoding
+  /// containing a sequence of six 'X' characters, and containing no
+  /// directory components. If it is %NULL, a default template is used.
+  static final _gFileNewTmpDirAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_file_new_tmp_dir_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void newTmpDirAsync(
+    String? tmpl,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(tmpl, (nativeTmpl) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gFileNewTmpDirAsync(
+          nativeTmpl.cast<Utf8>(),
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
+      }
     });
   }
 

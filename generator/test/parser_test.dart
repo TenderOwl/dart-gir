@@ -317,9 +317,11 @@ void main() {
   });
 
   group('filtering and attributes', () {
-    test('introspectable="0" elements are skipped', () {
+    test('introspectable="0" classes are skipped but functions are kept',
+        () {
       final repo = parser.parse(gir('''
-    <function name="hidden" c:identifier="test_hidden" introspectable="0">
+    <function name="hidden_macro" c:identifier="test_hidden_macro"
+        introspectable="0" shadowed-by="hidden_full">
       <return-value><type name="none" c:type="void"/></return-value>
     </function>
     <function name="visible" c:identifier="test_visible">
@@ -327,7 +329,15 @@ void main() {
     </function>
     <class name="HiddenClass" c:type="TestHiddenClass" introspectable="0"/>
 '''));
-      expect(repo.namespace.functions.map((f) => f.name), ['visible']);
+      // Both functions are kept so CallableEmitter can emit a skip entry
+      // naming the canonical sibling (or just `introspectable=0`).
+      expect(repo.namespace.functions.map((f) => f.name),
+          ['hidden_macro', 'visible']);
+      expect(repo.namespace.functions[0].introspectable, isFalse);
+      expect(repo.namespace.functions[0].shadowedBy, 'hidden_full');
+      expect(repo.namespace.functions[1].introspectable, isTrue);
+      // Classes with introspectable="0" are still dropped — only
+      // <function> at the namespace level gets the keep-and-skip treatment.
       expect(repo.namespace.classes, isEmpty);
     });
 

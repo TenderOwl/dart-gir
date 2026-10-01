@@ -215,6 +215,74 @@ final class GMainContext {
           );
   }
 
+  /// Invokes a function in such a way that @context is owned during the
+  /// invocation of @function.
+  ///
+  /// This function is the same as [method@GLib.MainContext.invoke] except that it
+  /// lets you specify the priority in case @function ends up being
+  /// scheduled as an idle and also lets you give a [callback@GLib.DestroyNotify]
+  /// for @data.
+  ///
+  /// The @notify function should not assume that it is called from any particular
+  /// thread or with any particular context acquired.
+  static final _gMainContextInvokeFull =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_main_context_invoke_full')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void invokeFull(
+    int priority,
+    int Function(ffi.Pointer<ffi.Void>) function_,
+    ffi.Pointer<ffi.Void> data, [
+    void Function(ffi.Pointer<ffi.Void>)? notify,
+  ]) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(function_, exceptionalReturn: 0);
+    final _nc4 = notify == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(notify);
+    try {
+      _gMainContextInvokeFull(
+        this.handle,
+        priority,
+        _nc2.nativeFunction,
+        data,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc2.close();
+      _nc4?.close();
+    }
+  }
+
   /// Determines whether this thread holds the (recursive)
   /// ownership of this [struct@GLib.MainContext].
   ///

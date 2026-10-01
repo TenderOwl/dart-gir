@@ -385,6 +385,86 @@ final class GAppInfo {
     }
   }
 
+  /// Async version of [method@Gio.AppInfo.launch_uris].
+  ///
+  /// The @callback is invoked immediately after the application launch, but it
+  /// waits for activation in case of D-Bus–activated applications and also provides
+  /// extended error information for sandboxed applications, see notes for
+  /// [func@Gio.AppInfo.launch_default_for_uri_async].
+  static final _gAppInfoLaunchUrisAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_app_info_launch_uris_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void launchUrisAsync(
+    GList? uris,
+    GAppLaunchContext? context,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc4 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gAppInfoLaunchUrisAsync(
+        this.handle,
+        uris?.handle ?? ffi.nullptr,
+        context?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc4?.close();
+    }
+  }
+
   /// Finishes a [method@Gio.AppInfo.launch_uris_async] operation.
   static final _gAppInfoLaunchUrisFinish =
       gioLookup<
@@ -718,6 +798,81 @@ final class GAppInfo {
     });
   }
 
+  /// Asynchronously gets the default [iface@Gio.AppInfo] for a given content
+  /// type.
+  static final _gAppInfoGetDefaultForTypeAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_app_info_get_default_for_type_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void getDefaultForTypeAsync(
+    String contentType,
+    bool mustSupportUris,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(contentType, (nativeContentType) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gAppInfoGetDefaultForTypeAsync(
+          nativeContentType.cast<Utf8>(),
+          mustSupportUris ? 1 : 0,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
+      }
+    });
+  }
+
   /// Finishes a default [iface@Gio.AppInfo] lookup started by
   /// [func@Gio.AppInfo.get_default_for_type_async].
   ///
@@ -770,6 +925,79 @@ final class GAppInfo {
           : GAppInfo.fromPointer(
               _gAppInfoGetDefaultForUriScheme(nativeUriScheme.cast<Utf8>()),
             );
+    });
+  }
+
+  /// Asynchronously gets the default application for handling URIs with
+  /// the given URI scheme. A URI scheme is the initial part
+  /// of the URI, up to but not including the `:`, e.g. `http`,
+  /// `ftp` or `sip`.
+  static final _gAppInfoGetDefaultForUriSchemeAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_app_info_get_default_for_uri_scheme_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void getDefaultForUriSchemeAsync(
+    String uriScheme,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(uriScheme, (nativeUriScheme) {
+      final _nc3 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gAppInfoGetDefaultForUriSchemeAsync(
+          nativeUriScheme.cast<Utf8>(),
+          cancellable?.handle ?? ffi.nullptr,
+          _nc3?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc3?.close();
+      }
     });
   }
 
@@ -885,6 +1113,88 @@ final class GAppInfo {
         return (_ret) != 0;
       } finally {
         calloc.free(_error);
+      }
+    });
+  }
+
+  /// Async version of [func@Gio.AppInfo.launch_default_for_uri].
+  ///
+  /// This version is useful if you are interested in receiving error information
+  /// in the case where the application is sandboxed and the portal may present an
+  /// application chooser dialog to the user.
+  ///
+  /// This is also useful if you want to be sure that the D-Bus–activated
+  /// applications are really started before termination and if you are interested
+  /// in receiving error information from their activation.
+  static final _gAppInfoLaunchDefaultForUriAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_app_info_launch_default_for_uri_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void launchDefaultForUriAsync(
+    String uri,
+    GAppLaunchContext? context,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeString(uri, (nativeUri) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gAppInfoLaunchDefaultForUriAsync(
+          nativeUri.cast<Utf8>(),
+          context?.handle ?? ffi.nullptr,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
       }
     });
   }

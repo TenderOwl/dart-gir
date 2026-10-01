@@ -18,6 +18,7 @@ class TypeBridge {
     this.isString = false,
     this.isStringList = false,
     this.isVoid = false,
+    this.isNullableCallback = false,
     this.outPointee,
     this.outExtract,
   });
@@ -47,6 +48,12 @@ class TypeBridge {
 
   /// `void` return.
   final bool isVoid;
+
+  /// `true` when this bridge is for a callback-typed parameter that may be
+  /// `null` at the call site. The generator emits a conditional allocation
+  /// so the `NativeCallable` is only constructed when the user actually
+  /// supplied a function; on `null` the native side receives `ffi.nullptr`.
+  final bool isNullableCallback;
 
   /// Pointee type to `malloc` for an out parameter, null when the type
   /// cannot appear as an out parameter.
@@ -498,21 +505,14 @@ class EmitContext {
           // generator already wraps the return via `fromNative`.
           return (null, 'callback return type (${ref.name})');
         }
-        if (nullable) {
-          // Nullable callback parameters need lifetime handling for the
-          // wrapping NativeCallable. None of the GIR files currently in
-          // scope declare a nullable callback parameter; revisit when a
-          // real case appears.
-          return (null, 'nullable callback parameter (${ref.name})');
-        }
-        return _bridgeForCallback(ref);
+        return _bridgeForCallback(ref, nullable: nullable);
       case TypeKind.opaque:
       case TypeKind.unsupported:
         return (null, m.reason ?? 'unsupported type (${ref.name})');
     }
   }
 
-  /// Builds the bridge for a non-nullable callback-typed parameter.
+  /// Builds the bridge for a callback-typed parameter.
   ///
   /// The wrapper signature uses the inline Dart signature (not the typedef
   /// name) so that the parameter has a concrete type Dart FFI's
@@ -520,7 +520,15 @@ class EmitContext {
   /// documentation and for variable declarations; callers can pass either an
   /// inline-typed function or a typedef-typed value (Dart's structural
   /// typing carries the inline type through).
-  (TypeBridge?, String?) _bridgeForCallback(GirTypeRef ref) {
+  ///
+  /// When [nullable] is true the bridge emits a conditional `NativeCallable`
+  /// allocation: when the user passes a function the wrapper allocates one
+  /// and disposes it in a `finally`; when the user passes `null` the native
+  /// side receives `ffi.nullptr` and no `NativeCallable` is created.
+  (TypeBridge?, String?) _bridgeForCallback(
+    GirTypeRef ref, {
+    bool nullable = false,
+  }) {
     final decl = findDeclaration(ref.name);
     if (decl == null) {
       return (null, 'callback ${ref.name} not found');
@@ -566,6 +574,11 @@ class EmitContext {
     // a local, passes `.nativeFunction` to the native call, and disposes
     // via `.close()` in a finally block — see [CallableEmitter].
     //
+    // For nullable callbacks the `toNative` expression returns either
+    // `null` or a `NativeCallable` instance. The wrapper emits the same
+    // lifecycle, with `?.nativeFunction ?? ffi.nullptr` at the call site
+    // and `?.close()` in the finally — see [CallableEmitter].
+    //
     // The user-facing typedef (`GCompareFunc`) is still emitted for
     // documentation and for typed variable declarations; the generated
     // wrapper parameter uses the inline signature so that callers can pass
@@ -576,20 +589,27 @@ class EmitContext {
       label: '${declNs.name}.${ref.name} (return)',
     );
     final hasSentinel = _callbackExceptionalReturn(retSig) != null;
+    final sentinelArg = hasSentinel
+        ? ', exceptionalReturn: ${_callbackExceptionalReturn(retSig)}'
+        : '';
     final String Function(String) toNative;
-    toNative = (e) => hasSentinel
-        ? 'ffi.NativeCallable<$sig>.isolateLocal($e, '
-              'exceptionalReturn: ${_callbackExceptionalReturn(retSig)})'
-        : 'ffi.NativeCallable<$sig>.isolateLocal($e)';
+    if (nullable) {
+      toNative = (e) =>
+          '$e == null ? null : ffi.NativeCallable<$sig>.isolateLocal($e$sentinelArg)';
+    } else {
+      toNative = (e) =>
+          'ffi.NativeCallable<$sig>.isolateLocal($e$sentinelArg)';
+    }
     return (
       TypeBridge(
-        wrapperType: userSig,
+        wrapperType: nullable ? '$userSig?' : userSig,
         // `_isCallbackBridge` in callable.dart keys off this nativeType to
         // emit the NativeCallable allocation + close() lifecycle.
         nativeType: 'ffi.Pointer<ffi.NativeFunction<$sig>>',
         dartFfiType: 'ffi.Pointer<ffi.NativeFunction<$sig>>',
         toNative: toNative,
         fromNative: (e) => e, // callbacks are never returned by GLib
+        isNullableCallback: nullable,
       ),
       null,
     );

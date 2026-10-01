@@ -54,6 +54,94 @@ final class GtkTreeSortable {
     return (_gtkTreeSortableHasDefaultSortFunc(this.handle)) != 0;
   }
 
+  /// Sets the default comparison function used when sorting to be @sort_func.
+  /// If the current sort column id of @sortable is
+  /// %GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID, then the model will sort using
+  /// this function.
+  ///
+  /// If @sort_func is %NULL, then there will be no default comparison function.
+  /// This means that once the model  has been sorted, it can’t go back to the
+  /// default state. In this case, when the current sort column id of @sortable
+  /// is %GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID, the model will be unsorted.
+  static final _gtkTreeSortableSetDefaultSortFunc =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gtk_tree_sortable_set_default_sort_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setDefaultSortFunc(
+    int Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )
+    sortFunc,
+    ffi.Pointer<ffi.Void> userData, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    final _nc1 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+          )
+        >.isolateLocal(sortFunc, exceptionalReturn: 0);
+    final _nc3 = destroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroy);
+    try {
+      _gtkTreeSortableSetDefaultSortFunc(
+        this.handle,
+        _nc1.nativeFunction,
+        userData,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc1.close();
+      _nc3?.close();
+    }
+  }
+
   /// Sets the current sort column to be @sort_column_id. The @sortable will
   /// resort itself to reflect this change, after emitting a
   /// `GtkTreeSortable::sort-column-changed` signal. @sort_column_id may either be
@@ -72,6 +160,92 @@ final class GtkTreeSortable {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
   void setSortColumnId(int sortColumnId, GtkSortType order) {
     _gtkTreeSortableSetSortColumnId(this.handle, sortColumnId, order.value);
+  }
+
+  /// Sets the comparison function used when sorting to be @sort_func. If the
+  /// current sort column id of @sortable is the same as @sort_column_id, then
+  /// the model will sort using this function.
+  static final _gtkTreeSortableSetSortFunc =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gtk_tree_sortable_set_sort_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setSortFunc(
+    int sortColumnId,
+    int Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )
+    sortFunc,
+    ffi.Pointer<ffi.Void> userData, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+          )
+        >.isolateLocal(sortFunc, exceptionalReturn: 0);
+    final _nc4 = destroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroy);
+    try {
+      _gtkTreeSortableSetSortFunc(
+        this.handle,
+        sortColumnId,
+        _nc2.nativeFunction,
+        userData,
+        _nc4?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc2.close();
+      _nc4?.close();
+    }
   }
 
   /// Emits a `GtkTreeSortable::sort-column-changed` signal on @sortable.

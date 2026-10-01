@@ -27,6 +27,32 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 - **`g_free` binding in `package:gir_ffi`** via
   `DynamicLibrary.process().lookup('g_free')` for transferring
   ownership of `transfer-none` strings out of the trampoline.
+- **GLib root-level namespace functions are now surfaced**:
+  `g_get_user_data_dir`, `g_get_user_cache_dir`, `g_get_user_config_dir`,
+  `g_get_user_name`, `g_get_real_name`, `g_get_home_dir`,
+  `g_idle_add_full`, `g_timeout_add_full`, `g_timeout_add_seconds_full`,
+  `g_io_add_watch_full`, `g_child_watch_add_full`, `g_source_set_callback`,
+  `g_source_set_funcs`, and similar `_full`-suffixed siblings of the
+  non-introspectable convenience macros are now real Dart wrappers. Their
+  non-`_full` convenience macros (`g_idle_add`, `g_timeout_add`,
+  `g_io_add_watch`, `g_child_watch_add`, `g_log_set_handler`, …) are
+  recorded in `skip_report.txt` with reason
+  `introspectable=0 (C macro; use <sibling>)`, naming the canonical
+  wrapper the user should call. See
+  [skip-categories.md](./docs/skip-categories.md#introspectable0--introspectable0-c-macro-use-sibling).
+- **Nullable callback parameters** (`nullable="1" allow-none="1"` on a
+  `<parameter>` whose `<type>` is a `<callback>`) are now emitted. The
+  wrapper parameter becomes nullable (`FuncType?`) and the
+  `NativeCallable` allocation, call-site argument, and
+  `finally`-block close are all conditional on the user supplying a
+  function. Without this change, 17 GLib skip entries
+  (`g_idle_add_full`, `g_timeout_add_full`, `g_io_add_watch_full`,
+  `g_child_watch_add_full`, `g_source_set_callback`,
+  `g_source_set_funcs`, …) were unbindable. The lifetime model is only
+  safe for callbacks invoked **synchronously** inside the call; see
+  [emission.md](./docs/emission.md#callback-parameters) for the full
+  pattern and the caveat about long-lived callbacks (idle sources,
+  timeout sources, signal handlers).
 - **`docs/`** with design references: [architecture](./docs/architecture.md),
   [emission](./docs/emission.md), [type-system](./docs/type-system.md),
   [signals](./docs/signals.md), [skip-categories](./docs/skip-categories.md).
@@ -36,6 +62,12 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   connections) and
   [`packages/gobject/test/typed_signal_test.dart`](./packages/gobject/test/typed_signal_test.dart)
   (smoke test verifying the public `connectSignal` is reachable).
+- **Runtime tests for namespace functions and nullable callbacks**:
+  [`packages/glib/test/namespace_functions_smoke_test.dart`](./packages/glib/test/namespace_functions_smoke_test.dart)
+  exercises `g_get_user_data_dir`, `g_get_user_name`, `g_get_real_name`
+  at runtime and verifies that the `idleAddFull` / `timeoutAddFull`
+  wrappers accept a top-level Dart callback plus nullable
+  `data` / `notify` parameters.
 
 ### Changed
 - **`ClassEmitter` walks the parent chain** to emit inherited typed
@@ -70,6 +102,13 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `connectSignal`** to reflect the public API surface; the runtime
   tests are unchanged in spirit (register a custom signal on
   `GObject`, connect via the public API, emit, disconnect).
+- **Parser keeps namespace-level `<function>` elements with
+  `introspectable="0"`** so `CallableEmitter.emit` can emit a precise
+  skip entry. Previously the parser silently dropped them at the
+  outer guard, leaving the macros with no trace in `skip_report.txt`.
+  Classes, records, and other top-level elements with
+  `introspectable="0"` are still dropped at the parser level — only
+  `<function>` gets the keep-and-skip treatment.
 
 ### Fixed
 - **Inheritance walker stop-at-local-name**: `Adw.Application` →

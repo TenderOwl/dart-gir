@@ -189,6 +189,83 @@ final class GtkFontChooser {
     return (_gtkFontChooserGetShowPreviewEntry(this.handle)) != 0;
   }
 
+  /// Adds a filter function that decides which fonts to display
+  /// in the font chooser.
+  static final _gtkFontChooserSetFilterFunc =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gtk_font_chooser_set_filter_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setFilterFunc(
+    int Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    filter,
+    ffi.Pointer<ffi.Void> userData,
+    void Function(ffi.Pointer<ffi.Void>) destroy,
+  ) {
+    final _nc1 = filter == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(filter, exceptionalReturn: 0);
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(destroy);
+    try {
+      _gtkFontChooserSetFilterFunc(
+        this.handle,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        userData,
+        _nc3.nativeFunction,
+      );
+    } finally {
+      _nc1?.close();
+      _nc3.close();
+    }
+  }
+
   /// Sets the currently-selected font.
   static final _gtkFontChooserSetFont =
       gtk4Lookup<

@@ -463,6 +463,90 @@ void showUri(GtkWindow? parent, String uri, int timestamp) {
   });
 }
 
+/// This function launches the default application for showing
+/// a given uri.
+///
+/// The @callback will be called when the launch is completed.
+///
+/// This is the recommended call to be used as it passes information
+/// necessary for sandbox helpers to parent their dialogs properly.
+final _gtkShowUriFull =
+    gtk4Lookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Uint32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('gtk_show_uri_full')
+        .asFunction<
+          void Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Void Function(
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                )
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+          )
+        >();
+void showUriFull(
+  GtkWindow? parent,
+  String uri,
+  int timestamp,
+  GCancellable? cancellable,
+  void Function(
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+  )?
+  callback,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  withNativeString(uri, (nativeUri) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gtkShowUriFull(
+        parent?.handle ?? ffi.nullptr,
+        nativeUri.cast<Utf8>(),
+        timestamp,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  });
+}
+
 /// Finishes the gtk_show_uri() call and returns the result
 /// of the operation.
 final _gtkShowUriFullFinish =

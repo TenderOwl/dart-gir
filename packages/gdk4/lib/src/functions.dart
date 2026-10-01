@@ -164,6 +164,91 @@ void cairoSetSourceRgba(CairoContext cr, GdkRGBA rgba) {
   _gdkCairoSetSourceRgba(cr.handle, rgba.handle);
 }
 
+/// Reads content from the given input stream and deserialize it, asynchronously.
+///
+/// The default I/O priority is `G_PRIORITY_DEFAULT` (i.e. 0), and lower numbers
+/// indicate a higher priority.
+final _gdkContentDeserializeAsync =
+    gdk4Lookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Size,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('gdk_content_deserialize_async')
+        .asFunction<
+          void Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<Utf8>,
+            int,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Void Function(
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                )
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+          )
+        >();
+void contentDeserializeAsync(
+  GInputStream stream,
+  String mimeType,
+  int type_,
+  int ioPriority,
+  GCancellable? cancellable,
+  void Function(
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+  )?
+  callback,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  withNativeString(mimeType, (nativeMimeType) {
+    final _nc6 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkContentDeserializeAsync(
+        stream.handle,
+        nativeMimeType.cast<Utf8>(),
+        type_,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc6?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc6?.close();
+    }
+  });
+}
+
 /// Registers a function to deserialize object of a given type.
 ///
 /// Since 4.20, when looking up a deserializer to use, GTK will
@@ -290,6 +375,91 @@ void contentRegisterSerializer(
     } finally {
       _nc3.close();
       _nc5.close();
+    }
+  });
+}
+
+/// Serialize content and write it to the given output stream, asynchronously.
+///
+/// The default I/O priority is %G_PRIORITY_DEFAULT (i.e. 0), and lower numbers
+/// indicate a higher priority.
+final _gdkContentSerializeAsync =
+    gdk4Lookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('gdk_content_serialize_async')
+        .asFunction<
+          void Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Void>,
+            int,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Void Function(
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                )
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+          )
+        >();
+void contentSerializeAsync(
+  GOutputStream stream,
+  String mimeType,
+  GValue value,
+  int ioPriority,
+  GCancellable? cancellable,
+  void Function(
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+  )?
+  callback,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  withNativeString(mimeType, (nativeMimeType) {
+    final _nc6 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gdkContentSerializeAsync(
+        stream.handle,
+        nativeMimeType.cast<Utf8>(),
+        value.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc6?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc6?.close();
     }
   });
 }

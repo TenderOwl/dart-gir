@@ -76,6 +76,41 @@ is emitted; the rest are skipped.
 A class with two unnamed constructors. The GIR corpus shouldn't have
 these; if it does, open an issue.
 
+### `introspectable=0` / `introspectable=0 (C macro; use <sibling>)`
+
+The GIR element is marked `introspectable="0"`. GLib uses this attribute
+to indicate that the C declaration is a convenience macro that expands
+to the canonical sibling — emitting a Dart wrapper around the macro
+would either duplicate the C ABI (drift risk) or silently route to the
+wrong symbol.
+
+Two variants of the reason show up in the skip report:
+
+- `introspectable=0 (C macro; use <sibling>)` — the macro has a sibling
+  declared via `shadows` / `shadowed-by`. Use the sibling instead, which
+  the generator emits as a real wrapper. Examples: `g_idle_add` →
+  `g_idle_add_full`, `g_timeout_add` → `g_timeout_add_full`,
+  `g_io_add_watch` → `g_io_add_watch_full`, `g_child_watch_add` →
+  `g_child_watch_add_full`, `g_log_set_handler` → `g_log_set_handler_full`.
+- `introspectable=0` — bare reason, no canonical sibling. Most often a
+  helper macro or a function whose ABI is unsafe to bind directly
+  (`g_assertion_message_*`, `g_clear_pointer`, `g_steal_pointer`, …). If
+  you genuinely need one, raise an issue with the GIR excerpt.
+
+In both cases the entry lists the symbol under the `[callable]`
+category so you can grep for the exact name:
+
+```
+[callable] GLib.idleAdd — introspectable=0 (C macro; use idle_add_full)
+[callable] GLib.clearPointer — introspectable=0
+```
+
+Namespace-level `<function>` elements with `introspectable="0"` are kept
+in the parsed model (not silently dropped) so the emitter can surface a
+precise reason. Classes, records, and other top-level elements with
+`introspectable="0"` are still dropped at the parser level — they have
+no useful binding to surface.
+
 ### `moved to <X>` / `shadowed by <X>`
 
 The C function was renamed. Skipped — call the canonical replacement.

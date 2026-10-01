@@ -204,6 +204,118 @@ void main() {
       expect(code, isNull);
       expect(report.entries.single.reason, contains('array'));
     });
+
+    test(
+      'skips introspectable="0" function naming the canonical sibling',
+      () {
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'idle_add',
+          cIdentifier: 'g_idle_add',
+          introspectable: false,
+          shadowedBy: 'idle_add_full',
+          returnType: const GirTypeRef(name: 'guint', cType: 'guint'),
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn);
+        expect(code, isNull);
+        expect(report.entries.single.category, 'callable');
+        expect(
+          report.entries.single.reason,
+          'introspectable=0 (C macro; use idle_add_full)',
+        );
+      },
+    );
+
+    test(
+      'skips introspectable="0" function without a sibling with bare reason',
+      () {
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'some_macro',
+          cIdentifier: 'g_some_macro',
+          introspectable: false,
+          returnType: const GirTypeRef(name: 'none'),
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn);
+        expect(code, isNull);
+        expect(report.entries.single.reason, 'introspectable=0');
+      },
+    );
+
+    test('emits nullable callback parameter with conditional NativeCallable',
+        () {
+      final report = GenerationReport();
+      // Callbacks declared in the same namespace so the bridge resolves.
+      final sourceFunc = GirCallback(
+        name: 'SourceFunc',
+        cType: 'GSourceFunc',
+        returnType: const GirTypeRef(name: 'gboolean'),
+        parameters: const [
+          GirParameter(
+            name: 'data',
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+          ),
+        ],
+      );
+      final destroyNotify = GirCallback(
+        name: 'DestroyNotify',
+        cType: 'GDestroyNotify',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'data',
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+          ),
+        ],
+      );
+      final fn = GirFunction(
+        name: 'idle_add_full',
+        cIdentifier: 'g_idle_add_full',
+        returnType: const GirTypeRef(name: 'guint', cType: 'guint'),
+        parameters: const [
+          GirParameter(
+            name: 'priority',
+            type: GirTypeRef(name: 'gint', cType: 'gint'),
+          ),
+          GirParameter(
+            name: 'function_',
+            type: GirTypeRef(name: 'SourceFunc', cType: 'GSourceFunc'),
+          ),
+          GirParameter(
+            name: 'data',
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            nullable: true,
+          ),
+          GirParameter(
+            name: 'notify',
+            type: GirTypeRef(name: 'DestroyNotify', cType: 'GDestroyNotify'),
+            nullable: true,
+          ),
+        ],
+      );
+      final ns = _glibNs(
+        functions: [fn],
+        callbacks: [sourceFunc, destroyNotify],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(report.totalSkipped, 0);
+      // Wrapper parameter type is nullable for the callback.
+      expect(code, contains('void Function(ffi.Pointer<ffi.Void>)? notify'));
+      // Trailing optional positional parameter for the nullable callback.
+      expect(code, contains('[void Function(ffi.Pointer<ffi.Void>)? notify'));
+      // Native side gets a null pointer when the user passes nothing —
+      // match on the actual variable name (`_nc4`) used for the 4th param.
+      expect(code, contains('_nc4?.nativeFunction ?? ffi.nullptr'));
+      // Lifecycle: NativeCallable only allocated when non-null; close is
+      // also conditional so we don't dereference a null instance.
+      expect(code, contains('notify == null ? null'));
+      expect(code, contains('_nc4?.close();'));
+    });
   });
 
   group('FunctionEmitter.emitConstant', () {
