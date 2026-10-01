@@ -1,24 +1,25 @@
 # Skip report for package gio (Gio 2.0)
-Total skipped: 220
+Total skipped: 259
 
 ## By category
-callable: 204
-method: 6
+callable: 224
+method: 20
+renamed: 8
 signal: 6
-renamed: 3
 callback: 1
 
 ## By reason
-return: string list return type (null): 27
-parameter buffer: array types are handled in a later phase: 20
+return: string list return type (null): 32
+parameter buffer: array types are handled in a later phase: 24
+name collision: 20
+parameter vectors: array types are handled in a later phase: 10
 parameter length: nullable scalar parameter (gsize): 9
-parameter vectors: array types are handled in a later phase: 8
+parameter entries: array types are handled in a later phase: 8
 parameter data: array types are handled in a later phase: 7
 return: array types are handled in a later phase: 7
-name collision: 6
+parameter messages: array types are handled in a later phase: 6
 parameter contents: array types are handled in a later phase: 5
-parameter entries: array types are handled in a later phase: 4
-parameter messages: array types are handled in a later phase: 4
+parameter inbuf: array types are handled in a later phase: 4
 parameter bytes: array types are handled in a later phase: 3
 introspectable=0: 3
 parameter out_serial: nullable scalar parameter (guint32): 3
@@ -33,8 +34,7 @@ parameter issuer_raw_dn: array types are handled in a later phase: 2
 parameter value: array types are handled in a later phase: 2
 parameter length: nullable scalar parameter (gint): 2
 parameter path: array types are handled in a later phase: 2
-moved to DtlsClientConnection.new: 1
-moved to DBusAnnotationInfo.lookup: 1
+moved to File.new_for_commandline_arg: 1
 moved to DBusError.encode_gerror: 1
 moved to DBusError.get_remote_error: 1
 moved to DBusError.is_remote_error: 1
@@ -44,12 +44,12 @@ moved to DBusError.register_error: 1
 moved to DBusError.register_error_domain: 1
 moved to DBusError.strip_remote_error: 1
 moved to DBusError.unregister_error: 1
+moved to AppInfo.create_from_commandline: 1
 moved to AppInfo.get_all: 1
-moved to AppInfo.get_all_for_type: 1
-moved to Action.name_is_valid: 1
+moved to DtlsClientConnection.new: 1
 moved to DtlsServerConnection.new: 1
 moved to File.new_build_filenamev: 1
-moved to File.new_for_commandline_arg: 1
+moved to Action.name_is_valid: 1
 moved to File.new_for_commandline_arg_and_cwd: 1
 moved to File.new_for_path: 1
 moved to File.new_for_uri: 1
@@ -67,16 +67,16 @@ moved to IOExtensionPoint.lookup: 1
 moved to IOExtensionPoint.register: 1
 moved to MemoryMonitor.dup_default: 1
 moved to NetworkMonitor.get_default: 1
-moved to AppInfo.get_default_for_type: 1
+moved to AppInfo.get_all_for_type: 1
 moved to PowerProfileMonitor.dup_default: 1
 moved to Proxy.get_default_for_protocol: 1
 moved to ProxyResolver.get_default: 1
 moved to ResolverError.quark: 1
 moved to ResourceError.quark: 1
 moved to Resource.load: 1
-moved to AppInfo.get_default_for_type_async: 1
+moved to AppInfo.get_default_for_type: 1
 moved to SettingsSchemaSource.get_default: 1
-moved to AppInfo.get_default_for_type_finish: 1
+moved to AppInfo.get_default_for_type_async: 1
 moved to TlsBackend.get_default: 1
 moved to TlsChannelBindingError.quark: 1
 moved to TlsClientConnection.new: 1
@@ -84,45 +84,50 @@ moved to TlsError.quark: 1
 moved to TlsFileDatabase.new: 1
 moved to TlsServerConnection.new: 1
 parameter annotations: array types are handled in a later phase: 1
-array types are handled in a later phase: 1
+moved to AppInfo.get_default_for_type_finish: 1
 parameter non_relocatable: array types are handled in a later phase: 1
 moved to AppInfo.get_default_for_uri_scheme: 1
-parameter files: array types are handled in a later phase: 1
+array types are handled in a later phase: 1
 moved to AppInfo.get_default_for_uri_scheme_async: 1
 parameter argc: nullable scalar parameter (gint): 1
+moved to AppInfo.get_default_for_uri_scheme_finish: 1
+moved to AppInfo.get_fallback_for_type: 1
 return: unknown type: pid_t: 1
 return: unknown type: uid_t: 1
 parameter uid: unknown type: uid_t: 1
 shadowed by register_object_with_closures: 1
-moved to AppInfo.get_default_for_uri_scheme_finish: 1
-moved to AppInfo.get_fallback_for_type: 1
-unsupported arg type at index 3: ?: 1
 moved to AppInfo.get_recommended_for_type: 1
-override-incompatible with ancestor; renamed to readByteDataInputStream: 1
+override-incompatible with ancestor; renamed to getInfoDBusInterfaceSkeleton: 1
 moved to AppInfo.launch_default_for_uri: 1
-parameter type: nullable scalar parameter (FileAttributeType): 1
+unsupported arg type at index 3: ?: 1
 moved to AppInfo.launch_default_for_uri_async: 1
+override-incompatible with ancestor; renamed to readByteDataInputStream: 1
+moved to AppInfo.launch_default_for_uri_finish: 1
+parameter type: nullable scalar parameter (FileAttributeType): 1
+override-incompatible with ancestor; renamed to useIOModule: 1
+moved to AppInfo.reset_type_associations: 1
 parameter additions: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getDataMemoryOutputStream: 1
 override-incompatible with ancestor; renamed to stealDataMemoryOutputStream: 1
 unsupported arg type at index 1: GLib.Array: 1
-moved to AppInfo.launch_default_for_uri_finish: 1
-moved to AppInfo.reset_type_associations: 1
-parameter keys: array types are handled in a later phase: 1
 moved to AsyncInitable.newv_async: 1
+parameter keys: array types are handled in a later phase: 1
+shadowed by bus_own_name_with_closures: 1
+override-incompatible with ancestor; renamed to conditionWaitSocket: 1
+override-incompatible with ancestor; renamed to receiveMessagesSocket: 1
+override-incompatible with ancestor; renamed to sendMessagesSocket: 1
 parameter iconnames: array types are handled in a later phase: 1
-moved to Action.parse_detailed_name: 1
 shadowed by bus_own_name_on_connection_with_closures: 1
-parameter fds: array types are handled in a later phase: 1
 shadowed by bus_watch_name_with_closures: 1
+parameter fds: array types are handled in a later phase: 1
 shadowed by bus_watch_name_on_connection_with_closures: 1
-parameter inbuf: array types are handled in a later phase: 1
+moved to Action.parse_detailed_name: 1
 shadowed by copy_async_with_closures: 1
 moved to Action.print_detailed_name: 1
-moved to AppInfo.create_from_commandline: 1
+moved to DBusAnnotationInfo.lookup: 1
 shadowed by move_async_with_closures: 1
 parameter parameters: array types are handled in a later phase: 1
-shadowed by bus_own_name_with_closures: 1
+parameter files: array types are handled in a later phase: 1
 
 ## First 50 entries
 [callable] Gio.actionNameIsValid — moved to Action.name_is_valid

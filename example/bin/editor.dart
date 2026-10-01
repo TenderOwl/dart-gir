@@ -13,11 +13,13 @@ void main(List<String> args) {
   app.run(args);
 }
 
+/// Implements a simple text editor using GTK4 and Adwaita.
+/// https://developer.gnome.org/documentation/tutorials/beginners/getting_started.html
 class EditorApp {
   late AdwApplication app;
   late AdwApplicationWindow appWindow;
   late AdwToastOverlay toastOverlay;
-  late GtkTextView textView;
+  late GtkTextView mainTextView;
   late GtkTextBuffer textBuffer;
 
   GtkFileDialog? dlg;
@@ -47,18 +49,22 @@ class EditorApp {
       ..setDefaultSize(800, 600)
       ..setTitle('Editor')
       ..setContent(buildContentView());
+
+    final openAction = GSimpleAction('open', null)
+      ..onActivate((_) {
+        dlg = GtkFileDialog();
+        dlg!.openCallback(appWindow, null, onFileDialogClosed);
+      });
+    appWindow.addAction(GAction.fromPointer(openAction.handle));
     appWindow.present();
   }
 
   GtkWidget buildContentView() {
     toastOverlay = AdwToastOverlay();
     final header = AdwHeaderBar();
-    final openButton = GtkButton.fromIconName('folder-open-symbolic')
+    final openButton = GtkButton.withLabel('Open')
       ..setTooltipText('Open File')
-      ..onClicked(() {
-        dlg = GtkFileDialog();
-        dlg!.openCallback(appWindow, null, onFileDialogClosed);
-      });
+      ..setActionName('win.open');
     header.packStart(openButton);
 
     final saveButton = GtkButton.fromIconName('document-save-symbolic')
@@ -73,16 +79,18 @@ class EditorApp {
 
     // Initialize text buffer and view
     textBuffer = GtkTextBuffer();
-    textView = GtkTextView()
+    mainTextView = GtkTextView()
       ..setBuffer(textBuffer)
-      ..setLeftMargin(12)
-      ..setRightMargin(12)
-      ..setTopMargin(12)
-      ..setBottomMargin(12);
+      ..setMonospace(true);
 
     final scrollView = GtkScrolledWindow()
+      ..setHexpand(true)
       ..setVexpand(true)
-      ..setChild(textView);
+      ..setMarginStart(6)
+      ..setMarginEnd(6)
+      ..setMarginTop(6)
+      ..setMarginBottom(6)
+      ..setChild(mainTextView);
 
     final contentBox = GtkBox(.vertical, 0)..append(scrollView);
 

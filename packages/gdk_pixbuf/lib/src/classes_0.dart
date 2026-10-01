@@ -2231,4 +2231,256 @@ class GdkPixbuf extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// Checks if two icons are equal.
+  static final _gIconEqual =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_icon_equal')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  bool equal([GIcon? icon2]) {
+    return (_gIconEqual(this.handle, icon2?.handle ?? ffi.nullptr)) != 0;
+  }
+
+  /// Gets a hash for an icon.
+  static final _gIconHash =
+      gdkPixbufLookup<
+            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
+          >('g_icon_hash')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+  int hash() {
+    return _gIconHash(this.handle);
+  }
+
+  /// Serializes a #GIcon into a #GVariant. An equivalent #GIcon can be retrieved
+  /// back by calling g_icon_deserialize() on the returned value.
+  /// As serialization will avoid using raw icon data when possible, it only
+  /// makes sense to transfer the #GVariant between processes on the same machine,
+  /// (as opposed to over the network), and within the same file system namespace.
+  static final _gIconSerialize =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_icon_serialize')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? serialize() {
+    return (_gIconSerialize(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_gIconSerialize(this.handle));
+  }
+
+  /// Loads a loadable icon. For the asynchronous version of this function,
+  /// see g_loadable_icon_load_async().
+  static final _gLoadableIconLoad =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_loadable_icon_load')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GInputStream, String?) load(int size, [GCancellable? cancellable]) {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gLoadableIconLoad(
+        this.handle,
+        size,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GInputStream.fromPointer(_ret),
+        stringFromNative(_out0.value.cast(), free: true)!,
+      );
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Loads an icon asynchronously. To finish this function, see
+  /// g_loadable_icon_load_finish(). For the synchronous, blocking
+  /// version of this function, see g_loadable_icon_load().
+  static final _gLoadableIconLoadAsync =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_loadable_icon_load_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void loadAsync(
+    int size,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc3 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gLoadableIconLoadAsync(
+        this.handle,
+        size,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
+  static final _loadAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _loadAsyncCallbackSeq = 0;
+  static final _loadAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_loadAsyncCallbackTrampoline);
+  static void _loadAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _loadAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [loadAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void loadAsyncCallback(
+    int size,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_loadAsyncCallbackSeq;
+    _loadAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gLoadableIconLoadAsync(
+      this.handle,
+      size,
+      cancellable?.handle ?? ffi.nullptr,
+      _loadAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
+  /// Finishes an asynchronous icon load started in g_loadable_icon_load_async().
+  static final _gLoadableIconLoadFinish =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_loadable_icon_load_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GInputStream, String?) loadFinish(GAsyncResult res) {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gLoadableIconLoadFinish(
+        this.handle,
+        res.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GInputStream.fromPointer(_ret),
+        stringFromNative(_out0.value.cast(), free: true)!,
+      );
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
 }

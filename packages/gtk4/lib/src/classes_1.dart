@@ -723,4 +723,456 @@ class GtkAboutDialog extends GtkWindow {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// Requests the user's screen reader to announce the given message.
+  ///
+  /// This kind of notification is useful for messages that
+  /// either have only a visual representation or that are not
+  /// exposed visually at all, e.g. a notification about a
+  /// successful operation.
+  ///
+  /// Also, by using this API, you can ensure that the message
+  /// does not interrupts the user's current screen reader output.
+  static final _gtkAccessibleAnnounce =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_accessible_announce')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void announce(String message, GtkAccessibleAnnouncementPriority priority) {
+    withNativeString(message, (nativeMessage) {
+      _gtkAccessibleAnnounce(
+        this.handle,
+        nativeMessage.cast<Utf8>(),
+        priority.value,
+      );
+    });
+  }
+
+  /// Retrieves the accessible identifier for the accessible object.
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations.
+  ///
+  /// It is left to the accessible implementation to define the scope
+  /// and uniqueness of the identifier.
+  static final _gtkAccessibleGetAccessibleId =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_accessible_id')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getAccessibleId() {
+    return stringFromNative(
+      (_gtkAccessibleGetAccessibleId(this.handle)).cast(),
+      free: true,
+    );
+  }
+
+  /// Retrieves the accessible parent for an accessible object.
+  ///
+  /// This function returns `NULL` for top level widgets.
+  static final _gtkAccessibleGetAccessibleParent =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_accessible_parent')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getAccessibleParent() {
+    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetAccessibleParent(this.handle),
+          );
+  }
+
+  /// Retrieves the accessible role of an accessible object.
+  static final _gtkAccessibleGetAccessibleRole =
+      gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
+        'gtk_accessible_get_accessible_role',
+      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessibleRole getAccessibleRole() {
+    return GtkAccessibleRole.fromValue(
+      _gtkAccessibleGetAccessibleRole(this.handle),
+    );
+  }
+
+  /// Retrieves the implementation for the given accessible object.
+  static final _gtkAccessibleGetAtContext =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_at_context')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkATContext getAtContext() {
+    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+  }
+
+  /// Queries the coordinates and dimensions of this accessible
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations, e.g. to get the bounds from an ignored
+  /// child widget.
+  static final _gtkAccessibleGetBounds =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_accessible_get_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int, int, int) getBounds() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkAccessibleGetBounds(
+        this.handle,
+        _out0,
+        _out1,
+        _out2,
+        _out3,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value, _out2.value, _out3.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
+  }
+
+  /// Retrieves the first accessible child of an accessible object.
+  static final _gtkAccessibleGetFirstAccessibleChild =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_first_accessible_child')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getFirstAccessibleChild() {
+    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetFirstAccessibleChild(this.handle),
+          );
+  }
+
+  /// Retrieves the next accessible sibling of an accessible object
+  static final _gtkAccessibleGetNextAccessibleSibling =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_next_accessible_sibling')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getNextAccessibleSibling() {
+    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetNextAccessibleSibling(this.handle),
+          );
+  }
+
+  /// Queries a platform state, such as focus.
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations, e.g. to get platform state from an ignored
+  /// child widget, as is the case for `GtkText` wrappers.
+  static final _gtkAccessibleGetPlatformState =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_get_platform_state')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
+  bool getPlatformState(GtkAccessiblePlatformState state) {
+    return (_gtkAccessibleGetPlatformState(this.handle, state.value)) != 0;
+  }
+
+  /// Resets the accessible property to its default value.
+  static final _gtkAccessibleResetProperty =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_property')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetProperty(GtkAccessibleProperty property) {
+    _gtkAccessibleResetProperty(this.handle, property.value);
+  }
+
+  /// Resets the accessible relation to its default value.
+  static final _gtkAccessibleResetRelation =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_relation')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetRelation(GtkAccessibleRelation relation) {
+    _gtkAccessibleResetRelation(this.handle, relation.value);
+  }
+
+  /// Resets the accessible state to its default value.
+  static final _gtkAccessibleResetState =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_state')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetState(GtkAccessibleState state) {
+    _gtkAccessibleResetState(this.handle, state.value);
+  }
+
+  /// Sets the parent and sibling of an accessible object.
+  ///
+  /// This function is meant to be used by accessible implementations that are
+  /// not part of the widget hierarchy, and but act as a logical bridge between
+  /// widgets. For instance, if a widget creates an object that holds metadata
+  /// for each child, and you want that object to implement the `GtkAccessible`
+  /// interface, you will use this function to ensure that the parent of each
+  /// child widget is the metadata object, and the parent of each metadata
+  /// object is the container widget.
+  static final _gtkAccessibleSetAccessibleParent =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_set_accessible_parent')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void setAccessibleParent([
+    GtkAccessible? parent,
+    GtkAccessible? nextSibling,
+  ]) {
+    _gtkAccessibleSetAccessibleParent(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      nextSibling?.handle ?? ffi.nullptr,
+    );
+  }
+
+  /// Updates the next accessible sibling.
+  ///
+  /// That might be useful when a new child of a custom accessible
+  /// is created, and it needs to be linked to a previous child.
+  static final _gtkAccessibleUpdateNextAccessibleSibling =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_update_next_accessible_sibling')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void updateNextAccessibleSibling([GtkAccessible? newSibling]) {
+    _gtkAccessibleUpdateNextAccessibleSibling(
+      this.handle,
+      newSibling?.handle ?? ffi.nullptr,
+    );
+  }
+
+  /// Informs ATs that the platform state has changed.
+  ///
+  /// This function should be used by `GtkAccessible` implementations that
+  /// have a platform state but are not widgets. Widgets handle platform
+  /// states automatically.
+  static final _gtkAccessibleUpdatePlatformState =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_update_platform_state')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void updatePlatformState(GtkAccessiblePlatformState state) {
+    _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Gets the ID of the @buildable object.
+  ///
+  /// `GtkBuilder` sets the name based on the ID attribute
+  /// of the `<object>` tag used to construct the @buildable.
+  static final _gtkBuildableGetBuildableId =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_buildable_get_buildable_id')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getBuildableId() {
+    return stringFromNative(
+      (_gtkBuildableGetBuildableId(this.handle)).cast(),
+      free: false,
+    );
+  }
+
+  /// Returns the renderer that is used for this `GtkNative`.
+  static final _gtkNativeGetRenderer =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_native_get_renderer')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GskRenderer? getRenderer() {
+    return (_gtkNativeGetRenderer(this.handle)) == ffi.nullptr
+        ? null
+        : GskRenderer.fromPointer(_gtkNativeGetRenderer(this.handle));
+  }
+
+  /// Returns the surface of this `GtkNative`.
+  static final _gtkNativeGetSurface =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_native_get_surface')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkSurface? getSurface() {
+    return (_gtkNativeGetSurface(this.handle)) == ffi.nullptr
+        ? null
+        : GdkSurface.fromPointer(_gtkNativeGetSurface(this.handle));
+  }
+
+  /// Retrieves the surface transform of @self.
+  ///
+  /// This is the translation from @self's surface coordinates into
+  /// @self's widget coordinates.
+  static final _gtkNativeGetSurfaceTransform =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_native_get_surface_transform')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (double, double) getSurfaceTransform() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      _gtkNativeGetSurfaceTransform(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Realizes a `GtkNative`.
+  ///
+  /// This should only be used by subclasses.
+  static final _gtkNativeRealize =
+      gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gtk_native_realize',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void realize() {
+    _gtkNativeRealize(this.handle);
+  }
+
+  /// Unrealizes a `GtkNative`.
+  ///
+  /// This should only be used by subclasses.
+  static final _gtkNativeUnrealize =
+      gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gtk_native_unrealize',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void unrealize() {
+    _gtkNativeUnrealize(this.handle);
+  }
+
+  /// Returns the display that this `GtkRoot` is on.
+  static final _gtkRootGetDisplay =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_root_get_display')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GdkDisplay getDisplay() {
+    return GdkDisplay.fromPointer(_gtkRootGetDisplay(this.handle));
+  }
+
+  /// Retrieves the current focused widget within the root.
+  ///
+  /// Note that this is the widget that would have the focus
+  /// if the root is active; if the root is not focused then
+  /// `gtk_widget_has_focus (widget)` will be %FALSE for the
+  /// widget.
+  static final _gtkRootGetFocus =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_root_get_focus')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkWidget? getFocus() {
+    return (_gtkRootGetFocus(this.handle)) == ffi.nullptr
+        ? null
+        : GtkWidget.fromPointer(_gtkRootGetFocus(this.handle));
+  }
+
+  /// If @focus is not the current focus widget, and is focusable, sets
+  /// it as the focus widget for the root.
+  ///
+  /// If @focus is %NULL, unsets the focus widget for the root.
+  ///
+  /// To set the focus to a particular widget in the root, it is usually
+  /// more convenient to use [method@Gtk.Widget.grab_focus] instead of
+  /// this function.
+  static final _gtkRootSetFocus =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_root_set_focus')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setFocus([GtkWidget? focus]) {
+    _gtkRootSetFocus(this.handle, focus?.handle ?? ffi.nullptr);
+  }
 }

@@ -1,13 +1,14 @@
 # Skip report for package gdk4 (Gdk 4.0)
-Total skipped: 373
+Total skipped: 379
 
 ## By category
 constant: 334
 callable: 36
-method: 2
+method: 8
 renamed: 1
 
 ## By reason
+name collision: 8
 parameter mime_types: array types are handled in a later phase: 3
 parameter keys: array types are handled in a later phase: 2
 name collision: keyCH: 2
@@ -15,7 +16,6 @@ name collision: keyCh: 2
 name collision: keyEth: 2
 name collision: keyThorn: 2
 introspectable=0: 2
-name collision: 2
 parameter data: array types are handled in a later phase: 2
 name collision: keyMacedoniaKje: 1
 name collision: keyArmenianHi: 1

@@ -96,381 +96,303 @@ class GtkAccessibleHyperlink extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
-}
 
-/// Presents contextual actions.
-///
-/// <picture>
-/// <source srcset="action-bar-dark.png" media="(prefers-color-scheme: dark)">
-/// <img alt="An example GtkActionBar" src="action-bar.png">
-/// </picture>
-///
-/// `GtkActionBar` is expected to be displayed below the content and expand
-/// horizontally to fill the area.
-///
-/// It allows placing children at the start or the end. In addition, it
-/// contains an internal centered box which is centered with respect to
-/// the full width of the box, even if the children at either side take
-/// up different amounts of space.
-///
-/// # GtkActionBar as GtkBuildable
-///
-/// The `GtkActionBar` implementation of the `GtkBuildable` interface supports
-/// adding children at the start or end sides by specifying “start” or “end” as
-/// the “type” attribute of a `<child>` element, or setting the center widget
-/// by specifying “center” value.
-///
-/// # CSS nodes
-///
-/// ```
-/// actionbar
-/// ╰── revealer
-/// ╰── box
-/// ├── box.start
-/// │   ╰── [start children]
-/// ├── [center widget]
-/// ╰── box.end
-/// ╰── [end children]
-/// ```
-///
-/// A `GtkActionBar`'s CSS node is called `actionbar`. It contains a `revealer`
-/// subnode, which contains a `box` subnode, which contains two `box` subnodes at
-/// the start and end of the action bar, with `start` and `end` style classes
-/// respectively, as well as a center node that represents the center child.
-///
-/// Each of the boxes contains children packed for that side.
-class GtkActionBar extends GtkWidget {
-  GtkActionBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Requests the user's screen reader to announce the given message.
+  ///
+  /// This kind of notification is useful for messages that
+  /// either have only a visual representation or that are not
+  /// exposed visually at all, e.g. a notification about a
+  /// successful operation.
+  ///
+  /// Also, by using this API, you can ensure that the message
+  /// does not interrupts the user's current screen reader output.
+  static final _gtkAccessibleAnnounce =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_accessible_announce')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void announce(String message, GtkAccessibleAnnouncementPriority priority) {
+    withNativeString(message, (nativeMessage) {
+      _gtkAccessibleAnnounce(
+        this.handle,
+        nativeMessage.cast<Utf8>(),
+        priority.value,
+      );
+    });
+  }
 
-  /// Creates a new action bar widget.
-  static final _gtkActionBarNew =
-      gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_action_bar_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkActionBar() {
-    return GtkActionBar.fromPointer(
-      gObjectRefSink(_gtkActionBarNew()),
-      owned: true,
+  /// Retrieves the accessible identifier for the accessible object.
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations.
+  ///
+  /// It is left to the accessible implementation to define the scope
+  /// and uniqueness of the identifier.
+  static final _gtkAccessibleGetAccessibleId =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_accessible_id')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getAccessibleId() {
+    return stringFromNative(
+      (_gtkAccessibleGetAccessibleId(this.handle)).cast(),
+      free: true,
     );
   }
 
-  /// Retrieves the center bar widget of the bar.
-  static final _gtkActionBarGetCenterWidget =
+  /// Retrieves the accessible parent for an accessible object.
+  ///
+  /// This function returns `NULL` for top level widgets.
+  static final _gtkAccessibleGetAccessibleParent =
       gtk4Lookup<
             ffi.NativeFunction<
               ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
             >
-          >('gtk_action_bar_get_center_widget')
+          >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkWidget? getCenterWidget() {
-    return (_gtkActionBarGetCenterWidget(this.handle)) == ffi.nullptr
+  GtkAccessible? getAccessibleParent() {
+    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
         ? null
-        : GtkWidget.fromPointer(_gtkActionBarGetCenterWidget(this.handle));
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetAccessibleParent(this.handle),
+          );
   }
 
-  /// Gets whether the contents of the action bar are revealed.
-  static final _gtkActionBarGetRevealed =
+  /// Retrieves the accessible role of an accessible object.
+  static final _gtkAccessibleGetAccessibleRole =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_action_bar_get_revealed',
+        'gtk_accessible_get_accessible_role',
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getRevealed() {
-    return (_gtkActionBarGetRevealed(this.handle)) != 0;
-  }
-
-  /// Adds a child to the action bar, packed with reference to the
-  /// end of the action bar.
-  static final _gtkActionBarPackEnd =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_pack_end')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void packEnd(GtkWidget child) {
-    _gtkActionBarPackEnd(this.handle, child.handle);
-  }
-
-  /// Adds a child to the action, packed with reference to the
-  /// start of the action bar.
-  static final _gtkActionBarPackStart =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_pack_start')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void packStart(GtkWidget child) {
-    _gtkActionBarPackStart(this.handle, child.handle);
-  }
-
-  /// Removes a child from the action bar.
-  static final _gtkActionBarRemove =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_remove')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void remove(GtkWidget child) {
-    _gtkActionBarRemove(this.handle, child.handle);
-  }
-
-  /// Sets the center widget for the action bar.
-  static final _gtkActionBarSetCenterWidget =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_action_bar_set_center_widget')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setCenterWidget([GtkWidget? centerWidget]) {
-    _gtkActionBarSetCenterWidget(
-      this.handle,
-      centerWidget?.handle ?? ffi.nullptr,
+  GtkAccessibleRole getAccessibleRole() {
+    return GtkAccessibleRole.fromValue(
+      _gtkAccessibleGetAccessibleRole(this.handle),
     );
   }
 
-  /// Reveals or conceals the content of the action bar.
+  /// Retrieves the implementation for the given accessible object.
+  static final _gtkAccessibleGetAtContext =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_at_context')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkATContext getAtContext() {
+    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+  }
+
+  /// Queries the coordinates and dimensions of this accessible
   ///
-  /// Note: this does not show or hide the action bar in the
-  /// [property@Gtk.Widget:visible] sense, so revealing has
-  /// no effect if the action bar is hidden.
-  static final _gtkActionBarSetRevealed =
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations, e.g. to get the bounds from an ignored
+  /// child widget.
+  static final _gtkAccessibleGetBounds =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_accessible_get_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int, int, int) getBounds() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkAccessibleGetBounds(
+        this.handle,
+        _out0,
+        _out1,
+        _out2,
+        _out3,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value, _out2.value, _out3.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
+  }
+
+  /// Retrieves the first accessible child of an accessible object.
+  static final _gtkAccessibleGetFirstAccessibleChild =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_first_accessible_child')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getFirstAccessibleChild() {
+    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetFirstAccessibleChild(this.handle),
+          );
+  }
+
+  /// Retrieves the next accessible sibling of an accessible object
+  static final _gtkAccessibleGetNextAccessibleSibling =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_next_accessible_sibling')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getNextAccessibleSibling() {
+    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetNextAccessibleSibling(this.handle),
+          );
+  }
+
+  /// Queries a platform state, such as focus.
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations, e.g. to get platform state from an ignored
+  /// child widget, as is the case for `GtkText` wrappers.
+  static final _gtkAccessibleGetPlatformState =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_get_platform_state')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
+  bool getPlatformState(GtkAccessiblePlatformState state) {
+    return (_gtkAccessibleGetPlatformState(this.handle, state.value)) != 0;
+  }
+
+  /// Resets the accessible property to its default value.
+  static final _gtkAccessibleResetProperty =
       gtk4Lookup<
             ffi.NativeFunction<
               ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
             >
-          >('gtk_action_bar_set_revealed')
+          >('gtk_accessible_reset_property')
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setRevealed(bool revealed) {
-    _gtkActionBarSetRevealed(this.handle, revealed ? 1 : 0);
+  void resetProperty(GtkAccessibleProperty property) {
+    _gtkAccessibleResetProperty(this.handle, property.value);
   }
 
-  /// Signals that all holders of a reference to the widget should release
-  /// the reference that they hold.
-  ///
-  /// May result in finalization of the widget if all references are released.
-  ///
-  /// This signal is not suitable for saving widget state.
-  int onDestroy(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'destroy', callback);
+  /// Resets the accessible relation to its default value.
+  static final _gtkAccessibleResetRelation =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_relation')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetRelation(GtkAccessibleRelation relation) {
+    _gtkAccessibleResetRelation(this.handle, relation.value);
   }
 
-  /// Emitted when the text direction of a widget changes.
-  int onDirectionChanged(
-    void Function(GtkTextDirection previousDirection) callback,
-  ) {
-    return _connectSignal_v_1_i_gtktextdirection(
+  /// Resets the accessible state to its default value.
+  static final _gtkAccessibleResetState =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_state')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetState(GtkAccessibleState state) {
+    _gtkAccessibleResetState(this.handle, state.value);
+  }
+
+  /// Sets the parent and sibling of an accessible object.
+  ///
+  /// This function is meant to be used by accessible implementations that are
+  /// not part of the widget hierarchy, and but act as a logical bridge between
+  /// widgets. For instance, if a widget creates an object that holds metadata
+  /// for each child, and you want that object to implement the `GtkAccessible`
+  /// interface, you will use this function to ensure that the parent of each
+  /// child widget is the metadata object, and the parent of each metadata
+  /// object is the container widget.
+  static final _gtkAccessibleSetAccessibleParent =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_set_accessible_parent')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void setAccessibleParent([
+    GtkAccessible? parent,
+    GtkAccessible? nextSibling,
+  ]) {
+    _gtkAccessibleSetAccessibleParent(
       this.handle,
-      'direction-changed',
-      callback,
+      parent?.handle ?? ffi.nullptr,
+      nextSibling?.handle ?? ffi.nullptr,
     );
   }
 
-  /// Emitted when @widget is hidden.
-  int onHide(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'hide', callback);
-  }
-
-  /// Emitted if keyboard navigation fails.
+  /// Updates the next accessible sibling.
   ///
-  /// See [method@Gtk.Widget.keynav_failed] for details.
-  int onKeynavFailed(bool Function(GtkDirectionType direction) callback) {
-    return _connectSignal_b_1_i_gtkdirectiontype(
+  /// That might be useful when a new child of a custom accessible
+  /// is created, and it needs to be linked to a previous child.
+  static final _gtkAccessibleUpdateNextAccessibleSibling =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_update_next_accessible_sibling')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void updateNextAccessibleSibling([GtkAccessible? newSibling]) {
+    _gtkAccessibleUpdateNextAccessibleSibling(
       this.handle,
-      'keynav-failed',
-      callback,
+      newSibling?.handle ?? ffi.nullptr,
     );
   }
 
-  /// Emitted when @widget is going to be mapped.
+  /// Informs ATs that the platform state has changed.
   ///
-  /// A widget is mapped when the widget is visible (which is controlled with
-  /// [property@Gtk.Widget:visible]) and all its parents up to the toplevel widget
-  /// are also visible.
-  ///
-  /// The `::map` signal can be used to determine whether a widget will be drawn,
-  /// for instance it can resume an animation that was stopped during the
-  /// emission of [signal@Gtk.Widget::unmap].
-  int onMap(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'map', callback);
-  }
-
-  /// Emitted when a widget is activated via a mnemonic.
-  ///
-  /// The default handler for this signal activates @widget if @group_cycling
-  /// is false, or just makes @widget grab focus if @group_cycling is true.
-  int onMnemonicActivate(bool Function(bool groupCycling) callback) {
-    return _connectSignal_b_1_b_bool(
-      this.handle,
-      'mnemonic-activate',
-      callback,
-    );
-  }
-
-  /// Emitted when the focus is moved.
-  ///
-  /// The `::move-focus` signal is a [keybinding signal](class.SignalAction.html).
-  ///
-  /// The default bindings for this signal are <kbd>Tab</kbd> to move forward,
-  /// and <kbd>Shift</kbd>+<kbd>Tab</kbd> to move backward.
-  int onMoveFocus(void Function(GtkDirectionType direction) callback) {
-    return _connectSignal_v_1_i_gtkdirectiontype(
-      this.handle,
-      'move-focus',
-      callback,
-    );
-  }
-
-  /// Emitted when the widget’s tooltip is about to be shown.
-  ///
-  /// This happens when the [property@Gtk.Widget:has-tooltip] property
-  /// is true and the hover timeout has expired with the cursor hovering
-  /// above @widget; or emitted when @widget got focus in keyboard mode.
-  ///
-  /// Using the given coordinates, the signal handler should determine
-  /// whether a tooltip should be shown for @widget. If this is the case
-  /// true should be returned, false otherwise. Note that if @keyboard_mode
-  /// is true, the values of @x and @y are undefined and should not be used.
-  ///
-  /// The signal handler is free to manipulate @tooltip with the therefore
-  /// destined function calls.
-  int onQueryTooltip(
-    bool Function(int x, int y, bool keyboardMode, GtkTooltip tooltip) callback,
-  ) {
-    return _connectSignal_b_4_i_i_b_o_int_int_bool_gtktooltip(
-      this.handle,
-      'query-tooltip',
-      callback,
-    );
-  }
-
-  /// Emitted when @widget is associated with a `GdkSurface`.
-  ///
-  /// This means that [method@Gtk.Widget.realize] has been called
-  /// or the widget has been mapped (that is, it is going to be drawn).
-  int onRealize(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'realize', callback);
-  }
-
-  /// Emitted when @widget is shown.
-  int onShow(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'show', callback);
-  }
-
-  /// Emitted when the widget state changes.
-  ///
-  /// See [method@Gtk.Widget.get_state_flags].
-  int onStateFlagsChanged(void Function(GtkStateFlags flags) callback) {
-    return _connectSignal_v_1_u_gtkstateflags(
-      this.handle,
-      'state-flags-changed',
-      callback,
-    );
-  }
-
-  /// Emitted when @widget is going to be unmapped.
-  ///
-  /// A widget is unmapped when either it or any of its parents up to the
-  /// toplevel widget have been set as hidden.
-  ///
-  /// As `::unmap` indicates that a widget will not be shown any longer,
-  /// it can be used to, for example, stop an animation on the widget.
-  int onUnmap(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'unmap', callback);
-  }
-
-  /// Emitted when the `GdkSurface` associated with @widget is destroyed.
-  ///
-  /// This means that [method@Gtk.Widget.unrealize] has been called
-  /// or the widget has been unmapped (that is, it is going to be hidden).
-  int onUnrealize(void Function() callback) {
-    return _connectSignal_v_0(this.handle, 'unrealize', callback);
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// Activates a widget.
-///
-/// Widgets are activated by calling [method@Gtk.Widget.activate].
-class GtkActivateAction extends GtkShortcutAction {
-  GtkActivateAction.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Gets the activate action.
-  ///
-  /// This is an action that calls gtk_widget_activate()
-  /// on the given widget upon activation.
-  static final _gtkActivateActionGet =
-      gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_activate_action_get',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GtkActivateAction get_() {
-    return GtkActivateAction.fromPointer(_gtkActivateActionGet());
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  /// This function should be used by `GtkAccessible` implementations that
+  /// have a platform state but are not widgets. Widgets handle platform
+  /// states automatically.
+  static final _gtkAccessibleUpdatePlatformState =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_update_platform_state')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void updatePlatformState(GtkAccessiblePlatformState state) {
+    _gtkAccessibleUpdatePlatformState(this.handle, state.value);
   }
 }

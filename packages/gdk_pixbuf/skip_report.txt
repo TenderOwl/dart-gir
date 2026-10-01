@@ -1,9 +1,10 @@
 # Skip report for package gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 17
+Total skipped: 18
 
 ## By category
 callable: 12
 callback: 5
+method: 1
 
 ## By reason
 array types are handled in a later phase: 5
@@ -15,6 +16,7 @@ return: array types are handled in a later phase: 1
 parameter buffer: array types are handled in a later phase: 1
 parameter save_func: callback PixbufSaveFunc has unsupported signature: 1
 parameter width: nullable scalar parameter (gint): 1
+name collision: 1
 parameter buf: array types are handled in a later phase: 1
 
 ## First 50 entries
@@ -30,6 +32,7 @@ parameter buf: array types are handled in a later phase: 1
 [callback] GdkPixbuf.PixbufSaveFunc parameter buf — array types are handled in a later phase
 [callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
 [callable] GdkPixbuf.getFileInfo — parameter width: nullable scalar parameter (gint)
+[method] GdkPixbuf.toString — name collision
 [callable] GdkPixbufLoader.write — parameter buf: array types are handled in a later phase
 [callback] GdkPixbufDestroyNotify parameter pixels — array types are handled in a later phase
 [callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array types are handled in a later phase

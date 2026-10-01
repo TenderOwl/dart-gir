@@ -98,3 +98,29 @@ final _adwLerp =
 double lerp(double a, double b, double t) {
   return _adwLerp(a, b, t);
 }
+
+/// Adjusts @rgba to be suitable as a standalone color.
+///
+/// It will typically be darker for light background, and lighter for dark
+/// background, ensuring contrast.
+final _adwRgbaToStandalone =
+    adwLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Void>,
+            )
+          >
+        >('adw_rgba_to_standalone')
+        .asFunction<
+          void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+        >();
+GdkRGBA rgbaToStandalone(GdkRGBA rgba, bool dark) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  try {
+    _adwRgbaToStandalone(rgba.handle, dark ? 1 : 0, _out0.cast<ffi.Void>());
+    return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
+  } finally {}
+}

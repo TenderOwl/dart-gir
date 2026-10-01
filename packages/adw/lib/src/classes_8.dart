@@ -371,4 +371,435 @@ class AdwBanner extends GtkWidget {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// Requests the user's screen reader to announce the given message.
+  ///
+  /// This kind of notification is useful for messages that
+  /// either have only a visual representation or that are not
+  /// exposed visually at all, e.g. a notification about a
+  /// successful operation.
+  ///
+  /// Also, by using this API, you can ensure that the message
+  /// does not interrupts the user's current screen reader output.
+  static final _gtkAccessibleAnnounce =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_accessible_announce')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void announce(String message, GtkAccessibleAnnouncementPriority priority) {
+    withNativeString(message, (nativeMessage) {
+      _gtkAccessibleAnnounce(
+        this.handle,
+        nativeMessage.cast<Utf8>(),
+        priority.value,
+      );
+    });
+  }
+
+  /// Retrieves the accessible identifier for the accessible object.
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations.
+  ///
+  /// It is left to the accessible implementation to define the scope
+  /// and uniqueness of the identifier.
+  static final _gtkAccessibleGetAccessibleId =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_accessible_id')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getAccessibleId() {
+    return stringFromNative(
+      (_gtkAccessibleGetAccessibleId(this.handle)).cast(),
+      free: true,
+    );
+  }
+
+  /// Retrieves the accessible parent for an accessible object.
+  ///
+  /// This function returns `NULL` for top level widgets.
+  static final _gtkAccessibleGetAccessibleParent =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_accessible_parent')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getAccessibleParent() {
+    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetAccessibleParent(this.handle),
+          );
+  }
+
+  /// Retrieves the accessible role of an accessible object.
+  static final _gtkAccessibleGetAccessibleRole =
+      adwLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
+        'gtk_accessible_get_accessible_role',
+      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessibleRole getAccessibleRole() {
+    return GtkAccessibleRole.fromValue(
+      _gtkAccessibleGetAccessibleRole(this.handle),
+    );
+  }
+
+  /// Retrieves the implementation for the given accessible object.
+  static final _gtkAccessibleGetAtContext =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_at_context')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkATContext getAtContext() {
+    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+  }
+
+  /// Queries the coordinates and dimensions of this accessible
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations, e.g. to get the bounds from an ignored
+  /// child widget.
+  static final _gtkAccessibleGetBounds =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_accessible_get_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int, int, int) getBounds() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkAccessibleGetBounds(
+        this.handle,
+        _out0,
+        _out1,
+        _out2,
+        _out3,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value, _out2.value, _out3.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
+  }
+
+  /// Retrieves the first accessible child of an accessible object.
+  static final _gtkAccessibleGetFirstAccessibleChild =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_first_accessible_child')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getFirstAccessibleChild() {
+    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetFirstAccessibleChild(this.handle),
+          );
+  }
+
+  /// Retrieves the next accessible sibling of an accessible object
+  static final _gtkAccessibleGetNextAccessibleSibling =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_get_next_accessible_sibling')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GtkAccessible? getNextAccessibleSibling() {
+    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(
+            _gtkAccessibleGetNextAccessibleSibling(this.handle),
+          );
+  }
+
+  /// Queries a platform state, such as focus.
+  ///
+  /// This functionality can be overridden by `GtkAccessible`
+  /// implementations, e.g. to get platform state from an ignored
+  /// child widget, as is the case for `GtkText` wrappers.
+  static final _gtkAccessibleGetPlatformState =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_get_platform_state')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
+  bool getPlatformState(GtkAccessiblePlatformState state) {
+    return (_gtkAccessibleGetPlatformState(this.handle, state.value)) != 0;
+  }
+
+  /// Resets the accessible property to its default value.
+  static final _gtkAccessibleResetProperty =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_property')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetProperty(GtkAccessibleProperty property) {
+    _gtkAccessibleResetProperty(this.handle, property.value);
+  }
+
+  /// Resets the accessible relation to its default value.
+  static final _gtkAccessibleResetRelation =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_relation')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetRelation(GtkAccessibleRelation relation) {
+    _gtkAccessibleResetRelation(this.handle, relation.value);
+  }
+
+  /// Resets the accessible state to its default value.
+  static final _gtkAccessibleResetState =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_reset_state')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void resetState(GtkAccessibleState state) {
+    _gtkAccessibleResetState(this.handle, state.value);
+  }
+
+  /// Sets the parent and sibling of an accessible object.
+  ///
+  /// This function is meant to be used by accessible implementations that are
+  /// not part of the widget hierarchy, and but act as a logical bridge between
+  /// widgets. For instance, if a widget creates an object that holds metadata
+  /// for each child, and you want that object to implement the `GtkAccessible`
+  /// interface, you will use this function to ensure that the parent of each
+  /// child widget is the metadata object, and the parent of each metadata
+  /// object is the container widget.
+  static final _gtkAccessibleSetAccessibleParent =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_set_accessible_parent')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void setAccessibleParent([
+    GtkAccessible? parent,
+    GtkAccessible? nextSibling,
+  ]) {
+    _gtkAccessibleSetAccessibleParent(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      nextSibling?.handle ?? ffi.nullptr,
+    );
+  }
+
+  /// Updates the next accessible sibling.
+  ///
+  /// That might be useful when a new child of a custom accessible
+  /// is created, and it needs to be linked to a previous child.
+  static final _gtkAccessibleUpdateNextAccessibleSibling =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_accessible_update_next_accessible_sibling')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void updateNextAccessibleSibling([GtkAccessible? newSibling]) {
+    _gtkAccessibleUpdateNextAccessibleSibling(
+      this.handle,
+      newSibling?.handle ?? ffi.nullptr,
+    );
+  }
+
+  /// Informs ATs that the platform state has changed.
+  ///
+  /// This function should be used by `GtkAccessible` implementations that
+  /// have a platform state but are not widgets. Widgets handle platform
+  /// states automatically.
+  static final _gtkAccessibleUpdatePlatformState =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('gtk_accessible_update_platform_state')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void updatePlatformState(GtkAccessiblePlatformState state) {
+    _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Gets the action name for @actionable.
+  static final _gtkActionableGetActionName =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_actionable_get_action_name')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getActionName() {
+    return stringFromNative(
+      (_gtkActionableGetActionName(this.handle)).cast(),
+      free: false,
+    );
+  }
+
+  /// Gets the current target value of @actionable.
+  static final _gtkActionableGetActionTargetValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_actionable_get_action_target_value')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GVariant? getActionTargetValue() {
+    return (_gtkActionableGetActionTargetValue(this.handle)) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_gtkActionableGetActionTargetValue(this.handle));
+  }
+
+  /// Specifies the name of the action with which this widget should be
+  /// associated.
+  ///
+  /// If @action_name is %NULL then the widget will be unassociated from
+  /// any previous action.
+  ///
+  /// Usually this function is used when the widget is located (or will be
+  /// located) within the hierarchy of a `GtkApplicationWindow`.
+  ///
+  /// Names are of the form “win.save” or “app.quit” for actions on the
+  /// containing [class@ApplicationWindow] or its associated [class@Application],
+  /// respectively. This is the same form used for actions in the [class@Gio.Menu]
+  /// associated with the window.
+  static final _gtkActionableSetActionName =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('gtk_actionable_set_action_name')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+          >();
+  void setActionName([String? actionName]) {
+    withNativeString(actionName, (nativeActionName) {
+      _gtkActionableSetActionName(this.handle, nativeActionName.cast<Utf8>());
+    });
+  }
+
+  /// Sets the target value of an actionable widget.
+  ///
+  /// If @target_value is %NULL then the target value is unset.
+  ///
+  /// The target value has two purposes. First, it is used as the parameter
+  /// to activation of the action associated with the `GtkActionable` widget.
+  /// Second, it is used to determine if the widget should be rendered as
+  /// “active” — the widget is active if the state is equal to the given target.
+  ///
+  /// Consider the example of associating a set of buttons with a [iface@Gio.Action]
+  /// with string state in a typical “radio button” situation. Each button
+  /// will be associated with the same action, but with a different target
+  /// value for that action. Clicking on a particular button will activate
+  /// the action with the target of that button, which will typically cause
+  /// the action’s state to change to that value. Since the action’s state
+  /// is now equal to the target value of the button, the button will now
+  /// be rendered as active (and the other buttons, with different targets,
+  /// rendered inactive).
+  static final _gtkActionableSetActionTargetValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_actionable_set_action_target_value')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void setActionTargetValue([GVariant? targetValue]) {
+    _gtkActionableSetActionTargetValue(
+      this.handle,
+      targetValue?.handle ?? ffi.nullptr,
+    );
+  }
+
+  /// Sets the action-name and associated string target value of an
+  /// actionable widget.
+  ///
+  /// @detailed_action_name is a string in the format accepted by
+  /// [func@Gio.Action.parse_detailed_name].
+  static final _gtkActionableSetDetailedActionName =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('gtk_actionable_set_detailed_action_name')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+          >();
+  void setDetailedActionName(String detailedActionName) {
+    withNativeString(detailedActionName, (nativeDetailedActionName) {
+      _gtkActionableSetDetailedActionName(
+        this.handle,
+        nativeDetailedActionName.cast<Utf8>(),
+      );
+    });
+  }
+
+  /// Gets the ID of the @buildable object.
+  ///
+  /// `GtkBuilder` sets the name based on the ID attribute
+  /// of the `<object>` tag used to construct the @buildable.
+  static final _gtkBuildableGetBuildableId =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_buildable_get_buildable_id')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getBuildableId() {
+    return stringFromNative(
+      (_gtkBuildableGetBuildableId(this.handle)).cast(),
+      free: false,
+    );
+  }
 }

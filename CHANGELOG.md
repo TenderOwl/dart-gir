@@ -145,6 +145,26 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   Classes, records, and other top-level elements with
   `introspectable="0"` are still dropped at the parser level — only
   `<function>` gets the keep-and-skip treatment.
+- **Interface methods are mirrored onto implementing classes.**
+  `GtkButton`, `GtkSwitch`, `GtkCheckButton`, `GtkLinkButton`,
+  `GtkToggleButton`, `GtkScaleButton`, `GtkListBoxRow`, `AdwActionRow`,
+  `GIOModule`, and every other class with `<implements name="..."/>`
+  in GIR now exposes the interface's `<method>` instances as its own
+  — same native symbol, same `this.handle` self-arg, same wrapper
+  pattern. Write `button.setActionName('win.open')` directly instead
+  of wrapping in `GtkActionable(button.handle)`. The interface itself
+  is still emitted as a concrete `final class GtkXxx` so wrapping
+  opaque pointers keeps working. Override-incompatible shadows (e.g.
+  `GIOModule.use` shadowing `GTypeModule.use` with a different
+  signature) are detected against the parent's combined method map
+  (own methods + ancestor interface methods) and renamed to
+  `<name><ClassName>` (`useIOModule`). Async interface methods
+  (`scope="async"` or `finishFunc`) get the same lifetime-safe
+  `*Callback` overload the class's own async methods use. Cross-package
+  mirrors add the foreign package to `ctx.imports` only when an emitted
+  method body references a wrapper type from that package — primitive
+  mirrors don't import. See [emission.md](./docs/emission.md#interface-mirroring)
+  for the full rule set.
 
 ### Fixed
 - **Use-after-free in caller-allocated record OUT params.** The

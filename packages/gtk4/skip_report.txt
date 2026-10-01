@@ -1,106 +1,115 @@
 # Skip report for package gtk4 (Gtk 4.0)
-Total skipped: 195
+Total skipped: 557
 
 ## By category
-callable: 167
+callable: 517
+method: 15
 signal: 13
-renamed: 7
-method: 6
+renamed: 10
 callback: 1
 alias: 1
 
 ## By reason
-return: string list return type (null): 11
+parameter relations: array types are handled in a later phase: 107
+parameter states: array types are handled in a later phase: 107
+parameter properties: array types are handled in a later phase: 107
+name collision: 15
+return: string list return type (null): 13
+parameter colors: array types are handled in a later phase: 10
 return: array types are handled in a later phase: 9
 introspectable=0: 7
 parameter width: nullable scalar parameter (gint): 7
-name collision: 6
+parameter start_pos: nullable scalar parameter (gint): 7
+inout parameter position: 7
+parameter new_order: array types are handled in a later phase: 6
 parameter types: array types are handled in a later phase: 6
 parameter value: nullable scalar parameter (guint): 5
+parameter stops: array types are handled in a later phase: 5
+parameter entries: array types are handled in a later phase: 5
 parameter minimum_height: nullable scalar parameter (gint): 5
 parameter minimum_width: nullable scalar parameter (gint): 5
-parameter stops: array types are handled in a later phase: 5
-unsupported return type: Gdk.DragAction: 4
 parameter columns: array types are handled in a later phase: 4
-parameter colors: array types are handled in a later phase: 3
-parameter object_ids: array types are handled in a later phase: 3
-parameter minimum_size: nullable scalar parameter (gint): 3
-parameter x: nullable scalar parameter (gdouble): 3
+unsupported return type: Gdk.DragAction: 4
+parameter options: array types are handled in a later phase: 4
 parameter x_offset: nullable scalar parameter (gint): 3
-parameter new_order: array types are handled in a later phase: 2
-parameter cell_x: nullable scalar parameter (gint): 2
-parameter length: nullable scalar parameter (gsize): 2
-parameter accelerator_key: nullable scalar parameter (guint): 2
+parameter object_ids: array types are handled in a later phase: 3
+parameter x: nullable scalar parameter (gdouble): 3
+parameter minimum_size: nullable scalar parameter (gint): 3
 unsupported return type: utf8: 2
 parameter pos: nullable scalar parameter (IconViewDropPosition): 2
 parameter x: nullable scalar parameter (gint): 2
 parameter minimum: nullable scalar parameter (gint): 2
+parameter cell_x: nullable scalar parameter (gint): 2
+parameter accelerator_key: nullable scalar parameter (guint): 2
+parameter length: nullable scalar parameter (gsize): 2
 parameter icons: array types are handled in a later phase: 2
 parameter pos: nullable scalar parameter (TreeViewDropPosition): 2
-moved to DialogError.quark: 1
-moved to AccessibleRelation.init_value: 1
-moved to TreeRowReference.deleted: 1
-moved to TreeRowReference.inserted: 1
-parameter accessibles: array types are handled in a later phase: 1
-moved to AccessibleState.init_value: 1
-parameter line_number: nullable scalar parameter (gint): 1
-moved to BitsetIter.init_at: 1
-moved to PaperSize.get_default: 1
+parameter people: array types are handled in a later phase: 1
+moved to BitsetIter.init_last: 1
 parameter indices: array types are handled in a later phase: 1
 parameter depth: nullable scalar parameter (gint): 1
-moved to PaperSize.get_paper_sizes: 1
-moved to BitsetIter.init_first: 1
+moved to BuilderError.quark: 1
+moved to ConstraintVflParserError.quark: 1
 parameter artists: array types are handled in a later phase: 1
 parameter authors: array types are handled in a later phase: 1
 parameter documenters: array types are handled in a later phase: 1
+moved to DialogError.quark: 1
+parameter portal_interfaces: array types are handled in a later phase: 1
+parameter sizes: array types are handled in a later phase: 1
 unsupported arg type at index 0: gpointer: 1
-moved to BitsetIter.init_last: 1
+moved to Editable.delegate_get_property: 1
+moved to Editable.delegate_set_property: 1
 array types are handled in a later phase: 1
 parameter marshal: callback GObject.ClosureMarshal has unsupported signature: 1
-moved to BuilderError.quark: 1
-moved to ConstraintVflParserError.quark: 1
-moved to AccessibleProperty.init_value: 1
-parameter portal_interfaces: array types are handled in a later phase: 1
+moved to Editable.install_properties: 1
+moved to FileChooserError.quark: 1
+moved to IconThemeError.quark: 1
+override-incompatible with ancestor; renamed to packEndCellAreaBox: 1
+override-incompatible with ancestor; renamed to packStartCellAreaBox: 1
+moved to Native.get_for_surface: 1
 parameter xalign: nullable scalar parameter (gfloat): 1
 parameter xpad: nullable scalar parameter (gint): 1
 parameter params: array types are handled in a later phase: 1
-moved to PrintError.quark: 1
+moved to AccessibleProperty.init_value: 1
+moved to AccessibleRelation.init_value: 1
 parameter lines: array types are handled in a later phase: 1
-parameter people: array types are handled in a later phase: 1
+unsupported return type: Gdk.ContentProvider: 1
 parameter n_types: nullable scalar parameter (gsize): 1
-parameter sizes: array types are handled in a later phase: 1
-moved to Editable.delegate_get_property: 1
+moved to PaperSize.get_paper_sizes: 1
+moved to PrintError.quark: 1
+moved to RecentManagerError.quark: 1
+moved to SvgError.get_attribute: 1
+moved to SvgError.get_element: 1
 parameter mime_types: array types are handled in a later phase: 1
 unsupported return type: Gdk.GLContext: 1
-moved to Editable.delegate_set_property: 1
+moved to SvgError.get_end: 1
 parameter axes: array types are handled in a later phase: 1
 parameter backlog: array types are handled in a later phase: 1
 parameter column: nullable scalar parameter (gint): 1
-parameter fallbacks: array types are handled in a later phase: 1
-override-incompatible with ancestor; renamed to getCursorIconView: 1
-moved to RecentManagerError.quark: 1
-override-incompatible with ancestor; renamed to setCursorIconView: 1
-moved to SvgError.get_attribute: 1
-parameter start: nullable scalar parameter (gint): 1
-moved to SvgError.get_element: 1
-moved to Editable.install_properties: 1
 aliases are resolved to their target: 1
+override-incompatible with ancestor; renamed to getCursorIconView: 1
+moved to SvgError.get_start: 1
+override-incompatible with ancestor; renamed to setCursorIconView: 1
+moved to SvgError.quark: 1
+parameter start: nullable scalar parameter (gint): 1
+moved to AccessibleState.init_value: 1
+moved to TreeRowReference.deleted: 1
+moved to TreeRowReference.inserted: 1
 override-incompatible with ancestor; renamed to getDirectionMenuButton: 1
 override-incompatible with ancestor; renamed to setDirectionMenuButton: 1
 unsupported arg type at index 1: ?: 1
 unsupported arg type at index 1: GLib.Array: 1
-parameter options: array types are handled in a later phase: 1
-parameter entries: array types are handled in a later phase: 1
-moved to FileChooserError.quark: 1
+unsupported return type: Notebook: 1
+parameter accessibles: array types are handled in a later phase: 1
 parameter ranges: array types are handled in a later phase: 1
 unsupported return type: GObject.Object: 1
 parameter page_ranges: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog: 1
 parameter slider_start: nullable scalar parameter (gint): 1
-moved to SvgError.get_end: 1
+parameter fallbacks: array types are handled in a later phase: 1
 parameter hscrollbar_policy: nullable scalar parameter (PolicyType): 1
 parameter border_width: array types are handled in a later phase: 1
-moved to IconThemeError.quark: 1
+moved to BitsetIter.init_at: 1
 parameter shadow: array types are handled in a later phase: 1
 parameter step: nullable scalar parameter (gdouble): 1
 parameter min: nullable scalar parameter (gdouble): 1
@@ -109,20 +118,14 @@ parameter trailing: nullable scalar parameter (gint): 1
 parameter x_offset: nullable scalar parameter (gdouble): 1
 parameter buffer_x: nullable scalar parameter (gint): 1
 override-incompatible with ancestor; renamed to getCursorTreeView: 1
-moved to SvgError.get_start: 1
-moved to SvgError.quark: 1
+parameter line_number: nullable scalar parameter (gint): 1
+moved to BitsetIter.init_first: 1
 override-incompatible with ancestor; renamed to setCursorTreeView: 1
+override-incompatible with ancestor; renamed to setCellDataFuncTreeViewColumn: 1
 parameter expressions: array types are handled in a later phase: 1
 parameter classes: array types are handled in a later phase: 1
 parameter dest_x: nullable scalar parameter (gdouble): 1
-parameter properties: array types are handled in a later phase: 1
-parameter relations: array types are handled in a later phase: 1
-parameter states: array types are handled in a later phase: 1
-moved to Native.get_for_surface: 1
-parameter start_pos: nullable scalar parameter (gint): 1
-inout parameter position: 1
-unsupported return type: Notebook: 1
-unsupported return type: Gdk.ContentProvider: 1
+moved to PaperSize.get_default: 1
 
 ## First 50 entries
 [callable] Gtk.acceleratorParse — parameter accelerator_key: nullable scalar parameter (guint)

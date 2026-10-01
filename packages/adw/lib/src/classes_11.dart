@@ -203,4 +203,22 @@ class AdwBreakpoint extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// Gets the ID of the @buildable object.
+  ///
+  /// `GtkBuilder` sets the name based on the ID attribute
+  /// of the `<object>` tag used to construct the @buildable.
+  static final _gtkBuildableGetBuildableId =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_buildable_get_buildable_id')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getBuildableId() {
+    return stringFromNative(
+      (_gtkBuildableGetBuildableId(this.handle)).cast(),
+      free: false,
+    );
+  }
 }

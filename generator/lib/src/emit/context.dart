@@ -705,6 +705,40 @@ class EmitContext {
     return null;
   }
 
+  /// Finds an interface by (possibly qualified) GIR name. Same
+  /// resolution rules as [findClass]: qualified (`'Gtk.Actionable'`)
+  /// looks up the namespace first; unqualified searches the current
+  /// namespace then all others. Returns `null` when no interface by
+  /// that name exists in any loaded namespace.
+  (GirNamespace, GirInterface)? findInterface(String name) {
+    final dot = name.indexOf('.');
+    if (dot >= 0) {
+      final ns = namespaceNamed(name.substring(0, dot));
+      if (ns == null) return null;
+      final local = name.substring(dot + 1);
+      for (final i in ns.interfaces) {
+        if (i.name == local) return (ns, i);
+      }
+      return null;
+    }
+    // Unqualified: current namespace first, then the rest.
+    GirInterface? inNs(GirNamespace ns) {
+      for (final i in ns.interfaces) {
+        if (i.name == name) return i;
+      }
+      return null;
+    }
+
+    final inCurrent = inNs(namespace);
+    if (inCurrent != null) return (namespace, inCurrent);
+    for (final ns in allNamespaces) {
+      if (ns.name == namespace.name) continue;
+      final found = inNs(ns);
+      if (found != null) return (ns, found);
+    }
+    return null;
+  }
+
   /// Walks the parent chain of [cls]; true when rooted at `GObject.Object`.
   bool isGObjectRooted(GirClass cls) {
     if (namespace.name == 'GObject' && cls.name == 'Object') return true;

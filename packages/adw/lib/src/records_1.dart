@@ -338,4 +338,49 @@ final class AdwSwipeable {
   double getProgress() {
     return _adwSwipeableGetProgress(this.handle);
   }
+
+  /// Gets the area @self can start a swipe from for the given direction and
+  /// gesture type.
+  ///
+  /// This can be used to restrict swipes to only be possible from a certain area,
+  /// for example, to only allow edge swipes, or to have a draggable element and
+  /// ignore swipes elsewhere.
+  ///
+  /// If not implemented, the default implementation returns the allocation of
+  /// @self, allowing swipes from anywhere.
+  static final _adwSwipeableGetSwipeArea =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('adw_swipeable_get_swipe_area')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GdkRectangle getSwipeArea(
+    AdwNavigationDirection navigationDirection,
+    bool isDrag,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _adwSwipeableGetSwipeArea(
+        this.handle,
+        navigationDirection.value,
+        isDrag ? 1 : 0,
+        _out0.cast<ffi.Void>(),
+      );
+      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
 }

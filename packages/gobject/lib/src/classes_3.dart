@@ -199,4 +199,82 @@ class GTypeModule extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// Calls the @complete_interface_info function from the
+  /// #GTypePluginClass of @plugin. There should be no need to use this
+  /// function outside of the GObject type system itself.
+  static final _gTypePluginCompleteInterfaceInfo =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_type_plugin_complete_interface_info')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void completeInterfaceInfo(
+    int instanceType,
+    int interfaceType,
+    GInterfaceInfo info,
+  ) {
+    _gTypePluginCompleteInterfaceInfo(
+      this.handle,
+      instanceType,
+      interfaceType,
+      info.handle,
+    );
+  }
+
+  /// Calls the @complete_type_info function from the #GTypePluginClass of @plugin.
+  /// There should be no need to use this function outside of the GObject
+  /// type system itself.
+  static final _gTypePluginCompleteTypeInfo =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_type_plugin_complete_type_info')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void completeTypeInfo(int gType, GTypeInfo info, GTypeValueTable valueTable) {
+    _gTypePluginCompleteTypeInfo(
+      this.handle,
+      gType,
+      info.handle,
+      valueTable.handle,
+    );
+  }
+
+  /// Calls the @use_plugin function from the #GTypePluginClass of
+  /// @plugin.  There should be no need to use this function outside of
+  /// the GObject type system itself.
+  static final _gTypePluginUse =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('g_type_plugin_use')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void useTypeModule() {
+    _gTypePluginUse(this.handle);
+  }
 }

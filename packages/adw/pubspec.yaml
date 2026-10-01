@@ -18,6 +18,8 @@ dependencies:
     path: ../glib
   gobject:
     path: ../gobject
+  gsk4:
+    path: ../gsk4
   gtk4:
     path: ../gtk4
   pango:

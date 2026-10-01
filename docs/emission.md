@@ -71,10 +71,105 @@ Output for `final class GtkButton extends GtkWidget implements ffi.Finalizable`:
 * `<function>` → `static R name(...)` with no self-arg.
 * **Inherited typed `onSignalName` methods** are appended after methods
   — see [signals.md](./signals.md) for details.
+* **Interface-mirrored methods** are appended last — see
+  [Interface mirroring](#interface-mirroring) below for the full rule
+  set, the rename-on-conflict logic, and the cross-package import
+  heuristic.
 
 The set of reserved class member names: `handle`, `owned`, `fromPointer`,
 plus the package's Dart class name. Any GIR member whose lowerCamel
 collides gets a `name collision` skip.
+
+### Interface mirroring
+
+GIR's `<class>` may declare `<implements name="..."/>` — concrete
+classes advertise that they satisfy a GObject interface's contract.
+The interface itself is emitted as `final class GtkActionable { ... }`
+by [`RecordEmitter`](#recorder-emitter) (see above), so users with an
+opaque pointer can still wrap it and call actionable methods directly.
+For ergonomic use on the concrete widget, the class emitter mirrors
+every `<method>` declared on each implemented interface onto the
+class as if it were its own. Result: `button.setActionName('win.open')`
+compiles and dispatches to `gtk_actionable_set_action_name` with
+`this.handle` — no `GtkActionable(button.handle)` wrapper required.
+
+```dart
+// GtkButton extends GtkWidget, implements Gtk.Actionable.
+class GtkButton extends GtkWidget {
+  // ... <constructor>, <method>, <function>, signals ...
+
+  // Mirrored from GtkActionable.get_action_name:
+  static final _gtkActionableGetActionName = gtk4Lookup<…>(
+    'gtk_actionable_get_action_name',
+  ).asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String? getActionName() {
+    return stringFromNative(
+      (_gtkActionableGetActionName(this.handle)).cast(),
+      free: false,
+    );
+  }
+
+  // Mirrored from GtkActionable.set_action_name:
+  void setActionName([String? actionName]) {
+    withNativeString(actionName, (nativeActionName) {
+      _gtkActionableSetActionName(this.handle, nativeActionName.cast<Utf8>());
+    });
+  }
+}
+```
+
+**Resolution rules** (failure → recorded skip, mirror dropped):
+
+* Interface name in `implements_` doesn't resolve → `interface <name> not found`.
+* Interface lives in a non-emitted package → `interface <name> is in non-generated package <pkg>`.
+* Method name collides with a class member or another mirrored method → `name collision`.
+
+**Override-incompatible rename** (mirrored method has a different
+signature than a parent's same-named method). The mirror's signature
+key is compared against:
+
+1. The parent chain's combined method map
+   (`_inheritedSigs`), which walks each ancestor and adds its own
+   methods first (they shadow interface methods with the same name in
+   Dart's resolution rules) and then the methods mirrored onto each
+   ancestor's interfaces. This catches cases like:
+   * `GtkCellAreaBox.packEnd(4 args)` shadows
+     `GtkCellArea.packEnd(2 args)` (the parent absorbed `packEnd` from
+     `GtkCellLayout`).
+   * `GIOModule.use()` (the `GObject.TypePlugin` interface method,
+     `void use()`) shadows `GTypeModule.use()` (the parent's own
+     `bool use()`).
+
+   When the signatures differ, the mirror is renamed to `<name><ClassName>`
+   (`packEndCellAreaBox`, `useIOModule`) and recorded with
+   `override-incompatible with ancestor; renamed to <name>`. The
+   parent's method is preserved; the renamed mirror is a distinct
+   method that the user can call explicitly when they want the
+   interface behavior.
+
+2. The interface's own expected signature
+   (`_interfaceMethodSigs`). A class method that diverges from its
+   declared interface is renamed so it doesn't claim to satisfy the
+   contract. With Phase 1's concrete `final class` interface
+   emission, this rename is purely defensive; Phase 2 will promote
+   the interface to `abstract class` and the rename will keep the
+   Dart analyzer happy.
+
+**Async interface methods** mirror the same logic the class's own
+methods use: a method with `scope="async"` parameter or `finishFunc`
+emits a lifetime-safe `*Callback` overload alongside the base
+wrapper (`button.initAsyncCallback(...)`).
+
+**Cross-package mirrors**. When the interface is in another emitted
+package (e.g. `PangoFontFamily implements Gio.ListModel`), the
+emitter scans each mirrored method's parameter and return types via
+the resolver. If a type's `requiredImport` is the interface's own
+package — meaning the emitted Dart code references a wrapper class
+that lives in that package (e.g. `GtkWidget` from `gtk4`) — the
+import is added to the package barrel. If the only types referenced
+are primitives, `Pointer<Void>`, or types from other already-imported
+packages (e.g. `GObject` from `gobject`), the import is suppressed
+to avoid `unused_import` warnings.
 
 ## CallableEmitter — `generator/lib/src/emit/callable.dart`
 

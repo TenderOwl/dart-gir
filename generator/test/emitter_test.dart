@@ -718,6 +718,406 @@ void main() {
     });
   });
 
+  group('ClassEmitter implements mirror', () {
+    // Build a namespace with one parent class (GObject.Object), one
+    // interface (Gtk.Actionable) and one concrete class (Gtk.Button)
+    // that implements the interface. The interface mirrors its methods
+    // onto the concrete class.
+    GirNamespace nsWith({
+      required List<GirInterface> interfaces,
+      required List<GirClass> classes,
+    }) =>
+        GirNamespace(
+          name: 'Gtk',
+          version: '4.0',
+          sharedLibrary: 'libgtk-4.so.1',
+          cIdentifierPrefixes: const ['Gtk', 'gtk'],
+          cSymbolPrefixes: const ['gtk'],
+          classes: classes,
+          interfaces: interfaces,
+        );
+
+    test('class implementing one interface gets interface methods mirrored', () {
+      final report = GenerationReport();
+      final iface = GirInterface(
+        name: 'Actionable',
+        cType: 'GtkActionable',
+        methods: [
+          GirMethod(
+            name: 'get_action_name',
+            cIdentifier: 'gtk_actionable_get_action_name',
+            returnType: GirTypeRef(name: 'utf8', cType: 'const gchar*'),
+          ),
+          GirMethod(
+            name: 'set_action_name',
+            cIdentifier: 'gtk_actionable_set_action_name',
+            parameters: [
+              GirParameter(
+                name: 'action_name',
+                nullable: true,
+                type: GirTypeRef(name: 'utf8', cType: 'const gchar*'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final button = GirClass(
+        name: 'Button',
+        cType: 'GtkButton',
+        parent: 'Widget',
+        implements_: const ['Actionable'],
+      );
+      final ns = nsWith(
+        interfaces: [iface],
+        classes: [
+          GirClass(name: 'Object', cType: 'GObject'),
+          GirClass(name: 'Widget', cType: 'GtkWidget', parent: 'Object'),
+          button,
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code =
+          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // Both interface methods are mirrored onto the class.
+      expect(code, contains('String getActionName()'));
+      expect(code, contains('void setActionName([String? actionName])'));
+      // Native bindings for the interface methods are present.
+      expect(code, contains('_gtkActionableGetActionName'));
+      expect(code, contains('_gtkActionableSetActionName'));
+      // The wrapper threads `this.handle` as the first native argument.
+      expect(code, contains('_gtkActionableGetActionName(this.handle'));
+    });
+
+    test('class implementing two interfaces gets methods from both', () {
+      final report = GenerationReport();
+      final actionable = GirInterface(
+        name: 'Actionable',
+        cType: 'GtkActionable',
+        methods: [
+          GirMethod(
+            name: 'get_action_name',
+            cIdentifier: 'gtk_actionable_get_action_name',
+            returnType: GirTypeRef(name: 'utf8'),
+          ),
+        ],
+      );
+      final buildable = GirInterface(
+        name: 'Buildable',
+        cType: 'GtkBuildable',
+        methods: [
+          GirMethod(
+            name: 'get_buildable_id',
+            cIdentifier: 'gtk_buildable_get_buildable_id',
+            returnType: GirTypeRef(name: 'utf8'),
+          ),
+        ],
+      );
+      final button = GirClass(
+        name: 'Button',
+        cType: 'GtkButton',
+        parent: 'Widget',
+        implements_: const ['Actionable', 'Buildable'],
+      );
+      final ns = nsWith(
+        interfaces: [actionable, buildable],
+        classes: [
+          GirClass(name: 'Object', cType: 'GObject'),
+          GirClass(name: 'Widget', cType: 'GtkWidget', parent: 'Object'),
+          button,
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code =
+          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
+      expect(code, contains('String getActionName()'));
+      expect(code, contains('String getBuildableId()'));
+    });
+
+    test(
+      'override-incompatible interface method with parent ancestor '
+      'is renamed',
+      () {
+        final report = GenerationReport();
+        // Parent class has `activate(GdkEvent*) -> bool`; interface has
+        // `activate() -> void`. When mirrored onto the child, the
+        // child's own `activate(GdkEvent*) -> bool` shadows the parent
+        // — the mirror must rename to `activateWidget` to avoid
+        // `invalid_override`.
+        final actionable = GirInterface(
+          name: 'Actionable',
+          cType: 'IActionable',
+          methods: [
+            GirMethod(
+              name: 'activate',
+              cIdentifier: 'i_actionable_activate',
+              returnType: GirTypeRef(name: 'none'),
+            ),
+          ],
+        );
+        final widget = GirClass(
+          name: 'Widget',
+          cType: 'IWidget',
+          parent: 'Object',
+          methods: [
+            GirMethod(
+              name: 'activate',
+              cIdentifier: 'i_widget_activate',
+              returnType: GirTypeRef(name: 'gboolean'),
+            ),
+          ],
+        );
+        final button = GirClass(
+          name: 'Button',
+          cType: 'IButton',
+          parent: 'Widget',
+          implements_: const ['Actionable'],
+        );
+        final ns = nsWith(
+          interfaces: [actionable],
+          classes: [
+            GirClass(name: 'Object', cType: 'IObject'),
+            widget,
+            button,
+          ],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code =
+            ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
+        expect(code, contains('void activateButton()'));
+        // Original parent's `activate` is preserved (the rename only
+        // affects the mirrored interface method on the child).
+        expect(report.entries.any(
+          (e) =>
+              e.category == 'renamed' &&
+              e.reason.contains('override-incompatible with ancestor'),
+        ), isTrue);
+      },
+    );
+
+    test('unresolved interface name is reported as a skip', () {
+      final report = GenerationReport();
+      final button = GirClass(
+        name: 'Button',
+        cType: 'IButton',
+        parent: 'Widget',
+        implements_: const ['NoSuchIface'],
+      );
+      final ns = nsWith(
+        interfaces: const [],
+        classes: [
+          GirClass(name: 'Object', cType: 'IObject'),
+          GirClass(name: 'Widget', cType: 'IWidget', parent: 'Object'),
+          button,
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code =
+          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
+      expect(code, isNotNull);
+      expect(report.entries.any(
+        (e) =>
+            e.category == 'method' && e.reason.contains('NoSuchIface not found'),
+      ), isTrue);
+    });
+
+    test('interface in non-emitted package is reported as a skip', () {
+      final report = GenerationReport();
+      final crossIface = GirInterface(
+        name: 'Actionable',
+        cType: 'OtherActionable',
+        methods: [
+          GirMethod(
+            name: 'go',
+            cIdentifier: 'other_actionable_go',
+            returnType: GirTypeRef(name: 'none'),
+          ),
+        ],
+      );
+      final gtk = nsWith(interfaces: const [], classes: [
+        GirClass(name: 'Object', cType: 'IObject'),
+        GirClass(name: 'Widget', cType: 'IWidget', parent: 'Object'),
+        GirClass(
+          name: 'Button',
+          cType: 'IButton',
+          parent: 'Widget',
+          implements_: const ['Actionable'],
+        ),
+      ]);
+      final other = GirNamespace(
+        name: 'Other',
+        version: '1.0',
+        sharedLibrary: 'libother-1.0.so.0',
+        cIdentifierPrefixes: const ['Other'],
+        cSymbolPrefixes: const ['other'],
+        interfaces: [crossIface],
+      );
+      final ctx = _ctx(gtk, [gtk, other], report);
+      final code =
+          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(
+        gtk.classes[2],
+      )!;
+      expect(code, isNotNull);
+      expect(report.entries.any(
+        (e) =>
+            e.category == 'method' &&
+            e.reason.contains('Actionable is in non-generated package'),
+      ), isTrue);
+    });
+
+    test('cross-package interface mirror adds the foreign import', () {
+      final report = GenerationReport();
+      // To exercise the cross-package import path, the interface's
+      // method must reference a wrapper type whose `requiredImport`
+      // is the interface's own package. We use `Gtk.Widget` here —
+      // Buildable.getInternalChild returns a GtkWidget, whose Dart
+      // wrapper type comes from the `gtk4` package.
+      final buildable = GirInterface(
+        name: 'Buildable',
+        cType: 'GtkBuildable',
+        methods: [
+          GirMethod(
+            name: 'get_internal_child',
+            cIdentifier: 'gtk_buildable_get_internal_child',
+            returnType:
+                const GirTypeRef(name: 'Gtk.Widget', cType: 'GtkWidget*'),
+          ),
+        ],
+      );
+      final gtk = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.so.1',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [
+          GirClass(name: 'Object', cType: 'GObject'),
+          GirClass(name: 'Widget', cType: 'GtkWidget', parent: 'Object'),
+        ],
+        interfaces: [buildable],
+      );
+      // A separate "Foo" namespace whose class implements Buildable.
+      // Emitting the mirror must add `gtk4` to the Foo package's
+      // import list (because the emitted method body uses GtkWidget).
+      final foo = GirNamespace(
+        name: 'Foo',
+        version: '1.0',
+        sharedLibrary: 'libfoo-1.0.so.0',
+        cIdentifierPrefixes: const ['Foo'],
+        cSymbolPrefixes: const ['foo'],
+        classes: [
+          GirClass(
+            name: 'FooWidget',
+            cType: 'FooWidget',
+            parent: 'Object',
+            implements_: const ['Buildable'],
+          ),
+        ],
+      );
+      final ctx = _ctx(foo, [gtk, foo], report);
+      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'foo'})
+          .emitClass(foo.classes[0]);
+      expect(ctx.imports.contains('gtk4'), isTrue);
+    });
+
+    test('async interface method emits *Callback overload alongside', () {
+      final report = GenerationReport();
+      final iface = GirInterface(
+        name: 'AsyncInitable',
+        cType: 'GAsyncInitable',
+        methods: [
+          GirMethod(
+            name: 'init_async',
+            cIdentifier: 'g_async_initable_init_async',
+            parameters: [
+              GirParameter(
+                name: 'callback',
+                nullable: true,
+                scope: 'async',
+                type: GirTypeRef(
+                  name: 'AsyncReadyCallback',
+                  cType: 'GAsyncReadyCallback',
+                ),
+              ),
+              GirParameter(
+                name: 'io_priority',
+                type: GirTypeRef(name: 'gint'),
+              ),
+              GirParameter(
+                name: 'cancellable',
+                nullable: true,
+                type: GirTypeRef(name: 'Object', cType: 'GObject*'),
+              ),
+            ],
+            finishFunc: 'init_finish',
+          ),
+        ],
+      );
+      final obj = GirClass(
+        name: 'SomeObject',
+        cType: 'GSomeObject',
+        parent: 'Object',
+        implements_: const ['AsyncInitable'],
+      );
+      // AsyncInitable callback needs GAsyncReadyCallback registered.
+      final asyncReady = GirCallback(
+        name: 'AsyncReadyCallback',
+        cType: 'GAsyncReadyCallback',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'source_object',
+            type: GirTypeRef(name: 'Object', cType: 'GObject*'),
+          ),
+          GirParameter(
+            name: 'res',
+            type: GirTypeRef(name: 'AsyncResult', cType: 'GAsyncResult*'),
+          ),
+          GirParameter(
+            name: 'data',
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+          ),
+        ],
+      );
+      // AsyncResult needs to be known to the resolver so the callback
+      // bridge accepts it.
+      final asyncResultClass = GirClass(
+        name: 'AsyncResult',
+        cType: 'GAsyncResult',
+        parent: 'Object',
+      );
+      final ns = nsWith(
+        interfaces: [iface],
+        classes: [
+          GirClass(name: 'Object', cType: 'GObject'),
+          asyncResultClass,
+          obj,
+        ],
+      );
+      // Add AsyncReadyCallback to the namespace via a callback list.
+      final nsWithCallbacks = GirNamespace(
+        name: ns.name,
+        version: ns.version,
+        sharedLibrary: 'libgtk-4.so.1',
+        cIdentifierPrefixes: ns.cIdentifierPrefixes,
+        cSymbolPrefixes: ns.cSymbolPrefixes,
+        classes: ns.classes,
+        interfaces: ns.interfaces,
+        callbacks: [asyncReady],
+      );
+      final ctx = _ctx(nsWithCallbacks, [nsWithCallbacks], report);
+      final code = ClassEmitter(ctx, emittedPackages: const {'glib'})
+          .emitClass(obj)!;
+      expect(code, isNotNull);
+      // Base wrapper for the mirrored async method.
+      expect(code, contains('void initAsync('));
+      // Lifetime-safe `*Callback` overload — same registry/trampoline
+      // pattern as on regular class methods.
+      expect(code, contains('void initAsyncCallback('));
+    });
+  });
+
   group('AsyncCallbackEmitter', () {
     GirCallback asyncReadyCallback() => GirCallback(
           name: 'AsyncReadyCallback',

@@ -1244,4 +1244,585 @@ class GApplication extends GObject {
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
+
+  /// Emits the [signal@Gio.ActionGroup::action-added] signal on @action_group.
+  ///
+  /// This function should only be called by [type@Gio.ActionGroup] implementations.
+  static final _gActionGroupActionAdded =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('g_action_group_action_added')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+          >();
+  void actionAdded(String actionName) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionGroupActionAdded(this.handle, nativeActionName.cast<Utf8>());
+    });
+  }
+
+  /// Emits the [signal@Gio.ActionGroup::action-enabled-changed] signal on @action_group.
+  ///
+  /// This function should only be called by [type@Gio.ActionGroup] implementations.
+  static final _gActionGroupActionEnabledChanged =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+              )
+            >
+          >('g_action_group_action_enabled_changed')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void actionEnabledChanged(String actionName, bool enabled) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionGroupActionEnabledChanged(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+        enabled ? 1 : 0,
+      );
+    });
+  }
+
+  /// Emits the [signal@Gio.ActionGroup::action-removed] signal on @action_group.
+  ///
+  /// This function should only be called by [type@Gio.ActionGroup] implementations.
+  static final _gActionGroupActionRemoved =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('g_action_group_action_removed')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+          >();
+  void actionRemoved(String actionName) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionGroupActionRemoved(this.handle, nativeActionName.cast<Utf8>());
+    });
+  }
+
+  /// Emits the [signal@Gio.ActionGroup::action-state-changed] signal on @action_group.
+  ///
+  /// This function should only be called by [type@Gio.ActionGroup] implementations.
+  static final _gActionGroupActionStateChanged =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_group_action_state_changed')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void actionStateChanged(String actionName, GVariant state) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionGroupActionStateChanged(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+        state.handle,
+      );
+    });
+  }
+
+  /// Activate the named action within @action_group.
+  ///
+  /// If the action is expecting a parameter, then the correct type of
+  /// parameter must be given as @parameter.  If the action is expecting no
+  /// parameters then @parameter must be `NULL`.  See
+  /// [method@Gio.ActionGroup.get_action_parameter_type].
+  ///
+  /// If the [type@Gio.ActionGroup] implementation supports asynchronous remote
+  /// activation over D-Bus, this call may return before the relevant
+  /// D-Bus traffic has been sent, or any replies have been received. In
+  /// order to block on such asynchronous activation calls,
+  /// [method@Gio.DBusConnection.flush] should be called prior to the code, which
+  /// depends on the result of the action activation. Without flushing
+  /// the D-Bus connection, there is no guarantee that the action would
+  /// have been activated.
+  ///
+  /// The following code which runs in a remote app instance, shows an
+  /// example of a ‘quit’ action being activated on the primary app
+  /// instance over D-Bus. Here [method@Gio.DBusConnection.flush] is called
+  /// before `exit()`. Without `g_dbus_connection_flush()`, the ‘quit’ action
+  /// may fail to be activated on the primary instance.
+  ///
+  /// ```c
+  /// // call ‘quit’ action on primary instance
+  /// g_action_group_activate_action (G_ACTION_GROUP (app), "quit", NULL);
+  ///
+  /// // make sure the action is activated now
+  /// g_dbus_connection_flush (…);
+  ///
+  /// g_debug ("Application has been terminated. Exiting.");
+  ///
+  /// exit (0);
+  /// ```
+  static final _gActionGroupActivateAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_group_activate_action')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void activateAction(String actionName, [GVariant? parameter]) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionGroupActivateAction(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+        parameter?.handle ?? ffi.nullptr,
+      );
+    });
+  }
+
+  /// Request for the state of the named action within @action_group to be
+  /// changed to @value.
+  ///
+  /// The action must be stateful and @value must be of the correct type.
+  /// See [method@Gio.ActionGroup.get_action_state_type].
+  ///
+  /// This call merely requests a change.  The action may refuse to change
+  /// its state or may change its state to something other than @value.
+  /// See [method@Gio.ActionGroup.get_action_state_hint].
+  ///
+  /// If the @value GVariant is floating, it is consumed.
+  static final _gActionGroupChangeActionState =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_group_change_action_state')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void changeActionState(String actionName, GVariant value) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionGroupChangeActionState(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+        value.handle,
+      );
+    });
+  }
+
+  /// Checks if the named action within @action_group is currently enabled.
+  ///
+  /// An action must be enabled in order to be activated or in order to
+  /// have its state changed from outside callers.
+  static final _gActionGroupGetActionEnabled =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('g_action_group_get_action_enabled')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)>();
+  bool getActionEnabled(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionGroupGetActionEnabled(
+            this.handle,
+            nativeActionName.cast<Utf8>(),
+          )) !=
+          0;
+    });
+  }
+
+  /// Queries the type of the parameter that must be given when activating
+  /// the named action within @action_group.
+  ///
+  /// When activating the action using [method@Gio.ActionGroup.activate_action],
+  /// the [type@GLib.Variant] given to that function must be of the type returned
+  /// by this function.
+  ///
+  /// In the case that this function returns `NULL`, you must not give any
+  /// [type@GLib.Variant], but `NULL` instead.
+  ///
+  /// The parameter type of a particular action will never change but it is
+  /// possible for an action to be removed and for a new action to be added
+  /// with the same name but a different parameter type.
+  static final _gActionGroupGetActionParameterType =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_action_group_get_action_parameter_type')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GVariantType? getActionParameterType(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionGroupGetActionParameterType(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              )) ==
+              ffi.nullptr
+          ? null
+          : GVariantType.fromPointer(
+              _gActionGroupGetActionParameterType(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              ),
+            );
+    });
+  }
+
+  /// Queries the current state of the named action within @action_group.
+  ///
+  /// If the action is not stateful then `NULL` will be returned.  If the
+  /// action is stateful then the type of the return value is the type
+  /// given by [method@Gio.ActionGroup.get_action_state_type].
+  ///
+  /// The return value (if non-`NULL`) should be freed with
+  /// [method@GLib.Variant.unref] when it is no longer required.
+  static final _gActionGroupGetActionState =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_action_group_get_action_state')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GVariant? getActionState(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionGroupGetActionState(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              )) ==
+              ffi.nullptr
+          ? null
+          : GVariant.fromPointer(
+              _gActionGroupGetActionState(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              ),
+            );
+    });
+  }
+
+  /// Requests a hint about the valid range of values for the state of the
+  /// named action within @action_group.
+  ///
+  /// If `NULL` is returned it either means that the action is not stateful
+  /// or that there is no hint about the valid range of values for the
+  /// state of the action.
+  ///
+  /// If a [type@GLib.Variant] array is returned then each item in the array is a
+  /// possible value for the state.  If a [type@GLib.Variant] pair (ie: two-tuple) is
+  /// returned then the tuple specifies the inclusive lower and upper bound
+  /// of valid values for the state.
+  ///
+  /// In any case, the information is merely a hint.  It may be possible to
+  /// have a state value outside of the hinted range and setting a value
+  /// within the range may fail.
+  ///
+  /// The return value (if non-`NULL`) should be freed with
+  /// [method@GLib.Variant.unref] when it is no longer required.
+  static final _gActionGroupGetActionStateHint =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_action_group_get_action_state_hint')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GVariant? getActionStateHint(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionGroupGetActionStateHint(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              )) ==
+              ffi.nullptr
+          ? null
+          : GVariant.fromPointer(
+              _gActionGroupGetActionStateHint(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              ),
+            );
+    });
+  }
+
+  /// Queries the type of the state of the named action within
+  /// @action_group.
+  ///
+  /// If the action is stateful then this function returns the
+  /// [type@GLib.VariantType] of the state.  All calls to
+  /// [method@Gio.ActionGroup.change_action_state] must give a [type@GLib.Variant] of this
+  /// type and [method@Gio.ActionGroup.get_action_state] will return a [type@GLib.Variant]
+  /// of the same type.
+  ///
+  /// If the action is not stateful then this function will return `NULL`.
+  /// In that case, [method@Gio.ActionGroup.get_action_state] will return `NULL`
+  /// and you must not call [method@Gio.ActionGroup.change_action_state].
+  ///
+  /// The state type of a particular action will never change but it is
+  /// possible for an action to be removed and for a new action to be added
+  /// with the same name but a different state type.
+  static final _gActionGroupGetActionStateType =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_action_group_get_action_state_type')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GVariantType? getActionStateType(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionGroupGetActionStateType(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              )) ==
+              ffi.nullptr
+          ? null
+          : GVariantType.fromPointer(
+              _gActionGroupGetActionStateType(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              ),
+            );
+    });
+  }
+
+  /// Checks if the named action exists within @action_group.
+  static final _gActionGroupHasAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('g_action_group_has_action')
+          .asFunction<int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)>();
+  bool hasAction(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionGroupHasAction(
+            this.handle,
+            nativeActionName.cast<Utf8>(),
+          )) !=
+          0;
+    });
+  }
+
+  /// Queries all aspects of the named action within an @action_group.
+  ///
+  /// This function acquires the information available from
+  /// [method@Gio.ActionGroup.has_action], [method@Gio.ActionGroup.get_action_enabled],
+  /// [method@Gio.ActionGroup.get_action_parameter_type],
+  /// [method@Gio.ActionGroup.get_action_state_type],
+  /// [method@Gio.ActionGroup.get_action_state_hint] and
+  /// [method@Gio.ActionGroup.get_action_state] with a single function call.
+  ///
+  /// This provides two main benefits.
+  ///
+  /// The first is the improvement in efficiency that comes with not having
+  /// to perform repeated lookups of the action in order to discover
+  /// different things about it.  The second is that implementing
+  /// [type@Gio.ActionGroup] can now be done by only overriding this one virtual
+  /// function.
+  ///
+  /// The interface provides a default implementation of this function that
+  /// calls the individual functions, as required, to fetch the
+  /// information.  The interface also provides default implementations of
+  /// those functions that call this function.  All implementations,
+  /// therefore, must override either this function or all of the others.
+  ///
+  /// If the action exists, `TRUE` is returned and any of the requested
+  /// fields (as indicated by having a non-`NULL` reference passed in) are
+  /// filled.  If the action doesn’t exist, `FALSE` is returned and the
+  /// fields may or may not have been modified.
+  static final _gActionGroupQueryAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_group_query_action')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  (bool, bool, GVariantType?, GVariantType?, GVariant?, GVariant?) queryAction(
+    String actionName,
+  ) {
+    return withNativeString(actionName, (nativeActionName) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1Anchor = HeapAnchor.allocate(256);
+      final _out1 = _out1Anchor.buffer;
+      final _out2Anchor = HeapAnchor.allocate(256);
+      final _out2 = _out2Anchor.buffer;
+      final _out3Anchor = HeapAnchor.allocate(256);
+      final _out3 = _out3Anchor.buffer;
+      final _out4Anchor = HeapAnchor.allocate(256);
+      final _out4 = _out4Anchor.buffer;
+      try {
+        final _ret = _gActionGroupQueryAction(
+          this.handle,
+          nativeActionName.cast<Utf8>(),
+          _out0,
+          _out1.cast<ffi.Void>(),
+          _out2.cast<ffi.Void>(),
+          _out3.cast<ffi.Void>(),
+          _out4.cast<ffi.Void>(),
+        );
+        return (
+          (_ret) != 0,
+          _out0.value != 0,
+          (_out1) == ffi.nullptr
+              ? null
+              : GVariantType.fromPointer(_out1.cast<ffi.Void>()),
+          (_out2) == ffi.nullptr
+              ? null
+              : GVariantType.fromPointer(_out2.cast<ffi.Void>()),
+          (_out3) == ffi.nullptr
+              ? null
+              : GVariant.fromPointer(_out3.cast<ffi.Void>()),
+          (_out4) == ffi.nullptr
+              ? null
+              : GVariant.fromPointer(_out4.cast<ffi.Void>()),
+        );
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
+  /// Adds an action to the @action_map.
+  ///
+  /// If the action map already contains an action with the same name
+  /// as @action then the old action is dropped from the action map.
+  ///
+  /// The action map takes its own reference on @action.
+  static final _gActionMapAddAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('g_action_map_add_action')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  void addAction(GAction action) {
+    _gActionMapAddAction(this.handle, action.handle);
+  }
+
+  /// Looks up the action with the name @action_name in @action_map.
+  ///
+  /// If no such action exists, returns `NULL`.
+  static final _gActionMapLookupAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_action_map_lookup_action')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  GAction? lookupAction(String actionName) {
+    return withNativeString(actionName, (nativeActionName) {
+      return (_gActionMapLookupAction(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              )) ==
+              ffi.nullptr
+          ? null
+          : GAction.fromPointer(
+              _gActionMapLookupAction(
+                this.handle,
+                nativeActionName.cast<Utf8>(),
+              ),
+            );
+    });
+  }
+
+  /// Removes the named action from the action map.
+  ///
+  /// If no action of this name is in the map then nothing happens.
+  static final _gActionMapRemoveAction =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+            >
+          >('g_action_map_remove_action')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
+          >();
+  void removeAction(String actionName) {
+    withNativeString(actionName, (nativeActionName) {
+      _gActionMapRemoveAction(this.handle, nativeActionName.cast<Utf8>());
+    });
+  }
 }
