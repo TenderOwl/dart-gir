@@ -151,6 +151,53 @@ final class GDrive {
     }
   }
 
+  static final _ejectCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _ejectCallbackSeq = 0;
+  static final _ejectCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_ejectCallbackTrampoline);
+  static void _ejectCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _ejectCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [eject] for use with
+  /// async callbacks. See `docs/async.md`.
+  void ejectCallback(
+    GMountUnmountFlags flags,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_ejectCallbackSeq;
+    _ejectCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDriveEject(
+      this.handle,
+      flags.value,
+      cancellable?.handle ?? ffi.nullptr,
+      _ejectCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes ejecting a drive.
   static final _gDriveEjectFinish =
       gioLookup<
@@ -257,6 +304,55 @@ final class GDrive {
     } finally {
       _nc4?.close();
     }
+  }
+
+  static final _ejectWithOperationCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _ejectWithOperationCallbackSeq = 0;
+  static final _ejectWithOperationCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_ejectWithOperationCallbackTrampoline);
+  static void _ejectWithOperationCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _ejectWithOperationCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [ejectWithOperation] for use with
+  /// async callbacks. See `docs/async.md`.
+  void ejectWithOperationCallback(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_ejectWithOperationCallbackSeq;
+    _ejectWithOperationCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDriveEjectWithOperation(
+      this.handle,
+      flags.value,
+      mountOperation?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _ejectWithOperationCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes ejecting a drive. If any errors occurred during the operation,
@@ -513,6 +609,51 @@ final class GDrive {
     }
   }
 
+  static final _pollForMediaCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _pollForMediaCallbackSeq = 0;
+  static final _pollForMediaCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_pollForMediaCallbackTrampoline);
+  static void _pollForMediaCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _pollForMediaCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [pollForMedia] for use with
+  /// async callbacks. See `docs/async.md`.
+  void pollForMediaCallback(
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_pollForMediaCallbackSeq;
+    _pollForMediaCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDrivePollForMedia(
+      this.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _pollForMediaCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes an operation started with g_drive_poll_for_media() on a drive.
   static final _gDrivePollForMediaFinish =
       gioLookup<
@@ -627,6 +768,55 @@ final class GDrive {
     }
   }
 
+  static final _startCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _startCallbackSeq = 0;
+  static final _startCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_startCallbackTrampoline);
+  static void _startCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _startCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [start] for use with
+  /// async callbacks. See `docs/async.md`.
+  void startCallback(
+    GDriveStartFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_startCallbackSeq;
+    _startCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDriveStart(
+      this.handle,
+      flags.value,
+      mountOperation?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _startCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes starting a drive.
   static final _gDriveStartFinish =
       gioLookup<
@@ -737,6 +927,55 @@ final class GDrive {
     }
   }
 
+  static final _stopCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _stopCallbackSeq = 0;
+  static final _stopCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_stopCallbackTrampoline);
+  static void _stopCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _stopCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [stop] for use with
+  /// async callbacks. See `docs/async.md`.
+  void stopCallback(
+    GMountUnmountFlags flags,
+    GMountOperation? mountOperation,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_stopCallbackSeq;
+    _stopCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDriveStop(
+      this.handle,
+      flags.value,
+      mountOperation?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _stopCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes stopping a drive.
   static final _gDriveStopFinish =
       gioLookup<
@@ -791,133 +1030,5 @@ final class GDrive {
   /// been pressed.
   int onStopButton(void Function() callback) {
     return _connectSignal_v_0(this.handle, 'stop-button', callback);
-  }
-}
-
-/// `GDtlsClientConnection` is the client-side subclass of
-/// [iface@Gio.DtlsConnection], representing a client-side DTLS connection.
-final class GDtlsClientConnection {
-  GDtlsClientConnection.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Gets the list of distinguished names of the Certificate Authorities
-  /// that the server will accept certificates from. This will be set
-  /// during the TLS handshake if the server requests a certificate.
-  /// Otherwise, it will be %NULL.
-  ///
-  /// Each item in the list is a #GByteArray which contains the complete
-  /// subject DN of the certificate authority.
-  static final _gDtlsClientConnectionGetAcceptedCas =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dtls_client_connection_get_accepted_cas')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GList getAcceptedCas() {
-    return GList.fromPointer(_gDtlsClientConnectionGetAcceptedCas(this.handle));
-  }
-
-  /// Gets @conn's expected server identity
-  static final _gDtlsClientConnectionGetServerIdentity =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dtls_client_connection_get_server_identity')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSocketConnectable getServerIdentity() {
-    return GSocketConnectable.fromPointer(
-      _gDtlsClientConnectionGetServerIdentity(this.handle),
-    );
-  }
-
-  /// Gets @conn's validation flags
-  ///
-  /// This function does not work as originally designed and is impossible
-  /// to use correctly. See #GDtlsClientConnection:validation-flags for more
-  /// information.
-  static final _gDtlsClientConnectionGetValidationFlags =
-      gioLookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dtls_client_connection_get_validation_flags',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GTlsCertificateFlags getValidationFlags() {
-    return GTlsCertificateFlags(
-      _gDtlsClientConnectionGetValidationFlags(this.handle),
-    );
-  }
-
-  /// Sets @conn's expected server identity, which is used both to tell
-  /// servers on virtual hosts which certificate to present, and also
-  /// to let @conn know what name to look for in the certificate when
-  /// performing %G_TLS_CERTIFICATE_BAD_IDENTITY validation, if enabled.
-  static final _gDtlsClientConnectionSetServerIdentity =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_dtls_client_connection_set_server_identity')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setServerIdentity(GSocketConnectable identity) {
-    _gDtlsClientConnectionSetServerIdentity(this.handle, identity.handle);
-  }
-
-  /// Sets @conn's validation flags, to override the default set of
-  /// checks performed when validating a server certificate. By default,
-  /// %G_TLS_CERTIFICATE_VALIDATE_ALL is used.
-  ///
-  /// This function does not work as originally designed and is impossible
-  /// to use correctly. See #GDtlsClientConnection:validation-flags for more
-  /// information.
-  static final _gDtlsClientConnectionSetValidationFlags =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('g_dtls_client_connection_set_validation_flags')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setValidationFlags(GTlsCertificateFlags flags) {
-    _gDtlsClientConnectionSetValidationFlags(this.handle, flags.value);
-  }
-
-  /// Creates a new #GDtlsClientConnection wrapping @base_socket which is
-  /// assumed to communicate with the server identified by @server_identity.
-  static final _gDtlsClientConnectionNew =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('g_dtls_client_connection_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  static GDtlsClientConnection new_(
-    GDatagramBased baseSocket, [
-    GSocketConnectable? serverIdentity,
-  ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDtlsClientConnectionNew(
-        baseSocket.handle,
-        serverIdentity?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return GDtlsClientConnection.fromPointer(_ret);
-    } finally {
-      calloc.free(_error);
-    }
   }
 }

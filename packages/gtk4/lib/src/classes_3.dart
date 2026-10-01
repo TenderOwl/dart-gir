@@ -443,6 +443,53 @@ class GtkAlertDialog extends GObject {
     }
   }
 
+  static final _chooseCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _chooseCallbackSeq = 0;
+  static final _chooseCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_chooseCallbackTrampoline);
+  static void _chooseCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _chooseCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [choose] for use with
+  /// async callbacks. See `docs/async.md`.
+  void chooseCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_chooseCallbackSeq;
+    _chooseCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkAlertDialogChoose(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _chooseCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes the [method@Gtk.AlertDialog.choose] call.
   static final _gtkAlertDialogChooseFinish =
       gtk4Lookup<

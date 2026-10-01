@@ -319,6 +319,55 @@ class GtkColorDialog extends GObject {
     }
   }
 
+  static final _chooseRgbaCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _chooseRgbaCallbackSeq = 0;
+  static final _chooseRgbaCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_chooseRgbaCallbackTrampoline);
+  static void _chooseRgbaCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _chooseRgbaCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [chooseRgba] for use with
+  /// async callbacks. See `docs/async.md`.
+  void chooseRgbaCallback(
+    GtkWindow? parent,
+    GdkRGBA? initialColor,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_chooseRgbaCallbackSeq;
+    _chooseRgbaCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkColorDialogChooseRgba(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      initialColor?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _chooseRgbaCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes the [method@Gtk.ColorDialog.choose_rgba] call
   ///
   /// Note that this function returns a [error@Gtk.DialogError.DISMISSED]

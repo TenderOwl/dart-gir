@@ -287,6 +287,8 @@ class GirParser {
       introspectable: _introspectable(e),
       shadows: e.getAttribute('shadows'),
       shadowedBy: e.getAttribute('shadowed-by'),
+      finishFunc:
+          e.getAttribute('finish-func', namespace: girGlibNamespace),
       doc: _doc(e),
     );
   }
@@ -358,6 +360,8 @@ class GirParser {
         transferOwnership: _transfer(e.getAttribute('transfer-ownership')),
         optional: _bool(e, 'optional'),
         callerAllocates: _bool(e, 'caller-allocates'),
+        scope: e.getAttribute('scope'),
+        closureIndex: _int(e, 'closure'),
         doc: _doc(e),
       );
 
@@ -443,6 +447,12 @@ class GirParser {
     final v = e.getAttribute(attr);
     if (v == null) return defaultValue;
     return v == '1' || v == 'true';
+  }
+
+  int? _int(XmlElement e, String attr) {
+    final v = e.getAttribute(attr);
+    if (v == null) return null;
+    return int.tryParse(v);
   }
 
   GirTransferOwnership _transfer(String? v) => switch (v) {

@@ -277,6 +277,53 @@ class GDataInputStream extends GBufferedInputStream {
     }
   }
 
+  static final _readLineAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readLineAsyncCallbackSeq = 0;
+  static final _readLineAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readLineAsyncCallbackTrampoline);
+  static void _readLineAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readLineAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readLineAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readLineAsyncCallback(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readLineAsyncCallbackSeq;
+    _readLineAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDataInputStreamReadLineAsync(
+      this.handle,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _readLineAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Reads an unsigned 16-bit/2-byte value from @stream.
   ///
   /// In order to get the correct byte order for this read operation,
@@ -490,6 +537,57 @@ class GDataInputStream extends GBufferedInputStream {
     });
   }
 
+  static final _readUntilAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readUntilAsyncCallbackSeq = 0;
+  static final _readUntilAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readUntilAsyncCallbackTrampoline);
+  static void _readUntilAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readUntilAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readUntilAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readUntilAsyncCallback(
+    String stopChars,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readUntilAsyncCallbackSeq;
+    _readUntilAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeString(stopChars, (stopChars) {
+      _gDataInputStreamReadUntilAsync(
+        this.handle,
+        stopChars.cast<Utf8>(),
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _readUntilAsyncCallbackPtr,
+        _data.cast<ffi.Void>(),
+      );
+    });
+  }
+
   /// The asynchronous version of g_data_input_stream_read_upto().
   /// It is an error to have two outstanding calls to this function.
   ///
@@ -581,6 +679,59 @@ class GDataInputStream extends GBufferedInputStream {
       } finally {
         _nc5?.close();
       }
+    });
+  }
+
+  static final _readUptoAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readUptoAsyncCallbackSeq = 0;
+  static final _readUptoAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readUptoAsyncCallbackTrampoline);
+  static void _readUptoAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readUptoAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readUptoAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readUptoAsyncCallback(
+    String stopChars,
+    int stopCharsLen,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readUptoAsyncCallbackSeq;
+    _readUptoAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeString(stopChars, (stopChars) {
+      _gDataInputStreamReadUptoAsync(
+        this.handle,
+        stopChars.cast<Utf8>(),
+        stopCharsLen,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _readUptoAsyncCallbackPtr,
+        _data.cast<ffi.Void>(),
+      );
     });
   }
 

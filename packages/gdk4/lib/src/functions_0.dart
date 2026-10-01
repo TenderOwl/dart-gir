@@ -249,6 +249,60 @@ void contentDeserializeAsync(
   });
 }
 
+final _content_deserialize_asyncCallbackRegistry =
+    <int, void Function(GObject?, GAsyncResult)>{};
+int _content_deserialize_asyncCallbackSeq = 0;
+final _content_deserialize_asyncCallbackPtr =
+    ffi.Pointer.fromFunction<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >(_content_deserialize_asyncCallbackTrampoline);
+void _content_deserialize_asyncCallbackTrampoline(
+  ffi.Pointer<ffi.Void> sourceObject,
+  ffi.Pointer<ffi.Void> res,
+  ffi.Pointer<ffi.Void> data,
+) {
+  final id = data.cast<ffi.IntPtr>().value;
+  final fn = _content_deserialize_asyncCallbackRegistry.remove(id);
+  malloc.free(data);
+  if (fn == null) return;
+  fn(
+    sourceObject == ffi.nullptr
+        ? null
+        : GObject.fromPointer(sourceObject.cast()),
+    GAsyncResult.fromPointer(res.cast()),
+  );
+}
+
+/// Lifetime-safe variant of [content_deserialize_async] for use with
+/// async callbacks. See `docs/async.md`.
+void content_deserialize_asyncCallback(
+  GInputStream stream,
+  String mimeType,
+  int type,
+  int ioPriority,
+  GCancellable? cancellable,
+  void Function(GObject?, GAsyncResult) callback,
+) {
+  final id = ++_content_deserialize_asyncCallbackSeq;
+  _content_deserialize_asyncCallbackRegistry[id] = callback;
+  final _data = malloc<ffi.IntPtr>()..value = id;
+  withNativeString(mimeType, (mimeType) {
+    _gdkContentDeserializeAsync(
+      stream.handle,
+      mimeType.cast<Utf8>(),
+      type,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _content_deserialize_asyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  });
+}
+
 /// Registers a function to deserialize object of a given type.
 ///
 /// Since 4.20, when looking up a deserializer to use, GTK will
@@ -461,6 +515,60 @@ void contentSerializeAsync(
     } finally {
       _nc6?.close();
     }
+  });
+}
+
+final _content_serialize_asyncCallbackRegistry =
+    <int, void Function(GObject?, GAsyncResult)>{};
+int _content_serialize_asyncCallbackSeq = 0;
+final _content_serialize_asyncCallbackPtr =
+    ffi.Pointer.fromFunction<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >(_content_serialize_asyncCallbackTrampoline);
+void _content_serialize_asyncCallbackTrampoline(
+  ffi.Pointer<ffi.Void> sourceObject,
+  ffi.Pointer<ffi.Void> res,
+  ffi.Pointer<ffi.Void> data,
+) {
+  final id = data.cast<ffi.IntPtr>().value;
+  final fn = _content_serialize_asyncCallbackRegistry.remove(id);
+  malloc.free(data);
+  if (fn == null) return;
+  fn(
+    sourceObject == ffi.nullptr
+        ? null
+        : GObject.fromPointer(sourceObject.cast()),
+    GAsyncResult.fromPointer(res.cast()),
+  );
+}
+
+/// Lifetime-safe variant of [content_serialize_async] for use with
+/// async callbacks. See `docs/async.md`.
+void content_serialize_asyncCallback(
+  GOutputStream stream,
+  String mimeType,
+  GValue value,
+  int ioPriority,
+  GCancellable? cancellable,
+  void Function(GObject?, GAsyncResult) callback,
+) {
+  final id = ++_content_serialize_asyncCallbackSeq;
+  _content_serialize_asyncCallbackRegistry[id] = callback;
+  final _data = malloc<ffi.IntPtr>()..value = id;
+  withNativeString(mimeType, (mimeType) {
+    _gdkContentSerializeAsync(
+      stream.handle,
+      mimeType.cast<Utf8>(),
+      value.handle,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _content_serialize_asyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   });
 }
 
@@ -788,56 +896,4 @@ GdkPixbuf? pixbufGetFromTexture(GdkTexture texture) {
   return (_gdkPixbufGetFromTexture(texture.handle)) == ffi.nullptr
       ? null
       : GdkPixbuf.fromPointer(_gdkPixbufGetFromTexture(texture.handle));
-}
-
-/// Sets a list of backends that GDK should try to use.
-///
-/// This can be useful if your application does not
-/// work with certain GDK backends.
-///
-/// By default, GDK tries all included backends.
-///
-/// For example:
-///
-/// ```c
-/// gdk_set_allowed_backends ("wayland,macos,*");
-/// ```
-///
-/// instructs GDK to try the Wayland backend first, followed by the
-/// MacOs backend, and then all others.
-///
-/// If the `GDK_BACKEND` environment variable is set, it determines
-/// what backends are tried in what order, while still respecting the
-/// set of allowed backends that are specified by this function.
-///
-/// The possible backend names are:
-///
-/// - `broadway`
-/// - `macos`
-/// - `wayland`.
-/// - `win32`
-/// - `x11`
-///
-/// You can also include a `*` in the list to try all remaining backends.
-///
-/// This call must happen prior to functions that open a display, such
-/// as [func@Gdk.Display.open], `gtk_init()`, or `gtk_init_check()`
-/// in order to take effect.
-final _gdkSetAllowedBackends =
-    gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<Utf8>)>>(
-      'gdk_set_allowed_backends',
-    ).asFunction<void Function(ffi.Pointer<Utf8>)>();
-void setAllowedBackends(String backends) {
-  withNativeString(backends, (nativeBackends) {
-    _gdkSetAllowedBackends(nativeBackends.cast<Utf8>());
-  });
-}
-
-/// Converts from a Unicode character to a key symbol.
-final _gdkUnicodeToKeyval =
-    gdk4Lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Uint32)>>(
-      'gdk_unicode_to_keyval',
-    ).asFunction<int Function(int)>();
-int unicodeToKeyval(int wc) {
-  return _gdkUnicodeToKeyval(wc);
 }

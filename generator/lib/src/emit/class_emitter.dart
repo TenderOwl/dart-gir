@@ -4,6 +4,7 @@ library;
 import '../gir/gir.dart';
 import '../resolve/naming.dart';
 import '../resolve/types.dart';
+import 'async_emitter.dart';
 import 'callable.dart';
 import 'context.dart';
 import 'record_emitter.dart';
@@ -136,6 +137,23 @@ class ClassEmitter {
           classMember: true,
           selfArgExpr: 'this.handle');
       if (code != null) b.writeln(_indent(code));
+      // `*Callback` lifetime-safe overload for async methods. Generated
+      // alongside the base wrapper when a parameter is `scope="async"`.
+      // Skip when the base wrapper was skipped (shadowed/moved/...).
+      if (code != null &&
+          (m.finishFunc != null ||
+              m.parameters.any((p) => p.scope == 'async'))) {
+        final async = AsyncCallbackEmitter(ctx).emitMethodOverload(
+          m,
+          dartName: name,
+          className: dartName,
+          selfArgExpr: 'this.handle',
+          nativeBindingName: '_${toLowerCamel(m.cIdentifier!)}',
+        );
+        if (async != null && memberNames.add('${name}Callback')) {
+          b.writeln(_indent(async));
+        }
+      }
     }
     for (final f in cls.functions) {
       final name = CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(f.name)));

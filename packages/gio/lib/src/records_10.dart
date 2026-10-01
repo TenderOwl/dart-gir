@@ -212,6 +212,53 @@ final class GAsyncInitable {
     }
   }
 
+  static final _initAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _initAsyncCallbackSeq = 0;
+  static final _initAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_initAsyncCallbackTrampoline);
+  static void _initAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _initAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [initAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void initAsyncCallback(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_initAsyncCallbackSeq;
+    _initAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gAsyncInitableInitAsync(
+      this.handle,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _initAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes asynchronous initialization and returns the result.
   /// See g_async_initable_init_async().
   static final _gAsyncInitableInitFinish =
@@ -584,65 +631,5 @@ final class GConverter {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void reset() {
     _gConverterReset(this.handle);
-  }
-}
-
-/// Base type for D-Bus interfaces.
-///
-/// The `GDBusInterface` type is the base type for D-Bus interfaces both
-/// on the service side (see [class@Gio.DBusInterfaceSkeleton]) and client side
-/// (see [class@Gio.DBusProxy]).
-final class GDBusInterface {
-  GDBusInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Gets the #GDBusObject that @interface_ belongs to, if any.
-  static final _gDbusInterfaceDupObject =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_interface_dup_object')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusObject? dupObject() {
-    return (_gDbusInterfaceDupObject(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusObject.fromPointer(_gDbusInterfaceDupObject(this.handle));
-  }
-
-  /// Gets D-Bus introspection information for the D-Bus interface
-  /// implemented by @interface_.
-  ///
-  /// This can return %NULL if no #GDBusInterfaceInfo was provided during
-  /// construction of @interface_ and is also not made available otherwise.
-  /// For example, #GDBusProxy implements #GDBusInterface but allows for a %NULL
-  /// #GDBusInterfaceInfo.
-  static final _gDbusInterfaceGetInfo =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_interface_get_info')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusInterfaceInfo? getInfo() {
-    return (_gDbusInterfaceGetInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusInterfaceInfo.fromPointer(_gDbusInterfaceGetInfo(this.handle));
-  }
-
-  /// Sets the #GDBusObject for @interface_ to @object.
-  ///
-  /// Note that @interface_ will hold a weak reference to @object.
-  static final _gDbusInterfaceSetObject =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_interface_set_object')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void setObject([GDBusObject? object]) {
-    _gDbusInterfaceSetObject(this.handle, object?.handle ?? ffi.nullptr);
   }
 }

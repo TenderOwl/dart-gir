@@ -547,6 +547,58 @@ void showUriFull(
   });
 }
 
+final _show_uri_fullCallbackRegistry =
+    <int, void Function(GObject?, GAsyncResult)>{};
+int _show_uri_fullCallbackSeq = 0;
+final _show_uri_fullCallbackPtr =
+    ffi.Pointer.fromFunction<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >(_show_uri_fullCallbackTrampoline);
+void _show_uri_fullCallbackTrampoline(
+  ffi.Pointer<ffi.Void> sourceObject,
+  ffi.Pointer<ffi.Void> res,
+  ffi.Pointer<ffi.Void> data,
+) {
+  final id = data.cast<ffi.IntPtr>().value;
+  final fn = _show_uri_fullCallbackRegistry.remove(id);
+  malloc.free(data);
+  if (fn == null) return;
+  fn(
+    sourceObject == ffi.nullptr
+        ? null
+        : GObject.fromPointer(sourceObject.cast()),
+    GAsyncResult.fromPointer(res.cast()),
+  );
+}
+
+/// Lifetime-safe variant of [show_uri_full] for use with
+/// async callbacks. See `docs/async.md`.
+void show_uri_fullCallback(
+  GtkWindow? parent,
+  String uri,
+  int timestamp,
+  GCancellable? cancellable,
+  void Function(GObject?, GAsyncResult) callback,
+) {
+  final id = ++_show_uri_fullCallbackSeq;
+  _show_uri_fullCallbackRegistry[id] = callback;
+  final _data = malloc<ffi.IntPtr>()..value = id;
+  withNativeString(uri, (uri) {
+    _gtkShowUriFull(
+      parent?.handle ?? ffi.nullptr,
+      uri.cast<Utf8>(),
+      timestamp,
+      cancellable?.handle ?? ffi.nullptr,
+      _show_uri_fullCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  });
+}
+
 /// Finishes the gtk_show_uri() call and returns the result
 /// of the operation.
 final _gtkShowUriFullFinish =

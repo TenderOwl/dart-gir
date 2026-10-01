@@ -387,6 +387,61 @@ class GDBusProxy extends GObject {
     });
   }
 
+  static final _callCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _callCallbackSeq = 0;
+  static final _callCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_callCallbackTrampoline);
+  static void _callCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _callCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [call] for use with
+  /// async callbacks. See `docs/async.md`.
+  void callCallback(
+    String methodName,
+    GVariant? parameters,
+    GDBusCallFlags flags,
+    int timeoutMsec,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_callCallbackSeq;
+    _callCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeString(methodName, (methodName) {
+      _gDbusProxyCall(
+        this.handle,
+        methodName.cast<Utf8>(),
+        parameters?.handle ?? ffi.nullptr,
+        flags.value,
+        timeoutMsec,
+        cancellable?.handle ?? ffi.nullptr,
+        _callCallbackPtr,
+        _data.cast<ffi.Void>(),
+      );
+    });
+  }
+
   /// Finishes an operation started with g_dbus_proxy_call().
   static final _gDbusProxyCallFinish =
       gioLookup<
@@ -594,6 +649,63 @@ class GDBusProxy extends GObject {
       } finally {
         _nc7?.close();
       }
+    });
+  }
+
+  static final _callWithUnixFdListCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _callWithUnixFdListCallbackSeq = 0;
+  static final _callWithUnixFdListCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_callWithUnixFdListCallbackTrampoline);
+  static void _callWithUnixFdListCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _callWithUnixFdListCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [callWithUnixFdList] for use with
+  /// async callbacks. See `docs/async.md`.
+  void callWithUnixFdListCallback(
+    String methodName,
+    GVariant? parameters,
+    GDBusCallFlags flags,
+    int timeoutMsec,
+    GUnixFDList? fdList,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_callWithUnixFdListCallbackSeq;
+    _callWithUnixFdListCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeString(methodName, (methodName) {
+      _gDbusProxyCallWithUnixFdList(
+        this.handle,
+        methodName.cast<Utf8>(),
+        parameters?.handle ?? ffi.nullptr,
+        flags.value,
+        timeoutMsec,
+        fdList?.handle ?? ffi.nullptr,
+        cancellable?.handle ?? ffi.nullptr,
+        _callWithUnixFdListCallbackPtr,
+        _data.cast<ffi.Void>(),
+      );
     });
   }
 

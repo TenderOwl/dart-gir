@@ -75,6 +75,51 @@ void busGet(
   }
 }
 
+final _bus_getCallbackRegistry = <int, void Function(GObject?, GAsyncResult)>{};
+int _bus_getCallbackSeq = 0;
+final _bus_getCallbackPtr =
+    ffi.Pointer.fromFunction<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >(_bus_getCallbackTrampoline);
+void _bus_getCallbackTrampoline(
+  ffi.Pointer<ffi.Void> sourceObject,
+  ffi.Pointer<ffi.Void> res,
+  ffi.Pointer<ffi.Void> data,
+) {
+  final id = data.cast<ffi.IntPtr>().value;
+  final fn = _bus_getCallbackRegistry.remove(id);
+  malloc.free(data);
+  if (fn == null) return;
+  fn(
+    sourceObject == ffi.nullptr
+        ? null
+        : GObject.fromPointer(sourceObject.cast()),
+    GAsyncResult.fromPointer(res.cast()),
+  );
+}
+
+/// Lifetime-safe variant of [bus_get] for use with
+/// async callbacks. See `docs/async.md`.
+void bus_getCallback(
+  GBusType busType,
+  GCancellable? cancellable,
+  void Function(GObject?, GAsyncResult) callback,
+) {
+  final id = ++_bus_getCallbackSeq;
+  _bus_getCallbackRegistry[id] = callback;
+  final _data = malloc<ffi.IntPtr>()..value = id;
+  _gBusGet(
+    busType.value,
+    cancellable?.handle ?? ffi.nullptr,
+    _bus_getCallbackPtr,
+    _data.cast<ffi.Void>(),
+  );
+}
+
 /// Finishes an operation started with g_bus_get().
 ///
 /// The returned object is a singleton, that is, shared with other
@@ -731,113 +776,50 @@ void dbusAddressGetStream(
   });
 }
 
-/// Finishes an operation started with g_dbus_address_get_stream().
-///
-/// A server is not required to set a GUID, so @out_guid may be set to %NULL
-/// even on success.
-final _gDbusAddressGetStreamFinish =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >
-        >('g_dbus_address_get_stream_finish')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Pointer<Utf8>>,
-            ffi.Pointer<ffi.Pointer<ffi.Void>>,
-          )
-        >();
-(GIOStream, String?) dbusAddressGetStreamFinish(GAsyncResult res) {
-  final _out0 = malloc<ffi.Pointer<Utf8>>();
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gDbusAddressGetStreamFinish(res.handle, _out0, _error);
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
-    }
-    return (
-      GIOStream.fromPointer(_ret),
-      stringFromNative(_out0.value.cast(), free: true)!,
-    );
-  } finally {
-    malloc.free(_out0);
-    calloc.free(_error);
-  }
+final _dbus_address_get_streamCallbackRegistry =
+    <int, void Function(GObject?, GAsyncResult)>{};
+int _dbus_address_get_streamCallbackSeq = 0;
+final _dbus_address_get_streamCallbackPtr =
+    ffi.Pointer.fromFunction<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >(_dbus_address_get_streamCallbackTrampoline);
+void _dbus_address_get_streamCallbackTrampoline(
+  ffi.Pointer<ffi.Void> sourceObject,
+  ffi.Pointer<ffi.Void> res,
+  ffi.Pointer<ffi.Void> data,
+) {
+  final id = data.cast<ffi.IntPtr>().value;
+  final fn = _dbus_address_get_streamCallbackRegistry.remove(id);
+  malloc.free(data);
+  if (fn == null) return;
+  fn(
+    sourceObject == ffi.nullptr
+        ? null
+        : GObject.fromPointer(sourceObject.cast()),
+    GAsyncResult.fromPointer(res.cast()),
+  );
 }
 
-/// Synchronously connects to an endpoint specified by @address and
-/// sets up the connection so it is in a state to run the client-side
-/// of the D-Bus authentication conversation. @address must be in the
-/// [D-Bus address format](https://dbus.freedesktop.org/doc/dbus-specification.html#addresses).
-///
-/// A server is not required to set a GUID, so @out_guid may be set to %NULL
-/// even on success.
-///
-/// This is a synchronous failable function. See
-/// g_dbus_address_get_stream() for the asynchronous version.
-final _gDbusAddressGetStreamSync =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >
-        >('g_dbus_address_get_stream_sync')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<ffi.Pointer<Utf8>>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Pointer<ffi.Void>>,
-          )
-        >();
-(GIOStream, String?) dbusAddressGetStreamSync(
-  String address, [
+/// Lifetime-safe variant of [dbus_address_get_stream] for use with
+/// async callbacks. See `docs/async.md`.
+void dbus_address_get_streamCallback(
+  String address,
   GCancellable? cancellable,
-]) {
-  return withNativeString(address, (nativeAddress) {
-    final _out0 = malloc<ffi.Pointer<Utf8>>();
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDbusAddressGetStreamSync(
-        nativeAddress.cast<Utf8>(),
-        _out0,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (
-        GIOStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
-      );
-    } finally {
-      malloc.free(_out0);
-      calloc.free(_error);
-    }
-  });
-}
-
-/// This is a language binding friendly version of g_dbus_escape_object_path_bytestring().
-final _gDbusEscapeObjectPath =
-    gioLookup<
-          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>
-        >('g_dbus_escape_object_path')
-        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>();
-String dbusEscapeObjectPath(String s) {
-  return withNativeString(s, (nativeS) {
-    return stringFromNative(
-      (_gDbusEscapeObjectPath(nativeS.cast<Utf8>())).cast(),
-      free: true,
-    )!;
+  void Function(GObject?, GAsyncResult) callback,
+) {
+  final id = ++_dbus_address_get_streamCallbackSeq;
+  _dbus_address_get_streamCallbackRegistry[id] = callback;
+  final _data = malloc<ffi.IntPtr>()..value = id;
+  withNativeString(address, (address) {
+    _gDbusAddressGetStream(
+      address.cast<Utf8>(),
+      cancellable?.handle ?? ffi.nullptr,
+      _dbus_address_get_streamCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   });
 }

@@ -4,6 +4,7 @@ library;
 import '../gir/gir.dart';
 import '../resolve/naming.dart';
 import '../resolve/types.dart';
+import 'async_emitter.dart';
 import 'callable.dart';
 import 'context.dart';
 
@@ -29,6 +30,9 @@ class FunctionEmitter {
     return toLowerCamel(fn.name);
   }
 
+  /// Returns the base namespace-function wrapper (today's emission).
+  /// Returns null when the function is skipped (the caller records the
+  /// reason in the report).
   String? emitFunction(GirFunction fn) {
     var name = escapeKeyword(publicName(fn));
     if (name.isEmpty) {
@@ -45,6 +49,21 @@ class FunctionEmitter {
     }
     return CallableEmitter(ctx)
         .emit(fn, dartName: name, ownerName: ctx.namespace.name);
+  }
+
+  /// Returns the lifetime-safe `*Callback` convenience overload for
+  /// async namespace functions, when applicable. Returns null when
+  /// there is no async callback or the callback type isn't a
+  /// `GAsyncReadyCallback`. The caller is responsible for collecting
+  /// the result and ensuring the name doesn't collide.
+  String? emitAsyncFunctionOverload(GirFunction fn, String baseDartName) {
+    if (!fn.parameters.any((p) => p.scope == 'async')) return null;
+    return AsyncCallbackEmitter(ctx).emitFunctionOverload(
+      fn,
+      dartName: baseDartName,
+      ownerName: ctx.namespace.name,
+      nativeBindingName: '_${toLowerCamel(fn.cIdentifier!)}',
+    );
   }
 
   /// Constants become top-level `const` when the value is a primitive int,

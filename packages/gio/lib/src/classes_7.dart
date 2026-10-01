@@ -502,6 +502,75 @@ class GDBusConnection extends GObject {
     });
   }
 
+  static final _callCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _callCallbackSeq = 0;
+  static final _callCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_callCallbackTrampoline);
+  static void _callCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _callCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [call] for use with
+  /// async callbacks. See `docs/async.md`.
+  void callCallback(
+    String? busName,
+    String objectPath,
+    String interfaceName,
+    String methodName,
+    GVariant? parameters,
+    GVariantType? replyType,
+    GDBusCallFlags flags,
+    int timeoutMsec,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_callCallbackSeq;
+    _callCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeString(busName, (busName) {
+      withNativeString(objectPath, (objectPath) {
+        withNativeString(interfaceName, (interfaceName) {
+          withNativeString(methodName, (methodName) {
+            _gDbusConnectionCall(
+              this.handle,
+              busName.cast<Utf8>(),
+              objectPath.cast<Utf8>(),
+              interfaceName.cast<Utf8>(),
+              methodName.cast<Utf8>(),
+              parameters?.handle ?? ffi.nullptr,
+              replyType?.handle ?? ffi.nullptr,
+              flags.value,
+              timeoutMsec,
+              cancellable?.handle ?? ffi.nullptr,
+              _callCallbackPtr,
+              _data.cast<ffi.Void>(),
+            );
+          });
+        });
+      });
+    });
+  }
+
   /// Finishes an operation started with g_dbus_connection_call().
   static final _gDbusConnectionCallFinish =
       gioLookup<
@@ -770,6 +839,77 @@ class GDBusConnection extends GObject {
     });
   }
 
+  static final _callWithUnixFdListCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _callWithUnixFdListCallbackSeq = 0;
+  static final _callWithUnixFdListCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_callWithUnixFdListCallbackTrampoline);
+  static void _callWithUnixFdListCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _callWithUnixFdListCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [callWithUnixFdList] for use with
+  /// async callbacks. See `docs/async.md`.
+  void callWithUnixFdListCallback(
+    String? busName,
+    String objectPath,
+    String interfaceName,
+    String methodName,
+    GVariant? parameters,
+    GVariantType? replyType,
+    GDBusCallFlags flags,
+    int timeoutMsec,
+    GUnixFDList? fdList,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_callWithUnixFdListCallbackSeq;
+    _callWithUnixFdListCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeString(busName, (busName) {
+      withNativeString(objectPath, (objectPath) {
+        withNativeString(interfaceName, (interfaceName) {
+          withNativeString(methodName, (methodName) {
+            _gDbusConnectionCallWithUnixFdList(
+              this.handle,
+              busName.cast<Utf8>(),
+              objectPath.cast<Utf8>(),
+              interfaceName.cast<Utf8>(),
+              methodName.cast<Utf8>(),
+              parameters?.handle ?? ffi.nullptr,
+              replyType?.handle ?? ffi.nullptr,
+              flags.value,
+              timeoutMsec,
+              fdList?.handle ?? ffi.nullptr,
+              cancellable?.handle ?? ffi.nullptr,
+              _callWithUnixFdListCallbackPtr,
+              _data.cast<ffi.Void>(),
+            );
+          });
+        });
+      });
+    });
+  }
+
   /// Closes @connection. Note that this never causes the process to
   /// exit (this might only happen if the other end of a shared message
   /// bus connection disconnects, see #GDBusConnection:exit-on-close).
@@ -858,6 +998,51 @@ class GDBusConnection extends GObject {
     } finally {
       _nc2?.close();
     }
+  }
+
+  static final _closeCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _closeCallbackSeq = 0;
+  static final _closeCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_closeCallbackTrampoline);
+  static void _closeCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _closeCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [close] for use with
+  /// async callbacks. See `docs/async.md`.
+  void closeCallback(
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_closeCallbackSeq;
+    _closeCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDbusConnectionClose(
+      this.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _closeCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes an operation started with g_dbus_connection_close().
@@ -1189,6 +1374,51 @@ class GDBusConnection extends GObject {
     } finally {
       _nc2?.close();
     }
+  }
+
+  static final _flushCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _flushCallbackSeq = 0;
+  static final _flushCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_flushCallbackTrampoline);
+  static void _flushCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _flushCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [flush] for use with
+  /// async callbacks. See `docs/async.md`.
+  void flushCallback(
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_flushCallbackSeq;
+    _flushCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gDbusConnectionFlush(
+      this.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _flushCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes an operation started with g_dbus_connection_flush().

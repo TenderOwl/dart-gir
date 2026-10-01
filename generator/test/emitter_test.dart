@@ -1,3 +1,4 @@
+import 'package:gir_generator/src/emit/async_emitter.dart';
 import 'package:gir_generator/src/emit/callback_emitter.dart';
 import 'package:gir_generator/src/emit/emit.dart';
 import 'package:gir_generator/src/gir/gir.dart';
@@ -613,5 +614,162 @@ void main() {
       expect(bindingCode, contains('GBinding.fromPointer('));
       expect(bindingCode, contains('String dupSource()'));
     });
+  });
+
+  group('AsyncCallbackEmitter', () {
+    GirCallback asyncReadyCallback() => GirCallback(
+          name: 'AsyncReadyCallback',
+          cType: 'GAsyncReadyCallback',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'source_object',
+              type: GirTypeRef(name: 'Object', cType: 'GObject*'),
+            ),
+            GirParameter(
+              name: 'res',
+              type: GirTypeRef(name: 'AsyncResult', cType: 'GAsyncResult*'),
+            ),
+            GirParameter(
+              name: 'data',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        );
+
+    test(
+      'emits *Callback convenience overload with typed registry + trampoline',
+      () {
+        final report = GenerationReport();
+        final cb = asyncReadyCallback();
+        final fn = GirFunction(
+          name: 'open',
+          cIdentifier: 'gtk_file_dialog_open',
+          parameters: const [
+            GirParameter(
+              name: 'callback',
+              nullable: true,
+              scope: 'async',
+              type: GirTypeRef(
+                name: 'AsyncReadyCallback',
+                cType: 'GAsyncReadyCallback',
+              ),
+            ),
+            GirParameter(
+              name: 'user_data',
+              nullable: true,
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn], callbacks: [cb]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
+          fn,
+          dartName: 'open',
+          ownerName: 'GLib',
+          nativeBindingName: '_gtkFileDialogOpen',
+        );
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+        // Typed callback signature for GAsyncReadyCallback.
+        expect(code, contains('void Function(GObject?, GAsyncResult) callback'));
+        // user_data is hidden from the wrapper.
+        expect(code, isNot(contains('Pointer<ffi.Void> userData')));
+        // Registry + sequence counter + permanent function pointer.
+        // (Top-level for namespace functions; static on class members.)
+        expect(code, contains('final _openCallbackRegistry = '
+            '<int, void Function(GObject?, GAsyncResult)>{};'));
+        expect(code, contains('int _openCallbackSeq = 0;'));
+        expect(code, contains('final _openCallbackPtr = '
+            'ffi.Pointer.fromFunction<'));
+        // Trampoline that looks up by id, calls the typed callback,
+        // and frees the data pointer.
+        expect(code, contains('void _openCallbackTrampoline('));
+        expect(code, contains('final id = data.cast<ffi.IntPtr>().value;'));
+        expect(code, contains('final fn = _openCallbackRegistry.remove(id);'));
+        expect(code, contains('malloc.free(data);'));
+        expect(code, contains('GObject.fromPointer(sourceObject.cast())'));
+        expect(code, contains('GAsyncResult.fromPointer(res.cast())'));
+        // Convenience overload calls the C function with the
+        // trampoline pointer and the malloc'd id pointer.
+        expect(code, contains('_gtkFileDialogOpen('));
+        expect(code, contains('_openCallbackPtr,'));
+        expect(code, contains('_data.cast<ffi.Void>()'));
+      },
+    );
+
+    test(
+      'skips when callback type is not GAsyncReadyCallback',
+      () {
+        final report = GenerationReport();
+        // A non-GAsyncReadyCallback progress callback (just a marker).
+        final cb = GirCallback(
+          name: 'FileProgressCallback',
+          cType: 'GFileProgressCallback',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'current_num_bytes',
+              type: GirTypeRef(name: 'goffset', cType: 'goffset'),
+            ),
+            GirParameter(
+              name: 'total_num_bytes',
+              type: GirTypeRef(name: 'goffset', cType: 'goffset'),
+            ),
+          ],
+        );
+        final fn = GirFunction(
+          name: 'copy',
+          cIdentifier: 'g_file_copy',
+          parameters: const [
+            GirParameter(
+              name: 'progress_callback',
+              scope: 'async',
+              type: GirTypeRef(
+                name: 'FileProgressCallback',
+                cType: 'GFileProgressCallback',
+              ),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn], callbacks: [cb]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
+          fn,
+          dartName: 'copy',
+          ownerName: 'GLib',
+          nativeBindingName: '_gFileCopy',
+        );
+        expect(code, isNull);
+      },
+    );
+
+    test(
+      'returns null when no scope="async" parameter is present',
+      () {
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'utf8_strlen',
+          cIdentifier: 'g_utf8_strlen',
+          returnType: const GirTypeRef(name: 'glong', cType: 'glong'),
+          parameters: const [
+            GirParameter(
+              name: 'str',
+              type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
+          fn,
+          dartName: 'utf8Strlen',
+          ownerName: 'GLib',
+          nativeBindingName: '_gUtf8Strlen',
+        );
+        expect(code, isNull);
+      },
+    );
   });
 }

@@ -178,6 +178,74 @@ skipped (none of the GIR files in scope declare one) — see
 **parameters** are accepted and emitted via the conditional pattern
 described above.
 
+## AsyncCallbackEmitter — `generator/lib/src/emit/async_emitter.dart`
+
+Emits the lifetime-safe `*Callback` convenience overload alongside
+every async method (a method whose callback parameter carries
+`scope="async"` AND whose callback type is `GAsyncReadyCallback`).
+
+The base wrapper (emitted by `CallableEmitter`) is unsafe for
+async callbacks because it closes its wrapping `NativeCallable` in
+`finally` — leaving a dangling C function pointer when GLib later
+dispatches the callback from the main loop. The `*Callback` overload
+replaces the `NativeCallable` with a permanent `Pointer.fromFunction`
+over a static trampoline + a per-call registry:
+
+```dart
+// Generated alongside `void open(...)`:
+void openCallback(
+  GtkWindow? parent,
+  GCancellable? cancellable,
+  void Function(GObject? sourceObject, GAsyncResult result) topLevel,
+);
+
+static final _openCallbackRegistry =
+    <int, void Function(GObject?, GAsyncResult)>{};
+static int _openCallbackSeq = 0;
+static final _openCallbackPtr = ffi.Pointer.fromFunction<
+    ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>)>(_openCallbackTrampoline);
+
+static void _openCallbackTrampoline(
+  ffi.Pointer<ffi.Void> sourceObject,
+  ffi.Pointer<ffi.Void> res,
+  ffi.Pointer<ffi.Void> data,
+) {
+  final id = data.cast<ffi.IntPtr>().value;
+  final fn = _openCallbackRegistry.remove(id);
+  malloc.free(data);
+  if (fn == null) return;
+  fn(
+    sourceObject == ffi.nullptr
+        ? null
+        : GObject.fromPointer(sourceObject.cast()),
+    GAsyncResult.fromPointer(res.cast()),
+  );
+}
+```
+
+`Pointer.fromFunction` is permanent (lifetime = program), the
+trampoline is a static method so `Pointer.fromFunction` accepts it,
+and the per-call `id` (carried in the malloc'd `data` pointer) routes
+the dispatch back to the user's typed callback. No `NativeCallable`
+to close, no dangling pointer risk.
+
+The convenience overload:
+
+* **hides `user_data`** — always passes `ffi.nullptr` internally.
+  Dart closures already capture state.
+* **types the callback** — `void Function(GObject?, GAsyncResult)`
+  for `GAsyncReadyCallback`. Other async callbacks fall back to the
+  FFI-compatible shape with `Pointer<Void>` parameters.
+
+Methods with multiple `scope="async"` callback parameters (e.g.
+`g_file_copy_async` with its progress callback) target the
+`GAsyncReadyCallback` specifically; the other async callbacks keep
+their existing emission.
+
+See [async.md](./async.md) for the user-facing guide and
+[signals.md](./signals.md) for the related signal-helper pattern.
+
 ## SignalHelper — `generator/lib/src/emit/signals_helper.dart`
 
 Emits `lib/src/signals.dart` when at least one kept signal exists.

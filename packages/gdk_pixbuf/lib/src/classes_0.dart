@@ -1517,6 +1517,65 @@ class GdkPixbuf extends GObject {
     });
   }
 
+  static final _saveToStreamvAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _saveToStreamvAsyncCallbackSeq = 0;
+  static final _saveToStreamvAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_saveToStreamvAsyncCallbackTrampoline);
+  static void _saveToStreamvAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _saveToStreamvAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [saveToStreamvAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void saveToStreamvAsyncCallback(
+    GOutputStream stream,
+    String type,
+    List<String?>? optionKeys,
+    List<String?>? optionValues,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_saveToStreamvAsyncCallbackSeq;
+    _saveToStreamvAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeStringList(optionKeys, (optionKeys) {
+      withNativeStringList(optionValues, (optionValues) {
+        withNativeString(type, (type) {
+          _gdkPixbufSaveToStreamvAsync(
+            this.handle,
+            stream.handle,
+            type.cast<Utf8>(),
+            optionKeys,
+            optionValues,
+            cancellable?.handle ?? ffi.nullptr,
+            _saveToStreamvAsyncCallbackPtr,
+            _data.cast<ffi.Void>(),
+          );
+        });
+      });
+    });
+  }
+
   /// Vector version of `gdk_pixbuf_save()`.
   ///
   /// Saves pixbuf to a file in `type`, which is currently "jpeg", "png", "tiff", "ico" or "bmp".

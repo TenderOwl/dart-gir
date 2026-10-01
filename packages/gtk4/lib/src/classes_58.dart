@@ -213,6 +213,53 @@ class GtkFileDialog extends GObject {
     }
   }
 
+  static final _openCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _openCallbackSeq = 0;
+  static final _openCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_openCallbackTrampoline);
+  static void _openCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _openCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [open] for use with
+  /// async callbacks. See `docs/async.md`.
+  void openCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_openCallbackSeq;
+    _openCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogOpen(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _openCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes the [method@Gtk.FileDialog.open] call.
   ///
   /// Note that this function returns a [error@Gtk.DialogError.DISMISSED]
@@ -323,6 +370,53 @@ class GtkFileDialog extends GObject {
     } finally {
       _nc3?.close();
     }
+  }
+
+  static final _openMultipleCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _openMultipleCallbackSeq = 0;
+  static final _openMultipleCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_openMultipleCallbackTrampoline);
+  static void _openMultipleCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _openMultipleCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [openMultiple] for use with
+  /// async callbacks. See `docs/async.md`.
+  void openMultipleCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_openMultipleCallbackSeq;
+    _openMultipleCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogOpenMultiple(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _openMultipleCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes the [method@Gtk.FileDialog.open] call.
@@ -442,6 +536,53 @@ class GtkFileDialog extends GObject {
     } finally {
       _nc3?.close();
     }
+  }
+
+  static final _openMultipleTextFilesCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _openMultipleTextFilesCallbackSeq = 0;
+  static final _openMultipleTextFilesCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_openMultipleTextFilesCallbackTrampoline);
+  static void _openMultipleTextFilesCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _openMultipleTextFilesCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [openMultipleTextFiles] for use with
+  /// async callbacks. See `docs/async.md`.
+  void openMultipleTextFilesCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_openMultipleTextFilesCallbackSeq;
+    _openMultipleTextFilesCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogOpenMultipleTextFiles(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _openMultipleTextFilesCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes the [method@Gtk.FileDialog.open] call.
@@ -565,6 +706,53 @@ class GtkFileDialog extends GObject {
     } finally {
       _nc3?.close();
     }
+  }
+
+  static final _openTextFileCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _openTextFileCallbackSeq = 0;
+  static final _openTextFileCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_openTextFileCallbackTrampoline);
+  static void _openTextFileCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _openTextFileCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [openTextFile] for use with
+  /// async callbacks. See `docs/async.md`.
+  void openTextFileCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_openTextFileCallbackSeq;
+    _openTextFileCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogOpenTextFile(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _openTextFileCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes the [method@Gtk.FileDialog.open_text_file] call
@@ -694,6 +882,53 @@ class GtkFileDialog extends GObject {
     }
   }
 
+  static final _saveCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _saveCallbackSeq = 0;
+  static final _saveCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_saveCallbackTrampoline);
+  static void _saveCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _saveCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [save] for use with
+  /// async callbacks. See `docs/async.md`.
+  void saveCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_saveCallbackSeq;
+    _saveCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogSave(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _saveCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes the [method@Gtk.FileDialog.save] call.
   ///
   /// Note that this function returns a [error@Gtk.DialogError.DISMISSED]
@@ -804,6 +1039,53 @@ class GtkFileDialog extends GObject {
     } finally {
       _nc3?.close();
     }
+  }
+
+  static final _saveTextFileCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _saveTextFileCallbackSeq = 0;
+  static final _saveTextFileCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_saveTextFileCallbackTrampoline);
+  static void _saveTextFileCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _saveTextFileCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [saveTextFile] for use with
+  /// async callbacks. See `docs/async.md`.
+  void saveTextFileCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_saveTextFileCallbackSeq;
+    _saveTextFileCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogSaveTextFile(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _saveTextFileCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes the [method@Gtk.FileDialog.save_text_file] call
@@ -946,6 +1228,53 @@ class GtkFileDialog extends GObject {
     }
   }
 
+  static final _selectFolderCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _selectFolderCallbackSeq = 0;
+  static final _selectFolderCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_selectFolderCallbackTrampoline);
+  static void _selectFolderCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _selectFolderCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [selectFolder] for use with
+  /// async callbacks. See `docs/async.md`.
+  void selectFolderCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_selectFolderCallbackSeq;
+    _selectFolderCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogSelectFolder(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _selectFolderCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes the [method@Gtk.FileDialog.select_folder] call.
   ///
   /// Note that this function returns a [error@Gtk.DialogError.DISMISSED]
@@ -1061,6 +1390,53 @@ class GtkFileDialog extends GObject {
     } finally {
       _nc3?.close();
     }
+  }
+
+  static final _selectMultipleFoldersCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _selectMultipleFoldersCallbackSeq = 0;
+  static final _selectMultipleFoldersCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_selectMultipleFoldersCallbackTrampoline);
+  static void _selectMultipleFoldersCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _selectMultipleFoldersCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [selectMultipleFolders] for use with
+  /// async callbacks. See `docs/async.md`.
+  void selectMultipleFoldersCallback(
+    GtkWindow? parent,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_selectMultipleFoldersCallbackSeq;
+    _selectMultipleFoldersCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gtkFileDialogSelectMultipleFolders(
+      this.handle,
+      parent?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _selectMultipleFoldersCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes the [method@Gtk.FileDialog.select_multiple_folders] call.

@@ -465,6 +465,55 @@ final class GAppInfo {
     }
   }
 
+  static final _launchUrisAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _launchUrisAsyncCallbackSeq = 0;
+  static final _launchUrisAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_launchUrisAsyncCallbackTrampoline);
+  static void _launchUrisAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _launchUrisAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [launchUrisAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void launchUrisAsyncCallback(
+    GList? uris,
+    GAppLaunchContext? context,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_launchUrisAsyncCallbackSeq;
+    _launchUrisAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gAppInfoLaunchUrisAsync(
+      this.handle,
+      uris?.handle ?? ffi.nullptr,
+      context?.handle ?? ffi.nullptr,
+      cancellable?.handle ?? ffi.nullptr,
+      _launchUrisAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes a [method@Gio.AppInfo.launch_uris_async] operation.
   static final _gAppInfoLaunchUrisFinish =
       gioLookup<

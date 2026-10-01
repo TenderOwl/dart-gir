@@ -205,8 +205,15 @@ class GirMethod extends GirFunction {
     super.introspectable,
     super.shadows,
     super.shadowedBy,
+    this.finishFunc,
     this.instanceParameter,
   });
+
+  /// `glib:finish-func="..."` value when this method is the async half
+  /// of a GIO-style `*_async` + `*_finish` pair. The `_finish` sibling
+  /// is conventionally named `<methodName>Finish` and lives on the
+  /// same class/record.
+  final String? finishFunc;
 
   /// The `this`/`self` instance parameter, when present.
   final GirParameter? instanceParameter;
@@ -240,6 +247,8 @@ class GirParameter {
     this.optional = false,
     this.callerAllocates = false,
     this.isVarargs = false,
+    this.scope,
+    this.closureIndex,
     this.doc,
   });
 
@@ -251,6 +260,20 @@ class GirParameter {
   final bool optional;
   final bool callerAllocates;
   final bool isVarargs;
+
+  /// `scope="..."` attribute value. GLib uses `"async"` for callback
+  /// parameters that survive past the call (dispatched by the main
+  /// loop), `"call"` for synchronous callbacks, `"notified"` for
+  /// `GDestroyNotify`-style parameters, and `null`/absent for plain
+  /// data parameters.
+  final String? scope;
+
+  /// `closure="N"` attribute value (1-based positional index of the
+  /// user_data parameter that carries the closure's state for this
+  /// callback). `null` when this parameter is not itself a callback
+  /// carrying user_data.
+  final int? closureIndex;
+
   final String? doc;
 }
 

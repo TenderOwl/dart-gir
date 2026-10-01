@@ -68,6 +68,20 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   at runtime and verifies that the `idleAddFull` / `timeoutAddFull`
   wrappers accept a top-level Dart callback plus nullable
   `data` / `notify` parameters.
+- **`*Callback` convenience overload for async methods** (`openCallback`,
+  `queryInfoAsyncCallback`, …). The base wrapper allocates a
+  `NativeCallable` and closes it in `finally` — unsafe for async
+  callbacks because GLib holds the pointer past the call. The new
+  overload routes the dispatch through a permanent
+  `Pointer.fromFunction` over a static trampoline + per-call registry,
+  so no `NativeCallable` is ever closed. The user's callback signature
+  is typed (`void Function(GObject?, GAsyncResult)` for
+  `GAsyncReadyCallback`); `user_data` is hidden (always `null`
+  internally). See [docs/async.md](./docs/async.md).
+- **GIR `glib:finish-func`, `scope`, `closure` attributes** are now
+  parsed into `GirMethod.finishFunc`, `GirParameter.scope`, and
+  `GirParameter.closureIndex`. The parser test that previously failed
+  (it referenced these fields) is now green.
 
 ### Changed
 - **`ClassEmitter` walks the parent chain** to emit inherited typed

@@ -17,6 +17,8 @@ dependencies:
     path: ../packages/gio
   gobject:
     path: ../packages/gobject
+  glib:
+    path: ../packages/glib
   gtk4:
     path: ../packages/gtk4
   gtk_source5:

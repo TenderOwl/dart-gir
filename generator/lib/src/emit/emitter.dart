@@ -75,8 +75,19 @@ class PackageEmitter {
       if (code != null) categories['constants']!.add(code);
     }
     for (final f in namespace.functions) {
-      final code = functionEmitter.emitFunction(f);
-      if (code != null) categories['functions']!.add(code);
+      final base = functionEmitter.emitFunction(f);
+      if (base != null) {
+        categories['functions']!.add(base);
+        // Lifetime-safe `*Callback` overload alongside the base wrapper
+        // for async functions whose callback type is `GAsyncReadyCallback`.
+        final asyncOverload = functionEmitter.emitAsyncFunctionOverload(
+          f,
+          f.name,
+        );
+        if (asyncOverload != null && ctx.claimName('${f.name}Callback')) {
+          categories['functions']!.add(asyncOverload);
+        }
+      }
     }
 
     final recordEmitter = RecordEmitter(ctx);

@@ -192,6 +192,51 @@ class GdkClipboard extends GObject {
     }
   }
 
+  static final _readTextAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readTextAsyncCallbackSeq = 0;
+  static final _readTextAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readTextAsyncCallbackTrampoline);
+  static void _readTextAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readTextAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readTextAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readTextAsyncCallback(
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readTextAsyncCallbackSeq;
+    _readTextAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gdkClipboardReadTextAsync(
+      this.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _readTextAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes an asynchronous clipboard read.
   ///
   /// See [method@Gdk.Clipboard.read_text_async].
@@ -298,6 +343,51 @@ class GdkClipboard extends GObject {
     } finally {
       _nc2?.close();
     }
+  }
+
+  static final _readTextureAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readTextureAsyncCallbackSeq = 0;
+  static final _readTextureAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readTextureAsyncCallbackTrampoline);
+  static void _readTextureAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readTextureAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readTextureAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readTextureAsyncCallback(
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readTextureAsyncCallbackSeq;
+    _readTextureAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gdkClipboardReadTextureAsync(
+      this.handle,
+      cancellable?.handle ?? ffi.nullptr,
+      _readTextureAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes an asynchronous clipboard read.
@@ -415,6 +505,55 @@ class GdkClipboard extends GObject {
     } finally {
       _nc4?.close();
     }
+  }
+
+  static final _readValueAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readValueAsyncCallbackSeq = 0;
+  static final _readValueAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readValueAsyncCallbackTrampoline);
+  static void _readValueAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readValueAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readValueAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readValueAsyncCallback(
+    int type,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readValueAsyncCallbackSeq;
+    _readValueAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gdkClipboardReadValueAsync(
+      this.handle,
+      type,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _readValueAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// Finishes an asynchronous clipboard read.
@@ -579,6 +718,53 @@ class GdkClipboard extends GObject {
     }
   }
 
+  static final _storeAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _storeAsyncCallbackSeq = 0;
+  static final _storeAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_storeAsyncCallbackTrampoline);
+  static void _storeAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _storeAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [storeAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void storeAsyncCallback(
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_storeAsyncCallbackSeq;
+    _storeAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gdkClipboardStoreAsync(
+      this.handle,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _storeAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes an asynchronous clipboard store.
   ///
   /// See [method@Gdk.Clipboard.store_async].
@@ -615,223 +801,6 @@ class GdkClipboard extends GObject {
   /// Emitted when the clipboard changes ownership.
   int onChanged(void Function() callback) {
     return _connectSignal_v_0(this.handle, 'changed', callback);
-  }
-
-  /// The notify signal is emitted on an object when one of its properties has
-  /// its value set through g_object_set_property(), g_object_set(), et al.
-  ///
-  /// Note that getting this signal doesn’t itself guarantee that the value of
-  /// the property has actually changed. When it is emitted is determined by the
-  /// derived GObject class. If the implementor did not create the property with
-  /// %G_PARAM_EXPLICIT_NOTIFY, then any call to g_object_set_property() results
-  /// in ::notify being emitted, even if the new value is the same as the old.
-  /// If they did pass %G_PARAM_EXPLICIT_NOTIFY, then this signal is emitted only
-  /// when they explicitly call g_object_notify() or g_object_notify_by_pspec(),
-  /// and common practice is to do that only when the value has actually changed.
-  ///
-  /// This signal is typically used to obtain change notification for a
-  /// single property, by specifying the property name as a detail in the
-  /// g_signal_connect() call, like this:
-  ///
-  /// |[<!-- language="C" -->
-  /// g_signal_connect (text_view->buffer, "notify::paste-target-list",
-  /// G_CALLBACK (gtk_text_view_target_list_notify),
-  /// text_view)
-  /// ]|
-  ///
-  /// It is important to note that you must use
-  /// [canonical parameter names][class@GObject.ParamSpec#parameter-names] as
-  /// detail strings for the notify signal.
-  int onNotify(void Function(GParamSpec pspec) callback) {
-    return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
-  }
-}
-
-/// Deserializes content received via inter-application data transfers.
-///
-/// The `GdkContentDeserializer` transforms serialized content that is
-/// identified by a mime type into an object identified by a GType.
-///
-/// GTK provides serializers and deserializers for common data types
-/// such as text, colors, images or file lists. To register your own
-/// deserialization functions, use [func@content_register_deserializer].
-///
-/// Also see [class@Gdk.ContentSerializer].
-class GdkContentDeserializer extends GObject {
-  GdkContentDeserializer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
-
-  /// Gets the cancellable for the current operation.
-  ///
-  /// This is the `GCancellable` that was passed to [func@Gdk.content_deserialize_async].
-  static final _gdkContentDeserializerGetCancellable =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_get_cancellable')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GCancellable? getCancellable() {
-    return (_gdkContentDeserializerGetCancellable(this.handle)) == ffi.nullptr
-        ? null
-        : GCancellable.fromPointer(
-            _gdkContentDeserializerGetCancellable(this.handle),
-          );
-  }
-
-  /// Gets the `GType` to create an instance of.
-  static final _gdkContentDeserializerGetGtype =
-      gdk4Lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_deserializer_get_gtype',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getGtype() {
-    return _gdkContentDeserializerGetGtype(this.handle);
-  }
-
-  /// Gets the input stream for the current operation.
-  ///
-  /// This is the stream that was passed to [func@Gdk.content_deserialize_async].
-  static final _gdkContentDeserializerGetInputStream =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_get_input_stream')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GInputStream getInputStream() {
-    return GInputStream.fromPointer(
-      _gdkContentDeserializerGetInputStream(this.handle),
-    );
-  }
-
-  /// Gets the mime type to deserialize from.
-  static final _gdkContentDeserializerGetMimeType =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_get_mime_type')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getMimeType() {
-    return stringFromNative(
-      (_gdkContentDeserializerGetMimeType(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Gets the I/O priority for the current operation.
-  ///
-  /// This is the priority that was passed to [func@Gdk.content_deserialize_async].
-  static final _gdkContentDeserializerGetPriority =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_deserializer_get_priority',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getPriority() {
-    return _gdkContentDeserializerGetPriority(this.handle);
-  }
-
-  /// Gets the data that was associated with the current operation.
-  ///
-  /// See [method@Gdk.ContentDeserializer.set_task_data].
-  static final _gdkContentDeserializerGetTaskData =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_get_task_data')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getTaskData() {
-    return _gdkContentDeserializerGetTaskData(this.handle);
-  }
-
-  /// Gets the user data that was passed when the deserializer was registered.
-  static final _gdkContentDeserializerGetUserData =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_get_user_data')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getUserData() {
-    return _gdkContentDeserializerGetUserData(this.handle);
-  }
-
-  /// Gets the `GValue` to store the deserialized object in.
-  static final _gdkContentDeserializerGetValue =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_get_value')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GValue getValue() {
-    return GValue.fromPointer(_gdkContentDeserializerGetValue(this.handle));
-  }
-
-  /// Indicate that the deserialization has ended with an error.
-  ///
-  /// This function consumes @error.
-  static final _gdkContentDeserializerReturnError =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_deserializer_return_error')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void returnError(GError error) {
-    _gdkContentDeserializerReturnError(this.handle, error.handle);
-  }
-
-  /// Indicate that the deserialization has been successfully completed.
-  static final _gdkContentDeserializerReturnSuccess =
-      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_deserializer_return_success',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void returnSuccess() {
-    _gdkContentDeserializerReturnSuccess(this.handle);
-  }
-
-  /// Associate data with the current deserialization operation.
-  static final _gdkContentDeserializerSetTaskData =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gdk_content_deserializer_set_task_data')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  void setTaskData(
-    ffi.Pointer<ffi.Void> data,
-    void Function(ffi.Pointer<ffi.Void>) notify,
-  ) {
-    final _nc2 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(notify);
-    try {
-      _gdkContentDeserializerSetTaskData(
-        this.handle,
-        data,
-        _nc2.nativeFunction,
-      );
-    } finally {
-      _nc2.close();
-    }
   }
 
   /// The notify signal is emitted on an object when one of its properties has

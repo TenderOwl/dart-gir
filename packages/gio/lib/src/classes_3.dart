@@ -194,6 +194,55 @@ class GBufferedInputStream extends GFilterInputStream {
     }
   }
 
+  static final _fillAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _fillAsyncCallbackSeq = 0;
+  static final _fillAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_fillAsyncCallbackTrampoline);
+  static void _fillAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _fillAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [fillAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void fillAsyncCallback(
+    int count,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_fillAsyncCallbackSeq;
+    _fillAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gBufferedInputStreamFillAsync(
+      this.handle,
+      count,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _fillAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finishes an asynchronous read.
   static final _gBufferedInputStreamFillFinish =
       gioLookup<
