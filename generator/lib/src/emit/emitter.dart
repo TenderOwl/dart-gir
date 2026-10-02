@@ -1,5 +1,6 @@
-/// Orchestrates per-package emission: runs the per-kind emitters, chunks
-/// declarations into part files, writes scaffolding and the skip report.
+/// Orchestrates per-package emission: runs the per-kind emitters, splits
+/// declarations into part files (one file per Dart class, chunked for
+/// the smaller categories), writes scaffolding and the skip report.
 library;
 
 import 'dart:io';
@@ -65,8 +66,15 @@ class PackageEmitter {
       'callbacks': [],
       'functions': [],
       'records': [],
-      'classes': [],
     };
+
+    // One file per Dart class: `lib/src/<lowercased class name>.dart`
+    // for the class itself and `lib/src/<lowercased class name>_props.dart`
+    // for its `<ClassName>Props` companion. Insertion order is the GIR
+    // declaration order, preserved by Dart's `Map` implementation; the
+    // barrel's `part` directives end up in that same order so IDE
+    // jump-to-source visits classes in declaration order.
+    final classFiles = <String, String>{};
 
     final enumEmitter = EnumEmitter(ctx);
     for (final e in namespace.enumerations) {
@@ -133,14 +141,18 @@ class PackageEmitter {
     }
     for (final c in namespace.classes) {
       final code = classEmitter.emitClass(c);
-      if (code != null) categories['classes']!.add(code);
+      final dartName = ctx.dartTypeName(ctx.namespace.name, c.name);
+      if (code != null) {
+        classFiles[_fileNameForClass(dartName)] = code;
+      }
       // The props companion class is a top-level class (alongside the
-      // class it backs) emitted in the same part file. Add it right
-      // after the class entry so the parts compiler can resolve it
-      // before the class body references it.
+      // class it backs) — placed in its own `<name>_props.dart` file.
+      // Forward references between the two `part of` files resolve
+      // naturally because Dart compiles every part of one library
+      // together.
       final propsCode = classEmitter.pendingPropsClass;
       if (propsCode != null) {
-        categories['classes']!.add(propsCode);
+        classFiles[_fileNameForClass(dartName, props: true)] = propsCode;
       }
     }
 
@@ -193,6 +205,19 @@ class PackageEmitter {
     if (signalsCode != null) {
       parts.add('signals.dart');
       File(p.join(srcDir, 'signals.dart')).writeAsStringSync(signalsCode);
+    }
+
+    // Classes: one file per Dart class / props companion, in GIR
+    // declaration order.
+    for (final entry in classFiles.entries) {
+      final fileName = '${entry.key}.dart';
+      parts.add(fileName);
+      final content = StringBuffer()
+        ..writeln(generatedHeader)
+        ..writeln("part of '../$pkg.dart';")
+        ..writeln()
+        ..write(entry.value);
+      File(p.join(srcDir, fileName)).writeAsStringSync(content.toString());
     }
 
     for (final entry in categories.entries) {
@@ -248,5 +273,17 @@ class PackageEmitter {
       lines += declLines;
     }
     return chunks.map((c) => c.toString()).toList();
+  }
+
+  /// File name (no `.dart` suffix) for a generated Dart class.
+  ///
+  /// Lowercased Dart class name verbatim — `GtkButton` →
+  /// `gtkbutton.dart`, `GApplication` → `gapplication.dart` — matching
+  /// the upstream g-i convention and the user's stated pattern. The
+  /// optional `props` flag appends `_props` for the companion class
+  /// (`GtkButtonProps` → `gtkbutton_props.dart`).
+  String _fileNameForClass(String dartName, {bool props = false}) {
+    final base = dartName.toLowerCase();
+    return props ? '${base}_props' : base;
   }
 }

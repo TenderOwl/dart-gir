@@ -10,11 +10,11 @@ const durationInfinite = 4294967295;
 const majorVersion = 1;
 
 /// Adwaita micro version component (e.g. 3 if the version is 1.2.3).
-const microVersion = 4;
+const microVersion = 0;
 
 /// Adwaita minor version component (e.g. 2 if the version is 1.2.3).
 const minorVersion = 9;
 
 /// Adwaita version, encoded as a string, useful for printing and
 /// concatenation.
-const versionS = '1.9.4';
+const versionS = '1.9.0';

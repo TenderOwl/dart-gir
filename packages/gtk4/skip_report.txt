@@ -1,8 +1,8 @@
 # Skip report for package gtk4 (Gtk 4.0)
-Total skipped: 1768
+Total skipped: 1767
 
 ## By category
-property: 1211
+property: 1210
 callable: 517
 method: 15
 signal: 13
@@ -131,8 +131,6 @@ missing getter get_view-name: 2
 parameter length: nullable scalar parameter (gsize): 2
 missing getter get_has-frame: 2
 missing getter get_inverted: 1
-array types are handled in a later phase: 1
-parameter marshal: callback GObject.ClosureMarshal has unsupported signature: 1
 moved to RecentManagerError.quark: 1
 moved to SvgError.get_attribute: 1
 moved to SvgError.get_element: 1
@@ -146,6 +144,7 @@ missing getter get_natural-width: 1
 parameter xalign: nullable scalar parameter (gfloat): 1
 parameter xpad: nullable scalar parameter (gint): 1
 moved to SvgError.get_start: 1
+moved to SvgError.quark: 1
 missing getter get_has-entry: 1
 missing getter get_model: 1
 missing getter get_text-column: 1
@@ -155,8 +154,8 @@ missing getter get_icon-size: 1
 missing getter get_pixbuf-expander-closed: 1
 missing getter get_pixbuf-expander-open: 1
 missing getter get_texture: 1
-moved to SvgError.quark: 1
 moved to AccessibleRelation.init_value: 1
+moved to TreeRowReference.deleted: 1
 missing getter get_text-xalign: 1
 missing getter get_text-yalign: 1
 missing getter get_value: 1
@@ -165,15 +164,15 @@ missing getter get_climb-rate: 1
 missing getter get_digits: 1
 missing getter get_active: 1
 missing getter get_inconsistent: 1
-moved to TreeRowReference.deleted: 1
+moved to TreeRowReference.inserted: 1
 missing getter get_cell-area-context: 1
 parameter params: array types are handled in a later phase: 1
-moved to TreeRowReference.inserted: 1
 parameter accessibles: array types are handled in a later phase: 1
 moved to AccessibleState.init_value: 1
 parameter line_number: nullable scalar parameter (gint): 1
 moved to BitsetIter.init_at: 1
 moved to BitsetIter.init_first: 1
+missing getter get_accel-key: 1
 missing getter get_max-width: 1
 missing getter get_min-height: 1
 missing getter get_min-width: 1
@@ -184,17 +183,17 @@ missing getter get_prefers-color-scheme: 1
 missing getter get_prefers-contrast: 1
 missing getter get_prefers-reduced-motion: 1
 unsupported return type: Gdk.ContentProvider: 1
-missing getter get_accel-key: 1
-parameter n_types: nullable scalar parameter (gsize): 1
 missing getter get_accel-mode: 1
+parameter n_types: nullable scalar parameter (gsize): 1
 missing getter get_accel-mods: 1
 missing getter get_keycode: 1
 parameter indices: array types are handled in a later phase: 1
 parameter depth: nullable scalar parameter (gint): 1
 moved to BitsetIter.init_last: 1
-missing getter get_enable-emoji-completion: 1
 missing getter get_display: 1
-missing getter get_realized: 1
+missing getter get_enable-emoji-completion: 1
+parameter people: array types are handled in a later phase: 1
+moved to BuilderError.quark: 1
 missing getter get_menu-entry-icon-primary-text: 1
 missing getter get_menu-entry-icon-secondary-text: 1
 missing getter get_primary-icon-activatable: 1
@@ -205,7 +204,7 @@ missing getter get_primary-icon-sensitive: 1
 missing getter get_primary-icon-storage-type: 1
 missing getter get_primary-icon-tooltip-markup: 1
 missing getter get_primary-icon-tooltip-text: 1
-parameter people: array types are handled in a later phase: 1
+parameter artists: array types are handled in a later phase: 1
 missing getter get_secondary-icon-activatable: 1
 missing getter get_secondary-icon-gicon: 1
 missing getter get_secondary-icon-name: 1
@@ -216,34 +215,34 @@ missing getter get_secondary-icon-tooltip-markup: 1
 missing getter get_secondary-icon-tooltip-text: 1
 missing getter get_show-emoji-icon: 1
 missing getter get_truncate-multiline: 1
-moved to BuilderError.quark: 1
-parameter artists: array types are handled in a later phase: 1
+parameter authors: array types are handled in a later phase: 1
+parameter documenters: array types are handled in a later phase: 1
 missing getter get_search-mode: 1
 missing getter get_show-time: 1
-parameter authors: array types are handled in a later phase: 1
+moved to ConstraintVflParserError.quark: 1
 parameter mime_types: array types are handled in a later phase: 1
-parameter documenters: array types are handled in a later phase: 1
+moved to DialogError.quark: 1
 missing getter get_tweak-action: 1
 unsupported return type: Gdk.GLContext: 1
-moved to ConstraintVflParserError.quark: 1
+parameter portal_interfaces: array types are handled in a later phase: 1
 parameter axes: array types are handled in a later phase: 1
 parameter backlog: array types are handled in a later phase: 1
 parameter column: nullable scalar parameter (gint): 1
-moved to DialogError.quark: 1
-parameter portal_interfaces: array types are handled in a later phase: 1
 parameter sizes: array types are handled in a later phase: 1
+moved to Editable.delegate_get_property: 1
+moved to Editable.delegate_set_property: 1
 parameter fallbacks: array types are handled in a later phase: 1
 override-incompatible with ancestor; renamed to getCursorIconView: 1
-moved to Editable.delegate_get_property: 1
+moved to Editable.install_properties: 1
 override-incompatible with ancestor; renamed to setCursorIconView: 1
 missing getter get_file: 1
-moved to Editable.delegate_set_property: 1
-missing getter get_use-fallback: 1
-moved to Editable.install_properties: 1
-parameter start: nullable scalar parameter (gint): 1
 moved to FileChooserError.quark: 1
+missing getter get_use-fallback: 1
 moved to IconThemeError.quark: 1
+parameter start: nullable scalar parameter (gint): 1
 moved to Native.get_for_surface: 1
+missing getter get_gfile: 1
+moved to AccessibleProperty.init_value: 1
 missing getter get_text-lock: 1
 missing getter get_text-unlock: 1
 missing getter get_tooltip-lock: 1
@@ -274,8 +273,8 @@ missing getter get_pad: 1
 missing getter get_max-position: 1
 missing getter get_min-position: 1
 missing getter get_position-set: 1
-missing getter get_gfile: 1
-moved to AccessibleProperty.init_value: 1
+unsupported arg type at index 0: gpointer: 1
+moved to PaperSize.get_default: 1
 missing getter get_visible-submenu: 1
 parameter ranges: array types are handled in a later phase: 1
 missing getter get_page-setup: 1
@@ -295,7 +294,7 @@ override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog: 1
 getter get_settings was renamed; call the renamed method directly: 1
 parameter slider_start: nullable scalar parameter (gint): 1
 missing getter get_filename: 1
-unsupported arg type at index 0: gpointer: 1
+missing getter get_complete: 1
 parameter hscrollbar_policy: nullable scalar parameter (PolicyType): 1
 aliases are resolved to their target: 1
 missing getter get_vscrollbar-policy: 1
@@ -355,8 +354,8 @@ missing getter get_gtk-xft-hinting: 1
 missing getter get_gtk-xft-hintstyle: 1
 missing getter get_gtk-xft-rgba: 1
 missing getter get_view: 1
-moved to PaperSize.get_default: 1
-missing getter get_complete: 1
+missing getter get_page-type: 1
+moved to PaperSize.get_paper_sizes: 1
 missing getter get_accelerator: 1
 missing getter get_action-name: 1
 missing getter get_icon: 1
@@ -364,7 +363,7 @@ missing getter get_icon-set: 1
 missing getter get_shortcut-type: 1
 missing getter get_subtitle-set: 1
 parameter border_width: array types are handled in a later phase: 1
-missing getter get_page-type: 1
+moved to PrintError.quark: 1
 parameter shadow: array types are handled in a later phase: 1
 parameter step: nullable scalar parameter (gdouble): 1
 parameter min: nullable scalar parameter (gdouble): 1
@@ -432,8 +431,8 @@ parameter buffer_x: nullable scalar parameter (gint): 1
 missing getter get_child-model: 1
 missing getter get_virtual-root: 1
 override-incompatible with ancestor; renamed to getCursorTreeView: 1
-moved to PaperSize.get_paper_sizes: 1
-moved to PrintError.quark: 1
+array types are handled in a later phase: 1
+parameter marshal: callback GObject.ClosureMarshal has unsupported signature: 1
 override-incompatible with ancestor; renamed to setCursorTreeView: 1
 missing getter get_enable-grid-lines: 1
 override-incompatible with ancestor; renamed to setCellDataFuncTreeViewColumn: 1

@@ -383,11 +383,6 @@ const fileAttributeStandardIcon = 'standard::icon';
 
 /// A key in the "standard" namespace for checking if a file is a backup file.
 ///
-/// The exact semantics of what constitutes a backup file are backend-specific.
-/// For local files, a file is considered a backup if its name ends with `~`
-/// and it is a regular file. This follows the POSIX convention used by text
-/// editors such as Emacs.
-///
 /// Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
 const fileAttributeStandardIsBackup = 'standard::is-backup';
 
@@ -395,3 +390,12 @@ const fileAttributeStandardIsBackup = 'standard::is-backup';
 ///
 /// Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
 const fileAttributeStandardIsHidden = 'standard::is-hidden';
+
+/// A key in the "standard" namespace for checking if the file is a symlink.
+/// Typically the actual type is something else, if we followed the symlink
+/// to get the type.
+///
+/// On Windows NTFS mountpoints are considered to be symlinks as well.
+///
+/// Corresponding #GFileAttributeType is %G_FILE_ATTRIBUTE_TYPE_BOOLEAN.
+const fileAttributeStandardIsSymlink = 'standard::is-symlink';

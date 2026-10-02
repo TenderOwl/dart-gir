@@ -9,9 +9,9 @@ const majorVersion = 5;
 /// Like gtk_source_get_micro_version(), but from the headers used at
 /// application compile time, rather than from the library linked
 /// against at application run time.
-const microVersion = 0;
+const microVersion = 1;
 
 /// Like gtk_source_get_minor_version(), but from the headers used at
 /// application compile time, rather than from the library linked
 /// against at application run time.
-const minorVersion = 20;
+const minorVersion = 19;
