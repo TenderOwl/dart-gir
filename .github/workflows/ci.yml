@@ -16,16 +16,23 @@ jobs:
       # libgtk-4-dev, libgtksourceview-5-dev, libadwaita-1-dev cover the
       # shared libraries the regenerated packages link against. cairo,
       # pango, graphene, gdk-pixbuf, and the GLib stack come along for
-      # the ride. Only used by the runtime-tests job below; the
-      # generator tests and `dart analyze` don't load the native
-      # libraries.
+      # the ride.
+      #
+      # libgirepository1.0-dev ships the upstream `.gir` files under
+      # `/usr/share/gir-1.0/` — needed by `GirLoader` and by the
+      # generator's "regenerate and verify" step. Other `-dev` packages
+      # create the directory for their `.typelib` files but leave it
+      # empty of `.gir` files, which is why the loader test's skip
+      # condition has to look at the actual files.
+      # Only used by the runtime-tests job below; the generator tests
+      # and `dart analyze` don't load the native libraries.
       - name: Install system deps
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             libgtk-4-dev libgtksourceview-5-dev libadwaita-1-dev \
             libgdk-pixbuf-2.0-dev libpango1.0-dev libcairo2-dev \
-            libgraphene-1.0-dev xvfb
+            libgraphene-1.0-dev libgirepository1.0-dev xvfb
 
       - name: dart pub get
         run: dart pub get

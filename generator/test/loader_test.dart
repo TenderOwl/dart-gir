@@ -6,9 +6,16 @@ import 'package:test/test.dart';
 const String girDir = '/usr/share/gir-1.0';
 
 void main() {
-  final available = Directory(girDir).existsSync();
+  // The directory may exist (other `-dev` packages create it for
+  // their own `.typelib` files) without containing any `.gir` files.
+  // Skip when there are no CGC-side GIR sources to load, since the
+  // loader's job is to read those.
+  final available = Directory(girDir).existsSync() &&
+      Directory(girDir)
+          .listSync()
+          .any((e) => e.path.endsWith('.gir'));
 
-  group('GirLoader', skip: available ? null : 'no GIR files at $girDir', () {
+  group('GirLoader', skip: available ? null : 'no .gir files at $girDir', () {
     late GirLoader loader;
 
     setUp(() => loader = GirLoader(girDir));
