@@ -309,27 +309,34 @@ class GtkSourceFileSaver extends GObject {
     void Function(ffi.Pointer<ffi.Void>)? progressCallbackNotify,
     void Function(GObject?, GAsyncResult) callback,
   ) {
+    final _nc1 = progressCallback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Void>)
+          >.isolateLocal(progressCallback);
+    final _nc2 = progressCallbackNotify == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(progressCallbackNotify);
     final id = ++_saveAsyncCallbackSeq;
     _saveAsyncCallbackRegistry[id] = callback;
     final _data = malloc<ffi.IntPtr>()..value = id;
-    _gtkSourceFileSaverSaveAsync(
-      this.handle,
-      ioPriority,
-      cancellable?.handle ?? ffi.nullptr,
-      progressCallback == null
-          ? null
-          : ffi.NativeCallable<
-              ffi.Void Function(ffi.Int64, ffi.Int64, ffi.Pointer<ffi.Void>)
-            >.isolateLocal(progressCallback),
-      progressCallbackData,
-      progressCallbackNotify == null
-          ? null
-          : ffi.NativeCallable<
-              ffi.Void Function(ffi.Pointer<ffi.Void>)
-            >.isolateLocal(progressCallbackNotify),
-      _saveAsyncCallbackPtr,
-      _data.cast<ffi.Void>(),
-    );
+    try {
+      _gtkSourceFileSaverSaveAsync(
+        this.handle,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc1?.nativeFunction ?? ffi.nullptr,
+        progressCallbackData,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        _saveAsyncCallbackPtr,
+        _data.cast<ffi.Void>(),
+      );
+    } finally {
+      _nc1?.close();
+      _nc2?.close();
+    }
   }
 
   /// Finishes a file saving started with [method@FileSaver.save_async].

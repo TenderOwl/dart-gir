@@ -18,7 +18,8 @@ Emits `<enumeration>` and `<bitfield>`.
 
 Both are emitted as plain Dart declarations, so each package gets
 `lib/src/enums_0.dart`, `lib/src/enums_1.dart`, … chunked at ~400 lines
-per file.
+per file. **Classes are not chunked** — see
+[ClassEmitter](#classemitter) for the one-class-per-file layout.
 
 ## FunctionEmitter — `generator/lib/src/emit/function_emitter.dart`
 
@@ -82,6 +83,50 @@ The set of reserved class member names: `handle`, `owned`, `fromPointer`,
 plus the package's Dart class name. Any GIR member whose lowerCamel
 collides gets a `name collision` skip. The `props` field and getter are
 also reserved — see below.
+
+### File layout
+
+Each generated `class` / `final class` lands in its own
+`lib/src/<lowercased_dart_class_name>.dart` file. The lowercased
+Dart class name is used verbatim — `GtkButton` →
+`lib/src/gtkbutton.dart`, `GApplication` → `lib/src/gapplication.dart`,
+`GInitiallyUnowned` → `lib/src/ginitiallyunowned.dart` — matching the
+upstream g-i convention and the user's stated pattern. No
+separator insertion (`GtkButtonAccessible` stays
+`lib/src/gtkbuttonaccessible.dart`); see the file-naming open
+question at the bottom of the plan snapshot if long names become a
+problem.
+
+The PyGObject-style `<ClassName>Props` companion class is placed in
+`lib/src/<lowercased_dart_class_name>_props.dart` next to its host
+class: `class GtkButtonProps` → `lib/src/gtkbutton_props.dart`. Both
+files are `part of '<pkg>.dart'` of the same library. Dart compiles
+every part of one library into a single compilation unit, so
+forward references resolve naturally: `GtkButton`'s `_props` /
+`props` references `GtkButtonProps`, and `GtkButtonProps`'s
+constructor takes `GtkButton` as `_self` — neither import gymnastics
+nor ordering constraints.
+
+The package barrel (`lib/<pkg>.dart`) lists the per-class files in
+GIR declaration order — host first, then its companion, then the next
+class. IDE jump-to-source (Ctrl+Click) on a class name now lands in
+a file that opens with that class.
+
+The chunking rule (~400 lines per file) applies only to the other
+categories: `lib/src/enums_<i>.dart`, `lib/src/records_<i>.dart`,
+`lib/src/functions_<i>.dart`, `lib/src/constants_<i>.dart`,
+`lib/src/callbacks.dart`. The singular support parts
+(`lib/src/signals.dart`, `lib/src/exception.dart`,
+`lib/src/object_support.dart`, `lib/src/lib.dart`) are unchanged.
+
+The naming helper lives in `generator/lib/src/emit/emitter.dart`:
+
+```dart
+String _fileNameForClass(String dartName, {bool props = false}) {
+  final base = dartName.toLowerCase();
+  return props ? '${base}_props' : base;
+}
+```
 
 ### Props accessor
 

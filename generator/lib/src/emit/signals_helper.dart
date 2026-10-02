@@ -191,9 +191,10 @@ Iterable<({GirSignal signal, GirNamespace? ns})> _signalsIncludingAncestors(
   }
 }
 
-/// Shared FFI binding for `g_signal_connect_data`. The C handler pointer
-/// is typed as `Pointer<NativeFunction<void Function(Pointer<Void>,
-/// Pointer<Void>)>>` — at the C ABI level, GLib's marshaller passes
+/// Shared FFI binding for `g_signal_connect_data`. The C handler
+/// pointer is typed as
+/// `Pointer<NativeFunction<void Function(Pointer<Void>, Pointer<Void>)>>`
+/// — at the C ABI level, GLib's marshaller passes
 /// `(instance, user_data, ...signal_args)` to the trampoline, and any
 /// trampoline with `(Pointer<Void>, Pointer<Void>, ...)` first two args
 /// is assignable to this signature via `cast`.

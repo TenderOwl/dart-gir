@@ -312,7 +312,6 @@ FfiShape? _ffiShapeFor(GirTypeRef? ref, EmitContext ctx, {GirNamespace? relative
     case TypeKind.unsupported:
       return null;
   }
-  return null;
 }
 
 ReturnShape? _returnShapeFor(GirTypeRef? ref) {
@@ -472,9 +471,10 @@ String _stringLiteral(String value) {
   return "'$escaped'";
 }
 
-/// Returns the FFI return-type token used in the trampoline's NativeCallable
-/// type parameter. NativeCallable<T> requires T to be a Dart function type
-/// with all FFI native types (Dart 3.13.x behavior).
+/// Returns the FFI return-type token used in the trampoline's
+/// `NativeCallable<T>` type parameter. `NativeCallable<T>` requires
+/// `T` to be a Dart function type with all FFI native types
+/// (Dart 3.13.x behavior).
 String _ffiReturnType(ReturnShape shape) => switch (shape) {
       ReturnShape.void_ => 'ffi.Void',
       ReturnShape.int => 'ffi.Int32',

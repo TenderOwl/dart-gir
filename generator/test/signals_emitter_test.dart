@@ -91,7 +91,7 @@ void main() {
       ],
     );
     final signals = [sig];
-    final code = emitSignalConnectors(
+    emitSignalConnectors(
       ctx,
       signals,
       'TestClass',
@@ -200,8 +200,6 @@ void main() {
   });
 
   test('inheritedSignals walks the parent chain and deduplicates', () {
-    final ns = _ns();
-    final ctx = _ctx(ns);
     final root = GirClass(
       name: 'Root',
       signals: [

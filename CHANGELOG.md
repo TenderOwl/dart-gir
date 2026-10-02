@@ -24,6 +24,23 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   helper (detailed names like `notify::property-name`, signatures the
   generator can't type). Uses the same trampoline path as the typed
   helpers.
+- **Generated classes are now one-Dart-class-per-file**, named after
+  the Dart class. `class GtkButton` lands in
+  `lib/src/gtkbutton.dart` (was `lib/src/classes_27.dart`),
+  `class GApplication` in `lib/src/gapplication.dart` (was
+  `lib/src/classes_N.dart`), and so on. The PyGObject-style props
+  companion class goes to `lib/src/<lowercased class name>_props.dart`
+  next to its host class. All per-class files are still `part of
+  '<pkg>.dart'` of the same library, so forward references resolve
+  naturally and the public surface is unchanged —
+  `import 'package:gtk4/gtk4.dart';` exposes the same names as
+  before. Other categories (`enums`, `records`, `functions`,
+  `constants`, `callbacks`) keep the existing ~400-line chunking.
+  IDE `Ctrl+Click` on a class name now lands in a file that's
+  recognisably that class. See
+  [emission.md](./docs/emission.md#classemitter) and the
+  `PackageEmitter file layout` regression test in
+  [`generator/test/emitter_test.dart`](./generator/test/emitter_test.dart).
 - **`g_free` binding in `package:gir_ffi`** via
   `DynamicLibrary.process().lookup('g_free')` for transferring
   ownership of `transfer-none` strings out of the trampoline.

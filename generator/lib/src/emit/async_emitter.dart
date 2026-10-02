@@ -225,6 +225,17 @@ class AsyncCallbackEmitter {
     // appear after the callback/user_data pair (e.g.
     // `g_simple_async_report_gerror_in_idle` takes an extra `error`
     // argument at the end).
+    //
+    // Callback-typed IN parameters other than the `cb` async-result
+    // callback (e.g. `progressCallback` on
+    // `gtk_source_file_loader_load_async`) are NOT replaced by the
+    // user's typed function directly at the call site — the C side
+    // expects `Pointer<NativeFunction<…>>`, so we allocate a
+    // `NativeCallable` local before the call and pass
+    // `nc.nativeFunction`. The locals are closed in a `finally` block
+    // below, matching the lifecycle `CallableEmitter` already uses
+    // for ordinary callbacks.
+    final callbackAllocs = <_CallbackAlloc>[];
     final nativeArgs = <String>[selfArgExpr];
     for (var i = 0; i < m.parameters.length; i++) {
       final p = m.parameters[i];
@@ -250,6 +261,15 @@ class AsyncCallbackEmitter {
       }
       if (bridge.isString) {
         nativeArgs.add('${overloadParam.name}.cast<Utf8>()');
+      } else if (_isCallbackBridge(bridge)) {
+        // Allocate a `NativeCallable` local, pass its function pointer.
+        final ncName = '_nc${callbackAllocs.length + 1}';
+        callbackAllocs.add(_CallbackAlloc(ncName, overloadParam.name, bridge));
+        nativeArgs.add(
+          bridge.isNullableCallback
+              ? '$ncName?.nativeFunction ?? ffi.nullptr'
+              : '$ncName.nativeFunction',
+        );
       } else {
         nativeArgs.add(bridge.toNative(overloadParam.name));
       }
@@ -313,12 +333,48 @@ class AsyncCallbackEmitter {
     b.writeln('/// Lifetime-safe variant of [$dartName] for use with');
     b.writeln('/// async callbacks. See `docs/async.md`.');
     b.writeln('void $methodName($paramList) {');
-    if (stringIns.isNotEmpty || listIns.isNotEmpty) {
+    // Allocate `NativeCallable` locals for any non-`cb` callback
+    // parameters so the C call receives a function pointer (not the
+    // wrapper instance). Mirrors the lifecycle `CallableEmitter`
+    // already uses for ordinary callbacks. Closed in the `finally`
+    // block at the end of this method.
+    for (final c in callbackAllocs) {
+      b.writeln('  final ${c.varName} = ${c.bridge.toNative(c.paramName)};');
+    }
+    b.writeln('  final id = ++$seqName;');
+    b.writeln('  $registryName'
+        '[id] = ${toLowerCamel(cb.name)};');
+    b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
+    if (callbackAllocs.isNotEmpty) {
+      b.writeln('  try {');
+      if (stringIns.isNotEmpty || listIns.isNotEmpty) {
+        var body = '    $callExpr;';
+        for (var i = stringIns.length - 1; i >= 0; i--) {
+          final p = stringIns[i];
+          final paramName = toLowerCamel(p.name);
+          body =
+              '    withNativeString($paramName, ($paramName) {\n  $body\n});';
+        }
+        for (var i = listIns.length - 1; i >= 0; i--) {
+          final p = listIns[i];
+          final paramName = toLowerCamel(p.name);
+          body =
+              '    withNativeStringList($paramName, ($paramName) {\n  $body\n});';
+        }
+        b.writeln(body);
+      } else {
+        b.writeln('    $callExpr;');
+      }
+      b.writeln('  } finally {');
+      for (final c in callbackAllocs) {
+        final closeExpr = c.bridge.isNullableCallback
+            ? '${c.varName}?.close()'
+            : '${c.varName}.close()';
+        b.writeln('    $closeExpr;');
+      }
+      b.writeln('  }');
+    } else if (stringIns.isNotEmpty || listIns.isNotEmpty) {
       // Wrap with string / string-list scope.
-      b.writeln('  final id = ++$seqName;');
-      b.writeln('  $registryName'
-          '[id] = ${toLowerCamel(cb.name)};');
-      b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
       var body = '$callExpr;';
       for (var i = stringIns.length - 1; i >= 0; i--) {
         final p = stringIns[i];
@@ -333,10 +389,6 @@ class AsyncCallbackEmitter {
       }
       b.writeln('  $body');
     } else {
-      b.writeln('  final id = ++$seqName;');
-      b.writeln('  $registryName'
-          '[id] = ${toLowerCamel(cb.name)};');
-      b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
       b.writeln('  $callExpr;');
     }
     b.write('}');
@@ -418,6 +470,7 @@ class AsyncCallbackEmitter {
     final nativeArgs = <String>[];
     final stringIns = <GirParameter>[];
     final listIns = <GirParameter>[];
+    final callbackAllocs = <_CallbackAlloc>[];
     for (final p in fn.parameters) {
       if (identical(p, cb)) {
         nativeArgs.add(ptrName);
@@ -445,6 +498,14 @@ class AsyncCallbackEmitter {
       } else if (bridge.isStringList) {
         listIns.add(p);
         nativeArgs.add(overloadParam.name);
+      } else if (_isCallbackBridge(bridge)) {
+        final ncName = '_nc${callbackAllocs.length + 1}';
+        callbackAllocs.add(_CallbackAlloc(ncName, overloadParam.name, bridge));
+        nativeArgs.add(
+          bridge.isNullableCallback
+              ? '$ncName?.nativeFunction ?? ffi.nullptr'
+              : '$ncName.nativeFunction',
+        );
       } else {
         nativeArgs.add(bridge.toNative(overloadParam.name));
       }
@@ -482,10 +543,46 @@ class AsyncCallbackEmitter {
     b.writeln('/// Lifetime-safe variant of [$dartName] for use with');
     b.writeln('/// async callbacks. See `docs/async.md`.');
     b.writeln('void $methodName($paramList) {');
-    if (stringIns.isNotEmpty || listIns.isNotEmpty) {
-      b.writeln('  final id = ++$seqName;');
-      b.writeln('  $registryName[id] = ${toLowerCamel(cb.name)};');
-      b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
+    // Allocate `NativeCallable` locals for any non-`cb` callback
+    // parameters so the C call receives a function pointer (not the
+    // wrapper instance). Mirrors the lifecycle `CallableEmitter`
+    // already uses for ordinary callbacks. Closed in the `finally`
+    // block at the end of this method.
+    for (final c in callbackAllocs) {
+      b.writeln('  final ${c.varName} = ${c.bridge.toNative(c.paramName)};');
+    }
+    b.writeln('  final id = ++$seqName;');
+    b.writeln('  $registryName[id] = ${toLowerCamel(cb.name)};');
+    b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
+    if (callbackAllocs.isNotEmpty) {
+      b.writeln('  try {');
+      if (stringIns.isNotEmpty || listIns.isNotEmpty) {
+        var body = '    $callExpr;';
+        for (var i = stringIns.length - 1; i >= 0; i--) {
+          final p = stringIns[i];
+          final paramName = toLowerCamel(p.name);
+          body =
+              '    withNativeString($paramName, ($paramName) {\n  $body\n});';
+        }
+        for (var i = listIns.length - 1; i >= 0; i--) {
+          final p = listIns[i];
+          final paramName = toLowerCamel(p.name);
+          body = '    withNativeStringList($paramName, ($paramName) {\n'
+              '  $body\n});';
+        }
+        b.writeln(body);
+      } else {
+        b.writeln('    $callExpr;');
+      }
+      b.writeln('  } finally {');
+      for (final c in callbackAllocs) {
+        final closeExpr = c.bridge.isNullableCallback
+            ? '${c.varName}?.close()'
+            : '${c.varName}.close()';
+        b.writeln('    $closeExpr;');
+      }
+      b.writeln('  }');
+    } else if (stringIns.isNotEmpty || listIns.isNotEmpty) {
       var body = '$callExpr;';
       for (var i = stringIns.length - 1; i >= 0; i--) {
         final p = stringIns[i];
@@ -500,9 +597,6 @@ class AsyncCallbackEmitter {
       }
       b.writeln('  $body');
     } else {
-      b.writeln('  final id = ++$seqName;');
-      b.writeln('  $registryName[id] = ${toLowerCamel(cb.name)};');
-      b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
       b.writeln('  $callExpr;');
     }
     b.write('}');
@@ -526,6 +620,22 @@ class AsyncCallbackEmitter {
     );
     return bridge?.isStringList ?? false;
   }
+
+  /// True when [bridge]'s native side is a `Pointer<NativeFunction<…>>`
+  /// (i.e. the parameter is a callback that the C side consumes). Mirrors
+  /// the helper in `callable.dart` so the async emitter's allocation +
+  /// close() lifecycle stays in sync with the rest of the generator.
+  static bool _isCallbackBridge(TypeBridge bridge) {
+    final n = bridge.nativeType;
+    return n.startsWith('ffi.Pointer<ffi.NativeFunction<');
+  }
+}
+
+class _CallbackAlloc {
+  _CallbackAlloc(this.varName, this.paramName, this.bridge);
+  final String varName;
+  final String paramName;
+  final TypeBridge bridge;
 }
 
 class _OverloadParam {

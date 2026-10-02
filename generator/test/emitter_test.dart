@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:gir_generator/src/emit/async_emitter.dart';
 import 'package:gir_generator/src/emit/callback_emitter.dart';
 import 'package:gir_generator/src/emit/emit.dart';
@@ -1641,5 +1643,139 @@ void main() {
         expect(code, isNull);
       },
     );
+  });
+
+  group('PackageEmitter file layout', () {
+    // The one-Dart-class-per-file layout is a structural property of
+    // generated bindings. A future generator refactor that re-introduces
+    // `classes_N.dart` chunking would break the IDE navigation story
+    // and the docs; this test guards against that regression by
+    // emitting into a temp directory and reading the file structure
+    // back out.
+    test('one class per file, named after the class; props companion '
+        'in its own file; barrel preserves declaration order', () {
+      final tmp = Directory.systemTemp.createTempSync('pkgemitter_test_');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+
+      // GObject.Object is the GIR root for every GObject-rooted class.
+      final gobject = GirNamespace(
+        name: 'GObject',
+        version: '2.0',
+        sharedLibrary: 'libgobject-2.0.so.0',
+        cIdentifierPrefixes: const ['GObject', 'gobject'],
+        cSymbolPrefixes: const ['gobject'],
+        classes: [
+          GirClass(
+            name: 'Object',
+            cType: 'GObject',
+            glibTypeName: 'GObject',
+          ),
+        ],
+      );
+      // The leaf class: must land in `gtkbutton.dart`. Must also
+      // emit a props companion in `gtkbutton_props.dart` because
+      // `GtkButton.props.label` round-trips through the typed
+      // `getLabel` / `setLabel` methods.
+      final buttonClass = GirClass(
+        name: 'Button',
+        cType: 'GtkButton',
+        parent: 'GObject.Object',
+        glibTypeName: 'GtkButton',
+        methods: [
+          GirMethod(
+            name: 'get_label',
+            cIdentifier: 'gtk_button_get_label',
+            returnType: const GirTypeRef(name: 'utf8'),
+            returnNullable: true,
+          ),
+          GirMethod(
+            name: 'set_label',
+            cIdentifier: 'gtk_button_set_label',
+            parameters: [
+              GirParameter(
+                name: 'label',
+                type: const GirTypeRef(name: 'utf8'),
+                nullable: true,
+              ),
+            ],
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'label',
+            type: GirTypeRef(name: 'utf8'),
+            writable: true,
+            readable: true,
+            getter: 'get_label',
+            setter: 'set_label',
+          ),
+        ],
+      );
+      final gtk = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [buttonClass],
+      );
+      final gobjectEmitter = PackageEmitter(
+        namespace: gobject,
+        allNamespaces: [gobject],
+        packagesDir: tmp.path,
+        emittedPackages: const {'gobject'},
+      );
+      gobjectEmitter.emit();
+      final gtkEmitter = PackageEmitter(
+        namespace: gtk,
+        allNamespaces: [gobject, gtk],
+        packagesDir: tmp.path,
+        emittedPackages: const {'gobject', 'gtk4'},
+      );
+      gtkEmitter.emit();
+
+      // Per-class files exist with the right names.
+      final gtkSrc = Directory('${tmp.path}/gtk4/lib/src');
+      expect(gtkSrc.existsSync(), isTrue);
+      expect(File('${gtkSrc.path}/gtkbutton.dart').existsSync(), isTrue,
+          reason: 'class GtkButton must live in gtkbutton.dart');
+      expect(File('${gtkSrc.path}/gtkbutton_props.dart').existsSync(),
+          isTrue,
+          reason: 'class GtkButtonProps must live in gtkbutton_props.dart');
+
+      // Each file contains exactly the class whose name it bears.
+      final hostSource =
+          File('${gtkSrc.path}/gtkbutton.dart').readAsStringSync();
+      expect(hostSource, contains('class GtkButton extends GObjectObject {'));
+      expect(hostSource, isNot(contains('class GtkButtonProps')));
+      final propsSource =
+          File('${gtkSrc.path}/gtkbutton_props.dart').readAsStringSync();
+      // The GObject.Object parent class declares no properties, so
+      // there is no `GObjectObjectProps` for the leaf's props class
+      // to extend — the leaf's companion class is a standalone
+      // declaration.
+      expect(propsSource, contains('class GtkButtonProps {'));
+      expect(propsSource, isNot(contains('class GtkButton ')));
+
+      // No `classes_*.dart` chunked class files are produced.
+      final chunked = gtkSrc
+          .listSync()
+          .where((e) => e.path.split(Platform.pathSeparator).last
+              .startsWith('classes_'))
+          .toList();
+      expect(chunked, isEmpty,
+          reason: 'classes must be one-per-file, not chunked');
+
+      // The barrel lists per-class files in declaration order — host
+      // class first, then its props companion — so IDE jump-to-source
+      // visits them in GIR declaration order.
+      final barrel = File('${tmp.path}/gtk4/lib/gtk4.dart').readAsStringSync();
+      final hostIdx = barrel.indexOf("part 'src/gtkbutton.dart';");
+      final propsIdx =
+          barrel.indexOf("part 'src/gtkbutton_props.dart';");
+      expect(hostIdx, greaterThanOrEqualTo(0));
+      expect(propsIdx, greaterThan(hostIdx),
+          reason: 'props companion must follow its host in the barrel');
+    });
   });
 }
