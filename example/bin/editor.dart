@@ -187,7 +187,12 @@ class EditorApp {
   }
 
   void onSaveResponse(GObject? sourceObject, GAsyncResult result) {
-    final path = saveDlg!.saveFinish(result).getPath();
+    // `saveFinish` returns nullable on GIR builds where the C function
+    // declares its return as `nullable="1"` (e.g. the GTK 4.10+ GIR),
+    // and non-nullable throwing elsewhere — be defensive so the example
+    // compiles regardless of the underlying GIR's nullability choice.
+    final dlg = saveDlg;
+    final path = dlg?.saveFinish(result).getPath();
     if (path != null) {
       saveFile(path);
     }
