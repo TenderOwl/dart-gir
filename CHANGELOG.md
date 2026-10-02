@@ -304,7 +304,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   is non-nullable, and `return ffi.nullptr` produces a
   `Pointer<Never>` the analyzer refuses to coerce.
 
-## 1.0.0 — 2025-09-28
+## 1.0.0 — 2026-09-28
 
 ### Added
 - Initial workspace: 11 generated packages (glib, gobject, gio,
