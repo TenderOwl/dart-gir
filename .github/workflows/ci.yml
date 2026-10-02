@@ -14,18 +14,19 @@ jobs:
       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
       
       # libgtk-4-dev, libgtksourceview-5-dev, libadwaita-1-dev cover the
-      # shared libraries the regenerated packages link against. cairo,
-      # pango, graphene, gdk-pixbuf, and the GLib stack come along for
-      # the ride.
+      # shared libraries the runtime tests link against. cairo, pango,
+      # graphene, gdk-pixbuf, and the GLib stack come along for the
+      # ride.
       #
       # libgirepository1.0-dev ships the upstream `.gir` files under
-      # `/usr/share/gir-1.0/` — needed by `GirLoader` and by the
-      # generator's "regenerate and verify" step. Other `-dev` packages
-      # create the directory for their `.typelib` files but leave it
-      # empty of `.gir` files, which is why the loader test's skip
-      # condition has to look at the actual files.
-      # Only used by the runtime-tests job below; the generator tests
-      # and `dart analyze` don't load the native libraries.
+      # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
+      # in `generator/test/loader_test.dart`; that test now skips
+      # cleanly when the directory has no `.gir` files, so the
+      # workflow stays green even if a future Ubuntu point release
+      # drops the package. Other `-dev` packages create the directory
+      # for their own `.typelib` files but leave it empty of `.gir`,
+      # which is why the loader test's skip condition has to look at
+      # the actual files.
       - name: Install system deps
         run: |
           sudo apt-get update
@@ -43,12 +44,19 @@ jobs:
       - name: dart test (generator)
         run: dart test generator/
 
-      - name: Regenerate packages and verify
-        run: |
-          dart run generator/bin/generate.dart --gir-dir /usr/share/gir-1.0 \
-            GLib-2.0 GObject-2.0 Gio-2.0 GdkPixbuf-2.0 cairo-1.0 Pango-1.0 \
-            Gdk-4.0 Gtk-4.0 Graphene-1.0 Gsk-4.0 Adw-1 GtkSource-5
-          dart analyze
+      # NB: we deliberately do NOT re-run the generator against the
+      # system's `/usr/share/gir-1.0/` here. The GIR files shipped
+      # with Ubuntu 24.04 (libgirepository1.0-dev) differ from those
+      # shipped with Fedora 44 (glib2-devel) — different GLib / GTK
+      # versions mean different `<method>` `<constructor>` `<function>`
+      # content, different nullability flags, and different
+      # `transfer-ownership` defaults. Regenerating from the system
+      # GIR on Ubuntu produces Dart that doesn't match the committed
+      # source (e.g. `GAsyncQueue.new_` becomes a `factory GAsyncQueue`
+      # in older GIRs, and `saveFinish` flips between throwing and
+      # nullable). The committed `packages/<lib>/lib/src/*.dart` is
+      # the source of truth; the generator unit tests above use
+      # bundled GIR fixtures to validate the generator itself.
 
       - name: Runtime tests (push to main only)
         # The Gtk4 runtime tests call `gtk.init()` which needs a
