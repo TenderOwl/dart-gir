@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="200"
+   height="200"
+   viewBox="0 0 200 200"
+   fill="none"
+   data-fg-boq90="1.10:1.2090:/src/app/components/aurora-icon.tsx:17:5:564:1518:e:svg::1"
+   version="1.1"
+   id="svg14"
+   sodipodi:docname="com.tenderowl.AuroraMail.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="4.035"
+     inkscape:cx="111.0285"
+     inkscape:cy="106.93928"
+     inkscape:window-width="1920"
+     inkscape:window-height="1060"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14" />
+  <rect
+     x="13.921933"
+     y="81.614067"
+     width="20"
+     height="100.0464"
+     rx="10"
+     fill="#8b5cf6"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect1"
+     style="stroke-width:0.913083" />
+  <rect
+     x="38.921932"
+     y="95.157745"
+     width="20"
+     height="96.415985"
+     rx="10"
+     fill="#d946ef"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect2"
+     style="stroke-width:0.801731" />
+  <rect
+     x="63.921932"
+     y="63.353317"
+     width="20"
+     height="116.3245"
+     rx="10"
+     fill="#ef4444"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect3"
+     style="stroke-width:0.827202" />
+  <rect
+     x="88.921936"
+     y="31.853708"
+     width="20"
+     height="129.98024"
+     rx="10"
+     fill="#f97316"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect4"
+     style="stroke-width:0.849772" />
+  <rect
+     x="113.92194"
+     y="4.7066088"
+     width="20"
+     height="138.78781"
+     rx="10"
+     fill="#facc15"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect5"
+     style="stroke-width:0.903548" />
+  <rect
+     x="139.16977"
+     y="28.18667"
+     width="20"
+     height="125.71667"
+     rx="10"
+     fill="#84cc16"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect6"
+     style="stroke-width:0.947616" />
+  <rect
+     x="163.92194"
+     y="47.403"
+     width="20"
+     height="127.07036"
+     rx="10"
+     fill="#10b981"
+     opacity="0.9"
+     data-fg-boq92="1.10:1.2090:/src/app/components/aurora-icon.tsx:31:11:975:235:e:rect"
+     id="rect7"
+     style="stroke-width:1.0748" />
+  <defs
+     data-fg-boq94="1.10:1.2090:/src/app/components/aurora-icon.tsx:45:7:1298:256:e:defs"
+     id="defs8">
+    <linearGradient
+       id="aurora-glow"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%"
+       data-fg-boq95="1.10:1.2090:/src/app/components/aurora-icon.tsx:46:9:1313:227:e:linearGradient">
+      <stop
+         offset="0%"
+         stop-color="white"
+         stop-opacity="0.3"
+         data-fg-boq96="1.10:1.2090:/src/app/components/aurora-icon.tsx:47:11:1391:56:e:stop"
+         id="stop7" />
+      <stop
+         offset="100%"
+         stop-color="white"
+         stop-opacity="0"
+         data-fg-boq97="1.10:1.2090:/src/app/components/aurora-icon.tsx:48:11:1458:56:e:stop"
+         id="stop8" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient25"
+       x1="343.94767"
+       y1="22.677868"
+       x2="343.94767"
+       y2="75.592895"
+       gradientTransform="matrix(0.37796447,0,0,2.3758218,13.630731,-33.035948)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient26"
+       x1="363.50722"
+       y1="38.376129"
+       x2="363.50722"
+       y2="85.280287"
+       gradientTransform="matrix(0.42640143,0,0,2.7091492,13.3829,-66.011267)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient27"
+       x1="306.12497"
+       y1="10.289915"
+       x2="306.12497"
+       y2="68.599434"
+       gradientTransform="matrix(0.34299717,0,0,2.3801913,13.3829,-26.462228)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient28"
+       x1="240"
+       y1="6.6666667"
+       x2="240"
+       y2="66.666667"
+       gradientTransform="matrix(0.33333333,0,0,2.1663374,13.3829,11.505706)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient29"
+       x1="160.35118"
+       y1="10.289915"
+       x2="160.35118"
+       y2="68.599434"
+       gradientTransform="matrix(0.34299717,0,0,1.9949487,13.3829,37.229272)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient30"
+       x1="82.158384"
+       y1="18.257419"
+       x2="82.158384"
+       y2="73.029674"
+       gradientTransform="matrix(0.36514837,0,0,1.7603069,13.3829,57.762207)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#aurora-glow"
+       id="linearGradient31"
+       x1="12.247449"
+       y1="32.659863"
+       x2="12.247449"
+       y2="81.649658"
+       gradientTransform="matrix(0.40824829,0,0,2.0421886,13.3829,8.0979369)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <rect
+     x="18.382898"
+     y="74.79554"
+     width="20"
+     height="100.0464"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect8"
+     style="fill:url(#linearGradient31);stroke-width:0.913083" />
+  <rect
+     x="43.3829"
+     y="89.900864"
+     width="20"
+     height="96.415985"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect9"
+     style="fill:url(#linearGradient30);stroke-width:0.801731" />
+  <rect
+     x="68.382904"
+     y="57.757122"
+     width="20"
+     height="116.3245"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect10"
+     style="fill:url(#linearGradient29);stroke-width:0.827202" />
+  <rect
+     x="93.382904"
+     y="25.947956"
+     width="20"
+     height="129.98024"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect11"
+     style="fill:url(#linearGradient28);stroke-width:0.849772" />
+  <rect
+     x="118.3829"
+     y="-1.9702601"
+     width="20"
+     height="138.78781"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect12"
+     style="fill:url(#linearGradient27);stroke-width:0.903548" />
+  <rect
+     x="143.63074"
+     y="20.842627"
+     width="20"
+     height="125.71667"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect13"
+     style="fill:url(#linearGradient25);stroke-width:0.947616" />
+  <rect
+     x="168.3829"
+     y="37.955391"
+     width="20"
+     height="127.07036"
+     rx="10"
+     fill="url(#aurora-glow)"
+     data-fg-boq99="1.10:1.2090:/src/app/components/aurora-icon.tsx:59:11:1826:224:e:rect"
+     id="rect14"
+     style="fill:url(#linearGradient26);stroke-width:1.0748" />
+</svg>

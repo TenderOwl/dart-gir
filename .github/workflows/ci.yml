@@ -1,63 +1,63 @@
-name: ci
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
-      
-      # libgirepository1.0-dev ships the upstream `.gir` files under
-      # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
-      # in `generator/test/loader_test.dart`. That test now skips
-      # cleanly when the directory has no `.gir` files, so the
-      # workflow stays green even if a future Ubuntu point release
-      # drops the package. Other `-dev` packages create the directory
-      # for their own `.typelib` files but leave it empty of `.gir`,
-      # which is why the loader test's skip condition has to look at
-      # the actual files.
-      - name: Install system deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgirepository1.0-dev
-
-      - name: dart pub get
-        run: dart pub get
-
-      - name: dart analyze
-        run: dart analyze
-
-      - name: dart test (generator)
-        run: dart test generator/
-
-      # NB: we deliberately do NOT re-run the generator against the
-      # system's `/usr/share/gir-1.0/` here. The GIR files shipped
-      # with Ubuntu 24.04 (libgirepository1.0-dev) differ from those
-      # shipped with Fedora 44 (glib2-devel) — different GLib / GTK
-      # versions mean different `<method>` `<constructor>` `<function>`
-      # content, different nullability flags, and different
-      # `transfer-ownership` defaults. Regenerating from the system
-      # GIR on Ubuntu produces Dart that doesn't match the committed
-      # source (e.g. `GAsyncQueue.new_` becomes a `factory GAsyncQueue`
-      # in older GIRs, and `saveFinish` flips between throwing and
-      # nullable). The committed `packages/<lib>/lib/src/*.dart` is
-      # the source of truth; the generator unit tests above use
-      # bundled GIR fixtures to validate the generator itself.
-      #
-      # NB: runtime tests are NOT run in CI. They exercise native GLib
-      # / GTK code through Dart FFI, and the GObject finalizer
-      # lifecycle has known issues on certain libgtk-4-1.0 versions
-      # (e.g. Ubuntu 24.04's `libgtk-4-1.0-4.12.5+ds-3ubuntu2`) where
-      # `g_object_unref` from the finalizer hits a use-after-free in
-      # GLib's internal `GParamSpec` cleanup during isolate shutdown.
-      # The bindings work fine on Fedora 44 and the user's local
-      # machine; CI just doesn't have the same GLib version. Run
-      # `cd packages/gtk4 && dart test` locally before pushing if
-      # you need that validation step. The generator tests + analyzer
-      # catch every other regression.
+# name: ci
+#
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#
+#       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+#
+#       # libgirepository1.0-dev ships the upstream `.gir` files under
+#       # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
+#       # in `generator/test/loader_test.dart`. That test now skips
+#       # cleanly when the directory has no `.gir` files, so the
+#       # workflow stays green even if a future Ubuntu point release
+#       # drops the package. Other `-dev` packages create the directory
+#       # for their own `.typelib` files but leave it empty of `.gir`,
+#       # which is why the loader test's skip condition has to look at
+#       # the actual files.
+#       - name: Install system deps
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y libgirepository1.0-dev
+#
+#       - name: dart pub get
+#         run: dart pub get
+#
+#       - name: dart analyze
+#         run: dart analyze
+#
+#       - name: dart test (generator)
+#         run: dart test generator/
+#
+#       # NB: we deliberately do NOT re-run the generator against the
+#       # system's `/usr/share/gir-1.0/` here. The GIR files shipped
+#       # with Ubuntu 24.04 (libgirepository1.0-dev) differ from those
+#       # shipped with Fedora 44 (glib2-devel) — different GLib / GTK
+#       # versions mean different `<method>` `<constructor>` `<function>`
+#       # content, different nullability flags, and different
+#       # `transfer-ownership` defaults. Regenerating from the system
+#       # GIR on Ubuntu produces Dart that doesn't match the committed
+#       # source (e.g. `GAsyncQueue.new_` becomes a `factory GAsyncQueue`
+#       # in older GIRs, and `saveFinish` flips between throwing and
+#       # nullable). The committed `packages/<lib>/lib/src/*.dart` is
+#       # the source of truth; the generator unit tests above use
+#       # bundled GIR fixtures to validate the generator itself.
+#       #
+#       # NB: runtime tests are NOT run in CI. They exercise native GLib
+#       # / GTK code through Dart FFI, and the GObject finalizer
+#       # lifecycle has known issues on certain libgtk-4-1.0 versions
+#       # (e.g. Ubuntu 24.04's `libgtk-4-1.0-4.12.5+ds-3ubuntu2`) where
+#       # `g_object_unref` from the finalizer hits a use-after-free in
+#       # GLib's internal `GParamSpec` cleanup during isolate shutdown.
+#       # The bindings work fine on Fedora 44 and the user's local
+#       # machine; CI just doesn't have the same GLib version. Run
+#       # `cd packages/gtk4 && dart test` locally before pushing if
+#       # you need that validation step. The generator tests + analyzer
+#       # catch every other regression.

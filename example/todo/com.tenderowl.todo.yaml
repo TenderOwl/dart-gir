@@ -1,0 +1,31 @@
+id: "com.tenderowl.Todo"
+runtime: "org.gnome.Platform"
+runtime-version: "51"
+sdk: "org.gnome.Sdk"
+command: "todo"
+finish-args:
+  - "--share=network"
+  - "--share=ipc"
+  - "--socket=fallback-x11"
+  - "--device=dri"
+  - "--socket=wayland"
+  - "--filesystem=xdg-run/dconf"
+  - "--own-name=com.tenderowl.Todo.*"
+  - "--talk-name=org.freedesktop.portal.Desktop"
+cleanup:
+  - "/include"
+  - "/lib/pkgconfig"
+  - "/man"
+  - "/share/doc"
+  - "/share/gtk-doc"
+  - "/share/man"
+  - "/share/pkgconfig"
+  - "*.la"
+  - "*.a"
+modules:
+  - name: "todo"
+    builddir: true
+    buildsystem: "meson"
+    sources:
+      - type: "dir"
+        path: "."

@@ -1,0 +1,45 @@
+# Skip report for package gi_repository3 (GIRepository 3.0)
+Total skipped: 19
+
+## By category
+callable: 17
+renamed: 2
+
+## By reason
+inout parameter iterator: 2
+parameter n_dependencies_out: nullable scalar parameter (gsize): 2
+parameter n_paths_out: nullable scalar parameter (gsize): 2
+introspectable=0: 1
+parameter out_closure_index: nullable scalar parameter (guint): 1
+parameter out_destroy_index: nullable scalar parameter (guint): 1
+parameter in_args: array types are handled in a later phase: 1
+override-incompatible with ancestor; renamed to getTypeInitFunctionNameObjectInfo: 1
+override-incompatible with ancestor; renamed to getTypeNameObjectInfo: 1
+parameter n_versions_out: nullable scalar parameter (gsize): 1
+parameter n_namespaces_out: nullable scalar parameter (gsize): 1
+parameter interfaces_out: array types are handled in a later phase: 1
+parameter out_n_elements: nullable scalar parameter (gsize): 1
+parameter out_size: nullable scalar parameter (gsize): 1
+parameter out_length_index: nullable scalar parameter (guint): 1
+parameter out_offset: nullable scalar parameter (gsize): 1
+
+## First 50 entries
+[callable] GIRepository.cclosureMarshalGeneric — introspectable=0
+[callable] GIArgInfo.getClosureIndex — parameter out_closure_index: nullable scalar parameter (guint)
+[callable] GIArgInfo.getDestroyIndex — parameter out_destroy_index: nullable scalar parameter (guint)
+[callable] GIBaseInfo.iterateAttributes — inout parameter iterator
+[callable] GICallableInfo.invoke — parameter in_args: array types are handled in a later phase
+[callable] GICallableInfo.iterateReturnAttributes — inout parameter iterator
+[renamed] GIObjectInfo.getTypeInitFunctionName — override-incompatible with ancestor; renamed to getTypeInitFunctionNameObjectInfo
+[renamed] GIObjectInfo.getTypeName — override-incompatible with ancestor; renamed to getTypeNameObjectInfo
+[callable] GIRepository.enumerateVersions — parameter n_versions_out: nullable scalar parameter (gsize)
+[callable] GIRepository.getDependencies — parameter n_dependencies_out: nullable scalar parameter (gsize)
+[callable] GIRepository.getImmediateDependencies — parameter n_dependencies_out: nullable scalar parameter (gsize)
+[callable] GIRepository.getLibraryPath — parameter n_paths_out: nullable scalar parameter (gsize)
+[callable] GIRepository.getLoadedNamespaces — parameter n_namespaces_out: nullable scalar parameter (gsize)
+[callable] GIRepository.getObjectGtypeInterfaces — parameter interfaces_out: array types are handled in a later phase
+[callable] GIRepository.getSearchPath — parameter n_paths_out: nullable scalar parameter (gsize)
+[callable] GIRepository.getSharedLibraries — parameter out_n_elements: nullable scalar parameter (gsize)
+[callable] GITypeInfo.getArrayFixedSize — parameter out_size: nullable scalar parameter (gsize)
+[callable] GITypeInfo.getArrayLengthIndex — parameter out_length_index: nullable scalar parameter (guint)
+[callable] GIUnionInfo.getDiscriminatorOffset — parameter out_offset: nullable scalar parameter (gsize)
