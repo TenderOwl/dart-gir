@@ -17,9 +17,8 @@ class GBytesIcon extends GObject {
             >
           >('g_bytes_icon_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GBytesIcon(GBytes bytes) {
-    return GBytesIcon.fromPointer(_gBytesIconNew(bytes.handle), owned: true);
-  }
+  GBytesIcon(GBytes bytes)
+    : super.fromPointer(_gBytesIconNew(bytes.handle), owned: true);
 
   /// Gets the #GBytes associated with the given @icon.
   static final _gBytesIconGetBytes =

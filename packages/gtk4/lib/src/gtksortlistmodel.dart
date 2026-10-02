@@ -49,15 +49,14 @@ class GtkSortListModel extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkSortListModel([GListModel? model, GtkSorter? sorter]) {
-    return GtkSortListModel.fromPointer(
-      _gtkSortListModelNew(
-        model?.handle ?? ffi.nullptr,
-        sorter?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
+  GtkSortListModel([GListModel? model, GtkSorter? sorter])
+    : super.fromPointer(
+        _gtkSortListModelNew(
+          model?.handle ?? ffi.nullptr,
+          sorter?.handle ?? ffi.nullptr,
+        ),
+        owned: true,
+      );
 
   /// Returns whether incremental sorting is enabled.
   ///

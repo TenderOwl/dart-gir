@@ -26,9 +26,8 @@ final class GSource {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GSource(GSourceFuncs sourceFuncs, int structSize) {
-    return GSource.fromPointer(_gSourceNew(sourceFuncs.handle, structSize));
-  }
+  GSource(GSourceFuncs sourceFuncs, int structSize)
+    : this.fromPointer(_gSourceNew(sourceFuncs.handle, structSize));
 
   /// Adds @child_source to @source as a ‘polled’ source.
   ///

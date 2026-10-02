@@ -27,12 +27,11 @@ class GBufferedInputStream extends GFilterInputStream {
             >
           >('g_buffered_input_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GBufferedInputStream(GInputStream baseStream) {
-    return GBufferedInputStream.fromPointer(
-      _gBufferedInputStreamNew(baseStream.handle),
-      owned: true,
-    );
-  }
+  GBufferedInputStream(GInputStream baseStream)
+    : super.fromPointer(
+        _gBufferedInputStreamNew(baseStream.handle),
+        owned: true,
+      );
 
   /// Creates a new [class@Gio.BufferedInputStream] from the given @base_stream,
   /// with a buffer set to @size.
@@ -45,12 +44,11 @@ class GBufferedInputStream extends GFilterInputStream {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GBufferedInputStream.sized(GInputStream baseStream, int size) {
-    return GBufferedInputStream.fromPointer(
-      _gBufferedInputStreamNewSized(baseStream.handle, size),
-      owned: true,
-    );
-  }
+  GBufferedInputStream.sized(GInputStream baseStream, int size)
+    : super.fromPointer(
+        _gBufferedInputStreamNewSized(baseStream.handle, size),
+        owned: true,
+      );
 
   /// Tries to read @count bytes from the stream into the buffer.
   /// Will block during this read.

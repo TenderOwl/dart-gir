@@ -16,9 +16,7 @@ final class GrapheneQuad {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_quad_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneQuad.alloc() {
-    return GrapheneQuad.fromPointer(_grapheneQuadAlloc());
-  }
+  GrapheneQuad.alloc() : this.fromPointer(_grapheneQuadAlloc());
 
   /// Computes the bounding rectangle of @q and places it into @r.
   static final _grapheneQuadBounds =
@@ -155,9 +153,7 @@ final class GrapheneQuaternion {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_quaternion_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneQuaternion.alloc() {
-    return GrapheneQuaternion.fromPointer(_grapheneQuaternionAlloc());
-  }
+  GrapheneQuaternion.alloc() : this.fromPointer(_grapheneQuaternionAlloc());
 
   /// Adds two #graphene_quaternion_t @a and @b.
   static final _grapheneQuaternionAdd =

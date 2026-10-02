@@ -51,9 +51,7 @@ final class GskPathBuilder {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_path_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GskPathBuilder() {
-    return GskPathBuilder.fromPointer(_gskPathBuilderNew());
-  }
+  GskPathBuilder() : this.fromPointer(_gskPathBuilderNew());
 
   /// Adds a Cairo path to the builder.
   ///

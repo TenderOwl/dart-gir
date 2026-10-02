@@ -68,24 +68,15 @@ class GtkComboBoxText extends GtkComboBox {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkComboBoxText() {
-    return GtkComboBoxText.fromPointer(
-      gObjectRefSink(_gtkComboBoxTextNew()),
-      owned: true,
-    );
-  }
+  GtkComboBoxText() : super.fromPointer(_gtkComboBoxTextNew(), owned: true);
 
   /// Creates a new `GtkComboBoxText` with an entry.
   static final _gtkComboBoxTextNewWithEntry =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_text_new_with_entry',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkComboBoxText.withEntry() {
-    return GtkComboBoxText.fromPointer(
-      gObjectRefSink(_gtkComboBoxTextNewWithEntry()),
-      owned: true,
-    );
-  }
+  GtkComboBoxText.withEntry()
+    : super.fromPointer(_gtkComboBoxTextNewWithEntry(), owned: true);
 
   /// Appends @text to the list of strings stored in @combo_box.
   ///

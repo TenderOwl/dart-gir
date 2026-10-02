@@ -44,12 +44,11 @@ class GtkSourceFileLoader extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkSourceFileLoader(GtkSourceBuffer buffer, GtkSourceFile file) {
-    return GtkSourceFileLoader.fromPointer(
-      _gtkSourceFileLoaderNew(buffer.handle, file.handle),
-      owned: true,
-    );
-  }
+  GtkSourceFileLoader(GtkSourceBuffer buffer, GtkSourceFile file)
+    : super.fromPointer(
+        _gtkSourceFileLoaderNew(buffer.handle, file.handle),
+        owned: true,
+      );
 
   /// Creates a new #GtkSourceFileLoader object. The contents is read from @stream.
   static final _gtkSourceFileLoaderNewFromStream =
@@ -69,20 +68,19 @@ class GtkSourceFileLoader extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkSourceFileLoader.fromStream(
+  GtkSourceFileLoader.fromStream(
     GtkSourceBuffer buffer,
     GtkSourceFile file,
     GInputStream stream,
-  ) {
-    return GtkSourceFileLoader.fromPointer(
-      _gtkSourceFileLoaderNewFromStream(
-        buffer.handle,
-        file.handle,
-        stream.handle,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkSourceFileLoaderNewFromStream(
+          buffer.handle,
+          file.handle,
+          stream.handle,
+        ),
+        owned: true,
+      );
+
   static final _gtkSourceFileLoaderGetBuffer =
       gtkSource5Lookup<
             ffi.NativeFunction<

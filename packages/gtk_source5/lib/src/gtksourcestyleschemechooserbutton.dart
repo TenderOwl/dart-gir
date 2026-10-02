@@ -19,12 +19,8 @@ class GtkSourceStyleSchemeChooserButton extends GtkButton {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_style_scheme_chooser_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceStyleSchemeChooserButton() {
-    return GtkSourceStyleSchemeChooserButton.fromPointer(
-      gObjectRefSink(_gtkSourceStyleSchemeChooserButtonNew()),
-      owned: true,
-    );
-  }
+  GtkSourceStyleSchemeChooserButton()
+    : super.fromPointer(_gtkSourceStyleSchemeChooserButtonNew(), owned: true);
 
   /// Emitted to animate press then release.
   ///

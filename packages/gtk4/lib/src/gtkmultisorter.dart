@@ -18,9 +18,7 @@ class GtkMultiSorter extends GtkSorter {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_multi_sorter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkMultiSorter() {
-    return GtkMultiSorter.fromPointer(_gtkMultiSorterNew(), owned: true);
-  }
+  GtkMultiSorter() : super.fromPointer(_gtkMultiSorterNew(), owned: true);
 
   /// Add @sorter to @self to use for sorting at the end.
   ///

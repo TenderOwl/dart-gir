@@ -24,16 +24,11 @@ class GskCrossFadeNode extends GskRenderNode {
               double,
             )
           >();
-  factory GskCrossFadeNode(
-    GskRenderNode start,
-    GskRenderNode end,
-    double progress,
-  ) {
-    return GskCrossFadeNode.fromPointer(
-      _gskCrossFadeNodeNew(start.handle, end.handle, progress),
-      owned: true,
-    );
-  }
+  GskCrossFadeNode(GskRenderNode start, GskRenderNode end, double progress)
+    : super.fromPointer(
+        _gskCrossFadeNodeNew(start.handle, end.handle, progress),
+        owned: true,
+      );
 
   /// Retrieves the child `GskRenderNode` at the end of the cross-fade.
   static final _gskCrossFadeNodeGetEndChild =

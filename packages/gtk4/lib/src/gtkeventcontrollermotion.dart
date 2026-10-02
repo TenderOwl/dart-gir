@@ -18,12 +18,8 @@ class GtkEventControllerMotion extends GtkEventController {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_event_controller_motion_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkEventControllerMotion() {
-    return GtkEventControllerMotion.fromPointer(
-      _gtkEventControllerMotionNew(),
-      owned: true,
-    );
-  }
+  GtkEventControllerMotion()
+    : super.fromPointer(_gtkEventControllerMotionNew(), owned: true);
 
   /// Returns if a pointer is within @self or one of its children.
   static final _gtkEventControllerMotionContainsPointer =

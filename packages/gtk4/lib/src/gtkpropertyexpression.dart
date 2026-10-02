@@ -73,18 +73,14 @@ class GtkPropertyExpression extends GtkExpression {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkPropertyExpression.forPspec(
-    GtkExpression? expression,
-    GParamSpec pspec,
-  ) {
-    return GtkPropertyExpression.fromPointer(
-      _gtkPropertyExpressionNewForPspec(
-        expression?.handle ?? ffi.nullptr,
-        pspec.handle,
-      ),
-      owned: true,
-    );
-  }
+  GtkPropertyExpression.forPspec(GtkExpression? expression, GParamSpec pspec)
+    : super.fromPointer(
+        _gtkPropertyExpressionNewForPspec(
+          expression?.handle ?? ffi.nullptr,
+          pspec.handle,
+        ),
+        owned: true,
+      );
 
   /// Gets the expression specifying the object of
   /// a property expression.

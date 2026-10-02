@@ -147,9 +147,7 @@ class GtkSvg extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_svg_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSvg() {
-    return GtkSvg.fromPointer(_gtkSvgNew(), owned: true);
-  }
+  GtkSvg() : super.fromPointer(_gtkSvgNew(), owned: true);
 
   /// Parses the SVG data in @bytes and creates a paintable.
   static final _gtkSvgNewFromBytes =
@@ -159,9 +157,8 @@ class GtkSvg extends GObject {
             >
           >('gtk_svg_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSvg.fromBytes(GBytes bytes) {
-    return GtkSvg.fromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
-  }
+  GtkSvg.fromBytes(GBytes bytes)
+    : super.fromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
 
   /// Parses the SVG data in the resource and creates a paintable.
   static final _gtkSvgNewFromResource =

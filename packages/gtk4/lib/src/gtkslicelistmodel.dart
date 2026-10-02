@@ -29,12 +29,11 @@ class GtkSliceListModel extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
-  factory GtkSliceListModel(GListModel? model, int offset, int size) {
-    return GtkSliceListModel.fromPointer(
-      _gtkSliceListModelNew(model?.handle ?? ffi.nullptr, offset, size),
-      owned: true,
-    );
-  }
+  GtkSliceListModel(GListModel? model, int offset, int size)
+    : super.fromPointer(
+        _gtkSliceListModelNew(model?.handle ?? ffi.nullptr, offset, size),
+        owned: true,
+      );
 
   /// Gets the model that is currently being used or %NULL if none.
   static final _gtkSliceListModelGetModel =

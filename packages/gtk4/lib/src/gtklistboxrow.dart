@@ -13,12 +13,7 @@ class GtkListBoxRow extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_list_box_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkListBoxRow() {
-    return GtkListBoxRow.fromPointer(
-      gObjectRefSink(_gtkListBoxRowNew()),
-      owned: true,
-    );
-  }
+  GtkListBoxRow() : super.fromPointer(_gtkListBoxRowNew(), owned: true);
 
   /// Marks @row as changed, causing any state that depends on this
   /// to be updated.

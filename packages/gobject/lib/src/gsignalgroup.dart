@@ -29,9 +29,8 @@ class GSignalGroup extends GObject {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
           >('g_signal_group_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GSignalGroup(int targetType) {
-    return GSignalGroup.fromPointer(_gSignalGroupNew(targetType), owned: true);
-  }
+  GSignalGroup(int targetType)
+    : super.fromPointer(_gSignalGroupNew(targetType), owned: true);
 
   /// Blocks all signal handlers managed by @self so they will not
   /// be called during any signal emissions. Must be unblocked exactly

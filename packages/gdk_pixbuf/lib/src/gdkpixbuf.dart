@@ -157,24 +157,22 @@ class GdkPixbuf extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, int, int, int, int)
           >();
-  factory GdkPixbuf(
+  GdkPixbuf(
     GdkColorspace colorspace,
     bool hasAlpha,
     int bitsPerSample,
     int width,
     int height,
-  ) {
-    return GdkPixbuf.fromPointer(
-      _gdkPixbufNew(
-        colorspace.value,
-        hasAlpha ? 1 : 0,
-        bitsPerSample,
-        width,
-        height,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gdkPixbufNew(
+          colorspace.value,
+          hasAlpha ? 1 : 0,
+          bitsPerSample,
+          width,
+          height,
+        ),
+        owned: true,
+      );
 
   /// Creates a new #GdkPixbuf out of in-memory readonly image data.
   ///
@@ -207,7 +205,7 @@ class GdkPixbuf extends GObject {
               int,
             )
           >();
-  factory GdkPixbuf.fromBytes(
+  GdkPixbuf.fromBytes(
     GBytes data,
     GdkColorspace colorspace,
     bool hasAlpha,
@@ -215,20 +213,18 @@ class GdkPixbuf extends GObject {
     int width,
     int height,
     int rowstride,
-  ) {
-    return GdkPixbuf.fromPointer(
-      _gdkPixbufNewFromBytes(
-        data.handle,
-        colorspace.value,
-        hasAlpha ? 1 : 0,
-        bitsPerSample,
-        width,
-        height,
-        rowstride,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gdkPixbufNewFromBytes(
+          data.handle,
+          colorspace.value,
+          hasAlpha ? 1 : 0,
+          bitsPerSample,
+          width,
+          height,
+          rowstride,
+        ),
+        owned: true,
+      );
 
   /// Creates a new pixbuf by loading an image from a file.
   ///

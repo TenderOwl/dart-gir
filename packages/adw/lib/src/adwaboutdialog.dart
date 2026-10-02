@@ -179,12 +179,7 @@ class AdwAboutDialog extends AdwDialog {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_about_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwAboutDialog() {
-    return AdwAboutDialog.fromPointer(
-      gObjectRefSink(_adwAboutDialogNew()),
-      owned: true,
-    );
-  }
+  AdwAboutDialog() : super.fromPointer(_adwAboutDialogNew(), owned: true);
 
   /// Creates a new `AdwAboutDialog` using AppStream metadata.
   ///

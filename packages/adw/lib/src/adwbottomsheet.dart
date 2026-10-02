@@ -81,12 +81,7 @@ class AdwBottomSheet extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_bottom_sheet_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwBottomSheet() {
-    return AdwBottomSheet.fromPointer(
-      gObjectRefSink(_adwBottomSheetNew()),
-      owned: true,
-    );
-  }
+  AdwBottomSheet() : super.fromPointer(_adwBottomSheetNew(), owned: true);
 
   /// Gets horizontal alignment of the bottom sheet.
   static final _adwBottomSheetGetAlign =

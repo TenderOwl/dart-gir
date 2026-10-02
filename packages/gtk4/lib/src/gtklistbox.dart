@@ -76,12 +76,7 @@ class GtkListBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_list_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkListBox() {
-    return GtkListBox.fromPointer(
-      gObjectRefSink(_gtkListBoxNew()),
-      owned: true,
-    );
-  }
+  GtkListBox() : super.fromPointer(_gtkListBoxNew(), owned: true);
 
   /// Append a widget to the list.
   ///

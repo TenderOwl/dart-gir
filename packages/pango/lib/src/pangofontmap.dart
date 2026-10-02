@@ -100,11 +100,14 @@ class PangoFontMap extends GObject {
               ffi.Pointer<Utf8>,
             )
           >();
-  PangoFontFamily getFamily(String name) {
+  PangoFontFamily? getFamily(String name) {
     return withNativeString(name, (nativeName) {
-      return PangoFontFamily.fromPointer(
-        _pangoFontMapGetFamily(this.handle, nativeName.cast<Utf8>()),
-      );
+      return (_pangoFontMapGetFamily(this.handle, nativeName.cast<Utf8>())) ==
+              ffi.nullptr
+          ? null
+          : PangoFontFamily.fromPointer(
+              _pangoFontMapGetFamily(this.handle, nativeName.cast<Utf8>()),
+            );
     });
   }
 

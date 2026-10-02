@@ -110,9 +110,7 @@ final class GIOChannel {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_io_channel_unix_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GIOChannel.unixNew(int fd) {
-    return GIOChannel.fromPointer(_gIoChannelUnixNew(fd));
-  }
+  GIOChannel.unixNew(int fd) : this.fromPointer(_gIoChannelUnixNew(fd));
 
   /// Close an IO channel. Any pending data to be written will be
   /// flushed, ignoring errors. The channel will not be freed until the

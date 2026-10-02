@@ -26,12 +26,11 @@ class GskTextureNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskTextureNode(GdkTexture texture, GrapheneRect bounds) {
-    return GskTextureNode.fromPointer(
-      _gskTextureNodeNew(texture.handle, bounds.handle),
-      owned: true,
-    );
-  }
+  GskTextureNode(GdkTexture texture, GrapheneRect bounds)
+    : super.fromPointer(
+        _gskTextureNodeNew(texture.handle, bounds.handle),
+        owned: true,
+      );
 
   /// Retrieves the `GdkTexture` used when creating this `GskRenderNode`.
   static final _gskTextureNodeGetTexture =

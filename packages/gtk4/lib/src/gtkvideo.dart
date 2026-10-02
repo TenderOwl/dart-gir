@@ -26,9 +26,7 @@ class GtkVideo extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_video_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkVideo() {
-    return GtkVideo.fromPointer(gObjectRefSink(_gtkVideoNew()), owned: true);
-  }
+  GtkVideo() : super.fromPointer(_gtkVideoNew(), owned: true);
 
   /// Creates a `GtkVideo` to play back the given @file.
   static final _gtkVideoNewForFile =
@@ -38,12 +36,11 @@ class GtkVideo extends GtkWidget {
             >
           >('gtk_video_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkVideo.forFile([GFile? file]) {
-    return GtkVideo.fromPointer(
-      gObjectRefSink(_gtkVideoNewForFile(file?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkVideo.forFile([GFile? file])
+    : super.fromPointer(
+        _gtkVideoNewForFile(file?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a `GtkVideo` to play back the given @filename.
   ///
@@ -73,12 +70,11 @@ class GtkVideo extends GtkWidget {
             >
           >('gtk_video_new_for_media_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkVideo.forMediaStream([GtkMediaStream? stream]) {
-    return GtkVideo.fromPointer(
-      gObjectRefSink(_gtkVideoNewForMediaStream(stream?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkVideo.forMediaStream([GtkMediaStream? stream])
+    : super.fromPointer(
+        _gtkVideoNewForMediaStream(stream?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a `GtkVideo` to play back the resource at the
   /// given @resource_path.

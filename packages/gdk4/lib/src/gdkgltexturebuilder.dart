@@ -20,12 +20,8 @@ class GdkGLTextureBuilder extends GObject {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_gl_texture_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GdkGLTextureBuilder() {
-    return GdkGLTextureBuilder.fromPointer(
-      _gdkGlTextureBuilderNew(),
-      owned: true,
-    );
-  }
+  GdkGLTextureBuilder()
+    : super.fromPointer(_gdkGlTextureBuilderNew(), owned: true);
 
   /// Builds a new `GdkTexture` with the values set up in the builder.
   ///

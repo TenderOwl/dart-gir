@@ -17,12 +17,11 @@ class GtkFlattenListModel extends GObject {
             >
           >('gtk_flatten_list_model_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkFlattenListModel([GListModel? model]) {
-    return GtkFlattenListModel.fromPointer(
-      _gtkFlattenListModelNew(model?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkFlattenListModel([GListModel? model])
+    : super.fromPointer(
+        _gtkFlattenListModelNew(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the model set via gtk_flatten_list_model_set_model().
   static final _gtkFlattenListModelGetModel =

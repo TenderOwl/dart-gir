@@ -43,12 +43,7 @@ class GtkOverlay extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_overlay_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkOverlay() {
-    return GtkOverlay.fromPointer(
-      gObjectRefSink(_gtkOverlayNew()),
-      owned: true,
-    );
-  }
+  GtkOverlay() : super.fromPointer(_gtkOverlayNew(), owned: true);
 
   /// Adds @widget to @overlay.
   ///

@@ -23,12 +23,8 @@ class GtkCellRendererSpin extends GtkCellRendererText {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_renderer_spin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellRendererSpin() {
-    return GtkCellRendererSpin.fromPointer(
-      gObjectRefSink(_gtkCellRendererSpinNew()),
-      owned: true,
-    );
-  }
+  GtkCellRendererSpin()
+    : super.fromPointer(_gtkCellRendererSpinNew(), owned: true);
 
   /// This signal is emitted after @renderer has been edited.
   ///

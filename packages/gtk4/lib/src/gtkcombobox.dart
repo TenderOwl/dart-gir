@@ -72,12 +72,7 @@ class GtkComboBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkComboBox() {
-    return GtkComboBox.fromPointer(
-      gObjectRefSink(_gtkComboBoxNew()),
-      owned: true,
-    );
-  }
+  GtkComboBox() : super.fromPointer(_gtkComboBoxNew(), owned: true);
 
   /// Creates a new empty `GtkComboBox` with an entry.
   ///
@@ -88,12 +83,8 @@ class GtkComboBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_new_with_entry',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkComboBox.withEntry() {
-    return GtkComboBox.fromPointer(
-      gObjectRefSink(_gtkComboBoxNewWithEntry()),
-      owned: true,
-    );
-  }
+  GtkComboBox.withEntry()
+    : super.fromPointer(_gtkComboBoxNewWithEntry(), owned: true);
 
   /// Creates a new `GtkComboBox` with a model.
   static final _gtkComboBoxNewWithModel =
@@ -103,12 +94,8 @@ class GtkComboBox extends GtkWidget {
             >
           >('gtk_combo_box_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkComboBox.withModel(GtkTreeModel model) {
-    return GtkComboBox.fromPointer(
-      gObjectRefSink(_gtkComboBoxNewWithModel(model.handle)),
-      owned: true,
-    );
-  }
+  GtkComboBox.withModel(GtkTreeModel model)
+    : super.fromPointer(_gtkComboBoxNewWithModel(model.handle), owned: true);
 
   /// Creates a new empty `GtkComboBox` with an entry and a model.
   ///
@@ -120,12 +107,11 @@ class GtkComboBox extends GtkWidget {
             >
           >('gtk_combo_box_new_with_model_and_entry')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkComboBox.withModelAndEntry(GtkTreeModel model) {
-    return GtkComboBox.fromPointer(
-      gObjectRefSink(_gtkComboBoxNewWithModelAndEntry(model.handle)),
-      owned: true,
-    );
-  }
+  GtkComboBox.withModelAndEntry(GtkTreeModel model)
+    : super.fromPointer(
+        _gtkComboBoxNewWithModelAndEntry(model.handle),
+        owned: true,
+      );
 
   /// Returns the index of the currently active item.
   ///

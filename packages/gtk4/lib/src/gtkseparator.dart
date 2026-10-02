@@ -28,12 +28,8 @@ class GtkSeparator extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_separator_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkSeparator(GtkOrientation orientation) {
-    return GtkSeparator.fromPointer(
-      gObjectRefSink(_gtkSeparatorNew(orientation.value)),
-      owned: true,
-    );
-  }
+  GtkSeparator(GtkOrientation orientation)
+    : super.fromPointer(_gtkSeparatorNew(orientation.value), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

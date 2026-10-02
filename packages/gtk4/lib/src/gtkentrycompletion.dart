@@ -48,12 +48,8 @@ class GtkEntryCompletion extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_entry_completion_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkEntryCompletion() {
-    return GtkEntryCompletion.fromPointer(
-      _gtkEntryCompletionNew(),
-      owned: true,
-    );
-  }
+  GtkEntryCompletion()
+    : super.fromPointer(_gtkEntryCompletionNew(), owned: true);
 
   /// Creates a new `GtkEntryCompletion` object using the
   /// specified @area.
@@ -67,12 +63,11 @@ class GtkEntryCompletion extends GObject {
             >
           >('gtk_entry_completion_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkEntryCompletion.withArea(GtkCellArea area) {
-    return GtkEntryCompletion.fromPointer(
-      _gtkEntryCompletionNewWithArea(area.handle),
-      owned: true,
-    );
-  }
+  GtkEntryCompletion.withArea(GtkCellArea area)
+    : super.fromPointer(
+        _gtkEntryCompletionNewWithArea(area.handle),
+        owned: true,
+      );
 
   /// Requests a completion operation, or in other words a refiltering of the
   /// current list with completions, using the current key.

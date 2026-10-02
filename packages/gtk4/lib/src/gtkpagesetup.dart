@@ -51,9 +51,7 @@ class GtkPageSetup extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_page_setup_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPageSetup() {
-    return GtkPageSetup.fromPointer(_gtkPageSetupNew(), owned: true);
-  }
+  GtkPageSetup() : super.fromPointer(_gtkPageSetupNew(), owned: true);
 
   /// Reads the page setup from the file @file_name.
   ///
@@ -104,12 +102,11 @@ class GtkPageSetup extends GObject {
             >
           >('gtk_page_setup_new_from_gvariant')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPageSetup.fromGvariant(GVariant variant) {
-    return GtkPageSetup.fromPointer(
-      _gtkPageSetupNewFromGvariant(variant.handle),
-      owned: true,
-    );
-  }
+  GtkPageSetup.fromGvariant(GVariant variant)
+    : super.fromPointer(
+        _gtkPageSetupNewFromGvariant(variant.handle),
+        owned: true,
+      );
 
   /// Reads the page setup from the group @group_name in the key file
   /// @key_file.

@@ -31,12 +31,7 @@ class GtkSpinner extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_spinner_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSpinner() {
-    return GtkSpinner.fromPointer(
-      gObjectRefSink(_gtkSpinnerNew()),
-      owned: true,
-    );
-  }
+  GtkSpinner() : super.fromPointer(_gtkSpinnerNew(), owned: true);
 
   /// Returns whether the spinner is spinning.
   static final _gtkSpinnerGetSpinning =

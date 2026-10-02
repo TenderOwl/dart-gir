@@ -73,12 +73,8 @@ class GtkSourceSpaceDrawer extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_space_drawer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceSpaceDrawer() {
-    return GtkSourceSpaceDrawer.fromPointer(
-      _gtkSourceSpaceDrawerNew(),
-      owned: true,
-    );
-  }
+  GtkSourceSpaceDrawer()
+    : super.fromPointer(_gtkSourceSpaceDrawerNew(), owned: true);
 
   /// Binds the [property@SpaceDrawer:matrix] property to a [class@Gio.Settings] key.
   ///

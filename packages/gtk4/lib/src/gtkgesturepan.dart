@@ -23,12 +23,8 @@ class GtkGesturePan extends GtkGestureDrag {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_gesture_pan_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkGesturePan(GtkOrientation orientation) {
-    return GtkGesturePan.fromPointer(
-      _gtkGesturePanNew(orientation.value),
-      owned: true,
-    );
-  }
+  GtkGesturePan(GtkOrientation orientation)
+    : super.fromPointer(_gtkGesturePanNew(orientation.value), owned: true);
 
   /// Returns the orientation of the pan gestures that this @gesture expects.
   static final _gtkGesturePanGetOrientation =

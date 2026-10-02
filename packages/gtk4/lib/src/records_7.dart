@@ -135,9 +135,7 @@ final class GtkTreePath {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_path_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTreePath() {
-    return GtkTreePath.fromPointer(_gtkTreePathNew());
-  }
+  GtkTreePath() : this.fromPointer(_gtkTreePathNew());
 
   /// Creates a new `GtkTreePath`.
   ///
@@ -146,9 +144,7 @@ final class GtkTreePath {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_path_new_first',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTreePath.first() {
-    return GtkTreePath.fromPointer(_gtkTreePathNewFirst());
-  }
+  GtkTreePath.first() : this.fromPointer(_gtkTreePathNewFirst());
 
   /// Creates a new `GtkTreePath` initialized to @path.
   ///
@@ -342,11 +338,8 @@ final class GtkTreeRowReference {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkTreeRowReference(GtkTreeModel model, GtkTreePath path) {
-    return GtkTreeRowReference.fromPointer(
-      _gtkTreeRowReferenceNew(model.handle, path.handle),
-    );
-  }
+  GtkTreeRowReference(GtkTreeModel model, GtkTreePath path)
+    : this.fromPointer(_gtkTreeRowReferenceNew(model.handle, path.handle));
 
   /// You do not need to use this function.
   ///
@@ -389,15 +382,10 @@ final class GtkTreeRowReference {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkTreeRowReference.proxy(
-    GObject proxy,
-    GtkTreeModel model,
-    GtkTreePath path,
-  ) {
-    return GtkTreeRowReference.fromPointer(
-      _gtkTreeRowReferenceNewProxy(proxy.handle, model.handle, path.handle),
-    );
-  }
+  GtkTreeRowReference.proxy(GObject proxy, GtkTreeModel model, GtkTreePath path)
+    : this.fromPointer(
+        _gtkTreeRowReferenceNewProxy(proxy.handle, model.handle, path.handle),
+      );
 
   /// Copies a `GtkTreeRowReference`.
   static final _gtkTreeRowReferenceCopy =

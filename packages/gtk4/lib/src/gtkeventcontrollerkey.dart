@@ -11,12 +11,8 @@ class GtkEventControllerKey extends GtkEventController {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_event_controller_key_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkEventControllerKey() {
-    return GtkEventControllerKey.fromPointer(
-      _gtkEventControllerKeyNew(),
-      owned: true,
-    );
-  }
+  GtkEventControllerKey()
+    : super.fromPointer(_gtkEventControllerKeyNew(), owned: true);
 
   /// Forwards the current event of this @controller to a @widget.
   ///

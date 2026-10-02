@@ -11,12 +11,8 @@ class AdwNoneAnimationTarget extends AdwAnimationTarget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_none_animation_target_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwNoneAnimationTarget() {
-    return AdwNoneAnimationTarget.fromPointer(
-      _adwNoneAnimationTargetNew(),
-      owned: true,
-    );
-  }
+  AdwNoneAnimationTarget()
+    : super.fromPointer(_adwNoneAnimationTargetNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

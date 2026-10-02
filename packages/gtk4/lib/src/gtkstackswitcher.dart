@@ -45,12 +45,7 @@ class GtkStackSwitcher extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_stack_switcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkStackSwitcher() {
-    return GtkStackSwitcher.fromPointer(
-      gObjectRefSink(_gtkStackSwitcherNew()),
-      owned: true,
-    );
-  }
+  GtkStackSwitcher() : super.fromPointer(_gtkStackSwitcherNew(), owned: true);
 
   /// Retrieves the stack.
   static final _gtkStackSwitcherGetStack =

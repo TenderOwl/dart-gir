@@ -285,9 +285,7 @@ final class PangoAttrList {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_attr_list_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory PangoAttrList() {
-    return PangoAttrList.fromPointer(_pangoAttrListNew());
-  }
+  PangoAttrList() : this.fromPointer(_pangoAttrListNew());
 
   /// Insert the given attribute into the `PangoAttrList`.
   ///

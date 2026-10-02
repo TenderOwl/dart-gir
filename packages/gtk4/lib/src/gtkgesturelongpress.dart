@@ -25,12 +25,8 @@ class GtkGestureLongPress extends GtkGestureSingle {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_long_press_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkGestureLongPress() {
-    return GtkGestureLongPress.fromPointer(
-      _gtkGestureLongPressNew(),
-      owned: true,
-    );
-  }
+  GtkGestureLongPress()
+    : super.fromPointer(_gtkGestureLongPressNew(), owned: true);
 
   /// Returns the delay factor.
   static final _gtkGestureLongPressGetDelayFactor =

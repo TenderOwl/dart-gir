@@ -15,9 +15,7 @@ class GtkBinLayout extends GtkLayoutManager {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_bin_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkBinLayout() {
-    return GtkBinLayout.fromPointer(_gtkBinLayoutNew(), owned: true);
-  }
+  GtkBinLayout() : super.fromPointer(_gtkBinLayoutNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

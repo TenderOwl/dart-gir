@@ -49,9 +49,7 @@ class GtkButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkButton() {
-    return GtkButton.fromPointer(gObjectRefSink(_gtkButtonNew()), owned: true);
-  }
+  GtkButton() : super.fromPointer(_gtkButtonNew(), owned: true);
 
   /// Creates a new button containing an icon from the current icon theme.
   ///

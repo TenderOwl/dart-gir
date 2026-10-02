@@ -79,12 +79,11 @@ class GtkColumnView extends GtkWidget {
             >
           >('gtk_column_view_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkColumnView([GtkSelectionModel? model]) {
-    return GtkColumnView.fromPointer(
-      gObjectRefSink(_gtkColumnViewNew(model?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkColumnView([GtkSelectionModel? model])
+    : super.fromPointer(
+        _gtkColumnViewNew(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Appends the @column to the end of the columns in @self.
   static final _gtkColumnViewAppendColumn =

@@ -16,9 +16,7 @@ final class PangoFontDescription {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_font_description_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory PangoFontDescription() {
-    return PangoFontDescription.fromPointer(_pangoFontDescriptionNew());
-  }
+  PangoFontDescription() : this.fromPointer(_pangoFontDescriptionNew());
 
   /// Determines if the style attributes of @new_match are a closer match
   /// for @desc than those of @old_match are, or if @old_match is %NULL,

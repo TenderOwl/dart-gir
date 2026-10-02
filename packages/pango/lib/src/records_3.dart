@@ -519,9 +519,7 @@ final class PangoGlyphString {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_glyph_string_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory PangoGlyphString() {
-    return PangoGlyphString.fromPointer(_pangoGlyphStringNew());
-  }
+  PangoGlyphString() : this.fromPointer(_pangoGlyphStringNew());
 
   /// Copy a glyph string and associated storage.
   static final _pangoGlyphStringCopy =

@@ -14,12 +14,8 @@ class GtkPasswordEntryBuffer extends GtkEntryBuffer {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_password_entry_buffer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPasswordEntryBuffer() {
-    return GtkPasswordEntryBuffer.fromPointer(
-      _gtkPasswordEntryBufferNew(),
-      owned: true,
-    );
-  }
+  GtkPasswordEntryBuffer()
+    : super.fromPointer(_gtkPasswordEntryBufferNew(), owned: true);
 
   /// The text is altered in the default handler for this signal.
   ///

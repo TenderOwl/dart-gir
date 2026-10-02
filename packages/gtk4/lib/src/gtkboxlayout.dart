@@ -22,12 +22,8 @@ class GtkBoxLayout extends GtkLayoutManager {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_box_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkBoxLayout(GtkOrientation orientation) {
-    return GtkBoxLayout.fromPointer(
-      _gtkBoxLayoutNew(orientation.value),
-      owned: true,
-    );
-  }
+  GtkBoxLayout(GtkOrientation orientation)
+    : super.fromPointer(_gtkBoxLayoutNew(orientation.value), owned: true);
 
   /// Gets the value set by gtk_box_layout_set_baseline_child().
   static final _gtkBoxLayoutGetBaselineChild =

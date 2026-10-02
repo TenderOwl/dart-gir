@@ -50,12 +50,7 @@ class AdwTabView extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_tab_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwTabView() {
-    return AdwTabView.fromPointer(
-      gObjectRefSink(_adwTabViewNew()),
-      owned: true,
-    );
-  }
+  AdwTabView() : super.fromPointer(_adwTabViewNew(), owned: true);
 
   /// Adds @child to @self with @parent as the parent.
   ///

@@ -44,12 +44,8 @@ class AdwApplicationWindow extends GtkApplicationWindow {
             >
           >('adw_application_window_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory AdwApplicationWindow(GtkApplication app) {
-    return AdwApplicationWindow.fromPointer(
-      _adwApplicationWindowNew(app.handle),
-      owned: true,
-    );
-  }
+  AdwApplicationWindow(GtkApplication app)
+    : super.fromPointer(_adwApplicationWindowNew(app.handle), owned: true);
 
   /// Adds @breakpoint to @self.
   static final _adwApplicationWindowAddBreakpoint =

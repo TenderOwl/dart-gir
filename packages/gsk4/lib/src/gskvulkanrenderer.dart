@@ -19,9 +19,7 @@ class GskVulkanRenderer extends GskRenderer {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_vulkan_renderer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GskVulkanRenderer() {
-    return GskVulkanRenderer.fromPointer(_gskVulkanRendererNew(), owned: true);
-  }
+  GskVulkanRenderer() : super.fromPointer(_gskVulkanRendererNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

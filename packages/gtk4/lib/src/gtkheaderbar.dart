@@ -83,12 +83,7 @@ class GtkHeaderBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_header_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkHeaderBar() {
-    return GtkHeaderBar.fromPointer(
-      gObjectRefSink(_gtkHeaderBarNew()),
-      owned: true,
-    );
-  }
+  GtkHeaderBar() : super.fromPointer(_gtkHeaderBarNew(), owned: true);
 
   /// Gets the decoration layout of the header bar.
   static final _gtkHeaderBarGetDecorationLayout =

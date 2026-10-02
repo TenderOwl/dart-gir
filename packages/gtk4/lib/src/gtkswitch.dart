@@ -52,9 +52,7 @@ class GtkSwitch extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_switch_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSwitch() {
-    return GtkSwitch.fromPointer(gObjectRefSink(_gtkSwitchNew()), owned: true);
-  }
+  GtkSwitch() : super.fromPointer(_gtkSwitchNew(), owned: true);
 
   /// Gets whether the `GtkSwitch` is in its “on” or “off” state.
   static final _gtkSwitchGetActive =

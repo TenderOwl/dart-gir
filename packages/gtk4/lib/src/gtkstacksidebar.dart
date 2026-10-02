@@ -30,12 +30,7 @@ class GtkStackSidebar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_stack_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkStackSidebar() {
-    return GtkStackSidebar.fromPointer(
-      gObjectRefSink(_gtkStackSidebarNew()),
-      owned: true,
-    );
-  }
+  GtkStackSidebar() : super.fromPointer(_gtkStackSidebarNew(), owned: true);
 
   /// Retrieves the stack.
   static final _gtkStackSidebarGetStack =

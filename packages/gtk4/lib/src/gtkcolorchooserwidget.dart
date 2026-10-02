@@ -42,12 +42,8 @@ class GtkColorChooserWidget extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_color_chooser_widget_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkColorChooserWidget() {
-    return GtkColorChooserWidget.fromPointer(
-      gObjectRefSink(_gtkColorChooserWidgetNew()),
-      owned: true,
-    );
-  }
+  GtkColorChooserWidget()
+    : super.fromPointer(_gtkColorChooserWidgetNew(), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

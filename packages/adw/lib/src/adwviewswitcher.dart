@@ -81,12 +81,7 @@ class AdwViewSwitcher extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_switcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwViewSwitcher() {
-    return AdwViewSwitcher.fromPointer(
-      gObjectRefSink(_adwViewSwitcherNew()),
-      owned: true,
-    );
-  }
+  AdwViewSwitcher() : super.fromPointer(_adwViewSwitcherNew(), owned: true);
 
   /// Gets the policy of @self.
   static final _adwViewSwitcherGetPolicy =

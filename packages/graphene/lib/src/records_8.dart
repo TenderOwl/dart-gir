@@ -18,9 +18,7 @@ final class GrapheneVec2 {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_vec2_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneVec2.alloc() {
-    return GrapheneVec2.fromPointer(_grapheneVec2Alloc());
-  }
+  GrapheneVec2.alloc() : this.fromPointer(_grapheneVec2Alloc());
 
   /// Adds each component of the two passed vectors and places
   /// each result into the components of @res.

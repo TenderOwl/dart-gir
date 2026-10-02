@@ -45,9 +45,7 @@ class GCredentials extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_credentials_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GCredentials() {
-    return GCredentials.fromPointer(_gCredentialsNew(), owned: true);
-  }
+  GCredentials() : super.fromPointer(_gCredentialsNew(), owned: true);
 
   /// Checks if @credentials and @other_credentials is the same user.
   ///

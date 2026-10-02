@@ -174,9 +174,7 @@ class AdwAboutWindow extends AdwWindow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_about_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwAboutWindow() {
-    return AdwAboutWindow.fromPointer(_adwAboutWindowNew(), owned: true);
-  }
+  AdwAboutWindow() : super.fromPointer(_adwAboutWindowNew(), owned: true);
 
   /// Creates a new `AdwAboutWindow` using AppStream metadata.
   ///

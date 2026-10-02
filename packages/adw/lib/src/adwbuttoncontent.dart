@@ -57,12 +57,7 @@ class AdwButtonContent extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_button_content_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwButtonContent() {
-    return AdwButtonContent.fromPointer(
-      gObjectRefSink(_adwButtonContentNew()),
-      owned: true,
-    );
-  }
+  AdwButtonContent() : super.fromPointer(_adwButtonContentNew(), owned: true);
 
   /// gets whether the button can be smaller than the natural size of its contents.
   static final _adwButtonContentGetCanShrink =

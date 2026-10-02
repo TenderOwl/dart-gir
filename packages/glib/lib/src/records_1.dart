@@ -51,9 +51,7 @@ final class GBookmarkFile {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_bookmark_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GBookmarkFile() {
-    return GBookmarkFile.fromPointer(_gBookmarkFileNew());
-  }
+  GBookmarkFile() : this.fromPointer(_gBookmarkFileNew());
 
   /// Adds the application with @name and @exec to the list of
   /// applications that have registered a bookmark for @uri into

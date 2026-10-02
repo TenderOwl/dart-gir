@@ -60,9 +60,7 @@ class AdwTabBar extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_tab_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwTabBar() {
-    return AdwTabBar.fromPointer(gObjectRefSink(_adwTabBarNew()), owned: true);
-  }
+  AdwTabBar() : super.fromPointer(_adwTabBarNew(), owned: true);
 
   /// Gets whether the tabs automatically hide.
   static final _adwTabBarGetAutohide =

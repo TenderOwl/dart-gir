@@ -11,9 +11,7 @@ class GDBusMessage extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_dbus_message_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GDBusMessage() {
-    return GDBusMessage.fromPointer(_gDbusMessageNew(), owned: true);
-  }
+  GDBusMessage() : super.fromPointer(_gDbusMessageNew(), owned: true);
 
   /// Creates a new #GDBusMessage for a method call.
   static final _gDbusMessageNewMethodCall =

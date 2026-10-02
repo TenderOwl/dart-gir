@@ -90,12 +90,7 @@ class GtkTextView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTextView() {
-    return GtkTextView.fromPointer(
-      gObjectRefSink(_gtkTextViewNew()),
-      owned: true,
-    );
-  }
+  GtkTextView() : super.fromPointer(_gtkTextViewNew(), owned: true);
 
   /// Creates a new `GtkTextView` widget displaying the buffer @buffer.
   ///
@@ -110,12 +105,8 @@ class GtkTextView extends GtkWidget {
             >
           >('gtk_text_view_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkTextView.withBuffer(GtkTextBuffer buffer) {
-    return GtkTextView.fromPointer(
-      gObjectRefSink(_gtkTextViewNewWithBuffer(buffer.handle)),
-      owned: true,
-    );
-  }
+  GtkTextView.withBuffer(GtkTextBuffer buffer)
+    : super.fromPointer(_gtkTextViewNewWithBuffer(buffer.handle), owned: true);
 
   /// Adds a child widget in the text buffer, at the given @anchor.
   static final _gtkTextViewAddChildAtAnchor =

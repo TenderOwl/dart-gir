@@ -23,9 +23,7 @@ class GUnixFDList extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_unix_fd_list_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GUnixFDList() {
-    return GUnixFDList.fromPointer(_gUnixFdListNew(), owned: true);
-  }
+  GUnixFDList() : super.fromPointer(_gUnixFdListNew(), owned: true);
 
   /// Adds a file descriptor to @list.
   ///

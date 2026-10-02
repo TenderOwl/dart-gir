@@ -1068,11 +1068,8 @@ final class GClosure {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
-  factory GClosure.object(int sizeofClosure, GObject object) {
-    return GClosure.fromPointer(
-      _gClosureNewObject(sizeofClosure, object.handle),
-    );
-  }
+  GClosure.object(int sizeofClosure, GObject object)
+    : this.fromPointer(_gClosureNewObject(sizeofClosure, object.handle));
 
   /// Allocates a struct of the given size and initializes the initial
   /// part as a #GClosure.
@@ -1120,9 +1117,8 @@ final class GClosure {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
-  factory GClosure.simple(int sizeofClosure, ffi.Pointer<ffi.Void> data) {
-    return GClosure.fromPointer(_gClosureNewSimple(sizeofClosure, data));
-  }
+  GClosure.simple(int sizeofClosure, ffi.Pointer<ffi.Void> data)
+    : this.fromPointer(_gClosureNewSimple(sizeofClosure, data));
 
   /// Sets a flag on the closure to indicate that its calling
   /// environment has become invalid, and thus causes any future

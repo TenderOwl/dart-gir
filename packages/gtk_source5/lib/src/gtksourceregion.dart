@@ -67,12 +67,8 @@ class GtkSourceRegion extends GObject {
             >
           >('gtk_source_region_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourceRegion(GtkTextBuffer buffer) {
-    return GtkSourceRegion.fromPointer(
-      _gtkSourceRegionNew(buffer.handle),
-      owned: true,
-    );
-  }
+  GtkSourceRegion(GtkTextBuffer buffer)
+    : super.fromPointer(_gtkSourceRegionNew(buffer.handle), owned: true);
 
   /// Adds @region_to_add to @region.
   ///

@@ -44,12 +44,8 @@ class GtkEventControllerScroll extends GtkEventController {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('gtk_event_controller_scroll_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkEventControllerScroll(GtkEventControllerScrollFlags flags) {
-    return GtkEventControllerScroll.fromPointer(
-      _gtkEventControllerScrollNew(flags.value),
-      owned: true,
-    );
-  }
+  GtkEventControllerScroll(GtkEventControllerScrollFlags flags)
+    : super.fromPointer(_gtkEventControllerScrollNew(flags.value), owned: true);
 
   /// Gets the flags conditioning the scroll controller behavior.
   static final _gtkEventControllerScrollGetFlags =

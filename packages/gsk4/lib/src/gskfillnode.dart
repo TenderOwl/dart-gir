@@ -25,12 +25,11 @@ class GskFillNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskFillNode(GskRenderNode child, GskPath path, GskFillRule fillRule) {
-    return GskFillNode.fromPointer(
-      _gskFillNodeNew(child.handle, path.handle, fillRule.value),
-      owned: true,
-    );
-  }
+  GskFillNode(GskRenderNode child, GskPath path, GskFillRule fillRule)
+    : super.fromPointer(
+        _gskFillNodeNew(child.handle, path.handle, fillRule.value),
+        owned: true,
+      );
 
   /// Gets the child node that is getting drawn by the given @node.
   static final _gskFillNodeGetChild =

@@ -202,9 +202,8 @@ final class GVariantType {
             >
           >('g_variant_type_new_array')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GVariantType.array(GVariantType element) {
-    return GVariantType.fromPointer(_gVariantTypeNewArray(element.handle));
-  }
+  GVariantType.array(GVariantType element)
+    : this.fromPointer(_gVariantTypeNewArray(element.handle));
 
   /// Constructs the type corresponding to a dictionary entry with a key
   /// of type @key and a value of type @value.
@@ -225,11 +224,8 @@ final class GVariantType {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GVariantType.dictEntry(GVariantType key, GVariantType value) {
-    return GVariantType.fromPointer(
-      _gVariantTypeNewDictEntry(key.handle, value.handle),
-    );
-  }
+  GVariantType.dictEntry(GVariantType key, GVariantType value)
+    : this.fromPointer(_gVariantTypeNewDictEntry(key.handle, value.handle));
 
   /// Constructs the type corresponding to a ‘maybe’ instance containing
   /// type @type or `Nothing`.
@@ -242,9 +238,8 @@ final class GVariantType {
             >
           >('g_variant_type_new_maybe')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GVariantType.maybe(GVariantType element) {
-    return GVariantType.fromPointer(_gVariantTypeNewMaybe(element.handle));
-  }
+  GVariantType.maybe(GVariantType element)
+    : this.fromPointer(_gVariantTypeNewMaybe(element.handle));
 
   /// Makes a copy of a [type@GLib.VariantType].
   ///

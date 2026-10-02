@@ -141,12 +141,8 @@ class AdwOverlaySplitView extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_overlay_split_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwOverlaySplitView() {
-    return AdwOverlaySplitView.fromPointer(
-      gObjectRefSink(_adwOverlaySplitViewNew()),
-      owned: true,
-    );
-  }
+  AdwOverlaySplitView()
+    : super.fromPointer(_adwOverlaySplitViewNew(), owned: true);
 
   /// Gets whether @self is collapsed.
   static final _adwOverlaySplitViewGetCollapsed =

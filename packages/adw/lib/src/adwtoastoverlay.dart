@@ -52,12 +52,7 @@ class AdwToastOverlay extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_toast_overlay_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwToastOverlay() {
-    return AdwToastOverlay.fromPointer(
-      gObjectRefSink(_adwToastOverlayNew()),
-      owned: true,
-    );
-  }
+  AdwToastOverlay() : super.fromPointer(_adwToastOverlayNew(), owned: true);
 
   /// Displays @toast.
   ///

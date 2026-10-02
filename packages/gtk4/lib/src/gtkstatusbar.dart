@@ -48,12 +48,7 @@ class GtkStatusbar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_statusbar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkStatusbar() {
-    return GtkStatusbar.fromPointer(
-      gObjectRefSink(_gtkStatusbarNew()),
-      owned: true,
-    );
-  }
+  GtkStatusbar() : super.fromPointer(_gtkStatusbarNew(), owned: true);
 
   /// Returns a new context identifier, given a description
   /// of the actual context.

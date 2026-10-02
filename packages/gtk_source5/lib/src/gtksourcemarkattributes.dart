@@ -41,12 +41,8 @@ class GtkSourceMarkAttributes extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_mark_attributes_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceMarkAttributes() {
-    return GtkSourceMarkAttributes.fromPointer(
-      _gtkSourceMarkAttributesNew(),
-      owned: true,
-    );
-  }
+  GtkSourceMarkAttributes()
+    : super.fromPointer(_gtkSourceMarkAttributesNew(), owned: true);
 
   /// Stores background color in @background.
   static final _gtkSourceMarkAttributesGetBackground =

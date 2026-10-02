@@ -15,12 +15,8 @@ class GMemoryInputStream extends GInputStream {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_memory_input_stream_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GMemoryInputStream() {
-    return GMemoryInputStream.fromPointer(
-      _gMemoryInputStreamNew(),
-      owned: true,
-    );
-  }
+  GMemoryInputStream()
+    : super.fromPointer(_gMemoryInputStreamNew(), owned: true);
 
   /// Creates a new #GMemoryInputStream with data from the given @bytes.
   static final _gMemoryInputStreamNewFromBytes =
@@ -30,12 +26,11 @@ class GMemoryInputStream extends GInputStream {
             >
           >('g_memory_input_stream_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GMemoryInputStream.fromBytes(GBytes bytes) {
-    return GMemoryInputStream.fromPointer(
-      _gMemoryInputStreamNewFromBytes(bytes.handle),
-      owned: true,
-    );
-  }
+  GMemoryInputStream.fromBytes(GBytes bytes)
+    : super.fromPointer(
+        _gMemoryInputStreamNewFromBytes(bytes.handle),
+        owned: true,
+      );
 
   /// Appends @bytes to data that can be read from the input stream.
   static final _gMemoryInputStreamAddBytes =

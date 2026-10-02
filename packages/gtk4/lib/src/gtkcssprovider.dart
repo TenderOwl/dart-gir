@@ -37,9 +37,7 @@ class GtkCssProvider extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_css_provider_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCssProvider() {
-    return GtkCssProvider.fromPointer(_gtkCssProviderNew(), owned: true);
-  }
+  GtkCssProvider() : super.fromPointer(_gtkCssProviderNew(), owned: true);
 
   /// Loads @data into @css_provider.
   ///

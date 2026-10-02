@@ -39,12 +39,7 @@ class AdwSwitchRow extends AdwActionRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_switch_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwSwitchRow() {
-    return AdwSwitchRow.fromPointer(
-      gObjectRefSink(_adwSwitchRowNew()),
-      owned: true,
-    );
-  }
+  AdwSwitchRow() : super.fromPointer(_adwSwitchRowNew(), owned: true);
 
   /// Gets whether @self is in its "on" or "off" position.
   static final _adwSwitchRowGetActive =

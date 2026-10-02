@@ -106,14 +106,11 @@ class GtkScale extends GtkRange {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
-  factory GtkScale(GtkOrientation orientation, [GtkAdjustment? adjustment]) {
-    return GtkScale.fromPointer(
-      gObjectRefSink(
+  GtkScale(GtkOrientation orientation, [GtkAdjustment? adjustment])
+    : super.fromPointer(
         _gtkScaleNew(orientation.value, adjustment?.handle ?? ffi.nullptr),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new scale widget with a range from @min to @max.
   ///
@@ -140,17 +137,15 @@ class GtkScale extends GtkRange {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, double, double, double)
           >();
-  factory GtkScale.withRange(
+  GtkScale.withRange(
     GtkOrientation orientation,
     double min,
     double max,
     double step,
-  ) {
-    return GtkScale.fromPointer(
-      gObjectRefSink(_gtkScaleNewWithRange(orientation.value, min, max, step)),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkScaleNewWithRange(orientation.value, min, max, step),
+        owned: true,
+      );
 
   /// Adds a mark at @value.
   ///

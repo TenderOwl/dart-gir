@@ -86,12 +86,7 @@ class GtkTreeExpander extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_expander_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTreeExpander() {
-    return GtkTreeExpander.fromPointer(
-      gObjectRefSink(_gtkTreeExpanderNew()),
-      owned: true,
-    );
-  }
+  GtkTreeExpander() : super.fromPointer(_gtkTreeExpanderNew(), owned: true);
 
   /// Gets the child widget displayed by @self.
   static final _gtkTreeExpanderGetChild =

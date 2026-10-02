@@ -94,9 +94,7 @@ class GtkWindow extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkWindow() {
-    return GtkWindow.fromPointer(gObjectRefSink(_gtkWindowNew()), owned: true);
-  }
+  GtkWindow() : super.fromPointer(_gtkWindowNew(), owned: true);
 
   /// Requests that the window is closed.
   ///

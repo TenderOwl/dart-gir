@@ -27,16 +27,11 @@ class GskMaskNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskMaskNode(
-    GskRenderNode source,
-    GskRenderNode mask,
-    GskMaskMode maskMode,
-  ) {
-    return GskMaskNode.fromPointer(
-      _gskMaskNodeNew(source.handle, mask.handle, maskMode.value),
-      owned: true,
-    );
-  }
+  GskMaskNode(GskRenderNode source, GskRenderNode mask, GskMaskMode maskMode)
+    : super.fromPointer(
+        _gskMaskNodeNew(source.handle, mask.handle, maskMode.value),
+        owned: true,
+      );
 
   /// Retrieves the mask `GskRenderNode` child of the @node.
   static final _gskMaskNodeGetMask =

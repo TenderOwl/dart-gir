@@ -21,9 +21,7 @@ class GtkPrintSettings extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_print_settings_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPrintSettings() {
-    return GtkPrintSettings.fromPointer(_gtkPrintSettingsNew(), owned: true);
-  }
+  GtkPrintSettings() : super.fromPointer(_gtkPrintSettingsNew(), owned: true);
 
   /// Reads the print settings from @file_name.
   ///
@@ -76,12 +74,11 @@ class GtkPrintSettings extends GObject {
             >
           >('gtk_print_settings_new_from_gvariant')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPrintSettings.fromGvariant(GVariant variant) {
-    return GtkPrintSettings.fromPointer(
-      _gtkPrintSettingsNewFromGvariant(variant.handle),
-      owned: true,
-    );
-  }
+  GtkPrintSettings.fromGvariant(GVariant variant)
+    : super.fromPointer(
+        _gtkPrintSettingsNewFromGvariant(variant.handle),
+        owned: true,
+      );
 
   /// Reads the print settings from the group @group_name in @key_file.
   ///

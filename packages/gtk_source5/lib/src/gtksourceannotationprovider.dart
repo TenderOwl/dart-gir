@@ -16,12 +16,8 @@ class GtkSourceAnnotationProvider extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_annotation_provider_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceAnnotationProvider() {
-    return GtkSourceAnnotationProvider.fromPointer(
-      _gtkSourceAnnotationProviderNew(),
-      owned: true,
-    );
-  }
+  GtkSourceAnnotationProvider()
+    : super.fromPointer(_gtkSourceAnnotationProviderNew(), owned: true);
 
   /// Add an annotation to the provider.
   static final _gtkSourceAnnotationProviderAddAnnotation =

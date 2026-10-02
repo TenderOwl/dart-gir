@@ -42,12 +42,11 @@ class AdwSpinnerPaintable extends GObject {
             >
           >('adw_spinner_paintable_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory AdwSpinnerPaintable([GtkWidget? widget]) {
-    return AdwSpinnerPaintable.fromPointer(
-      _adwSpinnerPaintableNew(widget?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  AdwSpinnerPaintable([GtkWidget? widget])
+    : super.fromPointer(
+        _adwSpinnerPaintableNew(widget?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the widget used for frame clock.
   static final _adwSpinnerPaintableGetWidget =

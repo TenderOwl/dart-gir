@@ -22,12 +22,11 @@ class GskClipNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskClipNode(GskRenderNode child, GrapheneRect clip) {
-    return GskClipNode.fromPointer(
-      _gskClipNodeNew(child.handle, clip.handle),
-      owned: true,
-    );
-  }
+  GskClipNode(GskRenderNode child, GrapheneRect clip)
+    : super.fromPointer(
+        _gskClipNodeNew(child.handle, clip.handle),
+        owned: true,
+      );
 
   /// Gets the child node that is getting clipped by the given @node.
   static final _gskClipNodeGetChild =

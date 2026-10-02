@@ -20,12 +20,8 @@ class GtkObjectExpression extends GtkExpression {
             >
           >('gtk_object_expression_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkObjectExpression(GObject object) {
-    return GtkObjectExpression.fromPointer(
-      _gtkObjectExpressionNew(object.handle),
-      owned: true,
-    );
-  }
+  GtkObjectExpression(GObject object)
+    : super.fromPointer(_gtkObjectExpressionNew(object.handle), owned: true);
 
   /// Gets the object that the expression evaluates to.
   static final _gtkObjectExpressionGetObject =

@@ -32,12 +32,11 @@ class GtkWidgetPaintable extends GObject {
             >
           >('gtk_widget_paintable_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkWidgetPaintable([GtkWidget? widget]) {
-    return GtkWidgetPaintable.fromPointer(
-      _gtkWidgetPaintableNew(widget?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkWidgetPaintable([GtkWidget? widget])
+    : super.fromPointer(
+        _gtkWidgetPaintableNew(widget?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Returns the widget that is observed or %NULL if none.
   static final _gtkWidgetPaintableGetWidget =

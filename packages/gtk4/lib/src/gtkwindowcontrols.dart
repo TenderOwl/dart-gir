@@ -63,12 +63,8 @@ class GtkWindowControls extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_window_controls_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkWindowControls(GtkPackType side) {
-    return GtkWindowControls.fromPointer(
-      gObjectRefSink(_gtkWindowControlsNew(side.value)),
-      owned: true,
-    );
-  }
+  GtkWindowControls(GtkPackType side)
+    : super.fromPointer(_gtkWindowControlsNew(side.value), owned: true);
 
   /// Gets the decoration layout of this window controls widget
   static final _gtkWindowControlsGetDecorationLayout =

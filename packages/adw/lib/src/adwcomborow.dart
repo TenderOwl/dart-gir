@@ -56,12 +56,7 @@ class AdwComboRow extends AdwActionRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_combo_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwComboRow() {
-    return AdwComboRow.fromPointer(
-      gObjectRefSink(_adwComboRowNew()),
-      owned: true,
-    );
-  }
+  AdwComboRow() : super.fromPointer(_adwComboRowNew(), owned: true);
 
   /// Gets whether search is enabled.
   ///

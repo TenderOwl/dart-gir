@@ -21,12 +21,7 @@ class GtkVolumeButton extends GtkScaleButton {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_volume_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkVolumeButton() {
-    return GtkVolumeButton.fromPointer(
-      gObjectRefSink(_gtkVolumeButtonNew()),
-      owned: true,
-    );
-  }
+  GtkVolumeButton() : super.fromPointer(_gtkVolumeButtonNew(), owned: true);
 
   /// Emitted to dismiss the popup.
   ///

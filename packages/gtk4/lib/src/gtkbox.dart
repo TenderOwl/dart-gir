@@ -49,12 +49,8 @@ class GtkBox extends GtkWidget {
             >
           >('gtk_box_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory GtkBox(GtkOrientation orientation, int spacing) {
-    return GtkBox.fromPointer(
-      gObjectRefSink(_gtkBoxNew(orientation.value, spacing)),
-      owned: true,
-    );
-  }
+  GtkBox(GtkOrientation orientation, int spacing)
+    : super.fromPointer(_gtkBoxNew(orientation.value, spacing), owned: true);
 
   /// Adds a child at the end.
   static final _gtkBoxAppend =

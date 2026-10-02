@@ -14,12 +14,11 @@ class GdkPixbufSimpleAnim extends GdkPixbufAnimation {
             >
           >('gdk_pixbuf_simple_anim_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, double)>();
-  factory GdkPixbufSimpleAnim(int width, int height, double rate) {
-    return GdkPixbufSimpleAnim.fromPointer(
-      _gdkPixbufSimpleAnimNew(width, height, rate),
-      owned: true,
-    );
-  }
+  GdkPixbufSimpleAnim(int width, int height, double rate)
+    : super.fromPointer(
+        _gdkPixbufSimpleAnimNew(width, height, rate),
+        owned: true,
+      );
 
   /// Adds a new frame to @animation. The @pixbuf must
   /// have the dimensions specified when the animation

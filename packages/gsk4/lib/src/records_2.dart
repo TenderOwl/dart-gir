@@ -23,9 +23,8 @@ final class GskPathMeasure {
             >
           >('gsk_path_measure_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GskPathMeasure(GskPath path) {
-    return GskPathMeasure.fromPointer(_gskPathMeasureNew(path.handle));
-  }
+  GskPathMeasure(GskPath path)
+    : this.fromPointer(_gskPathMeasureNew(path.handle));
 
   /// Creates a measure object for the given @path and @tolerance.
   static final _gskPathMeasureNewWithTolerance =
@@ -37,11 +36,8 @@ final class GskPathMeasure {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
-  factory GskPathMeasure.withTolerance(GskPath path, double tolerance) {
-    return GskPathMeasure.fromPointer(
-      _gskPathMeasureNewWithTolerance(path.handle, tolerance),
-    );
-  }
+  GskPathMeasure.withTolerance(GskPath path, double tolerance)
+    : this.fromPointer(_gskPathMeasureNewWithTolerance(path.handle, tolerance));
 
   /// Gets the length of the path being measured.
   ///
@@ -470,9 +466,7 @@ final class GskRenderReplay {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_render_replay_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GskRenderReplay() {
-    return GskRenderReplay.fromPointer(_gskRenderReplayNew());
-  }
+  GskRenderReplay() : this.fromPointer(_gskRenderReplayNew());
 
   /// Replays the node using the default method.
   ///

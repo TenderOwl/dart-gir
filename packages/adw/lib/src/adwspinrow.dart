@@ -53,14 +53,11 @@ class AdwSpinRow extends AdwActionRow {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double, int)
           >();
-  factory AdwSpinRow(GtkAdjustment? adjustment, double climbRate, int digits) {
-    return AdwSpinRow.fromPointer(
-      gObjectRefSink(
+  AdwSpinRow(GtkAdjustment? adjustment, double climbRate, int digits)
+    : super.fromPointer(
         _adwSpinRowNew(adjustment?.handle ?? ffi.nullptr, climbRate, digits),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new `AdwSpinRow` with the given properties.
   ///
@@ -80,12 +77,8 @@ class AdwSpinRow extends AdwActionRow {
             >
           >('adw_spin_row_new_with_range')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double, double)>();
-  factory AdwSpinRow.withRange(double min, double max, double step) {
-    return AdwSpinRow.fromPointer(
-      gObjectRefSink(_adwSpinRowNewWithRange(min, max, step)),
-      owned: true,
-    );
-  }
+  AdwSpinRow.withRange(double min, double max, double step)
+    : super.fromPointer(_adwSpinRowNewWithRange(min, max, step), owned: true);
 
   /// Changes the properties of an existing spin row.
   ///

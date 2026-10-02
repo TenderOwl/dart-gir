@@ -60,9 +60,7 @@ class GtkStack extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_stack_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkStack() {
-    return GtkStack.fromPointer(gObjectRefSink(_gtkStackNew()), owned: true);
-  }
+  GtkStack() : super.fromPointer(_gtkStackNew(), owned: true);
 
   /// Adds a child to @stack.
   static final _gtkStackAddChild =

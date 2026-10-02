@@ -45,9 +45,7 @@ final class GMainContext {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_main_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GMainContext() {
-    return GMainContext.fromPointer(_gMainContextNew());
-  }
+  GMainContext() : this.fromPointer(_gMainContextNew());
 
   /// Creates a new [struct@GLib.MainContext] structure.
   static final _gMainContextNewWithFlags =
@@ -55,9 +53,8 @@ final class GMainContext {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('g_main_context_new_with_flags')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GMainContext.withFlags(GMainContextFlags flags) {
-    return GMainContext.fromPointer(_gMainContextNewWithFlags(flags.value));
-  }
+  GMainContext.withFlags(GMainContextFlags flags)
+    : this.fromPointer(_gMainContextNewWithFlags(flags.value));
 
   /// Tries to become the owner of the specified context.
   ///

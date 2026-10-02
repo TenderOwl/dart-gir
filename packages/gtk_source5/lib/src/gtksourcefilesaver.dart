@@ -33,12 +33,11 @@ class GtkSourceFileSaver extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkSourceFileSaver(GtkSourceBuffer buffer, GtkSourceFile file) {
-    return GtkSourceFileSaver.fromPointer(
-      _gtkSourceFileSaverNew(buffer.handle, file.handle),
-      owned: true,
-    );
-  }
+  GtkSourceFileSaver(GtkSourceBuffer buffer, GtkSourceFile file)
+    : super.fromPointer(
+        _gtkSourceFileSaverNew(buffer.handle, file.handle),
+        owned: true,
+      );
 
   /// Creates a new #GtkSourceFileSaver object with a target location.
   ///
@@ -65,20 +64,19 @@ class GtkSourceFileSaver extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkSourceFileSaver.withTarget(
+  GtkSourceFileSaver.withTarget(
     GtkSourceBuffer buffer,
     GtkSourceFile file,
     GFile targetLocation,
-  ) {
-    return GtkSourceFileSaver.fromPointer(
-      _gtkSourceFileSaverNewWithTarget(
-        buffer.handle,
-        file.handle,
-        targetLocation.handle,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkSourceFileSaverNewWithTarget(
+          buffer.handle,
+          file.handle,
+          targetLocation.handle,
+        ),
+        owned: true,
+      );
+
   static final _gtkSourceFileSaverGetBuffer =
       gtkSource5Lookup<
             ffi.NativeFunction<

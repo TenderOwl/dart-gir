@@ -27,12 +27,8 @@ class GThreadedSocketService extends GSocketService {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_threaded_socket_service_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GThreadedSocketService(int maxThreads) {
-    return GThreadedSocketService.fromPointer(
-      _gThreadedSocketServiceNew(maxThreads),
-      owned: true,
-    );
-  }
+  GThreadedSocketService(int maxThreads)
+    : super.fromPointer(_gThreadedSocketServiceNew(maxThreads), owned: true);
 
   /// The ::run signal is emitted in a worker thread in response to an
   /// incoming connection. This thread is dedicated to handling

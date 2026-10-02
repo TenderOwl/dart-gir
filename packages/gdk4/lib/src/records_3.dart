@@ -25,11 +25,8 @@ final class GdkTextureDownloader {
             >
           >('gdk_texture_downloader_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkTextureDownloader(GdkTexture texture) {
-    return GdkTextureDownloader.fromPointer(
-      _gdkTextureDownloaderNew(texture.handle),
-    );
-  }
+  GdkTextureDownloader(GdkTexture texture)
+    : this.fromPointer(_gdkTextureDownloaderNew(texture.handle));
 
   /// Creates a copy of the downloader.
   ///
@@ -214,9 +211,7 @@ final class GdkToplevelLayout {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_toplevel_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GdkToplevelLayout() {
-    return GdkToplevelLayout.fromPointer(_gdkToplevelLayoutNew());
-  }
+  GdkToplevelLayout() : this.fromPointer(_gdkToplevelLayoutNew());
 
   /// Create a new `GdkToplevelLayout` and copy the contents of @layout into it.
   static final _gdkToplevelLayoutCopy =

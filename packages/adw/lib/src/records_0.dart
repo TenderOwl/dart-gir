@@ -93,14 +93,12 @@ final class AdwBreakpointCondition {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory AdwBreakpointCondition.and(
+  AdwBreakpointCondition.and(
     AdwBreakpointCondition condition1,
     AdwBreakpointCondition condition2,
-  ) {
-    return AdwBreakpointCondition.fromPointer(
-      _adwBreakpointConditionNewAnd(condition1.handle, condition2.handle),
-    );
-  }
+  ) : this.fromPointer(
+        _adwBreakpointConditionNewAnd(condition1.handle, condition2.handle),
+      );
 
   /// Creates a condition that triggers on length changes.
   static final _adwBreakpointConditionNewLength =
@@ -110,15 +108,13 @@ final class AdwBreakpointCondition {
             >
           >('adw_breakpoint_condition_new_length')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, double, int)>();
-  factory AdwBreakpointCondition.length(
+  AdwBreakpointCondition.length(
     AdwBreakpointConditionLengthType type_,
     double value,
     AdwLengthUnit unit,
-  ) {
-    return AdwBreakpointCondition.fromPointer(
-      _adwBreakpointConditionNewLength(type_.value, value, unit.value),
-    );
-  }
+  ) : this.fromPointer(
+        _adwBreakpointConditionNewLength(type_.value, value, unit.value),
+      );
 
   /// Creates a condition that triggers when either @condition_1 or @condition_2 is
   /// true.
@@ -137,14 +133,12 @@ final class AdwBreakpointCondition {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory AdwBreakpointCondition.or(
+  AdwBreakpointCondition.or(
     AdwBreakpointCondition condition1,
     AdwBreakpointCondition condition2,
-  ) {
-    return AdwBreakpointCondition.fromPointer(
-      _adwBreakpointConditionNewOr(condition1.handle, condition2.handle),
-    );
-  }
+  ) : this.fromPointer(
+        _adwBreakpointConditionNewOr(condition1.handle, condition2.handle),
+      );
 
   /// Creates a condition that triggers on ratio changes.
   ///
@@ -156,15 +150,13 @@ final class AdwBreakpointCondition {
             >
           >('adw_breakpoint_condition_new_ratio')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
-  factory AdwBreakpointCondition.ratio(
+  AdwBreakpointCondition.ratio(
     AdwBreakpointConditionRatioType type_,
     int width,
     int height,
-  ) {
-    return AdwBreakpointCondition.fromPointer(
-      _adwBreakpointConditionNewRatio(type_.value, width, height),
-    );
-  }
+  ) : this.fromPointer(
+        _adwBreakpointConditionNewRatio(type_.value, width, height),
+      );
 
   /// Copies @self.
   static final _adwBreakpointConditionCopy =
@@ -482,5 +474,10 @@ final class AdwSpinRowClass {
 
 final class AdwSpinnerClass {
   AdwSpinnerClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+final class AdwSpinnerPaintableClass {
+  AdwSpinnerPaintableClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

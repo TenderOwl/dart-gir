@@ -14,9 +14,7 @@ class GtkGestureStylus extends GtkGestureSingle {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_stylus_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkGestureStylus() {
-    return GtkGestureStylus.fromPointer(_gtkGestureStylusNew(), owned: true);
-  }
+  GtkGestureStylus() : super.fromPointer(_gtkGestureStylusNew(), owned: true);
 
   /// Returns the current value for the requested @axis.
   ///

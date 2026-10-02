@@ -22,9 +22,7 @@ class GSocketClient extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_socket_client_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GSocketClient() {
-    return GSocketClient.fromPointer(_gSocketClientNew(), owned: true);
-  }
+  GSocketClient() : super.fromPointer(_gSocketClientNew(), owned: true);
 
   /// Enable proxy protocols to be handled by the application. When the
   /// indicated proxy protocol is returned by the #GProxyResolver,

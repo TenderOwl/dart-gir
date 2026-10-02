@@ -21,12 +21,11 @@ class GtkTextBuffer extends GObject {
             >
           >('gtk_text_buffer_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkTextBuffer([GtkTextTagTable? table]) {
-    return GtkTextBuffer.fromPointer(
-      _gtkTextBufferNew(table?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkTextBuffer([GtkTextTagTable? table])
+    : super.fromPointer(
+        _gtkTextBufferNew(table?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Adds a [callback@Gtk.TextBufferCommitNotify] to be called when a change
   /// is to be made to the [type@Gtk.TextBuffer].

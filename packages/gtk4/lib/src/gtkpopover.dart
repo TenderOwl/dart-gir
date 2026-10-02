@@ -105,12 +105,7 @@ class GtkPopover extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_popover_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPopover() {
-    return GtkPopover.fromPointer(
-      gObjectRefSink(_gtkPopoverNew()),
-      owned: true,
-    );
-  }
+  GtkPopover() : super.fromPointer(_gtkPopoverNew(), owned: true);
 
   /// Returns whether the popover is modal.
   ///

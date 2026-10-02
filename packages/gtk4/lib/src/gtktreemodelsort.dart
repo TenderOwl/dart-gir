@@ -109,12 +109,11 @@ class GtkTreeModelSort extends GObject {
             >
           >('gtk_tree_model_sort_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkTreeModelSort.withModel(GtkTreeModel childModel) {
-    return GtkTreeModelSort.fromPointer(
-      _gtkTreeModelSortNewWithModel(childModel.handle),
-      owned: true,
-    );
-  }
+  GtkTreeModelSort.withModel(GtkTreeModel childModel)
+    : super.fromPointer(
+        _gtkTreeModelSortNewWithModel(childModel.handle),
+        owned: true,
+      );
 
   /// This function should almost never be called.  It clears the @tree_model_sort
   /// of any cached iterators that haven’t been reffed with

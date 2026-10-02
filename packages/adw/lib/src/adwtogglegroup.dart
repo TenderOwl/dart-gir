@@ -105,12 +105,7 @@ class AdwToggleGroup extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_toggle_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwToggleGroup() {
-    return AdwToggleGroup.fromPointer(
-      gObjectRefSink(_adwToggleGroupNew()),
-      owned: true,
-    );
-  }
+  AdwToggleGroup() : super.fromPointer(_adwToggleGroupNew(), owned: true);
 
   /// Adds a toggle to @self.
   static final _adwToggleGroupAdd =

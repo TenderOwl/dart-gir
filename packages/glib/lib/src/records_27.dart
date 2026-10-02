@@ -144,9 +144,7 @@ final class GTimeZone {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_time_zone_new_local',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GTimeZone.local() {
-    return GTimeZone.fromPointer(_gTimeZoneNewLocal());
-  }
+  GTimeZone.local() : this.fromPointer(_gTimeZoneNewLocal());
 
   /// Creates a #GTimeZone corresponding to the given constant offset from UTC,
   /// in seconds.
@@ -162,9 +160,8 @@ final class GTimeZone {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_time_zone_new_offset',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GTimeZone.offset(int seconds) {
-    return GTimeZone.fromPointer(_gTimeZoneNewOffset(seconds));
-  }
+  GTimeZone.offset(int seconds)
+    : this.fromPointer(_gTimeZoneNewOffset(seconds));
 
   /// Creates a #GTimeZone corresponding to UTC.
   ///
@@ -177,9 +174,7 @@ final class GTimeZone {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_time_zone_new_utc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GTimeZone.utc() {
-    return GTimeZone.fromPointer(_gTimeZoneNewUtc());
-  }
+  GTimeZone.utc() : this.fromPointer(_gTimeZoneNewUtc());
 
   /// Finds an interval within @tz that corresponds to the given @time_.
   /// The meaning of @time_ depends on @type.

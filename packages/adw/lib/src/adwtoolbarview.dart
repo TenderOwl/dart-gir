@@ -107,12 +107,7 @@ class AdwToolbarView extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_toolbar_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwToolbarView() {
-    return AdwToolbarView.fromPointer(
-      gObjectRefSink(_adwToolbarViewNew()),
-      owned: true,
-    );
-  }
+  AdwToolbarView() : super.fromPointer(_adwToolbarViewNew(), owned: true);
 
   /// Adds a bottom bar to @self.
   static final _adwToolbarViewAddBottomBar =

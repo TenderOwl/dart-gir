@@ -124,12 +124,11 @@ class GskGLShader extends GObject {
             >
           >('gsk_gl_shader_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GskGLShader.fromBytes(GBytes sourcecode) {
-    return GskGLShader.fromPointer(
-      _gskGlShaderNewFromBytes(sourcecode.handle),
-      owned: true,
-    );
-  }
+  GskGLShader.fromBytes(GBytes sourcecode)
+    : super.fromPointer(
+        _gskGlShaderNewFromBytes(sourcecode.handle),
+        owned: true,
+      );
 
   /// Creates a `GskGLShader` that will render pixels using the specified code.
   static final _gskGlShaderNewFromResource =

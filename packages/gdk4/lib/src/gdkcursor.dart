@@ -230,22 +230,20 @@ class GdkCursor extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GdkCursor.fromTexture(
+  GdkCursor.fromTexture(
     GdkTexture texture,
     int hotspotX,
     int hotspotY, [
     GdkCursor? fallback,
-  ]) {
-    return GdkCursor.fromPointer(
-      _gdkCursorNewFromTexture(
-        texture.handle,
-        hotspotX,
-        hotspotY,
-        fallback?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
+  ]) : super.fromPointer(
+         _gdkCursorNewFromTexture(
+           texture.handle,
+           hotspotX,
+           hotspotY,
+           fallback?.handle ?? ffi.nullptr,
+         ),
+         owned: true,
+       );
 
   /// Returns the fallback for this @cursor.
   ///

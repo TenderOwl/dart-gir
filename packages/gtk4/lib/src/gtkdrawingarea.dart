@@ -90,12 +90,7 @@ class GtkDrawingArea extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_drawing_area_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkDrawingArea() {
-    return GtkDrawingArea.fromPointer(
-      gObjectRefSink(_gtkDrawingAreaNew()),
-      owned: true,
-    );
-  }
+  GtkDrawingArea() : super.fromPointer(_gtkDrawingAreaNew(), owned: true);
 
   /// Retrieves the content height of the `GtkDrawingArea`.
   static final _gtkDrawingAreaGetContentHeight =

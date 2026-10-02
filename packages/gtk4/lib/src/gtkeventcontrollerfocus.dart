@@ -18,12 +18,8 @@ class GtkEventControllerFocus extends GtkEventController {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_event_controller_focus_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkEventControllerFocus() {
-    return GtkEventControllerFocus.fromPointer(
-      _gtkEventControllerFocusNew(),
-      owned: true,
-    );
-  }
+  GtkEventControllerFocus()
+    : super.fromPointer(_gtkEventControllerFocusNew(), owned: true);
 
   /// Returns %TRUE if focus is within @self or one of its children.
   static final _gtkEventControllerFocusContainsFocus =

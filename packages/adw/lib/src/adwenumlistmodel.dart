@@ -13,12 +13,8 @@ class AdwEnumListModel extends GObject {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
         'adw_enum_list_model_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory AdwEnumListModel(int enumType) {
-    return AdwEnumListModel.fromPointer(
-      _adwEnumListModelNew(enumType),
-      owned: true,
-    );
-  }
+  AdwEnumListModel(int enumType)
+    : super.fromPointer(_adwEnumListModelNew(enumType), owned: true);
 
   /// Finds the position of a given enum value in @self.
   ///

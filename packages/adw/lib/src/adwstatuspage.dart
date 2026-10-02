@@ -38,12 +38,7 @@ class AdwStatusPage extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_status_page_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwStatusPage() {
-    return AdwStatusPage.fromPointer(
-      gObjectRefSink(_adwStatusPageNew()),
-      owned: true,
-    );
-  }
+  AdwStatusPage() : super.fromPointer(_adwStatusPageNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _adwStatusPageGetChild =

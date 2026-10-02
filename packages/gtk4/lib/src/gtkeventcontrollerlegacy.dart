@@ -14,12 +14,8 @@ class GtkEventControllerLegacy extends GtkEventController {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_event_controller_legacy_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkEventControllerLegacy() {
-    return GtkEventControllerLegacy.fromPointer(
-      _gtkEventControllerLegacyNew(),
-      owned: true,
-    );
-  }
+  GtkEventControllerLegacy()
+    : super.fromPointer(_gtkEventControllerLegacyNew(), owned: true);
 
   /// Emitted for each GDK event delivered to @controller.
   int onEvent(bool Function(GdkEvent event) callback) {

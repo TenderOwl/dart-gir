@@ -24,20 +24,18 @@ class GskRepeatNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskRepeatNode(
+  GskRepeatNode(
     GrapheneRect bounds,
     GskRenderNode child, [
     GrapheneRect? childBounds,
-  ]) {
-    return GskRepeatNode.fromPointer(
-      _gskRepeatNodeNew(
-        bounds.handle,
-        child.handle,
-        childBounds?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
+  ]) : super.fromPointer(
+         _gskRepeatNodeNew(
+           bounds.handle,
+           child.handle,
+           childBounds?.handle ?? ffi.nullptr,
+         ),
+         owned: true,
+       );
 
   /// Retrieves the child of @node.
   static final _gskRepeatNodeGetChild =

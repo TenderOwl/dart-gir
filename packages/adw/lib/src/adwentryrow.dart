@@ -43,12 +43,7 @@ class AdwEntryRow extends AdwPreferencesRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_entry_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwEntryRow() {
-    return AdwEntryRow.fromPointer(
-      gObjectRefSink(_adwEntryRowNew()),
-      owned: true,
-    );
-  }
+  AdwEntryRow() : super.fromPointer(_adwEntryRowNew(), owned: true);
 
   /// Adds a prefix widget to @self.
   static final _adwEntryRowAddPrefix =

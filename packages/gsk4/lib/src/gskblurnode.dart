@@ -15,12 +15,8 @@ class GskBlurNode extends GskRenderNode {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
-  factory GskBlurNode(GskRenderNode child, double radius) {
-    return GskBlurNode.fromPointer(
-      _gskBlurNodeNew(child.handle, radius),
-      owned: true,
-    );
-  }
+  GskBlurNode(GskRenderNode child, double radius)
+    : super.fromPointer(_gskBlurNodeNew(child.handle, radius), owned: true);
 
   /// Retrieves the child `GskRenderNode` of the blur @node.
   static final _gskBlurNodeGetChild =

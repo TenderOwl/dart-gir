@@ -61,24 +61,22 @@ class AdwSpringAnimation extends AdwAnimation {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory AdwSpringAnimation(
+  AdwSpringAnimation(
     GtkWidget widget,
     double from,
     double to,
     AdwSpringParams springParams,
     AdwAnimationTarget target,
-  ) {
-    return AdwSpringAnimation.fromPointer(
-      _adwSpringAnimationNew(
-        widget.handle,
-        from,
-        to,
-        springParams.handle,
-        target.handle,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _adwSpringAnimationNew(
+          widget.handle,
+          from,
+          to,
+          springParams.handle,
+          target.handle,
+        ),
+        owned: true,
+      );
 
   /// Calculates the value @self will have at @time.
   ///

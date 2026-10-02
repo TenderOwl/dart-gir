@@ -14,12 +14,11 @@ class GtkMultiSelection extends GObject {
             >
           >('gtk_multi_selection_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkMultiSelection([GListModel? model]) {
-    return GtkMultiSelection.fromPointer(
-      _gtkMultiSelectionNew(model?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkMultiSelection([GListModel? model])
+    : super.fromPointer(
+        _gtkMultiSelectionNew(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Returns the underlying model of @self.
   static final _gtkMultiSelectionGetModel =

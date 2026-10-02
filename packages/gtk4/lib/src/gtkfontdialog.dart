@@ -20,9 +20,7 @@ class GtkFontDialog extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_font_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkFontDialog() {
-    return GtkFontDialog.fromPointer(_gtkFontDialogNew(), owned: true);
-  }
+  GtkFontDialog() : super.fromPointer(_gtkFontDialogNew(), owned: true);
 
   /// Presents a font chooser dialog to the user.
   ///

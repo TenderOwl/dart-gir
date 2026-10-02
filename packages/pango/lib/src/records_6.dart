@@ -234,11 +234,10 @@ final class PangoTabArray {
             >
           >('pango_tab_array_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory PangoTabArray(int initialSize, bool positionsInPixels) {
-    return PangoTabArray.fromPointer(
-      _pangoTabArrayNew(initialSize, positionsInPixels ? 1 : 0),
-    );
-  }
+  PangoTabArray(int initialSize, bool positionsInPixels)
+    : this.fromPointer(
+        _pangoTabArrayNew(initialSize, positionsInPixels ? 1 : 0),
+      );
 
   /// Copies a `PangoTabArray`.
   static final _pangoTabArrayCopy =

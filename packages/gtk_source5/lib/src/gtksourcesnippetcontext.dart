@@ -22,12 +22,8 @@ class GtkSourceSnippetContext extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_snippet_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceSnippetContext() {
-    return GtkSourceSnippetContext.fromPointer(
-      _gtkSourceSnippetContextNew(),
-      owned: true,
-    );
-  }
+  GtkSourceSnippetContext()
+    : super.fromPointer(_gtkSourceSnippetContextNew(), owned: true);
 
   /// Removes all variables from the context.
   static final _gtkSourceSnippetContextClearVariables =

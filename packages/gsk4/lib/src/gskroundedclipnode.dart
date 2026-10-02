@@ -23,12 +23,11 @@ class GskRoundedClipNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskRoundedClipNode(GskRenderNode child, GskRoundedRect clip) {
-    return GskRoundedClipNode.fromPointer(
-      _gskRoundedClipNodeNew(child.handle, clip.handle),
-      owned: true,
-    );
-  }
+  GskRoundedClipNode(GskRenderNode child, GskRoundedRect clip)
+    : super.fromPointer(
+        _gskRoundedClipNodeNew(child.handle, clip.handle),
+        owned: true,
+      );
 
   /// Gets the child node that is getting clipped by the given @node.
   static final _gskRoundedClipNodeGetChild =

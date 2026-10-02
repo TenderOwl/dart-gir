@@ -45,9 +45,7 @@ class GFileInfo extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_file_info_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GFileInfo() {
-    return GFileInfo.fromPointer(_gFileInfoNew(), owned: true);
-  }
+  GFileInfo() : super.fromPointer(_gFileInfoNew(), owned: true);
 
   /// Clears the status information from @info.
   static final _gFileInfoClearStatus =
@@ -536,6 +534,11 @@ class GFileInfo extends GObject {
   }
 
   /// Checks if a file is a backup file.
+  ///
+  /// The exact semantics of what constitutes a backup file are
+  /// backend-specific. For local files, a file is considered a backup
+  /// if its name ends with `~` and it is a regular file. This follows
+  /// the POSIX convention used by text editors such as Emacs.
   ///
   /// It is an error to call this if the #GFileInfo does not contain
   /// %G_FILE_ATTRIBUTE_STANDARD_IS_BACKUP.

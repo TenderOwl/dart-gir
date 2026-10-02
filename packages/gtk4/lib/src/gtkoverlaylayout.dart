@@ -17,9 +17,7 @@ class GtkOverlayLayout extends GtkLayoutManager {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_overlay_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkOverlayLayout() {
-    return GtkOverlayLayout.fromPointer(_gtkOverlayLayoutNew(), owned: true);
-  }
+  GtkOverlayLayout() : super.fromPointer(_gtkOverlayLayoutNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

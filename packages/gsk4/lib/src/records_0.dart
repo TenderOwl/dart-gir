@@ -49,11 +49,8 @@ final class GskComponentTransfer {
             >
           >('gsk_component_transfer_new_gamma')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double, double)>();
-  factory GskComponentTransfer.gamma(double amp, double exp, double ofs) {
-    return GskComponentTransfer.fromPointer(
-      _gskComponentTransferNewGamma(amp, exp, ofs),
-    );
-  }
+  GskComponentTransfer.gamma(double amp, double exp, double ofs)
+    : this.fromPointer(_gskComponentTransferNewGamma(amp, exp, ofs));
 
   /// Creates a new component transfer that doesn't
   /// change the component value.
@@ -68,9 +65,8 @@ final class GskComponentTransfer {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_component_transfer_new_identity',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GskComponentTransfer.identity() {
-    return GskComponentTransfer.fromPointer(_gskComponentTransferNewIdentity());
-  }
+  GskComponentTransfer.identity()
+    : this.fromPointer(_gskComponentTransferNewIdentity());
 
   /// Creates a new component transfer that limits
   /// the values of the component to `n` levels.
@@ -89,9 +85,8 @@ final class GskComponentTransfer {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Float)>>(
         'gsk_component_transfer_new_levels',
       ).asFunction<ffi.Pointer<ffi.Void> Function(double)>();
-  factory GskComponentTransfer.levels(double n) {
-    return GskComponentTransfer.fromPointer(_gskComponentTransferNewLevels(n));
-  }
+  GskComponentTransfer.levels(double n)
+    : this.fromPointer(_gskComponentTransferNewLevels(n));
 
   /// Creates a new component transfer that applies
   /// a linear transform.
@@ -113,11 +108,8 @@ final class GskComponentTransfer {
             >
           >('gsk_component_transfer_new_linear')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double)>();
-  factory GskComponentTransfer.linear(double m, double b) {
-    return GskComponentTransfer.fromPointer(
-      _gskComponentTransferNewLinear(m, b),
-    );
-  }
+  GskComponentTransfer.linear(double m, double b)
+    : this.fromPointer(_gskComponentTransferNewLinear(m, b));
 
   /// Creates a copy of @other.
   static final _gskComponentTransferCopy =

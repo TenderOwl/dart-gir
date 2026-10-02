@@ -54,12 +54,11 @@ class GMenuItem extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GMenuItem.fromModel(GMenuModel model, int itemIndex) {
-    return GMenuItem.fromPointer(
-      _gMenuItemNewFromModel(model.handle, itemIndex),
-      owned: true,
-    );
-  }
+  GMenuItem.fromModel(GMenuModel model, int itemIndex)
+    : super.fromPointer(
+        _gMenuItemNewFromModel(model.handle, itemIndex),
+        owned: true,
+      );
 
   /// Creates a new #GMenuItem representing a section.
   ///

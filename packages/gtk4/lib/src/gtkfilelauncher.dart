@@ -24,12 +24,11 @@ class GtkFileLauncher extends GObject {
             >
           >('gtk_file_launcher_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkFileLauncher([GFile? file]) {
-    return GtkFileLauncher.fromPointer(
-      _gtkFileLauncherNew(file?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkFileLauncher([GFile? file])
+    : super.fromPointer(
+        _gtkFileLauncherNew(file?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Returns whether to ask the user which app to use.
   static final _gtkFileLauncherGetAlwaysAsk =

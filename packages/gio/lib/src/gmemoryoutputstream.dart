@@ -16,12 +16,8 @@ class GMemoryOutputStream extends GOutputStream {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_memory_output_stream_new_resizable',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GMemoryOutputStream.resizable() {
-    return GMemoryOutputStream.fromPointer(
-      _gMemoryOutputStreamNewResizable(),
-      owned: true,
-    );
-  }
+  GMemoryOutputStream.resizable()
+    : super.fromPointer(_gMemoryOutputStreamNewResizable(), owned: true);
 
   /// Gets any loaded data from the @ostream.
   ///

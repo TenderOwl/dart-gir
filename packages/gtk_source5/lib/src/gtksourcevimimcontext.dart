@@ -79,12 +79,8 @@ class GtkSourceVimIMContext extends GtkIMContext {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_vim_im_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceVimIMContext() {
-    return GtkSourceVimIMContext.fromPointer(
-      _gtkSourceVimImContextNew(),
-      owned: true,
-    );
-  }
+  GtkSourceVimIMContext()
+    : super.fromPointer(_gtkSourceVimImContextNew(), owned: true);
 
   /// Executes @command as if it was typed into the command bar by the
   /// user except that this does not emit the

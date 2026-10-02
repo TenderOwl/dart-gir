@@ -28,12 +28,8 @@ class GskRenderer extends GObject {
             >
           >('gsk_renderer_new_for_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GskRenderer.forSurface(GdkSurface surface) {
-    return GskRenderer.fromPointer(
-      _gskRendererNewForSurface(surface.handle),
-      owned: true,
-    );
-  }
+  GskRenderer.forSurface(GdkSurface surface)
+    : super.fromPointer(_gskRendererNewForSurface(surface.handle), owned: true);
 
   /// Retrieves the surface that the renderer is associated with.
   ///

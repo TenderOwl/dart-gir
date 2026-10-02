@@ -88,9 +88,8 @@ class GTestDBus extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>>(
         'g_test_dbus_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GTestDBus(GTestDBusFlags flags) {
-    return GTestDBus.fromPointer(_gTestDbusNew(flags.value), owned: true);
-  }
+  GTestDBus(GTestDBusFlags flags)
+    : super.fromPointer(_gTestDbusNew(flags.value), owned: true);
 
   /// Add a path where dbus-daemon will look up .service files. This can't be
   /// called after g_test_dbus_up().

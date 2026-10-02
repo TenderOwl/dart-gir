@@ -17,12 +17,8 @@ class GSimplePermission extends GPermission {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_simple_permission_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GSimplePermission(bool allowed) {
-    return GSimplePermission.fromPointer(
-      _gSimplePermissionNew(allowed ? 1 : 0),
-      owned: true,
-    );
-  }
+  GSimplePermission(bool allowed)
+    : super.fromPointer(_gSimplePermissionNew(allowed ? 1 : 0), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

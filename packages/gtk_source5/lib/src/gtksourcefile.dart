@@ -16,9 +16,7 @@ class GtkSourceFile extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceFile() {
-    return GtkSourceFile.fromPointer(_gtkSourceFileNew(), owned: true);
-  }
+  GtkSourceFile() : super.fromPointer(_gtkSourceFileNew(), owned: true);
 
   /// Checks synchronously the file on disk, to know whether the file is externally
   /// modified, or has been deleted, and whether the file is read-only.

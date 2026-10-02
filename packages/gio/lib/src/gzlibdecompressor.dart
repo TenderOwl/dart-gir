@@ -12,12 +12,8 @@ class GZlibDecompressor extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_zlib_decompressor_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GZlibDecompressor(GZlibCompressorFormat format) {
-    return GZlibDecompressor.fromPointer(
-      _gZlibDecompressorNew(format.value),
-      owned: true,
-    );
-  }
+  GZlibDecompressor(GZlibCompressorFormat format)
+    : super.fromPointer(_gZlibDecompressorNew(format.value), owned: true);
 
   /// Gets the [property@Gio.ZlibDecompressor:file-info] property.
   static final _gZlibDecompressorGetFileInfo =

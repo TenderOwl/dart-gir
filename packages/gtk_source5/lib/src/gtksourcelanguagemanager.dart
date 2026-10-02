@@ -23,12 +23,8 @@ class GtkSourceLanguageManager extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_language_manager_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceLanguageManager() {
-    return GtkSourceLanguageManager.fromPointer(
-      _gtkSourceLanguageManagerNew(),
-      owned: true,
-    );
-  }
+  GtkSourceLanguageManager()
+    : super.fromPointer(_gtkSourceLanguageManagerNew(), owned: true);
 
   /// Appends @path to the list of directories where the @manager looks for
   /// language files.

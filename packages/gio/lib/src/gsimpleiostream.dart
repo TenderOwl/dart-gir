@@ -32,15 +32,11 @@ class GSimpleIOStream extends GIOStream {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GSimpleIOStream(
-    GInputStream inputStream,
-    GOutputStream outputStream,
-  ) {
-    return GSimpleIOStream.fromPointer(
-      _gSimpleIoStreamNew(inputStream.handle, outputStream.handle),
-      owned: true,
-    );
-  }
+  GSimpleIOStream(GInputStream inputStream, GOutputStream outputStream)
+    : super.fromPointer(
+        _gSimpleIoStreamNew(inputStream.handle, outputStream.handle),
+        owned: true,
+      );
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

@@ -167,12 +167,7 @@ class AdwNavigationView extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_navigation_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwNavigationView() {
-    return AdwNavigationView.fromPointer(
-      gObjectRefSink(_adwNavigationViewNew()),
-      owned: true,
-    );
-  }
+  AdwNavigationView() : super.fromPointer(_adwNavigationViewNew(), owned: true);
 
   /// Permanently adds @page to @self.
   ///

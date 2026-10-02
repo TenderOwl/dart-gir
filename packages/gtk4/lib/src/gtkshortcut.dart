@@ -36,18 +36,14 @@ class GtkShortcut extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkShortcut([
-    GtkShortcutTrigger? trigger,
-    GtkShortcutAction? action,
-  ]) {
-    return GtkShortcut.fromPointer(
-      _gtkShortcutNew(
-        trigger?.handle ?? ffi.nullptr,
-        action?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
+  GtkShortcut([GtkShortcutTrigger? trigger, GtkShortcutAction? action])
+    : super.fromPointer(
+        _gtkShortcutNew(
+          trigger?.handle ?? ffi.nullptr,
+          action?.handle ?? ffi.nullptr,
+        ),
+        owned: true,
+      );
 
   /// Gets the action that is activated by this shortcut.
   static final _gtkShortcutGetAction =

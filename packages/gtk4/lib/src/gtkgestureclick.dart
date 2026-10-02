@@ -18,9 +18,7 @@ class GtkGestureClick extends GtkGestureSingle {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_click_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkGestureClick() {
-    return GtkGestureClick.fromPointer(_gtkGestureClickNew(), owned: true);
-  }
+  GtkGestureClick() : super.fromPointer(_gtkGestureClickNew(), owned: true);
 
   /// Emitted whenever a button or touch press happens.
   int onPressed(void Function(int nPress, double x, double y) callback) {

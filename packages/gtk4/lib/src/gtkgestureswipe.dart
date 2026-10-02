@@ -22,9 +22,7 @@ class GtkGestureSwipe extends GtkGestureSingle {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_swipe_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkGestureSwipe() {
-    return GtkGestureSwipe.fromPointer(_gtkGestureSwipeNew(), owned: true);
-  }
+  GtkGestureSwipe() : super.fromPointer(_gtkGestureSwipeNew(), owned: true);
 
   /// Gets the current velocity.
   ///

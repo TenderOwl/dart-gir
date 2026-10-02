@@ -16,9 +16,7 @@ final class GrapheneRay {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_ray_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneRay.alloc() {
-    return GrapheneRay.fromPointer(_grapheneRayAlloc());
-  }
+  GrapheneRay.alloc() : this.fromPointer(_grapheneRayAlloc());
 
   /// Checks whether the two given #graphene_ray_t are equal.
   static final _grapheneRayEqual =

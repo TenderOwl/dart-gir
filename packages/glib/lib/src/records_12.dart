@@ -17,11 +17,10 @@ final class GMainLoop {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GMainLoop(GMainContext? context, bool isRunning) {
-    return GMainLoop.fromPointer(
-      _gMainLoopNew(context?.handle ?? ffi.nullptr, isRunning ? 1 : 0),
-    );
-  }
+  GMainLoop(GMainContext? context, bool isRunning)
+    : this.fromPointer(
+        _gMainLoopNew(context?.handle ?? ffi.nullptr, isRunning ? 1 : 0),
+      );
 
   /// Returns the [struct@GLib.MainContext] of @loop.
   static final _gMainLoopGetContext =

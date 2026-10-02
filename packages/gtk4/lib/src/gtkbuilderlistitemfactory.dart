@@ -53,18 +53,14 @@ class GtkBuilderListItemFactory extends GtkListItemFactory {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkBuilderListItemFactory.fromBytes(
-    GtkBuilderScope? scope,
-    GBytes bytes,
-  ) {
-    return GtkBuilderListItemFactory.fromPointer(
-      _gtkBuilderListItemFactoryNewFromBytes(
-        scope?.handle ?? ffi.nullptr,
-        bytes.handle,
-      ),
-      owned: true,
-    );
-  }
+  GtkBuilderListItemFactory.fromBytes(GtkBuilderScope? scope, GBytes bytes)
+    : super.fromPointer(
+        _gtkBuilderListItemFactoryNewFromBytes(
+          scope?.handle ?? ffi.nullptr,
+          bytes.handle,
+        ),
+        owned: true,
+      );
 
   /// Creates a new `GtkBuilderListItemFactory` that instantiates widgets
   /// using data read from the given @resource_path to pass to `GtkBuilder`.

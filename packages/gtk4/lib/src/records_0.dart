@@ -37,11 +37,8 @@ final class GtkAccessibleList {
             >
           >('gtk_accessible_list_new_from_list')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkAccessibleList.fromList(GList list) {
-    return GtkAccessibleList.fromPointer(
-      _gtkAccessibleListNewFromList(list.handle),
-    );
-  }
+  GtkAccessibleList.fromList(GList list)
+    : this.fromPointer(_gtkAccessibleListNewFromList(list.handle));
 
   /// Gets the list of objects this boxed type holds.
   static final _gtkAccessibleListGetObjects =
@@ -143,9 +140,7 @@ final class GtkBitset {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_bitset_new_empty',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkBitset.empty() {
-    return GtkBitset.fromPointer(_gtkBitsetNewEmpty());
-  }
+  GtkBitset.empty() : this.fromPointer(_gtkBitsetNewEmpty());
 
   /// Creates a bitset with the given range set.
   static final _gtkBitsetNewRange =
@@ -155,9 +150,8 @@ final class GtkBitset {
             >
           >('gtk_bitset_new_range')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory GtkBitset.range(int start, int nItems) {
-    return GtkBitset.fromPointer(_gtkBitsetNewRange(start, nItems));
-  }
+  GtkBitset.range(int start, int nItems)
+    : this.fromPointer(_gtkBitsetNewRange(start, nItems));
 
   /// Adds @value to @self if it wasn't part of it before.
   static final _gtkBitsetAdd =
@@ -618,9 +612,7 @@ final class GtkBorder {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_border_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkBorder() {
-    return GtkBorder.fromPointer(_gtkBorderNew());
-  }
+  GtkBorder() : this.fromPointer(_gtkBorderNew());
 
   /// Copies a `GtkBorder`.
   static final _gtkBorderCopy =
@@ -651,5 +643,12 @@ final class GtkBoxClass {
 
 final class GtkBoxLayoutClass {
   GtkBoxLayoutClass.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+}
+
+/// Contains methods to let `GtkBuilder` construct an object from
+/// a `GtkBuilder` UI definition.
+final class GtkBuildableIface {
+  GtkBuildableIface.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

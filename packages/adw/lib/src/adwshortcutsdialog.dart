@@ -95,12 +95,8 @@ class AdwShortcutsDialog extends AdwDialog {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_shortcuts_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwShortcutsDialog() {
-    return AdwShortcutsDialog.fromPointer(
-      gObjectRefSink(_adwShortcutsDialogNew()),
-      owned: true,
-    );
-  }
+  AdwShortcutsDialog()
+    : super.fromPointer(_adwShortcutsDialogNew(), owned: true);
 
   /// Adds @section to @self.
   static final _adwShortcutsDialogAdd =

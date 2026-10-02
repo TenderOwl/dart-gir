@@ -20,12 +20,11 @@ class GtkSourceStyleSchemePreview extends GtkWidget {
             >
           >('gtk_source_style_scheme_preview_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourceStyleSchemePreview(GtkSourceStyleScheme scheme) {
-    return GtkSourceStyleSchemePreview.fromPointer(
-      gObjectRefSink(_gtkSourceStyleSchemePreviewNew(scheme.handle)),
-      owned: true,
-    );
-  }
+  GtkSourceStyleSchemePreview(GtkSourceStyleScheme scheme)
+    : super.fromPointer(
+        _gtkSourceStyleSchemePreviewNew(scheme.handle),
+        owned: true,
+      );
 
   /// Gets the #GtkSourceStyleScheme previewed by the widget.
   static final _gtkSourceStyleSchemePreviewGetScheme =

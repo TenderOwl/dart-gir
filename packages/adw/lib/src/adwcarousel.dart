@@ -25,12 +25,7 @@ class AdwCarousel extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_carousel_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwCarousel() {
-    return AdwCarousel.fromPointer(
-      gObjectRefSink(_adwCarouselNew()),
-      owned: true,
-    );
-  }
+  AdwCarousel() : super.fromPointer(_adwCarouselNew(), owned: true);
 
   /// Appends @child to @self.
   static final _adwCarouselAppend =

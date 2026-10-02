@@ -27,12 +27,11 @@ class GTcpWrapperConnection extends GTcpConnection {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GTcpWrapperConnection(GIOStream baseIoStream, GSocket socket) {
-    return GTcpWrapperConnection.fromPointer(
-      _gTcpWrapperConnectionNew(baseIoStream.handle, socket.handle),
-      owned: true,
-    );
-  }
+  GTcpWrapperConnection(GIOStream baseIoStream, GSocket socket)
+    : super.fromPointer(
+        _gTcpWrapperConnectionNew(baseIoStream.handle, socket.handle),
+        owned: true,
+      );
 
   /// Gets @conn's base #GIOStream
   static final _gTcpWrapperConnectionGetBaseIoStream =

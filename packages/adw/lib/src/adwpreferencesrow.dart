@@ -19,12 +19,7 @@ class AdwPreferencesRow extends GtkListBoxRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwPreferencesRow() {
-    return AdwPreferencesRow.fromPointer(
-      gObjectRefSink(_adwPreferencesRowNew()),
-      owned: true,
-    );
-  }
+  AdwPreferencesRow() : super.fromPointer(_adwPreferencesRowNew(), owned: true);
 
   /// Gets the title of the preference represented by @self.
   static final _adwPreferencesRowGetTitle =

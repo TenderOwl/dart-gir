@@ -53,15 +53,11 @@ class AdwPropertyAnimationTarget extends AdwAnimationTarget {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory AdwPropertyAnimationTarget.forPspec(
-    GObject object,
-    GParamSpec pspec,
-  ) {
-    return AdwPropertyAnimationTarget.fromPointer(
-      _adwPropertyAnimationTargetNewForPspec(object.handle, pspec.handle),
-      owned: true,
-    );
-  }
+  AdwPropertyAnimationTarget.forPspec(GObject object, GParamSpec pspec)
+    : super.fromPointer(
+        _adwPropertyAnimationTargetNewForPspec(object.handle, pspec.handle),
+        owned: true,
+      );
 
   /// Gets the object animated by @self.
   ///

@@ -37,12 +37,11 @@ class GtkColorDialogButton extends GtkWidget {
             >
           >('gtk_color_dialog_button_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkColorDialogButton([GtkColorDialog? dialog]) {
-    return GtkColorDialogButton.fromPointer(
-      gObjectRefSink(_gtkColorDialogButtonNew(dialog?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkColorDialogButton([GtkColorDialog? dialog])
+    : super.fromPointer(
+        _gtkColorDialogButtonNew(dialog?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Returns the `GtkColorDialog` of @self.
   static final _gtkColorDialogButtonGetDialog =

@@ -21,12 +21,8 @@ class GdkMemoryTextureBuilder extends GObject {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_memory_texture_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GdkMemoryTextureBuilder() {
-    return GdkMemoryTextureBuilder.fromPointer(
-      _gdkMemoryTextureBuilderNew(),
-      owned: true,
-    );
-  }
+  GdkMemoryTextureBuilder()
+    : super.fromPointer(_gdkMemoryTextureBuilderNew(), owned: true);
 
   /// Builds a new `GdkTexture` with the values set up in the builder.
   ///

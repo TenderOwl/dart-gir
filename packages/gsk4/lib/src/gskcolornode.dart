@@ -22,12 +22,11 @@ class GskColorNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskColorNode(GdkRGBA rgba, GrapheneRect bounds) {
-    return GskColorNode.fromPointer(
-      _gskColorNodeNew(rgba.handle, bounds.handle),
-      owned: true,
-    );
-  }
+  GskColorNode(GdkRGBA rgba, GrapheneRect bounds)
+    : super.fromPointer(
+        _gskColorNodeNew(rgba.handle, bounds.handle),
+        owned: true,
+      );
 
   /// Retrieves the color of the given @node.
   ///

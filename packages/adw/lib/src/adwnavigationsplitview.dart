@@ -142,12 +142,8 @@ class AdwNavigationSplitView extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_navigation_split_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwNavigationSplitView() {
-    return AdwNavigationSplitView.fromPointer(
-      gObjectRefSink(_adwNavigationSplitViewNew()),
-      owned: true,
-    );
-  }
+  AdwNavigationSplitView()
+    : super.fromPointer(_adwNavigationSplitViewNew(), owned: true);
 
   /// Gets whether @self is collapsed.
   static final _adwNavigationSplitViewGetCollapsed =

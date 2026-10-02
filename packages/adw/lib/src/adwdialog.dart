@@ -66,9 +66,7 @@ class AdwDialog extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwDialog() {
-    return AdwDialog.fromPointer(gObjectRefSink(_adwDialogNew()), owned: true);
-  }
+  AdwDialog() : super.fromPointer(_adwDialogNew(), owned: true);
 
   /// Adds @breakpoint to @self.
   static final _adwDialogAddBreakpoint =

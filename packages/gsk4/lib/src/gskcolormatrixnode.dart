@@ -32,20 +32,18 @@ class GskColorMatrixNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskColorMatrixNode(
+  GskColorMatrixNode(
     GskRenderNode child,
     GrapheneMatrix colorMatrix,
     GrapheneVec4 colorOffset,
-  ) {
-    return GskColorMatrixNode.fromPointer(
-      _gskColorMatrixNodeNew(
-        child.handle,
-        colorMatrix.handle,
-        colorOffset.handle,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gskColorMatrixNodeNew(
+          child.handle,
+          colorMatrix.handle,
+          colorOffset.handle,
+        ),
+        owned: true,
+      );
 
   /// Gets the child node that is getting its colors modified by the given @node.
   static final _gskColorMatrixNodeGetChild =

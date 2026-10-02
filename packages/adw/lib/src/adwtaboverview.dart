@@ -85,12 +85,7 @@ class AdwTabOverview extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_tab_overview_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwTabOverview() {
-    return AdwTabOverview.fromPointer(
-      gObjectRefSink(_adwTabOverviewNew()),
-      owned: true,
-    );
-  }
+  AdwTabOverview() : super.fromPointer(_adwTabOverviewNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _adwTabOverviewGetChild =

@@ -50,12 +50,8 @@ class GtkShortcutController extends GtkEventController {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_shortcut_controller_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkShortcutController() {
-    return GtkShortcutController.fromPointer(
-      _gtkShortcutControllerNew(),
-      owned: true,
-    );
-  }
+  GtkShortcutController()
+    : super.fromPointer(_gtkShortcutControllerNew(), owned: true);
 
   /// Creates a new shortcut controller that takes its shortcuts from
   /// the given list model.
@@ -70,12 +66,11 @@ class GtkShortcutController extends GtkEventController {
             >
           >('gtk_shortcut_controller_new_for_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkShortcutController.forModel(GListModel model) {
-    return GtkShortcutController.fromPointer(
-      _gtkShortcutControllerNewForModel(model.handle),
-      owned: true,
-    );
-  }
+  GtkShortcutController.forModel(GListModel model)
+    : super.fromPointer(
+        _gtkShortcutControllerNewForModel(model.handle),
+        owned: true,
+      );
 
   /// Adds @shortcut to the list of shortcuts handled by @self.
   ///

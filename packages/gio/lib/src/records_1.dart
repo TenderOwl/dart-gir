@@ -359,9 +359,7 @@ final class GFileAttributeInfoList {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_file_attribute_info_list_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GFileAttributeInfoList() {
-    return GFileAttributeInfoList.fromPointer(_gFileAttributeInfoListNew());
-  }
+  GFileAttributeInfoList() : this.fromPointer(_gFileAttributeInfoListNew());
 
   /// Adds a new attribute with @name to the @list, setting
   /// its @type and @flags.

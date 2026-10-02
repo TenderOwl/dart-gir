@@ -82,12 +82,11 @@ class GtkApplicationWindow extends GtkWindow {
             >
           >('gtk_application_window_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkApplicationWindow(GtkApplication application) {
-    return GtkApplicationWindow.fromPointer(
-      gObjectRefSink(_gtkApplicationWindowNew(application.handle)),
-      owned: true,
-    );
-  }
+  GtkApplicationWindow(GtkApplication application)
+    : super.fromPointer(
+        _gtkApplicationWindowNew(application.handle),
+        owned: true,
+      );
 
   /// Gets the `GtkShortcutsWindow` that is associated with @window.
   ///

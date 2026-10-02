@@ -31,26 +31,24 @@ class GskInsetShadowNode extends GskRenderNode {
               double,
             )
           >();
-  factory GskInsetShadowNode(
+  GskInsetShadowNode(
     GskRoundedRect outline,
     GdkRGBA color,
     double dx,
     double dy,
     double spread,
     double blurRadius,
-  ) {
-    return GskInsetShadowNode.fromPointer(
-      _gskInsetShadowNodeNew(
-        outline.handle,
-        color.handle,
-        dx,
-        dy,
-        spread,
-        blurRadius,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gskInsetShadowNodeNew(
+          outline.handle,
+          color.handle,
+          dx,
+          dy,
+          spread,
+          blurRadius,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the blur radius to apply to the shadow.
   static final _gskInsetShadowNodeGetBlurRadius =

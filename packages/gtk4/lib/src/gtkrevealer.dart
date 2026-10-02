@@ -30,12 +30,7 @@ class GtkRevealer extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_revealer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkRevealer() {
-    return GtkRevealer.fromPointer(
-      gObjectRefSink(_gtkRevealerNew()),
-      owned: true,
-    );
-  }
+  GtkRevealer() : super.fromPointer(_gtkRevealerNew(), owned: true);
 
   /// Gets the child widget of @revealer.
   static final _gtkRevealerGetChild =

@@ -46,9 +46,7 @@ class GtkIconTheme extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_icon_theme_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkIconTheme() {
-    return GtkIconTheme.fromPointer(_gtkIconThemeNew(), owned: true);
-  }
+  GtkIconTheme() : super.fromPointer(_gtkIconThemeNew(), owned: true);
 
   /// Adds a resource path that will be looked at when looking
   /// for icons, similar to search paths.

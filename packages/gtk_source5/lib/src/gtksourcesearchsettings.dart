@@ -15,12 +15,9 @@ class GtkSourceSearchSettings extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_search_settings_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceSearchSettings() {
-    return GtkSourceSearchSettings.fromPointer(
-      _gtkSourceSearchSettingsNew(),
-      owned: true,
-    );
-  }
+  GtkSourceSearchSettings()
+    : super.fromPointer(_gtkSourceSearchSettingsNew(), owned: true);
+
   static final _gtkSourceSearchSettingsGetAtWordBoundaries =
       gtkSource5Lookup<
             ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>

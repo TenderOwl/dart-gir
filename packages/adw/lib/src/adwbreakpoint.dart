@@ -58,12 +58,8 @@ class AdwBreakpoint extends GObject {
             >
           >('adw_breakpoint_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory AdwBreakpoint(AdwBreakpointCondition condition) {
-    return AdwBreakpoint.fromPointer(
-      _adwBreakpointNew(condition.handle),
-      owned: true,
-    );
-  }
+  AdwBreakpoint(AdwBreakpointCondition condition)
+    : super.fromPointer(_adwBreakpointNew(condition.handle), owned: true);
 
   /// Adds a setter to @self.
   ///

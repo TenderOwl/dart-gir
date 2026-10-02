@@ -31,12 +31,11 @@ class GskStrokeNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskStrokeNode(GskRenderNode child, GskPath path, GskStroke stroke) {
-    return GskStrokeNode.fromPointer(
-      _gskStrokeNodeNew(child.handle, path.handle, stroke.handle),
-      owned: true,
-    );
-  }
+  GskStrokeNode(GskRenderNode child, GskPath path, GskStroke stroke)
+    : super.fromPointer(
+        _gskStrokeNodeNew(child.handle, path.handle, stroke.handle),
+        owned: true,
+      );
 
   /// Gets the child node that is getting drawn by the given @node.
   static final _gskStrokeNodeGetChild =

@@ -121,9 +121,7 @@ final class GString {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
         'g_string_sized_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GString.sizedNew(int dflSize) {
-    return GString.fromPointer(_gStringSizedNew(dflSize));
-  }
+  GString.sizedNew(int dflSize) : this.fromPointer(_gStringSizedNew(dflSize));
 
   /// Adds a string onto the end of a #GString, expanding
   /// it if necessary.

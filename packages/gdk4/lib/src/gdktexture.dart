@@ -42,12 +42,8 @@ class GdkTexture extends GObject {
             >
           >('gdk_texture_new_for_pixbuf')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkTexture.forPixbuf(GdkPixbuf pixbuf) {
-    return GdkTexture.fromPointer(
-      _gdkTextureNewForPixbuf(pixbuf.handle),
-      owned: true,
-    );
-  }
+  GdkTexture.forPixbuf(GdkPixbuf pixbuf)
+    : super.fromPointer(_gdkTextureNewForPixbuf(pixbuf.handle), owned: true);
 
   /// Creates a new texture by loading an image from memory,
   ///

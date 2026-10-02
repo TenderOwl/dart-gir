@@ -21,9 +21,7 @@ class GskCairoRenderer extends GskRenderer {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_cairo_renderer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GskCairoRenderer() {
-    return GskCairoRenderer.fromPointer(_gskCairoRendererNew(), owned: true);
-  }
+  GskCairoRenderer() : super.fromPointer(_gskCairoRendererNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

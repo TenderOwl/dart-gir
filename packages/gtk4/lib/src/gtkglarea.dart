@@ -125,9 +125,7 @@ class GtkGLArea extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gl_area_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkGLArea() {
-    return GtkGLArea.fromPointer(gObjectRefSink(_gtkGlAreaNew()), owned: true);
-  }
+  GtkGLArea() : super.fromPointer(_gtkGlAreaNew(), owned: true);
 
   /// Binds buffers to the framebuffer.
   ///

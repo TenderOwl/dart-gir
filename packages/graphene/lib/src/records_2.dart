@@ -14,9 +14,7 @@ final class GrapheneMatrix {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_matrix_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneMatrix.alloc() {
-    return GrapheneMatrix.fromPointer(_grapheneMatrixAlloc());
-  }
+  GrapheneMatrix.alloc() : this.fromPointer(_grapheneMatrixAlloc());
 
   /// Decomposes a transformation matrix into its component transformations.
   ///

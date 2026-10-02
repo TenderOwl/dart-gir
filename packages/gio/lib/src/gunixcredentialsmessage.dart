@@ -29,12 +29,8 @@ class GUnixCredentialsMessage extends GSocketControlMessage {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_unix_credentials_message_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GUnixCredentialsMessage() {
-    return GUnixCredentialsMessage.fromPointer(
-      _gUnixCredentialsMessageNew(),
-      owned: true,
-    );
-  }
+  GUnixCredentialsMessage()
+    : super.fromPointer(_gUnixCredentialsMessageNew(), owned: true);
 
   /// Creates a new #GUnixCredentialsMessage holding @credentials.
   static final _gUnixCredentialsMessageNewWithCredentials =
@@ -44,12 +40,11 @@ class GUnixCredentialsMessage extends GSocketControlMessage {
             >
           >('g_unix_credentials_message_new_with_credentials')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GUnixCredentialsMessage.withCredentials(GCredentials credentials) {
-    return GUnixCredentialsMessage.fromPointer(
-      _gUnixCredentialsMessageNewWithCredentials(credentials.handle),
-      owned: true,
-    );
-  }
+  GUnixCredentialsMessage.withCredentials(GCredentials credentials)
+    : super.fromPointer(
+        _gUnixCredentialsMessageNewWithCredentials(credentials.handle),
+        owned: true,
+      );
 
   /// Gets the credentials stored in @message.
   static final _gUnixCredentialsMessageGetCredentials =

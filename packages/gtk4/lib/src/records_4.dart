@@ -425,9 +425,7 @@ final class GtkRequisition {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_requisition_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkRequisition() {
-    return GtkRequisition.fromPointer(_gtkRequisitionNew());
-  }
+  GtkRequisition() : this.fromPointer(_gtkRequisitionNew());
 
   /// Copies a `GtkRequisition`.
   static final _gtkRequisitionCopy =
@@ -479,9 +477,7 @@ final class GtkScrollInfo {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_scroll_info_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkScrollInfo() {
-    return GtkScrollInfo.fromPointer(_gtkScrollInfoNew());
-  }
+  GtkScrollInfo() : this.fromPointer(_gtkScrollInfoNew());
 
   /// Checks if horizontal scrolling is enabled.
   static final _gtkScrollInfoGetEnableHorizontal =

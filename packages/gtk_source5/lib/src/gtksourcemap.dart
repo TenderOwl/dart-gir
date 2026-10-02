@@ -32,12 +32,7 @@ class GtkSourceMap extends GtkSourceView {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_map_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceMap() {
-    return GtkSourceMap.fromPointer(
-      gObjectRefSink(_gtkSourceMapNew()),
-      owned: true,
-    );
-  }
+  GtkSourceMap() : super.fromPointer(_gtkSourceMapNew(), owned: true);
 
   /// Gets the [property@Map:view] property, which is the view this widget is mapping.
   static final _gtkSourceMapGetView =

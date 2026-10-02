@@ -28,9 +28,8 @@ final class GVariantBuilder {
             >
           >('g_variant_builder_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GVariantBuilder(GVariantType type_) {
-    return GVariantBuilder.fromPointer(_gVariantBuilderNew(type_.handle));
-  }
+  GVariantBuilder(GVariantType type_)
+    : this.fromPointer(_gVariantBuilderNew(type_.handle));
 
   /// Adds @value to @builder.
   ///
@@ -287,11 +286,8 @@ final class GVariantDict {
             >
           >('g_variant_dict_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GVariantDict([GVariant? fromAsv]) {
-    return GVariantDict.fromPointer(
-      _gVariantDictNew(fromAsv?.handle ?? ffi.nullptr),
-    );
-  }
+  GVariantDict([GVariant? fromAsv])
+    : this.fromPointer(_gVariantDictNew(fromAsv?.handle ?? ffi.nullptr));
 
   /// Releases all memory associated with a #GVariantDict without freeing
   /// the #GVariantDict structure itself.

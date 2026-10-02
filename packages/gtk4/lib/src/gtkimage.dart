@@ -51,9 +51,7 @@ class GtkImage extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_image_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkImage() {
-    return GtkImage.fromPointer(gObjectRefSink(_gtkImageNew()), owned: true);
-  }
+  GtkImage() : super.fromPointer(_gtkImageNew(), owned: true);
 
   /// Creates a new `GtkImage` displaying the file @filename.
   ///
@@ -96,12 +94,8 @@ class GtkImage extends GtkWidget {
             >
           >('gtk_image_new_from_gicon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkImage.fromGicon(GIcon icon) {
-    return GtkImage.fromPointer(
-      gObjectRefSink(_gtkImageNewFromGicon(icon.handle)),
-      owned: true,
-    );
-  }
+  GtkImage.fromGicon(GIcon icon)
+    : super.fromPointer(_gtkImageNewFromGicon(icon.handle), owned: true);
 
   /// Creates a `GtkImage` displaying an icon from the current icon theme.
   ///
@@ -146,14 +140,11 @@ class GtkImage extends GtkWidget {
             >
           >('gtk_image_new_from_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkImage.fromPaintable([GdkPaintable? paintable]) {
-    return GtkImage.fromPointer(
-      gObjectRefSink(
+  GtkImage.fromPaintable([GdkPaintable? paintable])
+    : super.fromPointer(
         _gtkImageNewFromPaintable(paintable?.handle ?? ffi.nullptr),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new `GtkImage` displaying @pixbuf.
   ///
@@ -174,12 +165,11 @@ class GtkImage extends GtkWidget {
             >
           >('gtk_image_new_from_pixbuf')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkImage.fromPixbuf([GdkPixbuf? pixbuf]) {
-    return GtkImage.fromPointer(
-      gObjectRefSink(_gtkImageNewFromPixbuf(pixbuf?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkImage.fromPixbuf([GdkPixbuf? pixbuf])
+    : super.fromPointer(
+        _gtkImageNewFromPixbuf(pixbuf?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a new `GtkImage` displaying the resource file @resource_path.
   ///

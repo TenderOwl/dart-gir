@@ -71,12 +71,7 @@ class AdwViewStack extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_stack_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwViewStack() {
-    return AdwViewStack.fromPointer(
-      gObjectRefSink(_adwViewStackNew()),
-      owned: true,
-    );
-  }
+  AdwViewStack() : super.fromPointer(_adwViewStackNew(), owned: true);
 
   /// Adds a child to @self.
   static final _adwViewStackAdd =

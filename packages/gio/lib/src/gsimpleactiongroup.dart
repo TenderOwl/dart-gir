@@ -13,12 +13,8 @@ class GSimpleActionGroup extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_simple_action_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GSimpleActionGroup() {
-    return GSimpleActionGroup.fromPointer(
-      _gSimpleActionGroupNew(),
-      owned: true,
-    );
-  }
+  GSimpleActionGroup()
+    : super.fromPointer(_gSimpleActionGroupNew(), owned: true);
 
   /// Adds an action to the action group.
   ///

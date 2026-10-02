@@ -17,12 +17,8 @@ class GtkSourceSnippetChunk extends GInitiallyUnowned {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_snippet_chunk_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceSnippetChunk() {
-    return GtkSourceSnippetChunk.fromPointer(
-      gObjectRefSink(_gtkSourceSnippetChunkNew()),
-      owned: true,
-    );
-  }
+  GtkSourceSnippetChunk()
+    : super.fromPointer(_gtkSourceSnippetChunkNew(), owned: true);
 
   /// Copies the source snippet.
   static final _gtkSourceSnippetChunkCopy =

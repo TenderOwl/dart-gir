@@ -15,12 +15,8 @@ class GDataOutputStream extends GFilterOutputStream {
             >
           >('g_data_output_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GDataOutputStream(GOutputStream baseStream) {
-    return GDataOutputStream.fromPointer(
-      _gDataOutputStreamNew(baseStream.handle),
-      owned: true,
-    );
-  }
+  GDataOutputStream(GOutputStream baseStream)
+    : super.fromPointer(_gDataOutputStreamNew(baseStream.handle), owned: true);
 
   /// Gets the byte order for the stream.
   static final _gDataOutputStreamGetByteOrder =

@@ -19,12 +19,11 @@ class GtkSingleSelection extends GObject {
             >
           >('gtk_single_selection_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSingleSelection([GListModel? model]) {
-    return GtkSingleSelection.fromPointer(
-      _gtkSingleSelectionNew(model?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkSingleSelection([GListModel? model])
+    : super.fromPointer(
+        _gtkSingleSelectionNew(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Checks if autoselect has been enabled or disabled via
   /// gtk_single_selection_set_autoselect().

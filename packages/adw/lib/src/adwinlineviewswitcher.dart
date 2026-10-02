@@ -50,12 +50,8 @@ class AdwInlineViewSwitcher extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_inline_view_switcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwInlineViewSwitcher() {
-    return AdwInlineViewSwitcher.fromPointer(
-      gObjectRefSink(_adwInlineViewSwitcherNew()),
-      owned: true,
-    );
-  }
+  AdwInlineViewSwitcher()
+    : super.fromPointer(_adwInlineViewSwitcherNew(), owned: true);
 
   /// Gets whether the toggles can be smaller than the natural size of their
   /// contents.

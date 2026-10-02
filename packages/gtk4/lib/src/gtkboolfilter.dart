@@ -13,12 +13,11 @@ class GtkBoolFilter extends GtkFilter {
             >
           >('gtk_bool_filter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkBoolFilter([GtkExpression? expression]) {
-    return GtkBoolFilter.fromPointer(
-      _gtkBoolFilterNew(expression?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkBoolFilter([GtkExpression? expression])
+    : super.fromPointer(
+        _gtkBoolFilterNew(expression?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the expression that the filter evaluates for
   /// each item.

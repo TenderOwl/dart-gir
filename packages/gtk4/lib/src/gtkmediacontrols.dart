@@ -21,12 +21,11 @@ class GtkMediaControls extends GtkWidget {
             >
           >('gtk_media_controls_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkMediaControls([GtkMediaStream? stream]) {
-    return GtkMediaControls.fromPointer(
-      gObjectRefSink(_gtkMediaControlsNew(stream?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkMediaControls([GtkMediaStream? stream])
+    : super.fromPointer(
+        _gtkMediaControlsNew(stream?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the media stream managed by @controls or %NULL if none.
   static final _gtkMediaControlsGetMediaStream =

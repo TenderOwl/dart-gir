@@ -714,7 +714,10 @@ void main() {
         bindingCode,
         contains('GBinding.fromPointer(super.handle, {super.owned})'),
       );
-      expect(bindingCode, contains('factory GBinding('));
+      // `<constructor>` now emits a generative constructor (chaining
+      // to `super.fromPointer`) so subclasses can do
+      // `class MyBinding extends GBinding { MyBinding() : super(); }`.
+      expect(bindingCode, contains('GBinding() : super.fromPointer('));
       expect(bindingCode, contains('GBinding.fromPointer('));
       expect(bindingCode, contains('String dupSource()'));
     });

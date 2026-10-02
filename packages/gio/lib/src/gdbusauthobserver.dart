@@ -73,9 +73,7 @@ class GDBusAuthObserver extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_dbus_auth_observer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GDBusAuthObserver() {
-    return GDBusAuthObserver.fromPointer(_gDbusAuthObserverNew(), owned: true);
-  }
+  GDBusAuthObserver() : super.fromPointer(_gDbusAuthObserverNew(), owned: true);
 
   /// Emits the #GDBusAuthObserver::allow-mechanism signal on @observer.
   static final _gDbusAuthObserverAllowMechanism =

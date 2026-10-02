@@ -16,9 +16,8 @@ class GFileIcon extends GObject {
             >
           >('g_file_icon_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GFileIcon(GFile file) {
-    return GFileIcon.fromPointer(_gFileIconNew(file.handle), owned: true);
-  }
+  GFileIcon(GFile file)
+    : super.fromPointer(_gFileIconNew(file.handle), owned: true);
 
   /// Gets the #GFile associated with the given @icon.
   static final _gFileIconGetFile =

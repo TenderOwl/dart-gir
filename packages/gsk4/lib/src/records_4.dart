@@ -22,9 +22,7 @@ final class GskTransform {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_transform_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GskTransform() {
-    return GskTransform.fromPointer(_gskTransformNew());
-  }
+  GskTransform() : this.fromPointer(_gskTransformNew());
 
   /// Checks two transforms for equality.
   static final _gskTransformEqual =

@@ -66,9 +66,7 @@ class AdwFlap extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_flap_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwFlap() {
-    return AdwFlap.fromPointer(gObjectRefSink(_adwFlapNew()), owned: true);
-  }
+  AdwFlap() : super.fromPointer(_adwFlapNew(), owned: true);
 
   /// Gets the content widget for @self.
   static final _adwFlapGetContent =

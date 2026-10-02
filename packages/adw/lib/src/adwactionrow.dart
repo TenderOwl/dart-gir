@@ -57,12 +57,7 @@ class AdwActionRow extends AdwPreferencesRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_action_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwActionRow() {
-    return AdwActionRow.fromPointer(
-      gObjectRefSink(_adwActionRowNew()),
-      owned: true,
-    );
-  }
+  AdwActionRow() : super.fromPointer(_adwActionRowNew(), owned: true);
 
   /// Activates @self.
   static final _adwActionRowActivate =

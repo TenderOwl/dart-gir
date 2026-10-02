@@ -15,12 +15,8 @@ class GskPasteNode extends GskRenderNode {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GskPasteNode(GrapheneRect bounds, int depth) {
-    return GskPasteNode.fromPointer(
-      _gskPasteNodeNew(bounds.handle, depth),
-      owned: true,
-    );
-  }
+  GskPasteNode(GrapheneRect bounds, int depth)
+    : super.fromPointer(_gskPasteNodeNew(bounds.handle, depth), owned: true);
 
   /// Retrieves the index of the copy that should be pasted.
   static final _gskPasteNodeGetDepth =

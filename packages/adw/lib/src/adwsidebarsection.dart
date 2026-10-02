@@ -76,9 +76,7 @@ class AdwSidebarSection extends GObject {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_sidebar_section_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwSidebarSection() {
-    return AdwSidebarSection.fromPointer(_adwSidebarSectionNew(), owned: true);
-  }
+  AdwSidebarSection() : super.fromPointer(_adwSidebarSectionNew(), owned: true);
 
   /// Appends @item to @self.
   ///

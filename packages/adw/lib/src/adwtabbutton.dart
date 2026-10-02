@@ -37,12 +37,7 @@ class AdwTabButton extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_tab_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwTabButton() {
-    return AdwTabButton.fromPointer(
-      gObjectRefSink(_adwTabButtonNew()),
-      owned: true,
-    );
-  }
+  AdwTabButton() : super.fromPointer(_adwTabButtonNew(), owned: true);
 
   /// Gets the tab view @self displays.
   static final _adwTabButtonGetView =

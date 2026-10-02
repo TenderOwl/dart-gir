@@ -64,12 +64,7 @@ class GtkAboutDialog extends GtkWindow {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_about_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkAboutDialog() {
-    return GtkAboutDialog.fromPointer(
-      gObjectRefSink(_gtkAboutDialogNew()),
-      owned: true,
-    );
-  }
+  GtkAboutDialog() : super.fromPointer(_gtkAboutDialogNew(), owned: true);
 
   /// Returns the comments string.
   static final _gtkAboutDialogGetComments =

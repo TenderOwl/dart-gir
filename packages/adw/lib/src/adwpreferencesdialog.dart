@@ -30,12 +30,8 @@ class AdwPreferencesDialog extends AdwDialog {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwPreferencesDialog() {
-    return AdwPreferencesDialog.fromPointer(
-      gObjectRefSink(_adwPreferencesDialogNew()),
-      owned: true,
-    );
-  }
+  AdwPreferencesDialog()
+    : super.fromPointer(_adwPreferencesDialogNew(), owned: true);
 
   /// Adds a preferences page to @self.
   static final _adwPreferencesDialogAdd =

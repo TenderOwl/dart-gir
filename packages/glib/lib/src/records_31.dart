@@ -254,18 +254,15 @@ final class GVariant {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_variant_new_boolean',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.boolean(bool value) {
-    return GVariant.fromPointer(_gVariantNewBoolean(value ? 1 : 0));
-  }
+  GVariant.boolean(bool value)
+    : this.fromPointer(_gVariantNewBoolean(value ? 1 : 0));
 
   /// Creates a new byte #GVariant instance.
   static final _gVariantNewByte =
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint8)>>(
         'g_variant_new_byte',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.byte(int value) {
-    return GVariant.fromPointer(_gVariantNewByte(value));
-  }
+  GVariant.byte(int value) : this.fromPointer(_gVariantNewByte(value));
 
   /// Creates a new dictionary entry #GVariant. @key and @value must be
   /// non-%NULL. @key must be a value of a basic type (ie: not a container).
@@ -287,11 +284,8 @@ final class GVariant {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GVariant.dictEntry(GVariant key, GVariant value) {
-    return GVariant.fromPointer(
-      _gVariantNewDictEntry(key.handle, value.handle),
-    );
-  }
+  GVariant.dictEntry(GVariant key, GVariant value)
+    : this.fromPointer(_gVariantNewDictEntry(key.handle, value.handle));
 
   /// Creates a new double #GVariant instance.
   static final _gVariantNewDouble =
@@ -299,9 +293,7 @@ final class GVariant {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Double)>
           >('g_variant_new_double')
           .asFunction<ffi.Pointer<ffi.Void> Function(double)>();
-  factory GVariant.double(double value) {
-    return GVariant.fromPointer(_gVariantNewDouble(value));
-  }
+  GVariant.double(double value) : this.fromPointer(_gVariantNewDouble(value));
 
   /// Constructs a new array #GVariant instance, where the elements are
   /// of @element_type type.
@@ -335,21 +327,19 @@ final class GVariant {
               int,
             )
           >();
-  factory GVariant.fixedArray(
+  GVariant.fixedArray(
     GVariantType elementType,
     ffi.Pointer<ffi.Void> elements,
     int nElements,
     int elementSize,
-  ) {
-    return GVariant.fromPointer(
-      _gVariantNewFixedArray(
-        elementType.handle,
-        elements,
-        nElements,
-        elementSize,
-      ),
-    );
-  }
+  ) : this.fromPointer(
+        _gVariantNewFixedArray(
+          elementType.handle,
+          elements,
+          nElements,
+          elementSize,
+        ),
+      );
 
   /// Constructs a new serialized-mode #GVariant instance.  This is the
   /// inner interface for creation of new serialized values that gets
@@ -377,38 +367,31 @@ final class GVariant {
               int,
             )
           >();
-  factory GVariant.fromBytes(GVariantType type_, GBytes bytes, bool trusted) {
-    return GVariant.fromPointer(
-      _gVariantNewFromBytes(type_.handle, bytes.handle, trusted ? 1 : 0),
-    );
-  }
+  GVariant.fromBytes(GVariantType type_, GBytes bytes, bool trusted)
+    : this.fromPointer(
+        _gVariantNewFromBytes(type_.handle, bytes.handle, trusted ? 1 : 0),
+      );
 
   /// Creates a new int16 #GVariant instance.
   static final _gVariantNewInt16 =
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int16)>>(
         'g_variant_new_int16',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.int16(int value) {
-    return GVariant.fromPointer(_gVariantNewInt16(value));
-  }
+  GVariant.int16(int value) : this.fromPointer(_gVariantNewInt16(value));
 
   /// Creates a new int32 #GVariant instance.
   static final _gVariantNewInt32 =
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_variant_new_int32',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.int32(int value) {
-    return GVariant.fromPointer(_gVariantNewInt32(value));
-  }
+  GVariant.int32(int value) : this.fromPointer(_gVariantNewInt32(value));
 
   /// Creates a new int64 #GVariant instance.
   static final _gVariantNewInt64 =
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int64)>>(
         'g_variant_new_int64',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.int64(int value) {
-    return GVariant.fromPointer(_gVariantNewInt64(value));
-  }
+  GVariant.int64(int value) : this.fromPointer(_gVariantNewInt64(value));
 
   /// Depending on if @child is %NULL, either wraps @child inside of a
   /// maybe container or creates a Nothing instance for the given @type.
@@ -435,14 +418,13 @@ final class GVariant {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GVariant.maybe([GVariantType? childType, GVariant? child]) {
-    return GVariant.fromPointer(
-      _gVariantNewMaybe(
-        childType?.handle ?? ffi.nullptr,
-        child?.handle ?? ffi.nullptr,
-      ),
-    );
-  }
+  GVariant.maybe([GVariantType? childType, GVariant? child])
+    : this.fromPointer(
+        _gVariantNewMaybe(
+          childType?.handle ?? ffi.nullptr,
+          child?.handle ?? ffi.nullptr,
+        ),
+      );
 
   /// Creates a D-Bus object path #GVariant with the contents of @object_path.
   /// @object_path must be a valid D-Bus object path.  Use
@@ -506,9 +488,7 @@ final class GVariant {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint16)>
           >('g_variant_new_uint16')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.uint16(int value) {
-    return GVariant.fromPointer(_gVariantNewUint16(value));
-  }
+  GVariant.uint16(int value) : this.fromPointer(_gVariantNewUint16(value));
 
   /// Creates a new uint32 #GVariant instance.
   static final _gVariantNewUint32 =
@@ -516,9 +496,7 @@ final class GVariant {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('g_variant_new_uint32')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.uint32(int value) {
-    return GVariant.fromPointer(_gVariantNewUint32(value));
-  }
+  GVariant.uint32(int value) : this.fromPointer(_gVariantNewUint32(value));
 
   /// Creates a new uint64 #GVariant instance.
   static final _gVariantNewUint64 =
@@ -526,9 +504,7 @@ final class GVariant {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint64)>
           >('g_variant_new_uint64')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GVariant.uint64(int value) {
-    return GVariant.fromPointer(_gVariantNewUint64(value));
-  }
+  GVariant.uint64(int value) : this.fromPointer(_gVariantNewUint64(value));
 
   /// Boxes @value.  The result is a #GVariant instance representing a
   /// variant containing the original value.
@@ -542,9 +518,8 @@ final class GVariant {
             >
           >('g_variant_new_variant')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GVariant.variant(GVariant value) {
-    return GVariant.fromPointer(_gVariantNewVariant(value.handle));
-  }
+  GVariant.variant(GVariant value)
+    : this.fromPointer(_gVariantNewVariant(value.handle));
 
   /// Performs a byteswapping operation on the contents of @value.  The
   /// result is that all multi-byte numeric data contained in @value is

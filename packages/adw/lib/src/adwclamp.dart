@@ -36,9 +36,7 @@ class AdwClamp extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_clamp_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwClamp() {
-    return AdwClamp.fromPointer(gObjectRefSink(_adwClampNew()), owned: true);
-  }
+  AdwClamp() : super.fromPointer(_adwClampNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _adwClampGetChild =

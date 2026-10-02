@@ -13,9 +13,7 @@ final class GrapheneSize {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_size_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneSize.alloc() {
-    return GrapheneSize.fromPointer(_grapheneSizeAlloc());
-  }
+  GrapheneSize.alloc() : this.fromPointer(_grapheneSizeAlloc());
 
   /// Checks whether the two give #graphene_size_t are equal.
   static final _grapheneSizeEqual =
@@ -169,9 +167,7 @@ final class GrapheneSphere {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_sphere_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneSphere.alloc() {
-    return GrapheneSphere.fromPointer(_grapheneSphereAlloc());
-  }
+  GrapheneSphere.alloc() : this.fromPointer(_grapheneSphereAlloc());
 
   /// Checks whether the given @point is contained in the volume
   /// of a #graphene_sphere_t.
@@ -355,9 +351,7 @@ final class GrapheneTriangle {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_triangle_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneTriangle.alloc() {
-    return GrapheneTriangle.fromPointer(_grapheneTriangleAlloc());
-  }
+  GrapheneTriangle.alloc() : this.fromPointer(_grapheneTriangleAlloc());
 
   /// Checks whether the given triangle @t contains the point @p.
   static final _grapheneTriangleContainsPoint =

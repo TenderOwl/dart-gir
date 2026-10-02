@@ -18,12 +18,8 @@ class GtkTextChildAnchor extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_child_anchor_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTextChildAnchor() {
-    return GtkTextChildAnchor.fromPointer(
-      _gtkTextChildAnchorNew(),
-      owned: true,
-    );
-  }
+  GtkTextChildAnchor()
+    : super.fromPointer(_gtkTextChildAnchorNew(), owned: true);
 
   /// Creates a new `GtkTextChildAnchor` with the given replacement character.
   ///

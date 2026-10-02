@@ -30,24 +30,22 @@ class GskComponentTransferNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskComponentTransferNode(
+  GskComponentTransferNode(
     GskRenderNode child,
     GskComponentTransfer r,
     GskComponentTransfer g,
     GskComponentTransfer b,
     GskComponentTransfer a,
-  ) {
-    return GskComponentTransferNode.fromPointer(
-      _gskComponentTransferNodeNew(
-        child.handle,
-        r.handle,
-        g.handle,
-        b.handle,
-        a.handle,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gskComponentTransferNodeNew(
+          child.handle,
+          r.handle,
+          g.handle,
+          b.handle,
+          a.handle,
+        ),
+        owned: true,
+      );
 
   /// Gets the child node that is getting drawn by the given @node.
   static final _gskComponentTransferNodeGetChild =

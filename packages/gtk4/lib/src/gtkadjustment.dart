@@ -39,16 +39,14 @@ class GtkAdjustment extends GInitiallyUnowned {
               double,
             )
           >();
-  factory GtkAdjustment(
+  GtkAdjustment(
     double value,
     double lower,
     double upper,
     double stepIncrement,
     double pageIncrement,
     double pageSize,
-  ) {
-    return GtkAdjustment.fromPointer(
-      gObjectRefSink(
+  ) : super.fromPointer(
         _gtkAdjustmentNew(
           value,
           lower,
@@ -57,10 +55,8 @@ class GtkAdjustment extends GInitiallyUnowned {
           pageIncrement,
           pageSize,
         ),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Updates the value of the adjustment to ensure that the
   /// given range is contained in the current page.

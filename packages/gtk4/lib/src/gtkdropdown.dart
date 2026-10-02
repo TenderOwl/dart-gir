@@ -81,17 +81,14 @@ class GtkDropDown extends GtkWidget {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkDropDown([GListModel? model, GtkExpression? expression]) {
-    return GtkDropDown.fromPointer(
-      gObjectRefSink(
+  GtkDropDown([GListModel? model, GtkExpression? expression])
+    : super.fromPointer(
         _gtkDropDownNew(
           model?.handle ?? ffi.nullptr,
           expression?.handle ?? ffi.nullptr,
         ),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new `GtkDropDown` that is populated with
   /// the strings.

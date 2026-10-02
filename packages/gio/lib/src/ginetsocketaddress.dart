@@ -20,12 +20,11 @@ class GInetSocketAddress extends GSocketAddress {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GInetSocketAddress(GInetAddress address, int port) {
-    return GInetSocketAddress.fromPointer(
-      _gInetSocketAddressNew(address.handle, port),
-      owned: true,
-    );
-  }
+  GInetSocketAddress(GInetAddress address, int port)
+    : super.fromPointer(
+        _gInetSocketAddressNew(address.handle, port),
+        owned: true,
+      );
 
   /// Creates a new #GInetSocketAddress for @address and @port.
   ///

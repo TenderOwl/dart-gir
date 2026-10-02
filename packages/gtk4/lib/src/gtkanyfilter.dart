@@ -18,9 +18,7 @@ class GtkAnyFilter extends GtkMultiFilter {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_any_filter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkAnyFilter() {
-    return GtkAnyFilter.fromPointer(_gtkAnyFilterNew(), owned: true);
-  }
+  GtkAnyFilter() : super.fromPointer(_gtkAnyFilterNew(), owned: true);
 
   /// Emitted whenever the filter changed.
   ///

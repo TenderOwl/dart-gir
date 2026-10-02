@@ -28,12 +28,7 @@ class GtkCellAreaBox extends GtkCellArea {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_area_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellAreaBox() {
-    return GtkCellAreaBox.fromPointer(
-      gObjectRefSink(_gtkCellAreaBoxNew()),
-      owned: true,
-    );
-  }
+  GtkCellAreaBox() : super.fromPointer(_gtkCellAreaBoxNew(), owned: true);
 
   /// Gets the spacing added between cell renderers.
   static final _gtkCellAreaBoxGetSpacing =

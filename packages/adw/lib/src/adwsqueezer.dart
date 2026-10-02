@@ -31,12 +31,7 @@ class AdwSqueezer extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_squeezer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwSqueezer() {
-    return AdwSqueezer.fromPointer(
-      gObjectRefSink(_adwSqueezerNew()),
-      owned: true,
-    );
-  }
+  AdwSqueezer() : super.fromPointer(_adwSqueezerNew(), owned: true);
 
   /// Adds a child to @self.
   static final _adwSqueezerAdd =

@@ -24,12 +24,8 @@ class AdwSwipeTracker extends GObject {
             >
           >('adw_swipe_tracker_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory AdwSwipeTracker(AdwSwipeable swipeable) {
-    return AdwSwipeTracker.fromPointer(
-      _adwSwipeTrackerNew(swipeable.handle),
-      owned: true,
-    );
-  }
+  AdwSwipeTracker(AdwSwipeable swipeable)
+    : super.fromPointer(_adwSwipeTrackerNew(swipeable.handle), owned: true);
 
   /// Gets whether to allow swiping for more than one snap point at a time.
   static final _adwSwipeTrackerGetAllowLongSwipes =

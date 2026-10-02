@@ -90,12 +90,8 @@ class AdwMultiLayoutView extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_multi_layout_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwMultiLayoutView() {
-    return AdwMultiLayoutView.fromPointer(
-      gObjectRefSink(_adwMultiLayoutViewNew()),
-      owned: true,
-    );
-  }
+  AdwMultiLayoutView()
+    : super.fromPointer(_adwMultiLayoutViewNew(), owned: true);
 
   /// Adds @layout to @self.
   static final _adwMultiLayoutViewAddLayout =

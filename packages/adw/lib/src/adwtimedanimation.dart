@@ -44,18 +44,16 @@ class AdwTimedAnimation extends AdwAnimation {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory AdwTimedAnimation(
+  AdwTimedAnimation(
     GtkWidget widget,
     double from,
     double to,
     int duration,
     AdwAnimationTarget target,
-  ) {
-    return AdwTimedAnimation.fromPointer(
-      _adwTimedAnimationNew(widget.handle, from, to, duration, target.handle),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _adwTimedAnimationNew(widget.handle, from, to, duration, target.handle),
+        owned: true,
+      );
 
   /// Gets whether @self changes direction on every iteration.
   static final _adwTimedAnimationGetAlternate =

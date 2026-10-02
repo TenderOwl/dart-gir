@@ -21,12 +21,8 @@ class GtkConstraintGuide extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_constraint_guide_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkConstraintGuide() {
-    return GtkConstraintGuide.fromPointer(
-      _gtkConstraintGuideNew(),
-      owned: true,
-    );
-  }
+  GtkConstraintGuide()
+    : super.fromPointer(_gtkConstraintGuideNew(), owned: true);
 
   /// Retrieves the name set using gtk_constraint_guide_set_name().
   static final _gtkConstraintGuideGetName =

@@ -261,6 +261,79 @@ class CallableEmitter {
     final hasCallbacks = callbackAllocs.isNotEmpty;
     final call = '$lookupVar(${argExprs.join(', ')})';
 
+    // Subclassable emission for `<constructor>` (the `factoryClass`
+    // branch): when the constructor has no `throws`, no OUT params,
+    // no string / string-list parameters, and no callback
+    // parameters, emit it as a generative constructor instead of a
+    // `factory`. Generative constructors chain via `super(...)` from
+    // subclasses; the existing factory body pattern made
+    // `class MyAdwWindow extends AdwWindow { MyAdwWindow() : super(); }`
+    // fail with "The generative constructor 'AdwWindow()' is
+    // expected, but a factory was found." The generative form below
+    // delegates to `fromPointer` via the super-call argument list,
+    // which is evaluated before super runs. Classes with a parent
+    // use `super.fromPointer`; records (no parent) use their own
+    // `fromPointer` since there's no super.
+    //
+    // String / string-list parameters are excluded because the
+    // factory path wraps them with `withNativeString` /
+    // `withNativeStringList` for proper lifetime management
+    // (the helper frees the allocated C buffer after the call).
+    // A generative initializer list has no body — there's nowhere
+    // to free a manually allocated `stringToNative(text)` pointer,
+    // and calling `.cast<Utf8>()` directly on a `String?` user
+    // parameter would not compile (String? has no `cast`).
+    //
+    // Callback parameters are excluded for the same reason: the
+    // factory path allocates a `NativeCallable` local, passes
+    // `.nativeFunction` to C, and `.close()`-s it in `finally`.
+    // A generative initializer list has no body to host the
+    // `.close()` — falling back to the factory form keeps the
+    // lifecycle correct.
+    final hasStringInSet =
+        ins.any((p) => p.bridge.isString || p.bridge.isStringList);
+    final hasCallback = callbackAllocs.isNotEmpty;
+    if (factoryClass != null &&
+        !fn.throws &&
+        outs.isEmpty &&
+        !hasStringInSet &&
+        !hasCallback) {
+      final ownedArg = factoryOwned ? ', owned: true' : '';
+      // Classes chain to their superclass via `super.fromPointer(...)`;
+      // records (no parent) redirect to their own `fromPointer` via
+      // `this.fromPointer(...)`. Using the class name (`Foo.fromPointer(...)`)
+      // would be parsed as a field initializer and fail to compile — the
+      // `this` form is the only way to express a redirecting initializer
+      // that targets a same-class named constructor.
+      final receiver = factoryOwned ? 'super' : 'this';
+      final generativeArgExprs = <String>[];
+      for (var i = 0; i < fn.parameters.length; i++) {
+        final p = fn.parameters[i];
+        if (p.direction == GirParameterDirection.out) continue;
+        final inP = ins[i];
+        final bridge = bridges[i]!;
+        // Strings / string-lists are excluded by `hasStringInSet`
+        // above — `bridge.toNative` for those returns the parameter
+        // expression unchanged (the actual marshalling happens in
+        // `withNativeString` / `withNativeStringList`), so the
+        // same expression works here for the rare non-excluded path.
+        generativeArgExprs.add(bridge.toNative(inP.name));
+      }
+      final generativeCall =
+          '$lookupVar(${generativeArgExprs.join(', ')})';
+      final generativeHeader = dartName.isEmpty
+          ? '$factoryClass($paramList) : $receiver.fromPointer($generativeCall$ownedArg);'
+          : '$factoryClass.$dartName($paramList) : '
+              '$receiver.fromPointer($generativeCall$ownedArg);';
+      final b = StringBuffer();
+      for (final line in ctx.docLines(fn.doc)) {
+        b.writeln(line);
+      }
+      b.writeln(lookupDecl);
+      b.writeln(generativeHeader);
+      return b.toString();
+    }
+
     String resultExpr(String raw) {
       final String converted;
       if (factoryClass != null) {

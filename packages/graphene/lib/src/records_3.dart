@@ -16,9 +16,7 @@ final class GraphenePlane {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_plane_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GraphenePlane.alloc() {
-    return GraphenePlane.fromPointer(_graphenePlaneAlloc());
-  }
+  GraphenePlane.alloc() : this.fromPointer(_graphenePlaneAlloc());
 
   /// Computes the distance of @point from a #graphene_plane_t.
   static final _graphenePlaneDistance =
@@ -333,9 +331,7 @@ final class GraphenePoint {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_point_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GraphenePoint.alloc() {
-    return GraphenePoint.fromPointer(_graphenePointAlloc());
-  }
+  GraphenePoint.alloc() : this.fromPointer(_graphenePointAlloc());
 
   /// Checks if the two points @a and @b point to the same
   /// coordinates.
@@ -528,9 +524,7 @@ final class GraphenePoint3D {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_point3d_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GraphenePoint3D.alloc() {
-    return GraphenePoint3D.fromPointer(_graphenePoint3dAlloc());
-  }
+  GraphenePoint3D.alloc() : this.fromPointer(_graphenePoint3dAlloc());
 
   /// Computes the cross product of the two given #graphene_point3d_t.
   static final _graphenePoint3dCross =

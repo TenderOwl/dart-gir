@@ -36,9 +36,7 @@ final class GValueArray {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('g_value_array_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GValueArray(int nPrealloced) {
-    return GValueArray.fromPointer(_gValueArrayNew(nPrealloced));
-  }
+  GValueArray(int nPrealloced) : this.fromPointer(_gValueArrayNew(nPrealloced));
 
   /// Insert a copy of @value as last element of @value_array. If @value is
   /// %NULL, an uninitialized value is appended.

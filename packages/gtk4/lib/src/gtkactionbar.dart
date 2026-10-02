@@ -50,12 +50,7 @@ class GtkActionBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_action_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkActionBar() {
-    return GtkActionBar.fromPointer(
-      gObjectRefSink(_gtkActionBarNew()),
-      owned: true,
-    );
-  }
+  GtkActionBar() : super.fromPointer(_gtkActionBarNew(), owned: true);
 
   /// Retrieves the center bar widget of the bar.
   static final _gtkActionBarGetCenterWidget =

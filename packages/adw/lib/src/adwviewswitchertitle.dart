@@ -69,12 +69,8 @@ class AdwViewSwitcherTitle extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_switcher_title_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwViewSwitcherTitle() {
-    return AdwViewSwitcherTitle.fromPointer(
-      gObjectRefSink(_adwViewSwitcherTitleNew()),
-      owned: true,
-    );
-  }
+  AdwViewSwitcherTitle()
+    : super.fromPointer(_adwViewSwitcherTitleNew(), owned: true);
 
   /// Gets the stack controlled by @self.
   static final _adwViewSwitcherTitleGetStack =

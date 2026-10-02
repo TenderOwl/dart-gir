@@ -14,12 +14,8 @@ class GtkCellRendererProgress extends GtkCellRenderer {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_renderer_progress_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellRendererProgress() {
-    return GtkCellRendererProgress.fromPointer(
-      gObjectRefSink(_gtkCellRendererProgressNew()),
-      owned: true,
-    );
-  }
+  GtkCellRendererProgress()
+    : super.fromPointer(_gtkCellRendererProgressNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

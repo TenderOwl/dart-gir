@@ -90,12 +90,8 @@ class GtkPaned extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_paned_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkPaned(GtkOrientation orientation) {
-    return GtkPaned.fromPointer(
-      gObjectRefSink(_gtkPanedNew(orientation.value)),
-      owned: true,
-    );
-  }
+  GtkPaned(GtkOrientation orientation)
+    : super.fromPointer(_gtkPanedNew(orientation.value), owned: true);
 
   /// Retrieves the end child of the given `GtkPaned`.
   static final _gtkPanedGetEndChild =

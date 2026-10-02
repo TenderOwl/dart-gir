@@ -132,20 +132,14 @@ class GtkListView extends GtkListBase {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkListView([
-    GtkSelectionModel? model,
-    GtkListItemFactory? factory_,
-  ]) {
-    return GtkListView.fromPointer(
-      gObjectRefSink(
+  GtkListView([GtkSelectionModel? model, GtkListItemFactory? factory_])
+    : super.fromPointer(
         _gtkListViewNew(
           model?.handle ?? ffi.nullptr,
           factory_?.handle ?? ffi.nullptr,
         ),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Returns whether rows can be selected by dragging with the mouse.
   static final _gtkListViewGetEnableRubberband =

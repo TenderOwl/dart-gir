@@ -45,12 +45,7 @@ class AdwSpinner extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_spinner_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwSpinner() {
-    return AdwSpinner.fromPointer(
-      gObjectRefSink(_adwSpinnerNew()),
-      owned: true,
-    );
-  }
+  AdwSpinner() : super.fromPointer(_adwSpinnerNew(), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

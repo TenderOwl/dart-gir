@@ -17,9 +17,7 @@ class GtkMediaFile extends GtkMediaStream {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_media_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkMediaFile() {
-    return GtkMediaFile.fromPointer(_gtkMediaFileNew(), owned: true);
-  }
+  GtkMediaFile() : super.fromPointer(_gtkMediaFileNew(), owned: true);
 
   /// Creates a new media file to play @file.
   static final _gtkMediaFileNewForFile =
@@ -29,12 +27,8 @@ class GtkMediaFile extends GtkMediaStream {
             >
           >('gtk_media_file_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkMediaFile.forFile(GFile file) {
-    return GtkMediaFile.fromPointer(
-      _gtkMediaFileNewForFile(file.handle),
-      owned: true,
-    );
-  }
+  GtkMediaFile.forFile(GFile file)
+    : super.fromPointer(_gtkMediaFileNewForFile(file.handle), owned: true);
 
   /// Creates a new media file for the given filename.
   ///
@@ -67,12 +61,11 @@ class GtkMediaFile extends GtkMediaStream {
             >
           >('gtk_media_file_new_for_input_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkMediaFile.forInputStream(GInputStream stream) {
-    return GtkMediaFile.fromPointer(
-      _gtkMediaFileNewForInputStream(stream.handle),
-      owned: true,
-    );
-  }
+  GtkMediaFile.forInputStream(GInputStream stream)
+    : super.fromPointer(
+        _gtkMediaFileNewForInputStream(stream.handle),
+        owned: true,
+      );
 
   /// Creates a new new media file for the given resource.
   ///

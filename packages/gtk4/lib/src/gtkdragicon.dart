@@ -26,12 +26,8 @@ class GtkDragIcon extends GtkWidget {
             >
           >('gtk_drag_icon_get_for_drag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkDragIcon.getForDrag(GdkDrag drag) {
-    return GtkDragIcon.fromPointer(
-      gObjectRefSink(_gtkDragIconGetForDrag(drag.handle)),
-      owned: true,
-    );
-  }
+  GtkDragIcon.getForDrag(GdkDrag drag)
+    : super.fromPointer(_gtkDragIconGetForDrag(drag.handle), owned: true);
 
   /// Gets the widget currently used as drag icon.
   static final _gtkDragIconGetChild =

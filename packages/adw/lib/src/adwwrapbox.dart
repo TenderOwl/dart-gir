@@ -66,12 +66,7 @@ class AdwWrapBox extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_wrap_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwWrapBox() {
-    return AdwWrapBox.fromPointer(
-      gObjectRefSink(_adwWrapBoxNew()),
-      owned: true,
-    );
-  }
+  AdwWrapBox() : super.fromPointer(_adwWrapBoxNew(), owned: true);
 
   /// Adds @child as the last child to @self.
   static final _adwWrapBoxAppend =

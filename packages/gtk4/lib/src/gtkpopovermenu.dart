@@ -143,12 +143,11 @@ class GtkPopoverMenu extends GtkPopover {
             >
           >('gtk_popover_menu_new_from_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPopoverMenu.fromModel([GMenuModel? model]) {
-    return GtkPopoverMenu.fromPointer(
-      gObjectRefSink(_gtkPopoverMenuNewFromModel(model?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkPopoverMenu.fromModel([GMenuModel? model])
+    : super.fromPointer(
+        _gtkPopoverMenuNewFromModel(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a `GtkPopoverMenu` and populates it according to @model.
   ///
@@ -166,17 +165,11 @@ class GtkPopoverMenu extends GtkPopover {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GtkPopoverMenu.fromModelFull(
-    GMenuModel model,
-    GtkPopoverMenuFlags flags,
-  ) {
-    return GtkPopoverMenu.fromPointer(
-      gObjectRefSink(
+  GtkPopoverMenu.fromModelFull(GMenuModel model, GtkPopoverMenuFlags flags)
+    : super.fromPointer(
         _gtkPopoverMenuNewFromModelFull(model.handle, flags.value),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Adds a custom widget to a generated menu.
   ///

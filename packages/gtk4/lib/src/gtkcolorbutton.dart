@@ -36,12 +36,7 @@ class GtkColorButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_color_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkColorButton() {
-    return GtkColorButton.fromPointer(
-      gObjectRefSink(_gtkColorButtonNew()),
-      owned: true,
-    );
-  }
+  GtkColorButton() : super.fromPointer(_gtkColorButtonNew(), owned: true);
 
   /// Creates a new color button showing the given color.
   static final _gtkColorButtonNewWithRgba =
@@ -51,12 +46,8 @@ class GtkColorButton extends GtkWidget {
             >
           >('gtk_color_button_new_with_rgba')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkColorButton.withRgba(GdkRGBA rgba) {
-    return GtkColorButton.fromPointer(
-      gObjectRefSink(_gtkColorButtonNewWithRgba(rgba.handle)),
-      owned: true,
-    );
-  }
+  GtkColorButton.withRgba(GdkRGBA rgba)
+    : super.fromPointer(_gtkColorButtonNewWithRgba(rgba.handle), owned: true);
 
   /// Gets whether the dialog is modal.
   static final _gtkColorButtonGetModal =

@@ -13,12 +13,8 @@ class GFilenameCompleter extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_filename_completer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GFilenameCompleter() {
-    return GFilenameCompleter.fromPointer(
-      _gFilenameCompleterNew(),
-      owned: true,
-    );
-  }
+  GFilenameCompleter()
+    : super.fromPointer(_gFilenameCompleterNew(), owned: true);
 
   /// Obtains a suffix completion for @initial_text from @completer.
   ///

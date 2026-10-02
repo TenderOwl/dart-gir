@@ -22,12 +22,8 @@ class GSubprocessLauncher extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>>(
         'g_subprocess_launcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GSubprocessLauncher(GSubprocessFlags flags) {
-    return GSubprocessLauncher.fromPointer(
-      _gSubprocessLauncherNew(flags.value),
-      owned: true,
-    );
-  }
+  GSubprocessLauncher(GSubprocessFlags flags)
+    : super.fromPointer(_gSubprocessLauncherNew(flags.value), owned: true);
 
   /// Closes all the file descriptors previously passed to the object with
   /// g_subprocess_launcher_take_fd(), g_subprocess_launcher_take_stderr_fd(), etc.

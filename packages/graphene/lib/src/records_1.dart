@@ -16,9 +16,7 @@ final class GrapheneEuler {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_euler_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneEuler.alloc() {
-    return GrapheneEuler.fromPointer(_grapheneEulerAlloc());
-  }
+  GrapheneEuler.alloc() : this.fromPointer(_grapheneEulerAlloc());
 
   /// Checks if two #graphene_euler_t are equal.
   static final _grapheneEulerEqual =
@@ -461,9 +459,7 @@ final class GrapheneFrustum {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_frustum_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneFrustum.alloc() {
-    return GrapheneFrustum.fromPointer(_grapheneFrustumAlloc());
-  }
+  GrapheneFrustum.alloc() : this.fromPointer(_grapheneFrustumAlloc());
 
   /// Checks whether a point is inside the volume defined by the given
   /// #graphene_frustum_t.

@@ -48,12 +48,8 @@ class GtkIMContextSimple extends GtkIMContext {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_im_context_simple_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkIMContextSimple() {
-    return GtkIMContextSimple.fromPointer(
-      _gtkImContextSimpleNew(),
-      owned: true,
-    );
-  }
+  GtkIMContextSimple()
+    : super.fromPointer(_gtkImContextSimpleNew(), owned: true);
 
   /// Adds an additional table from the X11 compose file.
   static final _gtkImContextSimpleAddComposeFile =

@@ -24,12 +24,8 @@ class AdwPreferencesWindow extends AdwWindow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwPreferencesWindow() {
-    return AdwPreferencesWindow.fromPointer(
-      _adwPreferencesWindowNew(),
-      owned: true,
-    );
-  }
+  AdwPreferencesWindow()
+    : super.fromPointer(_adwPreferencesWindowNew(), owned: true);
 
   /// Adds a preferences page to @self.
   static final _adwPreferencesWindowAdd =

@@ -55,12 +55,8 @@ class GNetworkAddress extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint16)>>(
         'g_network_address_new_loopback',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GNetworkAddress.loopback(int port) {
-    return GNetworkAddress.fromPointer(
-      _gNetworkAddressNewLoopback(port),
-      owned: true,
-    );
-  }
+  GNetworkAddress.loopback(int port)
+    : super.fromPointer(_gNetworkAddressNewLoopback(port), owned: true);
 
   /// Gets @addr's hostname. This might be either UTF-8 or ASCII-encoded,
   /// depending on what @addr was created with.

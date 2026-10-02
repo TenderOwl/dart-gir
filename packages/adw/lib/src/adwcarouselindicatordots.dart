@@ -28,12 +28,8 @@ class AdwCarouselIndicatorDots extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_carousel_indicator_dots_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwCarouselIndicatorDots() {
-    return AdwCarouselIndicatorDots.fromPointer(
-      gObjectRefSink(_adwCarouselIndicatorDotsNew()),
-      owned: true,
-    );
-  }
+  AdwCarouselIndicatorDots()
+    : super.fromPointer(_adwCarouselIndicatorDotsNew(), owned: true);
 
   /// Gets the displayed carousel.
   static final _adwCarouselIndicatorDotsGetCarousel =

@@ -23,12 +23,11 @@ class GskTransformNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskTransformNode(GskRenderNode child, [GskTransform? transform]) {
-    return GskTransformNode.fromPointer(
-      _gskTransformNodeNew(child.handle, transform?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GskTransformNode(GskRenderNode child, [GskTransform? transform])
+    : super.fromPointer(
+        _gskTransformNodeNew(child.handle, transform?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the child node that is getting transformed by the given @node.
   static final _gskTransformNodeGetChild =

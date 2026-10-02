@@ -16,12 +16,7 @@ class GtkFlowBoxChild extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_flow_box_child_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkFlowBoxChild() {
-    return GtkFlowBoxChild.fromPointer(
-      gObjectRefSink(_gtkFlowBoxChildNew()),
-      owned: true,
-    );
-  }
+  GtkFlowBoxChild() : super.fromPointer(_gtkFlowBoxChildNew(), owned: true);
 
   /// Marks @child as changed, causing any state that depends on this
   /// to be updated.

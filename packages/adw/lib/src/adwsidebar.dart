@@ -225,12 +225,7 @@ class AdwSidebar extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwSidebar() {
-    return AdwSidebar.fromPointer(
-      gObjectRefSink(_adwSidebarNew()),
-      owned: true,
-    );
-  }
+  AdwSidebar() : super.fromPointer(_adwSidebarNew(), owned: true);
 
   /// Appends @section to @self.
   static final _adwSidebarAppend =
@@ -526,6 +521,11 @@ class AdwSidebar extends GtkWidget {
   }
 
   /// Sets @self's look and behavior.
+  ///
+  /// <picture>
+  /// <source srcset="sidebar-modes-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img src="sidebar-modes.png" alt="sidebar-modes">
+  /// </picture>
   ///
   /// If set to [enum@Adw.SidebarMode.sidebar], behaves like a sidebar: with a
   /// sidebar style and a persistent selection.

@@ -26,12 +26,11 @@ class GdkSurface extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GdkSurface.popup(GdkSurface parent, bool autohide) {
-    return GdkSurface.fromPointer(
-      _gdkSurfaceNewPopup(parent.handle, autohide ? 1 : 0),
-      owned: true,
-    );
-  }
+  GdkSurface.popup(GdkSurface parent, bool autohide)
+    : super.fromPointer(
+        _gdkSurfaceNewPopup(parent.handle, autohide ? 1 : 0),
+        owned: true,
+      );
 
   /// Creates a new toplevel surface.
   static final _gdkSurfaceNewToplevel =
@@ -41,12 +40,8 @@ class GdkSurface extends GObject {
             >
           >('gdk_surface_new_toplevel')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkSurface.toplevel(GdkDisplay display) {
-    return GdkSurface.fromPointer(
-      _gdkSurfaceNewToplevel(display.handle),
-      owned: true,
-    );
-  }
+  GdkSurface.toplevel(GdkDisplay display)
+    : super.fromPointer(_gdkSurfaceNewToplevel(display.handle), owned: true);
 
   /// Emits a short beep associated to @surface.
   ///

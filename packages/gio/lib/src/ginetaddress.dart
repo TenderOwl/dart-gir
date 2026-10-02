@@ -20,12 +20,8 @@ class GInetAddress extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_inet_address_new_any',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GInetAddress.any(GSocketFamily family) {
-    return GInetAddress.fromPointer(
-      _gInetAddressNewAny(family.value),
-      owned: true,
-    );
-  }
+  GInetAddress.any(GSocketFamily family)
+    : super.fromPointer(_gInetAddressNewAny(family.value), owned: true);
 
   /// Parses @string as an IP address and creates a new #GInetAddress.
   ///
@@ -53,12 +49,8 @@ class GInetAddress extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_inet_address_new_loopback',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GInetAddress.loopback(GSocketFamily family) {
-    return GInetAddress.fromPointer(
-      _gInetAddressNewLoopback(family.value),
-      owned: true,
-    );
-  }
+  GInetAddress.loopback(GSocketFamily family)
+    : super.fromPointer(_gInetAddressNewLoopback(family.value), owned: true);
 
   /// Checks if two #GInetAddress instances are equal, e.g. the same address.
   static final _gInetAddressEqual =

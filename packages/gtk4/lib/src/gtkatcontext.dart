@@ -31,20 +31,18 @@ class GtkATContext extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkATContext.create(
+  GtkATContext.create(
     GtkAccessibleRole accessibleRole,
     GtkAccessible accessible,
     GdkDisplay display,
-  ) {
-    return GtkATContext.fromPointer(
-      _gtkAtContextCreate(
-        accessibleRole.value,
-        accessible.handle,
-        display.handle,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkAtContextCreate(
+          accessibleRole.value,
+          accessible.handle,
+          display.handle,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the `GtkAccessible` using this context.
   static final _gtkAtContextGetAccessible =

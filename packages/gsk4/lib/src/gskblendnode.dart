@@ -24,16 +24,11 @@ class GskBlendNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskBlendNode(
-    GskRenderNode bottom,
-    GskRenderNode top,
-    GskBlendMode blendMode,
-  ) {
-    return GskBlendNode.fromPointer(
-      _gskBlendNodeNew(bottom.handle, top.handle, blendMode.value),
-      owned: true,
-    );
-  }
+  GskBlendNode(GskRenderNode bottom, GskRenderNode top, GskBlendMode blendMode)
+    : super.fromPointer(
+        _gskBlendNodeNew(bottom.handle, top.handle, blendMode.value),
+        owned: true,
+      );
 
   /// Retrieves the blend mode used by @node.
   static final _gskBlendNodeGetBlendMode =

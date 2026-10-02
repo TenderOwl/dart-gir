@@ -809,3 +809,83 @@ final class GHashTableIter {
     _gHashTableIterSteal(this.handle);
   }
 }
+
+final class GHmac {
+  GHmac.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+  static final _gHmacNew =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Int32, ffi.Uint8, ffi.Size)
+            >
+          >('g_hmac_new')
+          .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
+  GHmac(GChecksumType digestType, int key, int keyLen)
+    : this.fromPointer(_gHmacNew(digestType.value, key, keyLen));
+
+  static final _gHmacCopy =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_hmac_copy')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GHmac copy() {
+    return GHmac.fromPointer(_gHmacCopy(this.handle));
+  }
+
+  static final _gHmacGetDigest =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint8, ffi.Size)
+            >
+          >('g_hmac_get_digest')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
+  void getDigest(int buffer, int digestLen) {
+    _gHmacGetDigest(this.handle, buffer, digestLen);
+  }
+
+  static final _gHmacGetString =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_hmac_get_string')
+          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
+  String getString() {
+    return stringFromNative(
+      (_gHmacGetString(this.handle)).cast(),
+      free: false,
+    )!;
+  }
+
+  static final _gHmacRef =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_hmac_ref')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GHmac ref() {
+    return GHmac.fromPointer(_gHmacRef(this.handle));
+  }
+
+  static final _gHmacUnref =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_hmac_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void unref() {
+    _gHmacUnref(this.handle);
+  }
+
+  static final _gHmacUpdate =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Uint8, ffi.IntPtr)
+            >
+          >('g_hmac_update')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
+  void update(int data, int length) {
+    _gHmacUpdate(this.handle, data, length);
+  }
+}

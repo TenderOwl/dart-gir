@@ -26,12 +26,11 @@ class GEmblemedIcon extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GEmblemedIcon(GIcon icon, [GEmblem? emblem]) {
-    return GEmblemedIcon.fromPointer(
-      _gEmblemedIconNew(icon.handle, emblem?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GEmblemedIcon(GIcon icon, [GEmblem? emblem])
+    : super.fromPointer(
+        _gEmblemedIconNew(icon.handle, emblem?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Adds @emblem to the #GList of #GEmblems.
   static final _gEmblemedIconAddEmblem =

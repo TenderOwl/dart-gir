@@ -69,12 +69,7 @@ class GtkFlowBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_flow_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkFlowBox() {
-    return GtkFlowBox.fromPointer(
-      gObjectRefSink(_gtkFlowBoxNew()),
-      owned: true,
-    );
-  }
+  GtkFlowBox() : super.fromPointer(_gtkFlowBoxNew(), owned: true);
 
   /// Adds @child to the end of @self.
   ///

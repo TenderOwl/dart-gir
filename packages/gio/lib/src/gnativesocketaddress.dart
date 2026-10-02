@@ -19,12 +19,8 @@ class GNativeSocketAddress extends GSocketAddress {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GNativeSocketAddress(ffi.Pointer<ffi.Void> native, int len) {
-    return GNativeSocketAddress.fromPointer(
-      _gNativeSocketAddressNew(native, len),
-      owned: true,
-    );
-  }
+  GNativeSocketAddress(ffi.Pointer<ffi.Void> native, int len)
+    : super.fromPointer(_gNativeSocketAddressNew(native, len), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

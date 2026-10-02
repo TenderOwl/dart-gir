@@ -15,12 +15,8 @@ class GDataInputStream extends GBufferedInputStream {
             >
           >('g_data_input_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GDataInputStream(GInputStream baseStream) {
-    return GDataInputStream.fromPointer(
-      _gDataInputStreamNew(baseStream.handle),
-      owned: true,
-    );
-  }
+  GDataInputStream(GInputStream baseStream)
+    : super.fromPointer(_gDataInputStreamNew(baseStream.handle), owned: true);
 
   /// Gets the byte order for the data input stream.
   static final _gDataInputStreamGetByteOrder =

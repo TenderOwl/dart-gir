@@ -14,12 +14,8 @@ class GtkSourceStyleSchemeManager extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_style_scheme_manager_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceStyleSchemeManager() {
-    return GtkSourceStyleSchemeManager.fromPointer(
-      _gtkSourceStyleSchemeManagerNew(),
-      owned: true,
-    );
-  }
+  GtkSourceStyleSchemeManager()
+    : super.fromPointer(_gtkSourceStyleSchemeManagerNew(), owned: true);
 
   /// Appends @path to the list of directories where the @manager looks for
   /// style scheme files.

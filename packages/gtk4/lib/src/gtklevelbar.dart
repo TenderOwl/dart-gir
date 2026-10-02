@@ -109,12 +109,7 @@ class GtkLevelBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_level_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkLevelBar() {
-    return GtkLevelBar.fromPointer(
-      gObjectRefSink(_gtkLevelBarNew()),
-      owned: true,
-    );
-  }
+  GtkLevelBar() : super.fromPointer(_gtkLevelBarNew(), owned: true);
 
   /// Creates a new `GtkLevelBar` for the specified interval.
   static final _gtkLevelBarNewForInterval =
@@ -124,12 +119,11 @@ class GtkLevelBar extends GtkWidget {
             >
           >('gtk_level_bar_new_for_interval')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double)>();
-  factory GtkLevelBar.forInterval(double minValue, double maxValue) {
-    return GtkLevelBar.fromPointer(
-      gObjectRefSink(_gtkLevelBarNewForInterval(minValue, maxValue)),
-      owned: true,
-    );
-  }
+  GtkLevelBar.forInterval(double minValue, double maxValue)
+    : super.fromPointer(
+        _gtkLevelBarNewForInterval(minValue, maxValue),
+        owned: true,
+      );
 
   /// Adds a new offset marker on @self at the position specified by @value.
   ///

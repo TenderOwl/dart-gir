@@ -72,12 +72,8 @@ class AdwViewSwitcherBar extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_switcher_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwViewSwitcherBar() {
-    return AdwViewSwitcherBar.fromPointer(
-      gObjectRefSink(_adwViewSwitcherBarNew()),
-      owned: true,
-    );
-  }
+  AdwViewSwitcherBar()
+    : super.fromPointer(_adwViewSwitcherBarNew(), owned: true);
 
   /// Gets whether @self should be revealed or hidden.
   static final _adwViewSwitcherBarGetReveal =

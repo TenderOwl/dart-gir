@@ -41,20 +41,14 @@ class GtkViewport extends GtkWidget {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkViewport([
-    GtkAdjustment? hadjustment,
-    GtkAdjustment? vadjustment,
-  ]) {
-    return GtkViewport.fromPointer(
-      gObjectRefSink(
+  GtkViewport([GtkAdjustment? hadjustment, GtkAdjustment? vadjustment])
+    : super.fromPointer(
         _gtkViewportNew(
           hadjustment?.handle ?? ffi.nullptr,
           vadjustment?.handle ?? ffi.nullptr,
         ),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Gets the child widget of @viewport.
   static final _gtkViewportGetChild =

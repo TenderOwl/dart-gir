@@ -47,12 +47,7 @@ class GtkCenterBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_center_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCenterBox() {
-    return GtkCenterBox.fromPointer(
-      gObjectRefSink(_gtkCenterBoxNew()),
-      owned: true,
-    );
-  }
+  GtkCenterBox() : super.fromPointer(_gtkCenterBoxNew(), owned: true);
 
   /// Gets the baseline position of the center box.
   ///

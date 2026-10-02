@@ -27,12 +27,8 @@ class AdwPreferencesPage extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_page_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwPreferencesPage() {
-    return AdwPreferencesPage.fromPointer(
-      gObjectRefSink(_adwPreferencesPageNew()),
-      owned: true,
-    );
-  }
+  AdwPreferencesPage()
+    : super.fromPointer(_adwPreferencesPageNew(), owned: true);
 
   /// Adds a preferences group to @self.
   static final _adwPreferencesPageAdd =

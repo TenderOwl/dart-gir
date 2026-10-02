@@ -20,12 +20,8 @@ class GtkSourceStyleSchemeChooserWidget extends GtkWidget {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_style_scheme_chooser_widget_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceStyleSchemeChooserWidget() {
-    return GtkSourceStyleSchemeChooserWidget.fromPointer(
-      gObjectRefSink(_gtkSourceStyleSchemeChooserWidgetNew()),
-      owned: true,
-    );
-  }
+  GtkSourceStyleSchemeChooserWidget()
+    : super.fromPointer(_gtkSourceStyleSchemeChooserWidgetNew(), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

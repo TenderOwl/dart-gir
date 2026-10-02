@@ -41,6 +41,20 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   [emission.md](./docs/emission.md#classemitter) and the
   `PackageEmitter file layout` regression test in
   [`generator/test/emitter_test.dart`](./generator/test/emitter_test.dart).
+- **Subclassable generated classes**: `<constructor>` elements that have
+  no `throws`, no OUT params, and no `String` / `String?` /
+  `List<String?>?` / callback parameters are now emitted as generative
+  constructors (chaining via `super.fromPointer(...)` for classes and
+  `this.fromPointer(...)` for records) instead of factories. The
+  original blocker — `class MyAdwWindow extends AdwWindow { MyAdwWindow()
+  : super(); }` failing with *"The generative constructor 'AdwWindow()'
+  is expected, but a factory was found"* — is resolved for all such
+  simple constructors. Constructors with string / callback params remain
+  factories because the factory body wraps them in `withNativeString` /
+  `NativeCallable.isolateLocal` for proper C-buffer and
+  `NativeCallable` lifetime management, and a generative initializer
+  list has no body to host the corresponding `finally` block. Smoke
+  test: `example/bin/subclass_smoke.dart`.
 - **`g_free` binding in `package:gir_ffi`** via
   `DynamicLibrary.process().lookup('g_free')` for transferring
   ownership of `transfer-none` strings out of the trampoline.

@@ -56,12 +56,7 @@ class AdwSplitButton extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_split_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwSplitButton() {
-    return AdwSplitButton.fromPointer(
-      gObjectRefSink(_adwSplitButtonNew()),
-      owned: true,
-    );
-  }
+  AdwSplitButton() : super.fromPointer(_adwSplitButtonNew(), owned: true);
 
   /// gets whether the button can be smaller than the natural size of its contents.
   static final _adwSplitButtonGetCanShrink =

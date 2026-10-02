@@ -78,12 +78,7 @@ class GtkMenuButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_menu_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkMenuButton() {
-    return GtkMenuButton.fromPointer(
-      gObjectRefSink(_gtkMenuButtonNew()),
-      owned: true,
-    );
-  }
+  GtkMenuButton() : super.fromPointer(_gtkMenuButtonNew(), owned: true);
 
   /// Returns whether the menu button is active.
   static final _gtkMenuButtonGetActive =

@@ -32,9 +32,7 @@ class AdwClampLayout extends GtkLayoutManager {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_clamp_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwClampLayout() {
-    return AdwClampLayout.fromPointer(_adwClampLayoutNew(), owned: true);
-  }
+  AdwClampLayout() : super.fromPointer(_adwClampLayoutNew(), owned: true);
 
   /// Gets the maximum size allocated to the children.
   static final _adwClampLayoutGetMaximumSize =

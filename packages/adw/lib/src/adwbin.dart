@@ -21,9 +21,7 @@ class AdwBin extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_bin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwBin() {
-    return AdwBin.fromPointer(gObjectRefSink(_adwBinNew()), owned: true);
-  }
+  AdwBin() : super.fromPointer(_adwBinNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _adwBinGetChild =

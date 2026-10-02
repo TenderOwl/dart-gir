@@ -78,12 +78,7 @@ class GtkSourceView extends GtkTextView {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceView() {
-    return GtkSourceView.fromPointer(
-      gObjectRefSink(_gtkSourceViewNew()),
-      owned: true,
-    );
-  }
+  GtkSourceView() : super.fromPointer(_gtkSourceViewNew(), owned: true);
 
   /// Creates a new #GtkSourceView widget displaying the buffer @buffer.
   ///
@@ -95,12 +90,11 @@ class GtkSourceView extends GtkTextView {
             >
           >('gtk_source_view_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourceView.withBuffer(GtkSourceBuffer buffer) {
-    return GtkSourceView.fromPointer(
-      gObjectRefSink(_gtkSourceViewNewWithBuffer(buffer.handle)),
-      owned: true,
-    );
-  }
+  GtkSourceView.withBuffer(GtkSourceBuffer buffer)
+    : super.fromPointer(
+        _gtkSourceViewNewWithBuffer(buffer.handle),
+        owned: true,
+      );
 
   /// Gets the [class@Annotations] associated with @view.
   ///

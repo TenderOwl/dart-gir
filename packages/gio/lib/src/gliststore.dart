@@ -15,9 +15,8 @@ class GListStore extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
         'g_list_store_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GListStore(int itemType) {
-    return GListStore.fromPointer(_gListStoreNew(itemType), owned: true);
-  }
+  GListStore(int itemType)
+    : super.fromPointer(_gListStoreNew(itemType), owned: true);
 
   /// Appends @item to @store. @item must be of type #GListStore:item-type.
   ///

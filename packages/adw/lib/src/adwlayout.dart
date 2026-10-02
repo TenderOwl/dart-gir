@@ -13,9 +13,8 @@ class AdwLayout extends GObject {
             >
           >('adw_layout_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory AdwLayout(GtkWidget content) {
-    return AdwLayout.fromPointer(_adwLayoutNew(content.handle), owned: true);
-  }
+  AdwLayout(GtkWidget content)
+    : super.fromPointer(_adwLayoutNew(content.handle), owned: true);
 
   /// Gets the content widget.
   static final _adwLayoutGetContent =

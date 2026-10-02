@@ -27,12 +27,11 @@ class GtkSourcePrintCompositor extends GObject {
             >
           >('gtk_source_print_compositor_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourcePrintCompositor(GtkSourceBuffer buffer) {
-    return GtkSourcePrintCompositor.fromPointer(
-      _gtkSourcePrintCompositorNew(buffer.handle),
-      owned: true,
-    );
-  }
+  GtkSourcePrintCompositor(GtkSourceBuffer buffer)
+    : super.fromPointer(
+        _gtkSourcePrintCompositorNew(buffer.handle),
+        owned: true,
+      );
 
   /// Creates a new print compositor that can be used to print the buffer
   /// associated with @view.
@@ -49,12 +48,11 @@ class GtkSourcePrintCompositor extends GObject {
             >
           >('gtk_source_print_compositor_new_from_view')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourcePrintCompositor.fromView(GtkSourceView view) {
-    return GtkSourcePrintCompositor.fromPointer(
-      _gtkSourcePrintCompositorNewFromView(view.handle),
-      owned: true,
-    );
-  }
+  GtkSourcePrintCompositor.fromView(GtkSourceView view)
+    : super.fromPointer(
+        _gtkSourcePrintCompositorNewFromView(view.handle),
+        owned: true,
+      );
 
   /// Draw page @page_nr for printing on the the Cairo context encapsuled in @context.
   ///

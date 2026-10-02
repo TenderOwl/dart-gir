@@ -64,12 +64,7 @@ class GtkSearchEntry extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_search_entry_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSearchEntry() {
-    return GtkSearchEntry.fromPointer(
-      gObjectRefSink(_gtkSearchEntryNew()),
-      owned: true,
-    );
-  }
+  GtkSearchEntry() : super.fromPointer(_gtkSearchEntryNew(), owned: true);
 
   /// Gets the input purpose for @entry.
   static final _gtkSearchEntryGetInputHints =

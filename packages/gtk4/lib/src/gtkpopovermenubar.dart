@@ -44,14 +44,11 @@ class GtkPopoverMenuBar extends GtkWidget {
             >
           >('gtk_popover_menu_bar_new_from_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPopoverMenuBar.fromModel([GMenuModel? model]) {
-    return GtkPopoverMenuBar.fromPointer(
-      gObjectRefSink(
+  GtkPopoverMenuBar.fromModel([GMenuModel? model])
+    : super.fromPointer(
         _gtkPopoverMenuBarNewFromModel(model?.handle ?? ffi.nullptr),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Adds a custom widget to a generated menubar.
   ///

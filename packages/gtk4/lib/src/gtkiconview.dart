@@ -37,12 +37,7 @@ class GtkIconView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_icon_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkIconView() {
-    return GtkIconView.fromPointer(
-      gObjectRefSink(_gtkIconViewNew()),
-      owned: true,
-    );
-  }
+  GtkIconView() : super.fromPointer(_gtkIconViewNew(), owned: true);
 
   /// Creates a new `GtkIconView` widget using the
   /// specified @area to layout cells inside the icons.
@@ -53,12 +48,8 @@ class GtkIconView extends GtkWidget {
             >
           >('gtk_icon_view_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkIconView.withArea(GtkCellArea area) {
-    return GtkIconView.fromPointer(
-      gObjectRefSink(_gtkIconViewNewWithArea(area.handle)),
-      owned: true,
-    );
-  }
+  GtkIconView.withArea(GtkCellArea area)
+    : super.fromPointer(_gtkIconViewNewWithArea(area.handle), owned: true);
 
   /// Creates a new `GtkIconView` widget with the model @model.
   static final _gtkIconViewNewWithModel =
@@ -68,12 +59,8 @@ class GtkIconView extends GtkWidget {
             >
           >('gtk_icon_view_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkIconView.withModel(GtkTreeModel model) {
-    return GtkIconView.fromPointer(
-      gObjectRefSink(_gtkIconViewNewWithModel(model.handle)),
-      owned: true,
-    );
-  }
+  GtkIconView.withModel(GtkTreeModel model)
+    : super.fromPointer(_gtkIconViewNewWithModel(model.handle), owned: true);
 
   /// Creates a `GdkPaintable` representation of the item at @path.
   /// This image is used for a drag icon.

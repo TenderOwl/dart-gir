@@ -119,9 +119,7 @@ class GtkText extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkText() {
-    return GtkText.fromPointer(gObjectRefSink(_gtkTextNew()), owned: true);
-  }
+  GtkText() : super.fromPointer(_gtkTextNew(), owned: true);
 
   /// Creates a new `GtkText` with the specified buffer.
   static final _gtkTextNewWithBuffer =
@@ -131,12 +129,8 @@ class GtkText extends GtkWidget {
             >
           >('gtk_text_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkText.withBuffer(GtkEntryBuffer buffer) {
-    return GtkText.fromPointer(
-      gObjectRefSink(_gtkTextNewWithBuffer(buffer.handle)),
-      owned: true,
-    );
-  }
+  GtkText.withBuffer(GtkEntryBuffer buffer)
+    : super.fromPointer(_gtkTextNewWithBuffer(buffer.handle), owned: true);
 
   /// Determines the positions of the strong and weak cursors for a
   /// given character position.

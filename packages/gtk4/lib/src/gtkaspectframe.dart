@@ -33,19 +33,11 @@ class GtkAspectFrame extends GtkWidget {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(double, double, double, int)
           >();
-  factory GtkAspectFrame(
-    double xalign,
-    double yalign,
-    double ratio,
-    bool obeyChild,
-  ) {
-    return GtkAspectFrame.fromPointer(
-      gObjectRefSink(
+  GtkAspectFrame(double xalign, double yalign, double ratio, bool obeyChild)
+    : super.fromPointer(
         _gtkAspectFrameNew(xalign, yalign, ratio, obeyChild ? 1 : 0),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Gets the child widget of @self.
   static final _gtkAspectFrameGetChild =

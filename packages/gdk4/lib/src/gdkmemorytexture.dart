@@ -31,18 +31,16 @@ class GdkMemoryTexture extends GdkTexture {
               int,
             )
           >();
-  factory GdkMemoryTexture(
+  GdkMemoryTexture(
     int width,
     int height,
     GdkMemoryFormat format,
     GBytes bytes,
     int stride,
-  ) {
-    return GdkMemoryTexture.fromPointer(
-      _gdkMemoryTextureNew(width, height, format.value, bytes.handle, stride),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gdkMemoryTextureNew(width, height, format.value, bytes.handle, stride),
+        owned: true,
+      );
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

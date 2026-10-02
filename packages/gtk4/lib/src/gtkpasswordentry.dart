@@ -45,12 +45,7 @@ class GtkPasswordEntry extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_password_entry_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPasswordEntry() {
-    return GtkPasswordEntry.fromPointer(
-      gObjectRefSink(_gtkPasswordEntryNew()),
-      owned: true,
-    );
-  }
+  GtkPasswordEntry() : super.fromPointer(_gtkPasswordEntryNew(), owned: true);
 
   /// Gets the menu model set with gtk_password_entry_set_extra_menu().
   static final _gtkPasswordEntryGetExtraMenu =

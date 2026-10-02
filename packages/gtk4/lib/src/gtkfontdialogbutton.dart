@@ -36,12 +36,11 @@ class GtkFontDialogButton extends GtkWidget {
             >
           >('gtk_font_dialog_button_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkFontDialogButton([GtkFontDialog? dialog]) {
-    return GtkFontDialogButton.fromPointer(
-      gObjectRefSink(_gtkFontDialogButtonNew(dialog?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkFontDialogButton([GtkFontDialog? dialog])
+    : super.fromPointer(
+        _gtkFontDialogButtonNew(dialog?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Returns the `GtkFontDialog` of @self.
   static final _gtkFontDialogButtonGetDialog =

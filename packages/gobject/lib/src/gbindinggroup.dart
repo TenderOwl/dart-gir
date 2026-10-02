@@ -16,9 +16,7 @@ class GBindingGroup extends GObject {
       gobjectLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_binding_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GBindingGroup() {
-    return GBindingGroup.fromPointer(_gBindingGroupNew(), owned: true);
-  }
+  GBindingGroup() : super.fromPointer(_gBindingGroupNew(), owned: true);
 
   /// Creates a binding between @source_property on the source object
   /// and @target_property on @target. Whenever the @source_property

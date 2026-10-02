@@ -26,12 +26,7 @@ class GtkWindowHandle extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_window_handle_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkWindowHandle() {
-    return GtkWindowHandle.fromPointer(
-      gObjectRefSink(_gtkWindowHandleNew()),
-      owned: true,
-    );
-  }
+  GtkWindowHandle() : super.fromPointer(_gtkWindowHandleNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _gtkWindowHandleGetChild =

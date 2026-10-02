@@ -30,9 +30,7 @@ class GtkBuilderCScope extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_builder_cscope_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkBuilderCScope() {
-    return GtkBuilderCScope.fromPointer(_gtkBuilderCscopeNew(), owned: true);
-  }
+  GtkBuilderCScope() : super.fromPointer(_gtkBuilderCscopeNew(), owned: true);
 
   /// Adds the @callback_symbol to the scope of @builder under the
   /// given @callback_name.

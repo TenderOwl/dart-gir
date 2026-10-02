@@ -55,9 +55,7 @@ class GdkPixbufLoader extends GObject {
       gdkPixbufLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_pixbuf_loader_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GdkPixbufLoader() {
-    return GdkPixbufLoader.fromPointer(_gdkPixbufLoaderNew(), owned: true);
-  }
+  GdkPixbufLoader() : super.fromPointer(_gdkPixbufLoaderNew(), owned: true);
 
   /// Creates a new pixbuf loader object that always attempts to parse
   /// image data as if it were an image of MIME type @mime_type, instead of

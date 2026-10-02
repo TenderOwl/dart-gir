@@ -19,12 +19,8 @@ class AdwClampScrollable extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_clamp_scrollable_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwClampScrollable() {
-    return AdwClampScrollable.fromPointer(
-      gObjectRefSink(_adwClampScrollableNew()),
-      owned: true,
-    );
-  }
+  AdwClampScrollable()
+    : super.fromPointer(_adwClampScrollableNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _adwClampScrollableGetChild =

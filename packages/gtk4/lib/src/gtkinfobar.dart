@@ -85,12 +85,7 @@ class GtkInfoBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_info_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkInfoBar() {
-    return GtkInfoBar.fromPointer(
-      gObjectRefSink(_gtkInfoBarNew()),
-      owned: true,
-    );
-  }
+  GtkInfoBar() : super.fromPointer(_gtkInfoBarNew(), owned: true);
 
   /// Add an activatable widget to the action area of a `GtkInfoBar`.
   ///

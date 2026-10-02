@@ -137,9 +137,7 @@ class GtkDialog extends GtkWindow {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkDialog() {
-    return GtkDialog.fromPointer(gObjectRefSink(_gtkDialogNew()), owned: true);
-  }
+  GtkDialog() : super.fromPointer(_gtkDialogNew(), owned: true);
 
   /// Adds an activatable widget to the action area of a `GtkDialog`.
   ///

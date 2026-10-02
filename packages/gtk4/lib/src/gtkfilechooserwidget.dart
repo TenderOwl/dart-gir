@@ -44,12 +44,8 @@ class GtkFileChooserWidget extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_file_chooser_widget_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkFileChooserWidget(GtkFileChooserAction action) {
-    return GtkFileChooserWidget.fromPointer(
-      gObjectRefSink(_gtkFileChooserWidgetNew(action.value)),
-      owned: true,
-    );
-  }
+  GtkFileChooserWidget(GtkFileChooserAction action)
+    : super.fromPointer(_gtkFileChooserWidgetNew(action.value), owned: true);
 
   /// Emitted when the user asks for it.
   ///

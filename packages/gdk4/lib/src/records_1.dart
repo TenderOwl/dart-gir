@@ -183,9 +183,8 @@ final class GdkFileList {
             >
           >('gdk_file_list_new_from_list')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkFileList.fromList(GSList files) {
-    return GdkFileList.fromPointer(_gdkFileListNewFromList(files.handle));
-  }
+  GdkFileList.fromList(GSList files)
+    : this.fromPointer(_gdkFileListNewFromList(files.handle));
 
   /// Retrieves the list of files inside a `GdkFileList`.
   ///

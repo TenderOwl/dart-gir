@@ -29,12 +29,7 @@ class GtkFontButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_font_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkFontButton() {
-    return GtkFontButton.fromPointer(
-      gObjectRefSink(_gtkFontButtonNew()),
-      owned: true,
-    );
-  }
+  GtkFontButton() : super.fromPointer(_gtkFontButtonNew(), owned: true);
 
   /// Creates a new font picker widget showing the given font.
   static final _gtkFontButtonNewWithFont =

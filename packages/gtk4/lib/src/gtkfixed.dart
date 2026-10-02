@@ -46,9 +46,7 @@ class GtkFixed extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_fixed_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkFixed() {
-    return GtkFixed.fromPointer(gObjectRefSink(_gtkFixedNew()), owned: true);
-  }
+  GtkFixed() : super.fromPointer(_gtkFixedNew(), owned: true);
 
   /// Retrieves the translation transformation of the
   /// given child `GtkWidget` in the `GtkFixed`.

@@ -70,20 +70,14 @@ class GtkGridView extends GtkListBase {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkGridView([
-    GtkSelectionModel? model,
-    GtkListItemFactory? factory_,
-  ]) {
-    return GtkGridView.fromPointer(
-      gObjectRefSink(
+  GtkGridView([GtkSelectionModel? model, GtkListItemFactory? factory_])
+    : super.fromPointer(
         _gtkGridViewNew(
           model?.handle ?? ffi.nullptr,
           factory_?.handle ?? ffi.nullptr,
         ),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Returns whether rows can be selected by dragging with the mouse.
   static final _gtkGridViewGetEnableRubberband =

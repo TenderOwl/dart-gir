@@ -173,12 +173,8 @@ class GtkConstraintLayout extends GtkLayoutManager {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_constraint_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkConstraintLayout() {
-    return GtkConstraintLayout.fromPointer(
-      _gtkConstraintLayoutNew(),
-      owned: true,
-    );
-  }
+  GtkConstraintLayout()
+    : super.fromPointer(_gtkConstraintLayoutNew(), owned: true);
 
   /// Adds a constraint to the layout manager.
   ///

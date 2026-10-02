@@ -87,12 +87,11 @@ class GtkPadController extends GtkEventController {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkPadController(GActionGroup group, [GdkDevice? pad]) {
-    return GtkPadController.fromPointer(
-      _gtkPadControllerNew(group.handle, pad?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkPadController(GActionGroup group, [GdkDevice? pad])
+    : super.fromPointer(
+        _gtkPadControllerNew(group.handle, pad?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Adds an individual action to @controller.
   ///

@@ -53,12 +53,8 @@ class AdwViewSwitcherSidebar extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_switcher_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwViewSwitcherSidebar() {
-    return AdwViewSwitcherSidebar.fromPointer(
-      gObjectRefSink(_adwViewSwitcherSidebarNew()),
-      owned: true,
-    );
-  }
+  AdwViewSwitcherSidebar()
+    : super.fromPointer(_adwViewSwitcherSidebarNew(), owned: true);
 
   /// Gets the item filter for @self.
   static final _adwViewSwitcherSidebarGetFilter =
@@ -143,6 +139,11 @@ class AdwViewSwitcherSidebar extends GtkWidget {
   }
 
   /// Sets @self's look and behavior.
+  ///
+  /// <picture>
+  /// <source srcset="view-switcher-sidebar-modes-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img src="view-switcher-sidebar-modes.png" alt="view-switcher-sidebar-modes">
+  /// </picture>
   ///
   /// If set to [enum@Adw.SidebarMode.sidebar], behaves like a sidebar: with a
   /// sidebar style and a persistent selection.

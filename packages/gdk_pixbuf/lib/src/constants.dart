@@ -7,7 +7,7 @@ const pixbufMajor = 2;
 
 /// Micro version of gdk-pixbuf library, that is the "2" in
 /// "0.8.2" for example.
-const pixbufMicro = 5;
+const pixbufMicro = 4;
 
 /// Minor version of gdk-pixbuf library, that is the "8" in
 /// "0.8.2" for example.
@@ -17,4 +17,4 @@ const pixbufMinor = 44;
 ///
 /// This is the version being compiled against; contrast with
 /// `gdk_pixbuf_version`.
-const pixbufVersion = '2.44.5';
+const pixbufVersion = '2.44.4';

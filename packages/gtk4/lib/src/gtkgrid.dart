@@ -95,9 +95,7 @@ class GtkGrid extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_grid_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkGrid() {
-    return GtkGrid.fromPointer(gObjectRefSink(_gtkGridNew()), owned: true);
-  }
+  GtkGrid() : super.fromPointer(_gtkGridNew(), owned: true);
 
   /// Adds a widget to the grid.
   ///

@@ -99,9 +99,7 @@ class GtkEntry extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_entry_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkEntry() {
-    return GtkEntry.fromPointer(gObjectRefSink(_gtkEntryNew()), owned: true);
-  }
+  GtkEntry() : super.fromPointer(_gtkEntryNew(), owned: true);
 
   /// Creates a new entry with the specified text buffer.
   static final _gtkEntryNewWithBuffer =
@@ -111,12 +109,8 @@ class GtkEntry extends GtkWidget {
             >
           >('gtk_entry_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkEntry.withBuffer(GtkEntryBuffer buffer) {
-    return GtkEntry.fromPointer(
-      gObjectRefSink(_gtkEntryNewWithBuffer(buffer.handle)),
-      owned: true,
-    );
-  }
+  GtkEntry.withBuffer(GtkEntryBuffer buffer)
+    : super.fromPointer(_gtkEntryNewWithBuffer(buffer.handle), owned: true);
 
   /// Retrieves the value set by gtk_entry_set_activates_default().
   static final _gtkEntryGetActivatesDefault =

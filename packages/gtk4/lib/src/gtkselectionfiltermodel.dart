@@ -15,12 +15,11 @@ class GtkSelectionFilterModel extends GObject {
             >
           >('gtk_selection_filter_model_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSelectionFilterModel([GtkSelectionModel? model]) {
-    return GtkSelectionFilterModel.fromPointer(
-      _gtkSelectionFilterModelNew(model?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkSelectionFilterModel([GtkSelectionModel? model])
+    : super.fromPointer(
+        _gtkSelectionFilterModelNew(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the model currently filtered or %NULL if none.
   static final _gtkSelectionFilterModelGetModel =

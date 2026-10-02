@@ -14,12 +14,8 @@ class GtkSourceGutterRendererPixbuf extends GtkSourceGutterRenderer {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_gutter_renderer_pixbuf_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceGutterRendererPixbuf() {
-    return GtkSourceGutterRendererPixbuf.fromPointer(
-      gObjectRefSink(_gtkSourceGutterRendererPixbufNew()),
-      owned: true,
-    );
-  }
+  GtkSourceGutterRendererPixbuf()
+    : super.fromPointer(_gtkSourceGutterRendererPixbufNew(), owned: true);
 
   /// Get the gicon of the renderer
   static final _gtkSourceGutterRendererPixbufGetGicon =

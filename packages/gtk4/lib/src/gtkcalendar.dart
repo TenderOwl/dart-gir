@@ -65,12 +65,7 @@ class GtkCalendar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_calendar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCalendar() {
-    return GtkCalendar.fromPointer(
-      gObjectRefSink(_gtkCalendarNew()),
-      owned: true,
-    );
-  }
+  GtkCalendar() : super.fromPointer(_gtkCalendarNew(), owned: true);
 
   /// Remove all visual markers.
   static final _gtkCalendarClearMarks =

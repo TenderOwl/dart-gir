@@ -128,12 +128,7 @@ class GtkNotebook extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_notebook_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkNotebook() {
-    return GtkNotebook.fromPointer(
-      gObjectRefSink(_gtkNotebookNew()),
-      owned: true,
-    );
-  }
+  GtkNotebook() : super.fromPointer(_gtkNotebookNew(), owned: true);
 
   /// Appends a page to @notebook.
   static final _gtkNotebookAppendPage =

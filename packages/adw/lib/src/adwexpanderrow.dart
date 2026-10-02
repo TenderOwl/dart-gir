@@ -46,12 +46,7 @@ class AdwExpanderRow extends AdwPreferencesRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_expander_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwExpanderRow() {
-    return AdwExpanderRow.fromPointer(
-      gObjectRefSink(_adwExpanderRowNew()),
-      owned: true,
-    );
-  }
+  AdwExpanderRow() : super.fromPointer(_adwExpanderRowNew(), owned: true);
 
   /// Adds an action widget to @self.
   static final _adwExpanderRowAddAction =

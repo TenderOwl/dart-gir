@@ -371,9 +371,7 @@ class GtkBuilder extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkBuilder() {
-    return GtkBuilder.fromPointer(_gtkBuilderNew(), owned: true);
-  }
+  GtkBuilder() : super.fromPointer(_gtkBuilderNew(), owned: true);
 
   /// Parses the UI definition in the file @filename.
   ///

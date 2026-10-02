@@ -28,17 +28,20 @@ class GskTextNode extends GskRenderNode {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskTextNode(
+  GskTextNode(
     PangoFont font,
     PangoGlyphString glyphs,
     GdkRGBA color,
     GraphenePoint offset,
-  ) {
-    return GskTextNode.fromPointer(
-      _gskTextNodeNew(font.handle, glyphs.handle, color.handle, offset.handle),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gskTextNodeNew(
+          font.handle,
+          glyphs.handle,
+          color.handle,
+          offset.handle,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the color used by the text @node.
   ///

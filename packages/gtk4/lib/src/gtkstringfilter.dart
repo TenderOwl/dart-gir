@@ -28,12 +28,11 @@ class GtkStringFilter extends GtkFilter {
             >
           >('gtk_string_filter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkStringFilter([GtkExpression? expression]) {
-    return GtkStringFilter.fromPointer(
-      _gtkStringFilterNew(expression?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkStringFilter([GtkExpression? expression])
+    : super.fromPointer(
+        _gtkStringFilterNew(expression?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the expression that the string filter uses to
   /// obtain strings from items.

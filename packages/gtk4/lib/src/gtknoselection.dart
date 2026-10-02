@@ -18,12 +18,11 @@ class GtkNoSelection extends GObject {
             >
           >('gtk_no_selection_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkNoSelection([GListModel? model]) {
-    return GtkNoSelection.fromPointer(
-      _gtkNoSelectionNew(model?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkNoSelection([GListModel? model])
+    : super.fromPointer(
+        _gtkNoSelectionNew(model?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the model that @self is wrapping.
   static final _gtkNoSelectionGetModel =

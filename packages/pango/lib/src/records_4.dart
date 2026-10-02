@@ -29,9 +29,7 @@ final class PangoItem {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_item_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory PangoItem() {
-    return PangoItem.fromPointer(_pangoItemNew());
-  }
+  PangoItem() : this.fromPointer(_pangoItemNew());
 
   /// Add attributes to a `PangoItem`.
   ///

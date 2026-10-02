@@ -103,12 +103,7 @@ class AdwHeaderBar extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_header_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwHeaderBar() {
-    return AdwHeaderBar.fromPointer(
-      gObjectRefSink(_adwHeaderBarNew()),
-      owned: true,
-    );
-  }
+  AdwHeaderBar() : super.fromPointer(_adwHeaderBarNew(), owned: true);
 
   /// Gets the policy for aligning the center widget.
   static final _adwHeaderBarGetCenteringPolicy =

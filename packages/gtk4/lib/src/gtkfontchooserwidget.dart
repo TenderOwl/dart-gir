@@ -27,12 +27,8 @@ class GtkFontChooserWidget extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_font_chooser_widget_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkFontChooserWidget() {
-    return GtkFontChooserWidget.fromPointer(
-      gObjectRefSink(_gtkFontChooserWidgetNew()),
-      owned: true,
-    );
-  }
+  GtkFontChooserWidget()
+    : super.fromPointer(_gtkFontChooserWidgetNew(), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

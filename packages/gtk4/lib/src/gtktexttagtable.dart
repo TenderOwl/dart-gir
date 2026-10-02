@@ -33,9 +33,7 @@ class GtkTextTagTable extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_tag_table_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTextTagTable() {
-    return GtkTextTagTable.fromPointer(_gtkTextTagTableNew(), owned: true);
-  }
+  GtkTextTagTable() : super.fromPointer(_gtkTextTagTableNew(), owned: true);
 
   /// Add a tag to the table.
   ///

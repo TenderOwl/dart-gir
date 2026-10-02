@@ -28,9 +28,7 @@ class GtkWindowGroup extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_window_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkWindowGroup() {
-    return GtkWindowGroup.fromPointer(_gtkWindowGroupNew(), owned: true);
-  }
+  GtkWindowGroup() : super.fromPointer(_gtkWindowGroupNew(), owned: true);
 
   /// Adds a window to a `GtkWindowGroup`.
   static final _gtkWindowGroupAddWindow =

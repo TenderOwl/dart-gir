@@ -229,9 +229,8 @@ final class GdkContentFormats {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
         'gdk_content_formats_new_for_gtype',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GdkContentFormats.forGtype(int type_) {
-    return GdkContentFormats.fromPointer(_gdkContentFormatsNewForGtype(type_));
-  }
+  GdkContentFormats.forGtype(int type_)
+    : this.fromPointer(_gdkContentFormatsNewForGtype(type_));
 
   /// Checks if a given `GType` is part of the given @formats.
   static final _gdkContentFormatsContainGtype =
@@ -491,9 +490,7 @@ final class GdkContentFormatsBuilder {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_content_formats_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GdkContentFormatsBuilder() {
-    return GdkContentFormatsBuilder.fromPointer(_gdkContentFormatsBuilderNew());
-  }
+  GdkContentFormatsBuilder() : this.fromPointer(_gdkContentFormatsBuilderNew());
 
   /// Appends all formats from @formats to @builder, skipping those that
   /// already exist.

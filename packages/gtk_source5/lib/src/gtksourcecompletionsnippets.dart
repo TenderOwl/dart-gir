@@ -13,12 +13,8 @@ class GtkSourceCompletionSnippets extends GObject {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_completion_snippets_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceCompletionSnippets() {
-    return GtkSourceCompletionSnippets.fromPointer(
-      _gtkSourceCompletionSnippetsNew(),
-      owned: true,
-    );
-  }
+  GtkSourceCompletionSnippets()
+    : super.fromPointer(_gtkSourceCompletionSnippetsNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

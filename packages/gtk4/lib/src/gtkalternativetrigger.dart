@@ -30,15 +30,11 @@ class GtkAlternativeTrigger extends GtkShortcutTrigger {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkAlternativeTrigger(
-    GtkShortcutTrigger first,
-    GtkShortcutTrigger second,
-  ) {
-    return GtkAlternativeTrigger.fromPointer(
-      _gtkAlternativeTriggerNew(first.handle, second.handle),
-      owned: true,
-    );
-  }
+  GtkAlternativeTrigger(GtkShortcutTrigger first, GtkShortcutTrigger second)
+    : super.fromPointer(
+        _gtkAlternativeTriggerNew(first.handle, second.handle),
+        owned: true,
+      );
 
   /// Gets the first of the two alternative triggers that may
   /// trigger @self.

@@ -59,12 +59,7 @@ class GtkProgressBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_progress_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkProgressBar() {
-    return GtkProgressBar.fromPointer(
-      gObjectRefSink(_gtkProgressBarNew()),
-      owned: true,
-    );
-  }
+  GtkProgressBar() : super.fromPointer(_gtkProgressBarNew(), owned: true);
 
   /// Returns the ellipsizing position of the progress bar.
   ///

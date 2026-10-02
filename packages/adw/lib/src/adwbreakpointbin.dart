@@ -121,12 +121,7 @@ class AdwBreakpointBin extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_breakpoint_bin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwBreakpointBin() {
-    return AdwBreakpointBin.fromPointer(
-      gObjectRefSink(_adwBreakpointBinNew()),
-      owned: true,
-    );
-  }
+  AdwBreakpointBin() : super.fromPointer(_adwBreakpointBinNew(), owned: true);
 
   /// Adds @breakpoint to @self.
   static final _adwBreakpointBinAddBreakpoint =

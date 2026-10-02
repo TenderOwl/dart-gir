@@ -15,12 +15,8 @@ class GtkCellRendererAccel extends GtkCellRendererText {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_renderer_accel_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellRendererAccel() {
-    return GtkCellRendererAccel.fromPointer(
-      gObjectRefSink(_gtkCellRendererAccelNew()),
-      owned: true,
-    );
-  }
+  GtkCellRendererAccel()
+    : super.fromPointer(_gtkCellRendererAccelNew(), owned: true);
 
   /// Gets emitted when the user has removed the accelerator.
   int onAccelCleared(void Function(String pathString) callback) {

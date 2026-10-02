@@ -16,12 +16,8 @@ class GskOpacityNode extends GskRenderNode {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
-  factory GskOpacityNode(GskRenderNode child, double opacity) {
-    return GskOpacityNode.fromPointer(
-      _gskOpacityNodeNew(child.handle, opacity),
-      owned: true,
-    );
-  }
+  GskOpacityNode(GskRenderNode child, double opacity)
+    : super.fromPointer(_gskOpacityNodeNew(child.handle, opacity), owned: true);
 
   /// Gets the child node that is getting opacityed by the given @node.
   static final _gskOpacityNodeGetChild =

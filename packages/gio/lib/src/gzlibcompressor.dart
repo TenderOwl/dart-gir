@@ -15,12 +15,8 @@ class GZlibCompressor extends GObject {
             >
           >('g_zlib_compressor_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory GZlibCompressor(GZlibCompressorFormat format, int level) {
-    return GZlibCompressor.fromPointer(
-      _gZlibCompressorNew(format.value, level),
-      owned: true,
-    );
-  }
+  GZlibCompressor(GZlibCompressorFormat format, int level)
+    : super.fromPointer(_gZlibCompressorNew(format.value, level), owned: true);
 
   /// Gets the [property@Gio.ZlibCompressor:file-info] property.
   static final _gZlibCompressorGetFileInfo =

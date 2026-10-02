@@ -83,12 +83,11 @@ class GtkSourceBuffer extends GtkTextBuffer {
             >
           >('gtk_source_buffer_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourceBuffer([GtkTextTagTable? table]) {
-    return GtkSourceBuffer.fromPointer(
-      _gtkSourceBufferNew(table?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkSourceBuffer([GtkTextTagTable? table])
+    : super.fromPointer(
+        _gtkSourceBufferNew(table?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a new source buffer using the highlighting patterns in `language`.
   ///
@@ -101,12 +100,11 @@ class GtkSourceBuffer extends GtkTextBuffer {
             >
           >('gtk_source_buffer_new_with_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkSourceBuffer.withLanguage(GtkSourceLanguage language) {
-    return GtkSourceBuffer.fromPointer(
-      _gtkSourceBufferNewWithLanguage(language.handle),
-      owned: true,
-    );
-  }
+  GtkSourceBuffer.withLanguage(GtkSourceLanguage language)
+    : super.fromPointer(
+        _gtkSourceBufferNewWithLanguage(language.handle),
+        owned: true,
+      );
 
   /// Changes the case of the text between the specified iterators.
   ///

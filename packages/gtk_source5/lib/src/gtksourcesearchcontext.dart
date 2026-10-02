@@ -78,18 +78,16 @@ class GtkSourceSearchContext extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkSourceSearchContext(
+  GtkSourceSearchContext(
     GtkSourceBuffer buffer, [
     GtkSourceSearchSettings? settings,
-  ]) {
-    return GtkSourceSearchContext.fromPointer(
-      _gtkSourceSearchContextNew(
-        buffer.handle,
-        settings?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
+  ]) : super.fromPointer(
+         _gtkSourceSearchContextNew(
+           buffer.handle,
+           settings?.handle ?? ffi.nullptr,
+         ),
+         owned: true,
+       );
 
   /// The asynchronous version of [method@SearchContext.backward].
   ///

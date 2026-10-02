@@ -40,12 +40,7 @@ class AdwLeaflet extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_leaflet_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwLeaflet() {
-    return AdwLeaflet.fromPointer(
-      gObjectRefSink(_adwLeafletNew()),
-      owned: true,
-    );
-  }
+  AdwLeaflet() : super.fromPointer(_adwLeafletNew(), owned: true);
 
   /// Adds a child to @self.
   static final _adwLeafletAppend =

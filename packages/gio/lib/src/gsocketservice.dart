@@ -41,9 +41,7 @@ class GSocketService extends GSocketListener {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_socket_service_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GSocketService() {
-    return GSocketService.fromPointer(_gSocketServiceNew(), owned: true);
-  }
+  GSocketService() : super.fromPointer(_gSocketServiceNew(), owned: true);
 
   /// Check whether the service is active or not. An active
   /// service will accept new clients that connect, while

@@ -46,12 +46,8 @@ class AdwPreferencesGroup extends GtkWidget {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwPreferencesGroup() {
-    return AdwPreferencesGroup.fromPointer(
-      gObjectRefSink(_adwPreferencesGroupNew()),
-      owned: true,
-    );
-  }
+  AdwPreferencesGroup()
+    : super.fromPointer(_adwPreferencesGroupNew(), owned: true);
 
   /// Adds a child to @self.
   static final _adwPreferencesGroupAdd =

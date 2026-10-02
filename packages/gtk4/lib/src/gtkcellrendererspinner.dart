@@ -23,12 +23,8 @@ class GtkCellRendererSpinner extends GtkCellRenderer {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_renderer_spinner_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellRendererSpinner() {
-    return GtkCellRendererSpinner.fromPointer(
-      gObjectRefSink(_gtkCellRendererSpinnerNew()),
-      owned: true,
-    );
-  }
+  GtkCellRendererSpinner()
+    : super.fromPointer(_gtkCellRendererSpinnerNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

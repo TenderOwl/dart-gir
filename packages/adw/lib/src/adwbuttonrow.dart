@@ -53,12 +53,7 @@ class AdwButtonRow extends AdwPreferencesRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_button_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwButtonRow() {
-    return AdwButtonRow.fromPointer(
-      gObjectRefSink(_adwButtonRowNew()),
-      owned: true,
-    );
-  }
+  AdwButtonRow() : super.fromPointer(_adwButtonRowNew(), owned: true);
 
   /// Gets the end icon name for @self.
   static final _adwButtonRowGetEndIconName =

@@ -14,12 +14,9 @@ class GtkSourceGutterRendererText extends GtkSourceGutterRenderer {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_gutter_renderer_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSourceGutterRendererText() {
-    return GtkSourceGutterRendererText.fromPointer(
-      gObjectRefSink(_gtkSourceGutterRendererTextNew()),
-      owned: true,
-    );
-  }
+  GtkSourceGutterRendererText()
+    : super.fromPointer(_gtkSourceGutterRendererTextNew(), owned: true);
+
   static final _gtkSourceGutterRendererTextSetMarkup =
       gtkSource5Lookup<
             ffi.NativeFunction<

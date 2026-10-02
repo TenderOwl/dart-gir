@@ -25,12 +25,11 @@ class GtkIconPaintable extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
-  factory GtkIconPaintable.forFile(GFile file, int size, int scale) {
-    return GtkIconPaintable.fromPointer(
-      _gtkIconPaintableNewForFile(file.handle, size, scale),
-      owned: true,
-    );
-  }
+  GtkIconPaintable.forFile(GFile file, int size, int scale)
+    : super.fromPointer(
+        _gtkIconPaintableNewForFile(file.handle, size, scale),
+        owned: true,
+      );
 
   /// Gets the `GFile` that was used to load the icon.
   ///

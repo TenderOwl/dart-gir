@@ -48,7 +48,7 @@ class GtkConstraint extends GObject {
               int,
             )
           >();
-  factory GtkConstraint(
+  GtkConstraint(
     ffi.Pointer<ffi.Void> target,
     GtkConstraintAttribute targetAttribute,
     GtkConstraintRelation relation,
@@ -57,21 +57,19 @@ class GtkConstraint extends GObject {
     double multiplier,
     double constant,
     int strength,
-  ) {
-    return GtkConstraint.fromPointer(
-      _gtkConstraintNew(
-        target,
-        targetAttribute.value,
-        relation.value,
-        source,
-        sourceAttribute.value,
-        multiplier,
-        constant,
-        strength,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkConstraintNew(
+          target,
+          targetAttribute.value,
+          relation.value,
+          source,
+          sourceAttribute.value,
+          multiplier,
+          constant,
+          strength,
+        ),
+        owned: true,
+      );
 
   /// Creates a new constraint representing a relation between a layout
   /// attribute on a target and a constant value.
@@ -96,24 +94,22 @@ class GtkConstraint extends GObject {
               int,
             )
           >();
-  factory GtkConstraint.constant(
+  GtkConstraint.constant(
     ffi.Pointer<ffi.Void> target,
     GtkConstraintAttribute targetAttribute,
     GtkConstraintRelation relation,
     double constant,
     int strength,
-  ) {
-    return GtkConstraint.fromPointer(
-      _gtkConstraintNewConstant(
-        target,
-        targetAttribute.value,
-        relation.value,
-        constant,
-        strength,
-      ),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkConstraintNewConstant(
+          target,
+          targetAttribute.value,
+          relation.value,
+          constant,
+          strength,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the constant factor added to the source attributes' value.
   static final _gtkConstraintGetConstant =

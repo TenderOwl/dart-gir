@@ -138,18 +138,11 @@ class GtkSpinButton extends GtkWidget {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double, int)
           >();
-  factory GtkSpinButton(
-    GtkAdjustment? adjustment,
-    double climbRate,
-    int digits,
-  ) {
-    return GtkSpinButton.fromPointer(
-      gObjectRefSink(
+  GtkSpinButton(GtkAdjustment? adjustment, double climbRate, int digits)
+    : super.fromPointer(
         _gtkSpinButtonNew(adjustment?.handle ?? ffi.nullptr, climbRate, digits),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new `GtkSpinButton` with the given properties.
   ///
@@ -171,12 +164,11 @@ class GtkSpinButton extends GtkWidget {
             >
           >('gtk_spin_button_new_with_range')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double, double)>();
-  factory GtkSpinButton.withRange(double min, double max, double step) {
-    return GtkSpinButton.fromPointer(
-      gObjectRefSink(_gtkSpinButtonNewWithRange(min, max, step)),
-      owned: true,
-    );
-  }
+  GtkSpinButton.withRange(double min, double max, double step)
+    : super.fromPointer(
+        _gtkSpinButtonNewWithRange(min, max, step),
+        owned: true,
+      );
 
   /// Changes the properties of an existing spin button.
   ///

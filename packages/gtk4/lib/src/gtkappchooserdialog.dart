@@ -45,22 +45,15 @@ class GtkAppChooserDialog extends GtkDialog {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkAppChooserDialog(
-    GtkWindow? parent,
-    GtkDialogFlags flags,
-    GFile file,
-  ) {
-    return GtkAppChooserDialog.fromPointer(
-      gObjectRefSink(
+  GtkAppChooserDialog(GtkWindow? parent, GtkDialogFlags flags, GFile file)
+    : super.fromPointer(
         _gtkAppChooserDialogNew(
           parent?.handle ?? ffi.nullptr,
           flags.value,
           file.handle,
         ),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new `GtkAppChooserDialog` for the provided content type.
   ///

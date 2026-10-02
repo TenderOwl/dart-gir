@@ -19,12 +19,8 @@ class GSocketAddress extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GSocketAddress.fromNative(ffi.Pointer<ffi.Void> native, int len) {
-    return GSocketAddress.fromPointer(
-      _gSocketAddressNewFromNative(native, len),
-      owned: true,
-    );
-  }
+  GSocketAddress.fromNative(ffi.Pointer<ffi.Void> native, int len)
+    : super.fromPointer(_gSocketAddressNewFromNative(native, len), owned: true);
 
   /// Gets the socket family type of @address.
   static final _gSocketAddressGetFamily =

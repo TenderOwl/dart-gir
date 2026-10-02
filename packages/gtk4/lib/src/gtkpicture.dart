@@ -58,12 +58,7 @@ class GtkPicture extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_picture_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPicture() {
-    return GtkPicture.fromPointer(
-      gObjectRefSink(_gtkPictureNew()),
-      owned: true,
-    );
-  }
+  GtkPicture() : super.fromPointer(_gtkPictureNew(), owned: true);
 
   /// Creates a new `GtkPicture` displaying the given @file.
   ///
@@ -80,12 +75,11 @@ class GtkPicture extends GtkWidget {
             >
           >('gtk_picture_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPicture.forFile([GFile? file]) {
-    return GtkPicture.fromPointer(
-      gObjectRefSink(_gtkPictureNewForFile(file?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkPicture.forFile([GFile? file])
+    : super.fromPointer(
+        _gtkPictureNewForFile(file?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a new `GtkPicture` displaying the file @filename.
   ///
@@ -118,14 +112,11 @@ class GtkPicture extends GtkWidget {
             >
           >('gtk_picture_new_for_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPicture.forPaintable([GdkPaintable? paintable]) {
-    return GtkPicture.fromPointer(
-      gObjectRefSink(
+  GtkPicture.forPaintable([GdkPaintable? paintable])
+    : super.fromPointer(
         _gtkPictureNewForPaintable(paintable?.handle ?? ffi.nullptr),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Creates a new `GtkPicture` displaying @pixbuf.
   ///
@@ -140,12 +131,11 @@ class GtkPicture extends GtkWidget {
             >
           >('gtk_picture_new_for_pixbuf')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkPicture.forPixbuf([GdkPixbuf? pixbuf]) {
-    return GtkPicture.fromPointer(
-      gObjectRefSink(_gtkPictureNewForPixbuf(pixbuf?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkPicture.forPixbuf([GdkPixbuf? pixbuf])
+    : super.fromPointer(
+        _gtkPictureNewForPixbuf(pixbuf?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Creates a new `GtkPicture` displaying the resource at @resource_path.
   ///

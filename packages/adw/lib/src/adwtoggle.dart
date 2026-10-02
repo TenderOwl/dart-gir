@@ -14,9 +14,7 @@ class AdwToggle extends GObject {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_toggle_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwToggle() {
-    return AdwToggle.fromPointer(_adwToggleNew(), owned: true);
-  }
+  AdwToggle() : super.fromPointer(_adwToggleNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _adwToggleGetChild =

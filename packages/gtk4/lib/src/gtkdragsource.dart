@@ -85,9 +85,7 @@ class GtkDragSource extends GtkGestureSingle {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_drag_source_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkDragSource() {
-    return GtkDragSource.fromPointer(_gtkDragSourceNew(), owned: true);
-  }
+  GtkDragSource() : super.fromPointer(_gtkDragSourceNew(), owned: true);
 
   /// Cancels a currently ongoing drag operation.
   static final _gtkDragSourceDragCancel =

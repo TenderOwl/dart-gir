@@ -28,12 +28,7 @@ class GtkCellView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCellView() {
-    return GtkCellView.fromPointer(
-      gObjectRefSink(_gtkCellViewNew()),
-      owned: true,
-    );
-  }
+  GtkCellView() : super.fromPointer(_gtkCellViewNew(), owned: true);
 
   /// Creates a new `GtkCellView` widget with a specific `GtkCellArea`
   /// to layout cells and a specific `GtkCellAreaContext`.
@@ -57,15 +52,11 @@ class GtkCellView extends GtkWidget {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkCellView.withContext(
-    GtkCellArea area,
-    GtkCellAreaContext context,
-  ) {
-    return GtkCellView.fromPointer(
-      gObjectRefSink(_gtkCellViewNewWithContext(area.handle, context.handle)),
-      owned: true,
-    );
-  }
+  GtkCellView.withContext(GtkCellArea area, GtkCellAreaContext context)
+    : super.fromPointer(
+        _gtkCellViewNewWithContext(area.handle, context.handle),
+        owned: true,
+      );
 
   /// Creates a new `GtkCellView` widget, adds a `GtkCellRendererText`
   /// to it, and makes it show @markup. The text can be marked up with
@@ -113,12 +104,11 @@ class GtkCellView extends GtkWidget {
             >
           >('gtk_cell_view_new_with_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkCellView.withTexture(GdkTexture texture) {
-    return GtkCellView.fromPointer(
-      gObjectRefSink(_gtkCellViewNewWithTexture(texture.handle)),
-      owned: true,
-    );
-  }
+  GtkCellView.withTexture(GdkTexture texture)
+    : super.fromPointer(
+        _gtkCellViewNewWithTexture(texture.handle),
+        owned: true,
+      );
 
   /// Returns a `GtkTreePath` referring to the currently
   /// displayed row. If no row is currently displayed,

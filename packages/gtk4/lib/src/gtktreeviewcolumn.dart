@@ -20,12 +20,7 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_view_column_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkTreeViewColumn() {
-    return GtkTreeViewColumn.fromPointer(
-      gObjectRefSink(_gtkTreeViewColumnNew()),
-      owned: true,
-    );
-  }
+  GtkTreeViewColumn() : super.fromPointer(_gtkTreeViewColumnNew(), owned: true);
 
   /// Creates a new `GtkTreeViewColumn` using @area to render its cells.
   static final _gtkTreeViewColumnNewWithArea =
@@ -35,12 +30,11 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
             >
           >('gtk_tree_view_column_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkTreeViewColumn.withArea(GtkCellArea area) {
-    return GtkTreeViewColumn.fromPointer(
-      gObjectRefSink(_gtkTreeViewColumnNewWithArea(area.handle)),
-      owned: true,
-    );
-  }
+  GtkTreeViewColumn.withArea(GtkCellArea area)
+    : super.fromPointer(
+        _gtkTreeViewColumnNewWithArea(area.handle),
+        owned: true,
+      );
 
   /// Adds an attribute mapping to the list in @tree_column.
   ///

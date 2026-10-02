@@ -48,12 +48,7 @@ class GtkAssistant extends GtkWindow {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_assistant_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkAssistant() {
-    return GtkAssistant.fromPointer(
-      gObjectRefSink(_gtkAssistantNew()),
-      owned: true,
-    );
-  }
+  GtkAssistant() : super.fromPointer(_gtkAssistantNew(), owned: true);
 
   /// Adds a widget to the action area of a `GtkAssistant`.
   static final _gtkAssistantAddActionWidget =

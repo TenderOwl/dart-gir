@@ -270,14 +270,13 @@ final class GskShaderArgsBuilder {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GskShaderArgsBuilder(GskGLShader shader, [GBytes? initialValues]) {
-    return GskShaderArgsBuilder.fromPointer(
-      _gskShaderArgsBuilderNew(
-        shader.handle,
-        initialValues?.handle ?? ffi.nullptr,
-      ),
-    );
-  }
+  GskShaderArgsBuilder(GskGLShader shader, [GBytes? initialValues])
+    : this.fromPointer(
+        _gskShaderArgsBuilderNew(
+          shader.handle,
+          initialValues?.handle ?? ffi.nullptr,
+        ),
+      );
 
   /// Increases the reference count of a `GskShaderArgsBuilder` by one.
   static final _gskShaderArgsBuilderRef =
@@ -459,9 +458,7 @@ final class GskStroke {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Float)>>(
         'gsk_stroke_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(double)>();
-  factory GskStroke(double lineWidth) {
-    return GskStroke.fromPointer(_gskStrokeNew(lineWidth));
-  }
+  GskStroke(double lineWidth) : this.fromPointer(_gskStrokeNew(lineWidth));
 
   /// Creates a copy of a `GskStroke`.
   static final _gskStrokeCopy =

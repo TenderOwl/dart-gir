@@ -88,12 +88,7 @@ class GtkToggleButton extends GtkButton {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_toggle_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkToggleButton() {
-    return GtkToggleButton.fromPointer(
-      gObjectRefSink(_gtkToggleButtonNew()),
-      owned: true,
-    );
-  }
+  GtkToggleButton() : super.fromPointer(_gtkToggleButtonNew(), owned: true);
 
   /// Creates a new toggle button with a text label.
   static final _gtkToggleButtonNewWithLabel =

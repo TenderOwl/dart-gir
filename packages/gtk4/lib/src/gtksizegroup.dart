@@ -113,9 +113,8 @@ class GtkSizeGroup extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_size_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GtkSizeGroup(GtkSizeGroupMode mode) {
-    return GtkSizeGroup.fromPointer(_gtkSizeGroupNew(mode.value), owned: true);
-  }
+  GtkSizeGroup(GtkSizeGroupMode mode)
+    : super.fromPointer(_gtkSizeGroupNew(mode.value), owned: true);
 
   /// Adds a widget to a `GtkSizeGroup`.
   ///

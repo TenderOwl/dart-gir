@@ -52,9 +52,7 @@ final class GDate {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_date_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GDate() {
-    return GDate.fromPointer(_gDateNew());
-  }
+  GDate() : this.fromPointer(_gDateNew());
 
   /// Create a new #GDate representing the given day-month-year triplet.
   ///
@@ -68,9 +66,8 @@ final class GDate {
             >
           >('g_date_new_dmy')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
-  factory GDate.dmy(int day, GDateMonth month, int year) {
-    return GDate.fromPointer(_gDateNewDmy(day, month.value, year));
-  }
+  GDate.dmy(int day, GDateMonth month, int year)
+    : this.fromPointer(_gDateNewDmy(day, month.value, year));
 
   /// Create a new #GDate representing the given Julian date.
   ///
@@ -82,9 +79,7 @@ final class GDate {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('g_date_new_julian')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GDate.julian(int julianDay) {
-    return GDate.fromPointer(_gDateNewJulian(julianDay));
-  }
+  GDate.julian(int julianDay) : this.fromPointer(_gDateNewJulian(julianDay));
 
   /// Increments a date some number of days.
   /// To move forward by weeks, add weeks*7 days.

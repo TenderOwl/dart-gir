@@ -90,12 +90,7 @@ class GtkScrolledWindow extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_scrolled_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkScrolledWindow() {
-    return GtkScrolledWindow.fromPointer(
-      gObjectRefSink(_gtkScrolledWindowNew()),
-      owned: true,
-    );
-  }
+  GtkScrolledWindow() : super.fromPointer(_gtkScrolledWindowNew(), owned: true);
 
   /// Gets the child widget of @scrolled_window.
   ///

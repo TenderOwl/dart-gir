@@ -22,12 +22,7 @@ class GtkPopoverBin extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_popover_bin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPopoverBin() {
-    return GtkPopoverBin.fromPointer(
-      gObjectRefSink(_gtkPopoverBinNew()),
-      owned: true,
-    );
-  }
+  GtkPopoverBin() : super.fromPointer(_gtkPopoverBinNew(), owned: true);
 
   /// Retrieves the child widget of the popover bin.
   static final _gtkPopoverBinGetChild =

@@ -63,19 +63,17 @@ final class GdkPopupLayout {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
-  factory GdkPopupLayout(
+  GdkPopupLayout(
     GdkRectangle anchorRect,
     GdkGravity rectAnchor,
     GdkGravity surfaceAnchor,
-  ) {
-    return GdkPopupLayout.fromPointer(
-      _gdkPopupLayoutNew(
-        anchorRect.handle,
-        rectAnchor.value,
-        surfaceAnchor.value,
-      ),
-    );
-  }
+  ) : this.fromPointer(
+        _gdkPopupLayoutNew(
+          anchorRect.handle,
+          rectAnchor.value,
+          surfaceAnchor.value,
+        ),
+      );
 
   /// Makes a copy of @layout.
   static final _gdkPopupLayoutCopy =

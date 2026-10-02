@@ -148,9 +148,7 @@ final class GKeyFile {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_key_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GKeyFile() {
-    return GKeyFile.fromPointer(_gKeyFileNew());
-  }
+  GKeyFile() : this.fromPointer(_gKeyFileNew());
 
   /// Returns the value associated with @key under @group_name as a
   /// boolean.

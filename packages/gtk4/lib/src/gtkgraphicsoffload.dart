@@ -48,12 +48,11 @@ class GtkGraphicsOffload extends GtkWidget {
             >
           >('gtk_graphics_offload_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkGraphicsOffload([GtkWidget? child]) {
-    return GtkGraphicsOffload.fromPointer(
-      gObjectRefSink(_gtkGraphicsOffloadNew(child?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkGraphicsOffload([GtkWidget? child])
+    : super.fromPointer(
+        _gtkGraphicsOffloadNew(child?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Returns whether the widget draws a black background.
   ///

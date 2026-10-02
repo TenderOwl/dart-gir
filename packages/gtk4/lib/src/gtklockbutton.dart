@@ -61,12 +61,11 @@ class GtkLockButton extends GtkButton {
             >
           >('gtk_lock_button_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkLockButton([GPermission? permission]) {
-    return GtkLockButton.fromPointer(
-      gObjectRefSink(_gtkLockButtonNew(permission?.handle ?? ffi.nullptr)),
-      owned: true,
-    );
-  }
+  GtkLockButton([GPermission? permission])
+    : super.fromPointer(
+        _gtkLockButtonNew(permission?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Obtains the `GPermission` object that controls @button.
   static final _gtkLockButtonGetPermission =

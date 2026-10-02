@@ -51,12 +51,8 @@ class GtkSignalListItemFactory extends GtkListItemFactory {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_signal_list_item_factory_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSignalListItemFactory() {
-    return GtkSignalListItemFactory.fromPointer(
-      _gtkSignalListItemFactoryNew(),
-      owned: true,
-    );
-  }
+  GtkSignalListItemFactory()
+    : super.fromPointer(_gtkSignalListItemFactoryNew(), owned: true);
 
   /// Emitted when an object has been bound to an item.
   ///

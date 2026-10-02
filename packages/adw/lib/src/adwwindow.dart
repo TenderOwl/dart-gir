@@ -88,9 +88,7 @@ class AdwWindow extends GtkWindow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwWindow() {
-    return AdwWindow.fromPointer(_adwWindowNew(), owned: true);
-  }
+  AdwWindow() : super.fromPointer(_adwWindowNew(), owned: true);
 
   /// Adds @breakpoint to @self.
   static final _adwWindowAddBreakpoint =

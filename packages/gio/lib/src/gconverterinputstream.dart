@@ -26,12 +26,11 @@ class GConverterInputStream extends GFilterInputStream {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GConverterInputStream(GInputStream baseStream, GConverter converter) {
-    return GConverterInputStream.fromPointer(
-      _gConverterInputStreamNew(baseStream.handle, converter.handle),
-      owned: true,
-    );
-  }
+  GConverterInputStream(GInputStream baseStream, GConverter converter)
+    : super.fromPointer(
+        _gConverterInputStreamNew(baseStream.handle, converter.handle),
+        owned: true,
+      );
 
   /// Gets the #GConverter that is used by @converter_stream.
   static final _gConverterInputStreamGetConverter =

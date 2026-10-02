@@ -27,12 +27,8 @@ class GIPv6TclassMessage extends GSocketControlMessage {
             >
           >('g_ipv6_tclass_message_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory GIPv6TclassMessage(int dscp, GEcnCodePoint ecn) {
-    return GIPv6TclassMessage.fromPointer(
-      _gIpv6TclassMessageNew(dscp, ecn.value),
-      owned: true,
-    );
-  }
+  GIPv6TclassMessage(int dscp, GEcnCodePoint ecn)
+    : super.fromPointer(_gIpv6TclassMessageNew(dscp, ecn.value), owned: true);
 
   /// Gets the differentiated services code point stored in @message.
   static final _gIpv6TclassMessageGetDscp =

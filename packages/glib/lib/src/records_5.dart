@@ -83,7 +83,7 @@ final class GDateTime {
               double,
             )
           >();
-  factory GDateTime(
+  GDateTime(
     GTimeZone tz,
     int year,
     int month,
@@ -91,11 +91,9 @@ final class GDateTime {
     int hour,
     int minute,
     double seconds,
-  ) {
-    return GDateTime.fromPointer(
-      _gDateTimeNew(tz.handle, year, month, day, hour, minute, seconds),
-    );
-  }
+  ) : this.fromPointer(
+        _gDateTimeNew(tz.handle, year, month, day, hour, minute, seconds),
+      );
 
   /// Creates a #GDateTime corresponding to the given
   /// [ISO 8601 formatted string](https://en.wikipedia.org/wiki/ISO_8601)
@@ -185,9 +183,8 @@ final class GDateTime {
             >
           >('g_date_time_new_from_timeval_local')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GDateTime.fromTimevalLocal(GTimeVal tv) {
-    return GDateTime.fromPointer(_gDateTimeNewFromTimevalLocal(tv.handle));
-  }
+  GDateTime.fromTimevalLocal(GTimeVal tv)
+    : this.fromPointer(_gDateTimeNewFromTimevalLocal(tv.handle));
 
   /// Creates a #GDateTime corresponding to the given #GTimeVal @tv in UTC.
   ///
@@ -206,9 +203,8 @@ final class GDateTime {
             >
           >('g_date_time_new_from_timeval_utc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GDateTime.fromTimevalUtc(GTimeVal tv) {
-    return GDateTime.fromPointer(_gDateTimeNewFromTimevalUtc(tv.handle));
-  }
+  GDateTime.fromTimevalUtc(GTimeVal tv)
+    : this.fromPointer(_gDateTimeNewFromTimevalUtc(tv.handle));
 
   /// Creates a #GDateTime corresponding to the given Unix time @t in the
   /// local time zone.
@@ -225,9 +221,8 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int64)>>(
         'g_date_time_new_from_unix_local',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GDateTime.fromUnixLocal(int t) {
-    return GDateTime.fromPointer(_gDateTimeNewFromUnixLocal(t));
-  }
+  GDateTime.fromUnixLocal(int t)
+    : this.fromPointer(_gDateTimeNewFromUnixLocal(t));
 
   /// Creates a [struct@GLib.DateTime] corresponding to the given Unix time @t in the
   /// local time zone.
@@ -244,9 +239,8 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int64)>>(
         'g_date_time_new_from_unix_local_usec',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GDateTime.fromUnixLocalUsec(int usecs) {
-    return GDateTime.fromPointer(_gDateTimeNewFromUnixLocalUsec(usecs));
-  }
+  GDateTime.fromUnixLocalUsec(int usecs)
+    : this.fromPointer(_gDateTimeNewFromUnixLocalUsec(usecs));
 
   /// Creates a #GDateTime corresponding to the given Unix time @t in UTC.
   ///
@@ -262,9 +256,7 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int64)>>(
         'g_date_time_new_from_unix_utc',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GDateTime.fromUnixUtc(int t) {
-    return GDateTime.fromPointer(_gDateTimeNewFromUnixUtc(t));
-  }
+  GDateTime.fromUnixUtc(int t) : this.fromPointer(_gDateTimeNewFromUnixUtc(t));
 
   /// Creates a [struct@GLib.DateTime] corresponding to the given Unix time @t in UTC.
   ///
@@ -280,9 +272,8 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int64)>>(
         'g_date_time_new_from_unix_utc_usec',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GDateTime.fromUnixUtcUsec(int usecs) {
-    return GDateTime.fromPointer(_gDateTimeNewFromUnixUtcUsec(usecs));
-  }
+  GDateTime.fromUnixUtcUsec(int usecs)
+    : this.fromPointer(_gDateTimeNewFromUnixUtcUsec(usecs));
 
   /// Creates a new #GDateTime corresponding to the given date and time in
   /// the local time zone.
@@ -305,18 +296,16 @@ final class GDateTime {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, int, int, int, int, double)
           >();
-  factory GDateTime.local(
+  GDateTime.local(
     int year,
     int month,
     int day,
     int hour,
     int minute,
     double seconds,
-  ) {
-    return GDateTime.fromPointer(
-      _gDateTimeNewLocal(year, month, day, hour, minute, seconds),
-    );
-  }
+  ) : this.fromPointer(
+        _gDateTimeNewLocal(year, month, day, hour, minute, seconds),
+      );
 
   /// Creates a #GDateTime corresponding to this exact instant in the given
   /// time zone @tz.  The time is as accurate as the system allows, to a
@@ -334,9 +323,7 @@ final class GDateTime {
             >
           >('g_date_time_new_now')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GDateTime.now(GTimeZone tz) {
-    return GDateTime.fromPointer(_gDateTimeNewNow(tz.handle));
-  }
+  GDateTime.now(GTimeZone tz) : this.fromPointer(_gDateTimeNewNow(tz.handle));
 
   /// Creates a #GDateTime corresponding to this exact instant in the local
   /// time zone.
@@ -347,9 +334,7 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_date_time_new_now_local',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GDateTime.nowLocal() {
-    return GDateTime.fromPointer(_gDateTimeNewNowLocal());
-  }
+  GDateTime.nowLocal() : this.fromPointer(_gDateTimeNewNowLocal());
 
   /// Creates a #GDateTime corresponding to this exact instant in UTC.
   ///
@@ -359,9 +344,7 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_date_time_new_now_utc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GDateTime.nowUtc() {
-    return GDateTime.fromPointer(_gDateTimeNewNowUtc());
-  }
+  GDateTime.nowUtc() : this.fromPointer(_gDateTimeNewNowUtc());
 
   /// Creates a new #GDateTime corresponding to the given date and time in
   /// UTC.
@@ -384,18 +367,16 @@ final class GDateTime {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, int, int, int, int, double)
           >();
-  factory GDateTime.utc(
+  GDateTime.utc(
     int year,
     int month,
     int day,
     int hour,
     int minute,
     double seconds,
-  ) {
-    return GDateTime.fromPointer(
-      _gDateTimeNewUtc(year, month, day, hour, minute, seconds),
-    );
-  }
+  ) : this.fromPointer(
+        _gDateTimeNewUtc(year, month, day, hour, minute, seconds),
+      );
 
   /// Creates a copy of @datetime and adds the specified timespan to the copy.
   static final _gDateTimeAdd =

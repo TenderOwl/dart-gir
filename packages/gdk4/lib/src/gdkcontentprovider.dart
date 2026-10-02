@@ -51,12 +51,11 @@ class GdkContentProvider extends GObject {
             >
           >('gdk_content_provider_new_for_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GdkContentProvider.forValue(GValue value) {
-    return GdkContentProvider.fromPointer(
-      _gdkContentProviderNewForValue(value.handle),
-      owned: true,
-    );
-  }
+  GdkContentProvider.forValue(GValue value)
+    : super.fromPointer(
+        _gdkContentProviderNewForValue(value.handle),
+        owned: true,
+      );
 
   /// Emits the ::content-changed signal.
   static final _gdkContentProviderContentChanged =

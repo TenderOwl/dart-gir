@@ -20,12 +20,11 @@ class GtkNumericSorter extends GtkSorter {
             >
           >('gtk_numeric_sorter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GtkNumericSorter([GtkExpression? expression]) {
-    return GtkNumericSorter.fromPointer(
-      _gtkNumericSorterNew(expression?.handle ?? ffi.nullptr),
-      owned: true,
-    );
-  }
+  GtkNumericSorter([GtkExpression? expression])
+    : super.fromPointer(
+        _gtkNumericSorterNew(expression?.handle ?? ffi.nullptr),
+        owned: true,
+      );
 
   /// Gets the expression that is evaluated to obtain numbers from items.
   static final _gtkNumericSorterGetExpression =

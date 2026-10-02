@@ -32,15 +32,14 @@ class GtkFilterListModel extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkFilterListModel([GListModel? model, GtkFilter? filter]) {
-    return GtkFilterListModel.fromPointer(
-      _gtkFilterListModelNew(
-        model?.handle ?? ffi.nullptr,
-        filter?.handle ?? ffi.nullptr,
-      ),
-      owned: true,
-    );
-  }
+  GtkFilterListModel([GListModel? model, GtkFilter? filter])
+    : super.fromPointer(
+        _gtkFilterListModelNew(
+          model?.handle ?? ffi.nullptr,
+          filter?.handle ?? ffi.nullptr,
+        ),
+        owned: true,
+      );
 
   /// Gets the `GtkFilter` currently set on @self.
   static final _gtkFilterListModelGetFilter =

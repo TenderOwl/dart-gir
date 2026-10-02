@@ -30,16 +30,11 @@ class GskCompositeNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskCompositeNode(
-    GskRenderNode child,
-    GskRenderNode mask,
-    GskPorterDuff op,
-  ) {
-    return GskCompositeNode.fromPointer(
-      _gskCompositeNodeNew(child.handle, mask.handle, op.value),
-      owned: true,
-    );
-  }
+  GskCompositeNode(GskRenderNode child, GskRenderNode mask, GskPorterDuff op)
+    : super.fromPointer(
+        _gskCompositeNodeNew(child.handle, mask.handle, op.value),
+        owned: true,
+      );
 
   /// Gets the child node that is getting composited by the given @node.
   static final _gskCompositeNodeGetChild =

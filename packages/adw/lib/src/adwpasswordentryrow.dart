@@ -29,12 +29,8 @@ class AdwPasswordEntryRow extends AdwEntryRow {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_password_entry_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwPasswordEntryRow() {
-    return AdwPasswordEntryRow.fromPointer(
-      gObjectRefSink(_adwPasswordEntryRowNew()),
-      owned: true,
-    );
-  }
+  AdwPasswordEntryRow()
+    : super.fromPointer(_adwPasswordEntryRowNew(), owned: true);
 
   /// Emitted when the apply button is pressed.
   ///

@@ -26,15 +26,11 @@ class GConverterOutputStream extends GFilterOutputStream {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GConverterOutputStream(
-    GOutputStream baseStream,
-    GConverter converter,
-  ) {
-    return GConverterOutputStream.fromPointer(
-      _gConverterOutputStreamNew(baseStream.handle, converter.handle),
-      owned: true,
-    );
-  }
+  GConverterOutputStream(GOutputStream baseStream, GConverter converter)
+    : super.fromPointer(
+        _gConverterOutputStreamNew(baseStream.handle, converter.handle),
+        owned: true,
+      );
 
   /// Gets the #GConverter that is used by @converter_stream.
   static final _gConverterOutputStreamGetConverter =

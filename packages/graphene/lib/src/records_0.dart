@@ -14,9 +14,7 @@ final class GrapheneBox {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_box_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GrapheneBox.alloc() {
-    return GrapheneBox.fromPointer(_grapheneBoxAlloc());
-  }
+  GrapheneBox.alloc() : this.fromPointer(_grapheneBoxAlloc());
 
   /// Checks whether the #graphene_box_t @a contains the given
   /// #graphene_box_t @b.

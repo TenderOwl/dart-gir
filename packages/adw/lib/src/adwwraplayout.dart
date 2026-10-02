@@ -59,9 +59,7 @@ class AdwWrapLayout extends GtkLayoutManager {
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_wrap_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory AdwWrapLayout() {
-    return AdwWrapLayout.fromPointer(_adwWrapLayoutNew(), owned: true);
-  }
+  AdwWrapLayout() : super.fromPointer(_adwWrapLayoutNew(), owned: true);
 
   /// Gets the alignment of the children within each line.
   static final _adwWrapLayoutGetAlign =

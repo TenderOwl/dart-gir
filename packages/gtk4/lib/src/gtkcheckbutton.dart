@@ -78,12 +78,7 @@ class GtkCheckButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_check_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkCheckButton() {
-    return GtkCheckButton.fromPointer(
-      gObjectRefSink(_gtkCheckButtonNew()),
-      owned: true,
-    );
-  }
+  GtkCheckButton() : super.fromPointer(_gtkCheckButtonNew(), owned: true);
 
   /// Creates a new `GtkCheckButton` with the given text.
   static final _gtkCheckButtonNewWithLabel =

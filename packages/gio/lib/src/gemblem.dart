@@ -18,9 +18,8 @@ class GEmblem extends GObject {
             >
           >('g_emblem_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GEmblem(GIcon icon) {
-    return GEmblem.fromPointer(_gEmblemNew(icon.handle), owned: true);
-  }
+  GEmblem(GIcon icon)
+    : super.fromPointer(_gEmblemNew(icon.handle), owned: true);
 
   /// Creates a new emblem for @icon.
   static final _gEmblemNewWithOrigin =
@@ -32,12 +31,11 @@ class GEmblem extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GEmblem.withOrigin(GIcon icon, GEmblemOrigin origin) {
-    return GEmblem.fromPointer(
-      _gEmblemNewWithOrigin(icon.handle, origin.value),
-      owned: true,
-    );
-  }
+  GEmblem.withOrigin(GIcon icon, GEmblemOrigin origin)
+    : super.fromPointer(
+        _gEmblemNewWithOrigin(icon.handle, origin.value),
+        owned: true,
+      );
 
   /// Gives back the icon from @emblem.
   static final _gEmblemGetIcon =

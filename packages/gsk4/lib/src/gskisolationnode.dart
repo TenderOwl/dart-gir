@@ -24,12 +24,11 @@ class GskIsolationNode extends GskRenderNode {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GskIsolationNode(GskRenderNode child, GskIsolation isolations) {
-    return GskIsolationNode.fromPointer(
-      _gskIsolationNodeNew(child.handle, isolations.value),
-      owned: true,
-    );
-  }
+  GskIsolationNode(GskRenderNode child, GskIsolation isolations)
+    : super.fromPointer(
+        _gskIsolationNodeNew(child.handle, isolations.value),
+        owned: true,
+      );
 
   /// Gets the child node that is getting drawn by the given @node.
   static final _gskIsolationNodeGetChild =

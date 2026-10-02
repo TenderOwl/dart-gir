@@ -59,17 +59,11 @@ class GtkScrollbar extends GtkWidget {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
-  factory GtkScrollbar(
-    GtkOrientation orientation, [
-    GtkAdjustment? adjustment,
-  ]) {
-    return GtkScrollbar.fromPointer(
-      gObjectRefSink(
+  GtkScrollbar(GtkOrientation orientation, [GtkAdjustment? adjustment])
+    : super.fromPointer(
         _gtkScrollbarNew(orientation.value, adjustment?.handle ?? ffi.nullptr),
-      ),
-      owned: true,
-    );
-  }
+        owned: true,
+      );
 
   /// Returns the scrollbar's adjustment.
   static final _gtkScrollbarGetAdjustment =

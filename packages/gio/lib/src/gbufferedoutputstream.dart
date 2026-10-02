@@ -26,12 +26,11 @@ class GBufferedOutputStream extends GFilterOutputStream {
             >
           >('g_buffered_output_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  factory GBufferedOutputStream(GOutputStream baseStream) {
-    return GBufferedOutputStream.fromPointer(
-      _gBufferedOutputStreamNew(baseStream.handle),
-      owned: true,
-    );
-  }
+  GBufferedOutputStream(GOutputStream baseStream)
+    : super.fromPointer(
+        _gBufferedOutputStreamNew(baseStream.handle),
+        owned: true,
+      );
 
   /// Creates a new buffered output stream with a given buffer size.
   static final _gBufferedOutputStreamNewSized =
@@ -43,12 +42,11 @@ class GBufferedOutputStream extends GFilterOutputStream {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GBufferedOutputStream.sized(GOutputStream baseStream, int size) {
-    return GBufferedOutputStream.fromPointer(
-      _gBufferedOutputStreamNewSized(baseStream.handle, size),
-      owned: true,
-    );
-  }
+  GBufferedOutputStream.sized(GOutputStream baseStream, int size)
+    : super.fromPointer(
+        _gBufferedOutputStreamNewSized(baseStream.handle, size),
+        owned: true,
+      );
 
   /// Checks if the buffer automatically grows as data is added.
   static final _gBufferedOutputStreamGetAutoGrow =

@@ -72,9 +72,7 @@ class GtkPrintOperation extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_print_operation_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkPrintOperation() {
-    return GtkPrintOperation.fromPointer(_gtkPrintOperationNew(), owned: true);
-  }
+  GtkPrintOperation() : super.fromPointer(_gtkPrintOperationNew(), owned: true);
 
   /// Cancels a running print operation.
   ///

@@ -65,12 +65,7 @@ class GtkSearchBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_search_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GtkSearchBar() {
-    return GtkSearchBar.fromPointer(
-      gObjectRefSink(_gtkSearchBarNew()),
-      owned: true,
-    );
-  }
+  GtkSearchBar() : super.fromPointer(_gtkSearchBarNew(), owned: true);
 
   /// Connects the `GtkEditable` widget passed as the one to be used in
   /// this search bar.
