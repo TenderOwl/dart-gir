@@ -1,0 +1,60 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ^3.13.4
+
+      # libgtk-4-dev, libgtksourceview-5-dev, libadwaita-1-dev cover the
+      # shared libraries the regenerated packages link against. cairo,
+      # pango, graphene, gdk-pixbuf, and the GLib stack come along for
+      # the ride. Only used by the runtime-tests job below; the
+      # generator tests and `dart analyze` don't load the native
+      # libraries.
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-4-dev libgtksourceview-5-dev libadwaita-1-dev \
+            libgdk-pixbuf-2.0-dev libpango1.0-dev libcairo2-dev \
+            libgraphene-1.0-dev xvfb
+
+      - name: dart pub get
+        run: dart pub get
+
+      - name: dart analyze
+        run: dart analyze
+
+      - name: dart test (generator)
+        run: dart test generator/
+
+      - name: Regenerate packages and verify
+        run: |
+          dart run generator/bin/generate.dart --gir-dir /usr/share/gir-1.0 \
+            GLib-2.0 GObject-2.0 Gio-2.0 GdkPixbuf-2.0 cairo-1.0 Pango-1.0 \
+            Gdk-4.0 Gtk-4.0 Graphene-1.0 Gsk-4.0 Adw-1 GtkSource-5
+          dart analyze
+
+      - name: Runtime tests (push to main only)
+        # The Gtk4 runtime tests call `gtk.init()` which needs a
+        # display. xvfb-run gives them an offscreen one so the test
+        # suite can finish on a headless runner. Skipped on PRs from
+        # forks to keep their runs fast — the generator + analyze +
+        # regeneration job above already catches compile errors and
+        # logic regressions.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          xvfb-run -a dart test packages/glib/
+          xvfb-run -a dart test packages/gobject/
+          xvfb-run -a dart test packages/gio/
+          xvfb-run -a dart test packages/gtk4/
