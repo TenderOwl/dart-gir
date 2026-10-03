@@ -27,7 +27,6 @@ class TodoApp {
   late AdwApplication app;
   TodoApp() {
     app = AdwApplication('com.tenderowl.examples.todo', .defaultFlags);
-
     _registerCompiledResources();
     app.onActivate(onActivate);
   }
@@ -88,13 +87,13 @@ class TodoApp {
   }
 
   void onActivate() {
-    // Install the GtkBuilder template on AdwApplicationWindow's
-    // WidgetClass. Must run BEFORE the first `TodoWindow` instance
-    // is constructed — `gtk_widget_init_template` refuses to run if
-    // the template hasn't been set on the class. A real app would
-    // do this from a static initialiser or a constructor that
-    // defers super(); we trigger it explicitly here.
-    installTodoWindowTemplate();
+    // The builder-emitted `bindTodoWindowTemplate()` installs the
+    // template on `AdwApplicationWindow`'s WidgetClass and wires
+    // every `@TemplateCallback` trampoline. It must run BEFORE the
+    // first `TodoWindow` instance is constructed —
+    // `gtk_widget_init_template` refuses to run if the template
+    // hasn't been set on the class.
+    bindTodoWindowTemplate();
     final window = TodoWindow(app);
     window.present();
   }

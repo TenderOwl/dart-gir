@@ -1,0 +1,71 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TodoWindow: Adw.ApplicationWindow {
+  default-width: 800;
+  default-height: 600;
+  title: _("Todo");
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [start]
+      Button add_button {
+        label: _("Add");
+        action-name: "win.add";
+        clicked => $on_add_clicked();
+      }
+
+      [end]
+      MenuButton {
+        icon-name: "open-menu-symbolic";
+        menu-model: main-menu;
+        tooltip-text: _("Main Menu");
+      }
+    }
+
+    Adw.StatusPage status_page {
+      title: _("Welcome");
+      description: _("A simple task list");
+      icon-name: "org.gnome.Todo-symbolic";
+
+      ListBox list_box {
+        selection-mode: none;
+      }
+    }
+  }
+}
+
+menu main-menu {
+  submenu {
+    label: _("_Filter");
+
+    item {
+      label: _("_All");
+      action: "win.filter";
+      target: "All";
+    }
+
+    item {
+      label: _("_Open");
+      action: "win.filter";
+      target: "Open";
+    }
+
+    item {
+      label: _("_Done");
+      action: "win.filter";
+      target: "Done";
+    }
+  }
+
+  item {
+    label: _("_Remove Done Tasks");
+    action: "win.remove-done-tasks";
+  }
+
+  item {
+    label: _("_Keyboard Shortcuts");
+    action: "app.shortcuts";
+  }
+}

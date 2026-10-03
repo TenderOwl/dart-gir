@@ -59,9 +59,15 @@ class ParseMeWidget extends GtkBox {
       },
       outputs: {
         'a|lib/main.gtk_templates.dart': decodedMatches(
-          contains(
-            "The bind logic (`_\$ParseMeWidgetBindTemplate()`) lives in the main",
-          ),
+          // The bind function is generated automatically — the
+          // user no longer writes anything. Verify the builder
+          // produces `bindParseMeWidgetTemplate()` and reads the
+          // resource path verbatim from the annotation.
+          allOf([
+            contains('void bindParseMeWidgetTemplate() {'),
+            contains(
+                "widgetClass.setTemplateFromResource('/com/example/extracted.ui');"),
+          ]),
         ),
       },
     );

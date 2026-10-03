@@ -2,25 +2,18 @@
 <interface>
   <!-- The main todo list window. Built from a template bound to the
        user-defined `TodoWindow` class via @GtkTemplate in Dart. The
-       `class=` attribute must match the GType that the builder
-       registers; here it's `AdwApplicationWindow` because the Dart
-       class extends it. The children named here (status_page,
-       title_label, list_box, add_button) are bound to the matching
-       @TemplateChild fields in `example/todo/src/todo_window.dart`. -->
+       `class=` attribute must match the GObject class whose WidgetClass
+       the template is installed on via
+       `gtk_widget_class_set_template_from_resource`. The builder-emitted
+       `bindTodoWindowTemplate()` installs it on `AdwApplicationWindow`
+       (the immediate parent class — Dart doesn't yet model
+       `GTypeInfo` to register the user's class as a fresh `GType`).
+       The children named here (status_page, title_label, list_box,
+       add_button) are bound to the matching @TemplateChild fields in
+       `lib/todo_window.dart`. -->
+
   <!-- The composite widget template. Mirrors the GtkDoc example for
        building composite widgets from template XML.
-
-       The `class=` attribute must match the GObject class on whose
-       WidgetClass the template is installed via
-       `gtk_widget_class_set_template_from_resource` — the
-       Dart-side installer in `lib/todo_window.dart` calls that
-       function on `AdwApplicationWindow`'s WidgetClass so the
-       template can be looked up by `gtk_widget_init_template()`
-       when the first `TodoWindow` instance is constructed. The
-       `parent=` attribute is the immediate parent class; we set it
-       to `GtkApplicationWindow` (the libadwaita class extends
-       that) — `class` is required to be a strict subclass of
-       `parent`.
 
        `AdwApplicationWindow` does not accept a `type="titlebar"`
        child — its `content` property holds the entire window body,
@@ -39,7 +32,7 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="AdwHeaderBar">
-            <child type="end">
+            <child type="start">
               <object id="add_button" class="GtkButton">
                 <property name="label" translatable="yes">Add</property>
                 <property name="action-name">win.add</property>

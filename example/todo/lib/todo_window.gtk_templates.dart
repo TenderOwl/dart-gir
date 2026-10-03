@@ -6,15 +6,16 @@
 part of 'todo_window.dart';
 
 // =========================================================================
-// GtkTemplate trampolines + per-field helpers for class TodoWindow
+// GtkTemplate installer + trampolines + per-field helpers for class TodoWindow
 // =========================================================================
 //
-// The bind logic (`_$TodoWindowBindTemplate()`) lives in the main
-// source file because it must be callable BEFORE the first
-// `TodoWindow` instance is constructed — and the user code
-// (e.g. `app.dart`) imports the main source file, not this part file
-// (parts can't be imported directly). The helpers below are used
-// inside the constructor after `super()` + `initTemplate()`.
+// The user calls `bindTodoWindowTemplate()` from their `app.dart` (or
+// equivalent application entry point) BEFORE the first `TodoWindow`
+// instance is constructed. The function installs the template on the
+// parent WidgetClass (resolved via `adwApplicationWindowGetType()`),
+// pins the `@TemplateCallback` trampolines, and caches the parent
+// GType in the top-level `parentGtype` so the per-field
+// `_getChild_<field>` helpers can read it without re-resolving.
 
 // -- generated trampolines ----------------------------------------
 //
@@ -28,13 +29,57 @@ final _$TodoWindow_onAddClicked =
     ffi.NativeCallable<ffi.Void Function()>.isolateLocal(
         () => TodoWindow.onAddClicked());
 
+/// Cached parent GType for class `TodoWindow`. Initialised
+/// by `bindTodoWindowTemplate()`. Throws
+/// `LateInitializationError` if read before bind.
+late int parentGtype;
+
+/// One-shot template installer. Called by the user
+/// (typically from `app.dart`) BEFORE the first `TodoWindow`
+/// instance is constructed.
+///
+/// Resolves the parent GType (preferring a hand-bound
+/// `<parent>_get_type()` call when available so that the
+/// parent's `class_init` runs as a side effect; otherwise
+/// `typeFromName` + `ensureTypeRegistered`), pins every
+/// `@TemplateCallback` trampoline via
+/// `gtk_widget_class_bind_template_callback_full`, and installs
+/// the template resource on the parent WidgetClass.
+///
+/// Idempotent: calling twice refs and unrefs the parent
+/// class once per call, leaving net ref count unchanged.
+void bindTodoWindowTemplate() {
+  parentGtype = adwApplicationWindowGetType();
+
+  final classPtr = gTypeClassRef(parentGtype);
+  final widgetClass = GtkWidgetClass.fromPointer(
+    gTypeCheckClassCast(classPtr, parentGtype),
+  );
+  widgetClass.setTemplateFromResource('/com/tenderowl/Todo/window.ui');
+
+  // Wire each @TemplateCallback-annotated method by name.
+  // `registerTemplateCallback` keeps a Dart-side registry for
+  // introspection; the C side keeps its own pointer after
+  // `bind_template_callback_full`.
+  registerTemplateCallback(
+    parentGtype,
+    'on_add_clicked',
+    _$TodoWindow_onAddClicked,
+  );
+  gtkWidgetClassBindTemplateCallbackFull(
+    widgetClass.handle,
+    'on_add_clicked',
+    _$TodoWindow_onAddClicked.nativeFunction.cast(),
+  );
+
+  gTypeClassUnref(classPtr);
+}
+
 // -- per-field lookup helper ----------------------------------------
 //
-// One helper per @TemplateChild field. The user passes the
-// GType the template was loaded against (typically the C-level
-// parent class — `GtkApplicationWindow` for an
-// `AdwApplicationWindow` subclass) at the call site, since
-// the field's GIR supertype may differ from the runtime type.
+// One helper per @TemplateChild field. The gtype comes from
+// the per-class cache (set by `bindTodoWindowTemplate()`), so
+// the caller only passes the widget and the .ui id.
 //
 // Returns `T?` so the caller can do a null-check on a missing
 // child — e.g. if `initTemplate()` failed to materialise the
@@ -43,19 +88,19 @@ final _$TodoWindow_onAddClicked =
 // nullable (`late GtkLabel? titleLabel`) or asserted non-null
 // by the user if the template binding is well-known.
 
-GtkLabel? _getChild_titleLabel(TodoWindow self, int gtype, String name) {
+GtkLabel? _getChild_titleLabel(TodoWindow self, String name) {
   return getTemplateChild<GtkLabel>(
     self.handle,
-    gtype,
+    parentGtype,
     name,
     GtkLabel.fromPointer,
   );
 }
 
-GtkListBox? _getChild_listBox(TodoWindow self, int gtype, String name) {
+GtkListBox? _getChild_listBox(TodoWindow self, String name) {
   return getTemplateChild<GtkListBox>(
     self.handle,
-    gtype,
+    parentGtype,
     name,
     GtkListBox.fromPointer,
   );

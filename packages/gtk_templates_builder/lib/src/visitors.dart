@@ -65,7 +65,7 @@ class GtkTemplatesVisitor {
             isStatic: m.isStatic,
           ));
         }
-        final superTypeName = cls.supertype?.element.name ?? 'Object';
+        final superTypeName = _resolveSuperTypeName(cls);
         result.add(TemplateClass(
           className: className,
           superTypeName: superTypeName,
@@ -127,5 +127,50 @@ class GtkTemplatesVisitor {
     // emit the bare class name in the generated code (e.g.
     // `GtkLabel`, not `GtkLabel<int>`).
     return t.element?.name ?? t.toString();
+  }
+
+  /// Returns the user-visible name of [cls]'s immediate supertype.
+  ///
+  /// Prefers the analyzer's resolved type. Falls back to a regex
+  /// scan of the source unit for `extends <Name>` when the analyzer
+  /// can't resolve the supertype — typical when the test stub
+  /// environment or a downstream `package_config.json` doesn't
+  /// include the parent class.
+  String _resolveSuperTypeName(Element cls) {
+    final element = cls as ClassElement;
+    final fromAnalyzer = element.supertype?.element.name;
+    if (fromAnalyzer != null && fromAnalyzer != 'Object') {
+      return fromAnalyzer;
+    }
+    // Fallback: scan the class's source for `extends X`. The
+    // analyzer exposes the source via `ClassElement.source` (the
+    // `firstFragment` accessor lives in a newer analyzer API; we
+    // use the legacy approach which still works in 6.x/7.x).
+    try {
+      // `source` is the resolved source for the class element.
+      // `contents.data` is the full source text.
+      final dyn = element as dynamic;
+      // ignore: avoid_dynamic_calls
+      final src = dyn.source;
+      if (src != null) {
+        final data = (src as dynamic).contents?.data as String?;
+        if (data != null) {
+          final match = RegExp(
+            r'\bclass\s+' +
+                RegExp.escape(cls.name) +
+                r'\b\s+extends\s+(\w+)',
+          ).firstMatch(data);
+          if (match != null) return match.group(1)!;
+        }
+      }
+    } catch (_) {
+      // Source not available (older analyzer, or element is not a
+      // class). Fall through to the Object default.
+    }
+    // Last resort: pretend the supertype is Object so the
+    // generated code at least compiles. `ensureTypeRegistered`
+    // will throw a helpful error at runtime if the user actually
+    // tries to bind.
+    return 'Object';
   }
 }

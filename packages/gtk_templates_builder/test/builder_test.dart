@@ -48,6 +48,27 @@ class TemplateCallback {
 ''',
 };
 
+// Minimal stubs for the GTK / Libadwaita parent types the builder's
+// emitter looks up via `kHandBoundGetTypeCalls`. The test environment
+// doesn't resolve `package:gtk4/gtk4.dart` from the on-disk generated
+// bindings, so we declare the bare class shells here just to anchor
+// the supertype resolution. The emitter never instantiates these;
+// it only reads `cls.supertype?.element.name`.
+const _gtkStubs = {
+  'gtk4|lib/gtk4.dart': '''
+class GtkWidget {}
+class GtkBox extends GtkWidget {}
+class GtkButton extends GtkWidget {}
+class GtkApplicationWindow {}
+class GtkBin extends GtkWidget {}
+class GtkGrid extends GtkWidget {}
+class GtkWindow extends GtkBin {}
+''',
+  'adw|lib/adw.dart': '''
+class AdwApplicationWindow {}
+''',
+};
+
 void main() {
   group('gtk_templates_builder', () {
     test('emits an empty output when no annotation is present', () async {
@@ -55,6 +76,7 @@ void main() {
         _builder,
         {
           ..._annotationSources,
+          ..._gtkStubs,
           'a|lib/main.dart': '''
 import 'package:gtk4/gtk4.dart';
 
@@ -72,6 +94,7 @@ class PlainWidget extends GtkBox {
         _builder,
         {
           ..._annotationSources,
+          ..._gtkStubs,
           'a|lib/main.dart': '''
 import 'dart:ffi' as ffi;
 
@@ -96,12 +119,20 @@ class FooWidget extends GtkBox {
             contains("part of 'main.dart';"),
             // Class-banner comment block names the class so reviewers
             // can find the source for the generated helpers.
-            contains('// GtkTemplate trampolines + per-field helpers for class FooWidget'),
-            // Documented in the comment block — there's no actual
-            // `_$FooWidgetBindTemplate` function emitted, the user
-            // writes that into the main source so it can be called
-            // from sibling files.
-            contains(r'// The bind logic (`_$FooWidgetBindTemplate()`) lives in the main'),
+            contains('// GtkTemplate installer + trampolines + per-field helpers for class FooWidget'),
+            // The installer is named after the user class:
+            // `bind<Name>Template()`. The user calls it from
+            // `app.dart` (or equivalent) before constructing the
+            // first instance.
+            contains('void bindFooWidgetTemplate() {'),
+            // Cached parent GType for the per-field helpers.
+            contains('late int parentGtype;'),
+            // Parent-class resolution. GtkBox is NOT in the
+            // hand-binding whitelist (only `AdwApplicationWindow`
+            // and `GtkApplicationWindow` are), so the emitter falls
+            // back to `ensureTypeRegistered('GtkBox')` which throws
+            // a clear error if the parent isn't registered yet.
+            contains("ensureTypeRegistered('GtkBox')"),
           ])),
         },
       );
@@ -112,6 +143,7 @@ class FooWidget extends GtkBox {
         _builder,
         {
           ..._annotationSources,
+          ..._gtkStubs,
           'a|lib/main.dart': '''
 import 'dart:ffi' as ffi;
 
@@ -149,6 +181,7 @@ class BarWidget extends GtkBox {
         _builder,
         {
           ..._annotationSources,
+          ..._gtkStubs,
           'a|lib/main.dart': '''
 import 'dart:ffi' as ffi;
 
@@ -186,6 +219,7 @@ class BazWidget extends GtkBox {
         _builder,
         {
           ..._annotationSources,
+          ..._gtkStubs,
           'a|lib/main.dart': '''
 import 'dart:ffi' as ffi;
 
@@ -213,15 +247,110 @@ class QuxWidget extends GtkBox {
             // In real usage where `gtk4` is resolvable, this would
             // be `GtkLabel`.
             contains('InvalidType? _getChild_titleLabel('),
-            // Per-field helpers take a `(self, int gtype, String
-            // name)` triple — the user passes the GType the
-            // template was loaded against at the call site.
+            // Per-field helpers take a `(self, String name)` pair —
+            // the gtype comes from the per-class cache
+            // (`parentGtype`), not from the caller. One less
+            // argument per call site.
             contains(
-                'InvalidType? _getChild_titleLabel(QuxWidget self, int gtype, String name)'),
+                'InvalidType? _getChild_titleLabel(QuxWidget self, String name)'),
           ])),
         },
       );
     });
+
+    test(
+      'emits bind<Name>Template that calls <parent>_get_type for AdwApplicationWindow',
+      () async {
+        await testBuilder(
+          _builder,
+          {
+            ..._annotationSources,
+            'a|lib/main.dart': '''
+import 'package:gtk4/gtk4.dart';
+import 'package:gtk_templates/gtk_templates.dart';
+
+part 'main.gtk_templates.dart';
+
+@GtkTemplate(resourcePath: '/foo.ui')
+class AdwWindowSubclass extends AdwApplicationWindow {
+  AdwWindowSubclass() : super();
+}
+''',
+          },
+          outputs: {
+            'a|lib/main.gtk_templates.dart': decodedMatches(allOf([
+              // `AdwApplicationWindow` is in the hand-binding
+              // whitelist, so the bind function emits a direct call
+              // to `adwApplicationWindowGetType()` (no fallback
+              // needed).
+              contains(
+                  "parentGtype = adwApplicationWindowGetType();"),
+            ])),
+          },
+        );
+      },
+    );
+
+    test(
+      'emits bind<Name>Template that calls <parent>_get_type for GtkApplicationWindow',
+      () async {
+        await testBuilder(
+          _builder,
+          {
+            ..._annotationSources,
+            'a|lib/main.dart': '''
+import 'package:gtk4/gtk4.dart';
+import 'package:gtk_templates/gtk_templates.dart';
+
+part 'main.gtk_templates.dart';
+
+@GtkTemplate(resourcePath: '/foo.ui')
+class GtkAppWinSubclass extends GtkApplicationWindow {
+  GtkAppWinSubclass() : super();
+}
+''',
+          },
+          outputs: {
+            'a|lib/main.gtk_templates.dart': decodedMatches(allOf([
+              contains(
+                  "parentGtype = gtkApplicationWindowGetType();"),
+            ])),
+          },
+        );
+      },
+    );
+
+    test(
+      'emits bind<Name>Template that calls ensureTypeRegistered for unknown parents',
+      () async {
+        await testBuilder(
+          _builder,
+          {
+            ..._annotationSources,
+            'a|lib/main.dart': '''
+import 'package:gtk4/gtk4.dart';
+import 'package:gtk_templates/gtk_templates.dart';
+
+part 'main.gtk_templates.dart';
+
+@GtkTemplate(resourcePath: '/foo.ui')
+class Foo extends GtkButton {
+  Foo() : super();
+}
+''',
+          },
+          outputs: {
+            'a|lib/main.gtk_templates.dart': decodedMatches(allOf([
+              // `GtkButton` is not in the hand-binding whitelist,
+              // so the emitter falls back to
+              // `ensureTypeRegistered('GtkButton')` which throws a
+              // clear error if the parent isn't registered.
+              contains("ensureTypeRegistered('GtkButton')"),
+            ])),
+          },
+        );
+      },
+    );
 
     test(
       'fails when @GtkTemplate is missing a resourcePath',

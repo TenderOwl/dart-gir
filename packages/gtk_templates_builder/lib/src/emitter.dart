@@ -1,17 +1,56 @@
 /// Renders the `*.gtk_templates.dart` part file from a
 /// [TemplateClass] value.
 ///
-/// The output contains only the @TemplateCallback trampolines and
-/// the per-@TemplateChild field helpers. The one-shot bind function
-/// (`_$<Class>BindTemplate()`) lives in the user's main source file
+/// The output contains:
+///   * `@TemplateCallback` trampolines (top-level NativeCallables
+///     that route to the user's static methods).
+///   * A per-class `parentGtype` cache (`late int` in the part
+///     file's library scope).
+///   * A `bind<Name>Template()` function that installs the
+///     `.ui` template on the parent WidgetClass via
+///     `gtk_widget_class_set_template_from_resource` and wires
+///     every `@TemplateCallback` trampoline via
+///     `gtk_widget_class_bind_template_callback_full`. The user
+///     calls this from their application entry point (e.g.
+///     `app.dart`) BEFORE the first instance is constructed.
+///   * Per-field `_getChild_<field>(self, name)` helpers that
+///     resolve the named child against the cached `parentGtype`.
+///
+/// The bind function lives in the part file (not the user's source)
 /// because it must be callable from sibling files (e.g. `app.dart`)
 /// before the first instance is constructed — `part of` files can't
-/// be `import`ed directly. The emitter documents the function name
-/// in a comment so the user writes a thin wrapper that calls into
-/// the trampolines and per-field helpers below.
+/// be `import`ed directly. Re-exporting the FFI primitives from
+/// `package:gtk_templates`'s `template_lookup.dart` keeps the user's
+/// main source free of any `package:gir_ffi` import.
+///
+/// LIMITATION: the template is installed on the parent class's
+/// WidgetClass (not on a fresh GType registered for the user's
+/// class). All instances of the parent type in the process pick
+/// up the same template. A v2 builder that registers the user's
+/// class as a fresh `GType` (via `g_type_register_static_simple`
+/// + a Dart-side `class_init` closure) is tracked separately — it
+/// requires modelling `GTypeInfo` properly, which our binding
+/// can't yet do.
 library;
 
 import 'model.dart';
+
+/// Parent classes whose GType `package:gir_ffi` exposes as a hand
+/// binding. The emitter emits a direct call to the matching binding
+/// (e.g. `adwApplicationWindowGetType()`) — which has the side effect
+/// of triggering the parent class's lazy `class_init` if it hasn't
+/// been registered yet. Anything not in the table falls through to
+/// `typeFromName(parentName)` + `ensureTypeRegistered(...)` and the
+/// user is on the hook for triggering the parent's class_init
+/// themselves (e.g. by constructing a parent instance before binding).
+///
+/// Adding a new entry here is a one-line change once the matching
+/// hand binding is in `package:gir_ffi` — no builder-emitter code
+/// change is required.
+const Map<String, String> kHandBoundGetTypeCalls = {
+  'AdwApplicationWindow': 'adwApplicationWindowGetType()',
+  'GtkApplicationWindow': 'gtkApplicationWindowGetType()',
+};
 
 class Emitter {
   Emitter(this.sourceFileName);
@@ -29,13 +68,6 @@ class Emitter {
     buf.writeln('//');
     buf.writeln('// Source: $sourceFileName');
     buf.writeln();
-    // Emit `part of` so the generated file is a valid Dart part file.
-    // The user's source declares `part '<this-filename>.gtk_templates.dart';`
-    // at the top, and `part of` is mandatory on the included file.
-    //
-    // [sourceFileName] is the package-relative path
-    // (e.g. `todo/lib/todo_window.dart`); the part directive references
-    // the file by its bare basename.
     final partOfName = sourceFileName.split('/').last;
     buf.writeln("part of '$partOfName';");
     buf.writeln();
@@ -47,16 +79,20 @@ class Emitter {
   }
 
   void _emitClass(StringBuffer buf, TemplateClass c) {
+    final className = c.className;
+    final bindFn = 'bind${className}Template';
+
     buf.writeln('// =========================================================================');
-    buf.writeln('// GtkTemplate trampolines + per-field helpers for class ${c.className}');
+    buf.writeln('// GtkTemplate installer + trampolines + per-field helpers for class $className');
     buf.writeln('// =========================================================================');
     buf.writeln('//');
-    buf.writeln('// The bind logic (`_\$${c.className}BindTemplate()`) lives in the main');
-    buf.writeln('// source file because it must be callable BEFORE the first');
-    buf.writeln('// `${c.className}` instance is constructed — and the user code');
-    buf.writeln('// (e.g. `app.dart`) imports the main source file, not this part file');
-    buf.writeln('// (parts can\'t be imported directly). The helpers below are used');
-    buf.writeln('// inside the constructor after `super()` + `initTemplate()`.');
+    buf.writeln('// The user calls `$bindFn()` from their `app.dart` (or');
+    buf.writeln('// equivalent application entry point) BEFORE the first `$className`');
+    buf.writeln('// instance is constructed. The function installs the template on the');
+    buf.writeln('// parent WidgetClass (resolved via `${_resolveGtypeExpr(c.superTypeName)}`),');
+    buf.writeln('// pins the `@TemplateCallback` trampolines, and caches the parent');
+    buf.writeln('// GType in the top-level `parentGtype` so the per-field');
+    buf.writeln('// `_getChild_<field>` helpers can read it without re-resolving.');
     buf.writeln();
 
     // Trampolines for each @TemplateCallback method.
@@ -75,15 +111,76 @@ class Emitter {
       }
     }
 
+    // Per-class `parentGtype` cache. Public (no leading underscore)
+    // so sibling files that import the user's main source can also
+    // reach it for introspection or for code that wants to install
+    // the same template under multiple names.
+    buf.writeln('/// Cached parent GType for class `$className`. Initialised');
+    buf.writeln('/// by `bind${className}Template()`. Throws');
+    buf.writeln('/// `LateInitializationError` if read before bind.');
+    buf.writeln('late int parentGtype;');
+    buf.writeln();
+
+    // The bind function itself. This is the only FFI the generated
+    // code touches — the user's main source never sees
+    // `package:gir_ffi`.
+    buf.writeln('/// One-shot template installer. Called by the user');
+    buf.writeln('/// (typically from `app.dart`) BEFORE the first `$className`');
+    buf.writeln('/// instance is constructed.');
+    buf.writeln('///');
+    buf.writeln('/// Resolves the parent GType (preferring a hand-bound');
+    buf.writeln('/// `<parent>_get_type()` call when available so that the');
+    buf.writeln('/// parent\'s `class_init` runs as a side effect; otherwise');
+    buf.writeln('/// `typeFromName` + `ensureTypeRegistered`), pins every');
+    buf.writeln('/// `@TemplateCallback` trampoline via');
+    buf.writeln('/// `gtk_widget_class_bind_template_callback_full`, and installs');
+    buf.writeln('/// the template resource on the parent WidgetClass.');
+    buf.writeln('///');
+    buf.writeln('/// Idempotent: calling twice refs and unrefs the parent');
+    buf.writeln('/// class once per call, leaving net ref count unchanged.');
+    buf.writeln('void $bindFn() {');
+    buf.writeln('  parentGtype = ${_resolveGtypeExpr(c.superTypeName)};');
+    buf.writeln();
+    buf.writeln('  final classPtr = gTypeClassRef(parentGtype);');
+    buf.writeln('  final widgetClass = GtkWidgetClass.fromPointer(');
+    buf.writeln('    gTypeCheckClassCast(classPtr, parentGtype),');
+    buf.writeln('  );');
+    buf.writeln(
+      "  widgetClass.setTemplateFromResource('${c.resourcePath}');",
+    );
+    buf.writeln();
+    if (c.callbacks.isNotEmpty) {
+      buf.writeln('  // Wire each @TemplateCallback-annotated method by name.');
+      buf.writeln('  // `registerTemplateCallback` keeps a Dart-side registry for');
+      buf.writeln('  // introspection; the C side keeps its own pointer after');
+      buf.writeln('  // `bind_template_callback_full`.');
+      for (final cb in c.callbacks) {
+        buf.writeln('  registerTemplateCallback(');
+        buf.writeln('    parentGtype,');
+        buf.writeln("    '${cb.signalName}',");
+        buf.writeln('    _\$${className}_${cb.methodName},');
+        buf.writeln('  );');
+        buf.writeln('  gtkWidgetClassBindTemplateCallbackFull(');
+        buf.writeln('    widgetClass.handle,');
+        buf.writeln("    '${cb.signalName}',");
+        buf.writeln(
+          '    _\$${className}_${cb.methodName}.nativeFunction.cast(),',
+        );
+        buf.writeln('  );');
+      }
+    }
+    buf.writeln();
+    buf.writeln('  gTypeClassUnref(classPtr);');
+    buf.writeln('}');
+    buf.writeln();
+
     // Per-@TemplateChild field helpers.
     if (c.fields.isNotEmpty) {
       buf.writeln('// -- per-field lookup helper ----------------------------------------');
       buf.writeln('//');
-      buf.writeln('// One helper per @TemplateChild field. The user passes the');
-      buf.writeln('// GType the template was loaded against (typically the C-level');
-      buf.writeln('// parent class — `GtkApplicationWindow` for an');
-      buf.writeln('// `AdwApplicationWindow` subclass) at the call site, since');
-      buf.writeln('// the field\'s GIR supertype may differ from the runtime type.');
+      buf.writeln('// One helper per @TemplateChild field. The gtype comes from');
+      buf.writeln('// the per-class cache (set by `bind${className}Template()`), so');
+      buf.writeln('// the caller only passes the widget and the .ui id.');
       buf.writeln('//');
       buf.writeln('// Returns `T?` so the caller can do a null-check on a missing');
       buf.writeln('// child — e.g. if `initTemplate()` failed to materialise the');
@@ -95,11 +192,11 @@ class Emitter {
       for (final f in c.fields) {
         buf.writeln(
           '${f.fieldType}? _getChild_${f.fieldName}('
-          '${c.className} self, int gtype, String name) {',
+          '$className self, String name) {',
         );
         buf.writeln('  return getTemplateChild<${f.fieldType}>(');
         buf.writeln('    self.handle,');
-        buf.writeln('    gtype,');
+        buf.writeln('    parentGtype,');
         buf.writeln('    name,');
         buf.writeln('    ${f.fieldType}.fromPointer,');
         buf.writeln('  );');
@@ -109,22 +206,25 @@ class Emitter {
     }
   }
 
+  /// Returns the Dart expression that resolves the parent GType.
+  /// Prefers a hand-bound `<parent>_get_type()` call when
+  /// `package:gir_ffi` exposes one (via [kHandBoundGetTypeCalls])
+  /// so the parent class's lazy `class_init` runs as a side effect.
+  /// Otherwise falls back to `typeFromName(...)` wrapped in
+  /// `ensureTypeRegistered(...)` for a clear error message when the
+  /// parent isn't registered yet.
+  String _resolveGtypeExpr(String parentTypeName) {
+    final handBind = kHandBoundGetTypeCalls[parentTypeName];
+    if (handBind != null) return handBind;
+    return "ensureTypeRegistered('$parentTypeName')";
+  }
+
   void _emitTrampoline(
     StringBuffer buf,
     TemplateClass c,
     TemplateCallbackEntry cb,
   ) {
     final trampolineName = '_\$${c.className}_${cb.methodName}';
-    // The closure passed to `isolateLocal` must be a top-level Dart
-    // function (not a closure capturing `this`) so the C-side
-    // function pointer outlives the constructor that triggered the
-    // bind.
-    //
-    // The signature is `void Function()` (no parameters, no return)
-    // because `bind_template_callback_full` wires the trampoline as
-    // a `GCallback`, which GTK invokes with the bound user data —
-    // not the signal args. The user's method (static or top-level)
-    // is called from inside the trampoline closure.
     final target = cb.isStatic
         ? '${c.className}.${cb.methodName}'
         : cb.methodName;

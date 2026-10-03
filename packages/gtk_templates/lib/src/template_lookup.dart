@@ -1,5 +1,6 @@
-/// Runtime helpers used by the generated `_$<Class>BindTemplate()`
-/// methods emitted by the `gtk_templates_builder` builder.
+/// Runtime helpers used by the generated `bind<Name>Template()`
+/// function and per-`_getChild_<field>` helpers emitted by the
+/// `gtk_templates_builder` builder.
 ///
 /// The surface here is intentionally minimal: only what the generated
 /// code calls into. End-user code should never import from `src/`.
@@ -9,16 +10,41 @@ import 'dart:ffi' as ffi;
 
 import 'package:gir_ffi/gir_ffi.dart' show gtkWidgetGetTemplateChild;
 import 'package:gtk4/gtk4.dart';
-import 'package:gobject/gobject.dart';
+import 'package:gobject/gobject.dart' show typeFromName;
+
+// Re-export the FFI primitives the generated `bind<Name>Template()`
+// calls into. Without these `export`s, the part file would have to
+// fall back to raw FFI or the user would have to add
+// `import 'package:gir_ffi/gir_ffi.dart';` to their main source —
+// which is exactly what this layer exists to hide. Re-exporting via
+// `show` keeps the public surface intentional: only the symbols the
+// generated code needs are visible.
+export 'package:gir_ffi/gir_ffi.dart'
+    show
+        adwApplicationWindowGetType,
+        gTypeCheckClassCast,
+        gTypeClassRef,
+        gTypeClassUnref,
+        gTypeRegisterStaticSimple,
+        gObjectNew,
+        gObjectNewWithProperty,
+        gtkApplicationWindowGetType,
+        gtkWidgetClassBindTemplateCallbackFull;
 
 /// Process-global registry of pinned `NativeCallable` trampolines used
 /// by `@TemplateCallback`-annotated methods.
 ///
 /// `NativeCallable` instances must outlive the template they're wired
 /// into — i.e. they must outlive the running program. The generated
-/// `_$<Class>BindTemplate()` registers each trampoline here and never
+/// `bind<Name>Template()` registers each trampoline here and never
 /// closes it; mirroring how `g_idle_add_full` is used in
 /// `example/bin/example.dart`.
+///
+/// The registry is currently write-only: the generated bind function
+/// calls [registerTemplateCallback] but no consumer reads
+/// [lookupTemplateCallback]. The map is kept around for future
+/// introspection tools (e.g., a debug build that prints the
+/// registered signals per class).
 final Map<String, ffi.NativeCallable<Function>> _callbackRegistry = {};
 
 /// Registers [callable] for [signalName] on the widget class identified
@@ -26,7 +52,7 @@ final Map<String, ffi.NativeCallable<Function>> _callbackRegistry = {};
 /// classes that bind to the same signal name don't collide because their
 /// GTypes differ.
 ///
-/// Called from the generated `_$<Class>BindTemplate()`; not intended for
+/// Called from the generated `bind<Name>Template()`; not intended for
 /// direct user use.
 void registerTemplateCallback(
   int gtype,
@@ -37,9 +63,9 @@ void registerTemplateCallback(
 }
 
 /// Fetches the pinned [NativeCallable] for [gtype]/[signalName], or
-/// `null` if no callback is registered. The widget-class binding uses
-/// this so the trampoline's C-side function pointer can be looked up
-/// at `bind_template_callback_full` time.
+/// `null` if no callback is registered. Currently unused by the
+/// generated code (the C side retains its own reference after
+/// `bind_template_callback_full`); kept for introspection tools.
 ffi.NativeCallable<Function>? lookupTemplateCallback(
   int gtype,
   String signalName,
@@ -80,6 +106,30 @@ T? getTemplateChild<T extends GtkWidget>(
   return fromPointer(raw);
 }
 
+/// Returns the GType for [name], or throws a `StateError` if the type
+/// isn't registered.
+///
+/// Used by the generated `bind<Name>Template()` as the fallback path
+/// for parents that aren't in the emitter's hand-binding whitelist
+/// (see `kHandBoundGetTypeCalls` in `gtk_templates_builder`'s
+/// `emitter.dart`). The caller is expected to have already ensured
+/// the parent type is registered (by constructing a parent instance,
+/// for example); this helper just surfaces a clear error message
+/// when they forgot.
+int ensureTypeRegistered(String name) {
+  final type = typeFromName(name);
+  if (type == 0) {
+    throw StateError(
+      'GtkTemplate parent type "$name" is not registered. '
+      'Construct a parent instance (or call its `_get_type()` '
+      'function) before `bind<Name>Template()`, or add the parent '
+      'class to the gtk_templates parent whitelist by exposing a '
+      '`<name>_get_type()` hand binding in `package:gir_ffi`.',
+    );
+  }
+  return type;
+}
+
 /// Returns the current widget's `GType` (used by generated code that
 /// needs to re-resolve `runtimeType` to a GType after the first
 /// `typeRegisterStatic` call). When [name] is already registered,
@@ -88,14 +138,14 @@ T? getTemplateChild<T extends GtkWidget>(
 int resolveTemplateGtype(String name) {
   final existing = typeFromName(name);
   if (existing != 0) return existing;
-  // The first call into the generated `_$<Class>BindTemplate()` will
+  // The first call into the generated `bind<Name>Template()` will
   // have already registered the type via `gobject.typeRegisterStatic`
   // before calling `resolveTemplateGtype` from a helper. If somehow
   // this is reached with the type unregistered, throw — the user
-  // forgot to call `_$<Class>BindTemplate()` from their constructor.
+  // forgot to call `bind<Name>Template()` from their constructor.
   throw StateError(
     'GtkTemplate type "$name" is not registered. '
-    'Did you forget to call _\$${name}BindTemplate() from your '
+    'Did you forget to call bind<Name>Template() from your '
     'constructor before initTemplate()?',
   );
 }

@@ -149,35 +149,120 @@ Pointer<Void> gTypeCheckClassCast(Pointer<Void> typeClass, int type) {
 /// PyGObject's `@Gtk.Template` decorator and by every "static type"
 /// registration helper in the C ecosystem.
 ///
+/// [classSize] / [instanceSize] are in bytes. Pick values large
+/// enough to hold the parent class's struct plus any custom members
+/// the user wants — there's no upper bound on waste (GLib
+/// zero-fills the unused tail), but a too-small value is a memory
+/// corruption bug. The composite-widget path in `gtk_templates`
+/// uses 4096 for both, which is comfortably larger than the
+/// AdwApplicationWindow + GtkApplicationWindow + GtkWindow +
+/// GtkBin + GtkContainer + GtkWidget class hierarchy on every
+/// platform we test on.
+///
+/// [classInit] / [instanceInit] are `GClassInitFunc` /
+/// `GInstanceInitFunc` callbacks — `void(*)(gpointer,gpointer)` and
+/// `void(*)(GTypeInstance*, gpointer)`. Pass `nullptr` to skip. The
+/// composite-widget path passes a pinned `NativeCallable` (declared
+/// at top-level scope, see the `bind<Name>Template` flow) so the
+/// trampoline outlives every instance.
+///
 /// Returns the new GType ID, or 0 on failure.
 final _gTypeRegisterStaticSimpleNative = _libgobject().lookup<
     NativeFunction<
-        IntPtr Function(IntPtr, Pointer<Utf8>, IntPtr, Pointer<Void>, IntPtr,
-            Pointer<Void>, IntPtr)>>(
+        IntPtr Function(
+            IntPtr,
+            Pointer<Utf8>,
+            Uint32,
+            Pointer<
+                NativeFunction<
+                    Void Function(Pointer<Void>, Pointer<Void>)>>,
+            Uint32,
+            Pointer<
+                NativeFunction<
+                    Void Function(Pointer<Void>, Pointer<Void>)>>,
+            Uint32)>>(
   'g_type_register_static_simple',
 );
-int gTypeRegisterStaticSimple(int parent, String name) {
+int gTypeRegisterStaticSimple(
+  int parent,
+  String name, {
+  int classSize = 256,
+  Pointer<NativeFunction<Void Function(Pointer<Void>, Pointer<Void>)>>?
+      classInit,
+  int instanceSize = 256,
+  Pointer<NativeFunction<Void Function(Pointer<Void>, Pointer<Void>)>>?
+      instanceInit,
+  int flags = 0,
+}) {
   final nameBytes = name.toNativeUtf8();
   try {
-    final type = _gTypeRegisterStaticSimpleNative
+    return _gTypeRegisterStaticSimpleNative
         .asFunction<
-            int Function(int, Pointer<Utf8>, int, Pointer<Void>, int,
-                Pointer<Void>, int)>()
+            int Function(
+                int,
+                Pointer<Utf8>,
+                int,
+                Pointer<
+                    NativeFunction<
+                        Void Function(Pointer<Void>, Pointer<Void>)>>,
+                int,
+                Pointer<
+                    NativeFunction<
+                        Void Function(Pointer<Void>, Pointer<Void>)>>,
+                int)>()
         .call(
-          // class_size must be >= sizeof(GTypeClass) — pick a
-          // conservative 256 bytes so the C side has room for the
-          // vtable-ish members.
           parent,
           nameBytes,
-          256,
-          nullptr,
-          // instance_size: same — 256 bytes for any fields the
-          // user might add via `late` declarations on the Dart side.
-          256,
-          nullptr,
-          0,
+          classSize,
+          classInit ?? nullptr,
+          instanceSize,
+          instanceInit ?? nullptr,
+          flags,
         );
-    return type;
+  } finally {
+    calloc.free(nameBytes);
+  }
+}
+
+/// Constructs a new instance of [gtype] via `g_object_new` with no
+/// constructor properties (NULL-terminated).
+Pointer<Void> gObjectNew(int gtype) {
+  final newSym = _libgobject().lookup<
+      NativeFunction<
+          Pointer<Void> Function(IntPtr, Pointer<Void>)>>('g_object_new');
+  final newFn =
+      newSym.asFunction<Pointer<Void> Function(int, Pointer<Void>)>();
+  return newFn(gtype, nullptr);
+}
+
+/// Constructs a new instance of [gtype] with one constructor
+/// property — [propertyName] set to [propertyValue] (a
+/// `Pointer<ffi.Void>`). The C-side `g_object_new` reads a
+/// `const gchar*, ...` vararg, terminated by NULL, so we hand-roll
+/// the FFI signature to pass `[propertyName, value, NULL]`.
+Pointer<Void> gObjectNewWithProperty(
+  int gtype,
+  String propertyName,
+  Pointer<Void> propertyValue,
+) {
+  final newSym = _libgobject().lookup<
+      NativeFunction<
+          Pointer<Void> Function(
+            IntPtr,
+            Pointer<Utf8>,
+            Pointer<Void>,
+            Pointer<Void>,
+          )>>('g_object_new');
+  final newFn = newSym.asFunction<
+      Pointer<Void> Function(
+        int,
+        Pointer<Utf8>,
+        Pointer<Void>,
+        Pointer<Void>,
+      )>();
+  final nameBytes = propertyName.toNativeUtf8();
+  try {
+    return newFn(gtype, nameBytes, propertyValue, nullptr);
   } finally {
     calloc.free(nameBytes);
   }

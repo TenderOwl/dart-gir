@@ -2,6 +2,7 @@ blueprints = custom_target(
   'blueprints',
   input: files(
     'ui/shortcuts.blp',
+    'ui/window.blp',
   ),
   output: '.',
   command: [
