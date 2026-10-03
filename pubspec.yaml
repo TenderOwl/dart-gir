@@ -7,6 +7,7 @@ environment:
 
 workspace:
   - example
+  - example/todo
   - generator
   - packages/adw
   - packages/cairo
@@ -21,9 +22,9 @@ workspace:
   - packages/gsk4
   - packages/gtk4
   - packages/gtk_source5
+  - packages/gtk_templates
   - packages/pango
 
 dev_dependencies:
   lints: ^6.0.0
   test: ^1.25.6
-  vendor: ^0.9.8

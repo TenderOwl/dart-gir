@@ -1,34 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="AdwShortcutsDialog" id="shortcuts_dialog">
+  <!-- The main todo list window. Built from a template bound to the
+       user-defined `TodoWindow` class via @GtkTemplate in Dart. The
+       `class=` attribute must match the GType that the builder
+       registers; here it's `AdwApplicationWindow` because the Dart
+       class extends it. The children named here (status_page,
+       title_label, list_box, add_button) are bound to the matching
+       @TemplateChild fields in `example/todo/src/todo_window.dart`. -->
+  <!-- The composite widget template. Mirrors the GtkDoc example for
+       building composite widgets from template XML.
+
+       The `class=` attribute must match the GObject class on whose
+       WidgetClass the template is installed via
+       `gtk_widget_class_set_template_from_resource` — the
+       Dart-side installer in `lib/todo_window.dart` calls that
+       function on `AdwApplicationWindow`'s WidgetClass so the
+       template can be looked up by `gtk_widget_init_template()`
+       when the first `TodoWindow` instance is constructed. The
+       `parent=` attribute is the immediate parent class; we set it
+       to `GtkApplicationWindow` (the libadwaita class extends
+       that) — `class` is required to be a strict subclass of
+       `parent`.
+
+       `AdwApplicationWindow` does not accept a `type="titlebar"`
+       child — its `content` property holds the entire window body,
+       and the window manages its own breakaway header bar via the
+       style classes (`adw-application-window`) it brings in. We use
+       a vertical `GtkBox` to stack the header bar above the
+       status page so the `add_button` widget is visible to the
+       template, and so its `clicked` signal is wired through the
+       bind_template_callback_full trampoline. -->
+  <template class="AdwApplicationWindow" parent="GtkApplicationWindow">
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="title" translatable="yes">Todo</property>
     <child>
-      <object class="AdwShortcutsSection">
-        <property name="title" translatable="yes">General</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
         <child>
-          <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Show shortcuts</property>
-            <property name="action-name">app.shortcuts</property>
+          <object class="AdwHeaderBar">
+            <child type="end">
+              <object id="add_button" class="GtkButton">
+                <property name="label" translatable="yes">Add</property>
+                <property name="action-name">win.add</property>
+                <signal name="clicked" handler="on_add_clicked"/>
+              </object>
+            </child>
+            <child type="end">
+                <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">main-menu</property>
+                <property name="tooltip-text" translatable="yes">Main Menu</property>
+                </object>
+            </child>
           </object>
         </child>
         <child>
-          <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Filter to show all tasks</property>
-            <property name="action-name">win.filter('All')</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Filter to show only open tasks</property>
-            <property name="action-name">win.filter('Open')</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Filter to show only completed tasks</property>
-            <property name="action-name">win.filter('Done')</property>
+          <object id="status_page" class="AdwStatusPage">
+            <property name="title" translatable="yes">Todo</property>
+            <property name="description" translatable="yes">A simple task list</property>
+            <property name="icon-name">org.gnome.Todo-symbolic</property>
+            <child type="title">
+              <object id="title_label" class="GtkLabel">
+                <property name="label" translatable="yes">Welcome</property>
+              </object>
+            </child>
+            <child>
+              <object id="list_box" class="GtkListBox">
+                <property name="selection-mode">none</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
     </child>
-  </object>
+  </template>
+  <menu id="main-menu">
+      <submenu>
+        <attribute name="label" translatable="yes">_Filter</attribute>
+        <item>
+          <attribute name="label" translatable="yes">_All</attribute>
+          <attribute name="action">win.filter</attribute>
+          <attribute name="target">All</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Open</attribute>
+          <attribute name="action">win.filter</attribute>
+          <attribute name="target">Open</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_Done</attribute>
+          <attribute name="action">win.filter</attribute>
+          <attribute name="target">Done</attribute>
+        </item>
+      </submenu>
+      <item>
+        <attribute name="label" translatable="yes">_Remove Done Tasks</attribute>
+        <attribute name="action">win.remove-done-tasks</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="action">app.shortcuts</attribute>
+      </item>
+    </menu>
 </interface>

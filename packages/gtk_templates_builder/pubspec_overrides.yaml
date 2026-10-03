@@ -1,0 +1,15 @@
+# Local override for gtk_templates_builder — when running tests
+# inside the workspace, override the hosted deps to path-deps so
+# the builder sees the workspace's local packages. When this
+# builder is published and consumed by an external user, they
+# override this file (or delete it) so the normal version
+# resolution kicks in.
+dependency_overrides:
+  gtk_templates:
+    path: ../gtk_templates
+  gtk4:
+    path: ../gtk4
+  gobject:
+    path: ../gobject
+  gir_ffi:
+    path: ../gir_ffi

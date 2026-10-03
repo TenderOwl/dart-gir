@@ -41,6 +41,50 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   [emission.md](./docs/emission.md#classemitter) and the
   `PackageEmitter file layout` regression test in
   [`generator/test/emitter_test.dart`](./generator/test/emitter_test.dart).
+- **GtkBuilder template support via a build_runner builder**:
+  `package:gtk_templates` (annotations only) + `package:gtk_templates_builder`
+  (the builder). Mirrors PyGObject's `@Gtk.Template` /
+  `Gtk.Template.Child` and Vala/C#'s `[GtkTemplate]` / `[GtkChild]` for
+  user-defined composite widgets. The user writes:
+
+  ```dart
+  import 'package:gtk_templates/gtk_templates.dart';
+
+  part 'todo_window.gtk_templates.dart';
+
+  @GtkTemplate(resourcePath: '/com/example/todo_window.ui')
+  class TodoWindow extends AdwApplicationWindow {
+    TodoWindow() : super() {
+      _$TodoWindowBindTemplate();   // generated
+      initTemplate();
+    }
+    @TemplateChild() late GtkLabel titleLabel;
+    @TemplateCallback('add-button::clicked') void onAddClicked(GtkButton b) {}
+  }
+  ```
+
+  The generator pipeline is unchanged — the runtime layer is the
+  existing generated wrappers (`gtk_widget_init_template`,
+  `gtk_widget_class_set_template_from_resource`,
+  `gtk_widget_get_template_child`,
+  `gtk_widget_class_bind_template_callback_full`,
+  `g_type_register_static`) plus a static initializer the builder
+  emits. The hand-written `example/todo` now demonstrates the full
+  pipeline end-to-end: `@GtkTemplate`, `@TemplateChild`,
+  `@TemplateCallback`, plus `dart run build_runner build`
+  generating the part file, plus a meson-built `.gresource` bundle
+  registered at startup via `g_resources_register` (manual binding
+  in `package:gir_ffi`).
+- **Manual runtime bindings in `package:gir_ffi`** for GObject type-
+  class access (`g_type_class_ref`, `g_type_check_instance_cast`,
+  `g_type_class_unref`), `g_bytes_new` (skipped by our generator
+  because `const void*` isn't a supported pointee type), and
+  `gtk_widget_class_bind_template_callback_full` (the generator-
+  emitted wrapper closes the `NativeCallable` in a `finally` block,
+  which kills the trampoline before GTK wires the signal). These
+  supplement the generated wrappers; tracked for upstream
+  unification once the generator covers the skipped cases.
+  emits. See [docs/emission.md](./docs/emission.md#gtkbuilder-template-support--packagesgtk_templates--packagesgtk_templates_builder).
 - **Subclassable generated classes**: `<constructor>` elements that have
   no `throws`, no OUT params, and no `String` / `String?` /
   `List<String?>?` / callback parameters are now emitted as generative

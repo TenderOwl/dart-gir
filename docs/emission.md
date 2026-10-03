@@ -581,6 +581,67 @@ The barrel's `part 'src/signals.dart';` plus the file-level
 `part of '../<pkg>.dart';` makes the singletons reachable from every
 class in the same library without an extra import.
 
+## GtkBuilder template support — `packages/gtk_templates/` + `packages/gtk_templates_builder/`
+
+The generator emits every GLib primitive a `GtkBuilder`-backed
+composite widget needs (`GtkWidget.initTemplate`,
+`GtkWidgetClass.setTemplateFromResource`,
+`GtkWidget.getTemplateChild`,
+`GtkWidgetClass.bindTemplateCallbackFull`, `gobject.typeFromName`,
+`gobject.typeRegisterStatic`). Two new handwritten packages fill in
+the missing ergonomic layer — annotation-driven codegen rather than
+manual boilerplate.
+
+* **`packages/gtk_templates/`** — `@GtkTemplate(resourcePath: ...)`,
+  `@TemplateChild()`, `@TemplateCallback()`. Three `const`-constructible
+  annotation classes plus a tiny runtime surface
+  (`getTemplateChild<T>`, `registerTemplateCallback`,
+  `lookupTemplateCallback`, `resolveTemplateGtype`) the generated
+  part file calls into.
+* **`packages/gtk_templates_builder/`** — a `build_runner` builder
+  that scans user source for the three annotations and emits a
+  `<input>.gtk_templates.dart` part file containing
+  `_$<Class>BindTemplate()` (one-shot `g_type_register_static` +
+  `gtk_widget_class_set_template_from_resource` +
+  `bind_template_callback_full` for every `@TemplateCallback`).
+
+User-facing shape:
+
+```dart
+import 'dart:ffi' as ffi;
+import 'package:adw/adw.dart';
+import 'package:gtk4/gtk4.dart';
+import 'package:gtk_templates/gtk_templates.dart';
+
+part 'todo_window.gtk_templates.dart';
+
+@GtkTemplate(resourcePath: '/com/example/todo_window.ui')
+class TodoWindow extends AdwApplicationWindow {
+  TodoWindow() : super() {
+    _$TodoWindowBindTemplate();
+    initTemplate();
+    titleLabel = getTemplateChild<GtkLabel>('title_label');
+  }
+
+  @TemplateChild()
+  late GtkLabel titleLabel;
+
+  @TemplateCallback('add-button::clicked')
+  void onAddClicked(GtkButton button) { /* ... */ }
+}
+```
+
+The generator pipeline is not modified — the runtime layer is just
+the existing generated wrappers plus the static initializer the
+builder emits. `dart:ffi` is imported by the user because the
+generated trampoline declarations reference `ffi.NativeCallable<...>`.
+
+The builder package is intentionally NOT in the workspace because
+its `build`/`source_gen`/`analyzer` dependency tree conflicts with
+the workspace's `analyzer` pin. A `pubspec_overrides.yaml` redirects
+to path-deps when running tests inside the workspace; downstream
+users get the hosted versions.
+
 ## Cross-package imports
 
 Every emitter that resolves a cross-package type calls

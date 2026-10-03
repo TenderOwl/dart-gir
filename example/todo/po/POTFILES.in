@@ -1,4 +1,4 @@
 data/com.tenderowl.Todo.desktop.in.in
 data/ui/window.ui
-data/ui/shortcuts.ui
+data/ui/shortcuts.blp
 src/todo_window.dart

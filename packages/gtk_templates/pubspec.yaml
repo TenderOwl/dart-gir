@@ -1,0 +1,22 @@
+name: gtk_templates
+description: >
+  Annotations for declaring GtkBuilder-template-backed GObject subclasses.
+  The companion build_runner builder (`gtk_templates_builder`) scans for
+  these annotations and emits the GLib-side bookkeeping (GType registration,
+  set_template_from_resource, bind_template_callback_full) so user code can
+  write `class MyWindow extends AdwWindow {}` and get PyGObject-style
+  template ergonomics without runtime boilerplate.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  gtk4:
+  gobject:
+  gir_ffi:
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

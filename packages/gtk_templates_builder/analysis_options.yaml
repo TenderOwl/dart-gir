@@ -1,0 +1,11 @@
+include: package:lints/recommended.yaml
+
+# Generated doc comments can reference GTK XML element names in
+# angle brackets; keep the per-package override consistent with the
+# generated packages (see package:gtk4/analysis_options.yaml).
+analyzer:
+  errors:
+    unintended_html_in_doc_comment: ignore
+    # `dart_style`'s formatter output sometimes hits this when
+    # wrapping long string literals.
+    lines_longer_than_80_chars: ignore

@@ -1,6 +1,7 @@
 // Subclass smoke test: verifies that user code can extend the generated
 // classes without the historical "generative constructor expected, but a
-// factory was found" error.
+// factory was found" error, AND that the build_runner builder for
+// `package:gtk_templates` works end-to-end.
 //
 // What works today (no-arg, primitive-arg constructors):
 //   `class MyAdwWindow extends AdwWindow { MyAdwWindow() : super(); }`
@@ -13,13 +14,17 @@
 //   management (a generative initializer list has nowhere to host
 //   those scopes).
 //
-// What is intentionally still a factory:
-//   Constructors with `String`, `String?`, `List<String?>?`, or
-//   callback parameters. Forwarding their arguments requires either
-//   pre-converting strings (which would leak the C-side buffer) or
-//   holding a `NativeCallable` open without a `finally` block to
-//   close it. Keeping the factory form for those cases preserves the
-//   lifetime invariants the runtime tests assert.
+// GtkBuilder template support (the second half of the original
+// question — how to back the user-defined class with a `.ui` file):
+//   Annotated with `@GtkTemplate(resourcePath: '...')` plus optional
+//   `@TemplateChild()` / `@TemplateCallback()` annotations. The
+//   `gtk_templates_builder` build_runner plugin emits a sibling
+//   `<file>.gtk_templates.dart` part file with the GLib-side
+//   bookkeeping. The runtime test below confirms the user-facing
+//   shape compiles cleanly (the runtime GTK calls are not exercised
+//   here — that requires libgtk-4 installed and a `.ui` resource
+//   bundled, which is what `dart run build_runner build` against
+//   the user app handles).
 import 'package:adw/adw.dart';
 import 'package:gtk4/gtk4.dart';
 

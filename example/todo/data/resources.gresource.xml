@@ -2,6 +2,6 @@
 <gresources>
   <gresource prefix="/com/tenderowl/Todo/">
     <file compressed="true" preprocess="xml-stripblanks" alias="shortcuts-dialog.ui">ui/shortcuts.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="window.ui">ui/window.ui</file>
   </gresource>
 </gresources>

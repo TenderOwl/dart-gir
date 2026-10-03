@@ -1,0 +1,22 @@
+# build_runner builder registration for gtk_templates.
+#
+# Auto-applies to every package that depends on gtk_templates_builder
+# (directly or transitively), scanning `.dart` sources for
+# @GtkTemplate / @TemplateChild / @TemplateCallback annotations and
+# emitting a sibling `.gtk_templates.dart` part file per annotated
+# source.
+#
+# The output extension `.gtk_templates.dart` is unique to this builder
+# so it doesn't compete with `.g.dart` from json_serializable, freezed,
+# or retrofit.
+#
+# We register a plain `Builder` (not `source_gen.PartBuilder`) because
+# the latter writes to a staging dir under `.dart_tool/build/`
+# without auto-promotion to the source tree in `build_runner` 2.4.x.
+# See `lib/src/builder.dart` for the rationale.
+builders:
+  gtk_templates:
+    import: "package:gtk_templates_builder/gtk_templates_builder.dart"
+    builder_factories: ["gtkTemplatesBuilder"]
+    build_extensions: { ".dart": [".gtk_templates.dart"] }
+    auto_apply: dependents
