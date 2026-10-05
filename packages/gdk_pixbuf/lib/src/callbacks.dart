@@ -27,6 +27,12 @@ typedef GdkPixbufModuleLoadFunc = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<ffi.Void>,
 );
 
+/// Loads XPM data into a new `GdkPixbuf`.
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GdkPixbufModuleLoadXpmDataFunc = ffi.Pointer<ffi.Void> Function(
+  ffi.Pointer<ffi.Pointer<Utf8>>,
+);
+
 /// Defines the type of the function that gets called once the initial
 /// setup of @pixbuf is done.
 ///

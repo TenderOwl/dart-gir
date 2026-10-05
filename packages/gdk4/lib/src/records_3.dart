@@ -82,6 +82,26 @@ final class GdkTextureDownloader {
     }
   }
 
+  /// Downloads the @texture into local memory.
+  ///
+  /// This function cannot be used with a multiplanar format.
+  static final _gdkTextureDownloaderDownloadInto =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+              )
+            >
+          >('gdk_texture_downloader_download_into')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint8>, int)
+          >();
+  void downloadInto(ffi.Pointer<ffi.Uint8> data, int stride) {
+    _gdkTextureDownloaderDownloadInto(this.handle, data, stride);
+  }
+
   /// Frees the given downloader and all its associated resources.
   static final _gdkTextureDownloaderFree =
       gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(

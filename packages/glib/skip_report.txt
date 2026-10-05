@@ -1,8 +1,8 @@
 # Skip report for package glib (GLib 2.0)
-Total skipped: 447
+Total skipped: 391
 
 ## By category
-callable: 428
+callable: 372
 alias: 13
 constant: 2
 callback: 2
@@ -10,41 +10,36 @@ method: 1
 constructor: 1
 
 ## By reason
-introspectable=0: 97
+introspectable=0: 98
 parameter length: nullable scalar parameter (gsize): 18
-return: string list return type (null): 15
+return: string list return type (null): 16
 aliases are resolved to their target: 13
-parameter array: array types are handled in a later phase: 13
-return: array types are handled in a later phase: 11
-parameter data: array types are handled in a later phase: 9
-parameter str: array types are handled in a later phase: 8
-parameter string: array types are handled in a later phase: 8
-parameter fields: array types are handled in a later phase: 6
-parameter list: array types are handled in a later phase: 5
-parameter strv: array types are handled in a later phase: 3
-parameter key: array types are handled in a later phase: 3
-parameter contents: array types are handled in a later phase: 3
-parameter bytes_read: nullable scalar parameter (gsize): 3
+parameter bytes_read: nullable scalar parameter (gsize): 6
+parameter items_read: nullable scalar parameter (glong): 6
+parameter string: array of TypeKind.string (later phase): 6
+parameter strv: array of TypeKind.string (later phase): 3
 parameter child_pid: nullable scalar parameter (Pid): 3
 return: unknown type: time_t: 3
 parameter port: nullable scalar parameter (gint): 3
-parameter keys: array types are handled in a later phase: 2
-array types are handled in a later phase: 2
+unsupported out parameter out (ffi.Pointer<ffi.Uint8>): 2
+array parameter in callback signature: 2
 inout parameter rc: 2
-parameter standard_output: array types are handled in a later phase: 2
-parameter items_read: nullable scalar parameter (glong): 2
+unsupported out parameter standard_output (ffi.Pointer<ffi.Uint8>): 2
+unsupported out parameter end (ffi.Pointer<ffi.Uint8>): 2
 parameter count: nullable scalar parameter (guint): 2
-parameter buf: array types are handled in a later phase: 2
-parameter fds: array types are handled in a later phase: 2
+parameter list: array of TypeKind.string (later phase): 2
 parameter start_pos: nullable scalar parameter (gint): 2
 inout parameter location: 2
-parameter entries: array types are handled in a later phase: 2
+parameter entries: array of TypeKind.record (later phase): 2
+return: array of TypeKind.string (later phase): 2
 name collision: 2
-parameter children: array types are handled in a later phase: 2
-moved to Hook.destroy_link: 1
-parameter out_num: nullable scalar parameter (guint64): 1
-moved to AsyncQueue.new: 1
-moved to AsyncQueue.new_full: 1
+moved to Hook.insert_sorted: 1
+moved to ByteArray.sort_with_data: 1
+moved to ByteArray.steal: 1
+moved to ByteArray.unref: 1
+moved to Checksum.type_get_length: 1
+introspectable=0 (C macro; use child_watch_add_full): 1
+parameter out_num: nullable scalar parameter (gint64): 1
 moved to Date.get_days_in_month: 1
 moved to Date.get_monday_weeks_in_year: 1
 moved to Date.get_sunday_weeks_in_year: 1
@@ -58,12 +53,11 @@ moved to Date.valid_month: 1
 moved to Date.valid_weekday: 1
 moved to Date.valid_year: 1
 moved to Dir.make_tmp: 1
-unparseable int value: 18446744073709551615: 1
+parameter out_num: nullable scalar parameter (guint64): 1
 moved to Error.domain_register: 1
 moved to Error.domain_register_static: 1
-parameter text: array types are handled in a later phase: 1
-parameter out_num: nullable scalar parameter (gint64): 1
-parameter filename_charsets: array types are handled in a later phase: 1
+unsupported out parameter contents (ffi.Pointer<ffi.Uint8>): 1
+parameter filename_charsets: array of TypeKind.string (later phase): 1
 moved to HashTable.add: 1
 moved to HashTable.contains: 1
 moved to HashTable.destroy: 1
@@ -85,10 +79,10 @@ moved to HashTable.steal_all: 1
 moved to HashTable.steal_extended: 1
 moved to HashTable.unref: 1
 moved to Hook.destroy: 1
-name collision: csetA2Z: 1
+moved to Hook.destroy_link: 1
 moved to Hook.free: 1
 moved to Hook.insert_before: 1
-moved to Hook.insert_sorted: 1
+name collision: csetA2Z: 1
 moved to Hook.prepend: 1
 moved to Hook.unref: 1
 introspectable=0 (C macro; use idle_add_full): 1
@@ -98,11 +92,9 @@ moved to IOChannel.error_quark: 1
 moved to KeyFile.error_quark: 1
 moved to List.pop_allocator: 1
 moved to List.push_allocator: 1
-parameter opsysstring: array types are handled in a later phase: 1
 introspectable=0 (C macro; use log_set_handler_full): 1
-parameter out: array types are handled in a later phase: 1
+moved to AsyncQueue.new: 1
 parameter func: callback LogWriterFunc has unsupported signature: 1
-parameter in: array types are handled in a later phase: 1
 moved to MainContext.default: 1
 moved to MainContext.get_thread_default: 1
 moved to MainContext.ref_thread_default: 1
@@ -117,7 +109,7 @@ moved to Once.init_leave_pointer: 1
 moved to PathBuf.equal: 1
 parameter out_ptr: nullable scalar parameter (guintptr): 1
 inout parameter err: 1
-parameter out_val: nullable scalar parameter (gint): 1
+moved to AsyncQueue.new_full: 1
 moved to Regex.check_replacement: 1
 moved to Regex.error_quark: 1
 moved to Regex.escape_nul: 1
@@ -143,11 +135,10 @@ moved to Source.remove: 1
 moved to Source.remove_by_funcs_user_data: 1
 moved to Source.remove_by_user_data: 1
 moved to Source.set_name_by_id: 1
-moved to BookmarkFile.error_quark: 1
-parameter source_fds: array types are handled in a later phase: 1
-moved to ByteArray.append: 1
-parameter ascii_alternates: array types are handled in a later phase: 1
-parameter delimiters: array types are handled in a later phase: 1
+inout parameter text: 1
+parameter child_pid_out: nullable scalar parameter (Pid): 1
+unparseable int value: 18446744073709551615: 1
+parameter ascii_alternates: array of TypeKind.string (later phase): 1
 moved to Thread.error_quark: 1
 moved to Thread.exit: 1
 moved to ThreadPool.get_max_idle_time: 1
@@ -161,12 +152,12 @@ moved to Thread.yield: 1
 moved to TimeVal.from_iso8601: 1
 introspectable=0 (C macro; use timeout_add_full): 1
 introspectable=0 (C macro; use timeout_add_seconds_full): 1
-moved to ByteArray.free: 1
+parameter out_val: nullable scalar parameter (gint): 1
 moved to TrashStack.peek: 1
 moved to TrashStack.pop: 1
 moved to TrashStack.push: 1
+moved to BookmarkFile.error_quark: 1
 parameter result: nullable scalar parameter (gunichar): 1
-moved to ByteArray.free_to_bytes: 1
 moved to UnicodeScript.from_iso15924: 1
 moved to UnicodeScript.to_iso15924: 1
 moved to Uri.build: 1
@@ -189,8 +180,8 @@ moved to Uri.split_with_user: 1
 moved to Uri.unescape_bytes: 1
 moved to Uri.unescape_segment: 1
 moved to Uri.unescape_string: 1
-moved to ByteArray.new: 1
 parameter items_written: nullable scalar parameter (glong): 1
+moved to ByteArray.append: 1
 moved to Variant.is_object_path: 1
 moved to Variant.is_signature: 1
 moved to Variant.parse: 1
@@ -201,42 +192,38 @@ moved to VariantType.checked_: 1
 moved to VariantType.string_get_depth_: 1
 moved to VariantType.string_is_valid: 1
 moved to VariantType.string_scan: 1
-moved to ByteArray.new_take: 1
-moved to ByteArray.prepend: 1
-moved to ByteArray.ref: 1
+moved to ByteArray.free: 1
+moved to ByteArray.free_to_bytes: 1
+moved to ByteArray.new: 1
 parameter added: unknown type: time_t: 1
 parameter stamp: unknown type: time_t: 1
-parameter groups: array types are handled in a later phase: 1
+parameter groups: array of TypeKind.string (later phase): 1
 parameter modified: unknown type: time_t: 1
 parameter visited: unknown type: time_t: 1
-moved to ByteArray.remove_index: 1
+parameter len: nullable scalar parameter (gsize): 1
 parameter size: nullable scalar parameter (gsize): 1
 parameter timet: unknown type: time_t: 1
 parameter year: nullable scalar parameter (gint): 1
-parameter buffer: array types are handled in a later phase: 1
 parameter length: nullable scalar parameter (gint): 1
-moved to ByteArray.remove_index_fast: 1
+unsupported out parameter buf (ffi.Pointer<ffi.Uint8>): 1
 parameter terminator_pos: nullable scalar parameter (gsize): 1
-parameter str_return: array types are handled in a later phase: 1
-parameter search_dirs: array types are handled in a later phase: 1
-moved to ByteArray.remove_range: 1
-moved to ByteArray.set_size: 1
+unsupported out parameter str_return (ffi.Pointer<ffi.Uint8>): 1
+moved to ByteArray.new_take: 1
 parameter priority: nullable scalar parameter (gint): 1
+unsupported out parameter fds (ffi.Pointer<ffi.Void>): 1
 parameter line_number: nullable scalar parameter (gint): 1
+moved to ByteArray.prepend: 1
+moved to ByteArray.ref: 1
+moved to ByteArray.remove_index: 1
+inout parameter argc: 1
+parameter arguments: array of TypeKind.string (later phase): 1
+moved to ByteArray.remove_index_fast: 1
+parameter has_references: nullable scalar parameter (gboolean): 1
+moved to ByteArray.remove_range: 1
+inout parameter time_: 1
+moved to ByteArray.set_size: 1
 moved to ByteArray.sized_new: 1
 moved to ByteArray.sort: 1
-moved to ByteArray.sort_with_data: 1
-inout parameter argc: 1
-parameter arguments: array types are handled in a later phase: 1
-parameter has_references: nullable scalar parameter (gboolean): 1
-parameter value: array types are handled in a later phase: 1
-inout parameter time_: 1
-moved to ByteArray.steal: 1
-parameter unescaped: array types are handled in a later phase: 1
-moved to ByteArray.unref: 1
-moved to Checksum.type_get_length: 1
-introspectable=0 (C macro; use child_watch_add_full): 1
-parameter items: array types are handled in a later phase: 1
 moved to TrashStack.height: 1
 
 ## First 50 entries
@@ -250,12 +237,10 @@ moved to TrashStack.height: 1
 [callable] GLib.assertionMessageExpr — introspectable=0
 [callable] GLib.asyncQueueNew — moved to AsyncQueue.new
 [callable] GLib.asyncQueueNewFull — moved to AsyncQueue.new_full
-[callable] GLib.base64Decode — return: array types are handled in a later phase
-[callable] GLib.base64DecodeInplace — parameter text: array types are handled in a later phase
+[callable] GLib.base64DecodeInplace — inout parameter text
 [callable] GLib.base64DecodeStep — introspectable=0
-[callable] GLib.base64Encode — parameter data: array types are handled in a later phase
-[callable] GLib.base64EncodeClose — parameter out: array types are handled in a later phase
-[callable] GLib.base64EncodeStep — parameter in: array types are handled in a later phase
+[callable] GLib.base64EncodeClose — unsupported out parameter out (ffi.Pointer<ffi.Uint8>)
+[callable] GLib.base64EncodeStep — unsupported out parameter out (ffi.Pointer<ffi.Uint8>)
 [callable] GLib.bitLockAndGet — parameter out_val: nullable scalar parameter (gint)
 [callable] GLib.bookmarkFileErrorQuark — moved to BookmarkFile.error_quark
 [callable] GLib.buildFilename — introspectable=0
@@ -283,10 +268,12 @@ moved to TrashStack.height: 1
 [callable] GLib.clearList — introspectable=0
 [callable] GLib.clearPointer — introspectable=0
 [callable] GLib.clearSlist — introspectable=0
-[callable] GLib.computeChecksumForData — parameter data: array types are handled in a later phase
-[callable] GLib.computeHmacForData — parameter key: array types are handled in a later phase
-[callable] GLib.computeHmacForString — parameter key: array types are handled in a later phase
 [callable] GLib.condNew — introspectable=0
-[callable] GLib.convert — parameter str: array types are handled in a later phase
-[callable] GLib.convertWithFallback — parameter str: array types are handled in a later phase
+[callable] GLib.convert — parameter bytes_read: nullable scalar parameter (gsize)
+[callable] GLib.convertWithFallback — parameter bytes_read: nullable scalar parameter (gsize)
 [callable] GLib.convertWithIconv — introspectable=0
+[callable] GLib.datalistClear — introspectable=0
+[callable] GLib.datalistIdDupData — introspectable=0
+[callable] GLib.datalistIdRemoveNoNotify — introspectable=0
+[callable] GLib.datalistIdReplaceData — introspectable=0
+[callable] GLib.datalistIdSetDataFull — introspectable=0

@@ -112,6 +112,34 @@ String dbusEscapeObjectPath(String s) {
   });
 }
 
+/// Escapes @bytes for use in a D-Bus object path component.
+/// @bytes is an array of zero or more nonzero bytes in an
+/// unspecified encoding, followed by a single zero byte.
+///
+/// The escaping method consists of replacing all non-alphanumeric
+/// characters (see g_ascii_isalnum()) with their hexadecimal value
+/// preceded by an underscore (`_`). For example:
+/// `foo.bar.baz` will become `foo_2ebar_2ebaz`.
+///
+/// This method is appropriate to use when the input is nearly
+/// a valid object path component but is not when your input
+/// is far from being a valid object path component.
+/// Other escaping algorithms are also valid to use with
+/// D-Bus object paths.
+///
+/// This can be reversed with g_dbus_unescape_object_path().
+final _gDbusEscapeObjectPathBytestring =
+    gioLookup<
+          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Uint8>)>
+        >('g_dbus_escape_object_path_bytestring')
+        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Uint8>)>();
+String dbusEscapeObjectPathBytestring(ffi.Pointer<ffi.Uint8> bytes) {
+  return stringFromNative(
+    (_gDbusEscapeObjectPathBytestring(bytes)).cast(),
+    free: true,
+  )!;
+}
+
 /// Generate a D-Bus GUID that can be used with
 /// e.g. g_dbus_connection_new().
 ///
@@ -326,6 +354,25 @@ final _gDbusIsUniqueName =
 bool dbusIsUniqueName(String string) {
   return withNativeString(string, (nativeString) {
     return (_gDbusIsUniqueName(nativeString.cast<Utf8>())) != 0;
+  });
+}
+
+/// Unescapes an string that was previously escaped with
+/// g_dbus_escape_object_path(). If the string is in a format that could
+/// not have been returned by g_dbus_escape_object_path(), this function
+/// returns %NULL.
+///
+/// Encoding alphanumeric characters which do not need to be
+/// encoded is not allowed (e.g `_63` is not valid, the string
+/// should contain `c` instead).
+final _gDbusUnescapeObjectPath =
+    gioLookup<
+          ffi.NativeFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<Utf8>)>
+        >('g_dbus_unescape_object_path')
+        .asFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<Utf8>)>();
+ffi.Pointer<ffi.Uint8> dbusUnescapeObjectPath(String s) {
+  return withNativeString(s, (nativeS) {
+    return _gDbusUnescapeObjectPath(nativeS.cast<Utf8>());
   });
 }
 
@@ -574,90 +621,4 @@ void ioSchedulerPushJob(
     _nc1.close();
     _nc3?.close();
   }
-}
-
-/// Creates a keyfile-backed [class@Gio.SettingsBackend].
-///
-/// The filename of the keyfile to use is given by @filename.
-///
-/// All settings read to or written from the backend must fall under the
-/// path given in @root_path (which must start and end with a slash and
-/// not contain two consecutive slashes).  @root_path may be `"/"`.
-///
-/// If @root_group is non-`NULL` then it specifies the name of the keyfile
-/// group used for keys that are written directly below @root_path.  For
-/// example, if @root_path is `"/apps/example/"` and @root_group is
-/// `"toplevel"`, then setting the key `"/apps/example/enabled"` to true will
-/// cause the following to appear in the keyfile:
-///
-/// ```
-/// [toplevel]
-/// enabled=true
-/// ```
-///
-/// If @root_group is `NULL` then it is not permitted to store keys
-/// directly below the @root_path.
-///
-/// For keys not stored directly below @root_path (ie: in a sub-path),
-/// the name of the subpath (with the final slash stripped) is used as
-/// the name of the keyfile group.  To continue the example, if
-/// `"/apps/example/profiles/default/font-size"` were set to
-/// `12` then the following would appear in the keyfile:
-///
-/// ```
-/// [profiles/default]
-/// font-size=12
-/// ```
-///
-/// The backend will refuse writes (and return writability as being
-/// false) for keys outside of @root_path and, in the event that
-/// @root_group is `NULL`, also for keys directly under @root_path.
-/// Writes will also be refused if the backend detects that it has the
-/// inability to rewrite the keyfile (ie: the containing directory is not
-/// writable).
-///
-/// There is no checking done for your key namespace clashing with the
-/// syntax of the key file format.  For example, if you have `[` or `]`
-/// characters in your path names or `=` in your key names you may be in
-/// trouble.
-///
-/// The backend reads default values from a keyfile called `defaults` in
-/// the directory specified by the `GKeyfileSettingsBackend:defaults-dir`
-/// property, and a list of locked keys from a text file with the name `locks` in
-/// the same location.
-final _gKeyfileSettingsBackendNew =
-    gioLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-            )
-          >
-        >('g_keyfile_settings_backend_new')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-          )
-        >();
-GSettingsBackend keyfileSettingsBackendNew(
-  String filename,
-  String rootPath, [
-  String? rootGroup,
-]) {
-  return withNativeString(filename, (nativeFilename) {
-    return withNativeString(rootPath, (nativeRootPath) {
-      return withNativeString(rootGroup, (nativeRootGroup) {
-        return GSettingsBackend.fromPointer(
-          _gKeyfileSettingsBackendNew(
-            nativeFilename.cast<Utf8>(),
-            nativeRootPath.cast<Utf8>(),
-            nativeRootGroup.cast<Utf8>(),
-          ),
-        );
-      });
-    });
-  });
 }

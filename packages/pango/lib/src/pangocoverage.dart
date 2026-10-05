@@ -96,6 +96,23 @@ class PangoCoverage extends GObject {
     _pangoCoverageUnref(this.handle);
   }
 
+  /// Convert data generated from [method@Pango.Coverage.to_bytes]
+  /// back to a `PangoCoverage`.
+  static final _pangoCoverageFromBytes =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, ffi.Int32)
+            >
+          >('pango_coverage_from_bytes')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  static PangoCoverage? fromBytes(ffi.Pointer<ffi.Uint8> bytes, int nBytes) {
+    return (_pangoCoverageFromBytes(bytes, nBytes)) == ffi.nullptr
+        ? null
+        : PangoCoverage.fromPointer(_pangoCoverageFromBytes(bytes, nBytes));
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

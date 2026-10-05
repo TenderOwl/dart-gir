@@ -19,6 +19,8 @@ enum TypeKind {
   pointer,
   opaque,
   voidType,
+  primitiveArray,
+  recordArray,
   unsupported,
 }
 
@@ -31,6 +33,8 @@ class TypeMapping {
     this.isPointer = false,
     this.requiredImport,
     this.reason,
+    this.arrayElement,
+    this.arrayLengthParameter,
   });
 
   const TypeMapping.unsupported(String reason)
@@ -60,6 +64,17 @@ class TypeMapping {
 
   /// Why resolution failed, when [kind] is [TypeKind.unsupported].
   final String? reason;
+
+  /// For [TypeKind.primitiveArray] / [TypeKind.recordArray] mappings,
+  /// the resolved element mapping. Carries the element's Dart and native
+  /// types so the wrapper emits `Pointer<ElementType>` signatures.
+  final TypeMapping? arrayElement;
+
+  /// For bound-length arrays, the 0-based index into the callable's
+  /// parameter list of the length parameter. Null when the array has
+  /// no length binding (e.g. `<array c:type="int*">` without
+  /// `<array length="N">`).
+  final int? arrayLengthParameter;
 }
 
 /// Maps a [GirNamespace] to the Dart package that will hold its bindings.
@@ -414,8 +429,10 @@ class TypeResolver {
   static const Set<String> _stringListCtypes = {
     'gchar**',
     'const gchar* const*',
+    'const gchar**',
     'char**',
     'const char* const*',
+    'const char**',
   };
 
   /// Whether [type] is an argv-style array of strings we can marshal.
@@ -443,6 +460,64 @@ class TypeResolver {
         elem.cType == 'gchar*';
   }
 
+  /// Maps a bound-length array whose element is an int-sized primitive
+  /// (gint-family scalars), boolean, enumeration, or bitfield. The
+  /// wrapper signature and the FFI native signature both use
+  /// `Pointer<ElementNativeType>` — e.g. `Pointer<ffi.Int32>` for an
+  /// array of `gint`, `GtkAccessibleProperty`, or `gboolean`. The user
+  /// `calloc<Int32>(n)` and writes raw int values; the wrapper does not
+  /// need a `toNative` cast because the FFI type matches the calloc
+  /// result directly. `lengthIdx` is the index of the parameter that
+  /// carries the array's length — the GIR `<array length="N">` value.
+  static TypeMapping _arrayPrimitiveMapping(
+    TypeMapping element,
+    int lengthIdx,
+  ) {
+    return TypeMapping(
+      dartType: 'ffi.Pointer<${element.nativeType}>',
+      nativeType: 'ffi.Pointer<${element.nativeType}>',
+      kind: TypeKind.primitiveArray,
+      isPointer: true,
+      arrayElement: element,
+      arrayLengthParameter: lengthIdx,
+    );
+  }
+
+  /// Maps a bound-length array whose element is a record, class, or
+  /// interface. The wrapper signature and the FFI native signature
+  /// both use `ffi.Pointer<ffi.Void>` — the same shape a single record
+  /// / class / interface parameter uses. Generated records are
+  /// currently emitted as opaque pointer classes (no `StructBase`
+  /// subclass), so `Pointer<RecordClass>` is not a valid Dart FFI
+  /// type. The user passes a `Pointer<ffi.Void>` (e.g. from
+  /// `calloc<ffi.Void>(n * sizeOfRecord)`); the wrapper passes it
+  /// through unchanged. Typed iteration via `asTypedList` is a
+  /// follow-up once the generator emits real struct classes.
+  static TypeMapping _arrayStructMapping(TypeMapping element, int lengthIdx) {
+    return TypeMapping(
+      dartType: 'ffi.Pointer<ffi.Void>',
+      nativeType: 'ffi.Pointer<ffi.Void>',
+      kind: TypeKind.recordArray,
+      isPointer: true,
+      arrayElement: element,
+      arrayLengthParameter: lengthIdx,
+    );
+  }
+
+  /// Maps an unbound array of a primitive/enum element (e.g.
+  /// `<array c:type="int*">`). No length parameter is added — the C
+  /// function reads whatever the caller provides (typically via a
+  /// sibling `get_n_items` accessor).
+  static TypeMapping _unboundedArrayMapping(TypeMapping element) {
+    return TypeMapping(
+      dartType: 'ffi.Pointer<${element.nativeType}>',
+      nativeType: 'ffi.Pointer<${element.nativeType}>',
+      kind: TypeKind.primitiveArray,
+      isPointer: true,
+      arrayElement: element,
+    );
+  }
+
   /// Resolves [type] to a [TypeMapping]. Never throws: unknown or
   /// unmappable types yield `kind == TypeKind.unsupported` with a [reason].
   TypeMapping resolve(
@@ -451,9 +526,55 @@ class TypeResolver {
   }) {
     if (type.isArray) {
       if (isStringListArray(type)) return _stringListMapping;
-      return const TypeMapping.unsupported(
-        'array types are handled in a later phase',
-      );
+      final array = type.array!;
+      final elem = array.elementType;
+      // Reject elements we cannot identify — neither GIR name nor C type
+      // is present, so the resolver has nothing to map.
+      if ((elem.name == null || elem.name!.isEmpty) && elem.cType == null) {
+        return const TypeMapping.unsupported('array of unknown element');
+      }
+      final elemMap = resolve(elem, currentNamespace: currentNamespace);
+      if (elemMap.kind == TypeKind.unsupported) {
+        return TypeMapping.unsupported(
+          'array element of unsupported kind'
+          '${elemMap.reason != null ? ' (${elemMap.reason})' : ''}',
+        );
+      }
+      final lengthIdx = array.lengthParameterIndex;
+      if (lengthIdx != null) {
+        // Bound-length array: the C side reads exactly N slots, where N is
+        // passed as a separate parameter. The wrapper must add an `int`
+        // slot bound to the array's length parameter.
+        switch (elemMap.kind) {
+          case TypeKind.primitive:
+          case TypeKind.boolean:
+          case TypeKind.enumeration:
+          case TypeKind.bitfield:
+            return _arrayPrimitiveMapping(elemMap, lengthIdx);
+          case TypeKind.record:
+          case TypeKind.classType:
+          case TypeKind.interface:
+            return _arrayStructMapping(elemMap, lengthIdx);
+          default:
+            return TypeMapping.unsupported(
+              'array of ${elemMap.kind} (later phase)',
+            );
+        }
+      }
+      // Unbound array: the C side reads whatever the caller provides.
+      // Only primitive/enum element types make sense without an explicit
+      // length — anything more complex stays unsupported.
+      switch (elemMap.kind) {
+        case TypeKind.primitive:
+        case TypeKind.boolean:
+        case TypeKind.enumeration:
+        case TypeKind.bitfield:
+          return _unboundedArrayMapping(elemMap);
+        default:
+          return TypeMapping.unsupported(
+            'array of ${elemMap.kind} (later phase)',
+          );
+      }
     }
     final name = type.name;
     if (name != null && _unsupportedNames.contains(name)) {

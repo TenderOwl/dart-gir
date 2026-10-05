@@ -92,6 +92,84 @@ class GTlsPassword extends GObject {
     _gTlsPasswordSetFlags(this.handle, flags.value);
   }
 
+  /// Set the value for this password. The @value will be copied by the password
+  /// object.
+  ///
+  /// Specify the @length, for a non-nul-terminated password. Pass -1 as
+  /// @length if using a nul-terminated password, and @length will be
+  /// calculated automatically. (Note that the terminating nul is not
+  /// considered part of the password in this case.)
+  static final _gTlsPasswordSetValue =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.IntPtr,
+              )
+            >
+          >('g_tls_password_set_value')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint8>, int)
+          >();
+  void setValue(ffi.Pointer<ffi.Uint8> value, int length) {
+    _gTlsPasswordSetValue(this.handle, value, length);
+  }
+
+  /// Provide the value for this password.
+  ///
+  /// The @value will be owned by the password object, and later freed using
+  /// the @destroy function callback.
+  ///
+  /// Specify the @length, for a non-nul-terminated password. Pass -1 as
+  /// @length if using a nul-terminated password, and @length will be
+  /// calculated automatically. (Note that the terminating nul is not
+  /// considered part of the password in this case.)
+  static final _gTlsPasswordSetValueFull =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.IntPtr,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_tls_password_set_value_full')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setValueFull(
+    ffi.Pointer<ffi.Uint8> value,
+    int length, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    final _nc3 = destroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroy);
+    try {
+      _gTlsPasswordSetValueFull(
+        this.handle,
+        value,
+        length,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Set a user readable translated warning. Usually this warning is a
   /// representation of the password flags returned from
   /// g_tls_password_get_flags().

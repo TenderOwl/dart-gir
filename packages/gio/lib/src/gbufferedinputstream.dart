@@ -296,6 +296,59 @@ class GBufferedInputStream extends GFilterInputStream {
     return _gBufferedInputStreamGetBufferSize(this.handle);
   }
 
+  /// Peeks in the buffered input, copying @count bytes of data from @offset bytes
+  /// in the buffered input into @buffer.
+  static final _gBufferedInputStreamPeek =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Size Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Size,
+              )
+            >
+          >('g_buffered_input_stream_peek')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+            )
+          >();
+  int peek(ffi.Pointer<ffi.Uint8> buffer, int offset, int count) {
+    return _gBufferedInputStreamPeek(this.handle, buffer, offset, count);
+  }
+
+  /// Returns the buffer with the currently available bytes. The returned
+  /// buffer must not be modified and will become invalid when reading from
+  /// the stream or filling the buffer.
+  static final _gBufferedInputStreamPeekBuffer =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('g_buffered_input_stream_peek_buffer')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) peekBuffer() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gBufferedInputStreamPeekBuffer(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Tries to read a single byte from the stream or the buffer. Will block
   /// during this read.
   ///

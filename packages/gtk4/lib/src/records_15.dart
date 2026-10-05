@@ -2,6 +2,75 @@
 part of '../gtk4.dart';
 
 /// Interface for Drag-and-Drop destinations in `GtkTreeView`.
+final class GtkTreeDragDest {
+  GtkTreeDragDest.fromPointer(this.handle);
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Asks the `GtkTreeDragDest` to insert a row before the path @dest,
+  /// deriving the contents of the row from @value. If @dest is
+  /// outside the tree so that inserting before it is impossible, %FALSE
+  /// will be returned. Also, %FALSE may be returned if the new row is
+  /// not created for some model-specific reason.  Should robustly handle
+  /// a @dest no longer found in the model!
+  static final _gtkTreeDragDestDragDataReceived =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_drag_dest_drag_data_received')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  bool dragDataReceived(GtkTreePath dest, GValue value) {
+    return (_gtkTreeDragDestDragDataReceived(
+          this.handle,
+          dest.handle,
+          value.handle,
+        )) !=
+        0;
+  }
+
+  /// Determines whether a drop is possible before the given @dest_path,
+  /// at the same depth as @dest_path. i.e., can we drop the data in
+  /// @value at that location. @dest_path does not have to
+  /// exist; the return value will almost certainly be %FALSE if the
+  /// parent of @dest_path doesn’t exist, though.
+  static final _gtkTreeDragDestRowDropPossible =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_tree_drag_dest_row_drop_possible')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  bool rowDropPossible(GtkTreePath destPath, GValue value) {
+    return (_gtkTreeDragDestRowDropPossible(
+          this.handle,
+          destPath.handle,
+          value.handle,
+        )) !=
+        0;
+  }
+}
+
+/// Interface for Drag-and-Drop destinations in `GtkTreeView`.
 final class GtkTreeDragSource {
   GtkTreeDragSource.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;

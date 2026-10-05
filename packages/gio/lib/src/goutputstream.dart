@@ -734,6 +734,378 @@ class GOutputStream extends GObject {
     }
   }
 
+  /// Tries to write @count bytes from @buffer into the stream. Will block
+  /// during the operation.
+  ///
+  /// If count is 0, returns 0 and does nothing. A value of @count
+  /// larger than %G_MAXSSIZE will cause a %G_IO_ERROR_INVALID_ARGUMENT error.
+  ///
+  /// On success, the number of bytes written to the stream is returned.
+  /// It is not an error if this is not the same as the requested size, as it
+  /// can happen e.g. on a partial I/O error, or if there is not enough
+  /// storage in the stream. All writes block until at least one byte
+  /// is written or an error occurs; 0 is never returned (unless
+  /// @count is 0).
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned. If an
+  /// operation was partially finished when the operation was cancelled the
+  /// partial result will be returned, without an error.
+  ///
+  /// On error -1 is returned and @error is set accordingly.
+  static final _gOutputStreamWrite =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_write')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int write(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int count, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWrite(
+        this.handle,
+        buffer,
+        count,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Request an asynchronous write of @count bytes from @buffer into
+  /// the stream. When the operation is finished @callback will be called.
+  /// You can then call g_output_stream_write_all_finish() to get the result of the
+  /// operation.
+  ///
+  /// This is the asynchronous version of g_output_stream_write_all().
+  ///
+  /// Call g_output_stream_write_all_finish() to collect the result.
+  ///
+  /// Any outstanding I/O request with higher priority (lower numerical
+  /// value) will be executed before an outstanding request with lower
+  /// priority. Default priority is %G_PRIORITY_DEFAULT.
+  ///
+  /// Note that no copy of @buffer will be made, so it must stay valid
+  /// until @callback is called.
+  static final _gOutputStreamWriteAllAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_output_stream_write_all_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void writeAllAsync(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int count,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gOutputStreamWriteAllAsync(
+        this.handle,
+        buffer,
+        count,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  }
+
+  static final _writeAllAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _writeAllAsyncCallbackSeq = 0;
+  static final _writeAllAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_writeAllAsyncCallbackTrampoline);
+  static void _writeAllAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _writeAllAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [writeAllAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void writeAllAsyncCallback(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int count,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_writeAllAsyncCallbackSeq;
+    _writeAllAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gOutputStreamWriteAllAsync(
+      this.handle,
+      buffer,
+      count,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _writeAllAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
+  /// Request an asynchronous write of @count bytes from @buffer into
+  /// the stream. When the operation is finished @callback will be called.
+  /// You can then call g_output_stream_write_finish() to get the result of the
+  /// operation.
+  ///
+  /// During an async request no other sync and async calls are allowed,
+  /// and will result in %G_IO_ERROR_PENDING errors.
+  ///
+  /// A value of @count larger than %G_MAXSSIZE will cause a
+  /// %G_IO_ERROR_INVALID_ARGUMENT error.
+  ///
+  /// On success, the number of bytes written will be passed to the
+  /// @callback. It is not an error if this is not the same as the
+  /// requested size, as it can happen e.g. on a partial I/O error,
+  /// but generally we try to write as many bytes as requested.
+  ///
+  /// You are guaranteed that this method will never fail with
+  /// %G_IO_ERROR_WOULD_BLOCK - if @stream can't accept more data, the
+  /// method will just wait until this changes.
+  ///
+  /// Any outstanding I/O request with higher priority (lower numerical
+  /// value) will be executed before an outstanding request with lower
+  /// priority. Default priority is %G_PRIORITY_DEFAULT.
+  ///
+  /// The asynchronous methods have a default fallback that uses threads
+  /// to implement asynchronicity, so they are optional for inheriting
+  /// classes. However, if you override one you must override all.
+  ///
+  /// For the synchronous, blocking version of this function, see
+  /// g_output_stream_write().
+  ///
+  /// Note that no copy of @buffer will be made, so it must stay valid
+  /// until @callback is called. See g_output_stream_write_bytes_async()
+  /// for a #GBytes version that will automatically hold a reference to
+  /// the contents (without copying) for the duration of the call.
+  static final _gOutputStreamWriteAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_output_stream_write_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void writeAsync(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int count,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gOutputStreamWriteAsync(
+        this.handle,
+        buffer,
+        count,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  }
+
+  static final _writeAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _writeAsyncCallbackSeq = 0;
+  static final _writeAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_writeAsyncCallbackTrampoline);
+  static void _writeAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _writeAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [writeAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void writeAsyncCallback(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int count,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_writeAsyncCallbackSeq;
+    _writeAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gOutputStreamWriteAsync(
+      this.handle,
+      buffer,
+      count,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _writeAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// A wrapper function for g_output_stream_write() which takes a
   /// #GBytes as input.  This can be more convenient for use by language
   /// bindings or in other cases where the refcounted nature of #GBytes
@@ -986,6 +1358,310 @@ class GOutputStream extends GObject {
     } finally {
       calloc.free(_error);
     }
+  }
+
+  /// Request an asynchronous write of the bytes contained in the @n_vectors @vectors into
+  /// the stream. When the operation is finished @callback will be called.
+  /// You can then call g_output_stream_writev_all_finish() to get the result of the
+  /// operation.
+  ///
+  /// This is the asynchronous version of g_output_stream_writev_all().
+  ///
+  /// Call g_output_stream_writev_all_finish() to collect the result.
+  ///
+  /// Any outstanding I/O request with higher priority (lower numerical
+  /// value) will be executed before an outstanding request with lower
+  /// priority. Default priority is %G_PRIORITY_DEFAULT.
+  ///
+  /// Note that no copy of @vectors will be made, so it must stay valid
+  /// until @callback is called. The content of the individual elements
+  /// of @vectors might be changed by this function.
+  static final _gOutputStreamWritevAllAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_output_stream_writev_all_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void writevAllAsync(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gOutputStreamWritevAllAsync(
+        this.handle,
+        vectors,
+        nVectors,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  }
+
+  static final _writevAllAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _writevAllAsyncCallbackSeq = 0;
+  static final _writevAllAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_writevAllAsyncCallbackTrampoline);
+  static void _writevAllAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _writevAllAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [writevAllAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void writevAllAsyncCallback(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_writevAllAsyncCallbackSeq;
+    _writevAllAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gOutputStreamWritevAllAsync(
+      this.handle,
+      vectors,
+      nVectors,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _writevAllAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
+  /// Request an asynchronous write of the bytes contained in @n_vectors @vectors into
+  /// the stream. When the operation is finished @callback will be called.
+  /// You can then call g_output_stream_writev_finish() to get the result of the
+  /// operation.
+  ///
+  /// During an async request no other sync and async calls are allowed,
+  /// and will result in %G_IO_ERROR_PENDING errors.
+  ///
+  /// On success, the number of bytes written will be passed to the
+  /// @callback. It is not an error if this is not the same as the
+  /// requested size, as it can happen e.g. on a partial I/O error,
+  /// but generally we try to write as many bytes as requested.
+  ///
+  /// You are guaranteed that this method will never fail with
+  /// %G_IO_ERROR_WOULD_BLOCK — if @stream can't accept more data, the
+  /// method will just wait until this changes.
+  ///
+  /// Any outstanding I/O request with higher priority (lower numerical
+  /// value) will be executed before an outstanding request with lower
+  /// priority. Default priority is %G_PRIORITY_DEFAULT.
+  ///
+  /// The asynchronous methods have a default fallback that uses threads
+  /// to implement asynchronicity, so they are optional for inheriting
+  /// classes. However, if you override one you must override all.
+  ///
+  /// For the synchronous, blocking version of this function, see
+  /// g_output_stream_writev().
+  ///
+  /// Note that no copy of @vectors will be made, so it must stay valid
+  /// until @callback is called.
+  static final _gOutputStreamWritevAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_output_stream_writev_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void writevAsync(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gOutputStreamWritevAsync(
+        this.handle,
+        vectors,
+        nVectors,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  }
+
+  static final _writevAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _writevAsyncCallbackSeq = 0;
+  static final _writevAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_writevAsyncCallbackTrampoline);
+  static void _writevAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _writevAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [writevAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void writevAsyncCallback(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_writevAsyncCallbackSeq;
+    _writevAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gOutputStreamWritevAsync(
+      this.handle,
+      vectors,
+      nVectors,
+      ioPriority,
+      cancellable?.handle ?? ffi.nullptr,
+      _writevAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
   }
 
   /// The notify signal is emitted on an object when one of its properties has

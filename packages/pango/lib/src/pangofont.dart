@@ -215,6 +215,18 @@ class PangoFont extends GObject {
     return GBytes.fromPointer(_pangoFontSerialize(this.handle));
   }
 
+  /// Frees an array of font descriptions.
+  static final _pangoFontDescriptionsFree =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('pango_font_descriptions_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  static void descriptionsFree(ffi.Pointer<ffi.Void> descs, int nDescs) {
+    _pangoFontDescriptionsFree(descs, nDescs);
+  }
+
   /// Loads data previously created via [method@Pango.Font.serialize].
   ///
   /// For a discussion of the supported format, see that function.

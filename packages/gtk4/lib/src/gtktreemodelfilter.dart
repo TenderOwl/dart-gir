@@ -241,6 +241,107 @@ class GtkTreeModelFilter extends GObject {
     _gtkTreeModelFilterRefilter(this.handle);
   }
 
+  /// With the @n_columns and @types parameters, you give an array of column
+  /// types for this model (which will be exposed to the parent model/view).
+  /// The @func, @data and @destroy parameters are for specifying the modify
+  /// function. The modify function will get called for each
+  /// data access, the goal of the modify function is to return the data which
+  /// should be displayed at the location specified using the parameters of the
+  /// modify function.
+  ///
+  /// Note that gtk_tree_model_filter_set_modify_func()
+  /// can only be called once for a given filter model.
+  static final _gtkTreeModelFilterSetModifyFunc =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Int32,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('gtk_tree_model_filter_set_modify_func')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Int32,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void setModifyFunc(
+    int nColumns,
+    ffi.Pointer<ffi.Size> types,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      int,
+      ffi.Pointer<ffi.Void>,
+    )
+    func,
+    ffi.Pointer<ffi.Void> data, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    final _nc3 =
+        ffi.NativeCallable<
+          ffi.Void Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Int32,
+            ffi.Pointer<ffi.Void>,
+          )
+        >.isolateLocal(func);
+    final _nc5 = destroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroy);
+    try {
+      _gtkTreeModelFilterSetModifyFunc(
+        this.handle,
+        nColumns,
+        types,
+        _nc3.nativeFunction,
+        data,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc3.close();
+      _nc5?.close();
+    }
+  }
+
   /// Sets @column of the child_model to be the column where @filter should
   /// look for visibility information. @columns should be a column of type
   /// %G_TYPE_BOOLEAN, where %TRUE means that a row is visible, and %FALSE
@@ -1074,6 +1175,48 @@ class GtkTreeModelFilter extends GObject {
           >();
   void rowInserted(GtkTreePath path, GtkTreeIter iter) {
     _gtkTreeModelRowInserted(this.handle, path.handle, iter.handle);
+  }
+
+  /// Emits the ::rows-reordered signal on @tree_model.
+  ///
+  /// See [signal@Gtk.TreeModel::rows-reordered].
+  ///
+  /// This should be called by models when their rows have been
+  /// reordered.
+  static final _gtkTreeModelRowsReorderedWithLength =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_tree_model_rows_reordered_with_length')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              int,
+            )
+          >();
+  void rowsReorderedWithLength(
+    GtkTreePath path,
+    GtkTreeIter? iter,
+    ffi.Pointer<ffi.Int32> newOrder,
+    int length,
+  ) {
+    _gtkTreeModelRowsReorderedWithLength(
+      this.handle,
+      path.handle,
+      iter?.handle ?? ffi.nullptr,
+      newOrder,
+      length,
+    );
   }
 
   /// Lets the tree unref the node.

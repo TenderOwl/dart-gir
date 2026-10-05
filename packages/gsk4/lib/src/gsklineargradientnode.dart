@@ -6,6 +6,48 @@ class GskLinearGradientNode extends GskRenderNode {
   GskLinearGradientNode.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Creates a `GskRenderNode` that will create a linear gradient from the given
+  /// points and color stops, and render that into the area given by @bounds.
+  static final _gskLinearGradientNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gsk_linear_gradient_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GskLinearGradientNode(
+    GrapheneRect bounds,
+    GraphenePoint start,
+    GraphenePoint end,
+    ffi.Pointer<ffi.Void> colorStops,
+    int nColorStops,
+  ) {
+    return GskLinearGradientNode.fromPointer(
+      _gskLinearGradientNodeNew(
+        bounds.handle,
+        start.handle,
+        end.handle,
+        colorStops,
+        nColorStops,
+      ),
+      owned: true,
+    );
+  }
+
   /// Retrieves the final point of the linear gradient.
   static final _gskLinearGradientNodeGetEnd =
       gsk4Lookup<

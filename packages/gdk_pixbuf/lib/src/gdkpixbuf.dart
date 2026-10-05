@@ -398,6 +398,80 @@ class GdkPixbuf extends GObject {
     });
   }
 
+  /// Creates a `GdkPixbuf` from a flat representation that is suitable for
+  /// storing as inline data in a program.
+  ///
+  /// This is useful if you want to ship a program with images, but don't want
+  /// to depend on any external files.
+  ///
+  /// GdkPixbuf ships with a program called `gdk-pixbuf-csource`, which allows
+  /// for conversion of `GdkPixbuf`s into such a inline representation.
+  ///
+  /// In almost all cases, you should pass the `--raw` option to
+  /// `gdk-pixbuf-csource`. A sample invocation would be:
+  ///
+  /// ```
+  /// gdk-pixbuf-csource --raw --name=myimage_inline myimage.png
+  /// ```
+  ///
+  /// For the typical case where the inline pixbuf is read-only static data,
+  /// you don't need to copy the pixel data unless you intend to write to
+  /// it, so you can pass `FALSE` for `copy_pixels`. If you pass `--rle` to
+  /// `gdk-pixbuf-csource`, a copy will be made even if `copy_pixels` is `FALSE`,
+  /// so using this option is generally a bad idea.
+  ///
+  /// If you create a pixbuf from const inline data compiled into your
+  /// program, it's probably safe to ignore errors and disable length checks,
+  /// since things will always succeed:
+  ///
+  /// ```c
+  /// pixbuf = gdk_pixbuf_new_from_inline (-1, myimage_inline, FALSE, NULL);
+  /// ```
+  ///
+  /// For non-const inline data, you could get out of memory. For untrusted
+  /// inline data located at runtime, you could have corrupt inline data in
+  /// addition.
+  static final _gdkPixbufNewFromInline =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Int32,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_pixbuf_new_from_inline')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              int,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  factory GdkPixbuf.fromInline(
+    int dataLength,
+    ffi.Pointer<ffi.Uint8> data,
+    bool copyPixels,
+  ) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gdkPixbufNewFromInline(
+        dataLength,
+        data,
+        copyPixels ? 1 : 0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return GdkPixbuf.fromPointer(_ret, owned: true);
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Creates a new pixbuf by loading an image from an resource.
   ///
   /// The file format is detected automatically. If `NULL` is returned, then
@@ -642,6 +716,28 @@ class GdkPixbuf extends GObject {
     } finally {
       calloc.free(_error);
     }
+  }
+
+  /// Creates a new pixbuf by parsing XPM data in memory.
+  ///
+  /// This data is commonly the result of including an XPM file into a
+  /// program's C source.
+  static final _gdkPixbufNewFromXpmData =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+            >
+          >('gdk_pixbuf_new_from_xpm_data')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  factory GdkPixbuf.fromXpmData([List<String?>? data]) {
+    return withNativeStringList(data, (nativeData) {
+      return GdkPixbuf.fromPointer(
+        _gdkPixbufNewFromXpmData(nativeData),
+        owned: true,
+      );
+    });
   }
 
   /// Takes an existing pixbuf and adds an alpha channel to it.
@@ -1191,6 +1287,38 @@ class GdkPixbuf extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GHashTable getOptions() {
     return GHashTable.fromPointer(_gdkPixbufGetOptions(this.handle));
+  }
+
+  /// Queries a pointer to the pixel data of a pixbuf.
+  ///
+  /// This function will cause an implicit copy of the pixbuf data if the
+  /// pixbuf was created from read-only data.
+  ///
+  /// Please see the section on [image data](class.Pixbuf.html#image-data) for information
+  /// about how the pixel data is stored in memory.
+  static final _gdkPixbufGetPixelsWithLength =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gdk_pixbuf_get_pixels_with_length')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) getPixelsWithLength() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gdkPixbufGetPixelsWithLength(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Queries the rowstride of a pixbuf, which is the number of bytes between

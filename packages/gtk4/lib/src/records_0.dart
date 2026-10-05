@@ -28,6 +28,25 @@ final class GtkAccessibleList {
   GtkAccessibleList.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Allocates a new list of accessible objects.
+  static final _gtkAccessibleListNewFromArray =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
+            >
+          >('gtk_accessible_list_new_from_array')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  factory GtkAccessibleList.fromArray(
+    ffi.Pointer<ffi.Void> accessibles,
+    int nAccessibles,
+  ) {
+    return GtkAccessibleList.fromPointer(
+      _gtkAccessibleListNewFromArray(accessibles, nAccessibles),
+    );
+  }
+
   /// Allocates a new `GtkAccessibleList`, doing a shallow copy
   /// of the passed list of accessible objects
   static final _gtkAccessibleListNewFromList =
@@ -646,10 +665,5 @@ final class GtkBorder {
 
 final class GtkBoxClass {
   GtkBoxClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkBoxLayoutClass {
-  GtkBoxLayoutClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

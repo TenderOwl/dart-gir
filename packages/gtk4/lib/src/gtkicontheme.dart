@@ -105,6 +105,35 @@ class GtkIconTheme extends GObject {
         : GdkDisplay.fromPointer(_gtkIconThemeGetDisplay(this.handle));
   }
 
+  /// Returns an array of integers describing the sizes at which
+  /// the icon is available without scaling.
+  ///
+  /// A size of -1 means that the icon is available in a scalable
+  /// format. The array is zero-terminated.
+  static final _gtkIconThemeGetIconSizes =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Int32> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_icon_theme_get_icon_sizes')
+          .asFunction<
+            ffi.Pointer<ffi.Int32> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  ffi.Pointer<ffi.Int32> getIconSizes(String iconName) {
+    return withNativeString(iconName, (nativeIconName) {
+      return _gtkIconThemeGetIconSizes(
+        this.handle,
+        nativeIconName.cast<Utf8>(),
+      );
+    });
+  }
+
   /// Gets the current icon theme name.
   static final _gtkIconThemeGetThemeName =
       gtk4Lookup<
@@ -195,6 +224,72 @@ class GtkIconTheme extends GObject {
         flags.value,
       ),
     );
+  }
+
+  /// Looks up a named icon for a desired size and window scale,
+  /// returning a `GtkIconPaintable`.
+  ///
+  /// The icon can then be rendered by using it as a `GdkPaintable`,
+  /// or you can get information such as the filename and size.
+  ///
+  /// If the available @icon_name is not available and @fallbacks are
+  /// provided, they will be tried in order.
+  ///
+  /// If no matching icon is found, then a paintable that renders the
+  /// "missing icon" icon is returned. If you need to do something else
+  /// for missing icons you need to use [method@Gtk.IconTheme.has_icon].
+  ///
+  /// Note that you probably want to listen for icon theme changes and
+  /// update the icon. This is usually done by overriding the
+  /// GtkWidgetClass.css-changed() function.
+  static final _gtkIconThemeLookupIcon =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Uint32,
+              )
+            >
+          >('gtk_icon_theme_lookup_icon')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
+  GtkIconPaintable lookupIcon(
+    String iconName,
+    List<String?>? fallbacks,
+    int size,
+    int scale,
+    GtkTextDirection direction,
+    GtkIconLookupFlags flags,
+  ) {
+    return withNativeStringList(fallbacks, (nativeFallbacks) {
+      return withNativeString(iconName, (nativeIconName) {
+        return GtkIconPaintable.fromPointer(
+          _gtkIconThemeLookupIcon(
+            this.handle,
+            nativeIconName.cast<Utf8>(),
+            nativeFallbacks,
+            size,
+            scale,
+            direction.value,
+            flags.value,
+          ),
+        );
+      });
+    });
   }
 
   /// Sets the resource paths that will be looked at when

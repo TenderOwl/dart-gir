@@ -1148,6 +1148,49 @@ final class GClosure {
     _gClosureInvalidate(this.handle);
   }
 
+  /// Invokes the closure, i.e. executes the callback represented by the @closure.
+  static final _gClosureInvoke =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_closure_invoke')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GValue? invoke(
+    int nParamValues,
+    ffi.Pointer<ffi.Void> paramValues,
+    ffi.Pointer<ffi.Void> invocationHint,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gClosureInvoke(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        nParamValues,
+        paramValues,
+        invocationHint,
+      );
+      return (_out0) == ffi.nullptr
+          ? null
+          : GValue.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Increments the reference count on a closure to force it staying
   /// alive while the caller holds a pointer to it.
   static final _gClosureRef =

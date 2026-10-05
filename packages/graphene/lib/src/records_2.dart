@@ -303,6 +303,29 @@ final class GrapheneMatrix {
     );
   }
 
+  /// Initializes a #graphene_matrix_t with the given array of floating
+  /// point values.
+  static final _grapheneMatrixInitFromFloat =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_matrix_init_from_float')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  GrapheneMatrix initFromFloat(ffi.Pointer<ffi.Float> v) {
+    return GrapheneMatrix.fromPointer(
+      _grapheneMatrixInitFromFloat(this.handle, v),
+    );
+  }
+
   /// Initializes a #graphene_matrix_t using the values of the
   /// given matrix.
   static final _grapheneMatrixInitFromMatrix =

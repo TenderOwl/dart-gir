@@ -1276,6 +1276,448 @@ class GSocket extends GObject {
     }
   }
 
+  /// Receive multiple data messages from @socket in one go.  This is the most
+  /// complicated and fully-featured version of this call. For easier use, see
+  /// g_socket_receive(), g_socket_receive_from(), and g_socket_receive_message().
+  ///
+  /// @messages must point to an array of #GInputMessage structs and
+  /// @num_messages must be the length of this array. Each #GInputMessage
+  /// contains a pointer to an array of #GInputVector structs describing the
+  /// buffers that the data received in each message will be written to. Using
+  /// multiple #GInputVectors is more memory-efficient than manually copying data
+  /// out of a single buffer to multiple sources, and more system-call-efficient
+  /// than making multiple calls to g_socket_receive(), such as in scenarios where
+  /// a lot of data packets need to be received (e.g. high-bandwidth video
+  /// streaming over RTP/UDP).
+  ///
+  /// @flags modify how all messages are received. The commonly available
+  /// arguments for this are available in the #GSocketMsgFlags enum, but the
+  /// values there are the same as the system values, and the flags
+  /// are passed in as-is, so you can pass in system-specific flags too. These
+  /// flags affect the overall receive operation. Flags affecting individual
+  /// messages are returned in #GInputMessage.flags.
+  ///
+  /// The other members of #GInputMessage are treated as described in its
+  /// documentation.
+  ///
+  /// If #GSocket:blocking is %TRUE the call will block until @num_messages have
+  /// been received, or the end of the stream is reached.
+  ///
+  /// If #GSocket:blocking is %FALSE the call will return up to @num_messages
+  /// without blocking, or %G_IO_ERROR_WOULD_BLOCK if no messages are queued in the
+  /// operating system to be received.
+  ///
+  /// In blocking mode, if #GSocket:timeout is positive and is reached before any
+  /// messages are received, %G_IO_ERROR_TIMED_OUT is returned, otherwise up to
+  /// @num_messages are returned. (Note: This is effectively the
+  /// behaviour of `MSG_WAITFORONE` with recvmmsg().)
+  ///
+  /// To be notified when messages are available, wait for the
+  /// %G_IO_IN condition. Note though that you may still receive
+  /// %G_IO_ERROR_WOULD_BLOCK from g_socket_receive_messages() even if you were
+  /// previously notified of a %G_IO_IN condition.
+  ///
+  /// If the remote peer closes the connection, any messages queued in the
+  /// operating system will be returned, and subsequent calls to
+  /// g_socket_receive_messages() will return 0 (with no error set).
+  ///
+  /// On error -1 is returned and @error is set accordingly. An error will only
+  /// be returned if zero messages could be received; otherwise the number of
+  /// messages successfully received before the error will be returned.
+  static final _gSocketReceiveMessages =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_receive_messages')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int receiveMessages(
+    ffi.Pointer<ffi.Void> messages,
+    int numMessages,
+    int flags, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketReceiveMessages(
+        this.handle,
+        messages,
+        numMessages,
+        flags,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Tries to send @size bytes from @buffer on the socket. This is
+  /// mainly used by connection-oriented sockets; it is identical to
+  /// g_socket_send_to() with @address set to %NULL.
+  ///
+  /// If the socket is in blocking mode the call will block until there is
+  /// space for the data in the socket queue. If there is no space available
+  /// and the socket is in non-blocking mode a %G_IO_ERROR_WOULD_BLOCK error
+  /// will be returned. To be notified when space is available, wait for the
+  /// %G_IO_OUT condition. Note though that you may still receive
+  /// %G_IO_ERROR_WOULD_BLOCK from g_socket_send() even if you were previously
+  /// notified of a %G_IO_OUT condition. (On Windows in particular, this is
+  /// very common due to the way the underlying APIs work.)
+  ///
+  /// On error -1 is returned and @error is set accordingly.
+  static final _gSocketSend =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_send')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int send(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int size, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketSend(
+        this.handle,
+        buffer,
+        size,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Send data to @address on @socket.  For sending multiple messages see
+  /// g_socket_send_messages(); for easier use, see
+  /// g_socket_send() and g_socket_send_to().
+  ///
+  /// If @address is %NULL then the message is sent to the default receiver
+  /// (set by g_socket_connect()).
+  ///
+  /// @vectors must point to an array of #GOutputVector structs and
+  /// @num_vectors must be the length of this array. (If @num_vectors is -1,
+  /// then @vectors is assumed to be terminated by a #GOutputVector with a
+  /// %NULL buffer pointer.) The #GOutputVector structs describe the buffers
+  /// that the sent data will be gathered from. Using multiple
+  /// #GOutputVectors is more memory-efficient than manually copying
+  /// data from multiple sources into a single buffer, and more
+  /// network-efficient than making multiple calls to g_socket_send().
+  ///
+  /// @messages, if non-%NULL, is taken to point to an array of @num_messages
+  /// #GSocketControlMessage instances. These correspond to the control
+  /// messages to be sent on the socket.
+  /// If @num_messages is -1 then @messages is treated as a %NULL-terminated
+  /// array.
+  ///
+  /// @flags modify how the message is sent. The commonly available arguments
+  /// for this are available in the #GSocketMsgFlags enum, but the
+  /// values there are the same as the system values, and the flags
+  /// are passed in as-is, so you can pass in system-specific flags too.
+  ///
+  /// If the socket is in blocking mode the call will block until there is
+  /// space for the data in the socket queue. If there is no space available
+  /// and the socket is in non-blocking mode a %G_IO_ERROR_WOULD_BLOCK error
+  /// will be returned. To be notified when space is available, wait for the
+  /// %G_IO_OUT condition. Note though that you may still receive
+  /// %G_IO_ERROR_WOULD_BLOCK from g_socket_send() even if you were previously
+  /// notified of a %G_IO_OUT condition. (On Windows in particular, this is
+  /// very common due to the way the underlying APIs work.)
+  ///
+  /// The sum of the sizes of each #GOutputVector in vectors must not be
+  /// greater than %G_MAXSSIZE. If the message can be larger than this,
+  /// then it is mandatory to use the g_socket_send_message_with_timeout()
+  /// function.
+  ///
+  /// On error -1 is returned and @error is set accordingly.
+  static final _gSocketSendMessage =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_send_message')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int sendMessage(
+    GSocketAddress? address,
+    ffi.Pointer<ffi.Void> vectors,
+    int numVectors,
+    ffi.Pointer<ffi.Void> messages,
+    int numMessages,
+    int flags, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketSendMessage(
+        this.handle,
+        address?.handle ?? ffi.nullptr,
+        vectors,
+        numVectors,
+        messages,
+        numMessages,
+        flags,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Send multiple data messages from @socket in one go.  This is the most
+  /// complicated and fully-featured version of this call. For easier use, see
+  /// g_socket_send(), g_socket_send_to(), and g_socket_send_message().
+  ///
+  /// @messages must point to an array of #GOutputMessage structs and
+  /// @num_messages must be the length of this array. Each #GOutputMessage
+  /// contains an address to send the data to, and a pointer to an array of
+  /// #GOutputVector structs to describe the buffers that the data to be sent
+  /// for each message will be gathered from. Using multiple #GOutputVectors is
+  /// more memory-efficient than manually copying data from multiple sources
+  /// into a single buffer, and more network-efficient than making multiple
+  /// calls to g_socket_send(). Sending multiple messages in one go avoids the
+  /// overhead of making a lot of syscalls in scenarios where a lot of data
+  /// packets need to be sent (e.g. high-bandwidth video streaming over RTP/UDP),
+  /// or where the same data needs to be sent to multiple recipients.
+  ///
+  /// @flags modify how the message is sent. The commonly available arguments
+  /// for this are available in the #GSocketMsgFlags enum, but the
+  /// values there are the same as the system values, and the flags
+  /// are passed in as-is, so you can pass in system-specific flags too.
+  ///
+  /// If the socket is in blocking mode the call will block until there is
+  /// space for all the data in the socket queue. If there is no space available
+  /// and the socket is in non-blocking mode a %G_IO_ERROR_WOULD_BLOCK error
+  /// will be returned if no data was written at all, otherwise the number of
+  /// messages sent will be returned. To be notified when space is available,
+  /// wait for the %G_IO_OUT condition. Note though that you may still receive
+  /// %G_IO_ERROR_WOULD_BLOCK from g_socket_send() even if you were previously
+  /// notified of a %G_IO_OUT condition. (On Windows in particular, this is
+  /// very common due to the way the underlying APIs work.)
+  ///
+  /// On error -1 is returned and @error is set accordingly. An error will only
+  /// be returned if zero messages could be sent; otherwise the number of messages
+  /// successfully sent before the error will be returned.
+  static final _gSocketSendMessages =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_send_messages')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int sendMessages(
+    ffi.Pointer<ffi.Void> messages,
+    int numMessages,
+    int flags, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketSendMessages(
+        this.handle,
+        messages,
+        numMessages,
+        flags,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Tries to send @size bytes from @buffer to @address. If @address is
+  /// %NULL then the message is sent to the default receiver (set by
+  /// g_socket_connect()).
+  ///
+  /// See g_socket_send() for additional information.
+  static final _gSocketSendTo =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_send_to')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int sendTo(
+    GSocketAddress? address,
+    ffi.Pointer<ffi.Uint8> buffer,
+    int size, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketSendTo(
+        this.handle,
+        address?.handle ?? ffi.nullptr,
+        buffer,
+        size,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// This behaves exactly the same as g_socket_send(), except that
+  /// the choice of blocking or non-blocking behavior is determined by
+  /// the @blocking argument rather than by @socket's properties.
+  static final _gSocketSendWithBlocking =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_send_with_blocking')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int sendWithBlocking(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int size,
+    bool blocking, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketSendWithBlocking(
+        this.handle,
+        buffer,
+        size,
+        blocking ? 1 : 0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Sets the blocking mode of the socket. In blocking mode
   /// all operations (which don’t take an explicit blocking parameter) block until
   /// they succeed or there is an error. In
@@ -1660,6 +2102,201 @@ class GSocket extends GObject {
         cancellable?.handle ?? ffi.nullptr,
       ),
     );
+  }
+
+  /// Receive one or more data messages from @datagram_based in one go.
+  ///
+  /// @messages must point to an array of #GInputMessage structs and
+  /// @num_messages must be the length of this array. Each #GInputMessage
+  /// contains a pointer to an array of #GInputVector structs describing the
+  /// buffers that the data received in each message will be written to.
+  ///
+  /// @flags modify how all messages are received. The commonly available
+  /// arguments for this are available in the #GSocketMsgFlags enum, but the
+  /// values there are the same as the system values, and the flags
+  /// are passed in as-is, so you can pass in system-specific flags too. These
+  /// flags affect the overall receive operation. Flags affecting individual
+  /// messages are returned in #GInputMessage.flags.
+  ///
+  /// The other members of #GInputMessage are treated as described in its
+  /// documentation.
+  ///
+  /// If @timeout is negative the call will block until @num_messages have been
+  /// received, the connection is closed remotely (EOS), @cancellable is cancelled,
+  /// or an error occurs.
+  ///
+  /// If @timeout is 0 the call will return up to @num_messages without blocking,
+  /// or %G_IO_ERROR_WOULD_BLOCK if no messages are queued in the operating system
+  /// to be received.
+  ///
+  /// If @timeout is positive the call will block on the same conditions as if
+  /// @timeout were negative. If the timeout is reached
+  /// before any messages are received, %G_IO_ERROR_TIMED_OUT is returned,
+  /// otherwise it will return the number of messages received before timing out.
+  /// (Note: This is effectively the behaviour of `MSG_WAITFORONE` with
+  /// recvmmsg().)
+  ///
+  /// To be notified when messages are available, wait for the %G_IO_IN condition.
+  /// Note though that you may still receive %G_IO_ERROR_WOULD_BLOCK from
+  /// g_datagram_based_receive_messages() even if you were previously notified of a
+  /// %G_IO_IN condition.
+  ///
+  /// If the remote peer closes the connection, any messages queued in the
+  /// underlying receive buffer will be returned, and subsequent calls to
+  /// g_datagram_based_receive_messages() will return 0 (with no error set).
+  ///
+  /// If the connection is shut down or closed (by calling g_socket_close() or
+  /// g_socket_shutdown() with @shutdown_read set, if it’s a #GSocket, for
+  /// example), all calls to this function will return %G_IO_ERROR_CLOSED.
+  ///
+  /// On error -1 is returned and @error is set accordingly. An error will only
+  /// be returned if zero messages could be received; otherwise the number of
+  /// messages successfully received before the error will be returned. If
+  /// @cancellable is cancelled, %G_IO_ERROR_CANCELLED is returned as with any
+  /// other error.
+  static final _gDatagramBasedReceiveMessages =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Int64,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_datagram_based_receive_messages')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int receiveMessagesSocket(
+    ffi.Pointer<ffi.Void> messages,
+    int numMessages,
+    int flags,
+    int timeout, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDatagramBasedReceiveMessages(
+        this.handle,
+        messages,
+        numMessages,
+        flags,
+        timeout,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Send one or more data messages from @datagram_based in one go.
+  ///
+  /// @messages must point to an array of #GOutputMessage structs and
+  /// @num_messages must be the length of this array. Each #GOutputMessage
+  /// contains an address to send the data to, and a pointer to an array of
+  /// #GOutputVector structs to describe the buffers that the data to be sent
+  /// for each message will be gathered from.
+  ///
+  /// @flags modify how the message is sent. The commonly available arguments
+  /// for this are available in the #GSocketMsgFlags enum, but the
+  /// values there are the same as the system values, and the flags
+  /// are passed in as-is, so you can pass in system-specific flags too.
+  ///
+  /// The other members of #GOutputMessage are treated as described in its
+  /// documentation.
+  ///
+  /// If @timeout is negative the call will block until @num_messages have been
+  /// sent, @cancellable is cancelled, or an error occurs.
+  ///
+  /// If @timeout is 0 the call will send up to @num_messages without blocking,
+  /// or will return %G_IO_ERROR_WOULD_BLOCK if there is no space to send messages.
+  ///
+  /// If @timeout is positive the call will block on the same conditions as if
+  /// @timeout were negative. If the timeout is reached before any messages are
+  /// sent, %G_IO_ERROR_TIMED_OUT is returned, otherwise it will return the number
+  /// of messages sent before timing out.
+  ///
+  /// To be notified when messages can be sent, wait for the %G_IO_OUT condition.
+  /// Note though that you may still receive %G_IO_ERROR_WOULD_BLOCK from
+  /// g_datagram_based_send_messages() even if you were previously notified of a
+  /// %G_IO_OUT condition. (On Windows in particular, this is very common due to
+  /// the way the underlying APIs work.)
+  ///
+  /// If the connection is shut down or closed (by calling g_socket_close() or
+  /// g_socket_shutdown() with @shutdown_write set, if it’s a #GSocket, for
+  /// example), all calls to this function will return %G_IO_ERROR_CLOSED.
+  ///
+  /// On error -1 is returned and @error is set accordingly. An error will only
+  /// be returned if zero messages could be sent; otherwise the number of messages
+  /// successfully sent before the error will be returned. If @cancellable is
+  /// cancelled, %G_IO_ERROR_CANCELLED is returned as with any other error.
+  static final _gDatagramBasedSendMessages =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Int64,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_datagram_based_send_messages')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int sendMessagesSocket(
+    ffi.Pointer<ffi.Void> messages,
+    int numMessages,
+    int flags,
+    int timeout, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDatagramBasedSendMessages(
+        this.handle,
+        messages,
+        numMessages,
+        flags,
+        timeout,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
   }
 
   /// Initializes the object implementing the interface.

@@ -161,6 +161,28 @@ final class GrapheneVec2 {
     return GrapheneVec2.fromPointer(_grapheneVec2Init(this.handle, x, y));
   }
 
+  /// Initializes @v with the contents of the given array.
+  static final _grapheneVec2InitFromFloat =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_vec2_init_from_float')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  GrapheneVec2 initFromFloat(ffi.Pointer<ffi.Float> src) {
+    return GrapheneVec2.fromPointer(
+      _grapheneVec2InitFromFloat(this.handle, src),
+    );
+  }
+
   /// Copies the contents of @src into @v.
   static final _grapheneVec2InitFromVec2 =
       grapheneLookup<

@@ -106,6 +106,30 @@ class GtkFileFilter extends GtkFilter {
     });
   }
 
+  /// Adds a rule allowing a given array of mime types.
+  /// It can for example be used with
+  /// [Gly.Loader.get_mime_types](https://gnome.pages.gitlab.gnome.org/glycin/libglycin/type_func.Loader.get_mime_types.html).
+  ///
+  /// This is equivalent to calling [method@Gtk.FileFilter.add_mime_type]
+  /// for all the supported mime types.
+  static final _gtkFileFilterAddMimeTypes =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_file_filter_add_mime_types')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void addMimeTypes([List<String?>? mimeTypes]) {
+    withNativeStringList(mimeTypes, (nativeMimeTypes) {
+      _gtkFileFilterAddMimeTypes(this.handle, nativeMimeTypes);
+    });
+  }
+
   /// Adds a rule allowing a shell style glob pattern.
   ///
   /// Note that it depends on the platform whether pattern

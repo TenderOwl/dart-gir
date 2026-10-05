@@ -7,4 +7,29 @@ part of '../gtk4.dart';
 class GtkTryExpression extends GtkExpression {
   GtkTryExpression.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Creates a `GtkExpression` with an array of expressions.
+  ///
+  /// When evaluated, the `GtkTryExpression` tries to evaluate each of its expressions until it succeeds.
+  /// If all expressions fail to evaluate, the `GtkTryExpression`'s evaluation fails as well.
+  ///
+  /// The value type of the expressions in the array must match.
+  static final _gtkTryExpressionNew =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Uint32, ffi.Pointer<ffi.Void>)
+            >
+          >('gtk_try_expression_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
+          >();
+  factory GtkTryExpression(
+    int nExpressions,
+    ffi.Pointer<ffi.Void> expressions,
+  ) {
+    return GtkTryExpression.fromPointer(
+      _gtkTryExpressionNew(nExpressions, expressions),
+      owned: true,
+    );
+  }
 }

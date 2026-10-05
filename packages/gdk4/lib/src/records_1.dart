@@ -172,6 +172,22 @@ final class GdkFileList {
   GdkFileList.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Creates a new `GdkFileList` for the given array of files.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gdkFileListNewFromArray =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
+            >
+          >('gdk_file_list_new_from_array')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  factory GdkFileList.fromArray(ffi.Pointer<ffi.Void> files, int nFiles) {
+    return GdkFileList.fromPointer(_gdkFileListNewFromArray(files, nFiles));
+  }
+
   /// Creates a new files list container from a singly linked list of
   /// `GFile` instances.
   ///

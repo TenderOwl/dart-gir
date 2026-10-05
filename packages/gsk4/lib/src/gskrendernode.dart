@@ -60,6 +60,36 @@ class GskRenderNode {
     } finally {}
   }
 
+  /// Gets a list of all children nodes of the rendernode.
+  ///
+  /// Keep in mind that for various rendernodes, their children have different
+  /// semantics, like the mask vs the source of a mask node. If you care about
+  /// thse semantics, don't use this function, use the specific getters instead.
+  static final _gskRenderNodeGetChildren =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gsk_render_node_get_children')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getChildren() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gskRenderNodeGetChildren(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Returns the type of the render node.
   static final _gskRenderNodeGetNodeType =
       gsk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

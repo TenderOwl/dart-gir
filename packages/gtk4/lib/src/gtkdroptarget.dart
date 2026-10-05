@@ -203,6 +203,24 @@ class GtkDropTarget extends GtkEventController {
     _gtkDropTargetSetActions(this.handle, actions.value);
   }
 
+  /// Sets the supported `GType`s for this drop target.
+  static final _gtkDropTargetSetGtypes =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Size,
+              )
+            >
+          >('gtk_drop_target_set_gtypes')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Size>, int)
+          >();
+  void setGtypes(ffi.Pointer<ffi.Size> types, int nTypes) {
+    _gtkDropTargetSetGtypes(this.handle, types, nTypes);
+  }
+
   /// Sets whether data should be preloaded on hover.
   static final _gtkDropTargetSetPreload =
       gtk4Lookup<

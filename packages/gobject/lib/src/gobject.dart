@@ -34,6 +34,34 @@ class GObject implements ffi.Finalizable {
   void _attachFinalizer() =>
       gobjectFinalizer.attach(this, handle, detach: this);
 
+  /// Creates a new instance of a #GObject subtype and sets its properties.
+  ///
+  /// Construction parameters (see %G_PARAM_CONSTRUCT, %G_PARAM_CONSTRUCT_ONLY)
+  /// which are not explicitly specified are set to their default values.
+  static final _gObjectNewv =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Size,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_object_newv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(int, int, ffi.Pointer<ffi.Void>)
+          >();
+  factory GObject.newv(
+    int objectType,
+    int nParameters,
+    ffi.Pointer<ffi.Void> parameters,
+  ) {
+    return GObject.fromPointer(
+      _gObjectNewv(objectType, nParameters, parameters),
+      owned: true,
+    );
+  }
+
   /// Creates a binding between @source_property on @source and @target_property
   /// on @target.
   ///
@@ -273,6 +301,39 @@ class GObject implements ffi.Finalizable {
           >();
   ffi.Pointer<ffi.Void> getQdata(int quark) {
     return _gObjectGetQdata(this.handle, quark);
+  }
+
+  /// Gets @n_properties properties for an @object.
+  /// Obtained properties will be set to @values. All properties must be valid.
+  /// Warnings will be emitted and undefined behaviour may result if invalid
+  /// properties are passed in.
+  static final _gObjectGetv =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_object_getv')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void getv(
+    int nProperties,
+    List<String?>? names,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    withNativeStringList(names, (nativeNames) {
+      _gObjectGetv(this.handle, nProperties, nativeNames, values);
+    });
   }
 
   /// Checks whether @object has a [floating](floating-refs.html) reference.
@@ -672,6 +733,37 @@ class GObject implements ffi.Finalizable {
     GParamSpec pspec,
   ) {
     _gObjectInterfaceInstallProperty(gIface, pspec.handle);
+  }
+
+  /// Lists the properties of an interface.Generally, the interface
+  /// vtable passed in as @g_iface will be the default vtable from
+  /// g_type_default_interface_ref(), or, if you know the interface has
+  /// already been loaded, g_type_default_interface_peek().
+  static final _gObjectInterfaceListProperties =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('g_object_interface_list_properties')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  static (ffi.Pointer<ffi.Void>, int) interfaceListProperties(
+    ffi.Pointer<ffi.Void> gIface,
+  ) {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gObjectInterfaceListProperties(gIface, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// The notify signal is emitted on an object when one of its properties has

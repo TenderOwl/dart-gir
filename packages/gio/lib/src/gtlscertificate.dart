@@ -265,6 +265,66 @@ class GTlsCertificate extends GObject {
     });
   }
 
+  /// Creates a #GTlsCertificate from the data in @data. It must contain
+  /// a certificate and matching private key.
+  ///
+  /// If extra certificates are included they will be verified as a chain
+  /// and the #GTlsCertificate:issuer property will be set.
+  /// All other data will be ignored.
+  ///
+  /// You can pass as single password for all of the data which will be
+  /// used both for the PKCS #12 container as well as encrypted
+  /// private keys. If decryption fails it will error with
+  /// %G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD.
+  ///
+  /// This constructor requires support in the current #GTlsBackend.
+  /// If support is missing it will error with
+  /// %G_IO_ERROR_NOT_SUPPORTED.
+  ///
+  /// Other parsing failures will error with %G_TLS_ERROR_BAD_CERTIFICATE.
+  static final _gTlsCertificateNewFromPkcs12 =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_tls_certificate_new_from_pkcs12')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  factory GTlsCertificate.fromPkcs12(
+    ffi.Pointer<ffi.Uint8> data,
+    int length, [
+    String? password,
+  ]) {
+    return withNativeString(password, (nativePassword) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gTlsCertificateNewFromPkcs12(
+          data,
+          length,
+          nativePassword.cast<Utf8>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return GTlsCertificate.fromPointer(_ret, owned: true);
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Gets the #GTlsCertificate representing @cert's issuer, if known
   static final _gTlsCertificateGetIssuer =
       gioLookup<

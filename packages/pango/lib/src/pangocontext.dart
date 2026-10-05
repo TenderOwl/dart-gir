@@ -329,8 +329,8 @@ class PangoContext extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void setFontDescription([PangoFontDescription? desc]) {
-    _pangoContextSetFontDescription(this.handle, desc?.handle ?? ffi.nullptr);
+  void setFontDescription(PangoFontDescription desc) {
+    _pangoContextSetFontDescription(this.handle, desc.handle);
   }
 
   /// Sets the font map to be searched when fonts are looked-up

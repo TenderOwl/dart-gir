@@ -27,6 +27,30 @@ class GUnixFDList extends GObject {
     return GUnixFDList.fromPointer(_gUnixFdListNew(), owned: true);
   }
 
+  /// Creates a new #GUnixFDList containing the file descriptors given in
+  /// @fds.  The file descriptors become the property of the new list and
+  /// may no longer be used by the caller.  The array itself is owned by
+  /// the caller.
+  ///
+  /// Each file descriptor in the array should be set to close-on-exec.
+  ///
+  /// If @n_fds is -1 then @fds must be terminated with -1.
+  static final _gUnixFdListNewFromArray =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int32>, ffi.Int32)
+            >
+          >('g_unix_fd_list_new_from_array')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int32>, int)
+          >();
+  factory GUnixFDList.fromArray(ffi.Pointer<ffi.Int32> fds, int nFds) {
+    return GUnixFDList.fromPointer(
+      _gUnixFdListNewFromArray(fds, nFds),
+      owned: true,
+    );
+  }
+
   /// Adds a file descriptor to @list.
   ///
   /// The file descriptor is duplicated using dup(). You keep your copy

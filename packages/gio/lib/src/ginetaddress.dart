@@ -27,6 +27,69 @@ class GInetAddress extends GObject {
     );
   }
 
+  /// Creates a new #GInetAddress from the given @family and @bytes.
+  /// @bytes should be 4 bytes for %G_SOCKET_FAMILY_IPV4 and 16 bytes for
+  /// %G_SOCKET_FAMILY_IPV6.
+  static final _gInetAddressNewFromBytes =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, ffi.Int32)
+            >
+          >('g_inet_address_new_from_bytes')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  factory GInetAddress.fromBytes(
+    ffi.Pointer<ffi.Uint8> bytes,
+    GSocketFamily family,
+  ) {
+    return GInetAddress.fromPointer(
+      _gInetAddressNewFromBytes(bytes, family.value),
+      owned: true,
+    );
+  }
+
+  /// Creates a new [class@Gio.InetAddress] from the given @family, @bytes
+  /// and @scope_id.
+  ///
+  /// @bytes must be 4 bytes for [enum@Gio.SocketFamily.IPV4] and 16 bytes for
+  /// [enum@Gio.SocketFamily.IPV6].
+  static final _gInetAddressNewFromBytesWithIpv6Info =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Uint32,
+              )
+            >
+          >('g_inet_address_new_from_bytes_with_ipv6_info')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+              int,
+            )
+          >();
+  factory GInetAddress.fromBytesWithIpv6Info(
+    ffi.Pointer<ffi.Uint8> bytes,
+    GSocketFamily family,
+    int flowinfo,
+    int scopeId,
+  ) {
+    return GInetAddress.fromPointer(
+      _gInetAddressNewFromBytesWithIpv6Info(
+        bytes,
+        family.value,
+        flowinfo,
+        scopeId,
+      ),
+      owned: true,
+    );
+  }
+
   /// Parses @string as an IP address and creates a new #GInetAddress.
   ///
   /// If @address is an IPv6 address, it can also contain a scope ID

@@ -332,6 +332,34 @@ final class GrapheneBox {
     );
   }
 
+  /// Initializes the given #graphene_box_t with the given array
+  /// of vertices.
+  ///
+  /// If @n_points is 0, the returned box is initialized with
+  /// graphene_box_empty().
+  static final _grapheneBoxInitFromPoints =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_init_from_points')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneBox initFromPoints(int nPoints, ffi.Pointer<ffi.Void> points) {
+    return GrapheneBox.fromPointer(
+      _grapheneBoxInitFromPoints(this.handle, nPoints, points),
+    );
+  }
+
   /// Initializes the given #graphene_box_t with two vertices
   /// stored inside #graphene_vec3_t.
   static final _grapheneBoxInitFromVec3 =
@@ -358,6 +386,34 @@ final class GrapheneBox {
         min?.handle ?? ffi.nullptr,
         max?.handle ?? ffi.nullptr,
       ),
+    );
+  }
+
+  /// Initializes the given #graphene_box_t with the given array
+  /// of vertices.
+  ///
+  /// If @n_vectors is 0, the returned box is initialized with
+  /// graphene_box_empty().
+  static final _grapheneBoxInitFromVectors =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_box_init_from_vectors')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneBox initFromVectors(int nVectors, ffi.Pointer<ffi.Void> vectors) {
+    return GrapheneBox.fromPointer(
+      _grapheneBoxInitFromVectors(this.handle, nVectors, vectors),
     );
   }
 

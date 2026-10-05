@@ -29,10 +29,27 @@ The bridge is built in two layers:
 | `gunichar` | `int` | `ffi.Uint32` |
 
 `TypeResolver.isStringListArray(GirTypeRef)` upgrades arrays of `utf8` /
-`filename` / `gchar*` to `List<String?>?` (and `Pointer<Pointer<Utf8>>`
-natively). Other arrays fall through to `TypeKind.unsupported` with
-`array types are handled in a later phase` — current behaviour for them
-is to skip with that reason.
+`filename` / `gchar*` (with `c:type` in `gchar**`, `const gchar* const*`,
+`const gchar**`, `char**`, `const char* const*`, `const char**`) to
+`List<String?>?` (and `Pointer<Pointer<Utf8>>` natively). Other arrays
+dispatch by element kind:
+
+| Element kind | Length binding | Mapping |
+|---|---|---|
+| int-sized primitive / boolean / enumeration / bitfield | `<array length="N">` | `ffi.Pointer<ffi.Int32>` (or `Uint32` for bitfields), with `arrayLengthParameter=N`; the wrapper iteration emits a sibling `int` slot at the GIR's `lengthParameterIndex` |
+| int-sized primitive / boolean / enumeration / bitfield | unbounded (`<array c:type="…*">` only) | `ffi.Pointer<ffi.Int32>` (or `Uint32`); no length slot — caller is responsible for providing length via a sibling `get_n_items` accessor |
+| class / interface / record | `<array length="N">` | `ffi.Pointer<ffi.Void>`, with `arrayLengthParameter=N`. Typed `asTypedList(n)` iteration is a follow-up — generated records are currently opaque pointer classes, not `StructBase` subclasses, so `Pointer<RecordClass>` isn't a valid FFI type yet. |
+| union | any | `array of TypeKind.union (later phase)` — unions are not used in element position in the GIR corpus today. |
+| string (utf8) | `<array length="N">` (bound) | `array of TypeKind.string (later phase)` — a bound-length array of strings is unusual and not yet supported. |
+| element type unresolved | any | `array element of unsupported kind (<reason>)` |
+| element type with neither `<type name=…>` nor `c:type=` | any | `array of unknown element` |
+
+All four supported shapes (argv string list, bound enum/primitive array,
+bound record/class array, unbounded primitive array) are emitted by the
+existing parameter-marshalling loop without further changes — the GIR's
+length parameter is already in `fn.parameters` at the index named by
+`arrayLengthParameter`, so the loop iterates both naturally and the
+wrapper signature carries both slots in declaration order.
 
 ## Declared-type table
 
@@ -116,13 +133,15 @@ that means `AdwWindow`, which is wrong.
 
 | Reason | Where it surfaces |
 |---|---|
-| `array types are handled in a later phase` | Any array that isn't a string-list |
+| `array of TypeKind.X (later phase)` | Array element is a kind the resolver can't yet emit (union, GValue*, bound string array, …) |
+| `array element of unsupported kind (<reason>)` | Inner element type was rejected by the resolver; the parent reason is appended |
+| `array of unknown element` | Array has no `<type>` and no `c:type=` to identify the element |
 | `unsupported C type: <name>` | Scalar names not in the built-in table (e.g. `va_list`) |
 | `callback <name> is in non-generated package <pkg>` | Callback declared in a package we're not regenerating |
 | `type <name> is in non-generated package <pkg>` | Same for class/record/etc. |
 | `callback return type (<name>)` | Callbacks as return values |
 | `nullable scalar parameter (<name>)` | `int?` / `bool?` parameters |
-| `callback <name> has unsupported signature` | Inner callback type can't be marshalled |
+| `callback <name> has unsupported signature` | Inner callback type can't be marshalled (also raised when the user-facing signature can't be resolved, e.g. an alias to a callback that isn't in any GIR) |
 | `type ... is in non-generated package ...` | Cross-package type whose package isn't generated |
 
 See [skip-categories.md](./skip-categories.md) for the full enumeration.

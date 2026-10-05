@@ -220,6 +220,49 @@ class GListStore extends GObject {
     }
   }
 
+  /// Changes @store by removing @n_removals items and adding @n_additions
+  /// items to it. @additions must contain @n_additions items of type
+  /// #GListStore:item-type.  %NULL is not permitted.
+  ///
+  /// This function is more efficient than g_list_store_insert() and
+  /// g_list_store_remove(), because it only emits
+  /// #GListModel::items-changed once for the change.
+  ///
+  /// This function takes a ref on each item in @additions.
+  ///
+  /// The parameters @position and @n_removals must be correct (ie:
+  /// @position + @n_removals must be less than or equal to the length of
+  /// the list at the time this function is called).
+  static final _gListStoreSplice =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+              )
+            >
+          >('g_list_store_splice')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void splice(
+    int position,
+    int nRemovals,
+    ffi.Pointer<ffi.Void> additions,
+    int nAdditions,
+  ) {
+    _gListStoreSplice(this.handle, position, nRemovals, additions, nAdditions);
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

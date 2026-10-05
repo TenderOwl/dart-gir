@@ -1,21 +1,17 @@
 # Skip report for package gsk4 (Gsk 4.0)
-Total skipped: 35
+Total skipped: 21
 
 ## By category
-callable: 29
+callable: 15
 callback: 2
 method: 2
 property: 2
 
 ## By reason
-parameter color_stops: array types are handled in a later phase: 5
-return: array types are handled in a later phase: 4
 parameter n_stops: nullable scalar parameter (gsize): 3
-parameter values: array types are handled in a later phase: 2
-array types are handled in a later phase: 2
+array parameter in callback signature: 2
 inout parameter point: 2
 name collision: 2
-parameter children: array types are handled in a later phase: 2
 construct-only or no public setter; emitting getter only: 2
 moved to ComponentTransfer.equal: 1
 moved to Path.parse: 1
@@ -24,9 +20,8 @@ moved to Stroke.equal: 1
 moved to Transform.parse: 1
 parameter func: callback PathForeachFunc has unsupported signature: 1
 parameter distance: nullable scalar parameter (gfloat): 1
-parameter dash: array types are handled in a later phase: 1
-parameter border_width: array types are handled in a later phase: 1
-parameter shadows: array types are handled in a later phase: 1
+parameter border_color: array of TypeKind.record (later phase): 1
+return: array of TypeKind.record (later phase): 1
 parameter n_glyphs: nullable scalar parameter (guint): 1
 
 ## First 50 entries
@@ -35,33 +30,19 @@ parameter n_glyphs: nullable scalar parameter (guint): 1
 [callable] Gsk.serializationErrorQuark — moved to SerializationError.quark
 [callable] Gsk.strokeEqual — moved to Stroke.equal
 [callable] Gsk.transformParse — moved to Transform.parse
-[callable] GskComponentTransfer.discrete — parameter values: array types are handled in a later phase
-[callable] GskComponentTransfer.table — parameter values: array types are handled in a later phase
-[callback] Gsk.PathForeachFunc parameter pts — array types are handled in a later phase
+[callback] GskPathForeachFunc parameter pts — array parameter in callback signature
 [callable] GskPath.foreach — parameter func: callback PathForeachFunc has unsupported signature
 [callable] GskPath.getClosestPoint — parameter distance: nullable scalar parameter (gfloat)
 [callable] GskPath.getNext — inout parameter point
 [callable] GskPath.getPrevious — inout parameter point
 [method] GskPath.toString — name collision
-[callable] GskStroke.getDash — return: array types are handled in a later phase
-[callable] GskStroke.setDash — parameter dash: array types are handled in a later phase
 [method] GskTransform.toString — name collision
-[callable] GskBorderNode. — parameter border_width: array types are handled in a later phase
-[callable] GskBorderNode.getColors — return: array types are handled in a later phase
-[callable] GskBorderNode.getWidths — return: array types are handled in a later phase
-[callable] GskConicGradientNode. — parameter color_stops: array types are handled in a later phase
+[callable] GskBorderNode. — parameter border_color: array of TypeKind.record (later phase)
+[callable] GskBorderNode.getColors — return: array of TypeKind.record (later phase)
 [callable] GskConicGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
-[callable] GskContainerNode. — parameter children: array types are handled in a later phase
 [property] GskGLShader.resource — construct-only or no public setter; emitting getter only
 [property] GskGLShader.source — construct-only or no public setter; emitting getter only
-[callable] GskGLShaderNode. — parameter children: array types are handled in a later phase
-[callable] GskLinearGradientNode. — parameter color_stops: array types are handled in a later phase
 [callable] GskLinearGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
-[callable] GskRadialGradientNode. — parameter color_stops: array types are handled in a later phase
 [callable] GskRadialGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
-[callable] GskRenderNode.getChildren — return: array types are handled in a later phase
-[callable] GskRepeatingLinearGradientNode. — parameter color_stops: array types are handled in a later phase
-[callable] GskRepeatingRadialGradientNode. — parameter color_stops: array types are handled in a later phase
-[callable] GskShadowNode. — parameter shadows: array types are handled in a later phase
 [callable] GskTextNode.getGlyphs — parameter n_glyphs: nullable scalar parameter (guint)
-[callback] GskPathForeachFunc parameter pts — array types are handled in a later phase
+[callback] GskPathForeachFunc parameter pts — array parameter in callback signature

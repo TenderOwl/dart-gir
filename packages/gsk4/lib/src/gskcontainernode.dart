@@ -6,6 +6,25 @@ class GskContainerNode extends GskRenderNode {
   GskContainerNode.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Creates a new `GskRenderNode` instance for holding the given @children.
+  ///
+  /// The new node will acquire a reference to each of the children.
+  static final _gskContainerNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
+            >
+          >('gsk_container_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  factory GskContainerNode(ffi.Pointer<ffi.Void> children, int nChildren) {
+    return GskContainerNode.fromPointer(
+      _gskContainerNodeNew(children, nChildren),
+      owned: true,
+    );
+  }
+
   /// Gets one of the children of @container.
   static final _gskContainerNodeGetChild =
       gsk4Lookup<

@@ -517,6 +517,193 @@ class GTlsDatabase extends GObject {
     }
   }
 
+  /// Look up certificates issued by this issuer in the database.
+  ///
+  /// This function can block, use g_tls_database_lookup_certificates_issued_by_async() to perform
+  /// the lookup operation asynchronously.
+  static final _gTlsDatabaseLookupCertificatesIssuedBy =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_tls_database_lookup_certificates_issued_by')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  GList lookupCertificatesIssuedBy(
+    ffi.Pointer<ffi.Uint8> issuerRawDn,
+    GTlsInteraction? interaction,
+    GTlsDatabaseLookupFlags flags, [
+    GCancellable? cancellable,
+  ]) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gTlsDatabaseLookupCertificatesIssuedBy(
+        this.handle,
+        issuerRawDn,
+        interaction?.handle ?? ffi.nullptr,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return GList.fromPointer(_ret);
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Asynchronously look up certificates issued by this issuer in the database. See
+  /// g_tls_database_lookup_certificates_issued_by() for more information.
+  ///
+  /// The database may choose to hold a reference to the issuer byte array for the duration
+  /// of this asynchronous operation. The byte array should not be modified during
+  /// this time.
+  static final _gTlsDatabaseLookupCertificatesIssuedByAsync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_tls_database_lookup_certificates_issued_by_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void lookupCertificatesIssuedByAsync(
+    ffi.Pointer<ffi.Uint8> issuerRawDn,
+    GTlsInteraction? interaction,
+    GTlsDatabaseLookupFlags flags,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    try {
+      _gTlsDatabaseLookupCertificatesIssuedByAsync(
+        this.handle,
+        issuerRawDn,
+        interaction?.handle ?? ffi.nullptr,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData,
+      );
+    } finally {
+      _nc5?.close();
+    }
+  }
+
+  static final _lookupCertificatesIssuedByAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _lookupCertificatesIssuedByAsyncCallbackSeq = 0;
+  static final _lookupCertificatesIssuedByAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_lookupCertificatesIssuedByAsyncCallbackTrampoline);
+  static void _lookupCertificatesIssuedByAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _lookupCertificatesIssuedByAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [lookupCertificatesIssuedByAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void lookupCertificatesIssuedByAsyncCallback(
+    ffi.Pointer<ffi.Uint8> issuerRawDn,
+    GTlsInteraction? interaction,
+    GTlsDatabaseLookupFlags flags,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_lookupCertificatesIssuedByAsyncCallbackSeq;
+    _lookupCertificatesIssuedByAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    _gTlsDatabaseLookupCertificatesIssuedByAsync(
+      this.handle,
+      issuerRawDn,
+      interaction?.handle ?? ffi.nullptr,
+      flags.value,
+      cancellable?.handle ?? ffi.nullptr,
+      _lookupCertificatesIssuedByAsyncCallbackPtr,
+      _data.cast<ffi.Void>(),
+    );
+  }
+
   /// Finish an asynchronous lookup of certificates. See
   /// g_tls_database_lookup_certificates_issued_by() for more information.
   static final _gTlsDatabaseLookupCertificatesIssuedByFinish =

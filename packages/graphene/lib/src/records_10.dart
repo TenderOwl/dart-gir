@@ -224,6 +224,28 @@ final class GrapheneVec4 {
     return GrapheneVec4.fromPointer(_grapheneVec4Init(this.handle, x, y, z, w));
   }
 
+  /// Initializes a #graphene_vec4_t with the values inside the given array.
+  static final _grapheneVec4InitFromFloat =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_vec4_init_from_float')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  GrapheneVec4 initFromFloat(ffi.Pointer<ffi.Float> src) {
+    return GrapheneVec4.fromPointer(
+      _grapheneVec4InitFromFloat(this.handle, src),
+    );
+  }
+
   /// Initializes a #graphene_vec4_t using the components of a
   /// #graphene_vec2_t and the values of @z and @w.
   static final _grapheneVec4InitFromVec2 =

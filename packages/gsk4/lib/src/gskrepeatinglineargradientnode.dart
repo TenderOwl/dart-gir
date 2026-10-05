@@ -5,4 +5,47 @@ part of '../gsk4.dart';
 class GskRepeatingLinearGradientNode extends GskRenderNode {
   GskRepeatingLinearGradientNode.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Creates a `GskRenderNode` that will create a repeating linear gradient
+  /// from the given points and color stops, and render that into the area
+  /// given by @bounds.
+  static final _gskRepeatingLinearGradientNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gsk_repeating_linear_gradient_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GskRepeatingLinearGradientNode(
+    GrapheneRect bounds,
+    GraphenePoint start,
+    GraphenePoint end,
+    ffi.Pointer<ffi.Void> colorStops,
+    int nColorStops,
+  ) {
+    return GskRepeatingLinearGradientNode.fromPointer(
+      _gskRepeatingLinearGradientNodeNew(
+        bounds.handle,
+        start.handle,
+        end.handle,
+        colorStops,
+        nColorStops,
+      ),
+      owned: true,
+    );
+  }
 }

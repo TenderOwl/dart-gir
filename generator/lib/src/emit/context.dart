@@ -22,6 +22,7 @@ class TypeBridge {
     this.outPointee,
     this.outAllocSize,
     this.outExtract,
+    this.arrayLengthParameter,
   });
 
   /// Public Dart type used in wrapper signatures, e.g. `int`, `GObject?`.
@@ -69,6 +70,13 @@ class TypeBridge {
 
   /// Reads the out value from the allocated pointer variable.
   final String Function(String varName)? outExtract;
+
+  /// For bound-length array parameters, the 0-based index of the
+  /// parameter in the callable's signature that carries the array's
+  /// length. The emitter injects an extra `int` slot on both the
+  /// native and Dart signatures at this position. `null` for unbounded
+  /// arrays (the user is responsible for the length).
+  final int? arrayLengthParameter;
 }
 
 /// Per-package emission state shared by all emitters.
@@ -519,6 +527,28 @@ class EmitContext {
           ),
           null,
         );
+      case TypeKind.primitiveArray:
+      case TypeKind.recordArray:
+        // Both array shapes expose a typed `Pointer<T>` on the Dart
+        // side. The user `calloc<T>(n)` directly (or in PRIMITIVE
+        // cases `calloc<Int32>(n)` and casts at the buffer level),
+        // and the wrapper hands the buffer pointer to FFI unchanged —
+        // no `.cast<ffi.Void>()` is needed because the native FFI type
+        // matches the user's calloc return type.
+        // `arrayLengthParameter` flows through so the callable
+        // emitter can keep the length slot in sync across multiple
+        // arrays that share the same length parameter.
+        return (
+          TypeBridge(
+            wrapperType: m.dartType,
+            nativeType: m.nativeType,
+            dartFfiType: m.nativeType,
+            toNative: _id,
+            fromNative: (e) => e,
+            arrayLengthParameter: m.arrayLengthParameter,
+          ),
+          null,
+        );
       case TypeKind.callback:
         if (forReturn) {
           // Callbacks are never returned by GLib functions in the current
@@ -583,28 +613,25 @@ class EmitContext {
       return (null, 'callback ${ref.name} has unsupported signature');
     }
     final cbName = emitter.dartName(declObj);
-    // `Pointer.fromFunction<T>` requires a static/top-level function and
-    // throws at runtime when called via a wrapper whose parameter is a
-    // function value (even if the caller's literal is static — the runtime
-    // can't prove it). `NativeCallable.isolateLocal<T>(fn, ...)` accepts
-    // any Dart function (including ones flowing through wrapper params),
-    // so the generator wraps the user-supplied function with it.
+    // The user-facing signature uses the inline Dart signature (not the
+    // typedef name) so that the parameter has a concrete type Dart FFI's
+    // `NativeCallable` accepts. The user-facing typedef is still emitted
+    // for documentation and for variable declarations; callers can pass
+    // either an inline-typed function or a typedef-typed value (Dart's
+    // structural typing carries the inline type through).
     //
-    // The `toNative` expression below returns the `NativeCallable` instance
-    // (not the underlying pointer). The wrapper body holds the instance in
-    // a local, passes `.nativeFunction` to the native call, and disposes
-    // via `.close()` in a finally block — see [CallableEmitter].
-    //
-    // For nullable callbacks the `toNative` expression returns either
-    // `null` or a `NativeCallable` instance. The wrapper emits the same
-    // lifecycle, with `?.nativeFunction ?? ffi.nullptr` at the call site
-    // and `?.close()` in the finally — see [CallableEmitter].
-    //
-    // The user-facing typedef (`GCompareFunc`) is still emitted for
-    // documentation and for typed variable declarations; the generated
-    // wrapper parameter uses the inline signature so that callers can pass
-    // either an inline-typed function or a typedef-typed variable.
-    final userSig = emitter.signature(declObj, label: cbName) ?? 'void';
+    // If the signature builder can't produce the user-facing form
+    // (typically because a nested type or callback reference is
+    // unsupported, e.g. `GObject.ClosureMarshal` aliases a callback
+    // whose declaration lives in GLib but isn't present in any GIR),
+    // skip the parameter rather than emitting a broken wrapper whose
+    // param type is `void` — that compiles to a parameter type that
+    // doesn't match the `NativeCallable<T>` signature, breaking both
+    // the FFI lookup and the user call site.
+    final userSig = emitter.signature(declObj, label: cbName);
+    if (userSig == null) {
+      return (null, 'callback ${ref.name} has unsupported signature');
+    }
     final retSig = emitter.ffiSignature(
       declObj,
       label: '${declNs.name}.${ref.name} (return)',

@@ -15,6 +15,53 @@ class GDBusMessage extends GObject {
     return GDBusMessage.fromPointer(_gDbusMessageNew(), owned: true);
   }
 
+  /// Creates a new #GDBusMessage from the data stored at @blob. The byte
+  /// order that the message was in can be retrieved using
+  /// g_dbus_message_get_byte_order().
+  ///
+  /// If the @blob cannot be parsed, contains invalid fields, or contains invalid
+  /// headers, %G_IO_ERROR_INVALID_ARGUMENT will be returned.
+  static final _gDbusMessageNewFromBlob =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_message_new_from_blob')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  factory GDBusMessage.fromBlob(
+    ffi.Pointer<ffi.Uint8> blob,
+    int blobLen,
+    GDBusCapabilityFlags capabilities,
+  ) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusMessageNewFromBlob(
+        blob,
+        blobLen,
+        capabilities.value,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return GDBusMessage.fromPointer(_ret, owned: true);
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Creates a new #GDBusMessage for a method call.
   static final _gDbusMessageNewMethodCall =
       gioLookup<
@@ -248,6 +295,18 @@ class GDBusMessage extends GObject {
         : GVariant.fromPointer(
             _gDbusMessageGetHeader(this.handle, headerField.value),
           );
+  }
+
+  /// Gets an array of all header fields on @message that are set.
+  static final _gDbusMessageGetHeaderFields =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_dbus_message_get_header_fields')
+          .asFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Void>)>();
+  ffi.Pointer<ffi.Uint8> getHeaderFields() {
+    return _gDbusMessageGetHeaderFields(this.handle);
   }
 
   /// Convenience getter for the %G_DBUS_MESSAGE_HEADER_FIELD_INTERFACE header field.
@@ -748,6 +807,47 @@ class GDBusMessage extends GObject {
     _gDbusMessageSetUnixFdList(this.handle, fdList?.handle ?? ffi.nullptr);
   }
 
+  /// Serializes @message to a blob. The byte order returned by
+  /// g_dbus_message_get_byte_order() will be used.
+  static final _gDbusMessageToBlob =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_message_to_blob')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) toBlob(GDBusCapabilityFlags capabilities) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusMessageToBlob(
+        this.handle,
+        _out0,
+        capabilities.value,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// If @message is not of type %G_DBUS_MESSAGE_TYPE_ERROR does
   /// nothing and returns %FALSE.
   ///
@@ -778,6 +878,38 @@ class GDBusMessage extends GObject {
         throw GlibException.fromError(_error.value);
       }
       return (_ret) != 0;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Utility function to calculate how many bytes are needed to
+  /// completely deserialize the D-Bus message stored at @blob.
+  static final _gDbusMessageBytesNeeded =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_message_bytes_needed')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  static int bytesNeeded(ffi.Pointer<ffi.Uint8> blob, int blobLen) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusMessageBytesNeeded(blob, blobLen, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
     } finally {
       calloc.free(_error);
     }

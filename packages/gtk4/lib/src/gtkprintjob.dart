@@ -90,6 +90,32 @@ class GtkPrintJob extends GObject {
     return _gtkPrintJobGetNumCopies(this.handle);
   }
 
+  /// Gets the page ranges for this job.
+  static final _gtkPrintJobGetPageRanges =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_print_job_get_page_ranges')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getPageRanges() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkPrintJobGetPageRanges(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Gets the `GtkPageSet` setting for this job.
   static final _gtkPrintJobGetPageSet =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -346,6 +372,24 @@ class GtkPrintJob extends GObject {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setNumCopies(int numCopies) {
     _gtkPrintJobSetNumCopies(this.handle, numCopies);
+  }
+
+  /// Sets the page ranges for this job.
+  static final _gtkPrintJobSetPageRanges =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_print_job_set_page_ranges')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  void setPageRanges(ffi.Pointer<ffi.Void> ranges, int nRanges) {
+    _gtkPrintJobSetPageRanges(this.handle, ranges, nRanges);
   }
 
   /// Sets the `GtkPageSet` setting for this job.

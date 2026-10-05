@@ -80,6 +80,47 @@ class GtkSnapshot extends GdkSnapshot {
     _gtkSnapshotAppendColor(this.handle, color.handle, bounds.handle);
   }
 
+  /// Appends a conic gradient node with the given stops to @snapshot.
+  static final _gtkSnapshotAppendConicGradient =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_snapshot_append_conic_gradient')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void appendConicGradient(
+    GrapheneRect bounds,
+    GraphenePoint center,
+    double rotation,
+    ffi.Pointer<ffi.Void> stops,
+    int nStops,
+  ) {
+    _gtkSnapshotAppendConicGradient(
+      this.handle,
+      bounds.handle,
+      center.handle,
+      rotation,
+      stops,
+      nStops,
+    );
+  }
+
   /// A convenience method to fill a path with a color.
   ///
   /// See [method@Gtk.Snapshot.push_fill] if you need
@@ -186,6 +227,47 @@ class GtkSnapshot extends GdkSnapshot {
     _gtkSnapshotAppendLayout(this.handle, layout.handle, color.handle);
   }
 
+  /// Appends a linear gradient node with the given stops to @snapshot.
+  static final _gtkSnapshotAppendLinearGradient =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_snapshot_append_linear_gradient')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void appendLinearGradient(
+    GrapheneRect bounds,
+    GraphenePoint startPoint,
+    GraphenePoint endPoint,
+    ffi.Pointer<ffi.Void> stops,
+    int nStops,
+  ) {
+    _gtkSnapshotAppendLinearGradient(
+      this.handle,
+      bounds.handle,
+      startPoint.handle,
+      endPoint.handle,
+      stops,
+      nStops,
+    );
+  }
+
   /// Appends @node to the current render node of @snapshot,
   /// without changing the current node.
   ///
@@ -266,6 +348,153 @@ class GtkSnapshot extends GdkSnapshot {
           >();
   void appendPaste(GrapheneRect bounds, int nth) {
     _gtkSnapshotAppendPaste(this.handle, bounds.handle, nth);
+  }
+
+  /// Appends a radial gradient node with the given stops to @snapshot.
+  static final _gtkSnapshotAppendRadialGradient =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_snapshot_append_radial_gradient')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void appendRadialGradient(
+    GrapheneRect bounds,
+    GraphenePoint center,
+    double hradius,
+    double vradius,
+    double start,
+    double end,
+    ffi.Pointer<ffi.Void> stops,
+    int nStops,
+  ) {
+    _gtkSnapshotAppendRadialGradient(
+      this.handle,
+      bounds.handle,
+      center.handle,
+      hradius,
+      vradius,
+      start,
+      end,
+      stops,
+      nStops,
+    );
+  }
+
+  /// Appends a repeating linear gradient node with the given stops to @snapshot.
+  static final _gtkSnapshotAppendRepeatingLinearGradient =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_snapshot_append_repeating_linear_gradient')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void appendRepeatingLinearGradient(
+    GrapheneRect bounds,
+    GraphenePoint startPoint,
+    GraphenePoint endPoint,
+    ffi.Pointer<ffi.Void> stops,
+    int nStops,
+  ) {
+    _gtkSnapshotAppendRepeatingLinearGradient(
+      this.handle,
+      bounds.handle,
+      startPoint.handle,
+      endPoint.handle,
+      stops,
+      nStops,
+    );
+  }
+
+  /// Appends a repeating radial gradient node with the given stops to @snapshot.
+  static final _gtkSnapshotAppendRepeatingRadialGradient =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_snapshot_append_repeating_radial_gradient')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void appendRepeatingRadialGradient(
+    GrapheneRect bounds,
+    GraphenePoint center,
+    double hradius,
+    double vradius,
+    double start,
+    double end,
+    ffi.Pointer<ffi.Void> stops,
+    int nStops,
+  ) {
+    _gtkSnapshotAppendRepeatingRadialGradient(
+      this.handle,
+      bounds.handle,
+      center.handle,
+      hradius,
+      vradius,
+      start,
+      end,
+      stops,
+      nStops,
+    );
   }
 
   /// Creates a new render node drawing the @texture
@@ -766,6 +995,26 @@ class GtkSnapshot extends GdkSnapshot {
           >();
   void pushRoundedClip(GskRoundedRect bounds) {
     _gtkSnapshotPushRoundedClip(this.handle, bounds.handle);
+  }
+
+  /// Applies a shadow to an image.
+  ///
+  /// The image is recorded until the next call to [method@Gtk.Snapshot.pop].
+  static final _gtkSnapshotPushShadow =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_snapshot_push_shadow')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  void pushShadow(ffi.Pointer<ffi.Void> shadow, int nShadows) {
+    _gtkSnapshotPushShadow(this.handle, shadow, nShadows);
   }
 
   /// Strokes the given @path with the attributes given by @stroke and

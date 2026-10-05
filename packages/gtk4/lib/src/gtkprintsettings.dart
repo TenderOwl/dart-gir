@@ -477,6 +477,32 @@ class GtkPrintSettings extends GObject {
     );
   }
 
+  /// Gets the value of %GTK_PRINT_SETTINGS_PAGE_RANGES.
+  static final _gtkPrintSettingsGetPageRanges =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_print_settings_get_page_ranges')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getPageRanges() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkPrintSettingsGetPageRanges(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Gets the value of %GTK_PRINT_SETTINGS_PAGE_SET.
   static final _gtkPrintSettingsGetPageSet =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -1004,6 +1030,24 @@ class GtkPrintSettings extends GObject {
     withNativeString(outputBin, (nativeOutputBin) {
       _gtkPrintSettingsSetOutputBin(this.handle, nativeOutputBin.cast<Utf8>());
     });
+  }
+
+  /// Sets the value of %GTK_PRINT_SETTINGS_PAGE_RANGES.
+  static final _gtkPrintSettingsSetPageRanges =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_print_settings_set_page_ranges')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  void setPageRanges(ffi.Pointer<ffi.Void> pageRanges, int numRanges) {
+    _gtkPrintSettingsSetPageRanges(this.handle, pageRanges, numRanges);
   }
 
   /// Sets the value of %GTK_PRINT_SETTINGS_PAGE_SET.

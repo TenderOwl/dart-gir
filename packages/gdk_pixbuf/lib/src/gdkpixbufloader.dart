@@ -282,6 +282,39 @@ class GdkPixbufLoader extends GObject {
     _gdkPixbufLoaderSetSize(this.handle, width, height);
   }
 
+  /// Parses the next `count` bytes in the given image buffer.
+  static final _gdkPixbufLoaderWrite =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_pixbuf_loader_write')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool write(ffi.Pointer<ffi.Uint8> buf, int count) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gdkPixbufLoaderWrite(this.handle, buf, count, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) != 0;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Parses the next contents of the given image buffer.
   static final _gdkPixbufLoaderWriteBytes =
       gdkPixbufLookup<

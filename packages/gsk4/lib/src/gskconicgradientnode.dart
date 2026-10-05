@@ -6,6 +6,51 @@ class GskConicGradientNode extends GskRenderNode {
   GskConicGradientNode.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Creates a `GskRenderNode` that draws a conic gradient.
+  ///
+  /// The conic gradient
+  /// starts around @center in the direction of @rotation. A rotation of 0 means
+  /// that the gradient points up. Color stops are then added clockwise.
+  static final _gskConicGradientNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gsk_conic_gradient_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GskConicGradientNode(
+    GrapheneRect bounds,
+    GraphenePoint center,
+    double rotation,
+    ffi.Pointer<ffi.Void> colorStops,
+    int nColorStops,
+  ) {
+    return GskConicGradientNode.fromPointer(
+      _gskConicGradientNodeNew(
+        bounds.handle,
+        center.handle,
+        rotation,
+        colorStops,
+        nColorStops,
+      ),
+      owned: true,
+    );
+  }
+
   /// Retrieves the angle for the gradient in radians, normalized in [0, 2 * PI].
   ///
   /// The angle is starting at the top and going clockwise, as expressed

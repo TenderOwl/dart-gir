@@ -5,4 +5,61 @@ part of '../gsk4.dart';
 class GskRepeatingRadialGradientNode extends GskRenderNode {
   GskRepeatingRadialGradientNode.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Creates a `GskRenderNode` that draws a repeating radial gradient.
+  ///
+  /// The radial gradient starts around @center. The size of the gradient
+  /// is dictated by @hradius in horizontal orientation and by @vradius
+  /// in vertical orientation.
+  static final _gskRepeatingRadialGradientNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gsk_repeating_radial_gradient_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GskRepeatingRadialGradientNode(
+    GrapheneRect bounds,
+    GraphenePoint center,
+    double hradius,
+    double vradius,
+    double start,
+    double end,
+    ffi.Pointer<ffi.Void> colorStops,
+    int nColorStops,
+  ) {
+    return GskRepeatingRadialGradientNode.fromPointer(
+      _gskRepeatingRadialGradientNodeNew(
+        bounds.handle,
+        center.handle,
+        hradius,
+        vradius,
+        start,
+        end,
+        colorStops,
+        nColorStops,
+      ),
+      owned: true,
+    );
+  }
 }

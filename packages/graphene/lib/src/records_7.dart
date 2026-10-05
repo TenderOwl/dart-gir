@@ -300,6 +300,84 @@ final class GrapheneSphere {
     );
   }
 
+  /// Initializes the given #graphene_sphere_t using the given array
+  /// of 3D coordinates so that the sphere includes them.
+  ///
+  /// The center of the sphere can either be specified, or will be center
+  /// of the 3D volume that encompasses all @points.
+  static final _grapheneSphereInitFromPoints =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_sphere_init_from_points')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneSphere initFromPoints(
+    int nPoints,
+    ffi.Pointer<ffi.Void> points, [
+    GraphenePoint3D? center,
+  ]) {
+    return GrapheneSphere.fromPointer(
+      _grapheneSphereInitFromPoints(
+        this.handle,
+        nPoints,
+        points,
+        center?.handle ?? ffi.nullptr,
+      ),
+    );
+  }
+
+  /// Initializes the given #graphene_sphere_t using the given array
+  /// of 3D coordinates so that the sphere includes them.
+  ///
+  /// The center of the sphere can either be specified, or will be center
+  /// of the 3D volume that encompasses all @vectors.
+  static final _grapheneSphereInitFromVectors =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('graphene_sphere_init_from_vectors')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  GrapheneSphere initFromVectors(
+    int nVectors,
+    ffi.Pointer<ffi.Void> vectors, [
+    GraphenePoint3D? center,
+  ]) {
+    return GrapheneSphere.fromPointer(
+      _grapheneSphereInitFromVectors(
+        this.handle,
+        nVectors,
+        vectors,
+        center?.handle ?? ffi.nullptr,
+      ),
+    );
+  }
+
   /// Checks whether the sphere has a zero radius.
   static final _grapheneSphereIsEmpty =
       grapheneLookup<
@@ -683,6 +761,38 @@ final class GrapheneTriangle {
             : GrapheneVec3.fromPointer(_out2.cast<ffi.Void>()),
       );
     } finally {}
+  }
+
+  /// Initializes a #graphene_triangle_t using the three given arrays
+  /// of floating point values, each representing the coordinates of
+  /// a point in 3D space.
+  static final _grapheneTriangleInitFromFloat =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_triangle_init_from_float')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  GrapheneTriangle initFromFloat(
+    ffi.Pointer<ffi.Float> a,
+    ffi.Pointer<ffi.Float> b,
+    ffi.Pointer<ffi.Float> c,
+  ) {
+    return GrapheneTriangle.fromPointer(
+      _grapheneTriangleInitFromFloat(this.handle, a, b, c),
+    );
   }
 
   /// Initializes a #graphene_triangle_t using the three given 3D points.

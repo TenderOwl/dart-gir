@@ -149,6 +149,49 @@ int atomicRefCountInitFn() {
   }
 }
 
+/// Decode a sequence of Base-64 encoded text into binary data.  Note
+/// that the returned binary data is not necessarily zero-terminated,
+/// so it should not be used as a character string.
+final _gBase64Decode =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >
+        >('g_base64_decode')
+        .asFunction<
+          ffi.Pointer<ffi.Uint8> Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Size>,
+          )
+        >();
+(ffi.Pointer<ffi.Uint8>, int) base64Decode(String text) {
+  return withNativeString(text, (nativeText) {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gBase64Decode(nativeText.cast<Utf8>(), _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  });
+}
+
+/// Encode a sequence of binary data into its Base-64 stringified
+/// representation.
+final _gBase64Encode =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
+          >
+        >('g_base64_encode')
+        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Uint8>, int)>();
+String base64Encode(ffi.Pointer<ffi.Uint8> data, int len) {
+  return stringFromNative((_gBase64Encode(data, len)).cast(), free: true)!;
+}
+
 /// Gets the name of the file without any leading directory
 /// components. It returns a pointer into the given file name
 /// string.
@@ -576,46 +619,4 @@ final _gChildWatchSourceNew =
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 GSource childWatchSourceNew(int pid) {
   return GSource.fromPointer(_gChildWatchSourceNew(pid));
-}
-
-/// A wrapper for the POSIX chmod() function. The chmod() function is
-/// used to set the permissions of a file system object.
-///
-/// On Windows the file protection mechanism is not at all POSIX-like,
-/// and the underlying chmod() function in the C library just sets or
-/// clears the FAT-style READONLY attribute. It does not touch any
-/// ACL. Software that needs to manage file permissions on Windows
-/// exactly should use the Win32 API.
-///
-/// See your C library manual for more details about chmod().
-final _gChmod =
-    glibLookup<
-          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Int32)>
-        >('g_chmod')
-        .asFunction<int Function(ffi.Pointer<Utf8>, int)>();
-int chmod(String filename, int mode) {
-  return withNativeString(filename, (nativeFilename) {
-    return _gChmod(nativeFilename.cast<Utf8>(), mode);
-  });
-}
-
-/// If @err or `*err` is %NULL, does nothing. Otherwise,
-/// calls g_error_free() on `*err` and sets `*err` to %NULL.
-final _gClearError =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(ffi.Pointer<ffi.Pointer<ffi.Void>>)
-          >
-        >('g_clear_error')
-        .asFunction<void Function(ffi.Pointer<ffi.Pointer<ffi.Void>>)>();
-void clearError() {
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    _gClearError(_error);
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
-    }
-  } finally {
-    calloc.free(_error);
-  }
 }

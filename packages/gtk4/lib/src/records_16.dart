@@ -817,6 +817,48 @@ final class GtkTreeModel {
     _gtkTreeModelRowInserted(this.handle, path.handle, iter.handle);
   }
 
+  /// Emits the ::rows-reordered signal on @tree_model.
+  ///
+  /// See [signal@Gtk.TreeModel::rows-reordered].
+  ///
+  /// This should be called by models when their rows have been
+  /// reordered.
+  static final _gtkTreeModelRowsReorderedWithLength =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_tree_model_rows_reordered_with_length')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              int,
+            )
+          >();
+  void rowsReorderedWithLength(
+    GtkTreePath path,
+    GtkTreeIter? iter,
+    ffi.Pointer<ffi.Int32> newOrder,
+    int length,
+  ) {
+    _gtkTreeModelRowsReorderedWithLength(
+      this.handle,
+      path.handle,
+      iter?.handle ?? ffi.nullptr,
+      newOrder,
+      length,
+    );
+  }
+
   /// Lets the tree unref the node.
   ///
   /// This is an optional method for models to implement.

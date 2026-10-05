@@ -341,7 +341,9 @@ Each `<parameter>` is classified:
 | enum / bitfield | wrapper class | `Int32` / `Uint32` | `.value` ↔ `Wrapper.fromValue(...)` |
 | callback | inline Dart signature (nullable for `nullable="1"`) | `Pointer<NativeFunction>` | `NativeCallable.isolateLocal` wrap + `.close()` in `finally` (conditional on null for nullable callbacks) |
 | out / inout | wrapper type | `Pointer<...>` | `calloc<...>` + `.value` extraction |
-| array | (not yet supported) | — | Skip with `array types are handled in a later phase` |
+| bound-length array of primitive/enum/bitfield/bool | `ffi.Pointer<ffi.Int32>` (or `Uint32` for bitfields) | same | Direct (user `calloc<Int32>(n)`); the GIR's `<array length="N">` resolves to a sibling `int` parameter at index `N` that the natural parameter iteration adds to the signature |
+| bound-length array of class/interface/record | `ffi.Pointer<ffi.Void>` | same | Direct (user passes `Pointer<ffi.Void>`); `<array length="N">` binds to a sibling `int` parameter. Typed `asTypedList(n)` iteration is deferred until generated records become real `StructBase` subclasses. |
+| unbound primitive/enum/bitfield array (`<array c:type="…">` with no `<array length>`) | `ffi.Pointer<ffi.Int32>` (or `Uint32`) | same | Direct; the user provides length via a sibling `get_n_items` accessor. |
 
 The wrapper type for a class/record/union/interface carries the package
 name when the declaring namespace differs from the current namespace

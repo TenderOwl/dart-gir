@@ -586,73 +586,96 @@ final class GtkStyleProvider {
 final class GtkSymbolicPaintable {
   GtkSymbolicPaintable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
-}
 
-/// Interface for Drag-and-Drop destinations in `GtkTreeView`.
-final class GtkTreeDragDest {
-  GtkTreeDragDest.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Asks the `GtkTreeDragDest` to insert a row before the path @dest,
-  /// deriving the contents of the row from @value. If @dest is
-  /// outside the tree so that inserting before it is impossible, %FALSE
-  /// will be returned. Also, %FALSE may be returned if the new row is
-  /// not created for some model-specific reason.  Should robustly handle
-  /// a @dest no longer found in the model!
-  static final _gtkTreeDragDestDragDataReceived =
+  /// Snapshots the paintable with the given colors.
+  ///
+  /// If less than 5 colors are provided, GTK will pad the array with default
+  /// colors.
+  static final _gtkSymbolicPaintableSnapshotSymbolic =
       gtk4Lookup<
             ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
                 ffi.Pointer<ffi.Void>,
+                ffi.Size,
               )
             >
-          >('gtk_tree_drag_dest_drag_data_received')
+          >('gtk_symbolic_paintable_snapshot_symbolic')
           .asFunction<
-            int Function(
+            void Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
+              double,
+              double,
               ffi.Pointer<ffi.Void>,
+              int,
             )
           >();
-  bool dragDataReceived(GtkTreePath dest, GValue value) {
-    return (_gtkTreeDragDestDragDataReceived(
-          this.handle,
-          dest.handle,
-          value.handle,
-        )) !=
-        0;
+  void snapshotSymbolic(
+    GdkSnapshot snapshot,
+    double width,
+    double height,
+    ffi.Pointer<ffi.Void> colors,
+    int nColors,
+  ) {
+    _gtkSymbolicPaintableSnapshotSymbolic(
+      this.handle,
+      snapshot.handle,
+      width,
+      height,
+      colors,
+      nColors,
+    );
   }
 
-  /// Determines whether a drop is possible before the given @dest_path,
-  /// at the same depth as @dest_path. i.e., can we drop the data in
-  /// @value at that location. @dest_path does not have to
-  /// exist; the return value will almost certainly be %FALSE if the
-  /// parent of @dest_path doesn’t exist, though.
-  static final _gtkTreeDragDestRowDropPossible =
+  /// Snapshots the paintable with the given colors and weight.
+  ///
+  /// If less than 5 colors are provided, GTK will pad the array with default
+  /// colors.
+  static final _gtkSymbolicPaintableSnapshotWithWeight =
       gtk4Lookup<
             ffi.NativeFunction<
-              ffi.Int32 Function(
+              ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
                 ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Double,
               )
             >
-          >('gtk_tree_drag_dest_row_drop_possible')
+          >('gtk_symbolic_paintable_snapshot_with_weight')
           .asFunction<
-            int Function(
+            void Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
+              double,
+              double,
               ffi.Pointer<ffi.Void>,
+              int,
+              double,
             )
           >();
-  bool rowDropPossible(GtkTreePath destPath, GValue value) {
-    return (_gtkTreeDragDestRowDropPossible(
-          this.handle,
-          destPath.handle,
-          value.handle,
-        )) !=
-        0;
+  void snapshotWithWeight(
+    GdkSnapshot snapshot,
+    double width,
+    double height,
+    ffi.Pointer<ffi.Void> colors,
+    int nColors,
+    double weight,
+  ) {
+    _gtkSymbolicPaintableSnapshotWithWeight(
+      this.handle,
+      snapshot.handle,
+      width,
+      height,
+      colors,
+      nColors,
+      weight,
+    );
   }
 }
