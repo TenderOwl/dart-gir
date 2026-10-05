@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design reference — dart-gir</title>
+<meta name="description" content="How dart-gir works: the GIR to Dart pipeline, the type system and transfer ownership, the typed signal trampoline design, emitter rules, and the skip report contract.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <div class="inner">
+    <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M7 16.5V7.5h4.6a2.9 2.9 0 0 1 0 5.8H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.8" cy="8.4" r="1.15" fill="currentColor"/></svg> dart-gir</a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="features.html">Features</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="design.html" class="active">Design</a>
+      <a href="about.html">About</a>
+      <a href="license.html">License</a>
+      <a href="https://github.com/TenderOwl/dart-gir" class="nav-cta" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" style="padding-bottom:0">
+    <div class="eyebrow">Design reference</div>
+    <h1>How it actually works</h1>
+    <p class="lead">
+      The full design documents live in the repository under <code>docs/</code> — architecture,
+      emission, type system, signals, async and skip categories. This page is the summary; the
+      documents are the specification.
+    </p>
+    <div class="btn-row">
+      <a class="btn primary" href="https://github.com/TenderOwl/dart-gir/tree/main/docs" rel="noopener">Read docs/ on GitHub</a>
+    </div>
+  </section>
+
+  <!-- ============ PIPELINE ============ -->
+  <section>
+    <h2>The pipeline</h2>
+    <p>
+      One command reads GIR files and writes one package per namespace. Nothing in between is
+      hand-maintained, nothing in the output is meant to be edited, and no stage knows what
+      library it is processing.
+    </p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 1000 300" role="img" aria-label="Generation pipeline: CLI targets are loaded by GirLoader, parsed into an immutable data model, resolved by the TypeResolver, passed to per-kind emitters, and written out as a package plus a skip report.">
+        <defs>
+          <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- stage 1: CLI -->
+        <text class="d-sub" x="8" y="18">1 · CLI</text>
+        <rect class="d-node" x="8" y="28" width="200" height="64" rx="6"/>
+        <text class="d-label" x="24" y="52">generate.dart</text>
+        <text class="d-sub" x="24" y="70">--gir-dir + target list</text>
+        <text class="d-sub" x="24" y="84">Gtk-4.0 Adw-1 …</text>
+
+        <!-- stage 2: loader -->
+        <text class="d-sub" x="256" y="18">2 · GirLoader</text>
+        <rect class="d-node" x="256" y="28" width="200" height="64" rx="6"/>
+        <text class="d-label" x="272" y="52">include closure</text>
+        <text class="d-sub" x="272" y="70">deps first, in order</text>
+        <text class="d-sub" x="272" y="84">so Gtk sees GObject</text>
+
+        <!-- stage 3: model -->
+        <text class="d-sub" x="504" y="18">3 · Data model</text>
+        <rect class="d-node" x="504" y="28" width="200" height="64" rx="6"/>
+        <text class="d-label" x="520" y="52">immutable elements</text>
+        <text class="d-sub" x="520" y="70">class · record · union</text>
+        <text class="d-sub" x="520" y="84">enum · signal · property…</text>
+
+        <!-- stage 4: resolver -->
+        <text class="d-sub" x="752" y="18">4 · Resolve</text>
+        <rect class="d-node" x="752" y="28" width="216" height="64" rx="6"/>
+        <text class="d-label" x="768" y="52">TypeResolver</text>
+        <text class="d-sub" x="768" y="70">scalar + declared tables</text>
+        <text class="d-sub" x="768" y="84">dedup by c:type</text>
+
+        <!-- row 2: emitters -->
+        <text class="d-sub" x="8" y="146">5 · Emitters</text>
+        <rect class="d-node" x="8" y="156" width="200" height="60" rx="6"/>
+        <text class="d-label" x="24" y="180">ClassEmitter</text>
+        <text class="d-sub" x="24" y="198">methods, props, signals</text>
+
+        <rect class="d-node" x="256" y="156" width="200" height="60" rx="6"/>
+        <text class="d-label" x="272" y="180">RecordEmitter</text>
+        <text class="d-sub" x="272" y="198">records, unions, ifaces</text>
+
+        <rect class="d-node" x="504" y="156" width="200" height="60" rx="6"/>
+        <text class="d-label" x="520" y="180">EnumEmitter</text>
+        <text class="d-sub" x="520" y="198">enums, bitfields</text>
+
+        <rect class="d-node" x="752" y="156" width="216" height="60" rx="6"/>
+        <text class="d-label" x="768" y="180">Function · Callback</text>
+        <text class="d-sub" x="768" y="198">namespaces, typedefs</text>
+
+        <!-- row 3: outputs -->
+        <text class="d-sub" x="8" y="258">6 · Write</text>
+        <rect class="d-node-accent" x="8" y="268" width="440" height="26" rx="6"/>
+        <text class="d-label" x="24" y="285">packages/&lt;lib&gt;/ + barrel + lib.dart + pubspec</text>
+
+        <rect class="d-node-accent" x="464" y="268" width="504" height="26" rx="6"/>
+        <text class="d-label" x="480" y="285">skip_report.txt — every unemitted symbol, with its reason</text>
+
+        <!-- connectors row 1 -->
+        <g color="var(--text-3)">
+          <path class="d-arrow" d="M214 60 H250" marker-end="url(#ah)"/>
+          <path class="d-arrow" d="M462 60 H498" marker-end="url(#ah)"/>
+          <path class="d-arrow" d="M710 60 H746" marker-end="url(#ah)"/>
+        </g>
+
+        <!-- resolver down to emitter row, then fan to outputs -->
+        <g color="var(--text-3)">
+          <path class="d-dash" d="M860 98 V128 H108 V150" marker-end="url(#ah)"/>
+          <path class="d-dash" d="M860 98 V128 H356 V150" marker-end="url(#ah)"/>
+          <path class="d-dash" d="M860 98 V128 H604 V150" marker-end="url(#ah)"/>
+          <path class="d-arrow" d="M108 222 V262" marker-end="url(#ah)"/>
+          <path class="d-arrow" d="M356 222 V262" marker-end="url(#ah)"/>
+          <path class="d-arrow" d="M604 222 V262" marker-end="url(#ah)"/>
+          <path class="d-arrow" d="M860 222 V262" marker-end="url(#ah)"/>
+        </g>
+      </svg>
+      <figcaption>Every stage is library-agnostic. Adding a namespace is a new argument to the CLI, not a new code path.</figcaption>
+    </figure>
+
+    <p style="margin-top:24px">
+      The six stages in prose, if you prefer text to geometry:
+    </p>
+    <ul class="checks">
+      <li><strong>CLI</strong> — <code>generator/bin/generate.dart</code> takes a <code>--gir-dir</code> and a list of namespace-version pairs.</li>
+      <li><strong>GirLoader</strong> — resolves the transitive <code>&lt;include&gt;</code> closure and returns repositories in dependency order.</li>
+      <li><strong>Immutable data model</strong> — one value type per GIR element kind.</li>
+      <li><strong>TypeResolver + EmitContext</strong> — scalar table, declared-type table, cross-namespace dedup by canonical <code>c:type</code>.</li>
+      <li><strong>Emitters</strong> — one per symbol kind, all sharing the same context and report.</li>
+      <li><strong>Package writer</strong> — one file per class, <code>~400</code>-line chunks for the rest, then <code>dart format</code>.</li>
+    </ul>
+    <div class="note plain">
+      <p>
+        <strong>6,613 lines</strong> of generator code across 20 files produce
+        <strong>457,000</strong> lines across 1,322 Dart files. That ratio is not a brag about
+        volume — it is the reason the project is maintainable. The only part anyone reasons
+        about is the 6,613.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ TYPE SYSTEM ============ -->
+  <section>
+    <h2>The type system and ownership</h2>
+    <p>
+      GIR is a C API description, and most of the difficulty in generating a good Dart API is
+      that <code>transfer-ownership</code> and nullability are not decoration — they define who
+      frees what, and getting them wrong is a memory bug. Three rules do most of the work.
+    </p>
+
+    <div class="grid three">
+      <div class="cell">
+        <h4>transfer-none ⇒ nullable</h4>
+        <p>
+          A <code>gchar*</code> with <code>transfer-ownership="none"</code> is returned as
+          <code>String?</code>, because the native getter genuinely can return NULL. The
+          generator does not tighten this to make the API look nicer — a non-nullable annotation
+          over a NULL-returning C function is a runtime crash, not a convenience.
+        </p>
+      </div>
+      <div class="cell">
+        <h4>transfer-full ⇒ copy and free</h4>
+        <p>
+          Ownership transfers to the caller, so the string is copied into Dart memory and the
+          native allocation released. Getting this backwards leaks on every call.
+        </p>
+      </div>
+      <div class="cell">
+        <h4>Props types come from methods</h4>
+        <p>
+          A property accessor takes its Dart type from the typed
+          <code>get&lt;Name&gt;</code> / <code>set&lt;Name&gt;</code> method's resolved bridge, not
+          from the property's raw <code>&lt;type&gt;</code> element. The property element and the
+          method bridge can disagree — and when they do, the method is what the user will
+          actually execute.
+        </p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:34px">Namespace resolution needs an explicit anchor</h3>
+    <p>
+      The subtlest bug class in this project is unqualified type names resolving against the
+      wrong namespace. Emitting <code>Adw</code> that inherits from <code>Gtk</code> means
+      <code>&lt;type name="Application"/&gt;</code> has two plausible answers. The resolver
+      therefore takes a <code>relativeTo</code> parameter, and inherited properties, inherited
+      signals and interface mirrors all pass the namespace that actually declared the symbol.
+    </p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">the bug this prevents</span></div>
+<pre><span class="tok-c">// AdwMessageDialogProps.application, emitted while the namespace is Adw.</span>
+<span class="tok-c">// Unqualified "Application" resolved to Adw.Application …</span>
+<span class="tok-k">set</span> application(AdwApplication? value)   <span class="tok-c">// AdwApplication</span>
+
+<span class="tok-c">// … overriding GtkWindowProps.application(GtkApplication?) with a</span>
+<span class="tok-c">// NARROWER type. AdwApplication extends GtkApplication, so this</span>
+<span class="tok-c">// is an invalid override: invalid_override, hundreds of times.</span>
+
+<span class="tok-c">// Fix: resolve against the OWNER's namespace, not the emission namespace.</span>
+<span class="tok-k">set</span> application(GtkApplication? value)  <span class="tok-c">// correct</span></pre>
+    </div>
+    <p class="small">
+      The same fix applies to inherited signal arguments: <code>Gtk.Application::window-added</code>
+      must resolve its <code>Window</code> argument to <code>GtkWindow</code> even when emitted
+      into <code>Adw</code>.
+    </p>
+  </section>
+
+  <!-- ============ SIGNALS ============ -->
+  <section>
+    <h2>The typed signal design</h2>
+    <p>
+      3,738 typed helpers would be unmaintainable as one class each. Instead, signals are
+      partitioned into buckets by <strong>FFI shape × Dart signature</strong>, and each bucket
+      gets one trampoline, one typed registry and one connect helper.
+    </p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">signals.dart — bucket naming</span></div>
+<pre><span class="tok-c">// The bucket id encodes the native shape, so one trampoline can</span>
+<span class="tok-c">// serve every signal that shares it.</span>
+_connectSignal_v_1_i_gtktextdirection      <span class="tok-c">// void (*)(gint)</span>
+_connectSignal_b_4_i_i_b_o_int_int_bool_gtktooltip
+_connectSignal_b_1_s_string                 <span class="tok-c">// gboolean (*)(gchar*)</span>
+_connectSignal_v_0                          <span class="tok-c">// void (*)(void)</span></pre>
+    </div>
+    <ul class="checks">
+      <li><strong>Dedup is by <code>GirSignal</code> instance identity, not by name.</strong> Two signals called <code>interface-added</code> with different arities are different signals; deduplicating by name silently dropped one of them.</li>
+      <li><strong>The inheritance walk is keyed by qualified class name.</strong> Walking by local name stops at <code>Adw.Application</code>, because <code>Gio.Application</code> has the same local name.</li>
+      <li><strong>Every unsupported signal gets a precise reason</strong> — weak-ref, detailed name (<code>notify::x</code>), arity above 5, untypable argument, untypable return, name collision. Not "signal skipped".</li>
+      <li><strong><code>connectSignal</code></strong> is public in every package for anything the generator will not type, and uses the same trampoline path.</li>
+    </ul>
+  </section>
+
+  <!-- ============ LIFETIMES ============ -->
+  <section>
+    <h2>Callback lifetimes — the central invariant</h2>
+    <p>
+      Almost every memory bug in a hand-written FFI binding comes from one question: how long
+      does the native side hold this callback? The generator has exactly two strategies and
+      picks between them by whether the callee can retain the pointer.
+    </p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 1000 250" role="img" aria-label="Decision: can the callee invoke the callback after the native call returns? If no, allocate a NativeCallable and close it in a finally block. If yes, use a permanent trampoline and registry and never close anything.">
+        <defs>
+          <marker id="ah2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- question -->
+        <text class="d-sub" x="8" y="16">the only question that matters</text>
+        <rect class="d-node" x="8" y="26" width="300" height="62" rx="6"/>
+        <text class="d-label" x="24" y="50">Can the callee invoke it</text>
+        <text class="d-label" x="24" y="68">after the call returns?</text>
+
+        <!-- branch labels -->
+        <path class="d-arrow" d="M158 88 V120" marker-end="url(#ah2)"/>
+        <text class="d-sub" x="168" y="110">no</text>
+        <path class="d-arrow" d="M310 57 H392"/>
+        <path class="d-arrow" d="M386 52 L392 57 L386 62" marker-end="url(#ah2)"/>
+        <text class="d-sub" x="326" y="48">yes</text>
+
+        <!-- left: sync -->
+        <text class="d-sub" x="90" y="160">synchronous</text>
+        <rect class="d-node" x="8" y="170" width="300" height="66" rx="6"/>
+        <text class="d-label" x="24" y="194">NativeCallable.isolateLocal</text>
+        <text class="d-sub" x="24" y="212">allocated at the call site,</text>
+        <text class="d-sub" x="24" y="228">closed in a finally block</text>
+
+        <!-- right: async -->
+        <text class="d-sub" x="400" y="160">asynchronous · also sources,</text>
+        <text class="d-sub" x="400" y="176">signals, template callbacks</text>
+        <rect class="d-node-accent" x="392" y="186" width="576" height="50" rx="6"/>
+        <text class="d-label" x="408" y="208">Pointer.fromFunction → static trampoline → per-call registry</text>
+        <text class="d-sub" x="408" y="226">nothing is ever closed, and user_data stays internal</text>
+      </svg>
+      <figcaption>The <code>*Callback</code> suffix on 172 async methods exists to make this choice visible at the call site.</figcaption>
+    </figure>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Situation</th><th>Strategy</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Callback invoked synchronously, before the native call returns</td>
+            <td>Allocate a <code>NativeCallable.isolateLocal</code> at the call site, <code>.close()</code> it in <code>finally</code></td>
+            <td>The callee provably cannot call it later, so releasing it immediately is both safe and leak-free.</td>
+          </tr>
+          <tr>
+            <td>Async method finishing callback</td>
+            <td>Permanent <code>Pointer.fromFunction</code> over a static trampoline plus a per-call registry; nothing is ever closed</td>
+            <td>GLib holds the pointer past the return. Closing it would be a use-after-free; leaking a <code>NativeCallable</code> would not be, but the registry is bounded and keyed per call instead.</td>
+          </tr>
+          <tr>
+            <td>Template callback, signal handler, idle / timeout source</td>
+            <td>Top-level or static Dart function; keep it alive for the object's lifetime</td>
+            <td>These are long-lived by design. A closure created inside a wrapper call cannot outlive that call safely.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <p>
+        The second row is why the <code>*Callback</code> suffix exists on 172 async methods.
+        A single naming convention makes the lifetime difference visible at the call site, which
+        is the only place a reader can actually act on it.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ SKIP CONTRACT ============ -->
+  <section>
+    <h2>The skip report contract</h2>
+    <p>
+      Every symbol the generator declines to emit produces a line in
+      <code>packages/&lt;lib&gt;/skip_report.txt</code>, grouped by category and by reason. This is
+      a designed interface, not a log file — the reason string is written to be actionable.
+    </p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">skip_report.txt</span></div>
+<pre><span class="tok-c"># Skip report for package gtk4 (Gtk 4.0)</span>
+Total skipped: 1767
+
+<span class="tok-k">## By category</span>
+property: 1210
+callable: 517
+method: 15
+signal: 13
+renamed: 10
+
+<span class="tok-k">## By reason</span>
+construct-only or no public setter; emitting getter only: 218
+unsupported type null: 117
+parameter properties: array types are handled in a later phase: 107
+introspectable=0 (C macro; use log_set_handler_full): 1
+override-incompatible with ancestor; renamed to useIOModule: 1</pre>
+    </div>
+    <p>
+      Note the last two entries. The macro reason names the <code>_full</code> wrapper to call
+      instead, and the collision reason names the method that <em>was</em> emitted. A skip entry
+      that tells the user what to do instead is worth ten that just say no.
+    </p>
+    <p class="small">
+      All categories and reasons are documented alphabetically in
+      <code>docs/skip-categories.md</code>.
+    </p>
+  </section>
+
+  <!-- ============ FILE LAYOUT ============ -->
+  <section>
+    <h2>Generated file layout</h2>
+    <p>One class per file, named after the class, with its props companion alongside:</p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">packages/gtk4/lib/</span></div>
+<pre>gtk4.dart                     <span class="tok-c">// barrel: exports every part file in declaration order</span>
+src/
+  lib.dart                    <span class="tok-c">// library list + gtlLookup()</span>
+  signals.dart                <span class="tok-c">// trampolines, registries, connectSignal</span>
+  gtkbutton.dart              <span class="tok-c">// class GtkButton</span>
+  gtkbutton_props.dart        <span class="tok-c">// class GtkButtonProps extends GtkWidgetProps</span>
+  gtkwindow.dart              <span class="tok-c">// class GtkWindow</span>
+  gtkwindow_props.dart
+  records_0.dart …            <span class="tok-c">// records, unions, ~400-line chunks</span>
+  enums_0.dart …              <span class="tok-c">// enumerations, bitfields</span>
+  functions_0.dart …          <span class="tok-c">// namespace functions, constants</span>
+  callbacks_0.dart …          <span class="tok-c">// callback typedefs</span>
+skip_report.txt</pre>
+    </div>
+    <p>
+      All per-class files are <code>part of</code> the same library, so forward references
+      resolve naturally and the public surface is unchanged —
+      <code>import 'package:gtk4/gtk4.dart'</code> exposes the same names as before. The
+      practical benefit is navigational: <code>Ctrl+Click</code> on <code>GtkButton</code> lands
+      in <code>gtkbutton.dart</code> instead of <code>classes_27.dart</code>.
+    </p>
+  </section>
+
+  <!-- ============ CONVENTIONS ============ -->
+  <section>
+    <h2>Contributing conventions</h2>
+    <p>
+      The repository carries an <code>AGENTS.md</code> that defines the workflow and conventions
+      for both humans and AI agents, including a rule that matters more than the rest:
+    </p>
+    <div class="note">
+      <p>
+        <strong>Never hand-edit generated code.</strong> Changes belong in the generator, and a
+        pull request that modifies <code>packages/&lt;lib&gt;/lib/</code> by hand is wrong by
+        definition — because the next regeneration will silently revert it. A generator change
+        must land together with its regenerated output, so reviewers can see the actual effect.
+      </p>
+    </div>
+    <p>Other conventions worth knowing before opening a pull request:</p>
+    <ul class="checks">
+      <li>Commit prefixes: <code>feat(generator):</code> / <code>fix(generator):</code> for generator work, <code>chore(gen):</code> or <code>feat(gen &lt;lib&gt;):</code> for regenerated output.</li>
+      <li>One pull request per logical change, including the regenerated packages and updated <code>skip_report.txt</code> files.</li>
+      <li><code>dart analyze</code> clean and all tests passing across the workspace before merge.</li>
+      <li>CI deliberately does <em>not</em> re-run the generator, so a committed package that no longer matches the generator cannot merge silently.</li>
+      <li>Pointer lifetimes and <code>transfer-full</code> vs <code>transfer-none</code> are treated as correctness concerns. Leaks and use-after-free are bugs, not style issues.</li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>The documents</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Document</th><th>Covers</th></tr></thead>
+        <tbody>
+          <tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/architecture.md" rel="noopener">architecture.md</a></td><td>The pipeline end to end, top-level layout, and how to add a new binding package</td></tr>
+          <tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/emission.md" rel="noopener">emission.md</a></td><td>What each emitter produces and how — the props accessor rules, interface mirroring, callback parameters</td></tr>
+          <tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/type-system.md" rel="noopener">type-system.md</a></td><td>GIR-to-Dart type mapping, transfer ownership, nullability, cross-namespace resolution</td></tr>
+          <tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/signals.md" rel="noopener">signals.md</a></td><td>Bucket partitioning, the inheritance walk, destroy-notify, the <code>connectSignal</code> escape hatch</td></tr>
+          <tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/async.md" rel="noopener">async.md</a></td><td>The <code>*Callback</code> overloads and when the temporary-trampoline model is unsafe</td></tr>
+          <tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/skip-categories.md" rel="noopener">skip-categories.md</a></td><td>Every category and reason that appears in a skip report, alphabetised</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="btn-row" style="margin-top:30px">
+      <a class="btn primary" href="roadmap.html">See what the design still needs</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>
+      <p><strong>dart-gir</strong> — Dart FFI bindings for the GObject ecosystem</p>
+      <p class="base">Copyright © 2026 Andrey Maksimov · BSD-3-Clause</p>
+      <p class="small">Generated code is committed; the generator is the source of truth.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="design.html">Design reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Source</h4>
+        <ul>
+          <li><a href="https://github.com/TenderOwl/dart-gir" rel="noopener">Repository</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/tree/main/docs" rel="noopener">docs/</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#ai">AI development statement</a></li>
+          <li><a href="license.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
