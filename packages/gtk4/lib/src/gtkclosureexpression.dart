@@ -30,15 +30,13 @@ class GtkClosureExpression extends GtkExpression {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GtkClosureExpression(
+  GtkClosureExpression(
     int valueType,
     GClosure closure,
     int nParams,
     ffi.Pointer<ffi.Void> params,
-  ) {
-    return GtkClosureExpression.fromPointer(
-      _gtkClosureExpressionNew(valueType, closure.handle, nParams, params),
-      owned: true,
-    );
-  }
+  ) : super.fromPointer(
+        _gtkClosureExpressionNew(valueType, closure.handle, nParams, params),
+        owned: true,
+      );
 }

@@ -159,12 +159,8 @@ class GtkListStore extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Size>)
           >();
-  factory GtkListStore.newv(int nColumns, ffi.Pointer<ffi.Size> types) {
-    return GtkListStore.fromPointer(
-      _gtkListStoreNewv(nColumns, types),
-      owned: true,
-    );
-  }
+  GtkListStore.newv(int nColumns, ffi.Pointer<ffi.Size> types)
+    : super.fromPointer(_gtkListStoreNewv(nColumns, types), owned: true);
 
   /// Appends a new row to @list_store.  @iter will be changed to point to this new
   /// row.  The row will be empty after this function is called.  To fill in

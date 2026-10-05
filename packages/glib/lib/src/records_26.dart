@@ -182,9 +182,7 @@ final class GStrvBuilder {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_strv_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GStrvBuilder() {
-    return GStrvBuilder.fromPointer(_gStrvBuilderNew());
-  }
+  GStrvBuilder() : this.fromPointer(_gStrvBuilderNew());
 
   /// Add a string to the end of the array.
   ///

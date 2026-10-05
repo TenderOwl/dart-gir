@@ -23,13 +23,9 @@ class GtkTryExpression extends GtkExpression {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
-  factory GtkTryExpression(
-    int nExpressions,
-    ffi.Pointer<ffi.Void> expressions,
-  ) {
-    return GtkTryExpression.fromPointer(
-      _gtkTryExpressionNew(nExpressions, expressions),
-      owned: true,
-    );
-  }
+  GtkTryExpression(int nExpressions, ffi.Pointer<ffi.Void> expressions)
+    : super.fromPointer(
+        _gtkTryExpressionNew(nExpressions, expressions),
+        owned: true,
+      );
 }

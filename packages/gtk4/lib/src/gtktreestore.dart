@@ -47,12 +47,8 @@ class GtkTreeStore extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Size>)
           >();
-  factory GtkTreeStore.newv(int nColumns, ffi.Pointer<ffi.Size> types) {
-    return GtkTreeStore.fromPointer(
-      _gtkTreeStoreNewv(nColumns, types),
-      owned: true,
-    );
-  }
+  GtkTreeStore.newv(int nColumns, ffi.Pointer<ffi.Size> types)
+    : super.fromPointer(_gtkTreeStoreNewv(nColumns, types), owned: true);
 
   /// Appends a new row to @tree_store.
   ///

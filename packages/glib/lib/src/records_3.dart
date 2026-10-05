@@ -38,9 +38,8 @@ final class GChecksum {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_checksum_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GChecksum(GChecksumType checksumType) {
-    return GChecksum.fromPointer(_gChecksumNew(checksumType.value));
-  }
+  GChecksum(GChecksumType checksumType)
+    : this.fromPointer(_gChecksumNew(checksumType.value));
 
   /// Copies a #GChecksum. If @checksum has been closed, by calling
   /// g_checksum_get_string() or g_checksum_get_digest(), the copied

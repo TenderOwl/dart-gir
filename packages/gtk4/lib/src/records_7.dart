@@ -156,11 +156,8 @@ final class GtkTreePath {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int32>, int)
           >();
-  factory GtkTreePath.fromIndicesv(ffi.Pointer<ffi.Int32> indices, int length) {
-    return GtkTreePath.fromPointer(
-      _gtkTreePathNewFromIndicesv(indices, length),
-    );
-  }
+  GtkTreePath.fromIndicesv(ffi.Pointer<ffi.Int32> indices, int length)
+    : this.fromPointer(_gtkTreePathNewFromIndicesv(indices, length));
 
   /// Creates a new `GtkTreePath` initialized to @path.
   ///

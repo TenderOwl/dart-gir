@@ -16,9 +16,7 @@ final class GRand {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_rand_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  factory GRand() {
-    return GRand.fromPointer(_gRandNew());
-  }
+  GRand() : this.fromPointer(_gRandNew());
 
   /// Creates a new random number generator initialized with @seed.
   static final _gRandNewWithSeed =
@@ -26,9 +24,7 @@ final class GRand {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('g_rand_new_with_seed')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  factory GRand.withSeed(int seed) {
-    return GRand.fromPointer(_gRandNewWithSeed(seed));
-  }
+  GRand.withSeed(int seed) : this.fromPointer(_gRandNewWithSeed(seed));
 
   /// Creates a new random number generator initialized with @seed.
   static final _gRandNewWithSeedArray =
@@ -38,9 +34,8 @@ final class GRand {
             >
           >('g_rand_new_with_seed_array')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  factory GRand.withSeedArray(int seed, int seedLength) {
-    return GRand.fromPointer(_gRandNewWithSeedArray(seed, seedLength));
-  }
+  GRand.withSeedArray(int seed, int seedLength)
+    : this.fromPointer(_gRandNewWithSeedArray(seed, seedLength));
 
   /// Copies a #GRand into a new one with the same exact state as before.
   /// This way you can take a snapshot of the random number generator for
