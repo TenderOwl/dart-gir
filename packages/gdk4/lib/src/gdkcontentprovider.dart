@@ -57,6 +57,40 @@ class GdkContentProvider extends GObject {
         owned: true,
       );
 
+  /// Creates a content provider that represents all the given @providers.
+  ///
+  /// Whenever data needs to be written, the union provider will try the given
+  /// @providers in the given order and the first one supporting a format will
+  /// be chosen to provide it.
+  ///
+  /// This allows an easy way to support providing data in different formats.
+  /// For example, an image may be provided by its file and by the image
+  /// contents with a call such as
+  /// ```c
+  /// gdk_content_provider_new_union ((GdkContentProvider *[2]) {
+  /// gdk_content_provider_new_typed (G_TYPE_FILE, file),
+  /// gdk_content_provider_new_typed (GDK_TYPE_TEXTURE, texture)
+  /// }, 2);
+  /// ```
+  static final _gdkContentProviderNewUnion =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
+            >
+          >('gdk_content_provider_new_union')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  factory GdkContentProvider.union(
+    ffi.Pointer<ffi.Void> providers,
+    int nProviders,
+  ) {
+    return GdkContentProvider.fromPointer(
+      _gdkContentProviderNewUnion(providers, nProviders),
+      owned: true,
+    );
+  }
+
   /// Emits the ::content-changed signal.
   static final _gdkContentProviderContentChanged =
       gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(

@@ -32,6 +32,50 @@ class GMemoryInputStream extends GInputStream {
         owned: true,
       );
 
+  /// Creates a new #GMemoryInputStream with data in memory of a given size.
+  static final _gMemoryInputStreamNewFromData =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.IntPtr,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_memory_input_stream_new_from_data')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  factory GMemoryInputStream.fromData(
+    ffi.Pointer<ffi.Uint8> data,
+    int len, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    final _nc3 = destroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroy);
+    try {
+      final _ret = _gMemoryInputStreamNewFromData(
+        data,
+        len,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+      return GMemoryInputStream.fromPointer(_ret, owned: true);
+    } finally {
+      _nc3?.close();
+    }
+  }
+
   /// Appends @bytes to data that can be read from the input stream.
   static final _gMemoryInputStreamAddBytes =
       gioLookup<
@@ -44,6 +88,52 @@ class GMemoryInputStream extends GInputStream {
           >();
   void addBytes(GBytes bytes) {
     _gMemoryInputStreamAddBytes(this.handle, bytes.handle);
+  }
+
+  /// Appends @data to data that can be read from the input stream
+  static final _gMemoryInputStreamAddData =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.IntPtr,
+                ffi.Pointer<
+                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+                >,
+              )
+            >
+          >('g_memory_input_stream_add_data')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >();
+  void addData(
+    ffi.Pointer<ffi.Uint8> data,
+    int len, [
+    void Function(ffi.Pointer<ffi.Void>)? destroy,
+  ]) {
+    final _nc3 = destroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>)
+          >.isolateLocal(destroy);
+    try {
+      _gMemoryInputStreamAddData(
+        this.handle,
+        data,
+        len,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+      );
+    } finally {
+      _nc3?.close();
+    }
   }
 
   /// The notify signal is emitted on an object when one of its properties has

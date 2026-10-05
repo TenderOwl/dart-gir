@@ -208,6 +208,45 @@ class GdkTexture extends GObject {
     });
   }
 
+  /// Downloads the @texture into local memory.
+  ///
+  /// This may be an expensive operation, as the actual texture data
+  /// may reside on a GPU or on a remote display server.
+  ///
+  /// The data format of the downloaded data is equivalent to
+  /// %CAIRO_FORMAT_ARGB32, so every downloaded pixel requires
+  /// 4 bytes of memory.
+  ///
+  /// Downloading a texture into a Cairo image surface:
+  /// ```c
+  /// surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+  /// gdk_texture_get_width (texture),
+  /// gdk_texture_get_height (texture));
+  /// gdk_texture_download (texture,
+  /// cairo_image_surface_get_data (surface),
+  /// cairo_image_surface_get_stride (surface));
+  /// cairo_surface_mark_dirty (surface);
+  /// ```
+  ///
+  /// For more flexible download capabilities, see
+  /// [struct@Gdk.TextureDownloader].
+  static final _gdkTextureDownload =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+              )
+            >
+          >('gdk_texture_download')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint8>, int)
+          >();
+  void download(ffi.Pointer<ffi.Uint8> data, int stride) {
+    _gdkTextureDownload(this.handle, data, stride);
+  }
+
   /// Returns the color state associated with the texture.
   static final _gdkTextureGetColorState =
       gdk4Lookup<

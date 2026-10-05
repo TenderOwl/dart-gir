@@ -499,6 +499,45 @@ class GApplication extends GObject {
     _gApplicationMarkBusy(this.handle);
   }
 
+  /// Opens the given files.
+  ///
+  /// In essence, this results in the #GApplication::open signal being emitted
+  /// in the primary instance.
+  ///
+  /// @n_files must be greater than zero.
+  ///
+  /// @hint is simply passed through to the ::open signal.  It is
+  /// intended to be used by applications that have multiple modes for
+  /// opening files (eg: "view" vs "edit", etc).  Unless you have a need
+  /// for this functionality, you should use "".
+  ///
+  /// The application must be registered before calling this function
+  /// and it must have the %G_APPLICATION_HANDLES_OPEN flag set.
+  static final _gApplicationOpen =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('g_application_open')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  void open(ffi.Pointer<ffi.Void> files, int nFiles, String hint) {
+    withNativeString(hint, (nativeHint) {
+      _gApplicationOpen(this.handle, files, nFiles, nativeHint.cast<Utf8>());
+    });
+  }
+
   /// Immediately quits the application.
   ///
   /// Upon return to the mainloop, g_application_run() will return,
@@ -1773,6 +1812,70 @@ class GApplication extends GObject {
     _gActionMapAddAction(this.handle, action.handle);
   }
 
+  /// A convenience function for creating multiple [class@Gio.SimpleAction]
+  /// instances and adding them to a [iface@Gio.ActionMap].
+  ///
+  /// Each action is constructed as per one [struct@Gio.ActionEntry].
+  ///
+  /// ```c
+  /// static void
+  /// activate_quit (GSimpleAction *simple,
+  /// GVariant      *parameter,
+  /// gpointer       user_data)
+  /// {
+  /// exit (0);
+  /// }
+  ///
+  /// static void
+  /// activate_print_string (GSimpleAction *simple,
+  /// GVariant      *parameter,
+  /// gpointer       user_data)
+  /// {
+  /// g_print ("%s\n", g_variant_get_string (parameter, NULL));
+  /// }
+  ///
+  /// static GActionGroup *
+  /// create_action_group (void)
+  /// {
+  /// const GActionEntry entries[] = {
+  /// { "quit",         activate_quit              },
+  /// { "print-string", activate_print_string, "s" }
+  /// };
+  /// GSimpleActionGroup *group;
+  ///
+  /// group = g_simple_action_group_new ();
+  /// g_action_map_add_action_entries (G_ACTION_MAP (group), entries, G_N_ELEMENTS (entries), NULL);
+  ///
+  /// return G_ACTION_GROUP (group);
+  /// }
+  /// ```
+  static final _gActionMapAddActionEntries =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_map_add_action_entries')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void addActionEntries(
+    ffi.Pointer<ffi.Void> entries,
+    int nEntries,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    _gActionMapAddActionEntries(this.handle, entries, nEntries, userData);
+  }
+
   /// Looks up the action with the name @action_name in @action_map.
   ///
   /// If no such action exists, returns `NULL`.
@@ -1824,6 +1927,45 @@ class GApplication extends GObject {
     withNativeString(actionName, (nativeActionName) {
       _gActionMapRemoveAction(this.handle, nativeActionName.cast<Utf8>());
     });
+  }
+
+  /// Remove actions from a [iface@Gio.ActionMap]. This is meant as the reverse of
+  /// [method@Gio.ActionMap.add_action_entries].
+  ///
+  ///
+  /// ```c
+  /// static const GActionEntry entries[] = {
+  /// { "quit",         activate_quit              },
+  /// { "print-string", activate_print_string, "s" }
+  /// };
+  ///
+  /// void
+  /// add_actions (GActionMap *map)
+  /// {
+  /// g_action_map_add_action_entries (map, entries, G_N_ELEMENTS (entries), NULL);
+  /// }
+  ///
+  /// void
+  /// remove_actions (GActionMap *map)
+  /// {
+  /// g_action_map_remove_action_entries (map, entries, G_N_ELEMENTS (entries));
+  /// }
+  /// ```
+  static final _gActionMapRemoveActionEntries =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('g_action_map_remove_action_entries')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  void removeActionEntries(ffi.Pointer<ffi.Void> entries, int nEntries) {
+    _gActionMapRemoveActionEntries(this.handle, entries, nEntries);
   }
 
   /// PyGObject-style typed property accessor. Reads and

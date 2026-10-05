@@ -66,6 +66,36 @@ class GtkAboutDialog extends GtkWindow {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkAboutDialog() : super.fromPointer(_gtkAboutDialogNew(), owned: true);
 
+  /// Creates a new section in the "Credits" page.
+  static final _gtkAboutDialogAddCreditSection =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_about_dialog_add_credit_section')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void addCreditSection(String sectionName, [List<String?>? people]) {
+    withNativeStringList(people, (nativePeople) {
+      withNativeString(sectionName, (nativeSectionName) {
+        _gtkAboutDialogAddCreditSection(
+          this.handle,
+          nativeSectionName.cast<Utf8>(),
+          nativePeople,
+        );
+      });
+    });
+  }
+
   /// Returns the comments string.
   static final _gtkAboutDialogGetComments =
       gtk4Lookup<
@@ -250,6 +280,46 @@ class GtkAboutDialog extends GtkWindow {
     return (_gtkAboutDialogGetWrapLicense(this.handle)) != 0;
   }
 
+  /// Sets the names of the artists to be displayed
+  /// in the "Credits" page.
+  static final _gtkAboutDialogSetArtists =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_about_dialog_set_artists')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setArtists([List<String?>? artists]) {
+    withNativeStringList(artists, (nativeArtists) {
+      _gtkAboutDialogSetArtists(this.handle, nativeArtists);
+    });
+  }
+
+  /// Sets the names of the authors which are displayed
+  /// in the "Credits" page of the about dialog.
+  static final _gtkAboutDialogSetAuthors =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_about_dialog_set_authors')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setAuthors([List<String?>? authors]) {
+    withNativeStringList(authors, (nativeAuthors) {
+      _gtkAboutDialogSetAuthors(this.handle, nativeAuthors);
+    });
+  }
+
   /// Sets the comments string to display in the about dialog.
   ///
   /// This should be a short string of one or two lines.
@@ -283,6 +353,26 @@ class GtkAboutDialog extends GtkWindow {
   void setCopyright([String? copyright]) {
     withNativeString(copyright, (nativeCopyright) {
       _gtkAboutDialogSetCopyright(this.handle, nativeCopyright.cast<Utf8>());
+    });
+  }
+
+  /// Sets the names of the documenters which are displayed
+  /// in the "Credits" page.
+  static final _gtkAboutDialogSetDocumenters =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_about_dialog_set_documenters')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setDocumenters([List<String?>? documenters]) {
+    withNativeStringList(documenters, (nativeDocumenters) {
+      _gtkAboutDialogSetDocumenters(this.handle, nativeDocumenters);
     });
   }
 
@@ -1016,6 +1106,115 @@ class GtkAboutDialog extends GtkWindow {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Gets the ID of the @buildable object.

@@ -319,6 +319,58 @@ class GtkFileChooserNative extends GtkNativeDialog {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 
+  /// Adds a 'choice' to the file chooser.
+  ///
+  /// This is typically implemented as a combobox or, for boolean choices,
+  /// as a checkbutton. You can select a value using
+  /// [method@Gtk.FileChooser.set_choice] before the dialog is shown,
+  /// and you can obtain the user-selected value in the
+  /// [signal@Gtk.Dialog::response] signal handler using
+  /// [method@Gtk.FileChooser.get_choice].
+  static final _gtkFileChooserAddChoice =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gtk_file_chooser_add_choice')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void addChoice(
+    String id,
+    String label, [
+    List<String?>? options,
+    List<String?>? optionLabels,
+  ]) {
+    withNativeStringList(options, (nativeOptions) {
+      withNativeStringList(optionLabels, (nativeOptionLabels) {
+        withNativeString(id, (nativeId) {
+          withNativeString(label, (nativeLabel) {
+            _gtkFileChooserAddChoice(
+              this.handle,
+              nativeId.cast<Utf8>(),
+              nativeLabel.cast<Utf8>(),
+              nativeOptions,
+              nativeOptionLabels,
+            );
+          });
+        });
+      });
+    });
+  }
+
   /// Adds @filter to the list of filters that the user can select between.
   ///
   /// When a filter is selected, only files that are passed by that

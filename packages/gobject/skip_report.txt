@@ -1,8 +1,8 @@
 # Skip report for package gobject (GObject 2.0)
-Total skipped: 107
+Total skipped: 99
 
 ## By category
-callable: 88
+callable: 80
 property: 8
 callback: 5
 alias: 3
@@ -12,16 +12,16 @@ renamed: 1
 
 ## By reason
 introspectable=0: 28
-array types are handled in a later phase: 5
 construct-only or no public setter; emitting getter only: 5
-return: array types are handled in a later phase: 4
-parameter const_static_values: array types are handled in a later phase: 4
+parameter const_static_values: array of TypeKind.record (later phase): 4
+array parameter in callback signature: 3
 aliases are resolved to their target: 3
-parameter instance_and_params: array types are handled in a later phase: 2
-parameter const_values: array types are handled in a later phase: 2
-moved to CClosure.marshal_VOID__ENUM: 1
-moved to CClosure.marshal_VOID__FLAGS: 1
+array of TypeKind.union (later phase): 2
+parameter const_values: array of TypeKind.record (later phase): 2
+parameter instance_and_params: array of TypeKind.record (later phase): 2
+moved to CClosure.marshal_VOID__UINT_POINTER: 1
 moved to CClosure.marshal_BOOLEAN__BOXED_BOXED: 1
+moved to CClosure.marshal_VOID__FLOAT: 1
 moved to CClosure.marshal_VOID__INT: 1
 moved to CClosure.marshal_VOID__LONG: 1
 moved to CClosure.marshal_VOID__OBJECT: 1
@@ -30,18 +30,17 @@ moved to CClosure.marshal_VOID__POINTER: 1
 moved to CClosure.marshal_VOID__STRING: 1
 moved to CClosure.marshal_VOID__UCHAR: 1
 moved to CClosure.marshal_VOID__UINT: 1
-moved to CClosure.marshal_VOID__UINT_POINTER: 1
 duplicate declaration owned by an earlier namespace: 1
+moved to CClosure.marshal_VOID__ULONG: 1
 moved to CClosure.marshal_VOID__VARIANT: 1
 moved to CClosure.marshal_VOID__VOID: 1
 moved to CClosure.marshal_generic: 1
 moved to CClosure.marshal_BOOLEAN__FLAGS: 1
-moved to CClosure.marshal_VOID__DOUBLE: 1
-moved to CClosure.marshal_VOID__CHAR: 1
 moved to CClosure.marshal_STRING__OBJECT_POINTER: 1
-parameter hook_func: callback SignalEmissionHook has unsupported signature: 1
+moved to CClosure.marshal_VOID__BOOLEAN: 1
 moved to CClosure.marshal_VOID__BOXED: 1
-moved to CClosure.marshal_VOID__ULONG: 1
+parameter hook_func: callback SignalEmissionHook has unsupported signature: 1
+moved to CClosure.marshal_VOID__CHAR: 1
 moved to Source.set_closure: 1
 moved to Source.set_dummy_callback: 1
 parameter n_children: nullable scalar parameter (guint): 1
@@ -49,30 +48,27 @@ moved to TypeClass.adjust_private_offset: 1
 moved to TypeClass.get: 1
 moved to TypeClass.peek: 1
 moved to TypeClass.peek_static: 1
-moved to TypeClass.ref: 1
+moved to CClosure.marshal_VOID__DOUBLE: 1
 moved to TypeInterface.add_prerequisite: 1
-moved to CClosure.marshal_VOID__BOOLEAN: 1
+moved to TypeInterface.get_plugin: 1
 moved to TypeInterface.instantiatable_prerequisite: 1
 moved to TypeInterface.peek: 1
 moved to TypeInterface.prerequisites: 1
 parameter n_interfaces: nullable scalar parameter (guint): 1
 moved to Value.type_compatible: 1
 moved to Value.type_transformable: 1
-parameter param_values: array types are handled in a later phase: 1
-parameter pspecs: array types are handled in a later phase: 1
 parameter n_prerequisites: nullable scalar parameter (guint): 1
 shadowed by sort_with_data: 1
-moved to TypeInterface.get_plugin: 1
+moved to TypeClass.ref: 1
 shadowed by bind_with_closures: 1
 missing getter get_source: 1
-parameter parameters: array types are handled in a later phase: 1
 shadowed by bind_property_with_closures: 1
-parameter names: array types are handled in a later phase: 1
 missing getter get_target: 1
 missing getter get_target-type: 1
 name collision: 1
 override-incompatible with ancestor; renamed to useTypeModule: 1
-moved to CClosure.marshal_VOID__FLOAT: 1
+moved to CClosure.marshal_VOID__ENUM: 1
+moved to CClosure.marshal_VOID__FLAGS: 1
 
 ## First 50 entries
 [bitfield] GIOCondition — duplicate declaration owned by an earlier namespace
@@ -104,24 +100,24 @@ moved to CClosure.marshal_VOID__FLOAT: 1
 [callable] GObject.cclosureNewObjectSwap — introspectable=0
 [callable] GObject.cclosureNewSwap — introspectable=0
 [callable] GObject.clearObject — introspectable=0
-[callable] GObject.enumCompleteTypeInfo — parameter const_values: array types are handled in a later phase
-[callable] GObject.enumRegisterStatic — parameter const_static_values: array types are handled in a later phase
-[callable] GObject.flagsCompleteTypeInfo — parameter const_values: array types are handled in a later phase
-[callable] GObject.flagsRegisterStatic — parameter const_static_values: array types are handled in a later phase
+[callable] GObject.enumCompleteTypeInfo — parameter const_values: array of TypeKind.record (later phase)
+[callable] GObject.enumRegisterStatic — parameter const_static_values: array of TypeKind.record (later phase)
+[callable] GObject.flagsCompleteTypeInfo — parameter const_values: array of TypeKind.record (later phase)
+[callable] GObject.flagsRegisterStatic — parameter const_static_values: array of TypeKind.record (later phase)
 [callable] GObject.paramSpecOverride — introspectable=0
 [callable] GObject.paramSpecValueArray — introspectable=0
-[callback] GObject.SignalEmissionHook parameter param_values — array types are handled in a later phase
+[callback] GSignalEmissionHook parameter param_values — array parameter in callback signature
 [callable] GObject.signalAddEmissionHook — parameter hook_func: callback SignalEmissionHook has unsupported signature
-[callable] GObject.signalChainFromOverridden — parameter instance_and_params: array types are handled in a later phase
+[callable] GObject.signalChainFromOverridden — parameter instance_and_params: array of TypeKind.record (later phase)
 [callable] GObject.signalChainFromOverriddenHandler — introspectable=0
 [callable] GObject.signalConnectData — introspectable=0
 [callable] GObject.signalConnectObject — introspectable=0
 [callable] GObject.signalEmit — introspectable=0
 [callable] GObject.signalEmitByName — introspectable=0
 [callable] GObject.signalEmitValist — introspectable=0
-[callable] GObject.signalEmitv — parameter instance_and_params: array types are handled in a later phase
-[callable] GObject.signalListIds — return: array types are handled in a later phase
+[callable] GObject.signalEmitv — parameter instance_and_params: array of TypeKind.record (later phase)
 [callable] GObject.signalNew — introspectable=0
 [callable] GObject.signalNewClassHandler — introspectable=0
 [callable] GObject.signalNewValist — introspectable=0
 [callable] GObject.signalNewv — introspectable=0
+[callable] GObject.signalSetVaMarshaller — introspectable=0

@@ -30,6 +30,38 @@ final class GskComponentTransfer {
   final ffi.Pointer<ffi.Void> handle;
 
   /// Creates a new component transfer that applies
+  /// a step function.
+  ///
+  /// The new value is computed as
+  ///
+  /// C' = values[k]
+  ///
+  /// where k is the smallest value such that
+  ///
+  /// k / n <= C < (k + 1) / n
+  ///
+  /// <figure>
+  /// <picture>
+  /// <source srcset="discrete-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Component transfer: discrete" src="discrete-light.png">
+  /// </picture>
+  /// </figure>
+  static final _gskComponentTransferNewDiscrete =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Uint32, ffi.Pointer<ffi.Float>)
+            >
+          >('gsk_component_transfer_new_discrete')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Float>)
+          >();
+  factory GskComponentTransfer.discrete(int n, ffi.Pointer<ffi.Float> values) {
+    return GskComponentTransfer.fromPointer(
+      _gskComponentTransferNewDiscrete(n, values),
+    );
+  }
+
+  /// Creates a new component transfer that applies
   /// a gamma transform.
   ///
   /// The new value is computed as
@@ -110,6 +142,38 @@ final class GskComponentTransfer {
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double)>();
   GskComponentTransfer.linear(double m, double b)
     : this.fromPointer(_gskComponentTransferNewLinear(m, b));
+
+  /// Creates a new component transfer that applies
+  /// a piecewise linear function.
+  ///
+  /// The new value is computed as
+  ///
+  /// C' = values[k] + (C - k / (n - 1)) * n * (values[k + 1] - values[k])
+  ///
+  /// where k is the smallest value such that
+  ///
+  /// k / (n - 1) <= C < (k + 1) / (n - 1)
+  ///
+  /// <figure>
+  /// <picture>
+  /// <source srcset="table-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Component transfer: table" src="table-light.png">
+  /// </picture>
+  /// </figure>
+  static final _gskComponentTransferNewTable =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Uint32, ffi.Pointer<ffi.Float>)
+            >
+          >('gsk_component_transfer_new_table')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Float>)
+          >();
+  factory GskComponentTransfer.table(int n, ffi.Pointer<ffi.Float> values) {
+    return GskComponentTransfer.fromPointer(
+      _gskComponentTransferNewTable(n, values),
+    );
+  }
 
   /// Creates a copy of @other.
   static final _gskComponentTransferCopy =

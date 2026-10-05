@@ -827,6 +827,28 @@ bool signalIsValidName(String name) {
   });
 }
 
+/// Lists the signals by id that a certain instance or interface type
+/// created. Further information about the signals can be acquired through
+/// g_signal_query().
+final _gSignalListIds =
+    gobjectLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<ffi.Uint32> Function(ffi.Size, ffi.Pointer<ffi.Uint32>)
+          >
+        >('g_signal_list_ids')
+        .asFunction<
+          ffi.Pointer<ffi.Uint32> Function(int, ffi.Pointer<ffi.Uint32>)
+        >();
+(ffi.Pointer<ffi.Uint32>, int) signalListIds(int itype) {
+  final _out0 = malloc<ffi.Uint32>();
+  try {
+    final _ret = _gSignalListIds(itype, _out0);
+    return (_ret, _out0.value);
+  } finally {
+    malloc.free(_out0);
+  }
+}
+
 /// Given the name of the signal and the type of object it connects to, gets
 /// the signal's identifying integer. Emitting the signal by number is
 /// somewhat faster than using the name each time.
@@ -880,50 +902,4 @@ void signalOverrideClassClosure(
   GClosure classClosure,
 ) {
   _gSignalOverrideClassClosure(signalId, instanceType, classClosure.handle);
-}
-
-/// Overrides the class closure (i.e. the default handler) for the
-/// given signal for emissions on instances of @instance_type with
-/// callback @class_handler. @instance_type must be derived from the
-/// type to which the signal belongs.
-///
-/// See g_signal_chain_from_overridden() and
-/// g_signal_chain_from_overridden_handler() for how to chain up to the
-/// parent class closure from inside the overridden one.
-final _gSignalOverrideClassHandler =
-    gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Size,
-              ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
-            )
-          >
-        >('g_signal_override_class_handler')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
-          )
-        >();
-void signalOverrideClassHandler(
-  String signalName,
-  int instanceType,
-  void Function() classHandler,
-) {
-  withNativeString(signalName, (nativeSignalName) {
-    final _nc3 = ffi.NativeCallable<ffi.Void Function()>.isolateLocal(
-      classHandler,
-    );
-    try {
-      _gSignalOverrideClassHandler(
-        nativeSignalName.cast<Utf8>(),
-        instanceType,
-        _nc3.nativeFunction,
-      );
-    } finally {
-      _nc3.close();
-    }
-  });
 }

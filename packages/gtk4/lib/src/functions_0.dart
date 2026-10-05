@@ -223,6 +223,20 @@ int cssParserWarningQuark() {
   return _gtkCssParserWarningQuark();
 }
 
+/// Prevents GTK from using the specified portals.
+///
+/// This should only be used in portal implementations, apps must not call it.
+final _gtkDisablePortalInterfaces =
+    gtk4Lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Pointer<Utf8>>)>
+        >('gtk_disable_portal_interfaces')
+        .asFunction<void Function(ffi.Pointer<ffi.Pointer<Utf8>>)>();
+void disablePortalInterfaces([List<String?>? portalInterfaces]) {
+  withNativeStringList(portalInterfaces, (nativePortalInterfaces) {
+    _gtkDisablePortalInterfaces(nativePortalInterfaces);
+  });
+}
+
 /// Prevents GTK from using portals.
 ///
 /// This is equivalent to setting `GDK_DEBUG=no-portals` in the environment.
@@ -247,6 +261,27 @@ final _gtkDisableSetlocale =
         .asFunction<void Function()>();
 void disableSetlocale() {
   _gtkDisableSetlocale();
+}
+
+/// Distributes @extra_space to child @sizes by bringing smaller
+/// children up to natural size first.
+///
+/// The remaining space will be added to the @minimum_size member of the
+/// `GtkRequestedSize` struct. If all sizes reach their natural size then
+/// the remaining space is returned.
+final _gtkDistributeNaturalAllocation =
+    gtk4Lookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(ffi.Int32, ffi.Uint32, ffi.Pointer<ffi.Void>)
+          >
+        >('gtk_distribute_natural_allocation')
+        .asFunction<int Function(int, int, ffi.Pointer<ffi.Void>)>();
+int distributeNaturalAllocation(
+  int extraSpace,
+  int nRequestedSizes,
+  ffi.Pointer<ffi.Void> sizes,
+) {
+  return _gtkDistributeNaturalAllocation(extraSpace, nRequestedSizes, sizes);
 }
 
 /// Calls a function for all printers that are known to GTK.
@@ -685,80 +720,4 @@ void printRunPageSetupDialogAsync(
   } finally {
     _nc4.close();
   }
-}
-
-/// Renders an activity indicator (such as in `GtkSpinner`).
-/// The state %GTK_STATE_FLAG_CHECKED determines whether there is
-/// activity going on.
-final _gtkRenderActivity =
-    gtk4Lookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Double,
-              ffi.Double,
-              ffi.Double,
-              ffi.Double,
-            )
-          >
-        >('gtk_render_activity')
-        .asFunction<
-          void Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            double,
-            double,
-            double,
-            double,
-          )
-        >();
-void renderActivity(
-  GtkStyleContext context,
-  CairoContext cr,
-  double x,
-  double y,
-  double width,
-  double height,
-) {
-  _gtkRenderActivity(context.handle, cr.handle, x, y, width, height);
-}
-
-/// Renders an arrow pointing to @angle.
-///
-/// Typical arrow rendering at 0, 1⁄2 π;, π; and 3⁄2 π:
-///
-/// ![](arrows.png)
-final _gtkRenderArrow =
-    gtk4Lookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Double,
-              ffi.Double,
-              ffi.Double,
-              ffi.Double,
-            )
-          >
-        >('gtk_render_arrow')
-        .asFunction<
-          void Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            double,
-            double,
-            double,
-            double,
-          )
-        >();
-void renderArrow(
-  GtkStyleContext context,
-  CairoContext cr,
-  double angle,
-  double x,
-  double y,
-  double size,
-) {
-  _gtkRenderArrow(context.handle, cr.handle, angle, x, y, size);
 }

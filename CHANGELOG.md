@@ -170,6 +170,36 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   The wrapper returns the typed Dart value (`GtkTextIter
   getStartIter()`) directly. Skipped count across the workspace
   dropped from 1793 to 1511 (~282 fewer skips) without regressions.
+- **Bound-length and unbounded arrays are now resolved, not skipped.**
+  Four array shapes are handled by the resolver:
+  - `gchar**` / `const gchar**` / `char**` / `const char**` argv-style
+    string lists (the whitelist now matches what the C ABI accepts).
+  - `<array length="N">` whose element is an int-sized primitive,
+    boolean, enumeration, or bitfield: the wrapper exposes
+    `ffi.Pointer<ffi.Int32>` (or `Pointer<ffi.Uint32>` for bitfields)
+    and the C-side length parameter is bound to the GIR
+    `lengthParameterIndex`.
+  - `<array length="N">` whose element is a class/interface/record
+    type: the wrapper exposes `ffi.Pointer<ffi.Void>` (the same shape
+    a single record param uses today) and the length parameter is
+    bound to `lengthParameterIndex`.
+  - Unbounded primitive arrays (`<array c:type="int*">` without
+    `<array length="…">`): the wrapper exposes
+    `ffi.Pointer<ffi.Int32>`; the user provides length via a sibling
+    `get_n_items` accessor.
+  The user allocates the buffer with `calloc<Int32>(n)` (or
+  `calloc<ffi.Void>(n)` for record arrays) and passes the typed
+  pointer through. The GIR's length parameter is propagated through
+  the natural parameter iteration so the C side always sees the
+  matching `nProperties` / `nColors` slot. Across the regenerated
+  packages the "array types are handled in a later phase" reason
+  dropped from 946 skips to 0; the `gtk4` package's total skip count
+  fell from 1767 to 1380 and `glib` from 447 to 391. Remaining
+  array skips carry informative reasons (`array of TypeKind.X (later
+  phase)`, `array element of unsupported kind`, `array of unknown
+  element`) so the gaps are explicit. See
+  [emission.md](./docs/emission.md#parameter-marshalling) and
+  [type-system.md](./docs/type-system.md#arrays).
 
 ### Changed
 - **`ClassEmitter` walks the parent chain** to emit inherited typed
@@ -334,6 +364,19 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   for trampolines; a bare `return;` is rejected because `ffi.Void`
   is non-nullable, and `return ffi.nullptr` produces a
   `Pointer<Never>` the analyzer refuses to coerce.
+- **Callback-typed parameters with unresolvable user-facing signatures
+  silently emitted broken wrappers** with a parameter type of
+  `void?` that doesn't match the corresponding `NativeCallable<T>`
+  signature. Triggered when the callback typedef is reachable only
+  through a `<alias>` whose target callback declaration isn't in any
+  GIR (e.g. `GObject.ClosureMarshal` aliases a callback typedef that
+  lives in GLib's headers but isn't present in the GIR corpus). The
+  bridge now skips the parameter (and the callable) with the same
+  reason the FFI signature already records, instead of producing a
+  wrapper whose parameter type doesn't match its native call site.
+  Surfaced during the array-type resolution pass because
+  `gtk_cclosure_expression_new`'s `params` array used to be skipped,
+  masking the latent bug.
 
 ## 1.0.0 — 2026-09-28
 

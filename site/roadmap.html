@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmap — dart-gir</title>
+<meta name="description" content="Where dart-gir is today and what comes next: array and collection types, real runtime verification in CI, cross-platform library loading, GObject subclassing, and pub.dev publication.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <div class="inner">
+    <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M7 16.5V7.5h4.6a2.9 2.9 0 0 1 0 5.8H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.8" cy="8.4" r="1.15" fill="currentColor"/></svg> dart-gir</a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="features.html">Features</a>
+      <a href="roadmap.html" class="active">Roadmap</a>
+      <a href="design.html">Design</a>
+      <a href="about.html">About</a>
+      <a href="license.html">License</a>
+      <a href="https://github.com/TenderOwl/dart-gir" class="nav-cta" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" style="padding-bottom:0">
+    <div class="eyebrow">Roadmap</div>
+    <h1>Where this goes</h1>
+    <p class="lead">
+      Phases are ordered by what unblocks the most users, not by what is most fun. Every phase
+      is tied to a measurable exit condition, and the "done" column below is a claim you can
+      check against the repository — not a projection.
+    </p>
+    <div class="note plain">
+      <p>
+        <strong>No dates.</strong> This is a one-person project, and putting calendar dates on
+        phases that depend on generator rewrites would be fiction. Each phase instead states
+        what must be true for it to be called finished.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ SUMMARY ============ -->
+  <section>
+    <h2>At a glance</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Phase</th><th>Theme</th><th>Status</th><th>Exit condition</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>Generator foundation</td><td><span class="tag done">done</span></td><td>Loader, parser, resolver, emitters, 12 packages, skip reports</td></tr>
+          <tr><td>1</td><td>Ergonomics layer</td><td><span class="tag done">done</span></td><td>Typed props, typed signals, interface mirroring, async overloads</td></tr>
+          <tr><td>2</td><td>Prove it at runtime</td><td><span class="tag wip">in progress</span></td><td>CI that makes real native GTK calls; a loading failure says why</td></tr>
+          <tr><td>3</td><td>Arrays and collections</td><td><span class="tag next">next</span></td><td>Array-typed parameters, properties and returns are emitted</td></tr>
+          <tr><td>4</td><td>Cross-platform</td><td><span class="tag future">planned</span></td><td>Linux, macOS and Windows loaders; a macOS CI job</td></tr>
+          <tr><td>5</td><td>Subclassing &amp; composite templates</td><td><span class="tag wip">built on a branch</span></td><td>Merged to <code>main</code> and covered by CI</td></tr>
+          <tr><td>6</td><td>Distribute</td><td><span class="tag future">planned</span></td><td>Semver policy, pub.dev packages, documented stability level</td></tr>
+          <tr><td>7</td><td>More namespaces</td><td><span class="tag future">exploratory</span></td><td>Only after phases 2–5; driven by real demand</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 0 ============ -->
+  <section>
+    <h2>Phase details</h2>
+
+    <div class="phase done">
+      <div class="phase-head">
+        <h3>Phase 0 — Generator foundation</h3>
+        <span class="tag done">done</span>
+      </div>
+      <p class="muted" style="margin-bottom:0">
+        The pipeline that makes every later phase possible.
+      </p>
+      <ul>
+        <li>GIR XML loader with transitive <code>&lt;include&gt;</code> resolution</li>
+        <li>Immutable data model for every GIR element kind</li>
+        <li>Type resolver with a scalar table, a declared-type table and cross-namespace deduplication by <code>c:type</code></li>
+        <li>Emitters for classes, interfaces, records, unions, enums, bitfields, callbacks, functions, constants and signals</li>
+        <li>Per-package <code>skip_report.txt</code> from day one — no silent omissions</li>
+        <li>Twelve packages generated and compiling</li>
+      </ul>
+    </div>
+
+    <div class="phase done">
+      <div class="phase-head">
+        <h3>Phase 1 — The ergonomics layer</h3>
+        <span class="tag done">done</span>
+      </div>
+      <p class="muted" style="margin-bottom:0">
+        Turning "technically bound" into "pleasant to use". This is what separates dart-gir from
+        a raw FFI dump.
+      </p>
+      <ul>
+        <li>PyGObject-style typed <code>.props</code> accessors, 12,702 of them, with correct inherited nullability</li>
+        <li>Typed <code>onSignalName</code> handlers, 3,738 of them, bucketed by FFI shape and walked through the full parent chain</li>
+        <li>Interface methods mirrored onto concrete classes, with rename-on-conflict</li>
+        <li>Nullable callback parameters, unblocking the whole <code>g_*_add_full</code> family</li>
+        <li>Lifetime-safe <code>*Callback</code> overloads for async methods — 172 emitted</li>
+        <li>Caller-allocated OUT parameters as typed return values, anchored by <code>HeapAnchor</code></li>
+        <li>One Dart class per file, named after the class</li>
+        <li>A non-trivial consumer app in <code>example/</code> that compiles and runs against the output</li>
+      </ul>
+    </div>
+
+    <div class="phase wip">
+      <div class="phase-head">
+        <h3>Phase 2 — Prove it at runtime</h3>
+        <span class="tag wip">in progress</span>
+      </div>
+      <p>
+        The most important phase remaining, because right now the project's central claim —
+        that the generated bindings are correct — is verified by a linter and generator unit
+        tests, not by running against GTK.
+      </p>
+      <h4 style="margin-top:18px">The concrete problem</h4>
+      <p>
+        Each package's generated loader lists only Linux shared-object names:
+      </p>
+      <div class="code">
+        <div class="bar"><span></span><span></span><span></span><span class="fname">adw/lib/src/lib.dart (generated)</span></div>
+<pre><span class="tok-k">for</span> (<span class="tok-k">final</span> name <span class="tok-k">in</span> <span class="tok-k">const</span> [<span class="tok-s">'libadwaita-1.so.0'</span>]) { ... }
+<span class="tok-k">if</span> (libs.isEmpty) libs.add(ffi.DynamicLibrary.process());</pre>
+      </div>
+      <p>
+        On any other platform every name fails to open, the loader silently falls back to the
+        current process, and the first symbol lookup fails with
+        <em>"None of the loaded modules contained the requested symbol"</em> — a message that
+        points at the bindings when the real cause is a missing native library. It also means
+        <code>HeapAnchor</code>'s finalizer path and the <code>g_free</code> binding have no
+        working non-Linux behaviour to fall back on.
+      </p>
+      <h4 style="margin-top:18px">What "done" means</h4>
+      <ul class="checks todo">
+        <li>Platform-aware library name tables per namespace — <code>.dll</code>, <code>.dylib</code>, <code>.so.N</code> — emitted by the generator instead of hardcoded Linux sonames.</li>
+        <li>A dedicated, actionable exception when a native library is missing, naming the library, the package and the platform-specific install command.</li>
+        <li>A CI job that installs GTK 4 / libadwaita and actually runs <code>packages/gtk4/test</code> and <code>packages/glib/test</code> — currently CI never makes a native call.</li>
+        <li>Heap and lifetime tests run under CI, not only on a maintainer's desktop.</li>
+        <li>Every remaining <code>g_free</code> / <code>DynamicLibrary.process()</code> assumption reviewed for non-Linux correctness.</li>
+      </ul>
+    </div>
+
+    <div class="phase next">
+      <div class="phase-head">
+        <h3>Phase 3 — Arrays and collections</h3>
+        <span class="tag next">next</span>
+      </div>
+      <p>
+        <strong>946 recorded skips</strong> — 23% of the entire report — carry the reason
+        <em>"array types are handled in a later phase"</em>. This is the single biggest functional
+        gap and the next substantial body of work.
+      </p>
+      <p>It spans four different positions in a signature, each with its own lifetime rules:</p>
+      <ul>
+        <li><strong>Array parameters</strong> — typically accompanied by a length or
+          <code>n_*</code> scalar, and sometimes an <code>inout</code> for element replacement.</li>
+        <li><strong>Array properties</strong> — including <code>GStrv</code>-style string lists,
+          which have their own NULL-termination and ownership contract.</li>
+        <li><strong>Array returns</strong> — the hardest case, because the returned memory is
+          often caller-owned and must be freed with <code>g_free</code> or an element-free
+          function, and sometimes transferred in full.</li>
+        <li><strong>Array parameters to a callback</strong> — where the buffer's lifetime is
+          bounded by the trampoline, which changes the allocation strategy entirely.</li>
+      </ul>
+      <h4 style="margin-top:18px">What "done" means</h4>
+      <ul class="checks todo">
+        <li>A <code>GList</code>/<code>GPtrArray</code>/<code>GStrv</code>/fixed-array mapping layer in the resolver, with ownership rules per case rather than one generic array type.</li>
+        <li>Caller-allocated buffers for OUT-style array parameters, anchored the same way OUT structs are today.</li>
+        <li>A documented, tested policy for freeing returned arrays.</li>
+        <li>Property and return paths covered, not just parameters.</li>
+        <li>The skip reports regenerate with the 946 entries gone or individually explained.</li>
+      </ul>
+      <div class="note">
+        <p>
+          <strong>Why this phase is not already done:</strong> it needs the ownership and
+          lifetime model settled before the code is written, not after. The earlier
+          <code>HeapAnchor</code> work established that a buffer's lifetime must be tied to the
+          Dart wrapper that exposes it — and for arrays the question "who frees this, and when"
+          has more wrong answers than the OUT-struct case did.
+        </p>
+      </div>
+    </div>
+
+    <div class="phase future">
+      <div class="phase-head">
+        <h3>Phase 4 — Cross-platform support</h3>
+        <span class="tag future">planned</span>
+      </div>
+      <p>
+        Linux is the only platform that has ever run this. macOS is the next target because a
+        large share of GTK application development happens there, and the loader problem from
+        phase 2 has to be solved first.
+      </p>
+      <ul class="checks todo">
+        <li>macOS library names and Homebrew paths; a macOS CI job with GTK from Homebrew</li>
+        <li>Windows: DLL names, and an honest decision about whether GTK 4 via MSYS2 is supported or explicitly out of scope — saying so is better than leaving it silently broken</li>
+        <li>Platform notes per namespace: how to install the native libraries on each OS</li>
+      </ul>
+    </div>
+
+    <div class="phase wip">
+      <div class="phase-head">
+        <h3>Phase 5 — Subclassing and composite templates</h3>
+        <span class="tag wip">built on a branch</span>
+      </div>
+      <p>
+        The largest missing capability on <code>main</code> — and the one that most clearly
+        decides whether this project is a set of bindings or a toolkit for building real GTK
+        applications. On <code>main</code> every class is a thin wrapper around a native
+        pointer: you can call methods and connect signals, but you cannot define a class that
+        GTK itself instantiates.
+      </p>
+      <p>
+        <strong>This work exists already</strong>, on the <code>composite-templates</code>
+        branch — three commits ahead of <code>main</code>, roughly 9,200 added and 3,100 removed
+        lines across 519 files. It is worth being specific about what is there, because
+        "subclassing" in FFI is easy to claim and hard to do:
+      </p>
+      <ul>
+        <li><strong>Dart-level subclassing of generated wrappers.</strong> Generated classes are
+          emitted as <code>class</code> rather than <code>final class</code> and props classes as
+          public extendable companions, precisely so that a Dart subclass can override a method
+          for a covariant return type across a package boundary.</li>
+        <li><strong>A <code>gtk_templates_builder</code></strong> that reads
+          <code>libadwaita</code> composite templates and emits a
+          <code>&lt;class&gt;.gtk_templates.dart</code> beside the source: template installation,
+          per-field child lookup helpers, and a cached parent <code>GType</code>.</li>
+        <li><strong><code>@TemplateCallback</code> trampolines</strong> with
+          program-lifetime <code>NativeCallable</code>s — the opposite lifetime choice from
+          synchronous wrappers, and the correct one here, since the native side may call a
+          template callback at any point during the widget's life.</li>
+        <li><strong>A real consumer app</strong>: <code>example/todo/</code>, a libadwaita task
+          list using Blueprint (<code>.blp</code>) and XML (<code>.ui</code>) templates, a
+          <code>GResource</code> bundle, Meson integration, gettext catalogues and an icon —
+          4 commits of scaffolding beyond the editor on <code>main</code>.</li>
+      </ul>
+      <h4 style="margin-top:18px">What "done" means</h4>
+      <ul class="checks todo">
+        <li>The branch merges to <code>main</code> with <code>dart analyze</code> clean and the regenerated packages included.</li>
+        <li>It stops calling itself WIP where it does — the branch currently disables CI, so <strong>nothing on it is continuously verified</strong>. That has to end before it merges.</li>
+        <li>Subclass registration is documented as supported, with its own lifetime rules written down, rather than left as a pattern the reader has to infer from an example.</li>
+        <li>The template builder moves into the repository's own build path instead of being a separate tool.</li>
+      </ul>
+      <div class="note">
+        <p>
+          <strong>Sequencing note:</strong> this is listed after the runtime phase on purpose.
+          The branch is large, and merging 9,000 lines of generated output that no CI job has
+          ever executed would trade a visible gap for an invisible one. Phase 2's GTK-enabled CI
+          job is what makes this merge safe.
+        </p>
+      </div>
+    </div>
+
+    <div class="phase future">
+      <div class="phase-head">
+        <h3>Phase 6 — Distributing the packages</h3>
+        <span class="tag future">planned</span>
+      </div>
+      <p>
+        Everything is currently <code>publish_to: none</code> and pinned to the workspace version,
+        which means nobody can depend on it. Publication is what turns this from a repository
+        into a usable dependency.
+      </p>
+      <ul class="checks todo">
+        <li>A versioning policy: which packages move together, and what constitutes a breaking change for each</li>
+        <li>Per-package versions that follow semver, replacing the workspace pin</li>
+        <li>Publication to pub.dev, once phases 2–5 have stopped moving the API</li>
+        <li>A stated stability level per package — "generated, not hand-curated" is a real and acceptable answer, as long as it is written down</li>
+        <li>Migration notes for the generated API when an emitter changes</li>
+      </ul>
+    </div>
+
+    <div class="phase future">
+      <div class="phase-head">
+        <h3>Phase 7 — More namespaces</h3>
+        <span class="tag future">exploratory</span>
+      </div>
+      <p>
+        The generator is namespace-agnostic, so adding a library is mostly a matter of pointing it
+        at another <code>.gir</code> file. That makes this phase cheap per library and therefore
+        driven by demand rather than ambition.
+      </p>
+      <p>Candidates that fit the existing dependency graph cleanly:</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Candidate</th><th>Why it fits</th></tr></thead>
+          <tbody>
+            <tr><td><code>libsoup-3</code></td><td>HTTP client for Gio's network stack; same era, same introspection format.</td></tr>
+            <tr><td><code>Poppler</code></td><td>PDF rendering; commonly needed next to GDK in real apps.</td></tr>
+            <tr><td><code>GdkPixbuf</code> loaders, <code>Pango</code> extras</td><td>Small additions to namespaces already present.</td></tr>
+            <tr><td><code>Gst</code> (GStreamer)</td><td>Large and valuable for media apps, but a much bigger surface than the current packages.</td></tr>
+            <tr><td><code>JavaScriptCore</code> bindings</td><td>Would let GTK apps embed script engines without a second binding layer.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style="margin-top:12px">
+        Deliberately absent: Gtk 3. It is a large, widely deployed surface, but supporting two
+        major versions of the same toolkit from one generator is a project in itself and would
+        delay the phases that matter more.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ PRINCIPLES ============ -->
+  <section>
+    <h2>Constraints the roadmap is built around</h2>
+    <div class="grid two">
+      <div class="cell">
+        <h3>The generator is the product</h3>
+        <p>
+          457,000 lines of generated code are disposable output. A change that requires
+          hand-editing a package is a change to the generator, and any pull request that edits
+          <code>packages/*/lib/</code> by hand is by definition wrong. This is also why the
+          generated output is committed: reviewers need to see the effect of a generator change,
+          and CI lints the code that users will actually consume.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Skip a symbol loudly, never silently</h3>
+        <p>
+          Every unemitted symbol gets a line in <code>skip_report.txt</code> with a reason that
+          names the alternative when one exists. A binding generator that quietly omits a method
+          is worse than one that fails, because the omission surfaces as a mystery at the call
+          site. This is why the report is treated as a deliverable rather than a debug artifact.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Correctness over coverage</h3>
+        <p>
+          A use-after-free in an OUT-parameter buffer is a bug, not a missing feature. The
+          project has shipped at least two such defects — an undersized malloc and a premature
+          free — and both were fixed with end-to-end tests rather than patched. Where the safe
+          design is not yet known, the symbol stays in the skip report.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Runtime before polish</h3>
+        <p>
+          Static analysis is necessary and not sufficient. The current gap — that no
+          continuously-running test makes a native GTK call — is the single thing standing
+          between this project and a credible stability claim, which is why it is phase 2 and
+          not phase 6.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section id="contributing">
+    <h2>Contributing</h2>
+    <p>
+      The most useful contribution is not "add a binding" — the generator makes that mechanical.
+      It is <strong>taking a skip entry and making it emitable</strong>, ideally with a test.
+      Start with the <code>skip_report.txt</code> of whichever package you care about; the reasons
+      are alphabetised and documented in <code>docs/skip-categories.md</code>.
+    </p>
+    <p>
+      Two things make a change easy to accept: a change to the generator <em>and</em> the
+      regenerated packages in the same pull request, and a test that fails before the fix.
+    </p>
+    <div class="btn-row" style="margin-top:28px">
+      <a class="btn primary" href="https://github.com/TenderOwl/dart-gir" rel="noopener">Open an issue</a>
+      <a class="btn" href="features.html">See what's already built</a>
+      <a class="btn" href="design.html">Understand the design first</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>
+      <p><strong>dart-gir</strong> — Dart FFI bindings for the GObject ecosystem</p>
+      <p class="base">Copyright © 2026 Andrey Maksimov · BSD-3-Clause</p>
+      <p class="small">Generated code is committed; the generator is the source of truth.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="design.html">Design reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Source</h4>
+        <ul>
+          <li><a href="https://github.com/TenderOwl/dart-gir" rel="noopener">Repository</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/tree/main/docs" rel="noopener">docs/</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#ai">AI development statement</a></li>
+          <li><a href="license.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

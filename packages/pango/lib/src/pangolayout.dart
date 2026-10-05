@@ -521,6 +521,42 @@ class PangoLayout extends GObject {
     return GSList.fromPointer(_pangoLayoutGetLinesReadonly(this.handle));
   }
 
+  /// Retrieves an array of logical attributes for each character in
+  /// the @layout.
+  ///
+  /// This is a faster alternative to [method@Pango.Layout.get_log_attrs].
+  /// The returned array is part of @layout and must not be modified.
+  /// Modifying the layout will invalidate the returned array.
+  ///
+  /// The number of attributes returned in @n_attrs will be one more
+  /// than the total number of characters in the layout, since there
+  /// need to be attributes corresponding to both the position before
+  /// the first character and the position after the last character.
+  static final _pangoLayoutGetLogAttrsReadonly =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_layout_get_log_attrs_readonly')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getLogAttrsReadonly() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _pangoLayoutGetLogAttrsReadonly(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Computes the logical and ink extents of @layout in device units.
   ///
   /// This function just calls [method@Pango.Layout.get_extents] followed by

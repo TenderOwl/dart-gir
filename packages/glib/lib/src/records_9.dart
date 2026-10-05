@@ -627,6 +627,54 @@ final class GIOChannel {
     });
   }
 
+  /// Replacement for g_io_channel_write() with the new API.
+  ///
+  /// On seekable channels with encodings other than %NULL or UTF-8, generic
+  /// mixing of reading and writing is not allowed. A call to g_io_channel_write_chars ()
+  /// may only be made on a channel from which data has been read in the
+  /// cases described in the documentation for g_io_channel_set_encoding ().
+  static final _gIoChannelWriteChars =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.IntPtr,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_io_channel_write_chars')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GIOStatus, int) writeChars(ffi.Pointer<ffi.Uint8> buf, int count) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gIoChannelWriteChars(
+        this.handle,
+        buf,
+        count,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (GIOStatus.fromValue(_ret), _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// Writes a Unicode character to @channel.
   /// This function cannot be called on a channel with %NULL encoding.
   static final _gIoChannelWriteUnichar =
@@ -675,11 +723,4 @@ final class GIOChannel {
   static int errorQuark() {
     return _gIoChannelErrorQuark();
   }
-}
-
-/// A table of functions used to handle different types of #GIOChannel
-/// in a generic way.
-final class GIOFuncs {
-  GIOFuncs.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
 }

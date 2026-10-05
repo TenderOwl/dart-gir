@@ -591,6 +591,115 @@ class GtkColorChooserDialog extends GtkDialog {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
   }
 
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
+  }
+
   /// Gets the ID of the @buildable object.
   ///
   /// `GtkBuilder` sets the name based on the ID attribute
@@ -606,6 +715,59 @@ class GtkColorChooserDialog extends GtkDialog {
     return stringFromNative(
       (_gtkBuildableGetBuildableId(this.handle)).cast(),
       free: false,
+    );
+  }
+
+  /// Adds a palette to the color chooser.
+  ///
+  /// If @orientation is horizontal, the colors are grouped in rows,
+  /// with @colors_per_line colors in each row. If @horizontal is %FALSE,
+  /// the colors are grouped in columns instead.
+  ///
+  /// The default color palette of [class@Gtk.ColorChooserWidget] has
+  /// 45 colors, organized in columns of 5 colors (this includes some
+  /// grays).
+  ///
+  /// The layout of the color chooser widget works best when the
+  /// palettes have 9-10 columns.
+  ///
+  /// Calling this function for the first time has the side effect
+  /// of removing the default color palette from the color chooser.
+  ///
+  /// If @colors is %NULL, removes all previously added palettes.
+  static final _gtkColorChooserAddPalette =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_color_chooser_add_palette')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void addPalette(
+    GtkOrientation orientation,
+    int colorsPerLine,
+    int nColors,
+    ffi.Pointer<ffi.Void> colors,
+  ) {
+    _gtkColorChooserAddPalette(
+      this.handle,
+      orientation.value,
+      colorsPerLine,
+      nColors,
+      colors,
     );
   }
 

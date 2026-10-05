@@ -209,3 +209,5 @@ part 'src/records_20.dart';
 part 'src/records_21.dart';
 part 'src/records_22.dart';
 part 'src/records_23.dart';
+part 'src/records_24.dart';
+part 'src/records_25.dart';

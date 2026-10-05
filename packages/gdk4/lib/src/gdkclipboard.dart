@@ -76,6 +76,138 @@ class GdkClipboard extends GObject {
     return (_gdkClipboardIsLocal(this.handle)) != 0;
   }
 
+  /// Asynchronously requests an input stream to read the @clipboard's
+  /// contents from.
+  ///
+  /// The clipboard will choose the most suitable mime type from the given list
+  /// to fulfill the request, preferring the ones listed first.
+  static final _gdkClipboardReadAsync =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_clipboard_read_async')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void readAsync(
+    List<String?>? mimeTypes,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    withNativeStringList(mimeTypes, (nativeMimeTypes) {
+      final _nc4 = callback == null
+          ? null
+          : ffi.NativeCallable<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >.isolateLocal(callback);
+      try {
+        _gdkClipboardReadAsync(
+          this.handle,
+          nativeMimeTypes,
+          ioPriority,
+          cancellable?.handle ?? ffi.nullptr,
+          _nc4?.nativeFunction ?? ffi.nullptr,
+          userData,
+        );
+      } finally {
+        _nc4?.close();
+      }
+    });
+  }
+
+  static final _readAsyncCallbackRegistry =
+      <int, void Function(GObject?, GAsyncResult)>{};
+  static int _readAsyncCallbackSeq = 0;
+  static final _readAsyncCallbackPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >(_readAsyncCallbackTrampoline);
+  static void _readAsyncCallbackTrampoline(
+    ffi.Pointer<ffi.Void> sourceObject,
+    ffi.Pointer<ffi.Void> res,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    final id = data.cast<ffi.IntPtr>().value;
+    final fn = _readAsyncCallbackRegistry.remove(id);
+    malloc.free(data);
+    if (fn == null) return;
+    fn(
+      sourceObject == ffi.nullptr
+          ? null
+          : GObject.fromPointer(sourceObject.cast()),
+      GAsyncResult.fromPointer(res.cast()),
+    );
+  }
+
+  /// Lifetime-safe variant of [readAsync] for use with
+  /// async callbacks. See `docs/async.md`.
+  void readAsyncCallback(
+    List<String?>? mimeTypes,
+    int ioPriority,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  ) {
+    final id = ++_readAsyncCallbackSeq;
+    _readAsyncCallbackRegistry[id] = callback;
+    final _data = malloc<ffi.IntPtr>()..value = id;
+    withNativeStringList(mimeTypes, (mimeTypes) {
+      _gdkClipboardReadAsync(
+        this.handle,
+        mimeTypes,
+        ioPriority,
+        cancellable?.handle ?? ffi.nullptr,
+        _readAsyncCallbackPtr,
+        _data.cast<ffi.Void>(),
+      );
+    });
+  }
+
   /// Finishes an asynchronous clipboard read.
   ///
   /// See [method@Gdk.Clipboard.read_async].

@@ -311,6 +311,11 @@ FfiShape? _ffiShapeFor(GirTypeRef? ref, EmitContext ctx, {GirNamespace? relative
     case TypeKind.stringList:
     case TypeKind.unsupported:
       return null;
+    case TypeKind.primitiveArray:
+    case TypeKind.recordArray:
+      // Arrays are not used in signal signatures today; signal
+      // classification doesn't model them, so we omit the shape.
+      return null;
   }
 }
 

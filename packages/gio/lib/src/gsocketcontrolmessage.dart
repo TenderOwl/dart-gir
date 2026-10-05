@@ -74,6 +74,46 @@ class GSocketControlMessage extends GObject {
     _gSocketControlMessageSerialize(this.handle, data);
   }
 
+  /// Tries to deserialize a socket control message of a given
+  /// @level and @type. This will ask all known (to GType) subclasses
+  /// of #GSocketControlMessage if they can understand this kind
+  /// of message and if so deserialize it into a #GSocketControlMessage.
+  ///
+  /// If there is no implementation for this kind of control message, %NULL
+  /// will be returned.
+  static final _gSocketControlMessageDeserialize =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Size,
+                ffi.Pointer<ffi.Uint8>,
+              )
+            >
+          >('g_socket_control_message_deserialize')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint8>,
+            )
+          >();
+  static GSocketControlMessage? deserialize(
+    int level,
+    int type_,
+    int size,
+    ffi.Pointer<ffi.Uint8> data,
+  ) {
+    return (_gSocketControlMessageDeserialize(level, type_, size, data)) ==
+            ffi.nullptr
+        ? null
+        : GSocketControlMessage.fromPointer(
+            _gSocketControlMessageDeserialize(level, type_, size, data),
+          );
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

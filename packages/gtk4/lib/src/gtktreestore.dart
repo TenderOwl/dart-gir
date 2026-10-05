@@ -35,6 +35,25 @@ part of '../gtk4.dart';
 class GtkTreeStore extends GObject {
   GtkTreeStore.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Creates a new tree store.
+  ///
+  /// This constructor is meant for language bindings.
+  static final _gtkTreeStoreNewv =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Int32, ffi.Pointer<ffi.Size>)
+            >
+          >('gtk_tree_store_newv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Size>)
+          >();
+  factory GtkTreeStore.newv(int nColumns, ffi.Pointer<ffi.Size> types) {
+    return GtkTreeStore.fromPointer(
+      _gtkTreeStoreNewv(nColumns, types),
+      owned: true,
+    );
+  }
+
   /// Appends a new row to @tree_store.
   ///
   /// If @parent is non-%NULL, then it will append the new row after the last
@@ -218,6 +237,60 @@ class GtkTreeStore extends GObject {
     } finally {}
   }
 
+  /// A variant of gtk_tree_store_insert_with_values() which takes
+  /// the columns and values as two arrays, instead of varargs.
+  ///
+  /// This function is mainly intended for language bindings.
+  static final _gtkTreeStoreInsertWithValuesv =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_tree_store_insert_with_valuesv')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  GtkTreeIter? insertWithValuesv(
+    GtkTreeIter? parent,
+    int position,
+    ffi.Pointer<ffi.Int32> columns,
+    ffi.Pointer<ffi.Void> values,
+    int nValues,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    try {
+      _gtkTreeStoreInsertWithValuesv(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        parent?.handle ?? ffi.nullptr,
+        position,
+        columns,
+        values,
+        nValues,
+      );
+      return (_out0) == ffi.nullptr
+          ? null
+          : GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
+    } finally {}
+  }
+
   /// Checks if @iter is an ancestor of @descendant.
   static final _gtkTreeStoreIsAncestor =
       gtk4Lookup<
@@ -397,6 +470,32 @@ class GtkTreeStore extends GObject {
     return (_gtkTreeStoreRemove(this.handle, iter.handle)) != 0;
   }
 
+  /// Sets the type of the columns in a tree store.
+  ///
+  /// This function is meant primarily for types that inherit from
+  /// `GtkTreeStore`, and should only be used when constructing a new
+  /// `GtkTreeStore`.
+  ///
+  /// This functions cannot be called after a row has been added,
+  /// or a method on the `GtkTreeModel` interface is called on the
+  /// tree store.
+  static final _gtkTreeStoreSetColumnTypes =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gtk_tree_store_set_column_types')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Size>)
+          >();
+  void setColumnTypes(int nColumns, ffi.Pointer<ffi.Size> types) {
+    _gtkTreeStoreSetColumnTypes(this.handle, nColumns, types);
+  }
+
   /// Sets the data in the cell specified by @iter and @column.
   ///
   /// The type of @value must be convertible to the type of the
@@ -422,6 +521,42 @@ class GtkTreeStore extends GObject {
           >();
   void setValue(GtkTreeIter iter, int column, GValue value) {
     _gtkTreeStoreSetValue(this.handle, iter.handle, column, value.handle);
+  }
+
+  /// A variant of gtk_tree_store_set_valist() which takes
+  /// the columns and values as two arrays, instead of using variadic
+  /// arguments.
+  ///
+  /// This function is mainly intended for language bindings or in case
+  /// the number of columns to change is not known until run-time.
+  static final _gtkTreeStoreSetValuesv =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_tree_store_set_valuesv')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void setValuesv(
+    GtkTreeIter iter,
+    ffi.Pointer<ffi.Int32> columns,
+    ffi.Pointer<ffi.Void> values,
+    int nValues,
+  ) {
+    _gtkTreeStoreSetValuesv(this.handle, iter.handle, columns, values, nValues);
   }
 
   /// Swaps @a and @b in the same level of @tree_store.
@@ -1233,6 +1368,48 @@ class GtkTreeStore extends GObject {
           >();
   void rowInserted(GtkTreePath path, GtkTreeIter iter) {
     _gtkTreeModelRowInserted(this.handle, path.handle, iter.handle);
+  }
+
+  /// Emits the ::rows-reordered signal on @tree_model.
+  ///
+  /// See [signal@Gtk.TreeModel::rows-reordered].
+  ///
+  /// This should be called by models when their rows have been
+  /// reordered.
+  static final _gtkTreeModelRowsReorderedWithLength =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_tree_model_rows_reordered_with_length')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              int,
+            )
+          >();
+  void rowsReorderedWithLength(
+    GtkTreePath path,
+    GtkTreeIter? iter,
+    ffi.Pointer<ffi.Int32> newOrder,
+    int length,
+  ) {
+    _gtkTreeModelRowsReorderedWithLength(
+      this.handle,
+      path.handle,
+      iter?.handle ?? ffi.nullptr,
+      newOrder,
+      length,
+    );
   }
 
   /// Lets the tree unref the node.

@@ -44,6 +44,82 @@ class GUnixSocketAddress extends GSocketAddress {
     });
   }
 
+  /// Creates a new %G_UNIX_SOCKET_ADDRESS_ABSTRACT_PADDED
+  /// #GUnixSocketAddress for @path.
+  static final _gUnixSocketAddressNewAbstract =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int8>, ffi.Int32)
+            >
+          >('g_unix_socket_address_new_abstract')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int8>, int)
+          >();
+  factory GUnixSocketAddress.abstract_(
+    ffi.Pointer<ffi.Int8> path,
+    int pathLen,
+  ) {
+    return GUnixSocketAddress.fromPointer(
+      _gUnixSocketAddressNewAbstract(path, pathLen),
+      owned: true,
+    );
+  }
+
+  /// Creates a new #GUnixSocketAddress of type @type with name @path.
+  ///
+  /// If @type is %G_UNIX_SOCKET_ADDRESS_PATH, this is equivalent to
+  /// calling g_unix_socket_address_new().
+  ///
+  /// If @type is %G_UNIX_SOCKET_ADDRESS_ANONYMOUS, @path and @path_len will be
+  /// ignored.
+  ///
+  /// If @path_type is %G_UNIX_SOCKET_ADDRESS_ABSTRACT, then @path_len
+  /// bytes of @path will be copied to the socket's path, and only those
+  /// bytes will be considered part of the name. (If @path_len is -1,
+  /// then @path is assumed to be NUL-terminated.) For example, if @path
+  /// was "test", then calling g_socket_address_get_native_size() on the
+  /// returned socket would return 7 (2 bytes of overhead, 1 byte for the
+  /// abstract-socket indicator byte, and 4 bytes for the name "test").
+  ///
+  /// If @path_type is %G_UNIX_SOCKET_ADDRESS_ABSTRACT_PADDED, then
+  /// @path_len bytes of @path will be copied to the socket's path, the
+  /// rest of the path will be padded with 0 bytes, and the entire
+  /// zero-padded buffer will be considered the name. (As above, if
+  /// @path_len is -1, then @path is assumed to be NUL-terminated.) In
+  /// this case, g_socket_address_get_native_size() will always return
+  /// the full size of a `struct sockaddr_un`, although
+  /// g_unix_socket_address_get_path_len() will still return just the
+  /// length of @path.
+  ///
+  /// %G_UNIX_SOCKET_ADDRESS_ABSTRACT is preferred over
+  /// %G_UNIX_SOCKET_ADDRESS_ABSTRACT_PADDED for new programs. Of course,
+  /// when connecting to a server created by another process, you must
+  /// use the appropriate type corresponding to how that process created
+  /// its listening socket.
+  static final _gUnixSocketAddressNewWithType =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Int8>,
+                ffi.Int32,
+                ffi.Int32,
+              )
+            >
+          >('g_unix_socket_address_new_with_type')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int8>, int, int)
+          >();
+  factory GUnixSocketAddress.withType(
+    ffi.Pointer<ffi.Int8> path,
+    int pathLen,
+    GUnixSocketAddressType type_,
+  ) {
+    return GUnixSocketAddress.fromPointer(
+      _gUnixSocketAddressNewWithType(path, pathLen, type_.value),
+      owned: true,
+    );
+  }
+
   /// Gets @address's type.
   static final _gUnixSocketAddressGetAddressType =
       gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

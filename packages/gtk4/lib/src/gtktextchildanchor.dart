@@ -57,6 +57,34 @@ class GtkTextChildAnchor extends GObject {
     return (_gtkTextChildAnchorGetDeleted(this.handle)) != 0;
   }
 
+  /// Gets a list of all widgets anchored at this child anchor.
+  ///
+  /// The order in which the widgets are returned is not defined.
+  static final _gtkTextChildAnchorGetWidgets =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gtk_text_child_anchor_get_widgets')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getWidgets() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkTextChildAnchorGetWidgets(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

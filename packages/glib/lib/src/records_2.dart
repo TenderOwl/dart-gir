@@ -5,6 +5,371 @@ part of '../glib.dart';
 final class GByteArray {
   GByteArray.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Adds the given bytes to the end of the `GByteArray`.
+  /// The array will grow in size automatically if necessary.
+  static final _gByteArrayAppend =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Uint32,
+              )
+            >
+          >('g_byte_array_append')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+            )
+          >();
+  static ffi.Pointer<ffi.Uint8> append(
+    ffi.Pointer<ffi.Uint8> array,
+    ffi.Pointer<ffi.Uint8> data,
+    int len,
+  ) {
+    return _gByteArrayAppend(array, data, len);
+  }
+
+  /// Frees the memory allocated by the `GByteArray`. If @free_segment is
+  /// true it frees the actual byte data. If the reference count of
+  /// @array is greater than one, the `GByteArray` wrapper is preserved but
+  /// the size of @array will be set to zero.
+  static final _gByteArrayFree =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, ffi.Int32)
+            >
+          >('g_byte_array_free')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  static ffi.Pointer<ffi.Uint8> free(
+    ffi.Pointer<ffi.Uint8> array,
+    bool freeSegment,
+  ) {
+    return _gByteArrayFree(array, freeSegment ? 1 : 0);
+  }
+
+  /// Transfers the data from the `GByteArray` into a new immutable
+  /// [struct@GLib.Bytes].
+  ///
+  /// The `GByteArray` is freed unless the reference count of @array is greater
+  /// than one, in which the `GByteArray` wrapper is preserved but the size of
+  /// @array will be set to zero.
+  ///
+  /// This is identical to using [ctor@GLib.Bytes.new_take] and
+  /// [func@GLib.ByteArray.free] together.
+  static final _gByteArrayFreeToBytes =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>)
+            >
+          >('g_byte_array_free_to_bytes')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>)>();
+  static GBytes freeToBytes(ffi.Pointer<ffi.Uint8> array) {
+    return GBytes.fromPointer(_gByteArrayFreeToBytes(array));
+  }
+
+  /// Creates a new `GByteArray` with a reference count of 1.
+  static final _gByteArrayNew =
+      glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint8> Function()>>(
+        'g_byte_array_new',
+      ).asFunction<ffi.Pointer<ffi.Uint8> Function()>();
+  static ffi.Pointer<ffi.Uint8> new_() {
+    return _gByteArrayNew();
+  }
+
+  /// Creates a byte array containing the @data.
+  /// After this call, @data belongs to the `GByteArray` and may no longer be
+  /// modified by the caller. The memory of @data has to be dynamically
+  /// allocated and will eventually be freed with [func@GLib.free].
+  ///
+  /// Do not use it if @len is greater than [`G_MAXUINT`](types.html#guint).
+  /// `GByteArray` stores the length of its data in `guint`, which may be shorter
+  /// than `gsize`.
+  static final _gByteArrayNewTake =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
+            >
+          >('g_byte_array_new_take')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  static ffi.Pointer<ffi.Uint8> newTake(ffi.Pointer<ffi.Uint8> data, int len) {
+    return _gByteArrayNewTake(data, len);
+  }
+
+  /// Adds the given data to the start of the `GByteArray`.
+  /// The array will grow in size automatically if necessary.
+  static final _gByteArrayPrepend =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Uint32,
+              )
+            >
+          >('g_byte_array_prepend')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+            )
+          >();
+  static ffi.Pointer<ffi.Uint8> prepend(
+    ffi.Pointer<ffi.Uint8> array,
+    ffi.Pointer<ffi.Uint8> data,
+    int len,
+  ) {
+    return _gByteArrayPrepend(array, data, len);
+  }
+
+  /// Atomically increments the reference count of @array by one.
+  /// This function is thread-safe and may be called from any thread.
+  static final _gByteArrayRef =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>)
+            >
+          >('g_byte_array_ref')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>)
+          >();
+  static ffi.Pointer<ffi.Uint8> ref(ffi.Pointer<ffi.Uint8> array) {
+    return _gByteArrayRef(array);
+  }
+
+  /// Removes the byte at the given index from a `GByteArray`.
+  /// The following bytes are moved down one place.
+  static final _gByteArrayRemoveIndex =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Uint32,
+              )
+            >
+          >('g_byte_array_remove_index')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  static ffi.Pointer<ffi.Uint8> removeIndex(
+    ffi.Pointer<ffi.Uint8> array,
+    int index,
+  ) {
+    return _gByteArrayRemoveIndex(array, index);
+  }
+
+  /// Removes the byte at the given index from a `GByteArray`. The last
+  /// element in the array is used to fill in the space, so this function
+  /// does not preserve the order of the `GByteArray`. But it is faster
+  /// than [func@GLib.ByteArray.remove_index].
+  static final _gByteArrayRemoveIndexFast =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Uint32,
+              )
+            >
+          >('g_byte_array_remove_index_fast')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  static ffi.Pointer<ffi.Uint8> removeIndexFast(
+    ffi.Pointer<ffi.Uint8> array,
+    int index,
+  ) {
+    return _gByteArrayRemoveIndexFast(array, index);
+  }
+
+  /// Removes the given number of bytes starting at the given index from a
+  /// `GByteArray`. The following elements are moved to close the gap.
+  static final _gByteArrayRemoveRange =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Uint32,
+                ffi.Uint32,
+              )
+            >
+          >('g_byte_array_remove_range')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int, int)
+          >();
+  static ffi.Pointer<ffi.Uint8> removeRange(
+    ffi.Pointer<ffi.Uint8> array,
+    int index,
+    int length,
+  ) {
+    return _gByteArrayRemoveRange(array, index, length);
+  }
+
+  /// Sets the size of the `GByteArray`, expanding it if necessary.
+  static final _gByteArraySetSize =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Uint32,
+              )
+            >
+          >('g_byte_array_set_size')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  static ffi.Pointer<ffi.Uint8> setSize(
+    ffi.Pointer<ffi.Uint8> array,
+    int length,
+  ) {
+    return _gByteArraySetSize(array, length);
+  }
+
+  /// Creates a new `GByteArray` with @reserved_size bytes preallocated.
+  /// This avoids frequent reallocation, if you are going to add many
+  /// bytes to the array. Note however that the size of the array is still
+  /// 0.
+  static final _gByteArraySizedNew =
+      glibLookup<
+            ffi.NativeFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Uint32)>
+          >('g_byte_array_sized_new')
+          .asFunction<ffi.Pointer<ffi.Uint8> Function(int)>();
+  static ffi.Pointer<ffi.Uint8> sizedNew(int reservedSize) {
+    return _gByteArraySizedNew(reservedSize);
+  }
+
+  /// Sorts a byte array, using @compare_func which should be a
+  /// `qsort()`-style comparison function (returns less than zero for first
+  /// arg is less than second arg, zero for equal, greater than zero if
+  /// first arg is greater than second arg).
+  ///
+  /// If two array elements compare equal, their order in the sorted array
+  /// is undefined. If you want equal elements to keep their order (i.e.
+  /// you want a stable sort) you can write a comparison function that,
+  /// if two elements would otherwise compare equal, compares them by
+  /// their addresses.
+  static final _gByteArraySort =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+              )
+            >
+          >('g_byte_array_sort')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+            )
+          >();
+  static void sort(
+    ffi.Pointer<ffi.Uint8> array,
+    int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) compareFunc,
+  ) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+        >.isolateLocal(compareFunc, exceptionalReturn: 0);
+    try {
+      _gByteArraySort(array, _nc2.nativeFunction);
+    } finally {
+      _nc2.close();
+    }
+  }
+
+  /// Like [func@GLib.ByteArray.sort], but the comparison function takes an extra
+  /// user data argument.
+  static final _gByteArraySortWithData =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_byte_array_sort_with_data')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  static void sortWithData(
+    ffi.Pointer<ffi.Uint8> array,
+    int Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )
+    compareFunc,
+    ffi.Pointer<ffi.Void> userData,
+  ) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+          )
+        >.isolateLocal(compareFunc, exceptionalReturn: 0);
+    try {
+      _gByteArraySortWithData(array, _nc2.nativeFunction, userData);
+    } finally {
+      _nc2.close();
+    }
+  }
+
+  /// Atomically decrements the reference count of @array by one. If the
+  /// reference count drops to 0, all memory allocated by the array is
+  /// released. This function is thread-safe and may be called from any
+  /// thread.
+  static final _gByteArrayUnref =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Uint8>)>>(
+        'g_byte_array_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Uint8>)>();
+  static void unref(ffi.Pointer<ffi.Uint8> array) {
+    _gByteArrayUnref(array);
+  }
 }
 
 /// A simple reference counted data type representing an immutable sequence of
@@ -38,6 +403,25 @@ final class GBytes {
   GBytes.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
+  /// Creates a new [struct@GLib.Bytes] from @data.
+  ///
+  /// @data is copied. If @size is 0, @data may be `NULL`.
+  ///
+  /// As an optimization, [ctor@GLib.Bytes.new] may avoid an extra allocation by
+  /// copying the data within the resulting bytes structure if sufficiently small
+  /// (since GLib 2.84).
+  static final _gBytesNew =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
+            >
+          >('g_bytes_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  GBytes(ffi.Pointer<ffi.Uint8> data, int size)
+    : this.fromPointer(_gBytesNew(data, size));
+
   /// Creates a [struct@GLib.Bytes] which is a subsection of another `GBytes`.
   ///
   /// The @offset + @length may not be longer than the size of @bytes.
@@ -65,6 +449,28 @@ final class GBytes {
           >();
   GBytes.fromBytes(GBytes bytes, int offset, int length)
     : this.fromPointer(_gBytesNewFromBytes(bytes.handle, offset, length));
+
+  /// Creates a new [struct@GLib.Bytes] from @data.
+  ///
+  /// After this call, @data belongs to the `GBytes` and may no longer be
+  /// modified by the caller. The memory of @data has to be dynamically
+  /// allocated and will eventually be freed with [func@GLib.free].
+  ///
+  /// For creating `GBytes` with memory from other allocators, see
+  /// [ctor@GLib.Bytes.new_with_free_func].
+  ///
+  /// @data may be `NULL` if @size is 0.
+  static final _gBytesNewTake =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
+            >
+          >('g_bytes_new_take')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
+          >();
+  GBytes.take(ffi.Pointer<ffi.Uint8> data, int size)
+    : this.fromPointer(_gBytesNewTake(data, size));
 
   /// Compares the two [struct@GLib.Bytes] values.
   ///
@@ -193,6 +599,64 @@ final class GBytes {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gBytesUnref(this.handle);
+  }
+
+  /// Unreferences the bytes, and returns a new mutable [struct@GLib.ByteArray]
+  /// containing the same byte data.
+  ///
+  /// As an optimization, the byte data is transferred to the array without copying
+  /// if this was the last reference to @bytes and @bytes was created with
+  /// [ctor@GLib.Bytes.new], [ctor@GLib.Bytes.new_take] or
+  /// [func@GLib.ByteArray.free_to_bytes] and the buffer was larger than the size
+  /// [struct@GLib.Bytes] may internalize within its allocation. In all other cases
+  /// the data is copied.
+  ///
+  /// Do not use it if @bytes contains more than %G_MAXUINT
+  /// bytes. [struct@GLib.ByteArray] stores the length of its data in `guint`,
+  /// which may be shorter than `gsize`, that @bytes is using.
+  static final _gBytesUnrefToArray =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_bytes_unref_to_array')
+          .asFunction<ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Void>)>();
+  ffi.Pointer<ffi.Uint8> unrefToArray() {
+    return _gBytesUnrefToArray(this.handle);
+  }
+
+  /// Unreferences the bytes, and returns a pointer the same byte data
+  /// contents.
+  ///
+  /// As an optimization, the byte data is returned without copying if this was
+  /// the last reference to @bytes and @bytes was created with
+  /// [ctor@GLib.Bytes.new], [ctor@GLib.Bytes.new_take] or
+  /// [func@GLib.ByteArray.free_to_bytes] and the buffer was larger than the size
+  /// [struct@GLib.Bytes] may internalize within its allocation. In all other cases
+  /// the data is copied.
+  static final _gBytesUnrefToData =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('g_bytes_unref_to_data')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) unrefToData() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gBytesUnrefToData(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 }
 
@@ -382,193 +846,5 @@ final class GCache {
     } finally {
       _nc1.close();
     }
-  }
-}
-
-/// GLib provides a generic API for computing checksums (or ‘digests’)
-/// for a sequence of arbitrary bytes, using various hashing algorithms
-/// like MD5, SHA-1 and SHA-256. Checksums are commonly used in various
-/// environments and specifications.
-///
-/// To create a new `GChecksum`, use [ctor@GLib.Checksum.new]. To free
-/// a `GChecksum`, use [method@GLib.Checksum.free].
-///
-/// GLib supports incremental checksums using the `GChecksum` data
-/// structure, by calling [method@GLib.Checksum.update] as long as there’s data
-/// available and then using [method@GLib.Checksum.get_string] or
-/// [method@GLib.Checksum.get_digest] to compute the checksum and return it
-/// either as a string in hexadecimal form, or as a raw sequence of bytes. To
-/// compute the checksum for binary blobs and nul-terminated strings in
-/// one go, use the convenience functions [func@GLib.compute_checksum_for_data]
-/// and [func@GLib.compute_checksum_for_string], respectively.
-final class GChecksum {
-  GChecksum.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Creates a new #GChecksum, using the checksum algorithm @checksum_type.
-  /// If the @checksum_type is not known, %NULL is returned.
-  /// A #GChecksum can be used to compute the checksum, or digest, of an
-  /// arbitrary binary blob, using different hashing algorithms.
-  ///
-  /// A #GChecksum works by feeding a binary blob through g_checksum_update()
-  /// until there is data to be checked; the digest can then be extracted
-  /// using g_checksum_get_string(), which will return the checksum as a
-  /// hexadecimal string; or g_checksum_get_digest(), which will return a
-  /// vector of raw bytes. Once either g_checksum_get_string() or
-  /// g_checksum_get_digest() have been called on a #GChecksum, the checksum
-  /// will be closed and it won't be possible to call g_checksum_update()
-  /// on it anymore.
-  static final _gChecksumNew =
-      glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
-        'g_checksum_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  GChecksum(GChecksumType checksumType)
-    : this.fromPointer(_gChecksumNew(checksumType.value));
-
-  /// Copies a #GChecksum. If @checksum has been closed, by calling
-  /// g_checksum_get_string() or g_checksum_get_digest(), the copied
-  /// checksum will be closed as well.
-  static final _gChecksumCopy =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_checksum_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GChecksum copy() {
-    return GChecksum.fromPointer(_gChecksumCopy(this.handle));
-  }
-
-  /// Frees the memory allocated for @checksum.
-  static final _gChecksumFree =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_checksum_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _gChecksumFree(this.handle);
-  }
-
-  /// Gets the digest as a hexadecimal string.
-  ///
-  /// Once this function has been called the #GChecksum can no longer be
-  /// updated with g_checksum_update().
-  ///
-  /// The hexadecimal characters will be lower case.
-  static final _gChecksumGetString =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_checksum_get_string')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getString() {
-    return stringFromNative(
-      (_gChecksumGetString(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Resets the state of the @checksum back to its initial state.
-  static final _gChecksumReset =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_checksum_reset',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void reset() {
-    _gChecksumReset(this.handle);
-  }
-
-  /// Gets the length in bytes of digests of type @checksum_type
-  static final _gChecksumTypeGetLength =
-      glibLookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.Int32)>>(
-        'g_checksum_type_get_length',
-      ).asFunction<int Function(int)>();
-  static int typeGetLength(GChecksumType checksumType) {
-    return _gChecksumTypeGetLength(checksumType.value);
-  }
-}
-
-/// `GCompletion` provides support for automatic completion of a string
-/// using any group of target strings. It is typically used for file
-/// name completion as is common in many UNIX shells.
-///
-/// A `GCompletion` is created using [func@GLib.Completion.new]. Target items are
-/// added and removed with [method@GLib.Completion.add_items],
-/// [method@GLib.Completion.remove_items] and
-/// [method@GLib.Completion.clear_items]. A completion attempt is requested with
-/// [method@GLib.Completion.complete] or [method@GLib.Completion.complete_utf8].
-/// When no longer needed, the `GCompletion` is freed with
-/// [method@GLib.Completion.free].
-///
-/// Items in the completion can be simple strings (e.g. filenames), or
-/// pointers to arbitrary data structures. If data structures are used
-/// you must provide a [type@GLib.CompletionFunc] in [func@GLib.Completion.new],
-/// which retrieves the item’s string from the data structure. You can change
-/// the way in which strings are compared by setting a different
-/// [type@GLib.CompletionStrncmpFunc] in [method@GLib.Completion.set_compare].
-///
-/// `GCompletion` has been marked as deprecated, since this API is rarely
-/// used and not very actively maintained.
-final class GCompletion {
-  GCompletion.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Removes all items from the #GCompletion. The items are not freed, so if the
-  /// memory was dynamically allocated, it should be freed after calling this
-  /// function.
-  static final _gCompletionClearItems =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_completion_clear_items',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void clearItems() {
-    _gCompletionClearItems(this.handle);
-  }
-
-  /// Attempts to complete the string @prefix using the #GCompletion target items.
-  /// In contrast to g_completion_complete(), this function returns the largest common
-  /// prefix that is a valid UTF-8 string, omitting a possible common partial
-  /// character.
-  ///
-  /// You should use this function instead of g_completion_complete() if your
-  /// items are UTF-8 strings.
-  static final _gCompletionCompleteUtf8 =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_completion_complete_utf8')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GList completeUtf8(String prefix, String newPrefix) {
-    return withNativeString(prefix, (nativePrefix) {
-      return withNativeString(newPrefix, (nativeNewPrefix) {
-        return GList.fromPointer(
-          _gCompletionCompleteUtf8(
-            this.handle,
-            nativePrefix.cast<Utf8>(),
-            nativeNewPrefix.cast<Utf8>(),
-          ),
-        );
-      });
-    });
-  }
-
-  /// Frees all memory used by the #GCompletion. The items are not freed, so if
-  /// the memory was dynamically allocated, it should be freed after calling this
-  /// function.
-  static final _gCompletionFree =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_completion_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _gCompletionFree(this.handle);
   }
 }

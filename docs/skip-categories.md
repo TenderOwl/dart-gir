@@ -37,17 +37,41 @@ signal with more args, fall back to `connectSignal` with a
 `g_signal_get_invocation_hint` or by querying the property after the
 signal fires.
 
-### `array types are handled in a later phase`
+### `array of TypeKind.X (later phase)`
 
-Returned for any non-string-list array (`<array length="…">` whose
-element type isn't `utf8`/`filename`/`gchar*`). Open a generator issue
-with the GIR excerpt.
+The resolver accepts four array shapes (argv string lists in
+`gchar**` / `const gchar**` / `char**` / `const char**` c-type form;
+bound-length arrays of int-sized primitives / boolean / enumeration /
+bitfield; bound-length arrays of class / interface / record; unbounded
+primitive / enum / bitfield arrays). Arrays whose element kind doesn't
+match any of those (most commonly union elements, GValue* / GVariant*
+elements, bound-length string arrays, transfer-full arrays) fall
+through to this reason with the element `TypeKind` filled in. Open a
+generator issue with the GIR excerpt and the reason text.
+
+### `array element of unsupported kind (<reason>)`
+
+The inner element type was rejected by the resolver; the parent's
+reason is appended in parentheses. Look up the inner element's skip
+entry to find the precise cause (cross-package, unknown type, etc.).
+
+### `array of unknown element`
+
+The array has no `<type name=…>` and no `c:type=` to identify the
+element. The GIR is malformed or the loader dropped a child element;
+file a generator issue with the GIR excerpt.
 
 ### `callback <X> has unsupported signature`
 
-The inner callback's signature couldn't be marshalled (e.g. an unsupported
-arg type, a callback-typed param). Look up the inner callback in
-`skip_report.txt` to find the precise cause.
+The inner callback's signature couldn't be marshalled (e.g. an
+unsupported arg type, a callback-typed param). This reason is also
+raised when the **user-facing** callback signature can't be resolved
+separately from the FFI signature — typically because the callback
+typedef is reachable only through a `<alias>` whose target callback
+declaration isn't present in any GIR (e.g. `GObject.ClosureMarshal`
+aliases a typedef that lives in GLib's headers but isn't in the
+GIR corpus). Look up the inner callback in `skip_report.txt` to find
+the precise cause.
 
 ### `callback <X> is in non-generated package <pkg>`
 

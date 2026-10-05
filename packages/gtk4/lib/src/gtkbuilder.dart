@@ -597,6 +597,168 @@ class GtkBuilder extends GObject {
     });
   }
 
+  /// Parses a file containing a UI definition building only the
+  /// requested objects and merges them with the current contents
+  /// of @builder.
+  ///
+  /// Upon errors, 0 will be returned and @error will be assigned a
+  /// `GError` from the %GTK_BUILDER_ERROR, %G_MARKUP_ERROR or %G_FILE_ERROR
+  /// domain.
+  ///
+  /// If you are adding an object that depends on an object that is not
+  /// its child (for instance a `GtkTreeView` that depends on its
+  /// `GtkTreeModel`), you have to explicitly list all of them in @object_ids.
+  static final _gtkBuilderAddObjectsFromFile =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_builder_add_objects_from_file')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool addObjectsFromFile(String filename, [List<String?>? objectIds]) {
+    return withNativeStringList(objectIds, (nativeObjectIds) {
+      return withNativeString(filename, (nativeFilename) {
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gtkBuilderAddObjectsFromFile(
+            this.handle,
+            nativeFilename.cast<Utf8>(),
+            nativeObjectIds,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (_ret) != 0;
+        } finally {
+          calloc.free(_error);
+        }
+      });
+    });
+  }
+
+  /// Parses a resource file containing a UI definition, building
+  /// only the requested objects and merges them with the current
+  /// contents of @builder.
+  ///
+  /// Upon errors, 0 will be returned and @error will be assigned a
+  /// `GError` from the %GTK_BUILDER_ERROR, %G_MARKUP_ERROR or %G_RESOURCE_ERROR
+  /// domain.
+  ///
+  /// If you are adding an object that depends on an object that is not
+  /// its child (for instance a `GtkTreeView` that depends on its
+  /// `GtkTreeModel`), you have to explicitly list all of them in @object_ids.
+  static final _gtkBuilderAddObjectsFromResource =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_builder_add_objects_from_resource')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool addObjectsFromResource(String resourcePath, [List<String?>? objectIds]) {
+    return withNativeStringList(objectIds, (nativeObjectIds) {
+      return withNativeString(resourcePath, (nativeResourcePath) {
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gtkBuilderAddObjectsFromResource(
+            this.handle,
+            nativeResourcePath.cast<Utf8>(),
+            nativeObjectIds,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (_ret) != 0;
+        } finally {
+          calloc.free(_error);
+        }
+      });
+    });
+  }
+
+  /// Parses a string containing a UI definition, building only the
+  /// requested objects and merges them with the current contents of
+  /// @builder.
+  ///
+  /// Upon errors %FALSE will be returned and @error will be assigned a
+  /// `GError` from the %GTK_BUILDER_ERROR or %G_MARKUP_ERROR domain.
+  ///
+  /// If you are adding an object that depends on an object that is not
+  /// its child (for instance a `GtkTreeView` that depends on its
+  /// `GtkTreeModel`), you have to explicitly list all of them in @object_ids.
+  static final _gtkBuilderAddObjectsFromString =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_builder_add_objects_from_string')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool addObjectsFromString(
+    String buffer,
+    int length, [
+    List<String?>? objectIds,
+  ]) {
+    return withNativeStringList(objectIds, (nativeObjectIds) {
+      return withNativeString(buffer, (nativeBuffer) {
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gtkBuilderAddObjectsFromString(
+            this.handle,
+            nativeBuffer.cast<Utf8>(),
+            length,
+            nativeObjectIds,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (_ret) != 0;
+        } finally {
+          calloc.free(_error);
+        }
+      });
+    });
+  }
+
   /// Creates a closure to invoke the function called @function_name.
   ///
   /// This is using the create_closure() implementation of @builder's

@@ -179,6 +179,17 @@ class CallbackEmitter {
         return 'ffi.Pointer<ffi.Pointer<Utf8>>';
       case TypeKind.voidType:
         return 'void';
+      case TypeKind.primitiveArray:
+      case TypeKind.recordArray:
+        // Arrays are not used in callback signatures today; reject with
+        // a precise skip reason so the report carries the cause.
+        ctx.report.skip(
+          'callback',
+          label,
+          'array parameter in callback signature'
+          '${m.reason != null ? ' (${m.reason})' : ''}',
+        );
+        return null;
       case TypeKind.unsupported:
         return null;
     }

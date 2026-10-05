@@ -16,4 +16,16 @@ class GskBorderNode extends GskRenderNode {
   GskRoundedRect getOutline() {
     return GskRoundedRect.fromPointer(_gskBorderNodeGetOutline(this.handle));
   }
+
+  /// Retrieves the stroke widths of the border.
+  static final _gskBorderNodeGetWidths =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Float> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_border_node_get_widths')
+          .asFunction<ffi.Pointer<ffi.Float> Function(ffi.Pointer<ffi.Void>)>();
+  ffi.Pointer<ffi.Float> getWidths() {
+    return _gskBorderNodeGetWidths(this.handle);
+  }
 }

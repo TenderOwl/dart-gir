@@ -1,23 +1,23 @@
 # Skip report for package graphene (Graphene 1.0)
-Total skipped: 46
+Total skipped: 37
 
 ## By category
-callable: 46
+callable: 37
 
 ## By reason
-parameter src: array types are handled in a later phase: 3
-parameter dest: array types are handled in a later phase: 3
-parameter points: array types are handled in a later phase: 3
-parameter v: array types are handled in a later phase: 2
-parameter vertices: array types are handled in a later phase: 2
-parameter vectors: array types are handled in a later phase: 2
-moved to Vec2.x_axis: 1
+unsupported out parameter dest (ffi.Pointer<ffi.Float>): 3
+parameter vertices: array of TypeKind.record (later phase): 2
+moved to Vec2.one: 1
+moved to Box.one: 1
+moved to Box.one_minus_one: 1
+moved to Box.zero: 1
+moved to Point3D.zero: 1
 moved to Point.zero: 1
 moved to Rect.alloc: 1
 moved to Rect.zero: 1
 moved to Size.zero: 1
-moved to Vec2.one: 1
 moved to Box.empty: 1
+moved to Vec2.x_axis: 1
 moved to Vec2.y_axis: 1
 moved to Vec2.zero: 1
 moved to Vec3.one: 1
@@ -26,22 +26,19 @@ moved to Vec3.y_axis: 1
 moved to Vec3.z_axis: 1
 moved to Vec3.zero: 1
 moved to Vec4.one: 1
-moved to Vec4.w_axis: 1
+moved to Box.infinite: 1
 moved to Vec4.x_axis: 1
 moved to Vec4.y_axis: 1
-moved to Box.minus_one: 1
-moved to Vec4.zero: 1
-moved to Box.one: 1
-moved to Box.one_minus_one: 1
-moved to Box.zero: 1
-parameter planes: array types are handled in a later phase: 1
 moved to Vec4.z_axis: 1
+moved to Vec4.zero: 1
+moved to Box.minus_one: 1
+parameter planes: array of TypeKind.record (later phase): 1
+unsupported out parameter v (ffi.Pointer<ffi.Float>): 1
 parameter d_x: nullable scalar parameter (gfloat): 1
+parameter points: array of TypeKind.record (later phase): 1
 parameter deg_x: nullable scalar parameter (gfloat): 1
 parameter rad_x: nullable scalar parameter (gfloat): 1
-parameter a: array types are handled in a later phase: 1
-moved to Box.infinite: 1
-moved to Point3D.zero: 1
+moved to Vec4.w_axis: 1
 
 ## First 50 entries
 [callable] Graphene.boxEmpty — moved to Box.empty
@@ -70,23 +67,14 @@ moved to Point3D.zero: 1
 [callable] Graphene.vec4YAxis — moved to Vec4.y_axis
 [callable] Graphene.vec4ZAxis — moved to Vec4.z_axis
 [callable] Graphene.vec4Zero — moved to Vec4.zero
-[callable] GrapheneBox.getVertices — parameter vertices: array types are handled in a later phase
-[callable] GrapheneBox.initFromPoints — parameter points: array types are handled in a later phase
-[callable] GrapheneBox.initFromVectors — parameter vectors: array types are handled in a later phase
-[callable] GrapheneFrustum.getPlanes — parameter planes: array types are handled in a later phase
-[callable] GrapheneMatrix.initFromFloat — parameter v: array types are handled in a later phase
-[callable] GrapheneMatrix.toFloat — parameter v: array types are handled in a later phase
+[callable] GrapheneBox.getVertices — parameter vertices: array of TypeKind.record (later phase)
+[callable] GrapheneFrustum.getPlanes — parameter planes: array of TypeKind.record (later phase)
+[callable] GrapheneMatrix.toFloat — unsupported out parameter v (ffi.Pointer<ffi.Float>)
 [callable] GraphenePoint.distance — parameter d_x: nullable scalar parameter (gfloat)
-[callable] GrapheneQuad.initFromPoints — parameter points: array types are handled in a later phase
+[callable] GrapheneQuad.initFromPoints — parameter points: array of TypeKind.record (later phase)
 [callable] GrapheneQuaternion.toAngles — parameter deg_x: nullable scalar parameter (gfloat)
 [callable] GrapheneQuaternion.toRadians — parameter rad_x: nullable scalar parameter (gfloat)
-[callable] GrapheneRect.getVertices — parameter vertices: array types are handled in a later phase
-[callable] GrapheneSphere.initFromPoints — parameter points: array types are handled in a later phase
-[callable] GrapheneSphere.initFromVectors — parameter vectors: array types are handled in a later phase
-[callable] GrapheneTriangle.initFromFloat — parameter a: array types are handled in a later phase
-[callable] GrapheneVec2.initFromFloat — parameter src: array types are handled in a later phase
-[callable] GrapheneVec2.toFloat — parameter dest: array types are handled in a later phase
-[callable] GrapheneVec3.initFromFloat — parameter src: array types are handled in a later phase
-[callable] GrapheneVec3.toFloat — parameter dest: array types are handled in a later phase
-[callable] GrapheneVec4.initFromFloat — parameter src: array types are handled in a later phase
-[callable] GrapheneVec4.toFloat — parameter dest: array types are handled in a later phase
+[callable] GrapheneRect.getVertices — parameter vertices: array of TypeKind.record (later phase)
+[callable] GrapheneVec2.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)
+[callable] GrapheneVec3.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)
+[callable] GrapheneVec4.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)

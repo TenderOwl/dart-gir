@@ -55,6 +55,86 @@ final class GObjectClass {
     });
   }
 
+  /// Installs new properties from an array of #GParamSpecs.
+  ///
+  /// All properties should be installed during the class initializer.  It
+  /// is possible to install properties after that, but doing so is not
+  /// recommend, and specifically, is not guaranteed to be thread-safe vs.
+  /// use of properties on the same type on other threads.
+  ///
+  /// The property id of each property is the index of each #GParamSpec in
+  /// the @pspecs array.
+  ///
+  /// The property id of 0 is treated specially by #GObject and it should not
+  /// be used to store a #GParamSpec.
+  ///
+  /// This function should be used if you plan to use a static array of
+  /// #GParamSpecs and g_object_notify_by_pspec(). For instance, this
+  /// class initialization:
+  ///
+  /// |[<!-- language="C" -->
+  /// typedef enum {
+  /// PROP_FOO = 1,
+  /// PROP_BAR,
+  /// N_PROPERTIES
+  /// } MyObjectProperty;
+  ///
+  /// static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
+  ///
+  /// static void
+  /// my_object_class_init (MyObjectClass *klass)
+  /// {
+  /// GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  ///
+  /// obj_properties[PROP_FOO] =
+  /// g_param_spec_int ("foo", NULL, NULL,
+  /// -1, G_MAXINT,
+  /// 0,
+  /// G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  ///
+  /// obj_properties[PROP_BAR] =
+  /// g_param_spec_string ("bar", NULL, NULL,
+  /// NULL,
+  /// G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  ///
+  /// gobject_class->set_property = my_object_set_property;
+  /// gobject_class->get_property = my_object_get_property;
+  /// g_object_class_install_properties (gobject_class,
+  /// G_N_ELEMENTS (obj_properties),
+  /// obj_properties);
+  /// }
+  /// ]|
+  ///
+  /// allows calling g_object_notify_by_pspec() to notify of property changes:
+  ///
+  /// |[<!-- language="C" -->
+  /// void
+  /// my_object_set_foo (MyObject *self, gint foo)
+  /// {
+  /// if (self->foo != foo)
+  /// {
+  /// self->foo = foo;
+  /// g_object_notify_by_pspec (G_OBJECT (self), obj_properties[PROP_FOO]);
+  /// }
+  /// }
+  /// ]|
+  static final _gObjectClassInstallProperties =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_object_class_install_properties')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
+          >();
+  void installProperties(int nPspecs, ffi.Pointer<ffi.Void> pspecs) {
+    _gObjectClassInstallProperties(this.handle, nPspecs, pspecs);
+  }
+
   /// Installs a new property.
   ///
   /// All properties should be installed during the class initializer.  It
@@ -80,6 +160,32 @@ final class GObjectClass {
           >();
   void installProperty(int propertyId, GParamSpec pspec) {
     _gObjectClassInstallProperty(this.handle, propertyId, pspec.handle);
+  }
+
+  /// Get an array of #GParamSpec* for all properties of a class.
+  static final _gObjectClassListProperties =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('g_object_class_list_properties')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) listProperties() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gObjectClassListProperties(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Registers @property_id as referring to a property with the name
@@ -172,6 +278,35 @@ final class GParamSpecPool {
           >();
   void insert(GParamSpec pspec, int ownerType) {
     _gParamSpecPoolInsert(this.handle, pspec.handle, ownerType);
+  }
+
+  /// Gets an array of all #GParamSpecs owned by @owner_type in
+  /// the pool.
+  static final _gParamSpecPoolList =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('g_param_spec_pool_list')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) list(int ownerType) {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gParamSpecPoolList(this.handle, ownerType, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Gets an #GList of all #GParamSpecs owned by @owner_type in
@@ -481,135 +616,5 @@ final class GTypeClass {
 /// used specifically for managing fundamental types.
 final class GTypeFundamentalInfo {
   GTypeFundamentalInfo.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// This structure is used to provide the type system with the information
-/// required to initialize and destruct (finalize) a type's class and
-/// its instances.
-///
-/// The initialized structure is passed to the g_type_register_static() function
-/// (or is copied into the provided #GTypeInfo structure in the
-/// g_type_plugin_complete_type_info()). The type system will perform a deep
-/// copy of this structure, so its memory does not need to be persistent
-/// across invocation of g_type_register_static().
-final class GTypeInfo {
-  GTypeInfo.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// An opaque structure used as the base of all type instances.
-final class GTypeInstance {
-  GTypeInstance.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-  static final _gTypeInstanceGetPrivate =
-      gobjectLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
-            >
-          >('g_type_instance_get_private')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
-          >();
-  ffi.Pointer<ffi.Void> getPrivate(int privateType) {
-    return _gTypeInstanceGetPrivate(this.handle, privateType);
-  }
-}
-
-/// An opaque structure used as the base of all interface types.
-final class GTypeInterface {
-  GTypeInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Returns the corresponding #GTypeInterface structure of the parent type
-  /// of the instance type to which @g_iface belongs.
-  ///
-  /// This is useful when deriving the implementation of an interface from the
-  /// parent type and then possibly overriding some methods.
-  static final _gTypeInterfacePeekParent =
-      gobjectLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_type_interface_peek_parent')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> peekParent() {
-    return _gTypeInterfacePeekParent(this.handle);
-  }
-
-  /// Adds @prerequisite_type to the list of prerequisites of @interface_type.
-  /// This means that any type implementing @interface_type must also implement
-  /// @prerequisite_type. Prerequisites can be thought of as an alternative to
-  /// interface derivation (which GType doesn't support). An interface can have
-  /// at most one instantiatable prerequisite type.
-  static final _gTypeInterfaceAddPrerequisite =
-      gobjectLookup<ffi.NativeFunction<ffi.Void Function(ffi.Size, ffi.Size)>>(
-        'g_type_interface_add_prerequisite',
-      ).asFunction<void Function(int, int)>();
-  static void addPrerequisite(int interfaceType, int prerequisiteType) {
-    _gTypeInterfaceAddPrerequisite(interfaceType, prerequisiteType);
-  }
-
-  /// Returns the #GTypePlugin structure for the dynamic interface
-  /// @interface_type which has been added to @instance_type, or %NULL
-  /// if @interface_type has not been added to @instance_type or does
-  /// not have a #GTypePlugin structure. See g_type_add_interface_dynamic().
-  static final _gTypeInterfaceGetPlugin =
-      gobjectLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)
-            >
-          >('g_type_interface_get_plugin')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-  static GTypePlugin getPlugin(int instanceType, int interfaceType) {
-    return GTypePlugin.fromPointer(
-      _gTypeInterfaceGetPlugin(instanceType, interfaceType),
-    );
-  }
-
-  /// Returns the most specific instantiatable prerequisite of an
-  /// interface type. If the interface type has no instantiatable
-  /// prerequisite, %G_TYPE_INVALID is returned.
-  ///
-  /// See g_type_interface_add_prerequisite() for more information
-  /// about prerequisites.
-  static final _gTypeInterfaceInstantiatablePrerequisite =
-      gobjectLookup<ffi.NativeFunction<ffi.Size Function(ffi.Size)>>(
-        'g_type_interface_instantiatable_prerequisite',
-      ).asFunction<int Function(int)>();
-  static int instantiatablePrerequisite(int interfaceType) {
-    return _gTypeInterfaceInstantiatablePrerequisite(interfaceType);
-  }
-
-  /// Returns the #GTypeInterface structure of an interface to which the
-  /// passed in class conforms.
-  static final _gTypeInterfacePeek =
-      gobjectLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
-            >
-          >('g_type_interface_peek')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
-          >();
-  static ffi.Pointer<ffi.Void> peek(
-    ffi.Pointer<ffi.Void> instanceClass,
-    int ifaceType,
-  ) {
-    return _gTypeInterfacePeek(instanceClass, ifaceType);
-  }
-}
-
-/// In order to implement dynamic loading of types based on #GTypeModule,
-/// the @load and @unload functions in #GTypeModuleClass must be implemented.
-final class GTypeModuleClass {
-  GTypeModuleClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// The #GTypePlugin interface is used by the type system in order to handle
-/// the lifecycle of dynamically loaded types.
-final class GTypePluginClass {
-  GTypePluginClass.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

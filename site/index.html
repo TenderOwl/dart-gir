@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dart-gir — Dart bindings for GObject based libraries</title>
+<meta name="description" content="dart-gir generates type-safe, statically-analysed Dart FFI bindings for GLib, GObject, Gio, Cairo, Pango, GTK4, Gdk, Graphene, GSK, libadwaita and GtkSourceView 5 from upstream GIR files.">
+<meta property="og:title" content="dart-gir — Dart bindings for GObject based libraries">
+<meta property="og:description" content="A Dart workspace monorepo that generates typed, idiomatic Dart FFI bindings for GTK4, libadwaita and the whole GObject stack.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <div class="inner">
+    <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M7 16.5V7.5h4.6a2.9 2.9 0 0 1 0 5.8H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.8" cy="8.4" r="1.15" fill="currentColor"/></svg> dart-gir</a>
+    <nav class="site-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="features.html">Features</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="design.html">Design</a>
+      <a href="about.html">About</a>
+      <a href="license.html">License</a>
+      <a href="https://github.com/TenderOwl/dart-gir" class="nav-cta" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="eyebrow">Dart FFI · GObject · generator-driven</div>
+    <h1>Bindings for GObject-based libraries,<br>not just for GTK.</h1>
+    <p class="lead">
+      <strong>dart-gir</strong> is a Dart workspace monorepo with one generator that reads upstream
+      <code>.gir</code> introspection files and emits type-safe, statically-analysed, idiomatic
+      Dart FFI bindings. GTK 4 and libadwaita are the flagship, but nothing in the generator is
+      specific to them — point it at a <code>.gir</code> file and it produces the same quality of
+      API for that library.
+    </p>
+    <div class="badges">
+      <span class="badge ok">dart analyze — clean</span>
+      <span class="badge ok">121 generator tests passing</span>
+      <span class="badge info">Dart SDK ^3.13.4</span>
+      <span class="badge">BSD-3-Clause</span>
+      <span class="badge">status: pre-1.0</span>
+    </div>
+    <div class="btn-row">
+      <a class="btn primary" href="features.html">See what you get</a>
+      <a class="btn" href="https://github.com/TenderOwl/dart-gir" rel="noopener">Browse the source</a>
+      <a class="btn" href="roadmap.html">What's next</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="n">12</span>
+        <span class="l">GObject namespaces bound today, GLib up to Gtk</span>
+      </div>
+      <div class="stat">
+        <span class="n wide">any .gir</span>
+        <span class="l">is the input — no fixed library list inside the generator</span>
+      </div>
+      <div class="stat">
+        <span class="n">0</span>
+        <span class="l">hand-written binding lines to keep in sync with upstream</span>
+      </div>
+      <div class="stat">
+        <span class="n">0</span>
+        <span class="l">symbols dropped silently — every skip carries a reason</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GENERALITY ============ -->
+  <section id="generality">
+    <h2>Why it isn't a "GTK bindings" project</h2>
+    <div class="grid two">
+      <div class="cell">
+        <h3>The input is introspection data</h3>
+        <p>
+          Every GObject-based library ships a <code>.gir</code> file describing its complete
+          public API. The generator reads that and nothing else — no hand-maintained symbol
+          lists, no per-library templates, no hardcoded knowledge of GTK. A new library is a
+          new command-line argument.
+        </p>
+        <p>
+          That is the difference between a binding layer and a binding <em>generator</em>: the
+          first is bounded by its author's patience, the second by the introspection data.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>The hard parts are solved once, per library</h3>
+        <p>
+          Ownership and nullability, signal trampolines, callback lifetimes, caller-allocated
+          OUT parameters, interface mirroring — none of that is GTK-specific, and all of it is
+          where naive FFI bindings quietly introduce memory bugs. Solving it in the generator
+          means every library that goes through it inherits the fix.
+        </p>
+      </div>
+    </div>
+    <p style="margin-top:26px">
+      Today that covers the full GTK 4 stack and libadwaita. Candidates that fit the same
+      dependency graph — <code>libsoup-3</code>, <code>Poppler</code>, <code>GStreamer</code>,
+      <code>JavaScriptCore</code> — are listed on the <a href="roadmap.html">roadmap</a>. Gtk 3
+      is deliberately out of scope for now.
+    </p>
+  </section>
+
+  <!-- ============ THE PROBLEM ============ -->
+  <section>
+    <h2>The problem</h2>
+    <div class="grid two">
+      <div class="cell">
+        <h3>Hand-written FFI does not scale</h3>
+        <p>
+          A single GTK window in raw <code>dart:ffi</code> is fine. A real application is
+          thousands of symbols, every string is a <code>Pointer&lt;Utf8&gt;</code> you must free,
+          every property is a manual <code>g_object_set</code> attribute string, and every
+          signal is a <code>g_signal_connect_data</code> trampoline you have to get exactly
+          right — or you get a use-after-free in production.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Existing bindings don't match Dart</h3>
+        <p>
+          C-based binding layers expose the C API nearly verbatim: raw pointers, manual
+          ref-counting, <code>dynamic</code> in the places that matter. dart-gir inverts that.
+          The generated code is a Dart API first — typed properties, typed signals, typed
+          OUT parameters, nullability that matches the underlying transfer semantics — with
+          raw FFI still available as the escape hatch.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CODE ============ -->
+  <section>
+    <h2>What the generated code looks like</h2>
+    <p class="muted">
+      Everything below is emitted from GIR. There is no hand-written binding layer in between
+      you and the native call.
+    </p>
+
+    <h3 style="margin-top:26px">Typed properties, inherited like Dart classes</h3>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">props.dart</span></div>
+<pre><span class="tok-c">// Every GObject-rooted class gets a PyGObject-style typed accessor.</span>
+<span class="tok-k">import</span> <span class="tok-s">'package:gtk4/gtk4.dart'</span> <span class="tok-k">as</span> gtk <span class="tok-k">show</span> init;
+
+<span class="tok-k">void</span> <span class="tok-f">main</span>() {
+  gtk.<span class="tok-f">init</span>();
+  <span class="tok-k">final</span> button = <span class="tok-f">GtkButton</span>();
+
+  <span class="tok-c">// Declared on GtkButtonProps — writes through the typed setLabel().</span>
+  button.props.label = <span class="tok-s">'Save'</span>;
+  <span class="tok-f">print</span>(button.props.label);        <span class="tok-c">// 'Save'  (String, not dynamic)</span>
+
+  button.props.canShrink = <span class="tok-k">true</span>;
+  <span class="tok-f">print</span>(button.props.canShrink);    <span class="tok-c">// true</span>
+
+  <span class="tok-c">// Declared on GtkWidgetProps, inherited — no redeclaration needed.</span>
+  <span class="tok-f">print</span>(button.props.canFocus);     <span class="tok-c">// false</span>
+}</pre>
+    </div>
+
+    <h3 style="margin-top:30px">Typed signals and interface methods on the object itself</h3>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">signals.dart</span></div>
+<pre><span class="tok-c">// Inherited signals surface on every descendant class, with real types.</span>
+app.onWindowAdded((GtkWindow window) { <span class="tok-f">print</span>(window.getTitle()); });
+widget.onDirectionChanged((GtkTextDirection previous) { ... });
+object.onNotify((GParamSpec pspec) { ... });
+
+<span class="tok-c">// Interface methods are mirrored onto concrete classes — no wrapper object.</span>
+button.setActionName(<span class="tok-s">'win.open'</span>);   <span class="tok-c">// not GtkActionable(button.handle).setActionName(...)</span>
+
+<span class="tok-c">// Async methods get a lifetime-safe overload: no NativeCallable is ever closed.</span>
+file.queryInfoAsyncCallback(
+  <span class="tok-s">'async://example'</span>,
+  (GObject? source, GAsyncResult result) { ... },
+);</pre>
+    </div>
+
+    <h3 style="margin-top:30px">Caller-allocated OUT parameters come back as values</h3>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">out-params.dart</span></div>
+<pre><span class="tok-c">// The C signature is gtk_text_buffer_get_start_iter(buf, GtkTextIter* out).</span>
+<span class="tok-c">// You get a value back, and the buffer's lifetime is GC-managed.</span>
+<span class="tok-k">final</span> iter = buffer.getStartIter();     <span class="tok-c">// GtkTextIter</span>
+<span class="tok-k">final</span> text = buffer.getText(iter, buffer.getEndIter(), <span class="tok-k">false</span>);
+
+<span class="tok-c">// NULL means "not set" — nullability follows transfer-ownership, always.</span>
+<span class="tok-k">final</span> maybeTitle = window.getTitle();  <span class="tok-c">// String?</span></pre>
+    </div>
+  </section>
+
+  <!-- ============ PIPELINE ============ -->
+  <section>
+    <h2>One command, one library per argument</h2>
+    <p>
+      The generated output is disposable: change the generator, rerun one command, and every
+      package is rebuilt from the same upstream GIR files. The CI deliberately does
+      <em>not</em> run the generator — it lints and tests the checked-in output, so drift
+      between generator and packages is impossible to merge silently.
+    </p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 1000 190" role="img" aria-label="Pipeline: GIR files are loaded, parsed into an immutable model, resolved and named, emitted per kind, and written out as a package plus a skip report.">
+        <!-- inputs -->
+        <text class="d-sub" x="8" y="16">inputs</text>
+        <rect class="d-node" x="8" y="26" width="176" height="60" rx="6"/>
+        <text class="d-label" x="24" y="52">Gtk-4.0</text>
+        <text class="d-label" x="24" y="70">Adw-1</text>
+        <text class="d-sub" x="96" y="52">…any .gir</text>
+        <text class="d-sub" x="96" y="70">+ its includes</text>
+
+        <!-- arrow -->
+        <path class="d-arrow" d="M190 56 H232"/>
+        <path class="d-arrow" d="M226 51 L232 56 L226 61"/>
+
+        <!-- loader -->
+        <rect class="d-node" x="238" y="26" width="164" height="60" rx="6"/>
+        <text class="d-label" x="254" y="50">GirLoader</text>
+        <text class="d-sub" x="254" y="68">resolves &lt;include&gt;</text>
+
+        <path class="d-arrow" d="M408 56 H450"/>
+        <path class="d-arrow" d="M444 51 L450 56 L444 61"/>
+
+        <!-- model -->
+        <rect class="d-node" x="456" y="26" width="176" height="60" rx="6"/>
+        <text class="d-label" x="472" y="50">Immutable model</text>
+        <text class="d-sub" x="472" y="68">every GIR element kind</text>
+
+        <path class="d-arrow" d="M638 56 H680"/>
+        <path class="d-arrow" d="M674 51 L680 56 L674 61"/>
+
+        <!-- resolver + emitters -->
+        <rect class="d-node" x="686" y="26" width="148" height="60" rx="6"/>
+        <text class="d-label" x="702" y="50">TypeResolver</text>
+        <text class="d-sub" x="702" y="68">+ emitters</text>
+
+        <path class="d-arrow" d="M840 56 H882"/>
+        <path class="d-arrow" d="M876 51 L882 56 L876 61"/>
+
+        <!-- outputs -->
+        <text class="d-sub" x="8" y="126">outputs</text>
+        <rect class="d-node-accent" x="8" y="136" width="404" height="44" rx="6"/>
+        <text class="d-label" x="24" y="162">packages/&lt;lib&gt;/ — a real Dart API</text>
+
+        <rect class="d-node-accent" x="432" y="136" width="402" height="44" rx="6"/>
+        <text class="d-label" x="448" y="162">skip_report.txt — every skip, with a reason</text>
+
+        <!-- emitter fan-out from resolver down to both outputs -->
+        <path class="d-dash" d="M760 86 V112 H210 V132"/>
+        <path class="d-dash" d="M760 86 V112 H633 V132"/>
+        <circle cx="760" cy="86" r="2.5" fill="currentColor" opacity="0.4"/>
+      </svg>
+      <figcaption>One invocation, one package per namespace, and a report for the parts that could not be emitted.</figcaption>
+    </figure>
+
+    <div class="btn-row"><a class="btn" href="design.html">Read the design reference</a></div>
+  </section>
+
+  <!-- ============ PACKAGES ============ -->
+  <section>
+    <h2>The libraries bound so far</h2>
+    <p>
+      This is a coverage list, not a limit. Each row is one <code>.gir</code> file; the
+      generator itself has no per-library special cases.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Package</th><th>GIR namespace</th><th>Native library</th><th>Role in the stack</th><th class="num">Skipped</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>glib</code></td><td>GLib 2.0</td><td><code>libglib-2.0</code></td><td>Foundation: types, strings, main loop, sources</td><td class="num">447</td></tr>
+          <tr><td><code>gobject</code></td><td>GObject 2.0</td><td><code>libgobject-2.0</code></td><td>The object system everything else builds on</td><td class="num">107</td></tr>
+          <tr><td><code>gio</code></td><td>Gio 2.0</td><td><code>libgio-2.0</code></td><td>Files, async, D-Bus, networking, applications</td><td class="num">418</td></tr>
+          <tr><td><code>gdk_pixbuf</code></td><td>GdkPixbuf 2.0</td><td><code>libgdk_pixbuf-2.0</code></td><td>Image loading and pixel formats</td><td class="num">27</td></tr>
+          <tr><td><code>cairo</code></td><td>cairo 1.0</td><td><code>libcairo</code></td><td>2D vector drawing</td><td class="num">0</td></tr>
+          <tr><td><code>pango</code></td><td>Pango 1.0</td><td><code>libpango-1.0</code></td><td>Text shaping, fonts, layout</td><td class="num">89</td></tr>
+          <tr><td><code>gdk4</code></td><td>Gdk 4.0</td><td><code>libgtk-4</code></td><td>Display, input, GL/Vulkan contexts</td><td class="num">437</td></tr>
+          <tr><td><code>graphene</code></td><td>Graphene 1.0</td><td><code>libgraphene-1.0</code></td><td>Vec2/Vec3/Matrix primitives</td><td class="num">46</td></tr>
+          <tr><td><code>gsk4</code></td><td>Gsk 4.0</td><td><code>libgtk-4</code></td><td>Render nodes and effects</td><td class="num">35</td></tr>
+          <tr><td><code>gtk4</code></td><td>Gtk 4.0</td><td><code>libgtk-4</code></td><td>Widgets, dialogs, actions, settings</td><td class="num">1,767</td></tr>
+          <tr><td><code>adw</code></td><td>Adw 1</td><td><code>libadwaita-1</code></td><td>Application framework: header bars, toasts, styles</td><td class="num">530</td></tr>
+          <tr><td><code>gtk_source5</code></td><td>GtkSource 5</td><td><code>libgtksourceview-5</code></td><td>The code editor component</td><td class="num">286</td></tr>
+          <tr><td><code>gir_ffi</code></td><td colspan="2">handwritten runtime helpers — string marshalling, <code>withNativeStringList</code>, <code>HeapAnchor</code></td><td>Shared by every package above</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small" style="margin-top:16px">
+      "Skipped" is the number of entries in that package's <code>skip_report.txt</code> — see
+      <a href="features.html#coverage">coverage &amp; honest gaps</a> for what they are. Because
+      these are coverage counts rather than difficulty counts, <code>gtk4</code> legitimately
+      has the most: it is by far the largest API.
+    </p>
+  </section>
+
+  <!-- ============ VERIFICATION ============ -->
+  <section>
+    <h2>Verified state of the project</h2>
+    <p>
+      A project site that overstates its own maturity is worse than no site, so here is exactly
+      what passes today and what has not been verified yet.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Check</th><th>Command</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>Static analysis, whole workspace</td><td><code>dart analyze</code></td><td><span class="badge ok">No issues found</span></td></tr>
+          <tr><td>Generator unit tests</td><td><code>dart test generator/</code></td><td><span class="badge ok">121 passed, 6 skipped</span></td></tr>
+          <tr><td>Runtime helper tests</td><td><code>cd packages/gir_ffi && dart test</code></td><td><span class="badge ok">11 passed</span></td></tr>
+          <tr><td>GLib / GTK4 runtime tests</td><td><code>cd packages/gtk4 && dart test</code></td><td><span class="badge">not verified here</span></td></tr>
+          <tr><td>Continuous integration</td><td><code>.github/workflows/ci.yml</code></td><td><span class="badge">analyze + generator tests on Ubuntu</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <p>
+        <strong>The GTK4/GLib runtime tests are the honest gap.</strong> They need a real native
+        GTK 4 / GLib installation. On a machine without one, <code>openLibrary()</code> falls back
+        to the current process and fails with a bare
+        <em>"None of the loaded modules contained the requested symbol"</em> instead of
+        "libgtk-4 not found". CI currently lints and tests the generator but never exercises a
+        native call, so runtime behaviour is reviewed and hand-tested rather than continuously
+        verified. Fixing exactly that — a platform-aware loader with actionable diagnostics, plus
+        a GTK4-enabled CI matrix — is the top item on the
+        <a href="roadmap.html">roadmap</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ GETTING STARTED ============ -->
+  <section>
+    <h2>Try it</h2>
+    <p>You need Dart 3.13+ and native GLib/GTK 4 development libraries on the host.</p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">terminal</span></div>
+<pre><span class="tok-c"># Linux</span>
+<span class="tok-f">sudo</span> apt install libgtk-4-dev libadwaita-1-dev libgtksourceview-5-dev
+
+<span class="tok-c"># workspace root</span>
+dart pub get
+
+<span class="tok-c"># regenerate every package from local GIR files</span>
+dart run generator/bin/generate.dart --gir-dir /path/to/gir-1.0 \
+  GLib-2.0 GObject-2.0 Gio-2.0 GdkPixbuf-2.0 cairo-1.0 Pango-1.0 \
+  Gdk-4.0 Gtk-4.0 Graphene-1.0 Gsk-4.0 Adw-1 GtkSource-5
+
+<span class="tok-c"># lint, test, and run the example text editor</span>
+dart analyze
+dart test generator/
+cd example &amp;&amp; dart run bin/editor.dart</pre>
+    </div>
+    <p class="small" style="margin-top:14px">
+      The <code>example/</code> app is a real <code>AdwApplicationWindow</code> text editor —
+      open and save through <code>GtkFileDialog</code>, a live cursor-position readout driven
+      by a <code>notify::cursor-position</code> handler, and <code>AdwToast</code> feedback —
+      not a hello-world. It exists because the generator's output is only trustworthy if a
+      non-trivial consumer compiles and runs against it.
+    </p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============ CLOSING ============ -->
+  <section>
+    <h2>Status and honesty</h2>
+    <div class="grid two">
+      <div class="cell">
+        <h3>Pre-1.0, by design</h3>
+        <p>
+          The generated API surface changes when the generator improves, and packages are
+          currently <code>publish_to: none</code> and pinned to the workspace version. Nothing
+          here is on pub.dev yet. Expect breakage between iterations — the stability promise
+          is aimed at 1.0, and the <a href="roadmap.html">roadmap</a> says which parts land when.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Built with AI assistance</h3>
+        <p>
+          This project was developed with AI coding agents as working collaborators, under human
+          direction and review. The <a href="about.html#ai">AI development statement</a> spells out
+          exactly what that meant, which parts are machine-written, and what is verified by CI
+          rather than asserted.
+        </p>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:34px">
+      <a class="btn primary" href="https://github.com/TenderOwl/dart-gir" rel="noopener">Star / fork on GitHub</a>
+      <a class="btn" href="about.html">About the author</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>
+      <p><strong>dart-gir</strong> — Dart FFI bindings for the GObject ecosystem</p>
+      <p class="base">Copyright © 2026 Andrey Maksimov · BSD-3-Clause</p>
+      <p class="small">Generated code is committed; the generator is the source of truth.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="design.html">Design reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Source</h4>
+        <ul>
+          <li><a href="https://github.com/TenderOwl/dart-gir" rel="noopener">Repository</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/tree/main/docs" rel="noopener">docs/</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#ai">AI development statement</a></li>
+          <li><a href="license.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

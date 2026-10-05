@@ -618,6 +618,46 @@ final class GBookmarkFile {
     });
   }
 
+  /// Loads a bookmark file from memory into an empty #GBookmarkFile
+  /// structure.  If the object cannot be created then @error is set to a
+  /// #GBookmarkFileError.
+  static final _gBookmarkFileLoadFromData =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_load_from_data')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool loadFromData(ffi.Pointer<ffi.Uint8> data, int length) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gBookmarkFileLoadFromData(
+        this.handle,
+        data,
+        length,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) != 0;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// This function looks for a desktop bookmark file named @file in the
   /// paths returned from g_get_user_data_dir() and g_get_system_data_dirs(),
   /// loads the file into @bookmark and returns the file's full path in

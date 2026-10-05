@@ -5,6 +5,36 @@ part of '../gsk4.dart';
 class GskShadowNode extends GskRenderNode {
   GskShadowNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Creates a `GskRenderNode` that will draw a @child with the given
+  /// @shadows below it.
+  static final _gskShadowNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gsk_shadow_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GskShadowNode(
+    GskRenderNode child,
+    ffi.Pointer<ffi.Void> shadows,
+    int nShadows,
+  ) {
+    return GskShadowNode.fromPointer(
+      _gskShadowNodeNew(child.handle, shadows, nShadows),
+      owned: true,
+    );
+  }
+
   /// Retrieves the child `GskRenderNode` of the shadow @node.
   static final _gskShadowNodeGetChild =
       gsk4Lookup<

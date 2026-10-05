@@ -146,6 +146,27 @@ class GtkPadController extends GtkEventController {
     });
   }
 
+  /// A convenience function to add a group of action entries on
+  /// @controller.
+  ///
+  /// See [struct@Gtk.PadActionEntry] and [method@Gtk.PadController.set_action].
+  static final _gtkPadControllerSetActionEntries =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('gtk_pad_controller_set_action_entries')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  void setActionEntries(ffi.Pointer<ffi.Void> entries, int nEntries) {
+    _gtkPadControllerSetActionEntries(this.handle, entries, nEntries);
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

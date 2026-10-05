@@ -222,6 +222,40 @@ class GdkEvent {
     return GdkEventType.fromValue(_gdkEventGetEventType(this.handle));
   }
 
+  /// Retrieves the history of the device that @event is for, as a list of
+  /// time and coordinates.
+  ///
+  /// The history includes positions that are not delivered as separate events
+  /// to the application because they occurred in the same frame as @event.
+  ///
+  /// Note that only motion and scroll events record history, and motion
+  /// events do it only if one of the mouse buttons is down, or the device
+  /// has a tool.
+  static final _gdkEventGetHistory =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gdk_event_get_history')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getHistory() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gdkEventGetHistory(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Returns the modifier state field of an event.
   static final _gdkEventGetModifierState =
       gdk4Lookup<

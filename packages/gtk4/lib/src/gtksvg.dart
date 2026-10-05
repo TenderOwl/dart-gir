@@ -663,6 +663,98 @@ class GtkSvg extends GObject {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
   }
 
+  /// Snapshots the paintable with the given colors.
+  ///
+  /// If less than 5 colors are provided, GTK will pad the array with default
+  /// colors.
+  static final _gtkSymbolicPaintableSnapshotSymbolic =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_symbolic_paintable_snapshot_symbolic')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void snapshotSymbolic(
+    GdkSnapshot snapshot,
+    double width,
+    double height,
+    ffi.Pointer<ffi.Void> colors,
+    int nColors,
+  ) {
+    _gtkSymbolicPaintableSnapshotSymbolic(
+      this.handle,
+      snapshot.handle,
+      width,
+      height,
+      colors,
+      nColors,
+    );
+  }
+
+  /// Snapshots the paintable with the given colors and weight.
+  ///
+  /// If less than 5 colors are provided, GTK will pad the array with default
+  /// colors.
+  static final _gtkSymbolicPaintableSnapshotWithWeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Double,
+              )
+            >
+          >('gtk_symbolic_paintable_snapshot_with_weight')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+              double,
+            )
+          >();
+  void snapshotWithWeight(
+    GdkSnapshot snapshot,
+    double width,
+    double height,
+    ffi.Pointer<ffi.Void> colors,
+    int nColors,
+    double weight,
+  ) {
+    _gtkSymbolicPaintableSnapshotWithWeight(
+      this.handle,
+      snapshot.handle,
+      width,
+      height,
+      colors,
+      nColors,
+      weight,
+    );
+  }
+
   /// PyGObject-style typed property accessor. Reads and
   /// writes via the existing `get<Name>` / `set<Name>`
   /// methods; each property here corresponds to a GIR

@@ -481,6 +481,32 @@ final class GskStroke {
     _gskStrokeFree(this.handle);
   }
 
+  /// Gets the dash array in use.
+  static final _gskStrokeGetDash =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Float> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gsk_stroke_get_dash')
+          .asFunction<
+            ffi.Pointer<ffi.Float> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Float>, int) getDash() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gskStrokeGetDash(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Gets the dash offset.
   static final _gskStrokeGetDashOffset =
       gsk4Lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>>(
@@ -528,6 +554,46 @@ final class GskStroke {
       ).asFunction<double Function(ffi.Pointer<ffi.Void>)>();
   double getMiterLimit() {
     return _gskStrokeGetMiterLimit(this.handle);
+  }
+
+  /// Sets the dash pattern to use.
+  ///
+  /// A dash pattern is specified by an array of alternating non-negative
+  /// values. Each value provides the length of alternate "on" and "off"
+  /// portions of the stroke.
+  ///
+  /// Each "on" segment will have caps applied as if the segment were a
+  /// separate contour. In particular, it is valid to use an "on" length
+  /// of 0 with [enum@Gsk.LineCap.round] or [enum@Gsk.LineCap.square]
+  /// to draw dots or squares along a path.
+  ///
+  /// If @n_dash is 0, if all elements in @dash are 0, or if there are
+  /// negative values in @dash, then dashing is disabled.
+  ///
+  /// If @n_dash is 1, an alternating "on" and "off" pattern with the
+  /// single dash length provided is assumed.
+  ///
+  /// If @n_dash is uneven, the dash array will be used with the first
+  /// element in @dash defining an "on" or "off" in alternating passes
+  /// through the array.
+  ///
+  /// You can specify a starting offset into the dash with
+  /// [method@Gsk.Stroke.set_dash_offset].
+  static final _gskStrokeSetDash =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Size,
+              )
+            >
+          >('gsk_stroke_set_dash')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>, int)
+          >();
+  void setDash(ffi.Pointer<ffi.Float> dash, int nDash) {
+    _gskStrokeSetDash(this.handle, dash, nDash);
   }
 
   /// Sets the offset into the dash pattern where dashing should begin.

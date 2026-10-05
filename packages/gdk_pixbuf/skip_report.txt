@@ -1,39 +1,35 @@
 # Skip report for package gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 27
+Total skipped: 23
 
 ## By category
-callable: 12
 property: 9
+callable: 8
 callback: 5
 method: 1
 
 ## By reason
 construct-only or no public setter; emitting getter only: 7
-array types are handled in a later phase: 5
-parameter data: array types are handled in a later phase: 3
+array parameter in callback signature: 5
 return: string list return type (null): 2
 moved to PixbufError.quark: 1
+parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature: 1
 shadowed by get_pixels_with_length: 1
-return: array types are handled in a later phase: 1
-parameter buffer: array types are handled in a later phase: 1
+unsupported out parameter buffer (ffi.Pointer<ffi.Uint8>): 1
 parameter save_func: callback PixbufSaveFunc has unsupported signature: 1
 parameter width: nullable scalar parameter (gint): 1
 name collision: 1
 missing getter get_pixel-bytes: 1
 unsupported type gpointer: 1
-parameter buf: array types are handled in a later phase: 1
 
 ## First 50 entries
 [callable] GdkPixbuf.pixbufErrorQuark — moved to PixbufError.quark
 [callable] GdkPixbufFormat.getExtensions — return: string list return type (null)
 [callable] GdkPixbufFormat.getMimeTypes — return: string list return type (null)
-[callable] GdkPixbuf.fromData — parameter data: array types are handled in a later phase
-[callable] GdkPixbuf.fromInline — parameter data: array types are handled in a later phase
-[callable] GdkPixbuf.fromXpmData — parameter data: array types are handled in a later phase
+[callback] GdkPixbufDestroyNotify parameter pixels — array parameter in callback signature
+[callable] GdkPixbuf.fromData — parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature
 [callable] GdkPixbuf.getPixels — shadowed by get_pixels_with_length
-[callable] GdkPixbuf.getPixelsWithLength — return: array types are handled in a later phase
-[callable] GdkPixbuf.saveToBufferv — parameter buffer: array types are handled in a later phase
-[callback] GdkPixbuf.PixbufSaveFunc parameter buf — array types are handled in a later phase
+[callable] GdkPixbuf.saveToBufferv — unsupported out parameter buffer (ffi.Pointer<ffi.Uint8>)
+[callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature
 [callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
 [callable] GdkPixbuf.getFileInfo — parameter width: nullable scalar parameter (gint)
 [method] GdkPixbuf.toString — name collision
@@ -46,8 +42,6 @@ parameter buf: array types are handled in a later phase: 1
 [property] GdkPixbuf.pixels — unsupported type gpointer
 [property] GdkPixbuf.rowstride — construct-only or no public setter; emitting getter only
 [property] GdkPixbuf.width — construct-only or no public setter; emitting getter only
-[callable] GdkPixbufLoader.write — parameter buf: array types are handled in a later phase
-[callback] GdkPixbufDestroyNotify parameter pixels — array types are handled in a later phase
-[callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array types are handled in a later phase
-[callback] GdkPixbufModuleLoadXpmDataFunc parameter data — array types are handled in a later phase
-[callback] GdkPixbufSaveFunc parameter buf — array types are handled in a later phase
+[callback] GdkPixbufDestroyNotify parameter pixels — array parameter in callback signature
+[callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array parameter in callback signature
+[callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature

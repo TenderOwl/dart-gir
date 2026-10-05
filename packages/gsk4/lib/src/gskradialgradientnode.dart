@@ -6,6 +6,63 @@ class GskRadialGradientNode extends GskRenderNode {
   GskRadialGradientNode.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Creates a `GskRenderNode` that draws a radial gradient.
+  ///
+  /// The radial gradient
+  /// starts around @center. The size of the gradient is dictated by @hradius
+  /// in horizontal orientation and by @vradius in vertical orientation.
+  static final _gskRadialGradientNodeNew =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gsk_radial_gradient_node_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  factory GskRadialGradientNode(
+    GrapheneRect bounds,
+    GraphenePoint center,
+    double hradius,
+    double vradius,
+    double start,
+    double end,
+    ffi.Pointer<ffi.Void> colorStops,
+    int nColorStops,
+  ) {
+    return GskRadialGradientNode.fromPointer(
+      _gskRadialGradientNodeNew(
+        bounds.handle,
+        center.handle,
+        hradius,
+        vradius,
+        start,
+        end,
+        colorStops,
+        nColorStops,
+      ),
+      owned: true,
+    );
+  }
+
   /// Retrieves the center pointer for the gradient.
   static final _gskRadialGradientNodeGetCenter =
       gsk4Lookup<

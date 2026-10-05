@@ -301,6 +301,28 @@ final class GrapheneVec3 {
     return GrapheneVec3.fromPointer(_grapheneVec3Init(this.handle, x, y, z));
   }
 
+  /// Initializes a #graphene_vec3_t with the values from an array.
+  static final _grapheneVec3InitFromFloat =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_vec3_init_from_float')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  GrapheneVec3 initFromFloat(ffi.Pointer<ffi.Float> src) {
+    return GrapheneVec3.fromPointer(
+      _grapheneVec3InitFromFloat(this.handle, src),
+    );
+  }
+
   /// Initializes a #graphene_vec3_t with the values of another
   /// #graphene_vec3_t.
   static final _grapheneVec3InitFromVec3 =

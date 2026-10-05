@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — dart-gir</title>
+<meta name="description" content="dart-gir is maintained by Andrey Maksimov and was developed with AI coding agents as working collaborators under human direction and review.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <div class="inner">
+    <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M7 16.5V7.5h4.6a2.9 2.9 0 0 1 0 5.8H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.8" cy="8.4" r="1.15" fill="currentColor"/></svg> dart-gir</a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="features.html">Features</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="design.html">Design</a>
+      <a href="about.html" class="active">About</a>
+      <a href="license.html">License</a>
+      <a href="https://github.com/TenderOwl/dart-gir" class="nav-cta" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" style="padding-bottom:0">
+    <div class="eyebrow">About</div>
+    <h1>Who builds this, and how</h1>
+    <p class="lead">
+      dart-gir is a one-person project. It is also a project built with AI coding agents as
+      working collaborators. Both facts are stated here rather than left for a reader to
+      infer from the commit history.
+    </p>
+  </section>
+
+  <!-- ============ AUTHOR ============ -->
+  <section>
+    <h2>The author</h2>
+    <div class="grid two">
+      <div class="cell">
+        <h3>Andrey Maksimov</h3>
+        <p>
+          Developer at <strong>TenderOwl</strong>, a small software company in Moscow, and the
+          author and maintainer of dart-gir. The project is published under
+          <strong>BSD-3-Clause</strong>, copyright 2026.
+        </p>
+        <p>
+          The repository is <a href="https://github.com/TenderOwl/dart-gir" rel="noopener">github.com/TenderOwl/dart-gir</a>.
+          Issues, questions and pull requests are welcome — with the caveat, stated on the
+          <a href="roadmap.html#contributing">contributing</a> section, that a generator change
+          must arrive together with its regenerated output.
+        </p>
+        <p class="small" style="margin-bottom:0">
+          Other work lives at <a href="https://tenderowl.com" rel="noopener">tenderowl.com</a>
+          and <a href="https://github.com/TenderOwl" rel="noopener">github.com/TenderOwl</a>.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Why this project exists</h3>
+        <p>
+          GTK 4 and libadwaita are excellent C libraries with excellent introspection data — and
+          excellent bindings for Python, JavaScript, Rust and Go. For Dart, the honest options
+          were hand-written FFI, or nothing.
+        </p>
+        <p>
+          Hand-written FFI does not scale past a demo window, and "nothing" means nobody can
+          write a GTK application in Dart at all. The upstream <code>.gir</code> files already
+          contain the complete API description, so the missing piece was a generator that takes
+          them seriously — especially around ownership and nullability, which is exactly where
+          a naive binding layer quietly introduces memory bugs.
+        </p>
+        <p style="margin-bottom:0">
+          The goal is narrow and concrete: a Dart API where <code>button.props.label</code> is a
+          <code>String</code>, not a <code>dynamic</code>, and where the interesting failure modes
+          are in the generator instead of in your application.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APPS ============ -->
+  <section id="apps">
+    <h2>Before the bindings: the applications</h2>
+    <p>
+      dart-gir is the third attempt at solving the same problem, and the reason the design looks
+      the way it does comes from shipping GTK applications rather than from reading
+      documentation about them.
+    </p>
+
+    <div class="grid two">
+      <div class="cell">
+        <h3><a href="https://getfrog.app" rel="noopener">Frog</a></h3>
+        <p class="small" style="margin-bottom:12px">
+          OCR tool for GNOME · MIT · on <a href="https://flathub.org/en/apps/com.github.tenderowl.frog" rel="noopener">Flathub</a> and Snapcraft
+        </p>
+        <p>
+          Text extraction from almost any source — a screenshot, a video, a PDF, a webpage, a QR
+          code. Grab the region, get the text. It is the app most people know TenderOwl by, and
+          it is where the daily friction of doing GTK work in a language without good bindings
+          shows up most concretely.
+        </p>
+      </div>
+      <div class="cell">
+        <h3><a href="https://norka.app" rel="noopener">Norka</a></h3>
+        <p class="small" style="margin-bottom:12px">
+          Continuous text editor for Linux · MIT · on <a href="https://flathub.org/en/apps/com.github.tenderowl.norka" rel="noopener">Flathub</a>
+        </p>
+        <p>
+          A distraction-free editor: markdown, autosave, full-text search, reading time, previews,
+          export to HTML, Docx and PDF. Originally built for elementary OS, later on Flathub.
+          A second, more ambitious rewrite has been attempted more than once.
+        </p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p>
+        <strong>Both are PyGObject applications.</strong> Frog and Norka are written in Python on
+        top of GTK through PyGObject — which is exactly where this project's
+        <code>.props</code> design comes from. The generated API deliberately mirrors the
+        PyGObject shape (<code>widget.props.label</code>, typed signals on the object itself)
+        because it is a model that has already survived contact with real GTK applications. The
+        difference dart-gir is trying to make is that the same shape should be available from
+        Dart, and should come with ownership semantics that the type system can see.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ AI STATEMENT ============ -->
+  <section id="ai">
+    <div class="disclosure">
+      <div class="eyebrow">Statement</div>
+      <h2>AI-assisted development</h2>
+
+      <p class="lead">
+        This project was developed with AI coding agents as working collaborators, under human
+        direction and review. This section exists because a project page that quietly omits that
+        fact is not honest, regardless of how good the software is.
+      </p>
+
+      <h3>How the work was done</h3>
+      <p>
+        AI coding agents were used as working collaborators throughout the project — across
+        implementation, tests, documentation and maintenance. The architecture, the design
+        decisions, the interpretation of the GIR ownership and lifetime semantics, and the
+        judgement about what is correct all remained human work, under review.
+      </p>
+      <p>
+        Rather than itemise which files were machine-written, the more useful thing is to say
+        how the two ideas are kept apart in this project: <em>code having been produced</em> is
+        not the same claim as <em>code being correct</em>, and only the second one is presented
+        as a guarantee. Which is why the next section is a list of things you can check
+        yourself, and why the <a href="roadmap.html">roadmap</a> names the biggest unverified
+        area first.
+      </p>
+
+      <h3>How you can tell what is verified</h3>
+      <p>
+        Every capability claimed on this site links to the code, the tests or the report that
+        demonstrates it:
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Claim</th><th>How to check it yourself</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>The code is written</td>
+              <td>It is committed. <code>dart analyze</code> reports no issues across the workspace.</td>
+            </tr>
+            <tr>
+              <td>The generator behaves as documented</td>
+              <td><code>dart test generator/</code> — 121 tests passing, 6 skipped. These run in CI on every push.</td>
+            </tr>
+            <tr>
+              <td>The runtime helpers manage memory correctly</td>
+              <td><code>cd packages/gir_ffi &amp;&amp; dart test</code> — 11 tests, including the <code>HeapAnchor</code> lifetime contract.</td>
+            </tr>
+            <tr>
+              <td>The generated bindings work against real GTK</td>
+              <td><strong>Not currently verified continuously.</strong> CI never makes a native call. The GTK4/GLib tests require a real native installation and were last run by hand. This gap is the first item on the <a href="roadmap.html">roadmap</a>.</td>
+            </tr>
+            <tr>
+              <td>Symbols that could not be emitted</td>
+              <td><code>packages/&lt;lib&gt;/skip_report.txt</code> — every one, with a reason. 4,189 entries today.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Known limitations of this way of working</h3>
+      <p>
+        Stated because they are real, not because they are disqualifying:
+      </p>
+      <ul class="checks todo">
+        <li><strong>Writing quality varies.</strong> Documentation and comments are accurate more
+          often than they are good, and some of it is longer than it needs to be. Doc comments
+          inherited from GIR also carry upstream HTML quirks that the generated packages have to
+          suppress analyzer warnings for.</li>
+        <li><strong>Verification is uneven.</strong> Generator logic is well covered by unit
+          tests; native behaviour is not covered by CI at all. Tool-assisted development can
+          produce a large, plausible, wrong surface faster than it can be reviewed — which is the
+          main reason the runtime gap is treated as urgent rather than deferred.</li>
+        <li><strong>History is noisy.</strong> The commit log reflects an agent-assisted
+          workflow. The <code>CHANGELOG.md</code> is the reliable record of user-facing change,
+          not the commit history.</li>
+        <li><strong>The licence covers the code, not the process.</strong> The
+          <a href="license.html">licence</a> covers the source; it does not make any claim about
+          how the source was produced, which is why this statement exists alongside it.</li>
+      </ul>
+
+      <div class="note">
+        <p>
+          <strong>If you would rather not use AI-assisted code:</strong> the license does not
+          require a preference on this. What it requires is that claims made about the project
+          are checkable — which is why every capability on this site links to the code, the
+          tests or the skip report that demonstrates it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRINCIPLES ============ -->
+  <section>
+    <h2>Working principles</h2>
+    <div class="grid two">
+      <div class="cell">
+        <h3>State the gaps</h3>
+        <p>
+          This site has a page of what does not work yet, and the skip report names every symbol
+          the generator declines to emit. A binding layer that hides its omissions is worse than
+          one that has holes, because the hole surfaces later as a mystery at the call site.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>The generator is the source of truth</h3>
+        <p>
+          457,000 lines of generated code are disposable. Editing them by hand is not just
+          discouraged, it is wrong — the next regeneration reverts it. This is why CI does not
+          re-run the generator: the committed output is what gets linted and tested, so drift
+          between generator and packages cannot merge unnoticed.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Memory safety is the feature</h3>
+        <p>
+          Most hand-written FFI bugs are lifetime bugs. The project's own OUT-parameter work
+          produced a heap corruption and a use-after-free before it produced a correct
+          implementation, and both are documented in the changelog with the tests that now
+          prevent them.
+        </p>
+      </div>
+      <div class="cell">
+        <h3>Pre-1.0, honestly</h3>
+        <p>
+          Packages are <code>publish_to: none</code> and pinned to a single workspace version.
+          The generated API will change when the generator improves. That is stated on the
+          <a href="index.html">home page</a> rather than discovered by a consumer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Get involved</h2>
+    <p>
+      The most valuable contribution is taking a line from a
+      <code>skip_report.txt</code> and making it emitable, ideally with a test that fails before
+      the fix. Adding a namespace is mechanical by comparison — the generator is
+      namespace-agnostic and a new binding is mostly a matter of pointing it at another
+      <code>.gir</code> file.
+    </p>
+    <div class="btn-row" style="margin-top:26px">
+      <a class="btn primary" href="https://github.com/TenderOwl/dart-gir" rel="noopener">Open the repository</a>
+      <a class="btn" href="roadmap.html">Read the roadmap</a>
+      <a class="btn" href="license.html">License</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>
+      <p><strong>dart-gir</strong> — Dart FFI bindings for the GObject ecosystem</p>
+      <p class="base">Copyright © 2026 Andrey Maksimov · BSD-3-Clause</p>
+      <p class="small">Generated code is committed; the generator is the source of truth.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="design.html">Design reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Source</h4>
+        <ul>
+          <li><a href="https://github.com/TenderOwl/dart-gir" rel="noopener">Repository</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/tree/main/docs" rel="noopener">docs/</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#ai">AI development statement</a></li>
+          <li><a href="license.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

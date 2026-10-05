@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Features — dart-gir</title>
+<meta name="description" content="Typed properties, typed signals, interface mirroring, caller-allocated OUT parameters, async overloads, skip reports and one-class-per-file emission in dart-gir.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <div class="inner">
+    <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="M7 16.5V7.5h4.6a2.9 2.9 0 0 1 0 5.8H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16.8" cy="8.4" r="1.15" fill="currentColor"/></svg> dart-gir</a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="features.html" class="active">Features</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="design.html">Design</a>
+      <a href="about.html">About</a>
+      <a href="license.html">License</a>
+      <a href="https://github.com/TenderOwl/dart-gir" class="nav-cta" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" style="padding-bottom:0">
+    <div class="eyebrow">Feature list</div>
+    <h1>Everything the generator gives you</h1>
+    <p class="lead">
+      Each item below is implemented in the generator and present in the checked-in output,
+      not aspirational. Where a feature has limits, the limit is stated next to it.
+    </p>
+  </section>
+
+  <!-- ============ 1. TYPED PROPERTIES ============ -->
+  <section id="props">
+    <h2>1 · PyGObject-style typed properties</h2>
+    <p>
+      Every GObject-rooted class gets a <code>&lt;ClassName&gt;Props</code> companion reached
+      through <code>.props</code>. Each accessor delegates to the already-generated typed
+      <code>get&lt;Name&gt;()</code> / <code>set&lt;Name&gt;(value)</code> methods — no
+      <code>GValue</code> boxing, no attribute-string lookups, no <code>dynamic</code>.
+      <strong>12,702 accessors</strong> across 418 props classes.
+    </p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">generated props class</span></div>
+<pre><span class="tok-k">class</span> <span class="tok-f">GtkButtonProps</span> <span class="tok-k">extends</span> <span class="tok-f">GtkWidgetProps</span> {
+  <span class="tok-f">GtkButtonProps</span>(<span class="tok-f">GtkButton</span> $self) : _self = $self, <span class="tok-k">super</span>($self);
+  <span class="tok-k">final</span> <span class="tok-f">GtkButton</span> _self;
+
+  <span class="tok-c">// Type and nullability come from the typed method's bridge,</span>
+  <span class="tok-c">// never from the property's raw &lt;type&gt; element.</span>
+  <span class="tok-k">bool</span> <span class="tok-k">get</span> canShrink =&gt; _self.getCanShrink();
+  <span class="tok-k">set</span> canShrink(<span class="tok-k">bool</span> value) =&gt; _self.setCanShrink(value);
+
+  <span class="tok-k">String</span>? <span class="tok-k">get</span> label =&gt; _self.getLabel();
+  <span class="tok-k">set</span> label(<span class="tok-k">String</span> value) =&gt; _self.setLabel(value);
+}</pre>
+    </div>
+    <ul class="checks">
+      <li><strong>Inheritance works.</strong> <code>props.canFocus</code> is declared on <code>GtkWidgetProps</code> and reachable on every descendant, with no redeclaration.</li>
+      <li><strong>Nullability is honest.</strong> A property backed by a <code>gchar*</code> with <code>transfer-ownership="none"</code> is <code>String?</code>, because the native getter genuinely can return NULL. The accessor type is derived from the typed method's bridge, so it cannot drift into a type lie.</li>
+      <li><strong>Explicit field types.</strong> <code>late final GtkButtonProps _props</code> — Dart's late-final inference would otherwise adopt the parent's type and break every child's covariant override with <code>invalid_override</code>.</li>
+    </ul>
+    <div class="note plain">
+      <p>
+        <strong>Known limit:</strong> a property whose typed getter or setter is not
+        representable as a no-arg getter / single-arg setter — <code>get_size(orientation)</code>,
+        <code>set_text(text, length)</code>, <code>set_visible_page(…)</code> — is recorded in
+        the skip report with a precise reason instead of being emitted wrong. The typed method
+        is always still available.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 2. SIGNALS ============ -->
+  <section id="signals">
+    <h2>2 · Typed signal handlers</h2>
+    <p>
+      <strong>3,738</strong> generated <code>onSignalName(callback)</code> methods with real Dart
+      parameter types, bucketed by <code>FFI shape × Dart signature</code> so a single trampoline
+      serves every signal that shares a shape.
+    </p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">inherited signals</span></div>
+<pre><span class="tok-c">// Gtk.Widget::direction-changed, reachable on any Gtk.TextView</span>
+textView.onDirectionChanged((GtkTextDirection previous) {
+  <span class="tok-f">print</span>(<span class="tok-s">'now '</span> + previous.name);
+});
+
+<span class="tok-c">// Gtk.Application::window-added, reached from Adw.Application</span>
+app.onWindowAdded((GtkWindow window) { ... });
+
+<span class="tok-c">// notify with a detailed name — no typed helper, so use the escape hatch</span>
+textView.connectSignal(<span class="tok-s">'notify::cursor-position'</span>, (params) { ... });</pre>
+    </div>
+    <ul class="checks">
+      <li><strong>Inherited by default.</strong> The emitter walks the full parent chain, keyed by <em>qualified</em> class name — so <code>Adw.Application</code> correctly continues to <code>Gio.Application</code> even though both classes are locally named <code>Application</code>.</li>
+      <li><strong>Cross-package types resolve against the author.</strong> A signal declared in <code>Gtk</code> but emitted into <code>Adw</code> resolves its <code>Window</code> argument to <code>GtkWindow</code>, not <code>AdwWindow</code>.</li>
+      <li><strong>Dedup by identity,</strong> not by name — <code>Gio.DBusObject::interface-added</code> and <code>Gio.DBusObjectManager::interface-added</code> have different arities and stay separate buckets.</li>
+      <li><strong>transfer-none strings are freed.</strong> Strings coming out of a trampoline are released through a <code>g_free</code> binding resolved out of the running process.</li>
+      <li><strong>Destroy-notify is per-bucket.</strong> Teardown cleans up only the owning bucket's registry slot, so disconnecting one signal cannot corrupt another.</li>
+      <li><strong><code>connectSignal</code> escape hatch</strong> for anything the generator will not type: detailed names, arity above 5, weak-ref signals, untypable arguments. Same trampoline path.</li>
+    </ul>
+  </section>
+
+  <!-- ============ 3. INTERFACES ============ -->
+  <section id="interfaces">
+    <h2>3 · Interface methods mirrored onto concrete classes</h2>
+    <p>
+      GIR models interfaces as separate types, which in practice means wrapping your own object
+      to call one method. dart-gir emits an interface's methods onto every implementing class.
+    </p>
+    <div class="grid two">
+      <div class="code">
+        <div class="bar"><span></span><span></span><span></span><span class="fname">mirrored</span></div>
+<pre>button.setActionName(<span class="tok-s">'win.open'</span>);</pre>
+      </div>
+      <div class="code">
+        <div class="bar"><span></span><span></span><span></span><span class="fname">what you had to write</span></div>
+<pre><span class="tok-f">GtkActionable</span>(button.handle)
+    .setActionName(<span class="tok-s">'win.open'</span>);</pre>
+      </div>
+    </div>
+    <ul class="checks">
+      <li>Same native symbol, same <code>this.handle</code> self-argument, same wrapper pattern — mirroring is additive, not a second code path.</li>
+      <li>The interface is still emitted as a concrete class, so wrapping an opaque pointer keeps working when you genuinely have one.</li>
+      <li><strong>Override-incompatible shadows are renamed, not dropped.</strong> <code>GIOModule.use</code> shadowing <code>GTypeModule.use</code> with a different signature is detected against the parent's combined method map and emitted as <code>useIOModule</code>.</li>
+      <li>Async interface methods receive the same lifetime-safe <code>*Callback</code> overload as native async methods — <strong>172</strong> of them are emitted today.</li>
+    </ul>
+  </section>
+
+  <!-- ============ 4. ASYNC ============ -->
+  <section id="async">
+    <h2>4 · Safe callbacks, including async ones</h2>
+    <p>
+      A callback parameter is the easiest way to write a use-after-free in FFI. The generator
+      has two distinct strategies and applies the safe one automatically.
+    </p>
+    <div class="grid two">
+      <div class="cell">
+        <h4>Synchronous callbacks</h4>
+        <p>
+          A <code>NativeCallable.isolateLocal</code> is allocated at the call site and closed in
+          a <code>finally</code>. Safe because the native callee cannot retain it past the call.
+          Nullable callback parameters are supported — nothing is allocated or closed if you
+          pass <code>null</code>, which is what unblocked the whole family of GLib
+          <code>g_*_add_full</code> source functions.
+        </p>
+      </div>
+      <div class="cell">
+        <h4>Asynchronous callbacks</h4>
+        <p>
+          Never <code>.close()</code> a <code>NativeCallable</code> that GLib may invoke later.
+          The <code>*Callback</code> overloads instead route dispatch through a permanent
+          <code>Pointer.fromFunction</code> over a static trampoline plus a per-call registry,
+          so no <code>NativeCallable</code> is ever closed and <code>user_data</code> stays an
+          internal implementation detail.
+        </p>
+      </div>
+    </div>
+    <div class="note warn">
+      <p>
+        <strong>The one caveat, stated plainly:</strong> the synchronous strategy is only correct
+        for callbacks invoked <em>before</em> the native call returns. For a long-lived callback —
+        an idle source, a timeout, a signal handler — pass a top-level or static Dart function
+        and keep the wrapper alive; a closure that only exists inside the call is not safe to
+        retain natively. This is documented in <code>docs/emission.md</code> and
+        <code>docs/async.md</code>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 5. OUT PARAMS ============ -->
+  <section id="out-params">
+    <h2>5 · Caller-allocated OUT parameters become return values</h2>
+    <p>
+      C APIs that fill a caller-supplied struct are the worst part of FFI by hand. The
+      generator allocates the buffer, calls through, reads the value back through the type's
+      <code>fromPointer</code> factory, and hands you a value.
+    </p>
+    <div class="code">
+      <div class="bar"><span></span><span></span><span></span><span class="fname">out parameter</span></div>
+<pre><span class="tok-c">// C: void gtk_text_buffer_get_start_iter(GtkTextBuffer*, GtkTextIter* out);</span>
+<span class="tok-k">final</span> iter = buffer.getStartIter();   <span class="tok-c">// GtkTextIter</span>
+<span class="tok-k">final</span> text = buffer.getText(iter, buffer.getEndIter(), <span class="tok-k">false</span>);</pre>
+    </div>
+    <ul class="checks">
+      <li>Primitive OUT params (<code>gint*</code>, <code>guint32*</code>, <code>gboolean*</code>) free their buffer in a <code>finally</code>.</li>
+      <li>Record and class OUT params are anchored with <code>HeapAnchor</code> from <code>package:gir_ffi</code> — a <code>Finalizable</code> with a <code>NativeFinalizer(malloc.nativeFree)</code>, so the buffer lives exactly as long as the returned wrapper is reachable and is freed on GC.</li>
+      <li>Emitting this path cut the workspace's skip count by roughly 282 symbols with no regressions.</li>
+    </ul>
+    <div class="note">
+      <p>
+        <strong>This feature has a scar on it.</strong> The first implementation malloc'd 8 bytes
+        for a 32-byte struct — <code>free(): invalid next size</code> — and then freed the
+        backing buffer before the returned wrapper had dereferenced it, producing a SEGV inside
+        <code>gtk_text_iter_get_buffer</code>. Both are recorded in the changelog, and both now
+        have end-to-end tests. It is a good illustration of why pointer lifetime belongs in the
+        generator rather than in application code.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 6. PLUMBING ============ -->
+  <section id="plumbing">
+    <h2>6 · The plumbing you stop doing by hand</h2>
+    <div class="grid two">
+      <div class="cell feature">
+        <h3>Cross-package wiring</h3>
+        <p>
+          The resolver emits imports and path-dependencies automatically. <code>Adw</code> classes
+          use <code>GtkWidget</code>, <code>GdkCursor</code> and <code>GObject</code> without a
+          single manual <code>path:</code> entry. A cross-package import is added only when an
+          emitted body actually references a type from that package.
+        </p>
+      </div>
+      <div class="cell feature">
+        <h3>Type resolution by <code>c:type</code></h3>
+        <p>
+          A built-in scalar table plus a declared-type table, with cross-namespace
+          deduplication driven by canonical <code>c:type</code> values — so <code>GList</code> and
+          its many spellings resolve to one Dart type.
+        </p>
+      </div>
+      <div class="cell feature">
+        <h3>Namespace functions</h3>
+        <p>
+          GLib's root-level functions are surfaced as real Dart wrappers
+          (<code>g_get_user_data_dir</code>, <code>g_idle_add_full</code>,
+          <code>g_io_add_watch_full</code>), with a precise skip reason for the
+          non-introspectable C macros that have no symbol to bind to.
+        </p>
+      </div>
+      <div class="cell feature">
+        <h3>Nullable and ownership-aware types</h3>
+        <p>
+          <code>transfer-ownership="none"</code> pointers become nullable, transfer-full
+          strings are copied and freed, and ownership transfers are treated as correctness
+          concerns rather than formatting.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. ERGONOMICS ============ -->
+  <section id="ergonomics">
+    <h2>7 · Small things that add up</h2>
+    <ul class="checks">
+      <li><strong>One Dart class per file, named after the class.</strong> <code>class GtkButton</code> lives in <code>lib/src/gtkbutton.dart</code>, its props companion in <code>lib/src/gtkbutton_props.dart</code>. <code>Ctrl+Click</code> on a class name lands in a file that is recognisably that class. All files stay <code>part of</code> the same library, so the public barrel is unchanged and forward references still resolve.</li>
+      <li><strong>Per-package <code>signals.dart</code></strong> with one trampoline and typed registry per shape bucket, plus a shared destroy-notify.</li>
+      <li><strong>Handwritten runtime helpers</strong> in <code>package:gir_ffi</code> — string marshalling, <code>withNativeStringList</code> (NULL-terminated argv, distinguishing <code>null</code> from empty), <code>gFree</code>, <code>HeapAnchor</code>.</li>
+      <li><strong>Per-namespace library loading.</strong> Each package gets a generated <code>&lt;ns&gt;Libs</code> list and a <code>&lt;ns&gt;Lookup&lt;T&gt;(symbol)</code> helper that tries each candidate library in turn, then the running process — so symbols that live in a sibling library are still reachable.</li>
+      <li><strong>Analyzer-aware emission.</strong> Generated packages carry a curated set of lint suppressions for genuine FFI false positives, and keep the doc-comment HTML suppression the GIR docs require.</li>
+      <li><strong>Immutable GIR data model</strong> covering class, interface, record, union, enumeration, bitfield, callback, function, constant, alias, signal, property, method, constructor, parameter — with transitive include resolution.</li>
+      <li><strong>Tokenizer-based renaming</strong> that splits snake_case into Dart camelCase and resolves Dart keywords, so <code>get_surface</code> becomes <code>getSurface</code> and nothing collides with the language.</li>
+    </ul>
+  </section>
+
+  <!-- ============ 8. TRANSPARENCY ============ -->
+  <section id="coverage">
+    <h2>8 · Coverage, and the honest gaps</h2>
+    <p>
+      Every symbol the generator cannot emit is written to
+      <code>packages/&lt;lib&gt;/skip_report.txt</code> with a category and a reason. There is no
+      silent omission. Across the twelve packages there are <strong>4,189</strong> recorded entries.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Reason recorded in the report</th><th class="num">Entries</th><th>How much it actually hurts</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Property has no typed getter at all</td>
+            <td class="num">1,217</td>
+            <td>Cosmetic for most of them — the property is construct-only or write-only in GIR. The typed setter, where one exists, is still emitted.</td>
+          </tr>
+          <tr>
+            <td>Array / collection types — <em>"handled in a later phase"</em></td>
+            <td class="num">946</td>
+            <td><strong>The largest real gap.</strong> Affects parameters, properties, relations, states and returns.</td>
+          </tr>
+          <tr>
+            <td>Property construct-only or no public setter</td>
+            <td class="num">478</td>
+            <td>Cosmetic — the getter is emitted, the entry records the missing setter.</td>
+          </tr>
+          <tr>
+            <td>Name collision</td>
+            <td class="num">392</td>
+            <td>Almost entirely Pango Unicode <code>key*</code> enums colliding after name mangling. Benign, but noisy.</td>
+          </tr>
+          <tr>
+            <td>Deduplicated — emitted under the owning namespace</td>
+            <td class="num">357</td>
+            <td>Benign. The symbol exists, just in the package that owns it. The report names the exact replacement.</td>
+          </tr>
+          <tr>
+            <td>Nullable scalar parameter (<code>glong*</code>, <code>gint*</code>, …)</td>
+            <td class="num">190</td>
+            <td>Real but mechanical — needs an explicit nullable-scalar mapping in the resolver.</td>
+          </tr>
+          <tr>
+            <td>C macro (<code>introspectable="0"</code>)</td>
+            <td class="num">148</td>
+            <td>None. A macro has no symbol to bind. The report names the <code>_full</code> wrapper to call instead.</td>
+          </tr>
+          <tr>
+            <td>Return type could not be named</td>
+            <td class="num">84</td>
+            <td>Real — mostly string-list and array returns.</td>
+          </tr>
+          <tr>
+            <td>inout parameter</td>
+            <td class="num">36</td>
+            <td>Real. The read-only-out direction has no emission path yet.</td>
+          </tr>
+          <tr>
+            <td>Override-incompatible — emitted under a renamed method</td>
+            <td class="num">31</td>
+            <td>Largely handled: the entry names the renamed method to call.</td>
+          </tr>
+          <tr>
+            <td>Everything else (unsupported return types, unknown C types, shadowing, signal arg types, props-layer arity)</td>
+            <td class="num">250</td>
+            <td>A long tail, individually listed with a precise reason.</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><th>Total entries across all twelve packages</th><th class="num">4,189</th><th></th></tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="small" style="margin-top:12px">
+      Aggregated from the <code>## By reason</code> section of every
+      <code>skip_report.txt</code> on the current <code>main</code> branch. The two dominant
+      categories — missing getters and construct-only properties — account for over 40% of all
+      entries and neither is a functional hole.
+    </p>
+    <div class="note">
+      <p>
+        <strong>How to use the report:</strong> if a symbol you expect is missing, grep
+        <code>packages/&lt;lib&gt;/skip_report.txt</code> for it. Every line states the reason,
+        and the reason names the category documented in
+        <code>docs/skip-categories.md</code>. That is the intended workflow — not "open an
+        issue and wait".
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <h2>Not built yet</h2>
+    <p>Stated up front so nobody has to discover it by hitting it:</p>
+    <ul class="checks todo">
+      <li>Array and collection returns / parameters are the biggest remaining hole (946 recorded skips).</li>
+      <li>Subclassing and libadwaita composite templates are implemented on the <code>composite-templates</code> branch, not on <code>main</code> — and that branch currently has CI disabled.</li>
+      <li>Unions and bitfields are parsed but not emitted as first-class Dart types.</li>
+      <li>No pub.dev publication; packages are <code>publish_to: none</code>.</li>
+      <li>Linux is the only platform the runtime is exercised on. Windows and macOS library resolution is unhandled and produces poor error messages.</li>
+      <li>CI does not run any test that makes a native call.</li>
+    </ul>
+    <div class="btn-row" style="margin-top:32px">
+      <a class="btn primary" href="roadmap.html">See when each of these lands</a>
+      <a class="btn" href="design.html">How it works</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="inner">
+    <div>
+      <p><strong>dart-gir</strong> — Dart FFI bindings for the GObject ecosystem</p>
+      <p class="base">Copyright © 2026 Andrey Maksimov · BSD-3-Clause</p>
+      <p class="small">Generated code is committed; the generator is the source of truth.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <h4>Project</h4>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="roadmap.html">Roadmap</a></li>
+          <li><a href="design.html">Design reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Source</h4>
+        <ul>
+          <li><a href="https://github.com/TenderOwl/dart-gir" rel="noopener">Repository</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/tree/main/docs" rel="noopener">docs/</a></li>
+          <li><a href="https://github.com/TenderOwl/dart-gir/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>More</h4>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="about.html#ai">AI development statement</a></li>
+          <li><a href="license.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

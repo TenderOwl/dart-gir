@@ -269,8 +269,14 @@ void main() {
         ),
         currentNamespace: gtk,
       );
-      expect(m.kind, TypeKind.unsupported);
-      expect(m.reason, contains('array'));
+      // Unbound arrays of primitive elements are now resolved rather
+      // than rejected (see `unbound primitive arrays` group). This test
+      // is kept as a smoke check that resolution returns a non-throwing
+      // mapping for the legacy `<array>` shape.
+      expect(m.kind, TypeKind.primitiveArray);
+      expect(m.dartType, contains('Pointer'));
+      expect(m.arrayElement?.kind, TypeKind.primitive);
+      expect(m.arrayLengthParameter, isNull);
     });
   });
 
@@ -325,7 +331,11 @@ void main() {
       expect(m.reason, contains('array'));
     });
 
-    test('array of non-string element stays unsupported', () {
+    test('array of non-string element is accepted as primitive array', () {
+      // `<array c:type="gchar**">` of an int element used to be rejected
+      // outright; the new resolver classifies it by element kind and
+      // produces a primitiveArray mapping. The wrapper emits
+      // `Pointer<Int32>` and the caller handles the buffer.
       final m = resolver.resolve(
         const GirTypeRef(
           cType: 'gchar**',
@@ -333,8 +343,9 @@ void main() {
         ),
         currentNamespace: glib,
       );
-      expect(m.kind, TypeKind.unsupported);
-      expect(m.reason, contains('array'));
+      expect(m.kind, TypeKind.primitiveArray);
+      expect(m.dartType, contains('Pointer'));
+      expect(m.arrayElement?.kind, TypeKind.primitive);
     });
 
     test('utf8 array with unknown c-type stays unsupported', () {
@@ -347,6 +358,131 @@ void main() {
       );
       expect(m.kind, TypeKind.unsupported);
       expect(m.reason, contains('array'));
+    });
+  });
+
+  group('array shapes (resolved, not deferred)', () {
+    test('nullable string list with const gchar** c-type resolves', () {
+      // `gtk_file_chooser_add_choice` and friends use
+      // `<array c:type="const char**">` for argv-style option lists.
+      final m = resolver.resolve(
+        const GirTypeRef(
+          cType: 'const char**',
+          array: GirArrayInfo(elementType: GirTypeRef(name: 'utf8')),
+        ),
+        currentNamespace: glib,
+      );
+      expect(m.kind, TypeKind.stringList);
+      expect(m.nativeType, 'ffi.Pointer<ffi.Pointer<Utf8>>');
+      expect(m.dartType, 'List<String?>?');
+    });
+
+    test('bound-length array of enum element', () {
+      // `gtk_accessible_update_property_value` style:
+      // <parameter name="properties">
+      //   <array length="0">  <!-- 0-based index of the length param -->
+      //     <type name="AccessibleProperty"/>
+      //   </array>
+      // </parameter>
+      // Element is an int-sized enum; the wrapper signature and the
+      // FFI native signature both expose `Pointer<ffi.Int32>` (the
+      // C-side representation). The user allocates with
+      // `calloc<Int32>(n)` and writes raw values; the array's length
+      // parameter sits at index 0 (`n_properties`).
+      final m = resolver.resolve(
+        const GirTypeRef(
+          cType: 'GtkAccessibleProperty*',
+          array: GirArrayInfo(
+            lengthParameterIndex: 0,
+            elementType: GirTypeRef(name: 'Align', cType: 'GtkAlign'),
+          ),
+        ),
+        currentNamespace: gtk,
+      );
+      expect(m.kind, TypeKind.primitiveArray);
+      expect(m.dartType, 'ffi.Pointer<ffi.Int32>');
+      expect(m.nativeType, 'ffi.Pointer<ffi.Int32>');
+      expect(m.arrayElement?.kind, TypeKind.enumeration);
+      expect(m.arrayLengthParameter, 0);
+    });
+
+    test('bound-length array of record element', () {
+      // `gtk_color_chooser_set_palette` style: bound array of GdkRGBA.
+      // Element is a record; because generated records are emitted as
+      // opaque pointer classes (no `StructBase` subclass), the wrapper
+      // signature uses `Pointer<ffi.Void>` — the same shape a single
+      // record param uses — and the user passes a void* buffer. Typed
+      // iteration via `asTypedList` is a follow-up once records
+      // become real struct classes.
+      final gdk = GirNamespace(
+        name: 'Gdk',
+        version: '4.0',
+        cIdentifierPrefixes: ['Gdk'],
+        records: [GirRecord(name: 'RGBA', cType: 'GdkRGBA')],
+      );
+      final localResolver = TypeResolver([glib, gobject, gtk, gdk]);
+      final m = localResolver.resolve(
+        const GirTypeRef(
+          cType: 'GdkRGBA*',
+          array: GirArrayInfo(
+            lengthParameterIndex: 2,
+            elementType: GirTypeRef(name: 'RGBA', cType: 'GdkRGBA'),
+          ),
+        ),
+        currentNamespace: gtk,
+      );
+      expect(m.kind, TypeKind.recordArray);
+      expect(m.dartType, 'ffi.Pointer<ffi.Void>');
+      expect(m.nativeType, 'ffi.Pointer<ffi.Void>');
+      expect(m.arrayElement?.kind, TypeKind.record);
+      expect(m.arrayLengthParameter, 2);
+    });
+
+    test('unbounded primitive array (no length binding)', () {
+      // `gtk_list_store_reorder` style: `<array c:type="int*">` with
+      // no `<array length>`. The wrapper exposes `Pointer<ffi.Int32>`
+      // directly on both the Dart and FFI native sides; the user
+      // provides length via the sibling `get_n_items` accessor.
+      final m = resolver.resolve(
+        const GirTypeRef(
+          cType: 'int*',
+          array: GirArrayInfo(elementType: GirTypeRef(name: 'gint')),
+        ),
+        currentNamespace: gtk,
+      );
+      expect(m.kind, TypeKind.primitiveArray);
+      expect(m.dartType, 'ffi.Pointer<ffi.Int32>');
+      expect(m.nativeType, 'ffi.Pointer<ffi.Int32>');
+      expect(m.arrayElement?.kind, TypeKind.primitive);
+      expect(m.arrayLengthParameter, isNull);
+    });
+
+    test('bound-length array of unknown element stays unsupported', () {
+      final m = resolver.resolve(
+        const GirTypeRef(
+          array: GirArrayInfo(
+            lengthParameterIndex: 0,
+            elementType: GirTypeRef(),
+          ),
+        ),
+        currentNamespace: gtk,
+      );
+      expect(m.kind, TypeKind.unsupported);
+      expect(m.reason, contains('unknown element'));
+    });
+
+    test('bound-length array of unsupported element propagates reason', () {
+      final m = resolver.resolve(
+        const GirTypeRef(
+          array: GirArrayInfo(
+            lengthParameterIndex: 0,
+            elementType: GirTypeRef(name: 'NoSuchType'),
+          ),
+        ),
+        currentNamespace: gtk,
+      );
+      expect(m.kind, TypeKind.unsupported);
+      expect(m.reason, contains('array element'));
     });
   });
 

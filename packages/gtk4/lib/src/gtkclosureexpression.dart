@@ -6,4 +6,39 @@ part of '../gtk4.dart';
 class GtkClosureExpression extends GtkExpression {
   GtkClosureExpression.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Creates a `GtkExpression` that calls `closure` when it is evaluated.
+  ///
+  /// `closure` is called with the `this` object and the results of evaluating
+  /// the `params` expressions.
+  static final _gtkClosureExpressionNew =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_closure_expression_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  factory GtkClosureExpression(
+    int valueType,
+    GClosure closure,
+    int nParams,
+    ffi.Pointer<ffi.Void> params,
+  ) {
+    return GtkClosureExpression.fromPointer(
+      _gtkClosureExpressionNew(valueType, closure.handle, nParams, params),
+      owned: true,
+    );
+  }
 }
