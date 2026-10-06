@@ -3,5 +3,12 @@
 .dart_tool/
 
 # Avoid committing pubspec.lock for library packages; see
-# https://dart.dev/tools/pub/private-files#pubspec-lock.
+# https://dart.dev/pub/private-files#pubspec-lock.
 pubspec.lock
+
+# Generated API docs (built by tool/build_api_docs.dart).
+# Deployed as a Pages artifact by .github/workflows/ci.yml.
+site/docs/
+
+# Node toolchain (empty today; kept for future site tooling).
+node_modules/

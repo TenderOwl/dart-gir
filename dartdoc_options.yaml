@@ -1,0 +1,15 @@
+dartdoc:
+  # Per-package docs live at https://dartgir.tenderowl.com/docs/<pkg>/.
+  # `linkTo` makes cross-package references in one package's docs
+  # resolve to the right subdirectory in the deployed site. Locally the
+  # cross-package references degrade to italic text (dartdoc doesn't have
+  # a path-based linkTo), but every dependency in the workspace is
+  # emitted into its own subdirectory so navigation never dead-ends.
+  linkTo:
+    url: "https://dartgir.tenderowl.com/docs/%v%/"
+  showUndocumentedCategories: true
+  ignore:
+    - ambiguous-doc-reference
+  warnings:
+    - unresolved-doc-reference
+    - tool-error

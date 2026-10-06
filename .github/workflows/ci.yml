@@ -1,63 +1,119 @@
-# name: ci
-#
-# on:
-#   push:
-#     branches: [main]
-#   pull_request:
-#
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#
-#       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
-#
-#       # libgirepository1.0-dev ships the upstream `.gir` files under
-#       # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
-#       # in `generator/test/loader_test.dart`. That test now skips
-#       # cleanly when the directory has no `.gir` files, so the
-#       # workflow stays green even if a future Ubuntu point release
-#       # drops the package. Other `-dev` packages create the directory
-#       # for their own `.typelib` files but leave it empty of `.gir`,
-#       # which is why the loader test's skip condition has to look at
-#       # the actual files.
-#       - name: Install system deps
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y libgirepository1.0-dev
-#
-#       - name: dart pub get
-#         run: dart pub get
-#
-#       - name: dart analyze
-#         run: dart analyze
-#
-#       - name: dart test (generator)
-#         run: dart test generator/
-#
-#       # NB: we deliberately do NOT re-run the generator against the
-#       # system's `/usr/share/gir-1.0/` here. The GIR files shipped
-#       # with Ubuntu 24.04 (libgirepository1.0-dev) differ from those
-#       # shipped with Fedora 44 (glib2-devel) — different GLib / GTK
-#       # versions mean different `<method>` `<constructor>` `<function>`
-#       # content, different nullability flags, and different
-#       # `transfer-ownership` defaults. Regenerating from the system
-#       # GIR on Ubuntu produces Dart that doesn't match the committed
-#       # source (e.g. `GAsyncQueue.new_` becomes a `factory GAsyncQueue`
-#       # in older GIRs, and `saveFinish` flips between throwing and
-#       # nullable). The committed `packages/<lib>/lib/src/*.dart` is
-#       # the source of truth; the generator unit tests above use
-#       # bundled GIR fixtures to validate the generator itself.
-#       #
-#       # NB: runtime tests are NOT run in CI. They exercise native GLib
-#       # / GTK code through Dart FFI, and the GObject finalizer
-#       # lifecycle has known issues on certain libgtk-4-1.0 versions
-#       # (e.g. Ubuntu 24.04's `libgtk-4-1.0-4.12.5+ds-3ubuntu2`) where
-#       # `g_object_unref` from the finalizer hits a use-after-free in
-#       # GLib's internal `GParamSpec` cleanup during isolate shutdown.
-#       # The bindings work fine on Fedora 44 and the user's local
-#       # machine; CI just doesn't have the same GLib version. Run
-#       # `cd packages/gtk4 && dart test` locally before pushing if
-#       # you need that validation step. The generator tests + analyzer
-#       # catch every other regression.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v2
+        with:
+          sdk: ^3.13.4
+
+      # libgirepository1.0-dev ships the upstream `.gir` files under
+      # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
+      # in `generator/test/loader_test.dart`. That test now skips
+      # cleanly when the directory has no `.gir` files, so the
+      # workflow stays green even if a future Ubuntu point release
+      # drops the package. Other `-dev` packages create the directory
+      # for their own `.typelib` files but leave it empty of `.gir`,
+      # which is why the loader test's skip condition has to look at
+      # the actual files.
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgirepository1.0-dev
+
+      - name: dart pub get
+        run: dart pub get
+
+      - name: dart analyze
+        run: dart analyze
+
+      - name: dart test (generator)
+        run: dart test generator/
+
+      # NB: we deliberately do NOT re-run the generator against the
+      # system's `/usr/share/gir-1.0/` here. The GIR files shipped
+      # with Ubuntu 24.04 (libgirepository1.0-dev) differ from those
+      # shipped with Fedora 44 (glib2-devel) — different GLib / GTK
+      # versions mean different `<method>` `<constructor>` `<function>`
+      # content, different nullability flags, and different
+      # `transfer-ownership` defaults. Regenerating from the system
+      # GIR on Ubuntu produces Dart that doesn't match the committed
+      # source (e.g. `GAsyncQueue.new_` becomes a `factory GAsyncQueue`
+      # in older GIRs, and `saveFinish` flips between throwing and
+      # nullable). The committed `packages/<lib>/lib/src/*.dart` is
+      # the source of truth; the generator unit tests above use
+      # bundled GIR fixtures to validate the generator itself.
+      #
+      # NB: runtime tests are NOT run in CI. They exercise native GLib
+      # / GTK code through Dart FFI, and the GObject finalizer
+      # lifecycle has known issues on certain libgtk-4-1.0 versions
+      # (e.g. Ubuntu 24.04's `libgtk-4-1.0-4.12.5+ds-3ubuntu2`) where
+      # `g_object_unref` from the finalizer hits a use-after-free in
+      # GLib's internal `GParamSpec` cleanup during isolate shutdown.
+      # The bindings work fine on Fedora 44 and the user's local
+      # machine; CI just doesn't have the same GLib version. Run
+      # `cd packages/gtk4 && dart test` locally before pushing if
+      # you need that validation step. The generator tests + analyzer
+      # catch every other regression.
+
+      # The published API reference is generated from the committed
+      # `packages/<lib>/lib/src/*.dart` (see the comment above). We
+      # invoke `tool/build_api_docs.dart` to render the per-package
+      # docs into `site/docs/` so the Pages artifact (deploy job,
+      # below) carries the live reference. `tool/build_api_docs.dart`
+      # also writes the hand-crafted `site/docs/index.html` landing
+      # page that lists all 14 packages.
+      - name: Build API docs
+        run: dart run tool/build_api_docs.dart --verbose
+
+      # Sanity check: the six marketing pages must link to the docs
+      # landing page (the nav) and reference it from the footer
+      # "Source" block. Cheap Python smoke test that catches the
+      # common drift where a new page is added but the API link is
+      # forgotten.
+      - name: Verify site/ links
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          root = pathlib.Path('site')
+          html = sorted(root.glob('*.html'))
+          for f in html:
+              t = f.read_text()
+              assert 'href="docs/">API</a>' in t, f'{f} missing API nav link'
+              assert 'href="docs/">API reference</a>' in t, f'{f} missing footer API reference link'
+          print(f'verified API + API reference links on {len(html)} page(s)')
+          PY
+
+      # Upload the hand-written site/ folder (with the dartdoc
+      # `site/docs/` subdirectory baked in by the previous step) as a
+      # GitHub Pages artifact. The `deploy` job below publishes it.
+      # We only upload on push to `main` — PRs get the build but no
+      # artifact (so a fork's `github-pages` environment isn't
+      # accidentally overwritten).
+      - name: Upload site artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
