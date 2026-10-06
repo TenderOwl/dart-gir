@@ -14,7 +14,7 @@ class GFilenameCompleter extends GObject {
         'g_filename_completer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GFilenameCompleter()
-    : super.fromPointer(_gFilenameCompleterNew(), owned: true);
+    : this.fromPointer(_gFilenameCompleterNew(), owned: true);
 
   /// Obtains a suffix completion for @initial_text from @completer.
   ///

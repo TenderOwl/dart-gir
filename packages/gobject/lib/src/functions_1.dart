@@ -381,14 +381,14 @@ final _gSignalConnectClosure =
           )
         >();
 int signalConnectClosure(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   String detailedSignal,
   GClosure closure,
   bool after,
 ) {
   return withNativeString(detailedSignal, (nativeDetailedSignal) {
     return _gSignalConnectClosure(
-      instance,
+      instance.handle,
       nativeDetailedSignal.cast<Utf8>(),
       closure.handle,
       after ? 1 : 0,
@@ -430,14 +430,14 @@ final _gSignalConnectClosureById =
           )
         >();
 int signalConnectClosureById(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   int signalId,
   int detail,
   GClosure closure,
   bool after,
 ) {
   return _gSignalConnectClosureById(
-    instance,
+    instance.handle,
     signalId,
     detail,
     closure.handle,
@@ -453,10 +453,12 @@ final _gSignalGetInvocationHint =
           >
         >('g_signal_get_invocation_hint')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-GSignalInvocationHint? signalGetInvocationHint(ffi.Pointer<ffi.Void> instance) {
-  return (_gSignalGetInvocationHint(instance)) == ffi.nullptr
+GSignalInvocationHint? signalGetInvocationHint(GObject instance) {
+  return (_gSignalGetInvocationHint(instance.handle)) == ffi.nullptr
       ? null
-      : GSignalInvocationHint.fromPointer(_gSignalGetInvocationHint(instance));
+      : GSignalInvocationHint.fromPointer(
+          _gSignalGetInvocationHint(instance.handle),
+        );
 }
 
 /// Blocks a handler of an instance so it will not be called during any
@@ -474,8 +476,8 @@ final _gSignalHandlerBlock =
           >
         >('g_signal_handler_block')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void signalHandlerBlock(ffi.Pointer<ffi.Void> instance, int handlerId) {
-  _gSignalHandlerBlock(instance, handlerId);
+void signalHandlerBlock(GObject instance, int handlerId) {
+  _gSignalHandlerBlock(instance.handle, handlerId);
 }
 
 /// Disconnects a handler from an instance so it will not be called during
@@ -491,8 +493,8 @@ final _gSignalHandlerDisconnect =
           >
         >('g_signal_handler_disconnect')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void signalHandlerDisconnect(ffi.Pointer<ffi.Void> instance, int handlerId) {
-  _gSignalHandlerDisconnect(instance, handlerId);
+void signalHandlerDisconnect(GObject instance, int handlerId) {
+  _gSignalHandlerDisconnect(instance.handle, handlerId);
 }
 
 /// Finds the first signal handler that matches certain selection criteria.
@@ -526,7 +528,7 @@ final _gSignalHandlerFind =
           )
         >();
 int signalHandlerFind(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   GSignalMatchType mask,
   int signalId,
   int detail,
@@ -535,7 +537,7 @@ int signalHandlerFind(
   ffi.Pointer<ffi.Void> data,
 ) {
   return _gSignalHandlerFind(
-    instance,
+    instance.handle,
     mask.value,
     signalId,
     detail,
@@ -553,8 +555,8 @@ final _gSignalHandlerIsConnected =
           >
         >('g_signal_handler_is_connected')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-bool signalHandlerIsConnected(ffi.Pointer<ffi.Void> instance, int handlerId) {
-  return (_gSignalHandlerIsConnected(instance, handlerId)) != 0;
+bool signalHandlerIsConnected(GObject instance, int handlerId) {
+  return (_gSignalHandlerIsConnected(instance.handle, handlerId)) != 0;
 }
 
 /// Undoes the effect of a previous g_signal_handler_block() call.  A
@@ -577,8 +579,8 @@ final _gSignalHandlerUnblock =
           >
         >('g_signal_handler_unblock')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void signalHandlerUnblock(ffi.Pointer<ffi.Void> instance, int handlerId) {
-  _gSignalHandlerUnblock(instance, handlerId);
+void signalHandlerUnblock(GObject instance, int handlerId) {
+  _gSignalHandlerUnblock(instance.handle, handlerId);
 }
 
 /// Blocks all handlers on an instance that match a certain selection criteria.
@@ -620,7 +622,7 @@ final _gSignalHandlersBlockMatched =
           )
         >();
 int signalHandlersBlockMatched(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   GSignalMatchType mask,
   int signalId,
   int detail,
@@ -629,7 +631,7 @@ int signalHandlersBlockMatched(
   ffi.Pointer<ffi.Void> data,
 ) {
   return _gSignalHandlersBlockMatched(
-    instance,
+    instance.handle,
     mask.value,
     signalId,
     detail,
@@ -646,8 +648,8 @@ final _gSignalHandlersDestroy =
     gobjectLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
       'g_signal_handlers_destroy',
     ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-void signalHandlersDestroy(ffi.Pointer<ffi.Void> instance) {
-  _gSignalHandlersDestroy(instance);
+void signalHandlersDestroy(GObject instance) {
+  _gSignalHandlersDestroy(instance.handle);
 }
 
 /// Disconnects all handlers on an instance that match a certain
@@ -690,7 +692,7 @@ final _gSignalHandlersDisconnectMatched =
           )
         >();
 int signalHandlersDisconnectMatched(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   GSignalMatchType mask,
   int signalId,
   int detail,
@@ -699,7 +701,7 @@ int signalHandlersDisconnectMatched(
   ffi.Pointer<ffi.Void> data,
 ) {
   return _gSignalHandlersDisconnectMatched(
-    instance,
+    instance.handle,
     mask.value,
     signalId,
     detail,
@@ -750,7 +752,7 @@ final _gSignalHandlersUnblockMatched =
           )
         >();
 int signalHandlersUnblockMatched(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   GSignalMatchType mask,
   int signalId,
   int detail,
@@ -759,7 +761,7 @@ int signalHandlersUnblockMatched(
   ffi.Pointer<ffi.Void> data,
 ) {
   return _gSignalHandlersUnblockMatched(
-    instance,
+    instance.handle,
     mask.value,
     signalId,
     detail,
@@ -798,13 +800,13 @@ final _gSignalHasHandlerPending =
         >('g_signal_has_handler_pending')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int, int, int)>();
 bool signalHasHandlerPending(
-  ffi.Pointer<ffi.Void> instance,
+  GObject instance,
   int signalId,
   int detail,
   bool mayBeBlocked,
 ) {
   return (_gSignalHasHandlerPending(
-        instance,
+        instance.handle,
         signalId,
         detail,
         mayBeBlocked ? 1 : 0,

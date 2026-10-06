@@ -55,11 +55,8 @@ final class GskComponentTransfer {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Float>)
           >();
-  factory GskComponentTransfer.discrete(int n, ffi.Pointer<ffi.Float> values) {
-    return GskComponentTransfer.fromPointer(
-      _gskComponentTransferNewDiscrete(n, values),
-    );
-  }
+  GskComponentTransfer.discrete(int n, ffi.Pointer<ffi.Float> values)
+    : this.fromPointer(_gskComponentTransferNewDiscrete(n, values));
 
   /// Creates a new component transfer that applies
   /// a gamma transform.
@@ -169,11 +166,8 @@ final class GskComponentTransfer {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Float>)
           >();
-  factory GskComponentTransfer.table(int n, ffi.Pointer<ffi.Float> values) {
-    return GskComponentTransfer.fromPointer(
-      _gskComponentTransferNewTable(n, values),
-    );
-  }
+  GskComponentTransfer.table(int n, ffi.Pointer<ffi.Float> values)
+    : this.fromPointer(_gskComponentTransferNewTable(n, values));
 
   /// Creates a copy of @other.
   static final _gskComponentTransferCopy =

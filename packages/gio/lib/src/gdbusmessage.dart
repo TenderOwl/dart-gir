@@ -11,7 +11,7 @@ class GDBusMessage extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_dbus_message_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GDBusMessage() : super.fromPointer(_gDbusMessageNew(), owned: true);
+  GDBusMessage() : this.fromPointer(_gDbusMessageNew(), owned: true);
 
   /// Creates a new #GDBusMessage from the data stored at @blob. The byte
   /// order that the message was in can be retrieved using

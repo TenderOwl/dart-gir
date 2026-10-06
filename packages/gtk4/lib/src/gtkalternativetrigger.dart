@@ -31,7 +31,7 @@ class GtkAlternativeTrigger extends GtkShortcutTrigger {
             )
           >();
   GtkAlternativeTrigger(GtkShortcutTrigger first, GtkShortcutTrigger second)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkAlternativeTriggerNew(first.handle, second.handle),
         owned: true,
       );

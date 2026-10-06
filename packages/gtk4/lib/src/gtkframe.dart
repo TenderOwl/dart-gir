@@ -45,7 +45,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkFrame` uses the [enum@Gtk.AccessibleRole.group] role.
-class GtkFrame extends GtkWidget {
+class GtkFrame extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkFrame.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkFrame`, with optional label @label.

@@ -21,7 +21,8 @@ part of '../gtk4.dart';
 /// When circumstances require it, `GtkStackSidebar` adds the
 /// .needs-attention style class to the widgets representing the stack
 /// pages.
-class GtkStackSidebar extends GtkWidget {
+class GtkStackSidebar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkStackSidebar.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -30,7 +31,7 @@ class GtkStackSidebar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_stack_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkStackSidebar() : super.fromPointer(_gtkStackSidebarNew(), owned: true);
+  GtkStackSidebar() : this.fromPointer(_gtkStackSidebarNew(), owned: true);
 
   /// Retrieves the stack.
   static final _gtkStackSidebarGetStack =

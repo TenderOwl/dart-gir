@@ -27,7 +27,7 @@ class PangoContext extends GObject {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  PangoContext() : super.fromPointer(_pangoContextNew(), owned: true);
+  PangoContext() : this.fromPointer(_pangoContextNew(), owned: true);
 
   /// Forces a change in the context, which will cause any `PangoLayout`
   /// using this context to re-layout.

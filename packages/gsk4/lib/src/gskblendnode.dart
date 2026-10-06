@@ -25,7 +25,7 @@ class GskBlendNode extends GskRenderNode {
             )
           >();
   GskBlendNode(GskRenderNode bottom, GskRenderNode top, GskBlendMode blendMode)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskBlendNodeNew(bottom.handle, top.handle, blendMode.value),
         owned: true,
       );

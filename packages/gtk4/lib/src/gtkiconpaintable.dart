@@ -5,7 +5,8 @@ part of '../gtk4.dart';
 /// or loading it from a file.
 ///
 /// `GtkIconPaintable` implements `GdkPaintable` and `GtkSymbolicPaintable`.
-class GtkIconPaintable extends GObject {
+class GtkIconPaintable extends GObject
+    implements GdkPaintable, GtkSymbolicPaintable {
   GtkIconPaintable.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -26,7 +27,7 @@ class GtkIconPaintable extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
   GtkIconPaintable.forFile(GFile file, int size, int scale)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkIconPaintableNewForFile(file.handle, size, scale),
         owned: true,
       );
@@ -109,6 +110,28 @@ class GtkIconPaintable extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
   }
 
   /// Compute a concrete size for the `GdkPaintable`.
@@ -324,7 +347,7 @@ class GtkIconPaintable extends GObject {
               double,
             )
           >();
-  void snapshot(GtkSnapshot snapshot, double width, double height) {
+  void snapshot(GdkSnapshot snapshot, double width, double height) {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
   }
 

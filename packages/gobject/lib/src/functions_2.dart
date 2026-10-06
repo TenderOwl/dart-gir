@@ -140,12 +140,8 @@ final _gSignalStopEmission =
           >
         >('g_signal_stop_emission')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
-void signalStopEmission(
-  ffi.Pointer<ffi.Void> instance,
-  int signalId,
-  int detail,
-) {
-  _gSignalStopEmission(instance, signalId, detail);
+void signalStopEmission(GObject instance, int signalId, int detail) {
+  _gSignalStopEmission(instance.handle, signalId, detail);
 }
 
 /// Stops a signal's current emission.
@@ -159,12 +155,12 @@ final _gSignalStopEmissionByName =
           >
         >('g_signal_stop_emission_by_name')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)>();
-void signalStopEmissionByName(
-  ffi.Pointer<ffi.Void> instance,
-  String detailedSignal,
-) {
+void signalStopEmissionByName(GObject instance, String detailedSignal) {
   withNativeString(detailedSignal, (nativeDetailedSignal) {
-    _gSignalStopEmissionByName(instance, nativeDetailedSignal.cast<Utf8>());
+    _gSignalStopEmissionByName(
+      instance.handle,
+      nativeDetailedSignal.cast<Utf8>(),
+    );
   });
 }
 
@@ -356,8 +352,8 @@ final _gTypeDefaultInterfaceGet =
     gobjectLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_type_default_interface_get',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> typeDefaultInterfaceGet(int gType) {
-  return _gTypeDefaultInterfaceGet(gType);
+GTypeInterface typeDefaultInterfaceGet(int gType) {
+  return GTypeInterface.fromPointer(_gTypeDefaultInterfaceGet(gType));
 }
 
 /// If the interface type @g_type is currently in use, returns its
@@ -366,8 +362,8 @@ final _gTypeDefaultInterfacePeek =
     gobjectLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_type_default_interface_peek',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> typeDefaultInterfacePeek(int gType) {
-  return _gTypeDefaultInterfacePeek(gType);
+GTypeInterface typeDefaultInterfacePeek(int gType) {
+  return GTypeInterface.fromPointer(_gTypeDefaultInterfacePeek(gType));
 }
 
 /// Increments the reference count for the interface type @g_type,
@@ -384,8 +380,8 @@ final _gTypeDefaultInterfaceRef =
     gobjectLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_type_default_interface_ref',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> typeDefaultInterfaceRef(int gType) {
-  return _gTypeDefaultInterfaceRef(gType);
+GTypeInterface typeDefaultInterfaceRef(int gType) {
+  return GTypeInterface.fromPointer(_gTypeDefaultInterfaceRef(gType));
 }
 
 /// Decrements the reference count for the type corresponding to the
@@ -398,8 +394,8 @@ final _gTypeDefaultInterfaceUnref =
     gobjectLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
       'g_type_default_interface_unref',
     ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-void typeDefaultInterfaceUnref(ffi.Pointer<ffi.Void> gIface) {
-  _gTypeDefaultInterfaceUnref(gIface);
+void typeDefaultInterfaceUnref(GTypeInterface gIface) {
+  _gTypeDefaultInterfaceUnref(gIface.handle);
 }
 
 /// Returns the length of the ancestry of the passed in type. This

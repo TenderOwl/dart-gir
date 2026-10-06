@@ -31,7 +31,12 @@ part of '../gtk4.dart';
 /// # CSS nodes
 ///
 /// `GtkFileChooserWidget` has a single CSS node with name filechooser.
-class GtkFileChooserWidget extends GtkWidget {
+class GtkFileChooserWidget extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkFileChooser {
   GtkFileChooserWidget.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -45,7 +50,7 @@ class GtkFileChooserWidget extends GtkWidget {
         'gtk_file_chooser_widget_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkFileChooserWidget(GtkFileChooserAction action)
-    : super.fromPointer(_gtkFileChooserWidgetNew(action.value), owned: true);
+    : this.fromPointer(_gtkFileChooserWidgetNew(action.value), owned: true);
 
   /// Emitted when the user asks for it.
   ///

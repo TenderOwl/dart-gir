@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// `GDtlsServerConnection` is the server-side subclass of
 /// [iface@Gio.DtlsConnection], representing a server-side DTLS connection.
-final class GDtlsServerConnection {
+class GDtlsServerConnection {
   GDtlsServerConnection.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

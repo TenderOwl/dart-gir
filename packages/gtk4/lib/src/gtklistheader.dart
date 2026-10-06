@@ -49,8 +49,10 @@ class GtkListHeader extends GObject {
             >
           >('gtk_list_header_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getItem() {
-    return _gtkListHeaderGetItem(this.handle);
+  GObject? getItem() {
+    return (_gtkListHeaderGetItem(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gtkListHeaderGetItem(this.handle));
   }
 
   /// Gets the the number of items in the section.

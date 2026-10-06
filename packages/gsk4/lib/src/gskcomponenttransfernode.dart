@@ -36,7 +36,7 @@ class GskComponentTransferNode extends GskRenderNode {
     GskComponentTransfer g,
     GskComponentTransfer b,
     GskComponentTransfer a,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gskComponentTransferNodeNew(
           child.handle,
           r.handle,

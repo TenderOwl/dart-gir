@@ -14,7 +14,7 @@ part of '../gtk4.dart';
 ///
 /// If you want to specify the amount of space placed between each child,
 /// you can use the [property@Gtk.BoxLayout:spacing] property.
-class GtkBoxLayout extends GtkLayoutManager {
+class GtkBoxLayout extends GtkLayoutManager implements GtkOrientable {
   GtkBoxLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkBoxLayout`.
@@ -23,7 +23,7 @@ class GtkBoxLayout extends GtkLayoutManager {
         'gtk_box_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkBoxLayout(GtkOrientation orientation)
-    : super.fromPointer(_gtkBoxLayoutNew(orientation.value), owned: true);
+    : this.fromPointer(_gtkBoxLayoutNew(orientation.value), owned: true);
 
   /// Gets the value set by gtk_box_layout_set_baseline_child().
   static final _gtkBoxLayoutGetBaselineChild =

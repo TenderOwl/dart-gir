@@ -11,7 +11,7 @@ part of '../gdk4.dart';
 /// deserialization functions, use [func@content_register_deserializer].
 ///
 /// Also see [class@Gdk.ContentSerializer].
-class GdkContentDeserializer extends GObject {
+class GdkContentDeserializer extends GObject implements GAsyncResult {
   GdkContentDeserializer.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

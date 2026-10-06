@@ -17,7 +17,12 @@ part of '../gtk4.dart';
 /// ## CSS nodes
 ///
 /// `GtkInscription` has a single CSS node with the name label.
-class GtkInscription extends GtkWidget {
+class GtkInscription extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleText,
+        GtkBuildable,
+        GtkConstraintTarget {
   GtkInscription.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkInscription` with the given text.

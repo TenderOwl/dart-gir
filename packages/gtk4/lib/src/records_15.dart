@@ -2,7 +2,7 @@
 part of '../gtk4.dart';
 
 /// Interface for Drag-and-Drop destinations in `GtkTreeView`.
-final class GtkTreeDragDest {
+class GtkTreeDragDest {
   GtkTreeDragDest.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -71,7 +71,7 @@ final class GtkTreeDragDest {
 }
 
 /// Interface for Drag-and-Drop destinations in `GtkTreeView`.
-final class GtkTreeDragSource {
+class GtkTreeDragSource {
   GtkTreeDragSource.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

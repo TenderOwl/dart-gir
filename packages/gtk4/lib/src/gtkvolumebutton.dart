@@ -8,7 +8,13 @@ part of '../gtk4.dart';
 /// <source srcset="volumebutton-dark.png" media="(prefers-color-scheme: dark)">
 /// <img alt="An example GtkVolumeButton" src="volumebutton.png">
 /// </picture>
-class GtkVolumeButton extends GtkScaleButton {
+class GtkVolumeButton extends GtkScaleButton
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkVolumeButton.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -21,7 +27,7 @@ class GtkVolumeButton extends GtkScaleButton {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_volume_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkVolumeButton() : super.fromPointer(_gtkVolumeButtonNew(), owned: true);
+  GtkVolumeButton() : this.fromPointer(_gtkVolumeButtonNew(), owned: true);
 
   /// Emitted to dismiss the popup.
   ///

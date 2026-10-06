@@ -25,7 +25,7 @@ class GskIsolationNode extends GskRenderNode {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GskIsolationNode(GskRenderNode child, GskIsolation isolations)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskIsolationNodeNew(child.handle, isolations.value),
         owned: true,
       );

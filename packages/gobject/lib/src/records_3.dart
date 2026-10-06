@@ -48,8 +48,10 @@ final class GValue {
             >
           >('g_value_dup_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> dupObject() {
-    return _gValueDupObject(this.handle);
+  GObject? dupObject() {
+    return (_gValueDupObject(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gValueDupObject(this.handle));
   }
 
   /// Get a copy the contents of a %G_TYPE_STRING #GValue.
@@ -214,8 +216,10 @@ final class GValue {
             >
           >('g_value_get_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getObject() {
-    return _gValueGetObject(this.handle);
+  GObject? getObject() {
+    return (_gValueGetObject(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gValueGetObject(this.handle));
   }
 
   /// Get the contents of a %G_TYPE_PARAM #GValue.
@@ -365,8 +369,8 @@ final class GValue {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void initFromInstance(ffi.Pointer<ffi.Void> instance) {
-    _gValueInitFromInstance(this.handle, instance);
+  void initFromInstance(GTypeInstance instance) {
+    _gValueInitFromInstance(this.handle, instance.handle);
   }
 
   /// Returns the value contents as a pointer.
@@ -603,8 +607,8 @@ final class GValue {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void setObject(ffi.Pointer<ffi.Void> vObject) {
-    _gValueSetObject(this.handle, vObject);
+  void setObject([GObject? vObject]) {
+    _gValueSetObject(this.handle, vObject?.handle ?? ffi.nullptr);
   }
 
   /// Set the contents of a %G_TYPE_PARAM #GValue to @param.

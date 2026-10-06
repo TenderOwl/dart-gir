@@ -202,6 +202,52 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   [type-system.md](./docs/type-system.md#arrays).
 
 ### Changed
+- **`implements` clauses land on implementing classes** for every
+  `<implements name="..."/>` entry in GIR. `class GSimpleAction extends
+  GObject implements GAction` (was just `extends GObject`), so the user's
+  intent from the original request — `app.addAction(action)` without an
+  explicit `as GAction` cast — is now real. The implementing class
+  satisfies the interface structurally; the interface itself is emitted
+  as `class GAction { ... }` (was `final class GAction { ... }`) so a
+  non-`final` Dart class lets other classes implement it. Records and
+  unions stay `final class` because they're concrete struct wrappers that
+  aren't meant to be subclassed by user code. With this change the analyzer
+  reaches the "No issues found!" baseline across the whole workspace for
+  the first time since the array work landed. See
+  [emission.md](./docs/emission.md#interface-mirroring) for the
+  cross-package mirror rules and the defensive rename that fires on
+  signature mismatch.
+- **`CallableEmitter.emit` accepts a `relativeTo` namespace** so
+  interface mirrors resolve parameter and return types against the
+  interface's own namespace, not the implementing class's. Without this,
+  `GdkPaintable.snapshot(GdkSnapshot, ...)` would be re-bound to
+  `GtkSnapshot` when mirrored onto `GtkIconPaintable` and the
+  `implements GdkPaintable` structural check would fail with
+  `invalid_override` (the two classes are typedef'd to the same C type
+  but resolve to different Dart names per namespace).
+- **Generative constructors chain to `this.fromPointer(...)`** instead of
+  splitting between `super.fromPointer` (subclasses) and `this.fromPointer`
+  (records / root classes). The unified form works for both shapes
+  because every generated class declares its own `fromPointer` that
+  forwards to its super when one exists. Fixes the pre-existing
+  `final_not_initialized_constructor` /
+  `undefined_constructor_in_initializer` errors on
+  `packages/gobject/lib/src/gobject.dart` (`GObject.newv`, etc.) that
+  fired the moment `dart analyze` first ran.
+- **Type resolution prefers namespace lookup over c-type primitive**
+  for `<type name="…" c:type="gpointer"/>` style declarations. Many GLib
+  APIs use `<type name="GObject.Object" c:type="gpointer"/>` for backward
+  compatibility — the GIR name resolves to a known class but the c-type
+  matches the primitive `gpointer` mapping. Previously the c-type won
+  and emitted `Pointer<ffi.Void>`; the resolver now tries the namespace
+  lookup first, so `GTask.getSourceObject()` returns `GObject?` (matching
+  `GAsyncResult.getSourceObject()`) instead of `Pointer<ffi.Void>`,
+  satisfying the `implements GAsyncResult` structural check.
+- **`_methodKey` is now c-type-aware** when building the per-method
+  signature key. `Snapshot<GdkSnapshot*>` and `Snapshot<GtkSnapshot*>`
+  now compare unequal so the defensive rename fires on signature
+  mismatches that would otherwise produce valid-Dart but invalid-override
+  methods once the implements clause lands.
 - **`ClassEmitter` walks the parent chain** to emit inherited typed
   `onSignalName` methods on every descendant class. The walk is keyed
   by qualified class name (`'${ns.name}.${cls.name}'`) so `Adw.Application`
@@ -276,6 +322,22 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   with `invalid_override`).
 
 ### Fixed
+- **`Gtk*Paintable.snapshot(GtkSnapshot, …)` no longer claims to override
+  `GdkPaintable.snapshot(GdkSnapshot, …)`**. The two classes are
+  typedef'd to the same C type but live in different namespaces
+  (`gtk4` vs `gdk4`); the type resolver now threads the interface's
+  namespace into the mirror's `bridgeFor` call so the parameter type
+  resolves to `GdkSnapshot` (matching the interface) rather than the
+  local `GtkSnapshot`.
+- **`GtkIconPaintable` and friends no longer fail `dart analyze`** with
+  a mix of `non_abstract_class_inherits_abstract_member` and
+  `undefined_method _connectSignal_v_X` errors. The generator now
+  inherits signals (and their per-bucket `_connectSignal_<bucketId>`
+  helpers) from the `implements_` chain, not just the parent chain —
+  previously an `implements GListModel` class was missing the
+  `onItemsChanged` signal connector the interface declared, and the
+  package's `signals.dart` was missing the `_connectSignal_v_X` helper
+  the connector called.
 - **`late final _props = …` shadowed the parent's late-final with
   the parent's type**, breaking the child's covariant `props` getter.
   Dart's late-final inference for a field that shadows a parent's

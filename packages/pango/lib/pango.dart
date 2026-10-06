@@ -4,6 +4,7 @@ import 'dart:ffi' as ffi;
 
 import 'package:ffi/ffi.dart';
 import 'package:gir_ffi/gir_ffi.dart';
+import 'package:gio/gio.dart';
 import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
 

@@ -39,7 +39,8 @@ part of '../gtk4.dart';
 ///
 /// Starting from GTK 4.12, `GtkCenterBox` uses the [enum@Gtk.AccessibleRole.generic]
 /// role.
-class GtkCenterBox extends GtkWidget {
+class GtkCenterBox extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkCenterBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkCenterBox`.
@@ -47,7 +48,7 @@ class GtkCenterBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_center_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCenterBox() : super.fromPointer(_gtkCenterBoxNew(), owned: true);
+  GtkCenterBox() : this.fromPointer(_gtkCenterBoxNew(), owned: true);
 
   /// Gets the baseline position of the center box.
   ///

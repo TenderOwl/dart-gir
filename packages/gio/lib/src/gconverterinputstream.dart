@@ -6,7 +6,8 @@ part of '../gio.dart';
 ///
 /// As of GLib 2.34, `GConverterInputStream` implements
 /// [iface@Gio.PollableInputStream].
-class GConverterInputStream extends GFilterInputStream {
+class GConverterInputStream extends GFilterInputStream
+    implements GPollableInputStream {
   GConverterInputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -27,7 +28,7 @@ class GConverterInputStream extends GFilterInputStream {
             )
           >();
   GConverterInputStream(GInputStream baseStream, GConverter converter)
-    : super.fromPointer(
+    : this.fromPointer(
         _gConverterInputStreamNew(baseStream.handle, converter.handle),
         owned: true,
       );

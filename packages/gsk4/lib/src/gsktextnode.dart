@@ -33,7 +33,7 @@ class GskTextNode extends GskRenderNode {
     PangoGlyphString glyphs,
     GdkRGBA color,
     GraphenePoint offset,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gskTextNodeNew(
           font.handle,
           glyphs.handle,

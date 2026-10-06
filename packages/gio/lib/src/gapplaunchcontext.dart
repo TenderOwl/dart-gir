@@ -15,7 +15,7 @@ class GAppLaunchContext extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_app_launch_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GAppLaunchContext() : super.fromPointer(_gAppLaunchContextNew(), owned: true);
+  GAppLaunchContext() : this.fromPointer(_gAppLaunchContextNew(), owned: true);
 
   /// Gets the display string for the @context. This is used to ensure new
   /// applications are started on the same display as the launching

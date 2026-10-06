@@ -31,7 +31,7 @@ class GtkColumnViewRowProps {
     _self.setFocusable(value);
   }
 
-  ffi.Pointer<ffi.Void> get item => _self.getItem();
+  GObject? get item => _self.getItem();
 
   int get position => _self.getPosition();
 

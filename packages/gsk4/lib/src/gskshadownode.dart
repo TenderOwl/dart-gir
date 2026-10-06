@@ -24,16 +24,14 @@ class GskShadowNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskShadowNode(
+  GskShadowNode(
     GskRenderNode child,
     ffi.Pointer<ffi.Void> shadows,
     int nShadows,
-  ) {
-    return GskShadowNode.fromPointer(
-      _gskShadowNodeNew(child.handle, shadows, nShadows),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskShadowNodeNew(child.handle, shadows, nShadows),
+        owned: true,
+      );
 
   /// Retrieves the child `GskRenderNode` of the shadow @node.
   static final _gskShadowNodeGetChild =

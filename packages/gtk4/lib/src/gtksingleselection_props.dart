@@ -31,5 +31,5 @@ class GtkSingleSelectionProps {
     _self.setSelected(value);
   }
 
-  ffi.Pointer<ffi.Void> get selectedItem => _self.getSelectedItem();
+  GObject? get selectedItem => _self.getSelectedItem();
 }

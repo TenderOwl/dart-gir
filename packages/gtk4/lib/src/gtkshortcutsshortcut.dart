@@ -5,7 +5,8 @@ part of '../gtk4.dart';
 /// with a short text.
 ///
 /// This widget is only meant to be used with `GtkShortcutsWindow`.
-class GtkShortcutsShortcut extends GtkWidget {
+class GtkShortcutsShortcut extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkShortcutsShortcut.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

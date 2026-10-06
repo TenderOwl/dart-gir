@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// Data input stream implements [class@Gio.InputStream] and includes functions
 /// for reading structured data directly from a binary input stream.
-class GDataInputStream extends GBufferedInputStream {
+class GDataInputStream extends GBufferedInputStream implements GSeekable {
   GDataInputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -16,7 +16,7 @@ class GDataInputStream extends GBufferedInputStream {
           >('g_data_input_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDataInputStream(GInputStream baseStream)
-    : super.fromPointer(_gDataInputStreamNew(baseStream.handle), owned: true);
+    : this.fromPointer(_gDataInputStreamNew(baseStream.handle), owned: true);
 
   /// Gets the byte order for the data input stream.
   static final _gDataInputStreamGetByteOrder =

@@ -93,7 +93,7 @@ part of '../gtk4.dart';
 ///
 /// - [Using GtkApplication](https://developer.gnome.org/documentation/tutorials/application.html)
 /// - [Getting Started with GTK: Basics](getting_started.html#basics)
-class GtkApplication extends GApplication {
+class GtkApplication extends GApplication implements GActionGroup, GActionMap {
   GtkApplication.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new application instance.
@@ -547,6 +547,44 @@ class GtkApplication extends GApplication {
   /// after registration. See g_application_register().
   int onStartup(void Function() callback) {
     return _connectSignal_v_0(this.handle, 'startup', callback);
+  }
+
+  /// Signals that a new action was just added to the group.
+  ///
+  /// This signal is emitted after the action has been added
+  /// and is now visible.
+  int onActionAdded(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-added', callback);
+  }
+
+  /// Signals that the enabled status of the named action has changed.
+  int onActionEnabledChanged(
+    void Function(String actionName, bool enabled) callback,
+  ) {
+    return _connectSignal_v_2_s_b_string_bool(
+      this.handle,
+      'action-enabled-changed',
+      callback,
+    );
+  }
+
+  /// Signals that an action is just about to be removed from the group.
+  ///
+  /// This signal is emitted before the action is removed, so the action
+  /// is still visible and can be queried from the signal handler.
+  int onActionRemoved(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-removed', callback);
+  }
+
+  /// Signals that the state of the named action has changed.
+  int onActionStateChanged(
+    void Function(String actionName, GVariant value) callback,
+  ) {
+    return _connectSignal_v_2_s_o_string_gvariant(
+      this.handle,
+      'action-state-changed',
+      callback,
+    );
   }
 
   /// The notify signal is emitted on an object when one of its properties has

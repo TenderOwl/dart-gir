@@ -591,8 +591,8 @@ final class GDateTime {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  int compare(ffi.Pointer<ffi.Void> dt2) {
-    return _gDateTimeCompare(this.handle, dt2);
+  int compare(GDateTime dt2) {
+    return _gDateTimeCompare(this.handle, dt2.handle);
   }
 
   /// Calculates the difference in time between @end and @begin.  The
@@ -624,8 +624,8 @@ final class GDateTime {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool equal(ffi.Pointer<ffi.Void> dt2) {
-    return (_gDateTimeEqual(this.handle, dt2)) != 0;
+  bool equal(GDateTime dt2) {
+    return (_gDateTimeEqual(this.handle, dt2.handle)) != 0;
   }
 
   /// Creates a newly allocated string representing the requested @format.

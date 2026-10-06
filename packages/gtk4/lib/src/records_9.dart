@@ -31,7 +31,7 @@ part of '../gtk4.dart';
 /// it is necessary to ensure the correct shape of the a11y tree
 /// by calling [method@Gtk.Accessible.set_accessible_parent] and
 /// updating the sibling by [method@Gtk.Accessible.update_next_accessible_sibling].
-final class GtkAccessible {
+class GtkAccessible {
   GtkAccessible.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -449,7 +449,7 @@ final class GtkAccessible {
 /// The `GtkAccessibleHypertext` interfaces is meant to be implemented by accessible
 /// objects that contain links. Those links don't necessarily have to be part
 /// of text, they can be associated with images and other things.
-final class GtkAccessibleHypertext {
+class GtkAccessibleHypertext {
   GtkAccessibleHypertext.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }
@@ -479,7 +479,7 @@ final class GtkAccessibleHypertext {
 /// - `GTK_ACCESSIBLE_PROPERTY_VALUE_MIN`
 /// - `GTK_ACCESSIBLE_PROPERTY_VALUE_NOW`
 /// - `GTK_ACCESSIBLE_PROPERTY_VALUE_TEXT`
-final class GtkAccessibleRange {
+class GtkAccessibleRange {
   GtkAccessibleRange.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }
@@ -492,7 +492,7 @@ final class GtkAccessibleRange {
 /// You should use the [enum@Gtk.AccessibleProperty.LABEL] or the
 /// [enum@Gtk.AccessibleProperty.DESCRIPTION] properties for accessible
 /// objects containing simple, unformatted text.
-final class GtkAccessibleText {
+class GtkAccessibleText {
   GtkAccessibleText.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -564,7 +564,7 @@ final class GtkAccessibleText {
 /// `GtkApplicationWindow` or `GtkApplication`, but other action groups that
 /// are added with [method@Gtk.Widget.insert_action_group] will be consulted
 /// as well.
-final class GtkActionable {
+class GtkActionable {
   GtkActionable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -702,7 +702,7 @@ final class GtkActionable {
 ///
 /// To obtain the application that has been selected in a `GtkAppChooser`,
 /// use [method@Gtk.AppChooser.get_app_info].
-final class GtkAppChooser {
+class GtkAppChooser {
   GtkAppChooser.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

@@ -7,7 +7,8 @@ part of '../gtk4.dart';
 /// when a `GtkSelectionModel` is required.
 ///
 /// `GtkNoSelection` passes through sections from the underlying model.
-class GtkNoSelection extends GObject {
+class GtkNoSelection extends GObject
+    implements GListModel, GtkSectionModel, GtkSelectionModel {
   GtkNoSelection.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new selection to handle @model.
@@ -19,7 +20,7 @@ class GtkNoSelection extends GObject {
           >('gtk_no_selection_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkNoSelection([GListModel? model])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkNoSelectionNew(model?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -81,6 +82,54 @@ class GtkNoSelection extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
+  }
+
+  /// Emitted when the start-of-section state of some of the items in @model changes.
+  ///
+  /// Note that this signal does not specify the new section state of the
+  /// items, they need to be queried manually. It is also not necessary for
+  /// a model to change the section state of any of the items in the section
+  /// model, though it would be rather useless to emit such a signal.
+  ///
+  /// The [signal@Gio.ListModel::items-changed] implies the effect of the
+  /// [signal@Gtk.SectionModel::sections-changed] signal for all the items
+  /// it covers.
+  int onSectionsChanged(void Function(int position, int nItems) callback) {
+    return _connectSignal_v_2_i_i_int_int(
+      this.handle,
+      'sections-changed',
+      callback,
+    );
+  }
+
+  /// Emitted when the selection state of some of the items in @model changes.
+  ///
+  /// Note that this signal does not specify the new selection state of the
+  /// items, they need to be queried manually. It is also not necessary for
+  /// a model to change the selection state of any of the items in the selection
+  /// model, though it would be rather useless to emit such a signal.
+  int onSelectionChanged(void Function(int position, int nItems) callback) {
+    return _connectSignal_v_2_i_i_int_int(
+      this.handle,
+      'selection-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

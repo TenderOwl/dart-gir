@@ -29,7 +29,7 @@ class GtkStringFilter extends GtkFilter {
           >('gtk_string_filter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkStringFilter([GtkExpression? expression])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkStringFilterNew(expression?.handle ?? ffi.nullptr),
         owned: true,
       );

@@ -24,7 +24,8 @@ part of '../gtk4.dart';
 /// ## CSS nodes
 ///
 /// `GtkAppChooserWidget` has a single CSS node with name appchooser.
-class GtkAppChooserWidget extends GtkWidget {
+class GtkAppChooserWidget extends GtkWidget
+    implements GtkAccessible, GtkAppChooser, GtkBuildable, GtkConstraintTarget {
   GtkAppChooserWidget.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

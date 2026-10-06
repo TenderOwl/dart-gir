@@ -29,7 +29,7 @@ part of '../gtk4.dart';
 /// equal with it will be put into the same section.
 /// The [property@Gtk.SortListModel:sorter] will then be used to sort items
 /// inside their sections.
-class GtkSortListModel extends GObject {
+class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
   GtkSortListModel.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -50,7 +50,7 @@ class GtkSortListModel extends GObject {
             )
           >();
   GtkSortListModel([GListModel? model, GtkSorter? sorter])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkSortListModelNew(
           model?.handle ?? ffi.nullptr,
           sorter?.handle ?? ffi.nullptr,
@@ -239,6 +239,40 @@ class GtkSortListModel extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
+  }
+
+  /// Emitted when the start-of-section state of some of the items in @model changes.
+  ///
+  /// Note that this signal does not specify the new section state of the
+  /// items, they need to be queried manually. It is also not necessary for
+  /// a model to change the section state of any of the items in the section
+  /// model, though it would be rather useless to emit such a signal.
+  ///
+  /// The [signal@Gio.ListModel::items-changed] implies the effect of the
+  /// [signal@Gtk.SectionModel::sections-changed] signal for all the items
+  /// it covers.
+  int onSectionsChanged(void Function(int position, int nItems) callback) {
+    return _connectSignal_v_2_i_i_int_int(
+      this.handle,
+      'sections-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

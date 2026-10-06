@@ -93,8 +93,10 @@ class GtkListItem extends GObject {
             >
           >('gtk_list_item_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getItem() {
-    return _gtkListItemGetItem(this.handle);
+  GObject? getItem() {
+    return (_gtkListItemGetItem(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gtkListItemGetItem(this.handle));
   }
 
   /// Gets the position in the model that @self currently displays.

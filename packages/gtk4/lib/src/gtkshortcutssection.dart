@@ -31,7 +31,8 @@ part of '../gtk4.dart';
 /// The following signals have default keybindings:
 ///
 /// - [signal@Gtk.ShortcutsSection::change-current-page]
-class GtkShortcutsSection extends GtkBox {
+class GtkShortcutsSection extends GtkBox
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkShortcutsSection.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

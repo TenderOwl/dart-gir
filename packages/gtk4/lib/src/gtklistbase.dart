@@ -45,7 +45,13 @@ part of '../gtk4.dart';
 /// - `listitem.select` changes selection if the item is selectable.
 /// - `listitem.scroll-to` moves the visible area of the list to this item with
 /// the minimum amount of scrolling required.
-class GtkListBase extends GtkWidget {
+class GtkListBase extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable,
+        GtkScrollable {
   GtkListBase.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Signals that all holders of a reference to the widget should release

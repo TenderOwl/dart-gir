@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// `GZlibDecompressor` is an implementation of [iface@Gio.Converter] that
 /// decompresses data compressed with zlib.
-class GZlibDecompressor extends GObject {
+class GZlibDecompressor extends GObject implements GConverter {
   GZlibDecompressor.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -13,7 +13,7 @@ class GZlibDecompressor extends GObject {
         'g_zlib_decompressor_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GZlibDecompressor(GZlibCompressorFormat format)
-    : super.fromPointer(_gZlibDecompressorNew(format.value), owned: true);
+    : this.fromPointer(_gZlibDecompressorNew(format.value), owned: true);
 
   /// Gets the [property@Gio.ZlibDecompressor:file-info] property.
   static final _gZlibDecompressorGetFileInfo =

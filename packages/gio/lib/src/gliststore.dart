@@ -6,7 +6,7 @@ part of '../gio.dart';
 ///
 /// It provides insertions, deletions, and lookups in logarithmic time
 /// with a fast path for the common case of iterating the list linearly.
-class GListStore extends GObject {
+class GListStore extends GObject implements GListModel {
   GListStore.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new #GListStore with items of type @item_type. @item_type
@@ -16,7 +16,7 @@ class GListStore extends GObject {
         'g_list_store_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GListStore(int itemType)
-    : super.fromPointer(_gListStoreNew(itemType), owned: true);
+    : this.fromPointer(_gListStoreNew(itemType), owned: true);
 
   /// Appends @item to @store. @item must be of type #GListStore:item-type.
   ///
@@ -33,8 +33,8 @@ class GListStore extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void append(ffi.Pointer<ffi.Void> item) {
-    _gListStoreAppend(this.handle, item);
+  void append(GObject item) {
+    _gListStoreAppend(this.handle, item.handle);
   }
 
   /// Inserts @item into @store at @position. @item must be of type
@@ -58,8 +58,8 @@ class GListStore extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
           >();
-  void insert(int position, ffi.Pointer<ffi.Void> item) {
-    _gListStoreInsert(this.handle, position, item);
+  void insert(int position, GObject item) {
+    _gListStoreInsert(this.handle, position, item.handle);
   }
 
   /// Inserts @item into @store at a position to be determined by the
@@ -106,7 +106,7 @@ class GListStore extends GObject {
             )
           >();
   int insertSorted(
-    ffi.Pointer<ffi.Void> item,
+    GObject item,
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
@@ -126,7 +126,7 @@ class GListStore extends GObject {
     try {
       final _ret = _gListStoreInsertSorted(
         this.handle,
-        item,
+        item.handle,
         _nc2.nativeFunction,
         userData,
       );
@@ -289,6 +289,22 @@ class GListStore extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

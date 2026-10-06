@@ -20,7 +20,7 @@ part of '../gtk4.dart';
 /// of recursion when this happens. If you do this however, ensure that the
 /// [property@Gtk.Picture:can-shrink] property is set to %TRUE or you might
 /// end up with an infinitely growing widget.
-class GtkWidgetPaintable extends GObject {
+class GtkWidgetPaintable extends GObject implements GdkPaintable {
   GtkWidgetPaintable.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -33,7 +33,7 @@ class GtkWidgetPaintable extends GObject {
           >('gtk_widget_paintable_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidgetPaintable([GtkWidget? widget])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkWidgetPaintableNew(widget?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -93,6 +93,28 @@ class GtkWidgetPaintable extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
   }
 
   /// Compute a concrete size for the `GdkPaintable`.
@@ -308,7 +330,7 @@ class GtkWidgetPaintable extends GObject {
               double,
             )
           >();
-  void snapshot(GtkSnapshot snapshot, double width, double height) {
+  void snapshot(GdkSnapshot snapshot, double width, double height) {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
   }
 

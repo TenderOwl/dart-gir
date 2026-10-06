@@ -31,7 +31,7 @@ part of '../gio.dart';
 /// implementation of [method@Gio.Icon.serialize] that gives a result that is
 /// understood by [func@Gio.Icon.deserialize], yielding one of the built-in
 /// icon types.
-final class GIcon {
+class GIcon {
   GIcon.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -151,7 +151,7 @@ final class GIcon {
 /// exceptions the binding could check for objects implementing `GInitable`
 /// during normal construction and automatically initialize them, throwing
 /// an exception on failure.
-final class GInitable {
+class GInitable {
   GInitable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -251,7 +251,7 @@ final class GInitable {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  static ffi.Pointer<ffi.Void> newv(
+  static GObject newv(
     int objectType,
     int nParameters,
     ffi.Pointer<ffi.Void> parameters, [
@@ -269,7 +269,7 @@ final class GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return _ret;
+      return GObject.fromPointer(_ret);
     } finally {
       calloc.free(_error);
     }
@@ -340,7 +340,7 @@ final class GInitable {
 /// g_param_spec_uint ("n-items", NULL, NULL, 0, G_MAXUINT, 0,
 /// G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 /// ```
-final class GListModel {
+class GListModel {
   GListModel.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -455,7 +455,7 @@ final class GListModel {
 
 /// `GLoadableIcon` extends the [iface@Gio.Icon] interface and adds the ability
 /// to load icons from streams.
-final class GLoadableIcon {
+class GLoadableIcon {
   GLoadableIcon.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

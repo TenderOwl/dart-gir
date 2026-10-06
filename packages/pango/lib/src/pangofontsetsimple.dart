@@ -19,7 +19,7 @@ class PangoFontsetSimple extends PangoFontset {
           >('pango_fontset_simple_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontsetSimple(PangoLanguage language)
-    : super.fromPointer(_pangoFontsetSimpleNew(language.handle), owned: true);
+    : this.fromPointer(_pangoFontsetSimpleNew(language.handle), owned: true);
 
   /// Adds a font to the fontset.
   ///

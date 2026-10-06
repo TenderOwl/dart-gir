@@ -4,7 +4,8 @@ part of '../gtk4.dart';
 /// Matches an item when each of its filters matches.
 ///
 /// To add filters to a `GtkEveryFilter`, use [method@Gtk.MultiFilter.append].
-class GtkEveryFilter extends GtkMultiFilter {
+class GtkEveryFilter extends GtkMultiFilter
+    implements GListModel, GtkBuildable {
   GtkEveryFilter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new empty "every" filter.
@@ -18,7 +19,23 @@ class GtkEveryFilter extends GtkMultiFilter {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_every_filter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkEveryFilter() : super.fromPointer(_gtkEveryFilterNew(), owned: true);
+  GtkEveryFilter() : this.fromPointer(_gtkEveryFilterNew(), owned: true);
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
+  }
 
   /// Emitted whenever the filter changed.
   ///

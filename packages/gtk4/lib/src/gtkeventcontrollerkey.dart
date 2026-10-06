@@ -12,7 +12,7 @@ class GtkEventControllerKey extends GtkEventController {
         'gtk_event_controller_key_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkEventControllerKey()
-    : super.fromPointer(_gtkEventControllerKeyNew(), owned: true);
+    : this.fromPointer(_gtkEventControllerKeyNew(), owned: true);
 
   /// Forwards the current event of this @controller to a @widget.
   ///

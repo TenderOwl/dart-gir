@@ -834,48 +834,44 @@ int _connectSignal_v_1_o_gdkmonitor(
   }
 }
 
-/// Registry of Dart callbacks for bucket `b_1_o_ffipointerffivoid`. Keyed by an int
+/// Registry of Dart callbacks for bucket `b_1_o_gdkevent`. Keyed by an int
 /// we pass via `g_signal_connect_data` as the user_data pointer.
-final _signalRegistry_b_1_o_ffipointerffivoid =
-    <int, bool Function(ffi.Pointer<ffi.Void> event)>{};
+final _signalRegistry_b_1_o_gdkevent = <int, bool Function(GdkEvent event)>{};
 
-/// Trampoline invoked by GObject for bucket `b_1_o_ffipointerffivoid`. Reads
+/// Trampoline invoked by GObject for bucket `b_1_o_gdkevent`. Reads
 /// the handler id from `user_data`, converts the FFI args, and
 /// runs the Dart callback.
-bool _signalTrampoline_b_1_o_ffipointerffivoid(
+bool _signalTrampoline_b_1_o_gdkevent(
   ffi.Pointer<ffi.Void> instance_,
   ffi.Pointer<ffi.Void> event,
   ffi.Pointer<ffi.Void> userData,
 ) {
   final id = userData.cast<ffi.IntPtr>().value;
-  final cb = _signalRegistry_b_1_o_ffipointerffivoid[id]!;
-  return cb(event);
+  final cb = _signalRegistry_b_1_o_gdkevent[id]!;
+  return cb(GdkEvent.fromPointer(event));
 }
 
 /// Per-package singleton. Never closed — must stay reachable for
 /// as long as any connection in this bucket is alive.
-final _signalCallable_b_1_o_ffipointerffivoid =
+final _signalCallable_b_1_o_gdkevent =
     ffi.NativeCallable<
       ffi.Bool Function(
         ffi.Pointer<ffi.Void>,
         ffi.Pointer<ffi.Void>,
         ffi.Pointer<ffi.Void>,
       )
-    >.isolateLocal(
-      _signalTrampoline_b_1_o_ffipointerffivoid,
-      exceptionalReturn: false,
-    );
+    >.isolateLocal(_signalTrampoline_b_1_o_gdkevent, exceptionalReturn: false);
 
 /// Registers [callback] against [signalName] on [instance] via
 /// `g_signal_connect_data`. Returns the handler ID.
-int _connectSignal_b_1_o_ffipointerffivoid(
+int _connectSignal_b_1_o_gdkevent(
   ffi.Pointer<ffi.Void> instance,
   String signalName,
-  bool Function(ffi.Pointer<ffi.Void> event) callback,
+  bool Function(GdkEvent event) callback,
 ) {
   final id = _nextSignalId++;
-  _signalRegistry_b_1_o_ffipointerffivoid[id] = callback;
-  _signalRegistryOwner[id] = _signalRegistry_b_1_o_ffipointerffivoid;
+  _signalRegistry_b_1_o_gdkevent[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_b_1_o_gdkevent;
   final idPtr = calloc<ffi.IntPtr>()..value = id;
   final namePtr = signalName.toNativeUtf8();
   try {
@@ -887,7 +883,7 @@ int _connectSignal_b_1_o_ffipointerffivoid(
       // `g_signal_connect_data` is bound against that generic
       // signature; GLib dispatches via the signal's
       // registered marshaller at call time.
-      _signalCallable_b_1_o_ffipointerffivoid.nativeFunction
+      _signalCallable_b_1_o_gdkevent.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)

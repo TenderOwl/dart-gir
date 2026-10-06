@@ -20,7 +20,8 @@ part of '../gtk4.dart';
 ///
 /// `GtkFontDialogButton` has a single CSS node with name fontbutton which
 /// contains a button node with the .font style class.
-class GtkFontDialogButton extends GtkWidget {
+class GtkFontDialogButton extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkFontDialogButton.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -37,7 +38,7 @@ class GtkFontDialogButton extends GtkWidget {
           >('gtk_font_dialog_button_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFontDialogButton([GtkFontDialog? dialog])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkFontDialogButtonNew(dialog?.handle ?? ffi.nullptr),
         owned: true,
       );

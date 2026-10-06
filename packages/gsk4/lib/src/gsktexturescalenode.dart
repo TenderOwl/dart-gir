@@ -39,7 +39,7 @@ class GskTextureScaleNode extends GskRenderNode {
     GdkTexture texture,
     GrapheneRect bounds,
     GskScalingFilter filter,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gskTextureScaleNodeNew(texture.handle, bounds.handle, filter.value),
         owned: true,
       );

@@ -50,7 +50,7 @@ part of '../gio.dart';
 /// Like most other APIs in GLib, `GDatagramBased` is not inherently thread safe.
 /// To use a `GDatagramBased` concurrently from multiple threads, you must
 /// implement your own locking.
-final class GDatagramBased {
+class GDatagramBased {
   GDatagramBased.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -406,7 +406,7 @@ final class GDatagramBased {
 /// If your application or service is using the default GLib log writer function,
 /// creating one of the built-in implementations of `GDebugController` should be
 /// all that’s needed to dynamically enable or disable debug output.
-final class GDebugController {
+class GDebugController {
   GDebugController.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

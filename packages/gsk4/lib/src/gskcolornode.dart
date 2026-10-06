@@ -23,7 +23,7 @@ class GskColorNode extends GskRenderNode {
             )
           >();
   GskColorNode(GdkRGBA rgba, GrapheneRect bounds)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskColorNodeNew(rgba.handle, bounds.handle),
         owned: true,
       );

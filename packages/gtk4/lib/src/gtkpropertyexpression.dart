@@ -74,7 +74,7 @@ class GtkPropertyExpression extends GtkExpression {
             )
           >();
   GtkPropertyExpression.forPspec(GtkExpression? expression, GParamSpec pspec)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkPropertyExpressionNewForPspec(
           expression?.handle ?? ffi.nullptr,
           pspec.handle,

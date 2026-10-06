@@ -41,7 +41,7 @@ part of '../gtk4.dart';
 /// options. If a choice has no option, it will be rendered as a
 /// check button with the given label; if a choice has options, it will
 /// be rendered as a combo box.
-final class GtkFileChooser {
+class GtkFileChooser {
   GtkFileChooser.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

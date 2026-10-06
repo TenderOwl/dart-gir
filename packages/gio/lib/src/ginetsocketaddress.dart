@@ -6,7 +6,7 @@ part of '../gio.dart';
 ///
 /// In UNIX terms, `GInetSocketAddress` corresponds to a
 /// [`struct sockaddr_in` or `struct sockaddr_in6`](man:sockaddr(3type)).
-class GInetSocketAddress extends GSocketAddress {
+class GInetSocketAddress extends GSocketAddress implements GSocketConnectable {
   GInetSocketAddress.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -21,7 +21,7 @@ class GInetSocketAddress extends GSocketAddress {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GInetSocketAddress(GInetAddress address, int port)
-    : super.fromPointer(
+    : this.fromPointer(
         _gInetSocketAddressNew(address.handle, port),
         owned: true,
       );

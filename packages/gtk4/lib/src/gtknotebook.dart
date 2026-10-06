@@ -120,7 +120,8 @@ part of '../gtk4.dart';
 /// - [enum@Gtk.AccessibleRole.tab_list] for the list of tabs
 /// - [enum@Gtk.AccessibleRole.tab] role for each tab
 /// - [enum@Gtk.AccessibleRole.tab_panel] for each page
-class GtkNotebook extends GtkWidget {
+class GtkNotebook extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkNotebook.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkNotebook` widget with no pages.
@@ -128,7 +129,7 @@ class GtkNotebook extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_notebook_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkNotebook() : super.fromPointer(_gtkNotebookNew(), owned: true);
+  GtkNotebook() : this.fromPointer(_gtkNotebookNew(), owned: true);
 
   /// Appends a page to @notebook.
   static final _gtkNotebookAppendPage =

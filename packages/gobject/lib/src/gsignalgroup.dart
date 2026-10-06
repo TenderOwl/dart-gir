@@ -30,7 +30,7 @@ class GSignalGroup extends GObject {
           >('g_signal_group_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GSignalGroup(int targetType)
-    : super.fromPointer(_gSignalGroupNew(targetType), owned: true);
+    : this.fromPointer(_gSignalGroupNew(targetType), owned: true);
 
   /// Blocks all signal handlers managed by @self so they will not
   /// be called during any signal emissions. Must be unblocked exactly
@@ -207,8 +207,10 @@ class GSignalGroup extends GObject {
             >
           >('g_signal_group_dup_target')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> dupTarget() {
-    return _gSignalGroupDupTarget(this.handle);
+  GObject? dupTarget() {
+    return (_gSignalGroupDupTarget(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gSignalGroupDupTarget(this.handle));
   }
 
   /// Sets the target instance used when connecting signals. Any signal
@@ -226,8 +228,8 @@ class GSignalGroup extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void setTarget(ffi.Pointer<ffi.Void> target) {
-    _gSignalGroupSetTarget(this.handle, target);
+  void setTarget([GObject? target]) {
+    _gSignalGroupSetTarget(this.handle, target?.handle ?? ffi.nullptr);
   }
 
   /// Unblocks all signal handlers managed by @self so they will be

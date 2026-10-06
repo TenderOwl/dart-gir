@@ -93,7 +93,13 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkScale` uses the [enum@Gtk.AccessibleRole.slider] role.
-class GtkScale extends GtkRange {
+class GtkScale extends GtkRange
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkScale.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkScale`.
@@ -107,7 +113,7 @@ class GtkScale extends GtkRange {
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
   GtkScale(GtkOrientation orientation, [GtkAdjustment? adjustment])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkScaleNew(orientation.value, adjustment?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -142,7 +148,7 @@ class GtkScale extends GtkRange {
     double min,
     double max,
     double step,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gtkScaleNewWithRange(orientation.value, min, max, step),
         owned: true,
       );

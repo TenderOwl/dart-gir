@@ -19,7 +19,7 @@ class GtkEventControllerMotion extends GtkEventController {
         'gtk_event_controller_motion_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkEventControllerMotion()
-    : super.fromPointer(_gtkEventControllerMotionNew(), owned: true);
+    : this.fromPointer(_gtkEventControllerMotionNew(), owned: true);
 
   /// Returns if a pointer is within @self or one of its children.
   static final _gtkEventControllerMotionContainsPointer =

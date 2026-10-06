@@ -45,7 +45,7 @@ class GFileInfo extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_file_info_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GFileInfo() : super.fromPointer(_gFileInfoNew(), owned: true);
+  GFileInfo() : this.fromPointer(_gFileInfoNew(), owned: true);
 
   /// Clears the status information from @info.
   static final _gFileInfoClearStatus =

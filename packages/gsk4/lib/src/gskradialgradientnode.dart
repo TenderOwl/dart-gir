@@ -38,7 +38,7 @@ class GskRadialGradientNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskRadialGradientNode(
+  GskRadialGradientNode(
     GrapheneRect bounds,
     GraphenePoint center,
     double hradius,
@@ -47,21 +47,19 @@ class GskRadialGradientNode extends GskRenderNode {
     double end,
     ffi.Pointer<ffi.Void> colorStops,
     int nColorStops,
-  ) {
-    return GskRadialGradientNode.fromPointer(
-      _gskRadialGradientNodeNew(
-        bounds.handle,
-        center.handle,
-        hradius,
-        vradius,
-        start,
-        end,
-        colorStops,
-        nColorStops,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskRadialGradientNodeNew(
+          bounds.handle,
+          center.handle,
+          hradius,
+          vradius,
+          start,
+          end,
+          colorStops,
+          nColorStops,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the center pointer for the gradient.
   static final _gskRadialGradientNodeGetCenter =

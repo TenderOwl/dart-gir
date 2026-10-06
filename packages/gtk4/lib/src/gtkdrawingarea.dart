@@ -82,7 +82,8 @@ part of '../gtk4.dart';
 ///
 /// If you need more complex control over your widget, you should consider
 /// creating your own `GtkWidget` subclass.
-class GtkDrawingArea extends GtkWidget {
+class GtkDrawingArea extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkDrawingArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new drawing area.
@@ -90,7 +91,7 @@ class GtkDrawingArea extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_drawing_area_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkDrawingArea() : super.fromPointer(_gtkDrawingAreaNew(), owned: true);
+  GtkDrawingArea() : this.fromPointer(_gtkDrawingAreaNew(), owned: true);
 
   /// Retrieves the content height of the `GtkDrawingArea`.
   static final _gtkDrawingAreaGetContentHeight =

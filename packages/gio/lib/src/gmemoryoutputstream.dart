@@ -6,7 +6,8 @@ part of '../gio.dart';
 ///
 /// As of GLib 2.34, `GMemoryOutputStream` trivially implements
 /// [iface@Gio.PollableOutputStream]: it always polls as ready.
-class GMemoryOutputStream extends GOutputStream {
+class GMemoryOutputStream extends GOutputStream
+    implements GPollableOutputStream, GSeekable {
   GMemoryOutputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -17,7 +18,7 @@ class GMemoryOutputStream extends GOutputStream {
         'g_memory_output_stream_new_resizable',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GMemoryOutputStream.resizable()
-    : super.fromPointer(_gMemoryOutputStreamNewResizable(), owned: true);
+    : this.fromPointer(_gMemoryOutputStreamNewResizable(), owned: true);
 
   /// Gets any loaded data from the @ostream.
   ///

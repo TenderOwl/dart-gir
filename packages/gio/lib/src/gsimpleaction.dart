@@ -4,7 +4,7 @@ part of '../gio.dart';
 /// A `GSimpleAction` is the obvious simple implementation of the
 /// [iface@Gio.Action] interface. This is the easiest way to create an action for
 /// purposes of adding it to a [class@Gio.SimpleActionGroup].
-class GSimpleAction extends GObject {
+class GSimpleAction extends GObject implements GAction {
   GSimpleAction.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new action.

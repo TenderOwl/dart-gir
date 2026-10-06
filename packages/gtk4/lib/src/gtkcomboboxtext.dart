@@ -59,7 +59,13 @@ part of '../gtk4.dart';
 /// `GtkComboBoxText` has a single CSS node with name combobox. It adds
 /// the style class .combo to the main CSS nodes of its entry and button
 /// children, and the .linked class to the node of its internal box.
-class GtkComboBoxText extends GtkComboBox {
+class GtkComboBoxText extends GtkComboBox
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkCellEditable,
+        GtkCellLayout,
+        GtkConstraintTarget {
   GtkComboBoxText.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -68,7 +74,7 @@ class GtkComboBoxText extends GtkComboBox {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkComboBoxText() : super.fromPointer(_gtkComboBoxTextNew(), owned: true);
+  GtkComboBoxText() : this.fromPointer(_gtkComboBoxTextNew(), owned: true);
 
   /// Creates a new `GtkComboBoxText` with an entry.
   static final _gtkComboBoxTextNewWithEntry =
@@ -76,7 +82,7 @@ class GtkComboBoxText extends GtkComboBox {
         'gtk_combo_box_text_new_with_entry',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkComboBoxText.withEntry()
-    : super.fromPointer(_gtkComboBoxTextNewWithEntry(), owned: true);
+    : this.fromPointer(_gtkComboBoxTextNewWithEntry(), owned: true);
 
   /// Appends @text to the list of strings stored in @combo_box.
   ///
@@ -338,6 +344,37 @@ class GtkComboBoxText extends GtkComboBox {
   /// The default binding for this signal is Alt+Down.
   int onPopup(void Function() callback) {
     return _connectSignal_v_0(this.handle, 'popup', callback);
+  }
+
+  /// This signal is a sign for the cell renderer to update its
+  /// value from the @cell_editable.
+  ///
+  /// Implementations of `GtkCellEditable` are responsible for
+  /// emitting this signal when they are done editing, e.g.
+  /// `GtkEntry` emits this signal when the user presses Enter. Typical things to
+  /// do in a handler for ::editing-done are to capture the edited value,
+  /// disconnect the @cell_editable from signals on the `GtkCellRenderer`, etc.
+  ///
+  /// gtk_cell_editable_editing_done() is a convenience method
+  /// for emitting `GtkCellEditable::editing-done`.
+  int onEditingDone(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'editing-done', callback);
+  }
+
+  /// This signal is meant to indicate that the cell is finished
+  /// editing, and the @cell_editable widget is being removed and may
+  /// subsequently be destroyed.
+  ///
+  /// Implementations of `GtkCellEditable` are responsible for
+  /// emitting this signal when they are done editing. It must
+  /// be emitted after the `GtkCellEditable::editing-done` signal,
+  /// to give the cell renderer a chance to update the cell's value
+  /// before the widget is removed.
+  ///
+  /// gtk_cell_editable_remove_widget() is a convenience method
+  /// for emitting `GtkCellEditable::remove-widget`.
+  int onRemoveWidget(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'remove-widget', callback);
   }
 
   /// Signals that all holders of a reference to the widget should release

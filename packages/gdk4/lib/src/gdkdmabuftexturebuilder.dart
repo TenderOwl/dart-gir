@@ -69,7 +69,7 @@ class GdkDmabufTextureBuilder extends GObject {
         'gdk_dmabuf_texture_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GdkDmabufTextureBuilder()
-    : super.fromPointer(_gdkDmabufTextureBuilderNew(), owned: true);
+    : this.fromPointer(_gdkDmabufTextureBuilderNew(), owned: true);
 
   /// Builds a new `GdkTexture` with the values set up in the builder.
   ///

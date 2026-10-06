@@ -715,9 +715,13 @@ void main() {
         contains('GBinding.fromPointer(super.handle, {super.owned})'),
       );
       // `<constructor>` now emits a generative constructor (chaining
-      // to `super.fromPointer`) so subclasses can do
+      // to `this.fromPointer`) so subclasses can do
       // `class MyBinding extends GBinding { MyBinding() : super(); }`.
-      expect(bindingCode, contains('GBinding() : super.fromPointer('));
+      // Root classes without a declared parent (e.g. `GObject`) also
+      // work because every generated class/record declares its own
+      // `fromPointer` constructor — the redirect targets the same
+      // class when there's no parent to delegate to.
+      expect(bindingCode, contains('GBinding() : this.fromPointer('));
       expect(bindingCode, contains('GBinding.fromPointer('));
       expect(bindingCode, contains('String dupSource()'));
     });
@@ -1779,6 +1783,157 @@ void main() {
       expect(hostIdx, greaterThanOrEqualTo(0));
       expect(propsIdx, greaterThan(hostIdx),
           reason: 'props companion must follow its host in the barrel');
+    });
+
+    test('class with <implements> emits the implements clause and adds '
+        'the foreign-package import', () {
+      final report = GenerationReport();
+      final iface = GirInterface(
+        name: 'Action',
+        cType: 'GAction',
+        methods: [
+          // Use primitive-typed parameter so the resolver doesn't need
+          // a backing record/interface declaration — keeps the test
+          // self-contained.
+          GirMethod(
+            name: 'activate',
+            cIdentifier: 'g_action_activate',
+            parameters: const [
+              GirParameter(
+                name: 'enabled',
+                type: GirTypeRef(name: 'gboolean'),
+              ),
+            ],
+          ),
+        ],
+      );
+      // GObject.Object is the parent class for the implementing class.
+      // We reuse `Object` as the GIR name and let the resolver bind it.
+      final obj = GirClass(
+        name: 'Object',
+        cType: 'GObject',
+        abstract: false,
+      );
+      final gio = GirNamespace(
+        name: 'Gio',
+        version: '2.0',
+        sharedLibrary: 'libgio-2.0.so.0',
+        cIdentifierPrefixes: const ['G', 'g'],
+        cSymbolPrefixes: const ['g'],
+        classes: [obj],
+        interfaces: [iface],
+      );
+      final pkg = GirNamespace(
+        name: 'Pkg',
+        version: '1.0',
+        sharedLibrary: 'libpkg-1.0.so.0',
+        cIdentifierPrefixes: const ['Pkg'],
+        cSymbolPrefixes: const ['pkg'],
+        classes: [
+          GirClass(
+            name: 'ActionImpl',
+            cType: 'PkgActionImpl',
+            parent: 'Gio.Object',
+            implements_: const ['Gio.Action'],
+          ),
+        ],
+      );
+      final ctx = _ctx(pkg, [gio, pkg], report);
+      final code = ClassEmitter(ctx, emittedPackages: const {'gio', 'pkg'})
+          .emitClass(pkg.classes[0])!;
+      // Implements clause is emitted with the interface's Dart name.
+      // For Gio's `Action` interface the Dart name is `GAction`
+      // (the cIdentifier prefix `G` + the GIR name `Action`); see
+      // `prefixFor` in context.dart.
+      expect(code, contains('implements GAction'));
+      // The foreign package must be added to the imports — without
+      // it the implements identifier wouldn't resolve at compile time.
+      expect(ctx.imports.contains('gio'), isTrue,
+          reason: 'foreign interface package must be imported');
+      // The mirrored method body still references the right package.
+      expect(code, contains('g_action_activate'));
+    });
+
+    test('class with renamed interface method omits the implements clause',
+        () {
+      // When the interface's method would collide with a parent class's
+      // method whose signature differs, the emitter renames the
+      // mirror (Phase-1 guardrail at class_emitter.dart's
+      // `_emitInterfaceMirrors`). The renamed signature no longer
+      // satisfies the interface, so the implements clause must be
+      // omitted — emitting it would be a structural-implements
+      // violation Dart rejects.
+      final report = GenerationReport();
+      final iface = GirInterface(
+        name: 'Collidable',
+        cType: 'PkgCollidable',
+        methods: [
+          GirMethod(
+            name: 'handle_event',
+            cIdentifier: 'pkg_collidable_handle_event',
+            parameters: const [
+              GirParameter(
+                name: 'event',
+                type: GirTypeRef(name: 'gboolean'),
+              ),
+            ],
+            returnType: const GirTypeRef(name: 'none'),
+          ),
+        ],
+      );
+      // A parent class declares `handle_event` returning a value, while
+      // the interface declares `handle_event` returning void — the
+      // Dart signatures differ, so the mirror on the descendant class
+      // is renamed to avoid `invalid_override`.
+      final base = GirClass(
+        name: 'Base',
+        cType: 'PkgBase',
+        methods: [
+          GirMethod(
+            name: 'handle_event',
+            cIdentifier: 'pkg_base_handle_event',
+            parameters: const [
+              GirParameter(
+                name: 'event',
+                type: GirTypeRef(name: 'gboolean'),
+              ),
+            ],
+            returnType: const GirTypeRef(name: 'gboolean'),
+          ),
+        ],
+      );
+      final pkg = GirNamespace(
+        name: 'Pkg',
+        version: '1.0',
+        sharedLibrary: 'libpkg-1.0.so.0',
+        cIdentifierPrefixes: const ['Pkg'],
+        cSymbolPrefixes: const ['pkg'],
+        interfaces: [iface],
+        classes: [
+          base,
+          GirClass(
+            name: 'Widget',
+            cType: 'PkgWidget',
+            parent: 'Base',
+            implements_: const ['Collidable'],
+          ),
+        ],
+      );
+      final ctx = _ctx(pkg, [pkg], report);
+      final code = ClassEmitter(ctx, emittedPackages: const {'pkg'})
+          .emitClass(pkg.classes[1])!;
+      // The parent class's handleEvent returns bool; the interface's
+      // mirror wants to return void. The signatures differ, so the
+      // mirror is renamed to `handleEventWidget`.
+      expect(code, contains('handleEventWidget'),
+          reason: 'mirror should be renamed to avoid signature clash '
+              'with parent class');
+      // Implements clause is omitted because the rename makes the
+      // class not structurally satisfy the interface.
+      expect(code, isNot(contains('implements Collidable')),
+          reason: 'implements clause must be omitted when a rename '
+              'leaves the class not structurally satisfying the '
+              'interface');
     });
   });
 }

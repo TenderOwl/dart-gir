@@ -27,7 +27,7 @@ part of '../gio.dart';
 ///
 /// For [porting from GnomeVFS](migrating-gnome-vfs.html) note that there is no
 /// equivalent of `GDrive` in that API.
-final class GDrive {
+class GDrive {
   GDrive.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

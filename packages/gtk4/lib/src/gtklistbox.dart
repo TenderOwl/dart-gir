@@ -68,7 +68,8 @@ part of '../gtk4.dart';
 ///
 /// `GtkListBox` uses the [enum@Gtk.AccessibleRole.list] role and `GtkListBoxRow` uses
 /// the [enum@Gtk.AccessibleRole.list_item] role.
-class GtkListBox extends GtkWidget {
+class GtkListBox extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkListBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkListBox` container.
@@ -76,7 +77,7 @@ class GtkListBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_list_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkListBox() : super.fromPointer(_gtkListBoxNew(), owned: true);
+  GtkListBox() : this.fromPointer(_gtkListBoxNew(), owned: true);
 
   /// Append a widget to the list.
   ///

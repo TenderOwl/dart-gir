@@ -27,7 +27,7 @@ class GSocketListener extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_socket_listener_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GSocketListener() : super.fromPointer(_gSocketListenerNew(), owned: true);
+  GSocketListener() : this.fromPointer(_gSocketListenerNew(), owned: true);
 
   /// Blocks waiting for a client to connect to any of the sockets added
   /// to the listener. Returns a #GSocketConnection for the socket that was

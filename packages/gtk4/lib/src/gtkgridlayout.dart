@@ -22,7 +22,7 @@ class GtkGridLayout extends GtkLayoutManager {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_grid_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGridLayout() : super.fromPointer(_gtkGridLayoutNew(), owned: true);
+  GtkGridLayout() : this.fromPointer(_gtkGridLayoutNew(), owned: true);
 
   /// Retrieves the row set with gtk_grid_layout_set_baseline_row().
   static final _gtkGridLayoutGetBaselineRow =

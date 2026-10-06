@@ -22,7 +22,7 @@ class GtkTextBuffer extends GObject {
           >('gtk_text_buffer_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextBuffer([GtkTextTagTable? table])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkTextBufferNew(table?.handle ?? ffi.nullptr),
         owned: true,
       );

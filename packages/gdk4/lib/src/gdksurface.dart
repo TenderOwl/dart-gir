@@ -27,7 +27,7 @@ class GdkSurface extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GdkSurface.popup(GdkSurface parent, bool autohide)
-    : super.fromPointer(
+    : this.fromPointer(
         _gdkSurfaceNewPopup(parent.handle, autohide ? 1 : 0),
         owned: true,
       );
@@ -41,7 +41,7 @@ class GdkSurface extends GObject {
           >('gdk_surface_new_toplevel')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface.toplevel(GdkDisplay display)
-    : super.fromPointer(_gdkSurfaceNewToplevel(display.handle), owned: true);
+    : this.fromPointer(_gdkSurfaceNewToplevel(display.handle), owned: true);
 
   /// Emits a short beep associated to @surface.
   ///
@@ -507,12 +507,8 @@ class GdkSurface extends GObject {
   }
 
   /// Emitted when GDK receives an input event for @surface.
-  int onEvent(bool Function(ffi.Pointer<ffi.Void> event) callback) {
-    return _connectSignal_b_1_o_ffipointerffivoid(
-      this.handle,
-      'event',
-      callback,
-    );
+  int onEvent(bool Function(GdkEvent event) callback) {
+    return _connectSignal_b_1_o_gdkevent(this.handle, 'event', callback);
   }
 
   /// Emitted when the size of @surface is changed, or when relayout should

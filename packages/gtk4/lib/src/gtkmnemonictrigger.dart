@@ -20,7 +20,7 @@ class GtkMnemonicTrigger extends GtkShortcutTrigger {
           >('gtk_mnemonic_trigger_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkMnemonicTrigger(int keyval)
-    : super.fromPointer(_gtkMnemonicTriggerNew(keyval), owned: true);
+    : this.fromPointer(_gtkMnemonicTriggerNew(keyval), owned: true);
 
   /// Gets the keyval that must be pressed to succeed triggering @self.
   static final _gtkMnemonicTriggerGetKeyval =

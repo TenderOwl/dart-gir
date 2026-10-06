@@ -55,8 +55,10 @@ class GtkColumnViewCell extends GtkListItem {
             >
           >('gtk_column_view_cell_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getItem() {
-    return _gtkColumnViewCellGetItem(this.handle);
+  GObject? getItem() {
+    return (_gtkColumnViewCellGetItem(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gtkColumnViewCellGetItem(this.handle));
   }
 
   /// Gets the position in the model that @self currently displays.

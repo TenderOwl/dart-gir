@@ -217,7 +217,13 @@ part of '../gtk4.dart';
 /// It is possible to implement custom handling for links and their tooltips
 /// with the [signal@Gtk.Label::activate-link] signal and the
 /// [method@Gtk.Label.get_current_uri] function.
-class GtkLabel extends GtkWidget {
+class GtkLabel extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleHypertext,
+        GtkAccessibleText,
+        GtkBuildable,
+        GtkConstraintTarget {
   GtkLabel.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new label with the given text inside it.

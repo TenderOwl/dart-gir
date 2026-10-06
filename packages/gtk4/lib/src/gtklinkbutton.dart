@@ -43,7 +43,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkLinkButton` uses the [enum@Gtk.AccessibleRole.link] role.
-class GtkLinkButton extends GtkButton {
+class GtkLinkButton extends GtkButton
+    implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
   GtkLinkButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkLinkButton` with the URI as its text.

@@ -22,7 +22,8 @@ part of '../gtk4.dart';
 ///
 /// The child of `GtkRevealer`, if set, is always available in the accessibility
 /// tree, regardless of the state of the revealer widget.
-class GtkRevealer extends GtkWidget {
+class GtkRevealer extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkRevealer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkRevealer`.
@@ -30,7 +31,7 @@ class GtkRevealer extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_revealer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkRevealer() : super.fromPointer(_gtkRevealerNew(), owned: true);
+  GtkRevealer() : this.fromPointer(_gtkRevealerNew(), owned: true);
 
   /// Gets the child widget of @revealer.
   static final _gtkRevealerGetChild =

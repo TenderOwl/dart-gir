@@ -7,7 +7,7 @@ part of '../gio.dart';
 /// example, a SOCKS5 proxy implementation can be retrieved with the
 /// name `socks5` using the function
 /// [method@Gio.IOExtensionPoint.get_extension_by_name].
-final class GProxy {
+class GProxy {
   GProxy.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -258,7 +258,7 @@ final class GProxy {
 /// [libproxy](https://github.com/libproxy/libproxy) and GNOME settings can be
 /// found in [glib-networking](https://gitlab.gnome.org/GNOME/glib-networking).
 /// GIO comes with an implementation for use inside Flatpak portals.
-final class GProxyResolver {
+class GProxyResolver {
   GProxyResolver.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -427,7 +427,7 @@ final class GProxyResolver {
 /// the `_full` variants of the calls if available.  This
 /// provides a mechanism by which to receive platform data for action
 /// invocations that arrive by way of D-Bus.
-final class GRemoteActionGroup {
+class GRemoteActionGroup {
   GRemoteActionGroup.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -532,7 +532,7 @@ final class GRemoteActionGroup {
 /// `GSeekable` on resizable streams is approximately the same as POSIX
 /// [`lseek()`](man:lseek(2)) on a normal file.  Seeking past the end and writing
 /// data will usually cause the stream to resize by introducing zero bytes.
-final class GSeekable {
+class GSeekable {
   GSeekable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -722,7 +722,7 @@ final class GSeekable {
 /// }
 /// }
 /// ```
-final class GSocketConnectable {
+class GSocketConnectable {
   GSocketConnectable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

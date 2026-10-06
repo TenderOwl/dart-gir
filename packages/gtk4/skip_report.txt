@@ -1,12 +1,12 @@
 # Skip report for package gtk4 (Gtk 4.0)
-Total skipped: 1380
+Total skipped: 1382
 
 ## By category
 property: 1211
 callable: 129
-method: 15
+method: 16
 signal: 13
-renamed: 10
+renamed: 11
 callback: 1
 alias: 1
 
@@ -17,7 +17,7 @@ missing getter get_height-request: 104
 missing getter get_width-request: 104
 missing getter get_item-type: 18
 missing getter get_n-items: 18
-name collision: 15
+name collision: 16
 return: string list return type (null): 15
 missing getter get_default-height: 13
 missing getter get_default-width: 13
@@ -117,7 +117,7 @@ missing getter get_activates-default: 2
 missing getter get_section-name: 2
 missing getter get_view-name: 2
 parameter pos: nullable scalar parameter (TreeViewDropPosition): 2
-missing getter get_secondary-icon-storage-type: 1
+missing getter get_secondary-icon-tooltip-markup: 1
 override-incompatible with ancestor; renamed to packEndCellAreaBox: 1
 override-incompatible with ancestor; renamed to packStartCellAreaBox: 1
 moved to PaperSize.get_default: 1
@@ -195,8 +195,8 @@ missing getter get_secondary-icon-gicon: 1
 missing getter get_secondary-icon-name: 1
 missing getter get_secondary-icon-paintable: 1
 missing getter get_secondary-icon-sensitive: 1
+missing getter get_secondary-icon-storage-type: 1
 missing getter get_accel-mode: 1
-missing getter get_secondary-icon-tooltip-markup: 1
 missing getter get_secondary-icon-tooltip-text: 1
 missing getter get_show-emoji-icon: 1
 missing getter get_truncate-multiline: 1
@@ -303,8 +303,8 @@ missing getter get_gtk-fontconfig-timestamp: 1
 missing getter get_gtk-hint-font-metrics: 1
 missing getter get_gtk-icon-theme-name: 1
 missing getter get_gtk-im-module: 1
+missing getter get_gtk-interface-color-scheme: 1
 parameter dest_x: nullable scalar parameter (gdouble): 1
-missing getter get_gtk-interface-contrast: 1
 missing getter get_gtk-interface-reduced-motion: 1
 missing getter get_gtk-keynav-use-caret: 1
 missing getter get_gtk-label-select-on-focus: 1
@@ -410,9 +410,10 @@ moved to AccessibleProperty.init_value: 1
 missing getter get_keycode: 1
 override-incompatible with ancestor; renamed to setCursorTreeView: 1
 missing getter get_enable-grid-lines: 1
+override-incompatible with interface; renamed to setCellDataFuncTreeViewColumn: 1
 override-incompatible with ancestor; renamed to setCellDataFuncTreeViewColumn: 1
 missing getter get_use-symbolic: 1
-missing getter get_gtk-interface-color-scheme: 1
+missing getter get_gtk-interface-contrast: 1
 missing getter get_gtk-cursor-blink: 1
 
 ## First 50 entries

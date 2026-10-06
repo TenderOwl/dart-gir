@@ -10,7 +10,7 @@ part of '../gio.dart';
 /// Some example conversions are: character set conversion,
 /// compression, decompression and regular expression
 /// replace.
-final class GConverter {
+class GConverter {
   GConverter.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -206,7 +206,7 @@ final class GConverter {
 /// The `GDBusInterface` type is the base type for D-Bus interfaces both
 /// on the service side (see [class@Gio.DBusInterfaceSkeleton]) and client side
 /// (see [class@Gio.DBusProxy]).
-final class GDBusInterface {
+class GDBusInterface {
   GDBusInterface.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -265,7 +265,7 @@ final class GDBusInterface {
 /// the service side (see [class@Gio.DBusObjectSkeleton]) and the client side
 /// (see [class@Gio.DBusObjectProxy]). It is essentially just a container of
 /// interfaces.
-final class GDBusObject {
+class GDBusObject {
   GDBusObject.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -356,7 +356,7 @@ final class GDBusObject {
 ///
 /// See [class@Gio.DBusObjectManagerClient] for the client-side implementation
 /// and [class@Gio.DBusObjectManagerServer] for the service-side implementation.
-final class GDBusObjectManager {
+class GDBusObjectManager {
   GDBusObjectManager.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

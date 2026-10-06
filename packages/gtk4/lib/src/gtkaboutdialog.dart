@@ -56,7 +56,14 @@ part of '../gtk4.dart';
 ///
 /// `GtkAboutDialog` has a single CSS node with the name `window` and style
 /// class `.aboutdialog`.
-class GtkAboutDialog extends GtkWindow {
+class GtkAboutDialog extends GtkWindow
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkAboutDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkAboutDialog`.
@@ -64,7 +71,7 @@ class GtkAboutDialog extends GtkWindow {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_about_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkAboutDialog() : super.fromPointer(_gtkAboutDialogNew(), owned: true);
+  GtkAboutDialog() : this.fromPointer(_gtkAboutDialogNew(), owned: true);
 
   /// Creates a new section in the "Credits" page.
   static final _gtkAboutDialogAddCreditSection =

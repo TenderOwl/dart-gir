@@ -22,8 +22,15 @@ class RecordEmitter {
       _emit(u, u.constructors, u.methods, u.functions, u.doc);
 
   /// Interfaces are emitted as opaque handle classes (no vtable support yet).
-  String? emitInterface(GirInterface i) =>
-      _emit(i, const [], i.methods, i.functions, i.doc, signals: i.signals);
+  String? emitInterface(GirInterface i) => _emit(
+        i,
+        const [],
+        i.methods,
+        i.functions,
+        i.doc,
+        signals: i.signals,
+        isInterface: true,
+      );
 
   String? _emit(
     GirRegisteredType type,
@@ -32,6 +39,7 @@ class RecordEmitter {
     List<GirFunction> functions,
     String? doc, {
     List<GirSignal> signals = const [],
+    bool isInterface = false,
   }) {
     final dartName = ctx.dartTypeName(ctx.namespace.name, type.name);
     if (ctx.isDuplicateType(type)) {
@@ -50,7 +58,13 @@ class RecordEmitter {
     for (final line in ctx.docLines(doc)) {
       b.writeln(line);
     }
-    b.writeln('final class $dartName {');
+    // Interfaces must NOT be `final class`: the implements-clause plan
+    // (T2) requires other classes to be able to `implements <Name>`.
+    // `final class` forbids implementation outside the library, and the
+    // implementing class lives in another generated file. Records and
+    // unions stay `final class` because they're concrete struct wrappers
+    // that aren't meant to be subclassed by user code.
+    b.writeln(isInterface ? 'class $dartName {' : 'final class $dartName {');
     b.writeln('$dartName.fromPointer(this.handle);');
     b.writeln('final ffi.Pointer<ffi.Void> handle;');
 

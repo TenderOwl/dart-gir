@@ -32,24 +32,22 @@ class GskConicGradientNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskConicGradientNode(
+  GskConicGradientNode(
     GrapheneRect bounds,
     GraphenePoint center,
     double rotation,
     ffi.Pointer<ffi.Void> colorStops,
     int nColorStops,
-  ) {
-    return GskConicGradientNode.fromPointer(
-      _gskConicGradientNodeNew(
-        bounds.handle,
-        center.handle,
-        rotation,
-        colorStops,
-        nColorStops,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskConicGradientNodeNew(
+          bounds.handle,
+          center.handle,
+          rotation,
+          colorStops,
+          nColorStops,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the angle for the gradient in radians, normalized in [0, 2 * PI].
   ///

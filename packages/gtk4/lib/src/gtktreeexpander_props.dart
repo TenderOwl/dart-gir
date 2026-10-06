@@ -31,7 +31,7 @@ class GtkTreeExpanderProps extends GtkWidgetProps {
     _self.setIndentForIcon(value);
   }
 
-  ffi.Pointer<ffi.Void> get item => _self.getItem();
+  GObject? get item => _self.getItem();
 
   GtkTreeListRow? get listRow => _self.getListRow();
   set listRow(GtkTreeListRow? value) {

@@ -125,7 +125,14 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkDialog` uses the %GTK_ACCESSIBLE_ROLE_DIALOG role.
-class GtkDialog extends GtkWindow {
+class GtkDialog extends GtkWindow
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new dialog box.
@@ -137,7 +144,7 @@ class GtkDialog extends GtkWindow {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkDialog() : super.fromPointer(_gtkDialogNew(), owned: true);
+  GtkDialog() : this.fromPointer(_gtkDialogNew(), owned: true);
 
   /// Adds an activatable widget to the action area of a `GtkDialog`.
   ///

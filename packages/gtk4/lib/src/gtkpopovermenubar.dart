@@ -32,7 +32,8 @@ part of '../gtk4.dart';
 /// `GtkPopoverMenuBar` uses the [enum@Gtk.AccessibleRole.menu_bar] role,
 /// the menu items use the [enum@Gtk.AccessibleRole.menu_item] role and
 /// the menus use the [enum@Gtk.AccessibleRole.menu] role.
-class GtkPopoverMenuBar extends GtkWidget {
+class GtkPopoverMenuBar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkPopoverMenuBar.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -45,7 +46,7 @@ class GtkPopoverMenuBar extends GtkWidget {
           >('gtk_popover_menu_bar_new_from_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPopoverMenuBar.fromModel([GMenuModel? model])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkPopoverMenuBarNewFromModel(model?.handle ?? ffi.nullptr),
         owned: true,
       );

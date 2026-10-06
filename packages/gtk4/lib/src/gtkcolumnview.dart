@@ -65,7 +65,8 @@ part of '../gtk4.dart';
 /// widgets are using the [enum@Gtk.AccessibleRole.column_header] role. The row widgets
 /// are using the [enum@Gtk.AccessibleRole.row] role, and individual cells are using
 /// the [enum@Gtk.AccessibleRole.grid_cell] role
-class GtkColumnView extends GtkWidget {
+class GtkColumnView extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkScrollable {
   GtkColumnView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkColumnView`.
@@ -80,7 +81,7 @@ class GtkColumnView extends GtkWidget {
           >('gtk_column_view_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkColumnView([GtkSelectionModel? model])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkColumnViewNew(model?.handle ?? ffi.nullptr),
         owned: true,
       );

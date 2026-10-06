@@ -22,7 +22,12 @@ part of '../gtk4.dart';
 /// `GtkColorButton` has a single CSS node with name colorbutton which
 /// contains a button node. To differentiate it from a plain `GtkButton`,
 /// it gets the .color style class.
-class GtkColorButton extends GtkWidget {
+class GtkColorButton extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkColorChooser,
+        GtkConstraintTarget {
   GtkColorButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new color button.
@@ -36,7 +41,7 @@ class GtkColorButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_color_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkColorButton() : super.fromPointer(_gtkColorButtonNew(), owned: true);
+  GtkColorButton() : this.fromPointer(_gtkColorButtonNew(), owned: true);
 
   /// Creates a new color button showing the given color.
   static final _gtkColorButtonNewWithRgba =
@@ -47,7 +52,7 @@ class GtkColorButton extends GtkWidget {
           >('gtk_color_button_new_with_rgba')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkColorButton.withRgba(GdkRGBA rgba)
-    : super.fromPointer(_gtkColorButtonNewWithRgba(rgba.handle), owned: true);
+    : this.fromPointer(_gtkColorButtonNewWithRgba(rgba.handle), owned: true);
 
   /// Gets whether the dialog is modal.
   static final _gtkColorButtonGetModal =
@@ -290,6 +295,19 @@ class GtkColorButton extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when a color is activated from the color chooser.
+  ///
+  /// This usually happens when the user clicks a color swatch,
+  /// or a color is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onColorActivated(void Function(GdkRGBA color) callback) {
+    return _connectSignal_v_1_o_gdkrgba(
+      this.handle,
+      'color-activated',
+      callback,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

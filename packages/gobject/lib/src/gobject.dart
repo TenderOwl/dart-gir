@@ -51,16 +51,14 @@ class GObject implements ffi.Finalizable {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, int, ffi.Pointer<ffi.Void>)
           >();
-  factory GObject.newv(
+  GObject.newv(
     int objectType,
     int nParameters,
     ffi.Pointer<ffi.Void> parameters,
-  ) {
-    return GObject.fromPointer(
-      _gObjectNewv(objectType, nParameters, parameters),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gObjectNewv(objectType, nParameters, parameters),
+        owned: true,
+      );
 
   /// Creates a binding between @source_property on @source and @target_property
   /// on @target.
@@ -116,7 +114,7 @@ class GObject implements ffi.Finalizable {
           >();
   GBinding bindProperty(
     String sourceProperty,
-    ffi.Pointer<ffi.Void> target,
+    GObject target,
     String targetProperty,
     GBindingFlags flags,
   ) {
@@ -126,7 +124,7 @@ class GObject implements ffi.Finalizable {
           _gObjectBindProperty(
             this.handle,
             nativeSourceProperty.cast<Utf8>(),
-            target,
+            target.handle,
             nativeTargetProperty.cast<Utf8>(),
             flags.value,
           ),
@@ -169,7 +167,7 @@ class GObject implements ffi.Finalizable {
           >();
   GBinding bindPropertyWithClosures(
     String sourceProperty,
-    ffi.Pointer<ffi.Void> target,
+    GObject target,
     String targetProperty,
     GBindingFlags flags,
     GClosure transformTo,
@@ -181,7 +179,7 @@ class GObject implements ffi.Finalizable {
           _gObjectBindPropertyWithClosures(
             this.handle,
             nativeSourceProperty.cast<Utf8>(),
-            target,
+            target.handle,
             nativeTargetProperty.cast<Utf8>(),
             flags.value,
             transformTo.handle,
@@ -434,8 +432,8 @@ class GObject implements ffi.Finalizable {
             >
           >('g_object_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> ref() {
-    return _gObjectRef(this.handle);
+  GObject ref() {
+    return GObject.fromPointer(_gObjectRef(this.handle));
   }
 
   /// Increase the reference count of @object, and possibly remove the
@@ -456,8 +454,8 @@ class GObject implements ffi.Finalizable {
             >
           >('g_object_ref_sink')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> refSink() {
-    return _gObjectRefSink(this.handle);
+  GObject refSink() {
+    return GObject.fromPointer(_gObjectRefSink(this.handle));
   }
 
   /// Releases all references to other objects. This can be used to break
@@ -693,12 +691,15 @@ class GObject implements ffi.Finalizable {
             )
           >();
   static GParamSpec interfaceFindProperty(
-    ffi.Pointer<ffi.Void> gIface,
+    GTypeInterface gIface,
     String propertyName,
   ) {
     return withNativeString(propertyName, (nativePropertyName) {
       return GParamSpec.fromPointer(
-        _gObjectInterfaceFindProperty(gIface, nativePropertyName.cast<Utf8>()),
+        _gObjectInterfaceFindProperty(
+          gIface.handle,
+          nativePropertyName.cast<Utf8>(),
+        ),
       );
     });
   }
@@ -729,10 +730,10 @@ class GObject implements ffi.Finalizable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   static void interfaceInstallProperty(
-    ffi.Pointer<ffi.Void> gIface,
+    GTypeInterface gIface,
     GParamSpec pspec,
   ) {
-    _gObjectInterfaceInstallProperty(gIface, pspec.handle);
+    _gObjectInterfaceInstallProperty(gIface.handle, pspec.handle);
   }
 
   /// Lists the properties of an interface.Generally, the interface
@@ -755,11 +756,11 @@ class GObject implements ffi.Finalizable {
             )
           >();
   static (ffi.Pointer<ffi.Void>, int) interfaceListProperties(
-    ffi.Pointer<ffi.Void> gIface,
+    GTypeInterface gIface,
   ) {
     final _out0 = malloc<ffi.Uint32>();
     try {
-      final _ret = _gObjectInterfaceListProperties(gIface, _out0);
+      final _ret = _gObjectInterfaceListProperties(gIface.handle, _out0);
       return (_ret, _out0.value);
     } finally {
       malloc.free(_out0);

@@ -53,7 +53,7 @@ part of '../gio.dart';
 /// a [iface@Gio.Action] to control a setting stored in [class@Gio.Settings],
 /// see [method@Gio.Settings.create_action] instead, and possibly combine its
 /// use with [method@Gio.Settings.bind].
-class GPropertyAction extends GObject {
+class GPropertyAction extends GObject implements GAction {
   GPropertyAction.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -82,17 +82,13 @@ class GPropertyAction extends GObject {
               ffi.Pointer<Utf8>,
             )
           >();
-  factory GPropertyAction(
-    String name,
-    ffi.Pointer<ffi.Void> object,
-    String propertyName,
-  ) {
+  factory GPropertyAction(String name, GObject object, String propertyName) {
     return withNativeString(name, (nativeName) {
       return withNativeString(propertyName, (nativePropertyName) {
         return GPropertyAction.fromPointer(
           _gPropertyActionNew(
             nativeName.cast<Utf8>(),
-            object,
+            object.handle,
             nativePropertyName.cast<Utf8>(),
           ),
           owned: true,

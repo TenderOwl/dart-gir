@@ -27,7 +27,7 @@ class GIPTosMessage extends GSocketControlMessage {
           >('g_ip_tos_message_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GIPTosMessage(int dscp, GEcnCodePoint ecn)
-    : super.fromPointer(_gIpTosMessageNew(dscp, ecn.value), owned: true);
+    : this.fromPointer(_gIpTosMessageNew(dscp, ecn.value), owned: true);
 
   /// Gets the differentiated services code point stored in @message.
   static final _gIpTosMessageGetDscp =

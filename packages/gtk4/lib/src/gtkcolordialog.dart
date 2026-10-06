@@ -20,7 +20,7 @@ class GtkColorDialog extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_color_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkColorDialog() : super.fromPointer(_gtkColorDialogNew(), owned: true);
+  GtkColorDialog() : this.fromPointer(_gtkColorDialogNew(), owned: true);
 
   /// Presents a color chooser dialog to the user.
   static final _gtkColorDialogChooseRgba =

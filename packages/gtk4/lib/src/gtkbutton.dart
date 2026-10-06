@@ -39,7 +39,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkButton` uses the [enum@Gtk.AccessibleRole.button] role.
-class GtkButton extends GtkWidget {
+class GtkButton extends GtkWidget
+    implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
   GtkButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkButton` widget.
@@ -49,7 +50,7 @@ class GtkButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkButton() : super.fromPointer(_gtkButtonNew(), owned: true);
+  GtkButton() : this.fromPointer(_gtkButtonNew(), owned: true);
 
   /// Creates a new button containing an icon from the current icon theme.
   ///

@@ -6,7 +6,7 @@ part of '../pango.dart';
 ///
 /// This is a virtual object with implementations being specific to
 /// particular rendering systems.
-class PangoFontMap extends GObject {
+class PangoFontMap extends GObject implements GListModel {
   PangoFontMap.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Loads a font file with one or more fonts into the `PangoFontMap`.
@@ -278,6 +278,22 @@ class PangoFontMap extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

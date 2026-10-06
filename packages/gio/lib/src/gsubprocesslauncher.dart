@@ -23,7 +23,7 @@ class GSubprocessLauncher extends GObject {
         'g_subprocess_launcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GSubprocessLauncher(GSubprocessFlags flags)
-    : super.fromPointer(_gSubprocessLauncherNew(flags.value), owned: true);
+    : this.fromPointer(_gSubprocessLauncherNew(flags.value), owned: true);
 
   /// Closes all the file descriptors previously passed to the object with
   /// g_subprocess_launcher_take_fd(), g_subprocess_launcher_take_stderr_fd(), etc.

@@ -51,7 +51,13 @@ part of '../gtk4.dart';
 /// `GtkProgressBar` uses the [enum@Gtk.AccessibleRole.progress_bar] role
 /// and sets the [enum@Gtk.AccessibleProperty.value_min], [enum@Gtk.AccessibleProperty.value_max] and [enum@Gtk.AccessibleProperty.value_now] properties to reflect
 /// the progress.
-class GtkProgressBar extends GtkWidget {
+class GtkProgressBar extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkProgressBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkProgressBar`.
@@ -59,7 +65,7 @@ class GtkProgressBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_progress_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkProgressBar() : super.fromPointer(_gtkProgressBarNew(), owned: true);
+  GtkProgressBar() : this.fromPointer(_gtkProgressBarNew(), owned: true);
 
   /// Returns the ellipsizing position of the progress bar.
   ///

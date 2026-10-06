@@ -7,7 +7,7 @@ part of '../gio.dart';
 /// on NetworkManager.
 ///
 /// There is also an implementation for use inside Flatpak sandboxes.
-final class GNetworkMonitor {
+class GNetworkMonitor {
   GNetworkMonitor.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -302,7 +302,7 @@ final class GNetworkMonitor {
 /// instances of that class be pollable. If [method@Gio.PollableInputStream.can_poll]
 /// returns false, then the behavior of other `GPollableInputStream` methods is
 /// undefined.
-final class GPollableInputStream {
+class GPollableInputStream {
   GPollableInputStream.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -385,7 +385,7 @@ final class GPollableInputStream {
 /// instances of that class be pollable. If [method@Gio.PollableOutputStream.can_poll]
 /// returns false, then the behavior of other `GPollableOutputStream` methods is
 /// undefined.
-final class GPollableOutputStream {
+class GPollableOutputStream {
   GPollableOutputStream.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -545,7 +545,7 @@ final class GPollableOutputStream {
 /// Don’t forget to disconnect the [signal@GObject.Object::notify] signal for
 /// [property@Gio.PowerProfileMonitor:power-saver-enabled], and unref the
 /// `GPowerProfileMonitor` itself when exiting.
-final class GPowerProfileMonitor {
+class GPowerProfileMonitor {
   GPowerProfileMonitor.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

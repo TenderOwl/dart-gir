@@ -105,7 +105,13 @@ part of '../gtk4.dart';
 ///
 /// `GtkListView` uses the [enum@Gtk.AccessibleRole.list] role, and the list
 /// items use the [enum@Gtk.AccessibleRole.list_item] role.
-class GtkListView extends GtkListBase {
+class GtkListView extends GtkListBase
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable,
+        GtkScrollable {
   GtkListView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkListView` that uses the given @factory for
@@ -133,7 +139,7 @@ class GtkListView extends GtkListBase {
             )
           >();
   GtkListView([GtkSelectionModel? model, GtkListItemFactory? factory_])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkListViewNew(
           model?.handle ?? ffi.nullptr,
           factory_?.handle ?? ffi.nullptr,

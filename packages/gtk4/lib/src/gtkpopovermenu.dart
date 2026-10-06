@@ -120,7 +120,13 @@ part of '../gtk4.dart';
 /// items use the [enum@Gtk.AccessibleRole.menu_item],
 /// [enum@Gtk.AccessibleRole.checkbox] or [enum@Gtk.AccessibleRole.menu_item_radio]
 /// roles, depending on the action they are connected to.
-class GtkPopoverMenu extends GtkPopover {
+class GtkPopoverMenu extends GtkPopover
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkShortcutManager {
   GtkPopoverMenu.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a `GtkPopoverMenu` and populates it according to @model.
@@ -144,7 +150,7 @@ class GtkPopoverMenu extends GtkPopover {
           >('gtk_popover_menu_new_from_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPopoverMenu.fromModel([GMenuModel? model])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkPopoverMenuNewFromModel(model?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -166,7 +172,7 @@ class GtkPopoverMenu extends GtkPopover {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkPopoverMenu.fromModelFull(GMenuModel model, GtkPopoverMenuFlags flags)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkPopoverMenuNewFromModelFull(model.handle, flags.value),
         owned: true,
       );

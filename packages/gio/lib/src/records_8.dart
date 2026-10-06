@@ -45,7 +45,7 @@ part of '../gio.dart';
 /// [method@Gio.ActionGroup.query_action]. The other virtual functions should
 /// not be implemented — their ‘wrappers’ are actually implemented with
 /// calls to [method@Gio.ActionGroup.query_action].
-final class GActionGroup {
+class GActionGroup {
   GActionGroup.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

@@ -26,7 +26,7 @@ class GskFillNode extends GskRenderNode {
             )
           >();
   GskFillNode(GskRenderNode child, GskPath path, GskFillRule fillRule)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskFillNodeNew(child.handle, path.handle, fillRule.value),
         owned: true,
       );

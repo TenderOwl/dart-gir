@@ -17,7 +17,7 @@ part of '../gtk4.dart';
 /// Note that unless [method@Gtk.BuilderCScope.add_callback_symbol] is
 /// called for all signal callbacks which are referenced by the loaded XML,
 /// this functionality will require that `GModule` be supported on the platform.
-class GtkBuilderCScope extends GObject {
+class GtkBuilderCScope extends GObject implements GtkBuilderScope {
   GtkBuilderCScope.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -30,7 +30,7 @@ class GtkBuilderCScope extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_builder_cscope_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkBuilderCScope() : super.fromPointer(_gtkBuilderCscopeNew(), owned: true);
+  GtkBuilderCScope() : this.fromPointer(_gtkBuilderCscopeNew(), owned: true);
 
   /// Adds the @callback_symbol to the scope of @builder under the
   /// given @callback_name.

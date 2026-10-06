@@ -20,7 +20,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkSeparator` uses the [enum@Gtk.AccessibleRole.separator] role.
-class GtkSeparator extends GtkWidget {
+class GtkSeparator extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkSeparator.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkSeparator` with the given orientation.
@@ -29,7 +30,7 @@ class GtkSeparator extends GtkWidget {
         'gtk_separator_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkSeparator(GtkOrientation orientation)
-    : super.fromPointer(_gtkSeparatorNew(orientation.value), owned: true);
+    : this.fromPointer(_gtkSeparatorNew(orientation.value), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

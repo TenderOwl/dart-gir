@@ -46,7 +46,7 @@ class GtkAdjustment extends GInitiallyUnowned {
     double stepIncrement,
     double pageIncrement,
     double pageSize,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gtkAdjustmentNew(
           value,
           lower,

@@ -56,7 +56,7 @@ part of '../gio.dart';
 /// for applications to rely on the format of a particular URIs.
 /// Different launcher applications (e.g. file managers) may have
 /// different ideas of what a given URI means.
-final class GAppInfo {
+class GAppInfo {
   GAppInfo.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

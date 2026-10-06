@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// `GZlibCompressor` is an implementation of [iface@Gio.Converter] that
 /// compresses data using zlib.
-class GZlibCompressor extends GObject {
+class GZlibCompressor extends GObject implements GConverter {
   GZlibCompressor.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -16,7 +16,7 @@ class GZlibCompressor extends GObject {
           >('g_zlib_compressor_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GZlibCompressor(GZlibCompressorFormat format, int level)
-    : super.fromPointer(_gZlibCompressorNew(format.value, level), owned: true);
+    : this.fromPointer(_gZlibCompressorNew(format.value, level), owned: true);
 
   /// Gets the [property@Gio.ZlibCompressor:file-info] property.
   static final _gZlibCompressorGetFileInfo =

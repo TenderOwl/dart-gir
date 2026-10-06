@@ -22,5 +22,5 @@ class GtkTreeListRowProps {
     _self.setExpanded(value);
   }
 
-  ffi.Pointer<ffi.Void> get item => _self.getItem();
+  GObject? get item => _self.getItem();
 }

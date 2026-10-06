@@ -117,7 +117,8 @@ part of '../gtk4.dart';
 ///
 /// If you need to change the options for creating the `GdkGLContext`
 /// you should use the [signal@Gtk.GLArea::create-context] signal.
-class GtkGLArea extends GtkWidget {
+class GtkGLArea extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkGLArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkGLArea` widget.
@@ -125,7 +126,7 @@ class GtkGLArea extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gl_area_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGLArea() : super.fromPointer(_gtkGlAreaNew(), owned: true);
+  GtkGLArea() : this.fromPointer(_gtkGlAreaNew(), owned: true);
 
   /// Binds buffers to the framebuffer.
   ///

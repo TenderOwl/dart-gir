@@ -27,7 +27,7 @@ class GtkMountOperation extends GMountOperation {
           >('gtk_mount_operation_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMountOperation([GtkWindow? parent])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkMountOperationNew(parent?.handle ?? ffi.nullptr),
         owned: true,
       );

@@ -11,7 +11,7 @@ part of '../gtk4.dart';
 /// for an overview of all the objects and data types related to the tree widget and
 /// how they work together, and to the [class@Gtk.TreeView] documentation for specifics
 /// about the CSS node structure for treeviews and their headers.
-class GtkTreeViewColumn extends GInitiallyUnowned {
+class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
   GtkTreeViewColumn.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -20,7 +20,7 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_view_column_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTreeViewColumn() : super.fromPointer(_gtkTreeViewColumnNew(), owned: true);
+  GtkTreeViewColumn() : this.fromPointer(_gtkTreeViewColumnNew(), owned: true);
 
   /// Creates a new `GtkTreeViewColumn` using @area to render its cells.
   static final _gtkTreeViewColumnNewWithArea =
@@ -31,10 +31,7 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
           >('gtk_tree_view_column_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeViewColumn.withArea(GtkCellArea area)
-    : super.fromPointer(
-        _gtkTreeViewColumnNewWithArea(area.handle),
-        owned: true,
-      );
+    : this.fromPointer(_gtkTreeViewColumnNewWithArea(area.handle), owned: true);
 
   /// Adds an attribute mapping to the list in @tree_column.
   ///
@@ -506,7 +503,7 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
               >,
             )
           >();
-  void setCellDataFunc(
+  void setCellDataFuncTreeViewColumn(
     GtkCellRenderer cellRenderer,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -877,100 +874,6 @@ class GtkTreeViewColumn extends GInitiallyUnowned {
           >();
   void reorder(GtkCellRenderer cell, int position) {
     _gtkCellLayoutReorder(this.handle, cell.handle, position);
-  }
-
-  /// Sets the `GtkCellLayout`DataFunc to use for @cell_layout.
-  ///
-  /// This function is used instead of the standard attributes mapping
-  /// for setting the column value, and should set the value of @cell_layout’s
-  /// cell renderer(s) as appropriate.
-  ///
-  /// @func may be %NULL to remove a previously set function.
-  static final _gtkCellLayoutSetCellDataFunc =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Void Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('gtk_cell_layout_set_cell_data_func')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  void setCellDataFuncTreeViewColumn(
-    GtkCellRenderer cell,
-    void Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )?
-    func,
-    ffi.Pointer<ffi.Void> funcData,
-    void Function(ffi.Pointer<ffi.Void>) destroy,
-  ) {
-    final _nc2 = func == null
-        ? null
-        : ffi.NativeCallable<
-            ffi.Void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >.isolateLocal(func);
-    final _nc4 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>)
-        >.isolateLocal(destroy);
-    try {
-      _gtkCellLayoutSetCellDataFunc(
-        this.handle,
-        cell.handle,
-        _nc2?.nativeFunction ?? ffi.nullptr,
-        funcData,
-        _nc4.nativeFunction,
-      );
-    } finally {
-      _nc2?.close();
-      _nc4.close();
-    }
   }
 
   /// PyGObject-style typed property accessor. Reads and

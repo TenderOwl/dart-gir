@@ -6,7 +6,8 @@ part of '../gio.dart';
 ///
 /// As of GLib 2.34, `GMemoryInputStream` implements
 /// [iface@Gio.PollableInputStream].
-class GMemoryInputStream extends GInputStream {
+class GMemoryInputStream extends GInputStream
+    implements GPollableInputStream, GSeekable {
   GMemoryInputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -16,7 +17,7 @@ class GMemoryInputStream extends GInputStream {
         'g_memory_input_stream_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GMemoryInputStream()
-    : super.fromPointer(_gMemoryInputStreamNew(), owned: true);
+    : this.fromPointer(_gMemoryInputStreamNew(), owned: true);
 
   /// Creates a new #GMemoryInputStream with data from the given @bytes.
   static final _gMemoryInputStreamNewFromBytes =
@@ -27,7 +28,7 @@ class GMemoryInputStream extends GInputStream {
           >('g_memory_input_stream_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMemoryInputStream.fromBytes(GBytes bytes)
-    : super.fromPointer(
+    : this.fromPointer(
         _gMemoryInputStreamNewFromBytes(bytes.handle),
         owned: true,
       );

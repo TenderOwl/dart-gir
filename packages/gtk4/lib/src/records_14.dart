@@ -29,7 +29,7 @@ part of '../gtk4.dart';
 ///
 /// - When any of the adjustments emits the [signal@Gtk.Adjustment::value-changed]
 /// signal, the scrollable widget should scroll its contents.
-final class GtkScrollable {
+class GtkScrollable {
   GtkScrollable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -187,7 +187,7 @@ final class GtkScrollable {
 /// then need to be queried again.
 /// The [signal@Gio.ListModel::items-changed] signal has the same effect, all sections in
 /// that range are invalidated, too.
-final class GtkSectionModel {
+class GtkSectionModel {
   GtkSectionModel.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -309,7 +309,7 @@ final class GtkSectionModel {
 ///
 /// Selections may happen asynchronously, so the only reliable way to find out
 /// when an item was selected is to listen to the signals that indicate selection.
-final class GtkSelectionModel {
+class GtkSelectionModel {
   GtkSelectionModel.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -550,7 +550,7 @@ final class GtkSelectionModel {
 ///
 /// Every widget that implements `GtkShortcutManager` will be used as a
 /// `GTK_SHORTCUT_SCOPE_MANAGED`.
-final class GtkShortcutManager {
+class GtkShortcutManager {
   GtkShortcutManager.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }
@@ -563,7 +563,7 @@ final class GtkShortcutManager {
 ///
 /// GTK uses the `GtkStyleProvider` implementation for CSS in
 /// [class@Gtk.CssProvider].
-final class GtkStyleProvider {
+class GtkStyleProvider {
   GtkStyleProvider.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
   int onGtkPrivateChanged(void Function() callback) {
@@ -583,7 +583,7 @@ final class GtkStyleProvider {
 ///
 /// The system accent color has been added in GTK 4.22.
 /// More colors may be added in the future.
-final class GtkSymbolicPaintable {
+class GtkSymbolicPaintable {
   GtkSymbolicPaintable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

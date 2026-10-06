@@ -77,7 +77,8 @@ part of '../gtk4.dart';
 /// gtk_window_present (GTK_WINDOW (window));
 /// }
 /// ```
-class GtkToggleButton extends GtkButton {
+class GtkToggleButton extends GtkButton
+    implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
   GtkToggleButton.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -88,7 +89,7 @@ class GtkToggleButton extends GtkButton {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_toggle_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkToggleButton() : super.fromPointer(_gtkToggleButtonNew(), owned: true);
+  GtkToggleButton() : this.fromPointer(_gtkToggleButtonNew(), owned: true);
 
   /// Creates a new toggle button with a text label.
   static final _gtkToggleButtonNewWithLabel =

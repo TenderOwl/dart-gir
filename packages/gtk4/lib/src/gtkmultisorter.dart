@@ -5,7 +5,7 @@ part of '../gtk4.dart';
 ///
 /// If the first sorter compares two items as equal,
 /// the second is tried next, and so on.
-class GtkMultiSorter extends GtkSorter {
+class GtkMultiSorter extends GtkSorter implements GListModel, GtkBuildable {
   GtkMultiSorter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new multi sorter.
@@ -18,7 +18,7 @@ class GtkMultiSorter extends GtkSorter {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_multi_sorter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkMultiSorter() : super.fromPointer(_gtkMultiSorterNew(), owned: true);
+  GtkMultiSorter() : this.fromPointer(_gtkMultiSorterNew(), owned: true);
 
   /// Add @sorter to @self to use for sorting at the end.
   ///
@@ -97,6 +97,22 @@ class GtkMultiSorter extends GtkSorter {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

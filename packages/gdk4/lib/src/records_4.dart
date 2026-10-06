@@ -45,7 +45,7 @@ part of '../gdk4.dart';
 /// [method@Gdk.Paintable.invalidate_contents],
 /// [method@Gdk.Paintable.invalidate_size],
 /// [func@Gdk.Paintable.new_empty].
-final class GdkPaintable {
+class GdkPaintable {
   GdkPaintable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -316,7 +316,7 @@ final class GdkPaintable {
 /// `GdkPopup`s are typically used to implement menus and similar popups.
 /// They can be modal, which is indicated by the [property@Gdk.Popup:autohide]
 /// property.
-final class GdkPopup {
+class GdkPopup {
   GdkPopup.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

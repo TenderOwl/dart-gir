@@ -49,7 +49,8 @@ part of '../gio.dart';
 /// ## A watch proxy example
 /// An example using a proxy for a well-known name can be found in
 /// [`gdbus-example-watch-proxy.c`](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gdbus-example-watch-proxy.c).
-class GDBusProxy extends GObject {
+class GDBusProxy extends GObject
+    implements GAsyncInitable, GDBusInterface, GInitable {
   GDBusProxy.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Finishes creating a #GDBusProxy.

@@ -54,7 +54,7 @@ class GtkBuilderListItemFactory extends GtkListItemFactory {
             )
           >();
   GtkBuilderListItemFactory.fromBytes(GtkBuilderScope? scope, GBytes bytes)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkBuilderListItemFactoryNewFromBytes(
           scope?.handle ?? ffi.nullptr,
           bytes.handle,

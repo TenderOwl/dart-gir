@@ -119,7 +119,7 @@ class GDBusInterfaceSkeleton extends GObject {
             >
           >('g_dbus_interface_skeleton_get_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusInterfaceInfo getInfo() {
+  GDBusInterfaceInfo getInfoDBusInterfaceSkeleton() {
     return GDBusInterfaceInfo.fromPointer(
       _gDbusInterfaceSkeletonGetInfo(this.handle),
     );
@@ -316,26 +316,6 @@ class GDBusInterfaceSkeleton extends GObject {
     return (_gDbusInterfaceDupObject(this.handle)) == ffi.nullptr
         ? null
         : GDBusObject.fromPointer(_gDbusInterfaceDupObject(this.handle));
-  }
-
-  /// Gets D-Bus introspection information for the D-Bus interface
-  /// implemented by @interface_.
-  ///
-  /// This can return %NULL if no #GDBusInterfaceInfo was provided during
-  /// construction of @interface_ and is also not made available otherwise.
-  /// For example, #GDBusProxy implements #GDBusInterface but allows for a %NULL
-  /// #GDBusInterfaceInfo.
-  static final _gDbusInterfaceGetInfo =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_interface_get_info')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusInterfaceInfo? getInfoDBusInterfaceSkeleton() {
-    return (_gDbusInterfaceGetInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusInterfaceInfo.fromPointer(_gDbusInterfaceGetInfo(this.handle));
   }
 
   /// Sets the #GDBusObject for @interface_ to @object.

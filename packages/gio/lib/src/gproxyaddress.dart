@@ -2,7 +2,7 @@
 part of '../gio.dart';
 
 /// A [class@Gio.InetSocketAddress] representing a connection via a proxy server.
-class GProxyAddress extends GInetSocketAddress {
+class GProxyAddress extends GInetSocketAddress implements GSocketConnectable {
   GProxyAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new #GProxyAddress for @inetaddr with @protocol that should

@@ -17,7 +17,8 @@ part of '../gtk4.dart';
 ///
 /// If you need to add a shortcut programmatically, use
 /// [method@Gtk.ShortcutsGroup.add_shortcut].
-class GtkShortcutsGroup extends GtkBox {
+class GtkShortcutsGroup extends GtkBox
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkShortcutsGroup.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

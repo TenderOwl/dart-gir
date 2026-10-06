@@ -14,7 +14,7 @@ class GtkBoolFilter extends GtkFilter {
           >('gtk_bool_filter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkBoolFilter([GtkExpression? expression])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkBoolFilterNew(expression?.handle ?? ffi.nullptr),
         owned: true,
       );

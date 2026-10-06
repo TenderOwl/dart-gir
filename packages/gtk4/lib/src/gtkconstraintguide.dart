@@ -12,7 +12,7 @@ part of '../gtk4.dart';
 /// space*.
 ///
 /// Unlike a `GtkWidget`, a `GtkConstraintGuide` will not be drawn.
-class GtkConstraintGuide extends GObject {
+class GtkConstraintGuide extends GObject implements GtkConstraintTarget {
   GtkConstraintGuide.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -22,7 +22,7 @@ class GtkConstraintGuide extends GObject {
         'gtk_constraint_guide_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkConstraintGuide()
-    : super.fromPointer(_gtkConstraintGuideNew(), owned: true);
+    : this.fromPointer(_gtkConstraintGuideNew(), owned: true);
 
   /// Retrieves the name set using gtk_constraint_guide_set_name().
   static final _gtkConstraintGuideGetName =

@@ -18,7 +18,8 @@ part of '../gtk4.dart';
 /// selection, or input. If you are writing a full-fledged video player,
 /// you may want to use the [iface@Gdk.Paintable] API and a media framework
 /// such as Gstreamer directly.
-class GtkVideo extends GtkWidget {
+class GtkVideo extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkVideo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new empty `GtkVideo`.
@@ -26,7 +27,7 @@ class GtkVideo extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_video_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkVideo() : super.fromPointer(_gtkVideoNew(), owned: true);
+  GtkVideo() : this.fromPointer(_gtkVideoNew(), owned: true);
 
   /// Creates a `GtkVideo` to play back the given @file.
   static final _gtkVideoNewForFile =
@@ -37,7 +38,7 @@ class GtkVideo extends GtkWidget {
           >('gtk_video_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkVideo.forFile([GFile? file])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkVideoNewForFile(file?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -71,7 +72,7 @@ class GtkVideo extends GtkWidget {
           >('gtk_video_new_for_media_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkVideo.forMediaStream([GtkMediaStream? stream])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkVideoNewForMediaStream(stream?.handle ?? ffi.nullptr),
         owned: true,
       );

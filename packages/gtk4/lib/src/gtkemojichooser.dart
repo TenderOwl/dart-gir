@@ -44,7 +44,13 @@ part of '../gtk4.dart';
 /// The bottom toolbar used to switch between different emoji categories
 /// consists of buttons with the .emoji-section style class and gets the
 /// .emoji-toolbar style class itself.
-class GtkEmojiChooser extends GtkPopover {
+class GtkEmojiChooser extends GtkPopover
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkShortcutManager {
   GtkEmojiChooser.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -53,7 +59,7 @@ class GtkEmojiChooser extends GtkPopover {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_emoji_chooser_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkEmojiChooser() : super.fromPointer(_gtkEmojiChooserNew(), owned: true);
+  GtkEmojiChooser() : this.fromPointer(_gtkEmojiChooserNew(), owned: true);
 
   /// Emitted when the user selects an Emoji.
   int onEmojiPicked(void Function(String text) callback) {

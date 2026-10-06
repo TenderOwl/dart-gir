@@ -63,7 +63,7 @@ part of '../gtk4.dart';
 /// [method@Gtk.PrintOperationPreview.end_preview] and
 /// [method@Gtk.PrintOperationPreview.is_selected]
 /// are useful when implementing a print preview.
-class GtkPrintOperation extends GObject {
+class GtkPrintOperation extends GObject implements GtkPrintOperationPreview {
   GtkPrintOperation.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -72,7 +72,7 @@ class GtkPrintOperation extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_print_operation_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPrintOperation() : super.fromPointer(_gtkPrintOperationNew(), owned: true);
+  GtkPrintOperation() : this.fromPointer(_gtkPrintOperationNew(), owned: true);
 
   /// Cancels a running print operation.
   ///
@@ -892,6 +892,29 @@ class GtkPrintOperation extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted once for each page that gets rendered to the preview.
+  ///
+  /// A handler for this signal should update the @context
+  /// according to @page_setup and set up a suitable cairo
+  /// context, using [method@Gtk.PrintContext.set_cairo_context].
+  int onGotPageSize(
+    void Function(GtkPrintContext context, GtkPageSetup pageSetup) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtkprintcontext_gtkpagesetup(
+      this.handle,
+      'got-page-size',
+      callback,
+    );
+  }
+
+  /// The ::ready signal gets emitted once per preview operation,
+  /// before the first page is rendered.
+  ///
+  /// A handler for this signal can be used for setup tasks.
+  int onReady(void Function(GtkPrintContext context) callback) {
+    return _connectSignal_v_1_o_gtkprintcontext(this.handle, 'ready', callback);
   }
 
   /// Ends a preview.

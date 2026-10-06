@@ -75,7 +75,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkHeaderBar` uses the [enum@Gtk.AccessibleRole.group] role.
-class GtkHeaderBar extends GtkWidget {
+class GtkHeaderBar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkHeaderBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkHeaderBar` widget.
@@ -83,7 +84,7 @@ class GtkHeaderBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_header_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkHeaderBar() : super.fromPointer(_gtkHeaderBarNew(), owned: true);
+  GtkHeaderBar() : this.fromPointer(_gtkHeaderBarNew(), owned: true);
 
   /// Gets the decoration layout of the header bar.
   static final _gtkHeaderBarGetDecorationLayout =

@@ -18,7 +18,7 @@ part of '../gtk4.dart';
 /// [method@Gtk.MediaStream.gerror],
 /// [method@Gtk.MediaStream.error],
 /// [method@Gtk.MediaStream.error_valist].
-class GtkMediaStream extends GObject {
+class GtkMediaStream extends GObject implements GdkPaintable {
   GtkMediaStream.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Sets @self into an error state.
@@ -506,6 +506,28 @@ class GtkMediaStream extends GObject {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
+  }
+
   /// Compute a concrete size for the `GdkPaintable`.
   ///
   /// Applies the sizing algorithm outlined in the
@@ -719,7 +741,7 @@ class GtkMediaStream extends GObject {
               double,
             )
           >();
-  void snapshot(GtkSnapshot snapshot, double width, double height) {
+  void snapshot(GdkSnapshot snapshot, double width, double height) {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
   }
 

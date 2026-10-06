@@ -48,7 +48,7 @@ part of '../gio.dart';
 /// will generally be able to provide the `G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE`
 /// identifier, which can be used to obtain a hal device by means of
 /// `libhal_manager_find_device_string_match()`.
-final class GVolume {
+class GVolume {
   GVolume.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

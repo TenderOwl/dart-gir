@@ -15,7 +15,7 @@ class GtkConstantExpression extends GtkExpression {
           >('gtk_constant_expression_new_for_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkConstantExpression.forValue(GValue value)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkConstantExpressionNewForValue(value.handle),
         owned: true,
       );

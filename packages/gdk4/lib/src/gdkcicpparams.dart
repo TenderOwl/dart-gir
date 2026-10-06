@@ -31,7 +31,7 @@ class GdkCicpParams extends GObject {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_cicp_params_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GdkCicpParams() : super.fromPointer(_gdkCicpParamsNew(), owned: true);
+  GdkCicpParams() : this.fromPointer(_gdkCicpParamsNew(), owned: true);
 
   /// Creates a new `GdkColorState` object for the cicp parameters in @self.
   ///

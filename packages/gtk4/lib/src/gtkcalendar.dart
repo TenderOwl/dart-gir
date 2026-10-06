@@ -57,7 +57,8 @@ part of '../gtk4.dart';
 /// style class. The label of the current day get the .today style class.
 ///
 /// Marked day labels get the :selected state assigned.
-class GtkCalendar extends GtkWidget {
+class GtkCalendar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkCalendar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new calendar, with the current date being selected.
@@ -65,7 +66,7 @@ class GtkCalendar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_calendar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCalendar() : super.fromPointer(_gtkCalendarNew(), owned: true);
+  GtkCalendar() : this.fromPointer(_gtkCalendarNew(), owned: true);
 
   /// Remove all visual markers.
   static final _gtkCalendarClearMarks =

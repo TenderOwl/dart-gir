@@ -20,7 +20,7 @@ part of '../gio.dart';
 /// The default implementation of all the `GFileIOStream` operations
 /// and the implementation of [iface@Gio.Seekable] just call into the same
 /// operations on the output stream.
-class GFileIOStream extends GIOStream {
+class GFileIOStream extends GIOStream implements GSeekable {
   GFileIOStream.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Gets the entity tag for the file when it has been written.

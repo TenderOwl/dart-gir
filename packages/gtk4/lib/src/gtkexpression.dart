@@ -219,18 +219,14 @@ class GtkExpression {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkExpressionWatch bind(
-    ffi.Pointer<ffi.Void> target,
-    String property,
-    ffi.Pointer<ffi.Void> this_,
-  ) {
+  GtkExpressionWatch bind(GObject target, String property, [GObject? this_]) {
     return withNativeString(property, (nativeProperty) {
       return GtkExpressionWatch.fromPointer(
         _gtkExpressionBind(
           this.handle,
-          target,
+          target.handle,
           nativeProperty.cast<Utf8>(),
-          this_,
+          this_?.handle ?? ffi.nullptr,
         ),
       );
     });
@@ -263,8 +259,13 @@ class GtkExpression {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  bool evaluate(ffi.Pointer<ffi.Void> this_, GValue value) {
-    return (_gtkExpressionEvaluate(this.handle, this_, value.handle)) != 0;
+  bool evaluate(GObject? this_, GValue value) {
+    return (_gtkExpressionEvaluate(
+          this.handle,
+          this_?.handle ?? ffi.nullptr,
+          value.handle,
+        )) !=
+        0;
   }
 
   /// Gets the `GType` that this expression evaluates to.
@@ -356,7 +357,7 @@ class GtkExpression {
             )
           >();
   GtkExpressionWatch watch(
-    ffi.Pointer<ffi.Void> this_,
+    GObject? this_,
     void Function(ffi.Pointer<ffi.Void>) notify,
     ffi.Pointer<ffi.Void> userData,
     void Function(ffi.Pointer<ffi.Void>) userDestroy,
@@ -372,7 +373,7 @@ class GtkExpression {
     try {
       final _ret = _gtkExpressionWatch(
         this.handle,
-        this_,
+        this_?.handle ?? ffi.nullptr,
         _nc2.nativeFunction,
         userData,
         _nc4.nativeFunction,

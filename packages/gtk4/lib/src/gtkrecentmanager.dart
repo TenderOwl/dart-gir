@@ -75,7 +75,7 @@ class GtkRecentManager extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_recent_manager_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkRecentManager() : super.fromPointer(_gtkRecentManagerNew(), owned: true);
+  GtkRecentManager() : this.fromPointer(_gtkRecentManagerNew(), owned: true);
 
   /// Adds a new resource, pointed by @uri, into the recently used
   /// resources list, using the metadata specified inside the

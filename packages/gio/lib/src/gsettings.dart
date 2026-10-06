@@ -639,7 +639,7 @@ class GSettings extends GObject {
           >();
   void bind(
     String key,
-    ffi.Pointer<ffi.Void> object,
+    GObject object,
     String property,
     GSettingsBindFlags flags,
   ) {
@@ -648,7 +648,7 @@ class GSettings extends GObject {
         _gSettingsBind(
           this.handle,
           nativeKey.cast<Utf8>(),
-          object,
+          object.handle,
           nativeProperty.cast<Utf8>(),
           flags.value,
         );
@@ -747,7 +747,7 @@ class GSettings extends GObject {
           >();
   void bindWritable(
     String key,
-    ffi.Pointer<ffi.Void> object,
+    GObject object,
     String property,
     bool inverted,
   ) {
@@ -756,7 +756,7 @@ class GSettings extends GObject {
         _gSettingsBindWritable(
           this.handle,
           nativeKey.cast<Utf8>(),
-          object,
+          object.handle,
           nativeProperty.cast<Utf8>(),
           inverted ? 1 : 0,
         );
@@ -1741,9 +1741,9 @@ class GSettings extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
           >();
-  static void unbind(ffi.Pointer<ffi.Void> object, String property) {
+  static void unbind(GObject object, String property) {
     withNativeString(property, (nativeProperty) {
-      _gSettingsUnbind(object, nativeProperty.cast<Utf8>());
+      _gSettingsUnbind(object.handle, nativeProperty.cast<Utf8>());
     });
   }
 

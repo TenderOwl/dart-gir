@@ -46,7 +46,13 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkScrollbar` uses the [enum@Gtk.AccessibleRole.scrollbar] role.
-class GtkScrollbar extends GtkWidget {
+class GtkScrollbar extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkScrollbar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new scrollbar with the given orientation.
@@ -60,7 +66,7 @@ class GtkScrollbar extends GtkWidget {
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
   GtkScrollbar(GtkOrientation orientation, [GtkAdjustment? adjustment])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkScrollbarNew(orientation.value, adjustment?.handle ?? ffi.nullptr),
         owned: true,
       );

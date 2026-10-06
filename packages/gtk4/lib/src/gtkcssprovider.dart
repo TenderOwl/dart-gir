@@ -29,7 +29,7 @@ part of '../gtk4.dart';
 ///
 /// To track errors while loading CSS, connect to the
 /// [signal@Gtk.CssProvider::parsing-error] signal.
-class GtkCssProvider extends GObject {
+class GtkCssProvider extends GObject implements GtkStyleProvider {
   GtkCssProvider.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Returns a newly created `GtkCssProvider`.
@@ -37,7 +37,7 @@ class GtkCssProvider extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_css_provider_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCssProvider() : super.fromPointer(_gtkCssProviderNew(), owned: true);
+  GtkCssProvider() : this.fromPointer(_gtkCssProviderNew(), owned: true);
 
   /// Loads @data into @css_provider.
   ///
@@ -241,5 +241,9 @@ class GtkCssProvider extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  int onGtkPrivateChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'gtk-private-changed', callback);
   }
 }

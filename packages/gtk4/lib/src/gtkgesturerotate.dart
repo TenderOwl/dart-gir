@@ -15,7 +15,7 @@ class GtkGestureRotate extends GtkGesture {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_rotate_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGestureRotate() : super.fromPointer(_gtkGestureRotateNew(), owned: true);
+  GtkGestureRotate() : this.fromPointer(_gtkGestureRotateNew(), owned: true);
 
   /// Gets the angle delta in radians.
   ///

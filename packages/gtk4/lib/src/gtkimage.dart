@@ -43,7 +43,8 @@ part of '../gtk4.dart';
 /// ## Accessibility
 ///
 /// `GtkImage` uses the [enum@Gtk.AccessibleRole.img] role.
-class GtkImage extends GtkWidget {
+class GtkImage extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkImage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new empty `GtkImage` widget.
@@ -51,7 +52,7 @@ class GtkImage extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_image_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkImage() : super.fromPointer(_gtkImageNew(), owned: true);
+  GtkImage() : this.fromPointer(_gtkImageNew(), owned: true);
 
   /// Creates a new `GtkImage` displaying the file @filename.
   ///
@@ -95,7 +96,7 @@ class GtkImage extends GtkWidget {
           >('gtk_image_new_from_gicon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkImage.fromGicon(GIcon icon)
-    : super.fromPointer(_gtkImageNewFromGicon(icon.handle), owned: true);
+    : this.fromPointer(_gtkImageNewFromGicon(icon.handle), owned: true);
 
   /// Creates a `GtkImage` displaying an icon from the current icon theme.
   ///
@@ -141,7 +142,7 @@ class GtkImage extends GtkWidget {
           >('gtk_image_new_from_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkImage.fromPaintable([GdkPaintable? paintable])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkImageNewFromPaintable(paintable?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -166,7 +167,7 @@ class GtkImage extends GtkWidget {
           >('gtk_image_new_from_pixbuf')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkImage.fromPixbuf([GdkPixbuf? pixbuf])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkImageNewFromPixbuf(pixbuf?.handle ?? ffi.nullptr),
         owned: true,
       );

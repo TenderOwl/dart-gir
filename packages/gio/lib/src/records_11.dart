@@ -102,7 +102,7 @@ part of '../gio.dart';
 /// iface->init_finish = foo_init_finish;
 /// }
 /// ```
-final class GAsyncInitable {
+class GAsyncInitable {
   GAsyncInitable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -494,7 +494,7 @@ final class GAsyncInitable {
 /// higher priority. It is recommended to choose priorities between
 /// `G_PRIORITY_LOW` and `G_PRIORITY_HIGH`, with `G_PRIORITY_DEFAULT`
 /// as a default.
-final class GAsyncResult {
+class GAsyncResult {
   GAsyncResult.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

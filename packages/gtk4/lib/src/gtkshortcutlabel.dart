@@ -4,7 +4,8 @@ part of '../gtk4.dart';
 /// `GtkShortcutLabel` displays a single keyboard shortcut or gesture.
 ///
 /// The main use case for `GtkShortcutLabel` is inside a [class@Gtk.ShortcutsWindow].
-class GtkShortcutLabel extends GtkWidget {
+class GtkShortcutLabel extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkShortcutLabel.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

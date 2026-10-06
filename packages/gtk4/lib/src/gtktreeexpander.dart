@@ -77,7 +77,8 @@ part of '../gtk4.dart';
 ///
 /// Since GTK 4.12, `GtkTreeExpander` uses the [enum@Gtk.AccessibleRole.button] role.
 /// Toggling it will change the `GTK_ACCESSIBLE_STATE_EXPANDED` state.
-class GtkTreeExpander extends GtkWidget {
+class GtkTreeExpander extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkTreeExpander.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -86,7 +87,7 @@ class GtkTreeExpander extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_expander_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTreeExpander() : super.fromPointer(_gtkTreeExpanderNew(), owned: true);
+  GtkTreeExpander() : this.fromPointer(_gtkTreeExpanderNew(), owned: true);
 
   /// Gets the child widget displayed by @self.
   static final _gtkTreeExpanderGetChild =
@@ -143,8 +144,10 @@ class GtkTreeExpander extends GtkWidget {
             >
           >('gtk_tree_expander_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getItem() {
-    return _gtkTreeExpanderGetItem(this.handle);
+  GObject? getItem() {
+    return (_gtkTreeExpanderGetItem(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gtkTreeExpanderGetItem(this.handle));
   }
 
   /// Gets the list row managed by @self.

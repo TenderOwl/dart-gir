@@ -228,18 +228,23 @@ this keeps the public surface from emitting a half-broken object.
 
 GIR's `<class>` may declare `<implements name="..."/>` — concrete
 classes advertise that they satisfy a GObject interface's contract.
-The interface itself is emitted as `final class GtkActionable { ... }`
-by [`RecordEmitter`](#recorder-emitter) (see above), so users with an
-opaque pointer can still wrap it and call actionable methods directly.
-For ergonomic use on the concrete widget, the class emitter mirrors
-every `<method>` declared on each implemented interface onto the
-class as if it were its own. Result: `button.setActionName('win.open')`
-compiles and dispatches to `gtk_actionable_set_action_name` with
-`this.handle` — no `GtkActionable(button.handle)` wrapper required.
+The interface itself is emitted as `class GtkActionable { ... }`
+(non-`final`) by [`RecordEmitter`](#recorder-emitter) (see above), so
+users with an opaque pointer can still wrap it and call actionable
+methods directly. The implementing class now declares the
+`implements` clause (`class GtkButton extends GtkWidget implements
+GtkActionable`), so Dart's structural check enforces the contract at
+compile time and `button.setActionName('win.open')` works without an
+explicit `as GtkActionable` cast. For ergonomic use on the concrete
+widget, the class emitter mirrors every `<method>` declared on each
+implemented interface onto the class as if it were its own. Result:
+`button.setActionName('win.open')` compiles and dispatches to
+`gtk_actionable_set_action_name` with `this.handle` — no
+`GtkActionable(button.handle)` wrapper required.
 
 ```dart
 // GtkButton extends GtkWidget, implements Gtk.Actionable.
-class GtkButton extends GtkWidget {
+class GtkButton extends GtkWidget implements GtkActionable {
   // ... <constructor>, <method>, <function>, signals ...
 
   // Mirrored from GtkActionable.get_action_name:
@@ -294,10 +299,13 @@ key is compared against:
 2. The interface's own expected signature
    (`_interfaceMethodSigs`). A class method that diverges from its
    declared interface is renamed so it doesn't claim to satisfy the
-   contract. With Phase 1's concrete `final class` interface
-   emission, this rename is purely defensive; Phase 2 will promote
-   the interface to `abstract class` and the rename will keep the
-   Dart analyzer happy.
+   contract. `_methodKey` is c-type-aware, so two GIR types with the
+   same `<type name>` but different `c:type` (e.g. `<type name="Snapshot"
+   c:type="GdkSnapshot*"/>` vs `<type name="Snapshot" c:type=
+   "GtkSnapshot*"/>`) compare unequal and the rename fires. When the
+   rename fires, the offending interface is dropped from the
+   `implements` clause so Dart's structural check doesn't reject the
+   class declaration.
 
 **Async interface methods** mirror the same logic the class's own
 methods use: a method with `scope="async"` parameter or `finishFunc`
@@ -314,6 +322,26 @@ import is added to the package barrel. If the only types referenced
 are primitives, `Pointer<Void>`, or types from other already-imported
 packages (e.g. `GObject` from `gobject`), the import is suppressed
 to avoid `unused_import` warnings.
+
+**Namespace-relative type resolution**. The mirror's
+`CallableEmitter.emit` call threads the interface's namespace
+through to `bridgeFor` via a `relativeTo` parameter, so parameter and
+return types resolve against the interface's own namespace, not the
+implementing class's. Without this, `GdkPaintable.snapshot(GdkSnapshot,
+…)` would be re-bound to `GtkSnapshot` when mirrored onto
+`GtkIconPaintable` and the `implements GdkPaintable` structural check
+would fail with `invalid_override` (the two classes are typedef'd to
+the same C type but resolve to different Dart names per namespace).
+
+**Interface signals**. The `implements_` chain is walked by both
+`inheritedSignals` (per-class inheritance of `onSignalName`
+connectors) and `_signalsIncludingAncestors` (per-package emission of
+the `_connectSignal_<bucketId>` helpers in `signals.dart`). Without
+this walk, `class GtkStringList extends GObject implements GListModel`
+was missing the `onItemsChanged` connector the `GListModel` interface
+declared, and the package's `signals.dart` was missing the
+`_connectSignal_v_3_i_i_i_int_int_int` helper the connector called
+(`unknown_method _connectSignal_v_X` from the analyzer).
 
 ## CallableEmitter — `generator/lib/src/emit/callable.dart`
 

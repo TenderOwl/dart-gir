@@ -36,7 +36,8 @@ part of '../gtk4.dart';
 /// GDK_DEBUG=dmabuf
 ///
 /// The GTK inspector provides a visual debugging tool for graphics offload.
-class GtkGraphicsOffload extends GtkWidget {
+class GtkGraphicsOffload extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkGraphicsOffload.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -49,7 +50,7 @@ class GtkGraphicsOffload extends GtkWidget {
           >('gtk_graphics_offload_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkGraphicsOffload([GtkWidget? child])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkGraphicsOffloadNew(child?.handle ?? ffi.nullptr),
         owned: true,
       );

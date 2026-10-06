@@ -39,7 +39,8 @@ part of '../gtk4.dart';
 /// [method@Gtk.TreeModelFilter.get_model]. Don’t forget to use
 /// [method@Gtk.TreeModelFilter.convert_iter_to_child_iter] to obtain a
 /// matching iter.
-class GtkEntryCompletion extends GObject {
+class GtkEntryCompletion extends GObject
+    implements GtkBuildable, GtkCellLayout {
   GtkEntryCompletion.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -49,7 +50,7 @@ class GtkEntryCompletion extends GObject {
         'gtk_entry_completion_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkEntryCompletion()
-    : super.fromPointer(_gtkEntryCompletionNew(), owned: true);
+    : this.fromPointer(_gtkEntryCompletionNew(), owned: true);
 
   /// Creates a new `GtkEntryCompletion` object using the
   /// specified @area.
@@ -64,7 +65,7 @@ class GtkEntryCompletion extends GObject {
           >('gtk_entry_completion_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEntryCompletion.withArea(GtkCellArea area)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkEntryCompletionNewWithArea(area.handle),
         owned: true,
       );

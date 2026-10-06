@@ -21,7 +21,7 @@ class GCancellable extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_cancellable_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GCancellable() : super.fromPointer(_gCancellableNew(), owned: true);
+  GCancellable() : this.fromPointer(_gCancellableNew(), owned: true);
 
   /// Will set @cancellable to cancelled, and will emit the
   /// #GCancellable::cancelled signal. (However, see the warning about

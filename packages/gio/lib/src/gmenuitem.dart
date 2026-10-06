@@ -55,7 +55,7 @@ class GMenuItem extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GMenuItem.fromModel(GMenuModel model, int itemIndex)
-    : super.fromPointer(
+    : this.fromPointer(
         _gMenuItemNewFromModel(model.handle, itemIndex),
         owned: true,
       );

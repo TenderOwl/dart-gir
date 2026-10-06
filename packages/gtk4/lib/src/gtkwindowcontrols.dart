@@ -54,7 +54,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkWindowControls` uses the [enum@Gtk.AccessibleRole.group] role.
-class GtkWindowControls extends GtkWidget {
+class GtkWindowControls extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkWindowControls.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -64,7 +65,7 @@ class GtkWindowControls extends GtkWidget {
         'gtk_window_controls_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkWindowControls(GtkPackType side)
-    : super.fromPointer(_gtkWindowControlsNew(side.value), owned: true);
+    : this.fromPointer(_gtkWindowControlsNew(side.value), owned: true);
 
   /// Gets the decoration layout of this window controls widget
   static final _gtkWindowControlsGetDecorationLayout =

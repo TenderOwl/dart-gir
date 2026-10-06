@@ -92,7 +92,8 @@ part of '../gtk4.dart';
 /// For rubberband selection, a subnode with name `rubberband` is used.
 ///
 /// For the drop target location during DND, a subnode with name `dndtarget` is used.
-class GtkTreeView extends GtkWidget {
+class GtkTreeView extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkScrollable {
   GtkTreeView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkTreeView` widget.
@@ -100,7 +101,7 @@ class GtkTreeView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTreeView() : super.fromPointer(_gtkTreeViewNew(), owned: true);
+  GtkTreeView() : this.fromPointer(_gtkTreeViewNew(), owned: true);
 
   /// Creates a new `GtkTreeView` widget with the model initialized to @model.
   static final _gtkTreeViewNewWithModel =
@@ -111,7 +112,7 @@ class GtkTreeView extends GtkWidget {
           >('gtk_tree_view_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeView.withModel(GtkTreeModel model)
-    : super.fromPointer(_gtkTreeViewNewWithModel(model.handle), owned: true);
+    : this.fromPointer(_gtkTreeViewNewWithModel(model.handle), owned: true);
 
   /// Appends @column to the list of columns. If @tree_view has “fixed_height”
   /// mode enabled, then @column must have its “sizing” property set to be

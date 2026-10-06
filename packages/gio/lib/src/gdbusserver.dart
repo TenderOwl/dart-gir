@@ -21,7 +21,7 @@ part of '../gio.dart';
 /// `GDBusServer`. Since GLib 2.68 this can be achieved more simply by passing
 /// the `G_DBUS_SERVER_FLAGS_AUTHENTICATION_REQUIRE_SAME_USER` flag to the
 /// server.
-class GDBusServer extends GObject {
+class GDBusServer extends GObject implements GInitable {
   GDBusServer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new D-Bus server that listens on the first address in

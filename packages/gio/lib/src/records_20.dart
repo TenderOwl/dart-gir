@@ -49,7 +49,7 @@ part of '../gio.dart';
 ///
 /// Don’t forget to disconnect the [signal@Gio.MemoryMonitor::low-memory-warning]
 /// signal, and unref the `GMemoryMonitor` itself when exiting.
-final class GMemoryMonitor {
+class GMemoryMonitor {
   GMemoryMonitor.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

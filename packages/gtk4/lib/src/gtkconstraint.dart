@@ -49,20 +49,20 @@ class GtkConstraint extends GObject {
             )
           >();
   GtkConstraint(
-    ffi.Pointer<ffi.Void> target,
+    GtkConstraintTarget? target,
     GtkConstraintAttribute targetAttribute,
     GtkConstraintRelation relation,
-    ffi.Pointer<ffi.Void> source,
+    GtkConstraintTarget? source,
     GtkConstraintAttribute sourceAttribute,
     double multiplier,
     double constant,
     int strength,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gtkConstraintNew(
-          target,
+          target?.handle ?? ffi.nullptr,
           targetAttribute.value,
           relation.value,
-          source,
+          source?.handle ?? ffi.nullptr,
           sourceAttribute.value,
           multiplier,
           constant,
@@ -95,14 +95,14 @@ class GtkConstraint extends GObject {
             )
           >();
   GtkConstraint.constant(
-    ffi.Pointer<ffi.Void> target,
+    GtkConstraintTarget? target,
     GtkConstraintAttribute targetAttribute,
     GtkConstraintRelation relation,
     double constant,
     int strength,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gtkConstraintNewConstant(
-          target,
+          target?.handle ?? ffi.nullptr,
           targetAttribute.value,
           relation.value,
           constant,

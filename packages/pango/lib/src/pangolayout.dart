@@ -52,7 +52,7 @@ class PangoLayout extends GObject {
           >('pango_layout_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayout(PangoContext context)
-    : super.fromPointer(_pangoLayoutNew(context.handle), owned: true);
+    : this.fromPointer(_pangoLayoutNew(context.handle), owned: true);
 
   /// Forces recomputation of any state in the `PangoLayout` that
   /// might depend on the layout's context.

@@ -51,7 +51,7 @@ class GtkDropDownProps extends GtkWidgetProps {
     _self.setSelected(value);
   }
 
-  ffi.Pointer<ffi.Void> get selectedItem => _self.getSelectedItem();
+  GObject? get selectedItem => _self.getSelectedItem();
 
   bool get showArrow => _self.getShowArrow();
   set showArrow(bool value) {

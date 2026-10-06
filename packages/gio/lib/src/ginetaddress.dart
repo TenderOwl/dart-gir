@@ -21,7 +21,7 @@ class GInetAddress extends GObject {
         'g_inet_address_new_any',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GInetAddress.any(GSocketFamily family)
-    : super.fromPointer(_gInetAddressNewAny(family.value), owned: true);
+    : this.fromPointer(_gInetAddressNewAny(family.value), owned: true);
 
   /// Creates a new #GInetAddress from the given @family and @bytes.
   /// @bytes should be 4 bytes for %G_SOCKET_FAMILY_IPV4 and 16 bytes for
@@ -35,15 +35,11 @@ class GInetAddress extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
-  factory GInetAddress.fromBytes(
-    ffi.Pointer<ffi.Uint8> bytes,
-    GSocketFamily family,
-  ) {
-    return GInetAddress.fromPointer(
-      _gInetAddressNewFromBytes(bytes, family.value),
-      owned: true,
-    );
-  }
+  GInetAddress.fromBytes(ffi.Pointer<ffi.Uint8> bytes, GSocketFamily family)
+    : this.fromPointer(
+        _gInetAddressNewFromBytes(bytes, family.value),
+        owned: true,
+      );
 
   /// Creates a new [class@Gio.InetAddress] from the given @family, @bytes
   /// and @scope_id.
@@ -69,22 +65,20 @@ class GInetAddress extends GObject {
               int,
             )
           >();
-  factory GInetAddress.fromBytesWithIpv6Info(
+  GInetAddress.fromBytesWithIpv6Info(
     ffi.Pointer<ffi.Uint8> bytes,
     GSocketFamily family,
     int flowinfo,
     int scopeId,
-  ) {
-    return GInetAddress.fromPointer(
-      _gInetAddressNewFromBytesWithIpv6Info(
-        bytes,
-        family.value,
-        flowinfo,
-        scopeId,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gInetAddressNewFromBytesWithIpv6Info(
+          bytes,
+          family.value,
+          flowinfo,
+          scopeId,
+        ),
+        owned: true,
+      );
 
   /// Parses @string as an IP address and creates a new #GInetAddress.
   ///
@@ -113,7 +107,7 @@ class GInetAddress extends GObject {
         'g_inet_address_new_loopback',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GInetAddress.loopback(GSocketFamily family)
-    : super.fromPointer(_gInetAddressNewLoopback(family.value), owned: true);
+    : this.fromPointer(_gInetAddressNewLoopback(family.value), owned: true);
 
   /// Checks if two #GInetAddress instances are equal, e.g. the same address.
   static final _gInetAddressEqual =

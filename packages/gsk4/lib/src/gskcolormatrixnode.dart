@@ -36,7 +36,7 @@ class GskColorMatrixNode extends GskRenderNode {
     GskRenderNode child,
     GrapheneMatrix colorMatrix,
     GrapheneVec4 colorOffset,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gskColorMatrixNodeNew(
           child.handle,
           colorMatrix.handle,

@@ -50,7 +50,8 @@ part of '../gtk4.dart';
 /// [property@Gtk.LockButton:tooltip-lock],
 /// [property@Gtk.LockButton:tooltip-unlock] and
 /// [property@Gtk.LockButton:tooltip-not-authorized] properties.
-class GtkLockButton extends GtkButton {
+class GtkLockButton extends GtkButton
+    implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
   GtkLockButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new lock button which reflects the @permission.
@@ -62,7 +63,7 @@ class GtkLockButton extends GtkButton {
           >('gtk_lock_button_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkLockButton([GPermission? permission])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkLockButtonNew(permission?.handle ?? ffi.nullptr),
         owned: true,
       );

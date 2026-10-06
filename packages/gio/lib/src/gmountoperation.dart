@@ -32,7 +32,7 @@ class GMountOperation extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_mount_operation_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GMountOperation() : super.fromPointer(_gMountOperationNew(), owned: true);
+  GMountOperation() : this.fromPointer(_gMountOperationNew(), owned: true);
 
   /// Check to see whether the mount operation is being used
   /// for an anonymous user.

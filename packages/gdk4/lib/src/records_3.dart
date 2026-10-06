@@ -523,7 +523,7 @@ final class GdkToplevelSize {
 /// current modes. The number of available modes in a group can be found
 /// out through [method@Gdk.DevicePad.get_group_n_modes], and the current mode
 /// for a given group will be notified through events of type `GDK_PAD_GROUP_MODE`.
-final class GdkDevicePad {
+class GdkDevicePad {
   GdkDevicePad.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -580,7 +580,7 @@ final class GdkDevicePad {
 }
 
 /// A surface that is used during DND.
-final class GdkDragSurface {
+class GdkDragSurface {
   GdkDragSurface.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

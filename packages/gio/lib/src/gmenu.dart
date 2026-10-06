@@ -19,7 +19,7 @@ class GMenu extends GMenuModel {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_menu_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GMenu() : super.fromPointer(_gMenuNew(), owned: true);
+  GMenu() : this.fromPointer(_gMenuNew(), owned: true);
 
   /// Convenience function for appending a normal menu item to the end of
   /// @menu.  Combine g_menu_item_new() and g_menu_insert_item() for a more

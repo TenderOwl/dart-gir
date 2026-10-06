@@ -53,7 +53,7 @@ part of '../gio.dart';
 ///
 /// Here is an example for exporting a #GObject:
 /// [gdbus-example-export.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gdbus-example-export.c)
-class GDBusConnection extends GObject {
+class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
   GDBusConnection.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

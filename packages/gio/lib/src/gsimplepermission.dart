@@ -18,7 +18,7 @@ class GSimplePermission extends GPermission {
         'g_simple_permission_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GSimplePermission(bool allowed)
-    : super.fromPointer(_gSimplePermissionNew(allowed ? 1 : 0), owned: true);
+    : this.fromPointer(_gSimplePermissionNew(allowed ? 1 : 0), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

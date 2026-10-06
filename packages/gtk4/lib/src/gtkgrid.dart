@@ -87,7 +87,8 @@ part of '../gtk4.dart';
 /// Until GTK 4.10, `GtkGrid` used the [enum@Gtk.AccessibleRole.group] role.
 ///
 /// Starting from GTK 4.12, `GtkGrid` uses the [enum@Gtk.AccessibleRole.generic] role.
-class GtkGrid extends GtkWidget {
+class GtkGrid extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkGrid.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new grid widget.
@@ -95,7 +96,7 @@ class GtkGrid extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_grid_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGrid() : super.fromPointer(_gtkGridNew(), owned: true);
+  GtkGrid() : this.fromPointer(_gtkGridNew(), owned: true);
 
   /// Adds a widget to the grid.
   ///

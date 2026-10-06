@@ -77,7 +77,13 @@ part of '../gtk4.dart';
 /// ## Accessibility
 ///
 /// `GtkTextView` uses the [enum@Gtk.AccessibleRole.text_box] role.
-class GtkTextView extends GtkWidget {
+class GtkTextView extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleText,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkScrollable {
   GtkTextView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkTextView`.
@@ -90,7 +96,7 @@ class GtkTextView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTextView() : super.fromPointer(_gtkTextViewNew(), owned: true);
+  GtkTextView() : this.fromPointer(_gtkTextViewNew(), owned: true);
 
   /// Creates a new `GtkTextView` widget displaying the buffer @buffer.
   ///
@@ -106,7 +112,7 @@ class GtkTextView extends GtkWidget {
           >('gtk_text_view_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextView.withBuffer(GtkTextBuffer buffer)
-    : super.fromPointer(_gtkTextViewNewWithBuffer(buffer.handle), owned: true);
+    : this.fromPointer(_gtkTextViewNewWithBuffer(buffer.handle), owned: true);
 
   /// Adds a child widget in the text buffer, at the given @anchor.
   static final _gtkTextViewAddChildAtAnchor =

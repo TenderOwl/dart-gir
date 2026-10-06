@@ -71,8 +71,8 @@ class GtkFilter extends GObject {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool match(ffi.Pointer<ffi.Void> item) {
-    return (_gtkFilterMatch(this.handle, item)) != 0;
+  bool match(GObject item) {
+    return (_gtkFilterMatch(this.handle, item.handle)) != 0;
   }
 
   /// Emitted whenever the filter changed.

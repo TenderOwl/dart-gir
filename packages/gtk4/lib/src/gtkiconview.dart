@@ -29,7 +29,13 @@ part of '../gtk4.dart';
 ///
 /// `GtkIconView` has a single CSS node with name iconview and style class .view.
 /// For rubberband selection, a subnode with name rubberband is used.
-class GtkIconView extends GtkWidget {
+class GtkIconView extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkCellLayout,
+        GtkConstraintTarget,
+        GtkScrollable {
   GtkIconView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkIconView` widget
@@ -37,7 +43,7 @@ class GtkIconView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_icon_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkIconView() : super.fromPointer(_gtkIconViewNew(), owned: true);
+  GtkIconView() : this.fromPointer(_gtkIconViewNew(), owned: true);
 
   /// Creates a new `GtkIconView` widget using the
   /// specified @area to layout cells inside the icons.
@@ -49,7 +55,7 @@ class GtkIconView extends GtkWidget {
           >('gtk_icon_view_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkIconView.withArea(GtkCellArea area)
-    : super.fromPointer(_gtkIconViewNewWithArea(area.handle), owned: true);
+    : this.fromPointer(_gtkIconViewNewWithArea(area.handle), owned: true);
 
   /// Creates a new `GtkIconView` widget with the model @model.
   static final _gtkIconViewNewWithModel =
@@ -60,7 +66,7 @@ class GtkIconView extends GtkWidget {
           >('gtk_icon_view_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkIconView.withModel(GtkTreeModel model)
-    : super.fromPointer(_gtkIconViewNewWithModel(model.handle), owned: true);
+    : this.fromPointer(_gtkIconViewNewWithModel(model.handle), owned: true);
 
   /// Creates a `GdkPaintable` representation of the item at @path.
   /// This image is used for a drag icon.

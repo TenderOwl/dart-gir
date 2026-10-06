@@ -47,7 +47,7 @@ part of '../gtk4.dart';
 /// </suffixes>
 /// </object>
 /// ```
-class GtkFileFilter extends GtkFilter {
+class GtkFileFilter extends GtkFilter implements GtkBuildable {
   GtkFileFilter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkFileFilter` with no rules added to it.
@@ -68,7 +68,7 @@ class GtkFileFilter extends GtkFilter {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_file_filter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFileFilter() : super.fromPointer(_gtkFileFilterNew(), owned: true);
+  GtkFileFilter() : this.fromPointer(_gtkFileFilterNew(), owned: true);
 
   /// Deserialize a file filter from a `GVariant`.
   ///
@@ -82,7 +82,7 @@ class GtkFileFilter extends GtkFilter {
           >('gtk_file_filter_new_from_gvariant')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFileFilter.fromGvariant(GVariant variant)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkFileFilterNewFromGvariant(variant.handle),
         owned: true,
       );

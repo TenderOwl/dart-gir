@@ -81,7 +81,8 @@ part of '../gtk4.dart';
 ///
 /// Starting from GTK 4.12, `GtkScrolledWindow` uses the [enum@Gtk.AccessibleRole.generic]
 /// role.
-class GtkScrolledWindow extends GtkWidget {
+class GtkScrolledWindow extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkScrolledWindow.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -90,7 +91,7 @@ class GtkScrolledWindow extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_scrolled_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkScrolledWindow() : super.fromPointer(_gtkScrolledWindowNew(), owned: true);
+  GtkScrolledWindow() : this.fromPointer(_gtkScrolledWindowNew(), owned: true);
 
   /// Gets the child widget of @scrolled_window.
   ///

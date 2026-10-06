@@ -21,7 +21,8 @@ part of '../gtk4.dart';
 /// `GtkColorDialogButton` has a single CSS node with name colorbutton which
 /// contains a button node. To differentiate it from a plain `GtkButton`,
 /// it gets the .color style class.
-class GtkColorDialogButton extends GtkWidget {
+class GtkColorDialogButton extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkColorDialogButton.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -38,7 +39,7 @@ class GtkColorDialogButton extends GtkWidget {
           >('gtk_color_dialog_button_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkColorDialogButton([GtkColorDialog? dialog])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkColorDialogButtonNew(dialog?.handle ?? ffi.nullptr),
         owned: true,
       );

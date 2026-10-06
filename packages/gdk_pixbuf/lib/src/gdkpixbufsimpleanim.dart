@@ -15,7 +15,7 @@ class GdkPixbufSimpleAnim extends GdkPixbufAnimation {
           >('gdk_pixbuf_simple_anim_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, double)>();
   GdkPixbufSimpleAnim(int width, int height, double rate)
-    : super.fromPointer(
+    : this.fromPointer(
         _gdkPixbufSimpleAnimNew(width, height, rate),
         owned: true,
       );

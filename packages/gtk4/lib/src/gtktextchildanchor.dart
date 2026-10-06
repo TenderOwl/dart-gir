@@ -19,7 +19,7 @@ class GtkTextChildAnchor extends GObject {
         'gtk_text_child_anchor_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkTextChildAnchor()
-    : super.fromPointer(_gtkTextChildAnchorNew(), owned: true);
+    : this.fromPointer(_gtkTextChildAnchorNew(), owned: true);
 
   /// Creates a new `GtkTextChildAnchor` with the given replacement character.
   ///

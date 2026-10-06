@@ -25,7 +25,7 @@ class GskCrossFadeNode extends GskRenderNode {
             )
           >();
   GskCrossFadeNode(GskRenderNode start, GskRenderNode end, double progress)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskCrossFadeNodeNew(start.handle, end.handle, progress),
         owned: true,
       );

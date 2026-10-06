@@ -21,7 +21,7 @@ class GdkGLTextureBuilder extends GObject {
         'gdk_gl_texture_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GdkGLTextureBuilder()
-    : super.fromPointer(_gdkGlTextureBuilderNew(), owned: true);
+    : this.fromPointer(_gdkGlTextureBuilderNew(), owned: true);
 
   /// Builds a new `GdkTexture` with the values set up in the builder.
   ///

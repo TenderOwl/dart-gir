@@ -19,7 +19,7 @@ class GtkDropControllerMotion extends GtkEventController {
         'gtk_drop_controller_motion_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkDropControllerMotion()
-    : super.fromPointer(_gtkDropControllerMotionNew(), owned: true);
+    : this.fromPointer(_gtkDropControllerMotionNew(), owned: true);
 
   /// Returns if a Drag-and-Drop operation is within the widget
   /// @self or one of its children.

@@ -16,7 +16,7 @@ class GskCopyNode extends GskRenderNode {
           >('gsk_copy_node_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskCopyNode(GskRenderNode child)
-    : super.fromPointer(_gskCopyNodeNew(child.handle), owned: true);
+    : this.fromPointer(_gskCopyNodeNew(child.handle), owned: true);
 
   /// Gets the child node that is getting drawn by the given @node.
   static final _gskCopyNodeGetChild =

@@ -11,7 +11,7 @@ part of '../gio.dart';
 ///
 /// See [iface@Gio.SocketConnectable] for an example of using the connectable
 /// interface.
-class GNetworkAddress extends GObject {
+class GNetworkAddress extends GObject implements GSocketConnectable {
   GNetworkAddress.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -56,7 +56,7 @@ class GNetworkAddress extends GObject {
         'g_network_address_new_loopback',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GNetworkAddress.loopback(int port)
-    : super.fromPointer(_gNetworkAddressNewLoopback(port), owned: true);
+    : this.fromPointer(_gNetworkAddressNewLoopback(port), owned: true);
 
   /// Gets @addr's hostname. This might be either UTF-8 or ASCII-encoded,
   /// depending on what @addr was created with.

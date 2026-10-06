@@ -10,7 +10,7 @@ part of '../gio.dart';
 /// input stream, use [method@Gio.Seekable.tell]. To find out if a file input
 /// stream supports seeking, use [vfunc@Gio.Seekable.can_seek].
 /// To position a file input stream, use [vfunc@Gio.Seekable.seek].
-class GFileInputStream extends GInputStream {
+class GFileInputStream extends GInputStream implements GSeekable {
   GFileInputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

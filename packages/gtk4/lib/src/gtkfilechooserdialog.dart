@@ -173,7 +173,15 @@ part of '../gtk4.dart';
 ///
 /// `GtkFileChooserDialog` has a single CSS node with the name `window` and style
 /// class `.filechooser`.
-class GtkFileChooserDialog extends GtkDialog {
+class GtkFileChooserDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkFileChooser,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkFileChooserDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

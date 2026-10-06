@@ -41,7 +41,8 @@ part of '../gtk4.dart';
 /// for the syntax for other kinds of [class@Gtk.ShortcutAction]. See
 /// [ctor@Gtk.ShortcutTrigger.parse_string] to learn more about the syntax
 /// for triggers.
-class GtkShortcutController extends GtkEventController {
+class GtkShortcutController extends GtkEventController
+    implements GListModel, GtkBuildable {
   GtkShortcutController.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -51,7 +52,7 @@ class GtkShortcutController extends GtkEventController {
         'gtk_shortcut_controller_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkShortcutController()
-    : super.fromPointer(_gtkShortcutControllerNew(), owned: true);
+    : this.fromPointer(_gtkShortcutControllerNew(), owned: true);
 
   /// Creates a new shortcut controller that takes its shortcuts from
   /// the given list model.
@@ -67,7 +68,7 @@ class GtkShortcutController extends GtkEventController {
           >('gtk_shortcut_controller_new_for_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkShortcutController.forModel(GListModel model)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkShortcutControllerNewForModel(model.handle),
         owned: true,
       );
@@ -202,6 +203,22 @@ class GtkShortcutController extends GtkEventController {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

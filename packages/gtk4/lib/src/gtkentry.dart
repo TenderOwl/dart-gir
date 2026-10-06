@@ -91,7 +91,13 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkEntry` uses the [enum@Gtk.AccessibleRole.text_box] role.
-class GtkEntry extends GtkWidget {
+class GtkEntry extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkCellEditable,
+        GtkConstraintTarget,
+        GtkEditable {
   GtkEntry.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new entry.
@@ -99,7 +105,7 @@ class GtkEntry extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_entry_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkEntry() : super.fromPointer(_gtkEntryNew(), owned: true);
+  GtkEntry() : this.fromPointer(_gtkEntryNew(), owned: true);
 
   /// Creates a new entry with the specified text buffer.
   static final _gtkEntryNewWithBuffer =
@@ -110,7 +116,7 @@ class GtkEntry extends GtkWidget {
           >('gtk_entry_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEntry.withBuffer(GtkEntryBuffer buffer)
-    : super.fromPointer(_gtkEntryNewWithBuffer(buffer.handle), owned: true);
+    : this.fromPointer(_gtkEntryNewWithBuffer(buffer.handle), owned: true);
 
   /// Retrieves the value set by gtk_entry_set_activates_default().
   static final _gtkEntryGetActivatesDefault =
@@ -1319,6 +1325,78 @@ class GtkEntry extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is a sign for the cell renderer to update its
+  /// value from the @cell_editable.
+  ///
+  /// Implementations of `GtkCellEditable` are responsible for
+  /// emitting this signal when they are done editing, e.g.
+  /// `GtkEntry` emits this signal when the user presses Enter. Typical things to
+  /// do in a handler for ::editing-done are to capture the edited value,
+  /// disconnect the @cell_editable from signals on the `GtkCellRenderer`, etc.
+  ///
+  /// gtk_cell_editable_editing_done() is a convenience method
+  /// for emitting `GtkCellEditable::editing-done`.
+  int onEditingDone(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'editing-done', callback);
+  }
+
+  /// This signal is meant to indicate that the cell is finished
+  /// editing, and the @cell_editable widget is being removed and may
+  /// subsequently be destroyed.
+  ///
+  /// Implementations of `GtkCellEditable` are responsible for
+  /// emitting this signal when they are done editing. It must
+  /// be emitted after the `GtkCellEditable::editing-done` signal,
+  /// to give the cell renderer a chance to update the cell's value
+  /// before the widget is removed.
+  ///
+  /// gtk_cell_editable_remove_widget() is a convenience method
+  /// for emitting `GtkCellEditable::remove-widget`.
+  int onRemoveWidget(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'remove-widget', callback);
+  }
+
+  /// Emitted at the end of a single user-visible operation on the
+  /// contents.
+  ///
+  /// E.g., a paste operation that replaces the contents of the
+  /// selection will cause only one signal emission (even though it
+  /// is implemented by first deleting the selection, then inserting
+  /// the new content, and may cause multiple ::notify::text signals
+  /// to be emitted).
+  int onChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// Emitted when text is deleted from the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible for
+  /// deleting the text, so by connecting to this signal and then stopping
+  /// the signal with g_signal_stop_emission(), it is possible to modify the
+  /// range of deleted text, or prevent it from being deleted entirely.
+  ///
+  /// The @start_pos and @end_pos parameters are interpreted as for
+  /// [method@Gtk.Editable.delete_text].
+  int onDeleteText(void Function(int startPos, int endPos) callback) {
+    return _connectSignal_v_2_i_i_int_int(this.handle, 'delete-text', callback);
+  }
+
+  /// Emitted when text is inserted into the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible
+  /// for inserting the text, so by connecting to this signal and then
+  /// stopping the signal with g_signal_stop_emission(), it is possible
+  /// to modify the inserted text, or prevent it from being inserted entirely.
+  int onInsertText(
+    void Function(String text, int length, int position) callback,
+  ) {
+    return _connectSignal_v_3_s_i_i_string_int_int(
+      this.handle,
+      'insert-text',
+      callback,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

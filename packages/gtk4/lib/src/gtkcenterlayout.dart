@@ -17,7 +17,7 @@ class GtkCenterLayout extends GtkLayoutManager {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_center_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCenterLayout() : super.fromPointer(_gtkCenterLayoutNew(), owned: true);
+  GtkCenterLayout() : this.fromPointer(_gtkCenterLayoutNew(), owned: true);
 
   /// Returns the baseline position of the layout.
   static final _gtkCenterLayoutGetBaselinePosition =

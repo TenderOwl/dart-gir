@@ -68,7 +68,14 @@ part of '../gtk4.dart';
 ///
 /// `GtkShortcutsWindow` has a single CSS node with the name `window` and style
 /// class `.shortcuts`.
-class GtkShortcutsWindow extends GtkWindow {
+class GtkShortcutsWindow extends GtkWindow
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkShortcutsWindow.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

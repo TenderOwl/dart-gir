@@ -68,7 +68,8 @@ part of '../gtk4.dart';
 /// because it does not implement reference counting, or for models that
 /// do implement reference counting, obtain references on these child levels
 /// yourself.
-class GtkTreeModelFilter extends GObject {
+class GtkTreeModelFilter extends GObject
+    implements GtkTreeDragSource, GtkTreeModel {
   GtkTreeModelFilter.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -498,6 +499,59 @@ class GtkTreeModelFilter extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted when a row in the model has changed.
+  int onRowChanged(void Function(GtkTreePath path, GtkTreeIter iter) callback) {
+    return _connectSignal_v_2_o_o_gtktreepath_gtktreeiter(
+      this.handle,
+      'row-changed',
+      callback,
+    );
+  }
+
+  /// This signal is emitted when a row has been deleted.
+  ///
+  /// Note that no iterator is passed to the signal handler,
+  /// since the row is already deleted.
+  ///
+  /// This should be called by models after a row has been removed.
+  /// The location pointed to by @path should be the location that
+  /// the row previously was at. It may not be a valid location anymore.
+  int onRowDeleted(void Function(GtkTreePath path) callback) {
+    return _connectSignal_v_1_o_gtktreepath(
+      this.handle,
+      'row-deleted',
+      callback,
+    );
+  }
+
+  /// This signal is emitted when a row has gotten the first child
+  /// row or lost its last child row.
+  int onRowHasChildToggled(
+    void Function(GtkTreePath path, GtkTreeIter iter) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktreepath_gtktreeiter(
+      this.handle,
+      'row-has-child-toggled',
+      callback,
+    );
+  }
+
+  /// This signal is emitted when a new row has been inserted in
+  /// the model.
+  ///
+  /// Note that the row may still be empty at this point, since
+  /// it is a common pattern to first insert an empty row, and
+  /// then fill it with the desired values.
+  int onRowInserted(
+    void Function(GtkTreePath path, GtkTreeIter iter) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gtktreepath_gtktreeiter(
+      this.handle,
+      'row-inserted',
+      callback,
+    );
   }
 
   /// Asks the `GtkTreeDragSource` to delete the row at @path, because

@@ -101,7 +101,13 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkLevelBar` uses the [enum@Gtk.AccessibleRole.meter] role.
-class GtkLevelBar extends GtkWidget {
+class GtkLevelBar extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkLevelBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkLevelBar`.
@@ -109,7 +115,7 @@ class GtkLevelBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_level_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkLevelBar() : super.fromPointer(_gtkLevelBarNew(), owned: true);
+  GtkLevelBar() : this.fromPointer(_gtkLevelBarNew(), owned: true);
 
   /// Creates a new `GtkLevelBar` for the specified interval.
   static final _gtkLevelBarNewForInterval =
@@ -120,7 +126,7 @@ class GtkLevelBar extends GtkWidget {
           >('gtk_level_bar_new_for_interval')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double)>();
   GtkLevelBar.forInterval(double minValue, double maxValue)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkLevelBarNewForInterval(minValue, maxValue),
         owned: true,
       );

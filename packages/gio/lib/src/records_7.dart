@@ -30,7 +30,7 @@ part of '../gio.dart';
 ///
 /// Probably the only useful thing to do with a `GAction` is to put it
 /// inside of a [class@Gio.SimpleActionGroup].
-final class GAction {
+class GAction {
   GAction.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

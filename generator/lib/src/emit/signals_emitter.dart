@@ -514,6 +514,32 @@ List<GirSignal> inheritedSignals(GirClass cls, EmitContext ctx) {
         result.add(sig);
       }
     }
+    // Also collect signals from interfaces the parent class implements
+    // — they are part of the parent's public surface and subclasses
+    // inherit them along with the parent. Required so `implements GActionGroup`
+    // works on `GSimpleActionGroup` (GActionGroup declares
+    // `action-added`, `action-enabled-changed`, …).
+    for (final implName in current.implements_) {
+      final ifound = ctx.findInterface(implName);
+      if (ifound == null) continue;
+      for (final sig in ifound.$2.signals) {
+        if (seenSig.add(sig)) {
+          result.add(sig);
+        }
+      }
+    }
+  }
+  // Signals declared on interfaces that `cls` itself implements.
+  // These are direct mirror targets (the implementing class needs the
+  // `onSignalName` helpers the interface declares).
+  for (final implName in cls.implements_) {
+    final ifound = ctx.findInterface(implName);
+    if (ifound == null) continue;
+    for (final sig in ifound.$2.signals) {
+      if (seenSig.add(sig)) {
+        result.add(sig);
+      }
+    }
   }
   return result;
 }

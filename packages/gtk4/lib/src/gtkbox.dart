@@ -38,7 +38,8 @@ part of '../gtk4.dart';
 /// Until GTK 4.10, `GtkBox` used the [enum@Gtk.AccessibleRole.group] role.
 ///
 /// Starting from GTK 4.12, `GtkBox` uses the [enum@Gtk.AccessibleRole.generic] role.
-class GtkBox extends GtkWidget {
+class GtkBox extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new box.
@@ -50,7 +51,7 @@ class GtkBox extends GtkWidget {
           >('gtk_box_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkBox(GtkOrientation orientation, int spacing)
-    : super.fromPointer(_gtkBoxNew(orientation.value, spacing), owned: true);
+    : this.fromPointer(_gtkBoxNew(orientation.value, spacing), owned: true);
 
   /// Adds a child at the end.
   static final _gtkBoxAppend =

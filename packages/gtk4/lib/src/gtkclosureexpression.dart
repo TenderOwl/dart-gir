@@ -35,7 +35,7 @@ class GtkClosureExpression extends GtkExpression {
     GClosure closure,
     int nParams,
     ffi.Pointer<ffi.Void> params,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gtkClosureExpressionNew(valueType, closure.handle, nParams, params),
         owned: true,
       );

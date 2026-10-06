@@ -2,7 +2,7 @@
 part of '../gtk4.dart';
 
 /// An auxiliary class used by `GtkStack`.
-class GtkStackPage extends GObject {
+class GtkStackPage extends GObject implements GtkAccessible {
   GtkStackPage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Returns the stack child to which @self belongs.

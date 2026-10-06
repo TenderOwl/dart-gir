@@ -35,7 +35,8 @@ part of '../gtk4.dart';
 /// `GtkOverlay` has a single CSS node with the name “overlay”. Overlay children
 /// whose alignments cause them to be positioned at an edge get the style classes
 /// “.left”, “.right”, “.top”, and/or “.bottom” according to their position.
-class GtkOverlay extends GtkWidget {
+class GtkOverlay extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkOverlay.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkOverlay`.
@@ -43,7 +44,7 @@ class GtkOverlay extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_overlay_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkOverlay() : super.fromPointer(_gtkOverlayNew(), owned: true);
+  GtkOverlay() : this.fromPointer(_gtkOverlayNew(), owned: true);
 
   /// Adds @widget to @overlay.
   ///

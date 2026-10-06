@@ -359,8 +359,8 @@ final class GdkRGBA {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool equal(ffi.Pointer<ffi.Void> p2) {
-    return (_gdkRgbaEqual(this.handle, p2)) != 0;
+  bool equal(GdkRGBA p2) {
+    return (_gdkRgbaEqual(this.handle, p2.handle)) != 0;
   }
 
   /// Frees a `GdkRGBA`.

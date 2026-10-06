@@ -9,7 +9,7 @@ part of '../gio.dart';
 /// can be used as the base class for another proxy resolver
 /// implementation, or it can be created and used manually, such as
 /// with [method@Gio.SocketClient.set_proxy_resolver].
-class GSimpleProxyResolver extends GObject {
+class GSimpleProxyResolver extends GObject implements GProxyResolver {
   GSimpleProxyResolver.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

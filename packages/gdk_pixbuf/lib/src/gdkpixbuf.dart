@@ -133,7 +133,7 @@ part of '../gdk_pixbuf.dart';
 /// file or to a memory buffer. `GdkPixbuf` can also call a user-defined
 /// callback on the data, which allows to e.g. write the image
 /// to a socket or store it in a database.
-class GdkPixbuf extends GObject {
+class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
   GdkPixbuf.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GdkPixbuf` structure and allocates a buffer for it.
@@ -163,7 +163,7 @@ class GdkPixbuf extends GObject {
     int bitsPerSample,
     int width,
     int height,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gdkPixbufNew(
           colorspace.value,
           hasAlpha ? 1 : 0,
@@ -213,7 +213,7 @@ class GdkPixbuf extends GObject {
     int width,
     int height,
     int rowstride,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gdkPixbufNewFromBytes(
           data.handle,
           colorspace.value,

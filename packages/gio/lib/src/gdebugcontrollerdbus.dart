@@ -111,7 +111,8 @@ part of '../gio.dart';
 /// return polkit_authorization_result_get_is_authorized (auth_result);
 /// }
 /// ```
-class GDebugControllerDBus extends GObject {
+class GDebugControllerDBus extends GObject
+    implements GDebugController, GInitable {
   GDebugControllerDBus.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

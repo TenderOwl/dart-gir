@@ -25,7 +25,7 @@ class GtkCellRendererText extends GtkCellRenderer {
         'gtk_cell_renderer_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererText()
-    : super.fromPointer(_gtkCellRendererTextNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererTextNew(), owned: true);
 
   /// Sets the height of a renderer to explicitly be determined by the “font” and
   /// “y_pad” property set on it.  Further changes in these properties do not

@@ -23,7 +23,7 @@ class GtkCellRendererToggle extends GtkCellRenderer {
         'gtk_cell_renderer_toggle_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererToggle()
-    : super.fromPointer(_gtkCellRendererToggleNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererToggleNew(), owned: true);
 
   /// Returns whether the cell renderer is activatable. See
   /// gtk_cell_renderer_toggle_set_activatable().

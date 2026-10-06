@@ -20,7 +20,13 @@ part of '../gtk4.dart';
 /// ## CSS nodes
 ///
 /// GtkCellView has a single CSS node with name cellview.
-class GtkCellView extends GtkWidget {
+class GtkCellView extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkCellLayout,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkCellView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkCellView` widget.
@@ -28,7 +34,7 @@ class GtkCellView extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCellView() : super.fromPointer(_gtkCellViewNew(), owned: true);
+  GtkCellView() : this.fromPointer(_gtkCellViewNew(), owned: true);
 
   /// Creates a new `GtkCellView` widget with a specific `GtkCellArea`
   /// to layout cells and a specific `GtkCellAreaContext`.
@@ -53,7 +59,7 @@ class GtkCellView extends GtkWidget {
             )
           >();
   GtkCellView.withContext(GtkCellArea area, GtkCellAreaContext context)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkCellViewNewWithContext(area.handle, context.handle),
         owned: true,
       );
@@ -105,10 +111,7 @@ class GtkCellView extends GtkWidget {
           >('gtk_cell_view_new_with_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellView.withTexture(GdkTexture texture)
-    : super.fromPointer(
-        _gtkCellViewNewWithTexture(texture.handle),
-        owned: true,
-      );
+    : this.fromPointer(_gtkCellViewNewWithTexture(texture.handle), owned: true);
 
   /// Returns a `GtkTreePath` referring to the currently
   /// displayed row. If no row is currently displayed,

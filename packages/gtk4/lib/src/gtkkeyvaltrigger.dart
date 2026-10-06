@@ -16,7 +16,7 @@ class GtkKeyvalTrigger extends GtkShortcutTrigger {
           >('gtk_keyval_trigger_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkKeyvalTrigger(int keyval, GdkModifierType modifiers)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkKeyvalTriggerNew(keyval, modifiers.value),
         owned: true,
       );

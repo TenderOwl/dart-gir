@@ -30,7 +30,7 @@ class GUnixCredentialsMessage extends GSocketControlMessage {
         'g_unix_credentials_message_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GUnixCredentialsMessage()
-    : super.fromPointer(_gUnixCredentialsMessageNew(), owned: true);
+    : this.fromPointer(_gUnixCredentialsMessageNew(), owned: true);
 
   /// Creates a new #GUnixCredentialsMessage holding @credentials.
   static final _gUnixCredentialsMessageNewWithCredentials =
@@ -41,7 +41,7 @@ class GUnixCredentialsMessage extends GSocketControlMessage {
           >('g_unix_credentials_message_new_with_credentials')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GUnixCredentialsMessage.withCredentials(GCredentials credentials)
-    : super.fromPointer(
+    : this.fromPointer(
         _gUnixCredentialsMessageNewWithCredentials(credentials.handle),
         owned: true,
       );

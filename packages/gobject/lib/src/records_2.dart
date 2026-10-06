@@ -50,8 +50,10 @@ final class GTypeInterface {
             >
           >('g_type_interface_peek_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> peekParent() {
-    return _gTypeInterfacePeekParent(this.handle);
+  GTypeInterface? peekParent() {
+    return (_gTypeInterfacePeekParent(this.handle)) == ffi.nullptr
+        ? null
+        : GTypeInterface.fromPointer(_gTypeInterfacePeekParent(this.handle));
   }
 
   /// Adds @prerequisite_type to the list of prerequisites of @interface_type.
@@ -109,11 +111,12 @@ final class GTypeInterface {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  static ffi.Pointer<ffi.Void> peek(
-    ffi.Pointer<ffi.Void> instanceClass,
-    int ifaceType,
-  ) {
-    return _gTypeInterfacePeek(instanceClass, ifaceType);
+  static GTypeInterface? peek(GTypeClass instanceClass, int ifaceType) {
+    return (_gTypeInterfacePeek(instanceClass.handle, ifaceType)) == ffi.nullptr
+        ? null
+        : GTypeInterface.fromPointer(
+            _gTypeInterfacePeek(instanceClass.handle, ifaceType),
+          );
   }
 }
 

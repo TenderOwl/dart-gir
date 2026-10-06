@@ -787,8 +787,8 @@ final class GVariant {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  int compare(ffi.Pointer<ffi.Void> two) {
-    return _gVariantCompare(this.handle, two);
+  int compare(GVariant two) {
+    return _gVariantCompare(this.handle, two.handle);
   }
 
   /// Similar to g_variant_get_string() except that instead of returning
@@ -835,8 +835,8 @@ final class GVariant {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool equal(ffi.Pointer<ffi.Void> two) {
-    return (_gVariantEqual(this.handle, two)) != 0;
+  bool equal(GVariant two) {
+    return (_gVariantEqual(this.handle, two.handle)) != 0;
   }
 
   /// Returns the boolean value of @value.

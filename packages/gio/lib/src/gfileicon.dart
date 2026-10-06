@@ -5,7 +5,7 @@ part of '../gio.dart';
 /// to be used as icon.
 ///
 /// It implements [iface@Gio.LoadableIcon].
-class GFileIcon extends GObject {
+class GFileIcon extends GObject implements GIcon, GLoadableIcon {
   GFileIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new icon for a file.
@@ -17,7 +17,7 @@ class GFileIcon extends GObject {
           >('g_file_icon_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFileIcon(GFile file)
-    : super.fromPointer(_gFileIconNew(file.handle), owned: true);
+    : this.fromPointer(_gFileIconNew(file.handle), owned: true);
 
   /// Gets the #GFile associated with the given @icon.
   static final _gFileIconGetFile =

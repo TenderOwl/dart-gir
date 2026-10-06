@@ -111,7 +111,13 @@ part of '../gtk4.dart';
 /// skipped for accessibility. This is because `GtkText` is expected to be used
 /// as a delegate for a `GtkEditable` implementation that will be represented
 /// to accessibility.
-class GtkText extends GtkWidget {
+class GtkText extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleText,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkEditable {
   GtkText.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkText`.
@@ -119,7 +125,7 @@ class GtkText extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkText() : super.fromPointer(_gtkTextNew(), owned: true);
+  GtkText() : this.fromPointer(_gtkTextNew(), owned: true);
 
   /// Creates a new `GtkText` with the specified buffer.
   static final _gtkTextNewWithBuffer =
@@ -130,7 +136,7 @@ class GtkText extends GtkWidget {
           >('gtk_text_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkText.withBuffer(GtkEntryBuffer buffer)
-    : super.fromPointer(_gtkTextNewWithBuffer(buffer.handle), owned: true);
+    : this.fromPointer(_gtkTextNewWithBuffer(buffer.handle), owned: true);
 
   /// Determines the positions of the strong and weak cursors for a
   /// given character position.
@@ -963,6 +969,47 @@ class GtkText extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted at the end of a single user-visible operation on the
+  /// contents.
+  ///
+  /// E.g., a paste operation that replaces the contents of the
+  /// selection will cause only one signal emission (even though it
+  /// is implemented by first deleting the selection, then inserting
+  /// the new content, and may cause multiple ::notify::text signals
+  /// to be emitted).
+  int onChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// Emitted when text is deleted from the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible for
+  /// deleting the text, so by connecting to this signal and then stopping
+  /// the signal with g_signal_stop_emission(), it is possible to modify the
+  /// range of deleted text, or prevent it from being deleted entirely.
+  ///
+  /// The @start_pos and @end_pos parameters are interpreted as for
+  /// [method@Gtk.Editable.delete_text].
+  int onDeleteText(void Function(int startPos, int endPos) callback) {
+    return _connectSignal_v_2_i_i_int_int(this.handle, 'delete-text', callback);
+  }
+
+  /// Emitted when text is inserted into the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible
+  /// for inserting the text, so by connecting to this signal and then
+  /// stopping the signal with g_signal_stop_emission(), it is possible
+  /// to modify the inserted text, or prevent it from being inserted entirely.
+  int onInsertText(
+    void Function(String text, int length, int position) callback,
+  ) {
+    return _connectSignal_v_3_s_i_i_string_int_int(
+      this.handle,
+      'insert-text',
+      callback,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

@@ -6,7 +6,7 @@ part of '../gdk4.dart';
 /// The `GdkToplevel` interface provides useful APIs for interacting with
 /// the windowing system, such as controlling maximization and size of the
 /// surface, setting icons and transient parents for dialogs.
-final class GdkToplevel {
+class GdkToplevel {
   GdkToplevel.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

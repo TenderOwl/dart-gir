@@ -17,7 +17,7 @@ class PangoCoverage extends GObject {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_coverage_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  PangoCoverage() : super.fromPointer(_pangoCoverageNew(), owned: true);
+  PangoCoverage() : this.fromPointer(_pangoCoverageNew(), owned: true);
 
   /// Copy an existing `PangoCoverage`.
   static final _pangoCoverageCopy =

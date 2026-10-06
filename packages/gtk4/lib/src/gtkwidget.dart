@@ -393,7 +393,8 @@ part of '../gtk4.dart';
 /// gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), hello_button_clicked);
 /// }
 /// ```
-class GtkWidget extends GInitiallyUnowned {
+class GtkWidget extends GInitiallyUnowned
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkWidget.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Enables or disables an action installed with

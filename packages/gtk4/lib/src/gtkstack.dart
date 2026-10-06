@@ -52,7 +52,8 @@ part of '../gtk4.dart';
 ///
 /// `GtkStack` uses the [enum@Gtk.AccessibleRole.tab_panel] role for the stack
 /// pages, which are the accessible parent objects of the child widgets.
-class GtkStack extends GtkWidget {
+class GtkStack extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkStack.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkStack`.
@@ -60,7 +61,7 @@ class GtkStack extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_stack_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkStack() : super.fromPointer(_gtkStackNew(), owned: true);
+  GtkStack() : this.fromPointer(_gtkStackNew(), owned: true);
 
   /// Adds a child to @stack.
   static final _gtkStackAddChild =

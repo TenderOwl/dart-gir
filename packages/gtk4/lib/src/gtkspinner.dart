@@ -23,7 +23,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkSpinner` uses the [enum@Gtk.AccessibleRole.progress_bar] role.
-class GtkSpinner extends GtkWidget {
+class GtkSpinner extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkSpinner.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Returns a new spinner widget. Not yet started.
@@ -31,7 +32,7 @@ class GtkSpinner extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_spinner_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSpinner() : super.fromPointer(_gtkSpinnerNew(), owned: true);
+  GtkSpinner() : this.fromPointer(_gtkSpinnerNew(), owned: true);
 
   /// Returns whether the spinner is spinning.
   static final _gtkSpinnerGetSpinning =

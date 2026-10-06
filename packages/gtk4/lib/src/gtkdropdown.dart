@@ -59,7 +59,8 @@ part of '../gtk4.dart';
 /// ## Accessibility
 ///
 /// `GtkDropDown` uses the [enum@Gtk.AccessibleRole.combo_box] role.
-class GtkDropDown extends GtkWidget {
+class GtkDropDown extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkDropDown.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkDropDown`.
@@ -82,7 +83,7 @@ class GtkDropDown extends GtkWidget {
             )
           >();
   GtkDropDown([GListModel? model, GtkExpression? expression])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkDropDownNew(
           model?.handle ?? ffi.nullptr,
           expression?.handle ?? ffi.nullptr,
@@ -228,8 +229,10 @@ class GtkDropDown extends GtkWidget {
             >
           >('gtk_drop_down_get_selected_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getSelectedItem() {
-    return _gtkDropDownGetSelectedItem(this.handle);
+  GObject? getSelectedItem() {
+    return (_gtkDropDownGetSelectedItem(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gtkDropDownGetSelectedItem(this.handle));
   }
 
   /// Returns whether to show an arrow within the widget.

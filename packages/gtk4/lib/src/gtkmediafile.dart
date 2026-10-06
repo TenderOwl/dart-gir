@@ -9,7 +9,7 @@ part of '../gtk4.dart';
 /// to allow for external implementations using various media frameworks.
 ///
 /// GTK itself includes an implementation using GStreamer.
-class GtkMediaFile extends GtkMediaStream {
+class GtkMediaFile extends GtkMediaStream implements GdkPaintable {
   GtkMediaFile.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new empty media file.
@@ -17,7 +17,7 @@ class GtkMediaFile extends GtkMediaStream {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_media_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkMediaFile() : super.fromPointer(_gtkMediaFileNew(), owned: true);
+  GtkMediaFile() : this.fromPointer(_gtkMediaFileNew(), owned: true);
 
   /// Creates a new media file to play @file.
   static final _gtkMediaFileNewForFile =
@@ -28,7 +28,7 @@ class GtkMediaFile extends GtkMediaStream {
           >('gtk_media_file_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMediaFile.forFile(GFile file)
-    : super.fromPointer(_gtkMediaFileNewForFile(file.handle), owned: true);
+    : this.fromPointer(_gtkMediaFileNewForFile(file.handle), owned: true);
 
   /// Creates a new media file for the given filename.
   ///
@@ -62,7 +62,7 @@ class GtkMediaFile extends GtkMediaStream {
           >('gtk_media_file_new_for_input_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMediaFile.forInputStream(GInputStream stream)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkMediaFileNewForInputStream(stream.handle),
         owned: true,
       );
@@ -201,6 +201,28 @@ class GtkMediaFile extends GtkMediaStream {
     withNativeString(resourcePath, (nativeResourcePath) {
       _gtkMediaFileSetResource(this.handle, nativeResourcePath.cast<Utf8>());
     });
+  }
+
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
   }
 
   /// The notify signal is emitted on an object when one of its properties has
@@ -445,7 +467,7 @@ class GtkMediaFile extends GtkMediaStream {
               double,
             )
           >();
-  void snapshot(GtkSnapshot snapshot, double width, double height) {
+  void snapshot(GdkSnapshot snapshot, double width, double height) {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
   }
 

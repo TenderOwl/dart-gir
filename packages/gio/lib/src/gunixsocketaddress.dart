@@ -20,7 +20,7 @@ part of '../gio.dart';
 /// Before GLib 2.72, `<gio/gunixsocketaddress.h>` belonged to the UNIX-specific
 /// GIO interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file
 /// when using it. This is no longer necessary since GLib 2.72.
-class GUnixSocketAddress extends GSocketAddress {
+class GUnixSocketAddress extends GSocketAddress implements GSocketConnectable {
   GUnixSocketAddress.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -55,15 +55,11 @@ class GUnixSocketAddress extends GSocketAddress {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int8>, int)
           >();
-  factory GUnixSocketAddress.abstract_(
-    ffi.Pointer<ffi.Int8> path,
-    int pathLen,
-  ) {
-    return GUnixSocketAddress.fromPointer(
-      _gUnixSocketAddressNewAbstract(path, pathLen),
-      owned: true,
-    );
-  }
+  GUnixSocketAddress.abstract_(ffi.Pointer<ffi.Int8> path, int pathLen)
+    : this.fromPointer(
+        _gUnixSocketAddressNewAbstract(path, pathLen),
+        owned: true,
+      );
 
   /// Creates a new #GUnixSocketAddress of type @type with name @path.
   ///
@@ -109,16 +105,14 @@ class GUnixSocketAddress extends GSocketAddress {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int8>, int, int)
           >();
-  factory GUnixSocketAddress.withType(
+  GUnixSocketAddress.withType(
     ffi.Pointer<ffi.Int8> path,
     int pathLen,
     GUnixSocketAddressType type_,
-  ) {
-    return GUnixSocketAddress.fromPointer(
-      _gUnixSocketAddressNewWithType(path, pathLen, type_.value),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gUnixSocketAddressNewWithType(path, pathLen, type_.value),
+        owned: true,
+      );
 
   /// Gets @address's type.
   static final _gUnixSocketAddressGetAddressType =

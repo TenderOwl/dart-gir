@@ -28,7 +28,7 @@ class GskMaskNode extends GskRenderNode {
             )
           >();
   GskMaskNode(GskRenderNode source, GskRenderNode mask, GskMaskMode maskMode)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskMaskNodeNew(source.handle, mask.handle, maskMode.value),
         owned: true,
       );

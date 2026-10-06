@@ -20,7 +20,7 @@ class GtkPrintDialog extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_print_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPrintDialog() : super.fromPointer(_gtkPrintDialogNew(), owned: true);
+  GtkPrintDialog() : this.fromPointer(_gtkPrintDialogNew(), owned: true);
 
   /// Returns the label that will be shown on the
   /// accept button of the print dialog.

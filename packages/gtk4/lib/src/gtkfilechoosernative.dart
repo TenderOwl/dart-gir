@@ -147,7 +147,7 @@ part of '../gtk4.dart';
 /// are not supported:
 ///
 /// * Shortcut folders.
-class GtkFileChooserNative extends GtkNativeDialog {
+class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
   GtkFileChooserNative.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

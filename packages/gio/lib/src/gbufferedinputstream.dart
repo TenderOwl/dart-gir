@@ -14,7 +14,7 @@ part of '../gio.dart';
 /// [method@Gio.BufferedInputStream.get_buffer_size]. To change the size of a
 /// buffered input stream's buffer, use [method@Gio.BufferedInputStream.set_buffer_size].
 /// Note that the buffer's size cannot be reduced below the size of the data within the buffer.
-class GBufferedInputStream extends GFilterInputStream {
+class GBufferedInputStream extends GFilterInputStream implements GSeekable {
   GBufferedInputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -28,7 +28,7 @@ class GBufferedInputStream extends GFilterInputStream {
           >('g_buffered_input_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBufferedInputStream(GInputStream baseStream)
-    : super.fromPointer(
+    : this.fromPointer(
         _gBufferedInputStreamNew(baseStream.handle),
         owned: true,
       );
@@ -45,7 +45,7 @@ class GBufferedInputStream extends GFilterInputStream {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GBufferedInputStream.sized(GInputStream baseStream, int size)
-    : super.fromPointer(
+    : this.fromPointer(
         _gBufferedInputStreamNewSized(baseStream.handle, size),
         owned: true,
       );

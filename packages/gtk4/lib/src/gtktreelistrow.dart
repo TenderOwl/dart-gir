@@ -87,8 +87,10 @@ class GtkTreeListRow extends GObject {
             >
           >('gtk_tree_list_row_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getItem() {
-    return _gtkTreeListRowGetItem(this.handle);
+  GObject? getItem() {
+    return (_gtkTreeListRowGetItem(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gtkTreeListRowGetItem(this.handle));
   }
 
   /// Gets the row representing the parent for @self.

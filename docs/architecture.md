@@ -69,7 +69,7 @@ native-library opener, `GlibException` factory).
 │      enums + bitfields → EnumEmitter                                 │
 │      constants + functions     → FunctionEmitter                    │
 │      records + unions    → RecordEmitter                            │
-│      interfaces          → RecordEmitter (opaque handle)            │
+│      interfaces          → RecordEmitter (opaque handle, non-final)│
 │      classes             → ClassEmitter                             │
 │      callbacks           → CallbackEmitter                          │
 │      signals             → SignalBucket → signals.dart helper      │
@@ -118,8 +118,8 @@ when the type cannot be mapped (recorded in the skip report).
 |---|---|
 | `EnumEmitter` | One Dart `enum` per GIR `<enumeration>`, plus a wrapper class with constants and `fromValue` for bitfields |
 | `FunctionEmitter` | Top-level Dart functions + `const` declarations for `<function>` and `<constant>` |
-| `RecordEmitter` | Opaque pointer wrapper classes for `<record>` and `<union>` plus `<interface>` (no vtable yet) |
-| `ClassEmitter` | Pointer-wrapper classes with constructors, instance methods, static functions, **and** inherited typed `onSignalName` helpers |
+| `RecordEmitter` | Opaque pointer wrapper classes for `<record>` and `<union>` plus `<interface>` (non-`final`, so other classes can `implements` them) |
+| `ClassEmitter` | Pointer-wrapper classes with constructors, instance methods, static functions, the `implements` clause on every GIR `<implements>` target, mirrored interface methods, **and** inherited typed `onSignalName` helpers |
 | `CallbackEmitter` | Dart `typedef` aliases for `<callback>` declarations |
 | `SignalEmitter` (in `signals_emitter.dart`) | `onSignalName` method bodies emitted per class via `emitSignalConnectors` |
 | `SignalHelper` (in `signals_helper.dart`) | The per-package `lib/src/signals.dart` file: per-bucket trampolines + registries + `connectSignal` escape hatch |

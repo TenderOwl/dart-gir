@@ -235,7 +235,7 @@ class GdkCursor extends GObject {
     int hotspotX,
     int hotspotY, [
     GdkCursor? fallback,
-  ]) : super.fromPointer(
+  ]) : this.fromPointer(
          _gdkCursorNewFromTexture(
            texture.handle,
            hotspotX,

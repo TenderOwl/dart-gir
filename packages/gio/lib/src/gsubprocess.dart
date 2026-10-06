@@ -64,7 +64,7 @@ part of '../gio.dart';
 /// a command-line utility that uses `GSubprocess`, you may need to take into
 /// account the fact that your program will not automatically be killed
 /// if it tries to write to `stdout` after it has been closed.
-class GSubprocess extends GObject {
+class GSubprocess extends GObject implements GInitable {
   GSubprocess.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Create a new process with the given flags and argument list.

@@ -28,7 +28,7 @@ class GTcpWrapperConnection extends GTcpConnection {
             )
           >();
   GTcpWrapperConnection(GIOStream baseIoStream, GSocket socket)
-    : super.fromPointer(
+    : this.fromPointer(
         _gTcpWrapperConnectionNew(baseIoStream.handle, socket.handle),
         owned: true,
       );

@@ -17,7 +17,14 @@ part of '../gtk4.dart';
 ///
 /// `GtkPageSetupUnixDialog` has a single CSS node with the name `window` and
 /// style class `.pagesetup`.
-class GtkPageSetupUnixDialog extends GtkDialog {
+class GtkPageSetupUnixDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkPageSetupUnixDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

@@ -314,7 +314,8 @@ part of '../gtk4.dart';
 /// [method@Gtk.CellArea.cell_set] or [method@Gtk.CellArea.cell_set_valist]. To obtain
 /// the value of a cell property, use [method@Gtk.CellArea.cell_get_property]
 /// [method@Gtk.CellArea.cell_get] or [method@Gtk.CellArea.cell_get_valist].
-class GtkCellArea extends GInitiallyUnowned {
+class GtkCellArea extends GInitiallyUnowned
+    implements GtkBuildable, GtkCellLayout {
   GtkCellArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Activates @area, usually by activating the currently focused

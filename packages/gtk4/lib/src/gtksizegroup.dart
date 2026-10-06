@@ -105,7 +105,7 @@ part of '../gtk4.dart';
 /// </widgets>
 /// </object>
 /// ```
-class GtkSizeGroup extends GObject {
+class GtkSizeGroup extends GObject implements GtkBuildable {
   GtkSizeGroup.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Create a new `GtkSizeGroup`.
@@ -114,7 +114,7 @@ class GtkSizeGroup extends GObject {
         'gtk_size_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkSizeGroup(GtkSizeGroupMode mode)
-    : super.fromPointer(_gtkSizeGroupNew(mode.value), owned: true);
+    : this.fromPointer(_gtkSizeGroupNew(mode.value), owned: true);
 
   /// Adds a widget to a `GtkSizeGroup`.
   ///

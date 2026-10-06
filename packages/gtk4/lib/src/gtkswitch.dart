@@ -44,7 +44,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkSwitch` uses the [enum@Gtk.AccessibleRole.switch] role.
-class GtkSwitch extends GtkWidget {
+class GtkSwitch extends GtkWidget
+    implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
   GtkSwitch.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkSwitch` widget.
@@ -52,7 +53,7 @@ class GtkSwitch extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_switch_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSwitch() : super.fromPointer(_gtkSwitchNew(), owned: true);
+  GtkSwitch() : this.fromPointer(_gtkSwitchNew(), owned: true);
 
   /// Gets whether the `GtkSwitch` is in its “on” or “off” state.
   static final _gtkSwitchGetActive =

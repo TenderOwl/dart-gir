@@ -7,7 +7,7 @@ part of '../gtk4.dart';
 /// In GTK, the main objects that implement this interface are
 /// [class@Gtk.FontChooserWidget], [class@Gtk.FontChooserDialog] and
 /// [class@Gtk.FontButton].
-final class GtkFontChooser {
+class GtkFontChooser {
   GtkFontChooser.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -416,7 +416,7 @@ final class GtkFontChooser {
 /// In addition to a [class@Gdk.Surface], a `GtkNative` also provides
 /// a [class@Gsk.Renderer] for rendering on that surface. To get the
 /// renderer, use [method@Gtk.Native.get_renderer].
-final class GtkNative {
+class GtkNative {
   GtkNative.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -528,7 +528,7 @@ final class GtkNative {
 /// `GtkWidget` types implementing the `GtkOrientable` interface will
 /// automatically acquire the `horizontal` or `vertical` CSS class depending on
 /// the value of the [property@Gtk.Orientable:orientation] property.
-final class GtkOrientable {
+class GtkOrientable {
   GtkOrientable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -559,7 +559,7 @@ final class GtkOrientable {
 /// A `GtkPrintOperationPreview` object is passed to the
 /// [signal@Gtk.PrintOperation::preview] signal by
 /// [class@Gtk.PrintOperation].
-final class GtkPrintOperationPreview {
+class GtkPrintOperationPreview {
   GtkPrintOperationPreview.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -646,7 +646,7 @@ final class GtkPrintOperationPreview {
 ///
 /// `GtkRoot` also maintains the location of keyboard focus inside its widget
 /// hierarchy, with [method@Gtk.Root.set_focus] and [method@Gtk.Root.get_focus].
-final class GtkRoot {
+class GtkRoot {
   GtkRoot.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

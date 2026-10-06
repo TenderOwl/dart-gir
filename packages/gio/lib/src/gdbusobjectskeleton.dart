@@ -6,7 +6,7 @@ part of '../gio.dart';
 /// dynamic and change at runtime.
 ///
 /// This type is intended to be used with [iface@Gio.DBusObjectManager].
-class GDBusObjectSkeleton extends GObject {
+class GDBusObjectSkeleton extends GObject implements GDBusObject {
   GDBusObjectSkeleton.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -162,6 +162,24 @@ class GDBusObjectSkeleton extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when @interface is added to @object.
+  int onInterfaceAdded(void Function(GDBusInterface interface_) callback) {
+    return _connectSignal_v_1_o_gdbusinterface(
+      this.handle,
+      'interface-added',
+      callback,
+    );
+  }
+
+  /// Emitted when @interface is removed from @object.
+  int onInterfaceRemoved(void Function(GDBusInterface interface_) callback) {
+    return _connectSignal_v_1_o_gdbusinterface(
+      this.handle,
+      'interface-removed',
+      callback,
+    );
   }
 
   /// Gets the D-Bus interface with name @interface_name associated with

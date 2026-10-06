@@ -40,7 +40,14 @@ part of '../gtk4.dart';
 ///
 /// `GtkAssistant` has a single CSS node with the name window and style
 /// class .assistant.
-class GtkAssistant extends GtkWindow {
+class GtkAssistant extends GtkWindow
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkAssistant.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkAssistant`.
@@ -48,7 +55,7 @@ class GtkAssistant extends GtkWindow {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_assistant_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkAssistant() : super.fromPointer(_gtkAssistantNew(), owned: true);
+  GtkAssistant() : this.fromPointer(_gtkAssistantNew(), owned: true);
 
   /// Adds a widget to the action area of a `GtkAssistant`.
   static final _gtkAssistantAddActionWidget =

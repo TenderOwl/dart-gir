@@ -49,7 +49,7 @@ class GtkDropTargetAsync extends GtkEventController {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkDropTargetAsync(GdkContentFormats? formats, GdkDragAction actions)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkDropTargetAsyncNew(formats?.handle ?? ffi.nullptr, actions.value),
         owned: true,
       );

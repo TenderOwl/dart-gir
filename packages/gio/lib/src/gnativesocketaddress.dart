@@ -5,7 +5,8 @@ part of '../gio.dart';
 ///
 /// This corresponds to a general `struct sockaddr` of a type not otherwise
 /// handled by GLib.
-class GNativeSocketAddress extends GSocketAddress {
+class GNativeSocketAddress extends GSocketAddress
+    implements GSocketConnectable {
   GNativeSocketAddress.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -20,7 +21,7 @@ class GNativeSocketAddress extends GSocketAddress {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GNativeSocketAddress(ffi.Pointer<ffi.Void> native, int len)
-    : super.fromPointer(_gNativeSocketAddressNew(native, len), owned: true);
+    : this.fromPointer(_gNativeSocketAddressNew(native, len), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

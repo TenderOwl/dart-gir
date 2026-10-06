@@ -27,7 +27,7 @@ class GskTextureNode extends GskRenderNode {
             )
           >();
   GskTextureNode(GdkTexture texture, GrapheneRect bounds)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskTextureNodeNew(texture.handle, bounds.handle),
         owned: true,
       );

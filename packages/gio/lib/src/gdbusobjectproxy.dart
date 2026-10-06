@@ -5,7 +5,7 @@ part of '../gio.dart';
 /// with one or more D-Bus interfaces. Normally, you don’t instantiate
 /// a `GDBusObjectProxy` yourself — typically [class@Gio.DBusObjectManagerClient]
 /// is used to obtain it.
-class GDBusObjectProxy extends GObject {
+class GDBusObjectProxy extends GObject implements GDBusObject {
   GDBusObjectProxy.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -76,6 +76,24 @@ class GDBusObjectProxy extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when @interface is added to @object.
+  int onInterfaceAdded(void Function(GDBusInterface interface_) callback) {
+    return _connectSignal_v_1_o_gdbusinterface(
+      this.handle,
+      'interface-added',
+      callback,
+    );
+  }
+
+  /// Emitted when @interface is removed from @object.
+  int onInterfaceRemoved(void Function(GDBusInterface interface_) callback) {
+    return _connectSignal_v_1_o_gdbusinterface(
+      this.handle,
+      'interface-removed',
+      callback,
+    );
   }
 
   /// Gets the D-Bus interface with name @interface_name associated with

@@ -19,7 +19,8 @@ part of '../gtk4.dart';
 /// Until GTK 4.10, `GtkViewport` used the [enum@Gtk.AccessibleRole.group] role.
 ///
 /// Starting from GTK 4.12, `GtkViewport` uses the [enum@Gtk.AccessibleRole.generic] role.
-class GtkViewport extends GtkWidget {
+class GtkViewport extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkScrollable {
   GtkViewport.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkViewport`.
@@ -42,7 +43,7 @@ class GtkViewport extends GtkWidget {
             )
           >();
   GtkViewport([GtkAdjustment? hadjustment, GtkAdjustment? vadjustment])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkViewportNew(
           hadjustment?.handle ?? ffi.nullptr,
           vadjustment?.handle ?? ffi.nullptr,

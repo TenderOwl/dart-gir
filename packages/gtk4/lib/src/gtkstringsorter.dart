@@ -26,7 +26,7 @@ class GtkStringSorter extends GtkSorter {
           >('gtk_string_sorter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkStringSorter([GtkExpression? expression])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkStringSorterNew(expression?.handle ?? ffi.nullptr),
         owned: true,
       );

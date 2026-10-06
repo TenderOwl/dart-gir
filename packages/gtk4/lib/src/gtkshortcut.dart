@@ -37,7 +37,7 @@ class GtkShortcut extends GObject {
             )
           >();
   GtkShortcut([GtkShortcutTrigger? trigger, GtkShortcutAction? action])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkShortcutNew(
           trigger?.handle ?? ffi.nullptr,
           action?.handle ?? ffi.nullptr,

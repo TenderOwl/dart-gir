@@ -111,6 +111,16 @@ the resolved declaration lives in a different namespace than the
 current one, the bridge records the package via `requiredImport` and the
 emitter adds it to `ctx.imports`.
 
+The lookup is tried **before** the c-type primitive map. GIR routinely
+declares `<type name="GObject.Object" c:type="gpointer"/>` (and similar
+shapes for `GVariant`, `GBoxed`, etc.) for backward compatibility — the
+GIR name resolves to a known class but the c-type matches a primitive
+mapping like `gpointer` → `Pointer<ffi.Void>`. Preferring the namespace
+lookup means `GTask.getSourceObject` returns `GObject?` (matching
+`GAsyncResult.getSourceObject`), so the `implements GAsyncResult`
+structural check accepts the override; the c-type primitive map is the
+last fallback for types with no name or no resolvable class.
+
 Aliases are unwound recursively (`GirAlias.target` is resolved against
 the alias's namespace, not the current one). Duplicate declarations
 across namespaces (e.g. `GObject-2.0.gir` re-declares `GIOCondition`)
@@ -128,6 +138,16 @@ was authored) rather than the current namespace (where the wrapper
 class lives). Without this, `Window` would resolve to whichever
 namespace happens to define a class named `Window` first — for `Adw`
 that means `AdwWindow`, which is wrong.
+
+The same `relativeTo` plumbing drives the interface-mirror path:
+`CallableEmitter.emit` accepts a `relativeTo` namespace and the
+`ClassEmitter` interface mirror thread the interface's namespace
+through to it. Without this, `GdkPaintable.snapshot(GdkSnapshot, …)`
+would re-resolve `Snapshot` against `gtk4` when mirrored onto
+`GtkIconPaintable`, returning `GtkSnapshot` and breaking the
+`implements GdkPaintable` structural check with `invalid_override`
+(typed-different `class GdkSnapshot` vs `class GtkSnapshot` even though
+both are typedef'd to the same C struct).
 
 ## What's intentionally unsupported
 

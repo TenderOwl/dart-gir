@@ -5,7 +5,7 @@ part of '../gio.dart';
 /// [`struct sockaddr`](man:sockaddr(3type)) and its subtypes in the BSD sockets
 /// API. This is an abstract class; use [class@Gio.InetSocketAddress] for
 /// internet sockets, or [class@Gio.UnixSocketAddress] for UNIX domain sockets.
-class GSocketAddress extends GObject {
+class GSocketAddress extends GObject implements GSocketConnectable {
   GSocketAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a #GSocketAddress subclass corresponding to the native
@@ -20,7 +20,7 @@ class GSocketAddress extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GSocketAddress.fromNative(ffi.Pointer<ffi.Void> native, int len)
-    : super.fromPointer(_gSocketAddressNewFromNative(native, len), owned: true);
+    : this.fromPointer(_gSocketAddressNewFromNative(native, len), owned: true);
 
   /// Gets the socket family type of @address.
   static final _gSocketAddressGetFamily =

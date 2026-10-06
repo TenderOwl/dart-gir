@@ -90,7 +90,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkExpander` uses the [enum@Gtk.AccessibleRole.button] role.
-class GtkExpander extends GtkWidget {
+class GtkExpander extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkExpander.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new expander using @label as the text of the label.

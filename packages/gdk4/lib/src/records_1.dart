@@ -184,9 +184,8 @@ final class GdkFileList {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GdkFileList.fromArray(ffi.Pointer<ffi.Void> files, int nFiles) {
-    return GdkFileList.fromPointer(_gdkFileListNewFromArray(files, nFiles));
-  }
+  GdkFileList.fromArray(ffi.Pointer<ffi.Void> files, int nFiles)
+    : this.fromPointer(_gdkFileListNewFromArray(files, nFiles));
 
   /// Creates a new files list container from a singly linked list of
   /// `GFile` instances.

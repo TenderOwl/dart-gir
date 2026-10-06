@@ -24,7 +24,7 @@ class GskRoundedClipNode extends GskRenderNode {
             )
           >();
   GskRoundedClipNode(GskRenderNode child, GskRoundedRect clip)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskRoundedClipNodeNew(child.handle, clip.handle),
         owned: true,
       );

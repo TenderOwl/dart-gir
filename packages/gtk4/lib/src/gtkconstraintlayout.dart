@@ -164,7 +164,7 @@ part of '../gtk4.dart';
 /// // divided by 2 plus 12
 /// [button1(button2 / 2 + 12)]
 /// ```
-class GtkConstraintLayout extends GtkLayoutManager {
+class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
   GtkConstraintLayout.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -174,7 +174,7 @@ class GtkConstraintLayout extends GtkLayoutManager {
         'gtk_constraint_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkConstraintLayout()
-    : super.fromPointer(_gtkConstraintLayoutNew(), owned: true);
+    : this.fromPointer(_gtkConstraintLayoutNew(), owned: true);
 
   /// Adds a constraint to the layout manager.
   ///

@@ -38,7 +38,7 @@ class GskInsetShadowNode extends GskRenderNode {
     double dy,
     double spread,
     double blurRadius,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gskInsetShadowNodeNew(
           outline.handle,
           color.handle,

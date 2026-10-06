@@ -15,7 +15,13 @@ part of '../gtk4.dart';
 /// The `GtkRange` slider is draggable. Holding the <kbd>Shift</kbd> key while
 /// dragging, or initiating the drag with a long-press will enable the
 /// fine-tuning mode.
-class GtkRange extends GtkWidget {
+class GtkRange extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkRange.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Get the adjustment which is the “model” object for `GtkRange`.

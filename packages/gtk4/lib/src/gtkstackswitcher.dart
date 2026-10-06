@@ -36,7 +36,8 @@ part of '../gtk4.dart';
 /// Since GTK 4.4, `GtkStackSwitcher` implements `GtkOrientable` allowing
 /// the stack switcher to be made vertical with
 /// `gtk_orientable_set_orientation()`.
-class GtkStackSwitcher extends GtkWidget {
+class GtkStackSwitcher extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkStackSwitcher.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -45,7 +46,7 @@ class GtkStackSwitcher extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_stack_switcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkStackSwitcher() : super.fromPointer(_gtkStackSwitcherNew(), owned: true);
+  GtkStackSwitcher() : this.fromPointer(_gtkStackSwitcherNew(), owned: true);
 
   /// Retrieves the stack.
   static final _gtkStackSwitcherGetStack =

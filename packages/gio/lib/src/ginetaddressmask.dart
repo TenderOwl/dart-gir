@@ -5,7 +5,7 @@ part of '../gio.dart';
 /// described by a base address and a length indicating how many bits
 /// of the base address are relevant for matching purposes. These are
 /// often given in string form. For example, `10.0.0.0/8`, or `fe80::/10`.
-class GInetAddressMask extends GObject {
+class GInetAddressMask extends GObject implements GInitable {
   GInetAddressMask.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

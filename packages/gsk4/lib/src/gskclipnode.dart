@@ -23,10 +23,7 @@ class GskClipNode extends GskRenderNode {
             )
           >();
   GskClipNode(GskRenderNode child, GrapheneRect clip)
-    : super.fromPointer(
-        _gskClipNodeNew(child.handle, clip.handle),
-        owned: true,
-      );
+    : this.fromPointer(_gskClipNodeNew(child.handle, clip.handle), owned: true);
 
   /// Gets the child node that is getting clipped by the given @node.
   static final _gskClipNodeGetChild =

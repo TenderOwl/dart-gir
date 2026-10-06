@@ -35,7 +35,7 @@ class GtkATContext extends GObject {
     GtkAccessibleRole accessibleRole,
     GtkAccessible accessible,
     GdkDisplay display,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gtkAtContextCreate(
           accessibleRole.value,
           accessible.handle,

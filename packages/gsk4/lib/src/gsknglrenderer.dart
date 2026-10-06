@@ -12,7 +12,7 @@ class GskNglRenderer extends GskRenderer {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_ngl_renderer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GskNglRenderer() : super.fromPointer(_gskNglRendererNew(), owned: true);
+  GskNglRenderer() : this.fromPointer(_gskNglRendererNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

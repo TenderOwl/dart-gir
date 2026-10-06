@@ -43,7 +43,13 @@ part of '../gtk4.dart';
 ///
 /// `GtkGridView` uses the [enum@Gtk.AccessibleRole.grid] role, and the items
 /// use the [enum@Gtk.AccessibleRole.grid_cell] role.
-class GtkGridView extends GtkListBase {
+class GtkGridView extends GtkListBase
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable,
+        GtkScrollable {
   GtkGridView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkGridView` that uses the given @factory for
@@ -71,7 +77,7 @@ class GtkGridView extends GtkListBase {
             )
           >();
   GtkGridView([GtkSelectionModel? model, GtkListItemFactory? factory_])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkGridViewNew(
           model?.handle ?? ffi.nullptr,
           factory_?.handle ?? ffi.nullptr,

@@ -92,7 +92,7 @@ part of '../gio.dart';
 /// description of HTTP ETags in
 /// [RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-etag).
 /// `GFile` Entity Tags are a very similar concept.
-final class GFile {
+class GFile {
   GFile.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

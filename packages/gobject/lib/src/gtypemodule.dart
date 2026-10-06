@@ -167,7 +167,7 @@ class GTypeModule extends GObject {
             ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
           >('g_type_module_use')
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool use() {
+  bool useTypeModule() {
     return (_gTypeModuleUse(this.handle)) != 0;
   }
 
@@ -264,17 +264,5 @@ class GTypeModule extends GObject {
       info.handle,
       valueTable.handle,
     );
-  }
-
-  /// Calls the @use_plugin function from the #GTypePluginClass of
-  /// @plugin.  There should be no need to use this function outside of
-  /// the GObject type system itself.
-  static final _gTypePluginUse =
-      gobjectLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('g_type_plugin_use')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void useTypeModule() {
-    _gTypePluginUse(this.handle);
   }
 }

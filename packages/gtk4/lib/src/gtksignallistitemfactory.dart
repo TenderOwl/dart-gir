@@ -52,7 +52,7 @@ class GtkSignalListItemFactory extends GtkListItemFactory {
         'gtk_signal_list_item_factory_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkSignalListItemFactory()
-    : super.fromPointer(_gtkSignalListItemFactoryNew(), owned: true);
+    : this.fromPointer(_gtkSignalListItemFactoryNew(), owned: true);
 
   /// Emitted when an object has been bound to an item.
   ///

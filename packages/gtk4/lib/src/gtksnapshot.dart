@@ -26,7 +26,7 @@ class GtkSnapshot extends GdkSnapshot {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_snapshot_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSnapshot() : super.fromPointer(_gtkSnapshotNew(), owned: true);
+  GtkSnapshot() : this.fromPointer(_gtkSnapshotNew(), owned: true);
 
   /// Creates a new [class@Gsk.CairoNode] and appends it to the current
   /// render node of @snapshot, without changing the current node.

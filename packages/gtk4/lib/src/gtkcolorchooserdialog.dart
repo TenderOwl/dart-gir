@@ -23,7 +23,15 @@ part of '../gtk4.dart';
 ///
 /// `GtkColorChooserDialog` has a single CSS node with the name `window` and style
 /// class `.colorchooser`.
-class GtkColorChooserDialog extends GtkDialog {
+class GtkColorChooserDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkColorChooser,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkColorChooserDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -290,6 +298,19 @@ class GtkColorChooserDialog extends GtkDialog {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when a color is activated from the color chooser.
+  ///
+  /// This usually happens when the user clicks a color swatch,
+  /// or a color is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onColorActivated(void Function(GdkRGBA color) callback) {
+    return _connectSignal_v_1_o_gdkrgba(
+      this.handle,
+      'color-activated',
+      callback,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

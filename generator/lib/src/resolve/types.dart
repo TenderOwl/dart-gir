@@ -584,6 +584,66 @@ class TypeResolver {
       final builtin = _byGirName[name];
       if (builtin != null) return builtin;
     }
+    // Try the namespace lookup *before* falling back to the c-type
+    // primitive map. Many GLib APIs declare `<type name="GObject.Object"
+    // c:type="gpointer"/>` for backward compatibility — the GIR name
+    // resolves to the GObject class but the c-type matches the primitive
+    // `gpointer` mapping. Previously the c-type won and emitted
+    // `Pointer<ffi.Void>`; the implements-clause plan (T2) needs the
+    // canonical typed name (`GObject?`) so the override signature
+    // matches across interface and implementing class.
+    if (name != null && name.isNotEmpty) {
+      final found = _lookup(name, currentNamespace);
+      if (found != null) {
+        final (declaredIn, target) = found;
+        final requiredImport =
+            identical(declaredIn, currentNamespace) ||
+                    declaredIn.name == currentNamespace.name
+                ? null
+                : packageNameFor(declaredIn);
+        final dartName =
+            name.contains('.') ? name.split('.').last : name;
+
+        TypeMapping mappingFor(TypeKind kind) => TypeMapping(
+              dartType: dartName,
+              nativeType: 'Pointer<ffi.Void>',
+              kind: kind,
+              isPointer: true,
+              requiredImport: requiredImport,
+            );
+
+        switch (target) {
+          case GirClass():
+            return mappingFor(TypeKind.classType);
+          case GirInterface():
+            return mappingFor(TypeKind.interface);
+          case GirRecord():
+            return mappingFor(TypeKind.record);
+          case GirUnion():
+            return mappingFor(TypeKind.union);
+          case GirCallback():
+            return mappingFor(TypeKind.callback);
+          case GirBitfield():
+            return TypeMapping(
+              dartType: dartName,
+              nativeType: 'ffi.Uint32',
+              kind: TypeKind.bitfield,
+              requiredImport: requiredImport,
+            );
+          case GirEnum():
+            return TypeMapping(
+              dartType: dartName,
+              nativeType: 'ffi.Int32',
+              kind: TypeKind.enumeration,
+              requiredImport: requiredImport,
+            );
+          case GirAlias(target: final aliasTarget):
+            return resolve(aliasTarget,
+                currentNamespace: currentNamespace);
+        }
+        return TypeMapping.unsupported('unknown type: $name');
+      }
+    }
     final cType = type.cType;
     if (cType != null) {
       final builtin = _byCType[cType];
@@ -593,55 +653,6 @@ class TypeResolver {
       return TypeMapping.unsupported(
         'no GIR name${cType != null ? ' (c:type $cType)' : ''}',
       );
-    }
-
-    final found = _lookup(name, currentNamespace);
-    if (found == null) {
-      return TypeMapping.unsupported('unknown type: $name');
-    }
-    final (declaredIn, target) = found;
-    final requiredImport =
-        identical(declaredIn, currentNamespace) ||
-            declaredIn.name == currentNamespace.name
-        ? null
-        : packageNameFor(declaredIn);
-    final dartName = name.contains('.') ? name.split('.').last : name;
-
-    TypeMapping mappingFor(TypeKind kind) => TypeMapping(
-      dartType: dartName,
-      nativeType: 'Pointer<ffi.Void>',
-      kind: kind,
-      isPointer: true,
-      requiredImport: requiredImport,
-    );
-
-    switch (target) {
-      case GirClass():
-        return mappingFor(TypeKind.classType);
-      case GirInterface():
-        return mappingFor(TypeKind.interface);
-      case GirRecord():
-        return mappingFor(TypeKind.record);
-      case GirUnion():
-        return mappingFor(TypeKind.union);
-      case GirCallback():
-        return mappingFor(TypeKind.callback);
-      case GirBitfield():
-        return TypeMapping(
-          dartType: dartName,
-          nativeType: 'ffi.Uint32',
-          kind: TypeKind.bitfield,
-          requiredImport: requiredImport,
-        );
-      case GirEnum():
-        return TypeMapping(
-          dartType: dartName,
-          nativeType: 'ffi.Int32',
-          kind: TypeKind.enumeration,
-          requiredImport: requiredImport,
-        );
-      case GirAlias(target: final aliasTarget):
-        return resolve(aliasTarget, currentNamespace: currentNamespace);
     }
     return TypeMapping.unsupported('unknown type: $name');
   }

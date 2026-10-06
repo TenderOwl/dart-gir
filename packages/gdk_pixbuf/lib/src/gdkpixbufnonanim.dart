@@ -12,7 +12,7 @@ class GdkPixbufNonAnim extends GdkPixbufAnimation {
           >('gdk_pixbuf_non_anim_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbufNonAnim(GdkPixbuf pixbuf)
-    : super.fromPointer(_gdkPixbufNonAnimNew(pixbuf.handle), owned: true);
+    : this.fromPointer(_gdkPixbufNonAnimNew(pixbuf.handle), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

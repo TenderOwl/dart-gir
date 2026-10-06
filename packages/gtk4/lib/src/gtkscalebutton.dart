@@ -23,7 +23,13 @@ part of '../gtk4.dart';
 ///
 /// `GtkScaleButton` has a single CSS node with name scalebutton and `.scale`
 /// style class, and contains a `button` node with a `.toggle` style class.
-class GtkScaleButton extends GtkWidget {
+class GtkScaleButton extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkScaleButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a `GtkScaleButton`.

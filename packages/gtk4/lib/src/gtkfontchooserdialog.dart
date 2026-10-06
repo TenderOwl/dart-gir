@@ -23,7 +23,15 @@ part of '../gtk4.dart';
 ///
 /// `GtkFontChooserDialog` has a single CSS node with the name `window` and style
 /// class `.fontchooser`.
-class GtkFontChooserDialog extends GtkDialog {
+class GtkFontChooserDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkFontChooser,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkFontChooserDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -290,6 +298,15 @@ class GtkFontChooserDialog extends GtkDialog {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when a font is activated.
+  ///
+  /// This usually happens when the user double clicks an item,
+  /// or an item is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onFontActivated(void Function(String fontname) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'font-activated', callback);
   }
 
   /// Requests the user's screen reader to announce the given message.

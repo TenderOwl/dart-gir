@@ -15,7 +15,8 @@ part of '../gtk4.dart';
 /// Until GTK 4.10, `GtkAspectFrame` used the [enum@Gtk.AccessibleRole.group] role.
 ///
 /// Starting from GTK 4.12, `GtkAspectFrame` uses the [enum@Gtk.AccessibleRole.generic] role.
-class GtkAspectFrame extends GtkWidget {
+class GtkAspectFrame extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkAspectFrame.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Create a new `GtkAspectFrame`.
@@ -34,7 +35,7 @@ class GtkAspectFrame extends GtkWidget {
             ffi.Pointer<ffi.Void> Function(double, double, double, int)
           >();
   GtkAspectFrame(double xalign, double yalign, double ratio, bool obeyChild)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkAspectFrameNew(xalign, yalign, ratio, obeyChild ? 1 : 0),
         owned: true,
       );

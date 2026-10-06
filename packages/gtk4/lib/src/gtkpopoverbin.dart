@@ -14,7 +14,8 @@ part of '../gtk4.dart';
 /// ## CSS nodes
 ///
 /// `GtkPopoverBin` has a single CSS node with the name `popoverbin`.
-class GtkPopoverBin extends GtkWidget {
+class GtkPopoverBin extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkPopoverBin.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new popover bin widget.
@@ -22,7 +23,7 @@ class GtkPopoverBin extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_popover_bin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPopoverBin() : super.fromPointer(_gtkPopoverBinNew(), owned: true);
+  GtkPopoverBin() : this.fromPointer(_gtkPopoverBinNew(), owned: true);
 
   /// Retrieves the child widget of the popover bin.
   static final _gtkPopoverBinGetChild =

@@ -10,6 +10,8 @@ dependencies:
   ffi: ^2.1.3
   gir_ffi:
     path: ../gir_ffi
+  gio:
+    path: ../gio
   glib:
     path: ../glib
   gobject:

@@ -61,8 +61,8 @@ class GtkShortcutTrigger extends GObject {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  int compare(ffi.Pointer<ffi.Void> trigger2) {
-    return _gtkShortcutTriggerCompare(this.handle, trigger2);
+  int compare(GtkShortcutTrigger trigger2) {
+    return _gtkShortcutTriggerCompare(this.handle, trigger2.handle);
   }
 
   /// Checks if @trigger1 and @trigger2 trigger under the same conditions.
@@ -78,8 +78,8 @@ class GtkShortcutTrigger extends GObject {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool equal(ffi.Pointer<ffi.Void> trigger2) {
-    return (_gtkShortcutTriggerEqual(this.handle, trigger2)) != 0;
+  bool equal(GtkShortcutTrigger trigger2) {
+    return (_gtkShortcutTriggerEqual(this.handle, trigger2.handle)) != 0;
   }
 
   /// Generates a hash value for a `GtkShortcutTrigger`.

@@ -64,7 +64,13 @@ part of '../gtk4.dart';
 /// ## Accessibility
 ///
 /// `GtkComboBox` uses the [enum@Gtk.AccessibleRole.combo_box] role.
-class GtkComboBox extends GtkWidget {
+class GtkComboBox extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkCellEditable,
+        GtkCellLayout,
+        GtkConstraintTarget {
   GtkComboBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new empty `GtkComboBox`.
@@ -72,7 +78,7 @@ class GtkComboBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkComboBox() : super.fromPointer(_gtkComboBoxNew(), owned: true);
+  GtkComboBox() : this.fromPointer(_gtkComboBoxNew(), owned: true);
 
   /// Creates a new empty `GtkComboBox` with an entry.
   ///
@@ -84,7 +90,7 @@ class GtkComboBox extends GtkWidget {
         'gtk_combo_box_new_with_entry',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkComboBox.withEntry()
-    : super.fromPointer(_gtkComboBoxNewWithEntry(), owned: true);
+    : this.fromPointer(_gtkComboBoxNewWithEntry(), owned: true);
 
   /// Creates a new `GtkComboBox` with a model.
   static final _gtkComboBoxNewWithModel =
@@ -95,7 +101,7 @@ class GtkComboBox extends GtkWidget {
           >('gtk_combo_box_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkComboBox.withModel(GtkTreeModel model)
-    : super.fromPointer(_gtkComboBoxNewWithModel(model.handle), owned: true);
+    : this.fromPointer(_gtkComboBoxNewWithModel(model.handle), owned: true);
 
   /// Creates a new empty `GtkComboBox` with an entry and a model.
   ///
@@ -108,7 +114,7 @@ class GtkComboBox extends GtkWidget {
           >('gtk_combo_box_new_with_model_and_entry')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkComboBox.withModelAndEntry(GtkTreeModel model)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkComboBoxNewWithModelAndEntry(model.handle),
         owned: true,
       );
@@ -752,6 +758,37 @@ class GtkComboBox extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is a sign for the cell renderer to update its
+  /// value from the @cell_editable.
+  ///
+  /// Implementations of `GtkCellEditable` are responsible for
+  /// emitting this signal when they are done editing, e.g.
+  /// `GtkEntry` emits this signal when the user presses Enter. Typical things to
+  /// do in a handler for ::editing-done are to capture the edited value,
+  /// disconnect the @cell_editable from signals on the `GtkCellRenderer`, etc.
+  ///
+  /// gtk_cell_editable_editing_done() is a convenience method
+  /// for emitting `GtkCellEditable::editing-done`.
+  int onEditingDone(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'editing-done', callback);
+  }
+
+  /// This signal is meant to indicate that the cell is finished
+  /// editing, and the @cell_editable widget is being removed and may
+  /// subsequently be destroyed.
+  ///
+  /// Implementations of `GtkCellEditable` are responsible for
+  /// emitting this signal when they are done editing. It must
+  /// be emitted after the `GtkCellEditable::editing-done` signal,
+  /// to give the cell renderer a chance to update the cell's value
+  /// before the widget is removed.
+  ///
+  /// gtk_cell_editable_remove_widget() is a convenience method
+  /// for emitting `GtkCellEditable::remove-widget`.
+  int onRemoveWidget(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'remove-widget', callback);
   }
 
   /// Requests the user's screen reader to announce the given message.

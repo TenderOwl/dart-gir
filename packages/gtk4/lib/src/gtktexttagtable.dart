@@ -22,7 +22,7 @@ part of '../gtk4.dart';
 /// </child>
 /// </object>
 /// ```
-class GtkTextTagTable extends GObject {
+class GtkTextTagTable extends GObject implements GtkBuildable {
   GtkTextTagTable.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -33,7 +33,7 @@ class GtkTextTagTable extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_tag_table_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTextTagTable() : super.fromPointer(_gtkTextTagTableNew(), owned: true);
+  GtkTextTagTable() : this.fromPointer(_gtkTextTagTableNew(), owned: true);
 
   /// Add a tag to the table.
   ///

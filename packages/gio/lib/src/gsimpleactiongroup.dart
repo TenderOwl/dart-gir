@@ -4,7 +4,7 @@ part of '../gio.dart';
 /// `GSimpleActionGroup` is a hash table filled with [iface@Gio.Action] objects,
 /// implementing the [iface@Gio.ActionGroup] and [iface@Gio.ActionMap]
 /// interfaces.
-class GSimpleActionGroup extends GObject {
+class GSimpleActionGroup extends GObject implements GActionGroup, GActionMap {
   GSimpleActionGroup.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -14,7 +14,7 @@ class GSimpleActionGroup extends GObject {
         'g_simple_action_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GSimpleActionGroup()
-    : super.fromPointer(_gSimpleActionGroupNew(), owned: true);
+    : this.fromPointer(_gSimpleActionGroupNew(), owned: true);
 
   /// A convenience function for creating multiple #GSimpleAction instances
   /// and adding them to the action group.
@@ -135,6 +135,44 @@ class GSimpleActionGroup extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Signals that a new action was just added to the group.
+  ///
+  /// This signal is emitted after the action has been added
+  /// and is now visible.
+  int onActionAdded(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-added', callback);
+  }
+
+  /// Signals that the enabled status of the named action has changed.
+  int onActionEnabledChanged(
+    void Function(String actionName, bool enabled) callback,
+  ) {
+    return _connectSignal_v_2_s_b_string_bool(
+      this.handle,
+      'action-enabled-changed',
+      callback,
+    );
+  }
+
+  /// Signals that an action is just about to be removed from the group.
+  ///
+  /// This signal is emitted before the action is removed, so the action
+  /// is still visible and can be queried from the signal handler.
+  int onActionRemoved(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-removed', callback);
+  }
+
+  /// Signals that the state of the named action has changed.
+  int onActionStateChanged(
+    void Function(String actionName, GVariant value) callback,
+  ) {
+    return _connectSignal_v_2_s_o_string_gvariant(
+      this.handle,
+      'action-state-changed',
+      callback,
+    );
   }
 
   /// Emits the [signal@Gio.ActionGroup::action-added] signal on @action_group.

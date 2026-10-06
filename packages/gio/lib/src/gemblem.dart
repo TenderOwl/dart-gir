@@ -7,7 +7,7 @@ part of '../gio.dart';
 ///
 /// Currently, only metainformation about the emblem's origin is
 /// supported. More may be added in the future.
-class GEmblem extends GObject {
+class GEmblem extends GObject implements GIcon {
   GEmblem.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new emblem for @icon.
@@ -18,8 +18,7 @@ class GEmblem extends GObject {
             >
           >('g_emblem_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GEmblem(GIcon icon)
-    : super.fromPointer(_gEmblemNew(icon.handle), owned: true);
+  GEmblem(GIcon icon) : this.fromPointer(_gEmblemNew(icon.handle), owned: true);
 
   /// Creates a new emblem for @icon.
   static final _gEmblemNewWithOrigin =
@@ -32,7 +31,7 @@ class GEmblem extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GEmblem.withOrigin(GIcon icon, GEmblemOrigin origin)
-    : super.fromPointer(
+    : this.fromPointer(
         _gEmblemNewWithOrigin(icon.handle, origin.value),
         owned: true,
       );

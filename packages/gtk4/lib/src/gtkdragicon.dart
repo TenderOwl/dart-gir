@@ -12,7 +12,13 @@ part of '../gtk4.dart';
 /// to set whatever widget should be used for the drag icon.
 ///
 /// Keep in mind that drag icons do not allow user input.
-class GtkDragIcon extends GtkWidget {
+class GtkDragIcon extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot {
   GtkDragIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Gets the `GtkDragIcon` in use with @drag.
@@ -27,7 +33,7 @@ class GtkDragIcon extends GtkWidget {
           >('gtk_drag_icon_get_for_drag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkDragIcon.getForDrag(GdkDrag drag)
-    : super.fromPointer(_gtkDragIconGetForDrag(drag.handle), owned: true);
+    : this.fromPointer(_gtkDragIconGetForDrag(drag.handle), owned: true);
 
   /// Gets the widget currently used as drag icon.
   static final _gtkDragIconGetChild =

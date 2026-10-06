@@ -16,7 +16,7 @@ class GBindingGroup extends GObject {
       gobjectLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_binding_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GBindingGroup() : super.fromPointer(_gBindingGroupNew(), owned: true);
+  GBindingGroup() : this.fromPointer(_gBindingGroupNew(), owned: true);
 
   /// Creates a binding between @source_property on the source object
   /// and @target_property on @target. Whenever the @source_property
@@ -47,7 +47,7 @@ class GBindingGroup extends GObject {
           >();
   void bind(
     String sourceProperty,
-    ffi.Pointer<ffi.Void> target,
+    GObject target,
     String targetProperty,
     GBindingFlags flags,
   ) {
@@ -56,7 +56,7 @@ class GBindingGroup extends GObject {
         _gBindingGroupBind(
           this.handle,
           nativeSourceProperty.cast<Utf8>(),
-          target,
+          target.handle,
           nativeTargetProperty.cast<Utf8>(),
           flags.value,
         );
@@ -101,7 +101,7 @@ class GBindingGroup extends GObject {
           >();
   void bindWithClosures(
     String sourceProperty,
-    ffi.Pointer<ffi.Void> target,
+    GObject target,
     String targetProperty,
     GBindingFlags flags, [
     GClosure? transformTo,
@@ -112,7 +112,7 @@ class GBindingGroup extends GObject {
         _gBindingGroupBindWithClosures(
           this.handle,
           nativeSourceProperty.cast<Utf8>(),
-          target,
+          target.handle,
           nativeTargetProperty.cast<Utf8>(),
           flags.value,
           transformTo?.handle ?? ffi.nullptr,
@@ -130,8 +130,10 @@ class GBindingGroup extends GObject {
             >
           >('g_binding_group_dup_source')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> dupSource() {
-    return _gBindingGroupDupSource(this.handle);
+  GObject? dupSource() {
+    return (_gBindingGroupDupSource(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gBindingGroupDupSource(this.handle));
   }
 
   /// Sets @source as the source object used for creating property
@@ -148,8 +150,8 @@ class GBindingGroup extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void setSource(ffi.Pointer<ffi.Void> source) {
-    _gBindingGroupSetSource(this.handle, source);
+  void setSource([GObject? source]) {
+    _gBindingGroupSetSource(this.handle, source?.handle ?? ffi.nullptr);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

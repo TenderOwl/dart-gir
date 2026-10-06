@@ -21,7 +21,7 @@ class GskBroadwayRenderer extends GskRenderer {
         'gsk_broadway_renderer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GskBroadwayRenderer()
-    : super.fromPointer(_gskBroadwayRendererNew(), owned: true);
+    : this.fromPointer(_gskBroadwayRendererNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

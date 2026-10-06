@@ -491,8 +491,8 @@ final class GBytes {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  int compare(ffi.Pointer<ffi.Void> bytes2) {
-    return _gBytesCompare(this.handle, bytes2);
+  int compare(GBytes bytes2) {
+    return _gBytesCompare(this.handle, bytes2.handle);
   }
 
   /// Compares the two [struct@GLib.Bytes] values being pointed to and returns
@@ -510,8 +510,8 @@ final class GBytes {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool equal(ffi.Pointer<ffi.Void> bytes2) {
-    return (_gBytesEqual(this.handle, bytes2)) != 0;
+  bool equal(GBytes bytes2) {
+    return (_gBytesEqual(this.handle, bytes2.handle)) != 0;
   }
 
   /// Gets a pointer to a region in @bytes.

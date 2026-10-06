@@ -88,7 +88,7 @@ class GtkDropTarget extends GtkEventController {
           >('gtk_drop_target_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkDropTarget(int type_, GdkDragAction actions)
-    : super.fromPointer(_gtkDropTargetNew(type_, actions.value), owned: true);
+    : this.fromPointer(_gtkDropTargetNew(type_, actions.value), owned: true);
 
   /// Gets the actions that this drop target supports.
   static final _gtkDropTargetGetActions =

@@ -30,22 +30,20 @@ class GskRepeatingLinearGradientNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskRepeatingLinearGradientNode(
+  GskRepeatingLinearGradientNode(
     GrapheneRect bounds,
     GraphenePoint start,
     GraphenePoint end,
     ffi.Pointer<ffi.Void> colorStops,
     int nColorStops,
-  ) {
-    return GskRepeatingLinearGradientNode.fromPointer(
-      _gskRepeatingLinearGradientNodeNew(
-        bounds.handle,
-        start.handle,
-        end.handle,
-        colorStops,
-        nColorStops,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskRepeatingLinearGradientNodeNew(
+          bounds.handle,
+          start.handle,
+          end.handle,
+          colorStops,
+          nColorStops,
+        ),
+        owned: true,
+      );
 }

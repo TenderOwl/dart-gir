@@ -10,7 +10,7 @@ part of '../gio.dart';
 /// Ideally something like [method@Gtk.IconTheme.choose_icon] should be used to
 /// resolve the list of names so that fallback icons work nicely with
 /// themes that inherit other themes.
-class GThemedIcon extends GObject {
+class GThemedIcon extends GObject implements GIcon {
   GThemedIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new themed icon for @iconname.

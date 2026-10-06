@@ -75,7 +75,14 @@ part of '../gtk4.dart';
 /// `GtkWindow` uses the [enum@Gtk.AccessibleRole.window] role.
 ///
 /// From GTK 4.12 to 4.18, it used the [enum@Gtk.AccessibleRole.application] role.
-class GtkWindow extends GtkWidget {
+class GtkWindow extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkWindow.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkWindow`.
@@ -94,7 +101,7 @@ class GtkWindow extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkWindow() : super.fromPointer(_gtkWindowNew(), owned: true);
+  GtkWindow() : this.fromPointer(_gtkWindowNew(), owned: true);
 
   /// Requests that the window is closed.
   ///

@@ -70,7 +70,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkCheckButton` uses the [enum@Gtk.AccessibleRole.checkbox] role.
-class GtkCheckButton extends GtkWidget {
+class GtkCheckButton extends GtkWidget
+    implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
   GtkCheckButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkCheckButton`.
@@ -78,7 +79,7 @@ class GtkCheckButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_check_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCheckButton() : super.fromPointer(_gtkCheckButtonNew(), owned: true);
+  GtkCheckButton() : this.fromPointer(_gtkCheckButtonNew(), owned: true);
 
   /// Creates a new `GtkCheckButton` with the given text.
   static final _gtkCheckButtonNewWithLabel =

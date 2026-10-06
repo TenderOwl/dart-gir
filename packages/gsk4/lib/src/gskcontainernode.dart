@@ -18,12 +18,8 @@ class GskContainerNode extends GskRenderNode {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GskContainerNode(ffi.Pointer<ffi.Void> children, int nChildren) {
-    return GskContainerNode.fromPointer(
-      _gskContainerNodeNew(children, nChildren),
-      owned: true,
-    );
-  }
+  GskContainerNode(ffi.Pointer<ffi.Void> children, int nChildren)
+    : this.fromPointer(_gskContainerNodeNew(children, nChildren), owned: true);
 
   /// Gets one of the children of @container.
   static final _gskContainerNodeGetChild =

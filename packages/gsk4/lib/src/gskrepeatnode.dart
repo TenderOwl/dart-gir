@@ -28,7 +28,7 @@ class GskRepeatNode extends GskRenderNode {
     GrapheneRect bounds,
     GskRenderNode child, [
     GrapheneRect? childBounds,
-  ]) : super.fromPointer(
+  ]) : this.fromPointer(
          _gskRepeatNodeNew(
            bounds.handle,
            child.handle,

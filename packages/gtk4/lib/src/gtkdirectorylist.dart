@@ -23,7 +23,7 @@ part of '../gtk4.dart';
 /// This means you do not need access to the `GtkDirectoryList`, but can access
 /// the `GFile` directly from the `GFileInfo` when operating with a `GtkListView`
 /// or similar.
-class GtkDirectoryList extends GObject {
+class GtkDirectoryList extends GObject implements GListModel {
   GtkDirectoryList.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -248,6 +248,22 @@ class GtkDirectoryList extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

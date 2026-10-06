@@ -523,8 +523,8 @@ final class GTypeClass {
             >
           >('g_type_class_peek_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> peekParent() {
-    return _gTypeClassPeekParent(this.handle);
+  GTypeClass peekParent() {
+    return GTypeClass.fromPointer(_gTypeClassPeekParent(this.handle));
   }
 
   /// Decrements the reference count of the class structure being passed in.
@@ -566,8 +566,8 @@ final class GTypeClass {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
           >('g_type_class_get')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  static ffi.Pointer<ffi.Void> get_(int type_) {
-    return _gTypeClassGet(type_);
+  static GTypeClass get_(int type_) {
+    return GTypeClass.fromPointer(_gTypeClassGet(type_));
   }
 
   /// Retrieves the class for a give type.
@@ -583,8 +583,10 @@ final class GTypeClass {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
           >('g_type_class_peek')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  static ffi.Pointer<ffi.Void> peek(int type_) {
-    return _gTypeClassPeek(type_);
+  static GTypeClass? peek(int type_) {
+    return (_gTypeClassPeek(type_)) == ffi.nullptr
+        ? null
+        : GTypeClass.fromPointer(_gTypeClassPeek(type_));
   }
 
   /// A more efficient version of g_type_class_peek() which works only for
@@ -594,8 +596,10 @@ final class GTypeClass {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
           >('g_type_class_peek_static')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  static ffi.Pointer<ffi.Void> peekStatic(int type_) {
-    return _gTypeClassPeekStatic(type_);
+  static GTypeClass? peekStatic(int type_) {
+    return (_gTypeClassPeekStatic(type_)) == ffi.nullptr
+        ? null
+        : GTypeClass.fromPointer(_gTypeClassPeekStatic(type_));
   }
 
   /// Increments the reference count of the class structure belonging to
@@ -607,8 +611,8 @@ final class GTypeClass {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
           >('g_type_class_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  static ffi.Pointer<ffi.Void> ref(int type_) {
-    return _gTypeClassRef(type_);
+  static GTypeClass ref(int type_) {
+    return GTypeClass.fromPointer(_gTypeClassRef(type_));
   }
 }
 

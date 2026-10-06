@@ -22,7 +22,7 @@ part of '../gio.dart';
 /// See [class@Gio.DBusObjectManagerClient] for the client-side code that is
 /// intended to be used with `GDBusObjectManagerServer` or any D-Bus
 /// object implementing the `org.freedesktop.DBus.ObjectManager` interface.
-class GDBusObjectManagerServer extends GObject {
+class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
   GDBusObjectManagerServer.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -187,6 +187,52 @@ class GDBusObjectManagerServer extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when @interface is added to @object.
+  ///
+  /// This signal exists purely as a convenience to avoid having to
+  /// connect signals to all objects managed by @manager.
+  int onInterfaceAdded(
+    void Function(GDBusObject object, GDBusInterface interface_) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gdbusobject_gdbusinterface(
+      this.handle,
+      'interface-added',
+      callback,
+    );
+  }
+
+  /// Emitted when @interface has been removed from @object.
+  ///
+  /// This signal exists purely as a convenience to avoid having to
+  /// connect signals to all objects managed by @manager.
+  int onInterfaceRemoved(
+    void Function(GDBusObject object, GDBusInterface interface_) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gdbusobject_gdbusinterface(
+      this.handle,
+      'interface-removed',
+      callback,
+    );
+  }
+
+  /// Emitted when @object is added to @manager.
+  int onObjectAdded(void Function(GDBusObject object) callback) {
+    return _connectSignal_v_1_o_gdbusobject(
+      this.handle,
+      'object-added',
+      callback,
+    );
+  }
+
+  /// Emitted when @object is removed from @manager.
+  int onObjectRemoved(void Function(GDBusObject object) callback) {
+    return _connectSignal_v_1_o_gdbusobject(
+      this.handle,
+      'object-removed',
+      callback,
+    );
   }
 
   /// Gets the interface proxy for @interface_name at @object_path, if

@@ -44,24 +44,22 @@ class GskGLShaderNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskGLShaderNode(
+  GskGLShaderNode(
     GskGLShader shader,
     GrapheneRect bounds,
     GBytes args,
     ffi.Pointer<ffi.Void> children,
     int nChildren,
-  ) {
-    return GskGLShaderNode.fromPointer(
-      _gskGlShaderNodeNew(
-        shader.handle,
-        bounds.handle,
-        args.handle,
-        children,
-        nChildren,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskGlShaderNodeNew(
+          shader.handle,
+          bounds.handle,
+          args.handle,
+          children,
+          nChildren,
+        ),
+        owned: true,
+      );
 
   /// Gets args for the node.
   static final _gskGlShaderNodeGetArgs =

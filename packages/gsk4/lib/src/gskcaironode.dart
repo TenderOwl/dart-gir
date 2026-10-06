@@ -17,7 +17,7 @@ class GskCairoNode extends GskRenderNode {
           >('gsk_cairo_node_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskCairoNode(GrapheneRect bounds)
-    : super.fromPointer(_gskCairoNodeNew(bounds.handle), owned: true);
+    : this.fromPointer(_gskCairoNodeNew(bounds.handle), owned: true);
 
   /// Creates a Cairo context for drawing using the surface associated
   /// to the render node.

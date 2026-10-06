@@ -10,7 +10,7 @@ part of '../gio.dart';
 /// See [struct@Gio.SrvTarget] for more information about SRV records, and see
 /// [iface@Gio.SocketConnectable] for an example of using the connectable
 /// interface.
-class GNetworkService extends GObject {
+class GNetworkService extends GObject implements GSocketConnectable {
   GNetworkService.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

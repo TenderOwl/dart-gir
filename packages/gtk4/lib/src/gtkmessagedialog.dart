@@ -60,7 +60,14 @@ part of '../gtk4.dart';
 ///
 /// The `GtkMessageDialog` implementation of the `GtkBuildable` interface exposes
 /// the message area as an internal child with the name “message_area”.
-class GtkMessageDialog extends GtkDialog {
+class GtkMessageDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkMessageDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

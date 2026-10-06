@@ -30,7 +30,7 @@ part of '../gtk4.dart';
 /// There is one `GtkSettings` instance per display. It can be obtained with
 /// [func@Gtk.Settings.get_for_display], but in many cases, it is more
 /// convenient to use [method@Gtk.Widget.get_settings].
-class GtkSettings extends GObject {
+class GtkSettings extends GObject implements GtkStyleProvider {
   GtkSettings.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Undoes the effect of calling g_object_set() to install an
@@ -106,5 +106,9 @@ class GtkSettings extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  int onGtkPrivateChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'gtk-private-changed', callback);
   }
 }

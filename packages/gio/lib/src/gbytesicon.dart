@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// `GBytesIcon` specifies an image held in memory in a common format (usually
 /// PNG) to be used as icon.
-class GBytesIcon extends GObject {
+class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
   GBytesIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new icon for a bytes.
@@ -18,7 +18,7 @@ class GBytesIcon extends GObject {
           >('g_bytes_icon_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytesIcon(GBytes bytes)
-    : super.fromPointer(_gBytesIconNew(bytes.handle), owned: true);
+    : this.fromPointer(_gBytesIconNew(bytes.handle), owned: true);
 
   /// Gets the #GBytes associated with the given @icon.
   static final _gBytesIconGetBytes =

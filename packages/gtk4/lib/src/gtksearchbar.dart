@@ -54,7 +54,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkSearchBar` uses the [enum@Gtk.AccessibleRole.search] role.
-class GtkSearchBar extends GtkWidget {
+class GtkSearchBar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkSearchBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a `GtkSearchBar`.
@@ -65,7 +66,7 @@ class GtkSearchBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_search_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSearchBar() : super.fromPointer(_gtkSearchBarNew(), owned: true);
+  GtkSearchBar() : this.fromPointer(_gtkSearchBarNew(), owned: true);
 
   /// Connects the `GtkEditable` widget passed as the one to be used in
   /// this search bar.

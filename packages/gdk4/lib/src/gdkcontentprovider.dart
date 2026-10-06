@@ -52,7 +52,7 @@ class GdkContentProvider extends GObject {
           >('gdk_content_provider_new_for_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkContentProvider.forValue(GValue value)
-    : super.fromPointer(
+    : this.fromPointer(
         _gdkContentProviderNewForValue(value.handle),
         owned: true,
       );
@@ -81,15 +81,11 @@ class GdkContentProvider extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  factory GdkContentProvider.union(
-    ffi.Pointer<ffi.Void> providers,
-    int nProviders,
-  ) {
-    return GdkContentProvider.fromPointer(
-      _gdkContentProviderNewUnion(providers, nProviders),
-      owned: true,
-    );
-  }
+  GdkContentProvider.union(ffi.Pointer<ffi.Void> providers, int nProviders)
+    : this.fromPointer(
+        _gdkContentProviderNewUnion(providers, nProviders),
+        owned: true,
+      );
 
   /// Emits the ::content-changed signal.
   static final _gdkContentProviderContentChanged =

@@ -40,7 +40,8 @@ part of '../gtk4.dart';
 /// ## CSS node
 ///
 /// `GtkStatusbar` has a single CSS node with name `statusbar`.
-class GtkStatusbar extends GtkWidget {
+class GtkStatusbar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkStatusbar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkStatusbar` ready for messages.
@@ -48,7 +49,7 @@ class GtkStatusbar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_statusbar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkStatusbar() : super.fromPointer(_gtkStatusbarNew(), owned: true);
+  GtkStatusbar() : this.fromPointer(_gtkStatusbarNew(), owned: true);
 
   /// Returns a new context identifier, given a description
   /// of the actual context.

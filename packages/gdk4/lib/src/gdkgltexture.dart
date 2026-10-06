@@ -2,7 +2,8 @@
 part of '../gdk4.dart';
 
 /// A `GdkTexture` representing a GL texture object.
-class GdkGLTexture extends GdkTexture {
+class GdkGLTexture extends GdkTexture
+    implements GdkPaintable, GIcon, GLoadableIcon {
   GdkGLTexture.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new texture for an existing GL texture.
@@ -75,6 +76,28 @@ class GdkGLTexture extends GdkTexture {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void release() {
     _gdkGlTextureRelease(this.handle);
+  }
+
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

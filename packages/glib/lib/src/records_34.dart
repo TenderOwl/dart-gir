@@ -325,8 +325,8 @@ final class GVariantType {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool equal(ffi.Pointer<ffi.Void> type2) {
-    return (_gVariantTypeEqual(this.handle, type2)) != 0;
+  bool equal(GVariantType type2) {
+    return (_gVariantTypeEqual(this.handle, type2.handle)) != 0;
   }
 
   /// Determines the first item type of a tuple or dictionary entry

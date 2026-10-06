@@ -97,7 +97,13 @@ part of '../gtk4.dart';
 /// be the same. The arrow also does not support any border shape other than
 /// solid, no border-radius, only one border width (border-bottom-width is
 /// used) and no box-shadow.
-class GtkPopover extends GtkWidget {
+class GtkPopover extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkShortcutManager {
   GtkPopover.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkPopover`.
@@ -105,7 +111,7 @@ class GtkPopover extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_popover_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPopover() : super.fromPointer(_gtkPopoverNew(), owned: true);
+  GtkPopover() : this.fromPointer(_gtkPopoverNew(), owned: true);
 
   /// Returns whether the popover is modal.
   ///

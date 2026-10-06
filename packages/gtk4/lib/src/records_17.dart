@@ -6,7 +6,7 @@ part of '../gtk4.dart';
 /// `GtkTreeSortable` is an interface to be implemented by tree models which
 /// support sorting. The `GtkTreeView` uses the methods provided by this interface
 /// to sort the model.
-final class GtkTreeSortable {
+class GtkTreeSortable {
   GtkTreeSortable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

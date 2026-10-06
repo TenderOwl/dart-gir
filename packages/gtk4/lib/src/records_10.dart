@@ -13,7 +13,7 @@ part of '../gtk4.dart';
 ///
 /// An object only needs to implement this interface if it needs to extend the
 /// `GtkBuilder` XML format or run any extra routines at deserialization time.
-final class GtkBuildable {
+class GtkBuildable {
   GtkBuildable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -53,7 +53,7 @@ final class GtkBuildable {
 /// If you implement `GtkBuilderScope` for a language binding, you
 /// may want to (partially) derive from or fall back to a [class@Gtk.BuilderCScope],
 /// as that class implements support for automatic lookups from C symbols.
-final class GtkBuilderScope {
+class GtkBuilderScope {
   GtkBuilderScope.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }
@@ -63,7 +63,7 @@ final class GtkBuilderScope {
 /// The `GtkCellEditable` interface must be implemented for widgets to be usable
 /// to edit the contents of a `GtkTreeView` cell. It provides a way to specify how
 /// temporary widgets should be configured for editing, get the new value, etc.
-final class GtkCellEditable {
+class GtkCellEditable {
   GtkCellEditable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -248,7 +248,7 @@ final class GtkCellEditable {
 /// to support alternative cell areas, you can do so by moving the
 /// problematic calls out of `init()` and into a `constructor()`
 /// for your class.
-final class GtkCellLayout {
+class GtkCellLayout {
   GtkCellLayout.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -510,7 +510,7 @@ final class GtkCellLayout {
 /// In GTK, the main widgets that implement this interface are
 /// [class@Gtk.ColorChooserWidget], [class@Gtk.ColorChooserDialog] and
 /// [class@Gtk.ColorButton].
-final class GtkColorChooser {
+class GtkColorChooser {
   GtkColorChooser.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -639,7 +639,7 @@ final class GtkColorChooser {
 /// [class@Gtk.Constraint].
 ///
 /// Besides `GtkWidget`, it is also implemented by `GtkConstraintGuide`.
-final class GtkConstraintTarget {
+class GtkConstraintTarget {
   GtkConstraintTarget.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 }

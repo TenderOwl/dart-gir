@@ -7,7 +7,7 @@ part of '../gio.dart';
 ///
 /// Note that `GEmblemedIcon` allows no control over the position
 /// of the emblems. See also [class@Gio.Emblem] for more information.
-class GEmblemedIcon extends GObject {
+class GEmblemedIcon extends GObject implements GIcon {
   GEmblemedIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new emblemed icon for @icon with the emblem @emblem.
@@ -27,7 +27,7 @@ class GEmblemedIcon extends GObject {
             )
           >();
   GEmblemedIcon(GIcon icon, [GEmblem? emblem])
-    : super.fromPointer(
+    : this.fromPointer(
         _gEmblemedIconNew(icon.handle, emblem?.handle ?? ffi.nullptr),
         owned: true,
       );

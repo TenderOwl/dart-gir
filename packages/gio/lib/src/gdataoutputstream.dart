@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// Data output stream implements [class@Gio.OutputStream] and includes functions
 /// for writing data directly to an output stream.
-class GDataOutputStream extends GFilterOutputStream {
+class GDataOutputStream extends GFilterOutputStream implements GSeekable {
   GDataOutputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -16,7 +16,7 @@ class GDataOutputStream extends GFilterOutputStream {
           >('g_data_output_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDataOutputStream(GOutputStream baseStream)
-    : super.fromPointer(_gDataOutputStreamNew(baseStream.handle), owned: true);
+    : this.fromPointer(_gDataOutputStreamNew(baseStream.handle), owned: true);
 
   /// Gets the byte order for the stream.
   static final _gDataOutputStreamGetByteOrder =

@@ -28,7 +28,7 @@ class GThreadedSocketService extends GSocketService {
         'g_threaded_socket_service_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GThreadedSocketService(int maxThreads)
-    : super.fromPointer(_gThreadedSocketServiceNew(maxThreads), owned: true);
+    : this.fromPointer(_gThreadedSocketServiceNew(maxThreads), owned: true);
 
   /// The ::run signal is emitted in a worker thread in response to an
   /// incoming connection. This thread is dedicated to handling

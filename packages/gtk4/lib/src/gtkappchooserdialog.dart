@@ -21,7 +21,15 @@ part of '../gtk4.dart';
 ///
 /// `GtkAppChooserDialog` has a single CSS node with the name `window` and style
 /// class `.appchooser`.
-class GtkAppChooserDialog extends GtkDialog {
+class GtkAppChooserDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkAppChooser,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkAppChooserDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -46,7 +54,7 @@ class GtkAppChooserDialog extends GtkDialog {
             )
           >();
   GtkAppChooserDialog(GtkWindow? parent, GtkDialogFlags flags, GFile file)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkAppChooserDialogNew(
           parent?.handle ?? ffi.nullptr,
           flags.value,

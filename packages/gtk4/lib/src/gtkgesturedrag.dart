@@ -18,7 +18,7 @@ class GtkGestureDrag extends GtkGestureSingle {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_drag_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGestureDrag() : super.fromPointer(_gtkGestureDragNew(), owned: true);
+  GtkGestureDrag() : this.fromPointer(_gtkGestureDragNew(), owned: true);
 
   /// Emitted whenever dragging starts.
   int onDragBegin(void Function(double startX, double startY) callback) {

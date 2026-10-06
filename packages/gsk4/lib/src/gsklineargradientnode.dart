@@ -29,24 +29,22 @@ class GskLinearGradientNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskLinearGradientNode(
+  GskLinearGradientNode(
     GrapheneRect bounds,
     GraphenePoint start,
     GraphenePoint end,
     ffi.Pointer<ffi.Void> colorStops,
     int nColorStops,
-  ) {
-    return GskLinearGradientNode.fromPointer(
-      _gskLinearGradientNodeNew(
-        bounds.handle,
-        start.handle,
-        end.handle,
-        colorStops,
-        nColorStops,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskLinearGradientNodeNew(
+          bounds.handle,
+          start.handle,
+          end.handle,
+          colorStops,
+          nColorStops,
+        ),
+        owned: true,
+      );
 
   /// Retrieves the final point of the linear gradient.
   static final _gskLinearGradientNodeGetEnd =

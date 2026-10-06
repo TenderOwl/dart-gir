@@ -24,7 +24,7 @@ class GtkGesturePan extends GtkGestureDrag {
         'gtk_gesture_pan_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkGesturePan(GtkOrientation orientation)
-    : super.fromPointer(_gtkGesturePanNew(orientation.value), owned: true);
+    : this.fromPointer(_gtkGesturePanNew(orientation.value), owned: true);
 
   /// Returns the orientation of the pan gestures that this @gesture expects.
   static final _gtkGesturePanGetOrientation =

@@ -183,6 +183,23 @@ Iterable<({GirSignal signal, GirNamespace? ns})> _signalsIncludingAncestors(
         yield (signal: s, ns: currentNs);
       }
     }
+    // Also probe the class's implemented interfaces — a class that
+    // `implements GListModel` exposes GListModel's `items-changed`
+    // signal through its own `onItemsChanged` helper, which delegates
+    // to a per-bucket `_connectSignal_<bucketId>` helper in this
+    // package's `signals.dart`. Without this walk, the helper would be
+    // missing and the analyzer would flag `undefined_method` on every
+    // mirror. Required for the implements-clause plan (T2).
+    for (final implName in current.implements_) {
+      final ifound = ctx.findInterface(implName);
+      if (ifound == null) continue;
+      final (iNs, iface) = ifound;
+      for (final s in iface.signals) {
+        if (seen.add(s)) {
+          yield (signal: s, ns: iNs);
+        }
+      }
+    }
     if (current.parent == null) break;
     final found = ctx.findClass(current.parent!);
     if (found == null) break;

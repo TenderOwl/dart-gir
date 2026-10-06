@@ -36,7 +36,8 @@ part of '../gtk4.dart';
 /// # Accessibility
 ///
 /// `GtkPasswordEntry` uses the [enum@Gtk.AccessibleRole.text_box] role.
-class GtkPasswordEntry extends GtkWidget {
+class GtkPasswordEntry extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkEditable {
   GtkPasswordEntry.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -45,7 +46,7 @@ class GtkPasswordEntry extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_password_entry_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPasswordEntry() : super.fromPointer(_gtkPasswordEntryNew(), owned: true);
+  GtkPasswordEntry() : this.fromPointer(_gtkPasswordEntryNew(), owned: true);
 
   /// Gets the menu model set with gtk_password_entry_set_extra_menu().
   static final _gtkPasswordEntryGetExtraMenu =
@@ -277,6 +278,47 @@ class GtkPasswordEntry extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted at the end of a single user-visible operation on the
+  /// contents.
+  ///
+  /// E.g., a paste operation that replaces the contents of the
+  /// selection will cause only one signal emission (even though it
+  /// is implemented by first deleting the selection, then inserting
+  /// the new content, and may cause multiple ::notify::text signals
+  /// to be emitted).
+  int onChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// Emitted when text is deleted from the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible for
+  /// deleting the text, so by connecting to this signal and then stopping
+  /// the signal with g_signal_stop_emission(), it is possible to modify the
+  /// range of deleted text, or prevent it from being deleted entirely.
+  ///
+  /// The @start_pos and @end_pos parameters are interpreted as for
+  /// [method@Gtk.Editable.delete_text].
+  int onDeleteText(void Function(int startPos, int endPos) callback) {
+    return _connectSignal_v_2_i_i_int_int(this.handle, 'delete-text', callback);
+  }
+
+  /// Emitted when text is inserted into the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible
+  /// for inserting the text, so by connecting to this signal and then
+  /// stopping the signal with g_signal_stop_emission(), it is possible
+  /// to modify the inserted text, or prevent it from being inserted entirely.
+  int onInsertText(
+    void Function(String text, int length, int position) callback,
+  ) {
+    return _connectSignal_v_3_s_i_i_string_int_int(
+      this.handle,
+      'insert-text',
+      callback,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

@@ -29,7 +29,7 @@ class GtkCellRendererCombo extends GtkCellRendererText {
         'gtk_cell_renderer_combo_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererCombo()
-    : super.fromPointer(_gtkCellRendererComboNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererComboNew(), owned: true);
 
   /// This signal is emitted each time after the user selected an item in
   /// the combo box, either by using the mouse or the arrow keys.  Contrary

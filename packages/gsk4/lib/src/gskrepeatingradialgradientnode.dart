@@ -38,7 +38,7 @@ class GskRepeatingRadialGradientNode extends GskRenderNode {
               int,
             )
           >();
-  factory GskRepeatingRadialGradientNode(
+  GskRepeatingRadialGradientNode(
     GrapheneRect bounds,
     GraphenePoint center,
     double hradius,
@@ -47,19 +47,17 @@ class GskRepeatingRadialGradientNode extends GskRenderNode {
     double end,
     ffi.Pointer<ffi.Void> colorStops,
     int nColorStops,
-  ) {
-    return GskRepeatingRadialGradientNode.fromPointer(
-      _gskRepeatingRadialGradientNodeNew(
-        bounds.handle,
-        center.handle,
-        hradius,
-        vradius,
-        start,
-        end,
-        colorStops,
-        nColorStops,
-      ),
-      owned: true,
-    );
-  }
+  ) : this.fromPointer(
+        _gskRepeatingRadialGradientNodeNew(
+          bounds.handle,
+          center.handle,
+          hradius,
+          vradius,
+          start,
+          end,
+          colorStops,
+          nColorStops,
+        ),
+        owned: true,
+      );
 }

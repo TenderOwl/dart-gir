@@ -14,7 +14,7 @@ part of '../gio.dart';
 /// [method@Gio.BufferedOutputStream.get_buffer_size]. To change the size of a
 /// buffered output stream's buffer, use [method@Gio.BufferedOutputStream.set_buffer_size].
 /// Note that the buffer's size cannot be reduced below the size of the data within the buffer.
-class GBufferedOutputStream extends GFilterOutputStream {
+class GBufferedOutputStream extends GFilterOutputStream implements GSeekable {
   GBufferedOutputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -27,7 +27,7 @@ class GBufferedOutputStream extends GFilterOutputStream {
           >('g_buffered_output_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBufferedOutputStream(GOutputStream baseStream)
-    : super.fromPointer(
+    : this.fromPointer(
         _gBufferedOutputStreamNew(baseStream.handle),
         owned: true,
       );
@@ -43,7 +43,7 @@ class GBufferedOutputStream extends GFilterOutputStream {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GBufferedOutputStream.sized(GOutputStream baseStream, int size)
-    : super.fromPointer(
+    : this.fromPointer(
         _gBufferedOutputStreamNewSized(baseStream.handle, size),
         owned: true,
       );

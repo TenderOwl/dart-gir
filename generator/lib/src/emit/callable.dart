@@ -59,6 +59,7 @@ class CallableEmitter {
     String? factoryClass,
     bool factoryOwned = true,
     bool sinkFloating = false,
+    GirNamespace? relativeTo,
   }) {
     final label = '$ownerName.$dartName';
     String? skipReason;
@@ -96,6 +97,7 @@ class CallableEmitter {
         p.type,
         nullable: p.nullable,
         transfer: p.transferOwnership,
+        relativeTo: relativeTo,
       );
       if (bridge == null) {
         ctx.report.skip('callable', label, 'parameter ${p.name}: $reason');
@@ -137,6 +139,7 @@ class CallableEmitter {
       nullable: fn.returnNullable,
       transfer: fn.returnTransfer,
       forReturn: true,
+      relativeTo: relativeTo,
     );
     if (retBridge == null) {
       ctx.report.skip('callable', label, 'return: $retReason');
@@ -299,13 +302,20 @@ class CallableEmitter {
         !hasStringInSet &&
         !hasCallback) {
       final ownedArg = factoryOwned ? ', owned: true' : '';
-      // Classes chain to their superclass via `super.fromPointer(...)`;
-      // records (no parent) redirect to their own `fromPointer` via
-      // `this.fromPointer(...)`. Using the class name (`Foo.fromPointer(...)`)
-      // would be parsed as a field initializer and fail to compile — the
-      // `this` form is the only way to express a redirecting initializer
-      // that targets a same-class named constructor.
-      final receiver = factoryOwned ? 'super' : 'this';
+      // `this.fromPointer` is always valid — every generated class
+      // (and record) declares a `fromPointer` named constructor that
+      // initializes the inherited `handle` / `owned` fields. The
+      // original code emitted `super.fromPointer` for subclassable
+      // classes and `this.fromPointer` for root classes (records),
+      // but Dart rejects `super.fromPointer` on a class with no
+      // declared parent (`final_not_initialized_constructor`,
+      // `undefined_constructor_in_initializer` — see
+      // `packages/gobject/lib/src/gobject.dart` for `GObject.newv`).
+      // Routing every generative constructor through the same class's
+      // `fromPointer` works for both shapes — the call delegates up
+      // to the parent automatically because `fromPointer` forwards to
+      // its own super when one exists.
+      final receiver = 'this';
       final generativeArgExprs = <String>[];
       for (var i = 0; i < fn.parameters.length; i++) {
         final p = fn.parameters[i];

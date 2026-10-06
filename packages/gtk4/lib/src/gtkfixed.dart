@@ -38,7 +38,8 @@ part of '../gtk4.dart';
 /// If you know none of these things are an issue for your application,
 /// and prefer the simplicity of `GtkFixed`, by all means use the
 /// widget. But you should be aware of the tradeoffs.
-class GtkFixed extends GtkWidget {
+class GtkFixed extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkFixed.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkFixed`.
@@ -46,7 +47,7 @@ class GtkFixed extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_fixed_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFixed() : super.fromPointer(_gtkFixedNew(), owned: true);
+  GtkFixed() : this.fromPointer(_gtkFixedNew(), owned: true);
 
   /// Retrieves the translation transformation of the
   /// given child `GtkWidget` in the `GtkFixed`.

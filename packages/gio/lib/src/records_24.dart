@@ -4,7 +4,7 @@ part of '../gio.dart';
 /// TLS (Transport Layer Security, aka SSL) and DTLS backend. This is an
 /// internal type used to coordinate the different classes implemented
 /// by a TLS backend.
-final class GTlsBackend {
+class GTlsBackend {
   GTlsBackend.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -132,7 +132,7 @@ final class GTlsBackend {
 
 /// `GTlsClientConnection` is the client-side subclass of
 /// [class@Gio.TlsConnection], representing a client-side TLS connection.
-final class GTlsClientConnection {
+class GTlsClientConnection {
   GTlsClientConnection.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -340,7 +340,7 @@ final class GTlsClientConnection {
 /// `GTlsFileDatabase` is implemented by [class@Gio.TlsDatabase] objects which
 /// load their certificate information from a file. It is an interface which
 /// TLS library specific subtypes implement.
-final class GTlsFileDatabase {
+class GTlsFileDatabase {
   GTlsFileDatabase.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 
@@ -381,7 +381,7 @@ final class GTlsFileDatabase {
 
 /// `GTlsServerConnection` is the server-side subclass of
 /// [class@Gio.TlsConnection], representing a server-side TLS connection.
-final class GTlsServerConnection {
+class GTlsServerConnection {
   GTlsServerConnection.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

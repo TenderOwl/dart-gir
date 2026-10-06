@@ -107,6 +107,36 @@ class ClassEmitter {
       ctx.imports.add('gobject');
     }
 
+    // Build the set of interfaces the class can structurally satisfy
+    // — populated by `_emitInterfaceMirrors` once it walks each
+    // `<implements>` entry and decides whether the mirror is intact
+    // (no override-incompatible rename, no collision). The
+    // `implements <Name>` clause is built from this set so we never
+    // emit a clause the Dart analyzer would reject.
+    final implementsOk = <String>{}; // Dart type names
+    final currentPkg = packageNameFor(ctx.namespace);
+    for (final implName in cls.implements_) {
+      final decl = ctx.findDeclaration(implName);
+      if (decl == null) continue;
+      final (ns, obj) = decl;
+      // findDeclaration returns Object; every type it can resolve
+      // extends GirRegisteredType, so the cast is safe.
+      final reg = obj is GirRegisteredType ? obj : null;
+      if (reg == null) continue;
+      final implPkg = packageNameFor(ns);
+      // Skip interfaces in packages the user isn't regenerating
+      // (same policy as the mirrored-method emission).
+      if (implPkg != currentPkg && !emittedPackages.contains(implPkg)) {
+        continue;
+      }
+      implementsOk.add(ctx.dartTypeName(ns.name, reg.name));
+      // Make the foreign import visible so the implements-clause
+      // identifier resolves at compile time.
+      if (implPkg != currentPkg) {
+        ctx.imports.add(implPkg);
+      }
+    }
+
     final callables = CallableEmitter(ctx);
     final memberNames = <String>{'handle', 'owned', 'fromPointer', dartName};
     final ancestorSigs = _ancestorMethodSigs(cls);
@@ -129,9 +159,11 @@ class ClassEmitter {
     for (final line in ctx.docLines(cls.doc)) {
       b.writeln(line);
     }
-    b.writeln(
-        'class $dartName${parentName != null ? ' extends $parentName' : ''}'
-        '${parentName == null && rooted ? ' implements ffi.Finalizable' : ''} {');
+    // The class header placeholder is emitted with the *current*
+    // implementsOk set; it gets replaced after `_emitInterfaceMirrors`
+    // mutates the set (a rename removes an interface from the set so
+    // the post-mirror header reflects what's structurally satisfied).
+    b.writeln('__DART_GIR_HEADER_PLACEHOLDER__');
     if (parentName == null) {
       if (rooted) {
         b.writeln('$dartName.fromPointer(this.handle, {this.owned = false}) {');
@@ -186,6 +218,35 @@ class ClassEmitter {
         ctx.report.skip('renamed', '$dartName.$name',
             'override-incompatible with ancestor; renamed to $renamed');
         name = renamed;
+      }
+      // Same defensive rule for implemented interfaces: a class method
+      // whose signature disagrees with the interface's same-named method
+      // would be flagged `invalid_override` by the Dart analyzer once
+      // the implements clause lands (`GTask.getSourceObject` returning
+      // `Pointer<Void>` vs. `GAsyncResult.getSourceObject` returning
+      // `GObject?`). Rename the class's variant so the interface's
+      // method remains the canonical override target.
+      final ifaceSig = interfaceSigs[name];
+      if (ifaceSig != null && ifaceSig != _methodKey(m)) {
+        final renamed = '$name${cls.name}';
+        ctx.report.skip('renamed', '$dartName.$name',
+            'override-incompatible with interface; renamed to $renamed');
+        name = renamed;
+        // The rename removes the implements-clause guarantee for this
+        // interface, so drop it from the implements list.
+        for (final implName in cls.implements_) {
+          final decl = ctx.findInterface(implName);
+          if (decl == null) continue;
+          final (ns, iface) = decl;
+          for (final im in iface.methods) {
+            final imName = CallableEmitter.safeMemberName(
+              escapeKeyword(toLowerCamel(im.name)),
+            );
+            if (imName == name.replaceFirst(cls.name, '')) {
+              implementsOk.remove(ctx.dartTypeName(ns.name, iface.name));
+            }
+          }
+        }
       }
       if (CallableEmitter.conflictsWithObjectMember(name) ||
           !memberNames.add(name)) {
@@ -256,6 +317,7 @@ class ClassEmitter {
         memberNames,
         interfaceSigs,
         inheritedSigs,
+        implementsOk.isEmpty ? null : implementsOk,
       ));
     }
 
@@ -289,7 +351,15 @@ class ClassEmitter {
     }
 
     b.write('}');
-    return b.toString();
+    // Replace the placeholder header with the final one — built from
+    // the post-mirror `implementsOk` set (renames may have removed
+    // entries). Without this rewrite, the header would include
+    // `implements <Name>` for an interface whose methods were
+    // renamed away, which Dart's analyzer would reject.
+    final header = 'class $dartName${parentName != null ? ' extends $parentName' : ''}'
+        '${parentName == null && rooted ? ' implements ffi.Finalizable' : ''}'
+        '${implementsOk.isNotEmpty ? ' implements ${implementsOk.join(', ')}' : ''} {';
+    return b.toString().replaceFirst('__DART_GIR_HEADER_PLACEHOLDER__', header);
   }
 
   /// Returns the union of this class's properties and its ancestors',
@@ -746,6 +816,12 @@ class ClassEmitter {
   /// The mirrored method reuses the interface's native binding
   /// (e.g. `gtk_actionable_set_action_name` is looked up once per
   /// concrete class, not once per call).
+  ///
+  /// When [satisfiedIfDangling] is non-null, entries are removed
+  /// whenever a defensive rename fires (the rename means the class
+  /// no longer structurally satisfies the interface, so emitting
+  /// `implements <Name>` would be a Dart compile error). The caller
+  /// uses the resulting set to build the `implements <Name>` clause.
   String _emitInterfaceMirrors(
     GirClass cls,
     String dartName,
@@ -753,6 +829,7 @@ class ClassEmitter {
     Set<String> memberNames,
     Map<String, String> interfaceSigs,
     Map<String, String> inheritedSigs,
+    Set<String>? satisfiedIfDangling,
   ) {
     final b = StringBuffer();
     final seenInterfaces = <String>{};
@@ -801,6 +878,12 @@ class ClassEmitter {
           ctx.report.skip('renamed', '$dartName.$name',
               'override-incompatible with ancestor; renamed to $renamed');
           name = renamed;
+          // The rename means the class no longer matches the
+          // interface's signature — drop it from the implements
+          // clause so Dart's structural check doesn't reject the
+          // declaration.
+          satisfiedIfDangling?.remove(
+              ctx.dartTypeName(ifaceNs.name, iface.name));
         }
         // Override-incompatible with the interface's own expected
         // signature → rename so the class doesn't claim to satisfy
@@ -812,6 +895,8 @@ class ClassEmitter {
           ctx.report.skip('renamed', '$dartName.$name',
               'override-incompatible with interface; renamed to $renamed');
           name = renamed;
+          satisfiedIfDangling?.remove(
+              ctx.dartTypeName(ifaceNs.name, iface.name));
         }
         if (CallableEmitter.conflictsWithObjectMember(name) ||
             !memberNames.add(name)) {
@@ -822,7 +907,14 @@ class ClassEmitter {
             dartName: name,
             ownerName: dartName,
             classMember: true,
-            selfArgExpr: 'this.handle');
+            selfArgExpr: 'this.handle',
+            // Resolve parameter and return types against the
+            // interface's own namespace, not the implementing class's.
+            // `GdkPaintable.snapshot(GdkSnapshot, …)` and a Gtk mirror
+            // for `GtkIconPaintable` would otherwise re-bind `Snapshot`
+            // to the local `GtkSnapshot` class and break the
+            // `implements GdkPaintable` structural check.
+            relativeTo: ifaceNs);
         if (code != null) b.writeln(_indent(code));
         // Async-callback lifetime-safe overload — same detection rule
         // as class methods (line 143-156).
@@ -1010,9 +1102,20 @@ class ClassEmitter {
     String typeKey(GirTypeRef? t) {
       if (t == null) return 'void';
       if (t.isArray) return '[]${typeKey(t.array!.elementType)}';
+      // Use the canonical C type when the GIR declared both a name and
+      // a c:type that disagree — `<type name="Snapshot" c:type=
+      // "GdkSnapshot*"/>` and `<type name="Snapshot" c:type=
+      // "GtkSnapshot*"/>` resolve to different classes in different
+      // namespaces, and the implements-clause plan needs the two
+      // signatures to compare unequal so the defensive rename fires.
       final n = t.name ?? t.cType ?? '?';
       final dot = n.lastIndexOf('.');
-      return dot >= 0 ? n.substring(dot + 1) : n;
+      final base = dot >= 0 ? n.substring(dot + 1) : n;
+      final c = t.cType;
+      if (c != null && c.isNotEmpty && c != base) {
+        return '$base<$c>';
+      }
+      return base;
     }
 
     final params = m.parameters
@@ -1037,6 +1140,17 @@ class ClassEmitter {
     while (seen.add('${currentNs.name}.${current.name}')) {
       if (current.signals.any((s) => s.name == signalName)) {
         return currentNs;
+      }
+      // Also probe interfaces the class implements — a class that
+      // `implements GActionGroup` exposes GActionGroup's `action-added`
+      // signal through its own `onActionAdded` helper.
+      for (final implName in current.implements_) {
+        final ifound = ctx.findInterface(implName);
+        if (ifound == null) continue;
+        final (iNs, iface) = ifound;
+        if (iface.signals.any((s) => s.name == signalName)) {
+          return iNs;
+        }
       }
       if (current.parent == null) break;
       final found = ctx.findClass(current.parent!);

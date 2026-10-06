@@ -15,7 +15,7 @@ class GtkPasswordEntryBuffer extends GtkEntryBuffer {
         'gtk_password_entry_buffer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkPasswordEntryBuffer()
-    : super.fromPointer(_gtkPasswordEntryBufferNew(), owned: true);
+    : this.fromPointer(_gtkPasswordEntryBufferNew(), owned: true);
 
   /// The text is altered in the default handler for this signal.
   ///

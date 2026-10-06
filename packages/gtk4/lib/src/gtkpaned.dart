@@ -82,7 +82,13 @@ part of '../gtk4.dart';
 /// gtk_paned_set_shrink_end_child (GTK_PANED (hpaned), FALSE);
 /// gtk_widget_set_size_request (frame2, 50, -1);
 /// ```
-class GtkPaned extends GtkWidget {
+class GtkPaned extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkAccessibleRange,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkOrientable {
   GtkPaned.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkPaned` widget.
@@ -91,7 +97,7 @@ class GtkPaned extends GtkWidget {
         'gtk_paned_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkPaned(GtkOrientation orientation)
-    : super.fromPointer(_gtkPanedNew(orientation.value), owned: true);
+    : this.fromPointer(_gtkPanedNew(orientation.value), owned: true);
 
   /// Retrieves the end child of the given `GtkPaned`.
   static final _gtkPanedGetEndChild =

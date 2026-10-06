@@ -76,11 +76,10 @@ class GtkSorter extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkOrdering compare(
-    ffi.Pointer<ffi.Void> item1,
-    ffi.Pointer<ffi.Void> item2,
-  ) {
-    return GtkOrdering.fromValue(_gtkSorterCompare(this.handle, item1, item2));
+  GtkOrdering compare(GObject item1, GObject item2) {
+    return GtkOrdering.fromValue(
+      _gtkSorterCompare(this.handle, item1.handle, item2.handle),
+    );
   }
 
   /// Gets the order that @self conforms to.

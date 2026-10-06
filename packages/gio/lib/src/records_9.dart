@@ -12,7 +12,7 @@ part of '../gio.dart';
 /// prefixed names (e.g. by prepending "app." or "win.").
 /// This is the motivation for the ‘Map’ part of the interface
 /// name.
-final class GActionMap {
+class GActionMap {
   GActionMap.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

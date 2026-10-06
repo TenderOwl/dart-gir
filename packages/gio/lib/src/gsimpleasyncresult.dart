@@ -167,7 +167,7 @@ part of '../gio.dart';
 /// return g_object_ref (cake);
 /// }
 /// ```
-class GSimpleAsyncResult extends GObject {
+class GSimpleAsyncResult extends GObject implements GAsyncResult {
   GSimpleAsyncResult.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

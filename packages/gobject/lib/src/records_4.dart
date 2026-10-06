@@ -306,7 +306,7 @@ final class GValueDataUnion {
 /// [class@GObject.TypeModule] is an implementation of `GTypePlugin` that
 /// already implements most of this except for the actual module loading and
 /// unloading. It even handles multiple registered types per module.
-final class GTypePlugin {
+class GTypePlugin {
   GTypePlugin.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

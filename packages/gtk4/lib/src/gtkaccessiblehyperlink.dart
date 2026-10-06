@@ -6,7 +6,7 @@ part of '../gtk4.dart';
 /// A widget that contains one or more links should implement
 /// the [iface@Gtk.AccessibleHypertext] interface and return
 /// `GtkAccessibleHyperlink` objects for each of the links.
-class GtkAccessibleHyperlink extends GObject {
+class GtkAccessibleHyperlink extends GObject implements GtkAccessible {
   GtkAccessibleHyperlink.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

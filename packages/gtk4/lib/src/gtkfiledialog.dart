@@ -17,7 +17,7 @@ class GtkFileDialog extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_file_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFileDialog() : super.fromPointer(_gtkFileDialogNew(), owned: true);
+  GtkFileDialog() : this.fromPointer(_gtkFileDialogNew(), owned: true);
 
   /// Retrieves the text used by the dialog on its accept button.
   static final _gtkFileDialogGetAcceptLabel =

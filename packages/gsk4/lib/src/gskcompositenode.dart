@@ -31,7 +31,7 @@ class GskCompositeNode extends GskRenderNode {
             )
           >();
   GskCompositeNode(GskRenderNode child, GskRenderNode mask, GskPorterDuff op)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskCompositeNodeNew(child.handle, mask.handle, op.value),
         owned: true,
       );

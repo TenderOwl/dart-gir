@@ -129,7 +129,7 @@ part of '../gtk4.dart';
 /// recursion. If you wish to connect to the [signal@Gtk.Editable::insert-text]
 /// and [signal@Gtk.Editable::delete-text] signals, you will need to connect
 /// to them on the delegate obtained via [method@Gtk.Editable.get_delegate].
-final class GtkEditable {
+class GtkEditable {
   GtkEditable.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

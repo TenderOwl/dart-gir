@@ -197,7 +197,7 @@ part of '../gtk4.dart';
 /// required for levels in which nodes are referenced. For the root level
 /// however, signals must be emitted at all times (however the root level
 /// is always referenced when any view is attached).
-final class GtkTreeModel {
+class GtkTreeModel {
   GtkTreeModel.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

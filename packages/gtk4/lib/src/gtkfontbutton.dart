@@ -21,7 +21,12 @@ part of '../gtk4.dart';
 ///
 /// `GtkFontButton` has a single CSS node with name fontbutton which
 /// contains a button node with the .font style class.
-class GtkFontButton extends GtkWidget {
+class GtkFontButton extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkFontChooser {
   GtkFontButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new font picker widget.
@@ -29,7 +34,7 @@ class GtkFontButton extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_font_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFontButton() : super.fromPointer(_gtkFontButtonNew(), owned: true);
+  GtkFontButton() : this.fromPointer(_gtkFontButtonNew(), owned: true);
 
   /// Creates a new font picker widget showing the given font.
   static final _gtkFontButtonNewWithFont =
@@ -333,6 +338,15 @@ class GtkFontButton extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when a font is activated.
+  ///
+  /// This usually happens when the user double clicks an item,
+  /// or an item is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onFontActivated(void Function(String fontname) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'font-activated', callback);
   }
 
   /// Requests the user's screen reader to announce the given message.

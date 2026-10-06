@@ -79,7 +79,8 @@ part of '../gio.dart';
 /// originating from the `GDBusObjectManagerClient` object will be created in
 /// the same context and, consequently, will deliver signals in the
 /// same main loop.
-class GDBusObjectManagerClient extends GObject {
+class GDBusObjectManagerClient extends GObject
+    implements GAsyncInitable, GDBusObjectManager, GInitable {
   GDBusObjectManagerClient.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -780,6 +781,52 @@ class GDBusObjectManagerClient extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when @interface is added to @object.
+  ///
+  /// This signal exists purely as a convenience to avoid having to
+  /// connect signals to all objects managed by @manager.
+  int onInterfaceAdded(
+    void Function(GDBusObject object, GDBusInterface interface_) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gdbusobject_gdbusinterface(
+      this.handle,
+      'interface-added',
+      callback,
+    );
+  }
+
+  /// Emitted when @interface has been removed from @object.
+  ///
+  /// This signal exists purely as a convenience to avoid having to
+  /// connect signals to all objects managed by @manager.
+  int onInterfaceRemoved(
+    void Function(GDBusObject object, GDBusInterface interface_) callback,
+  ) {
+    return _connectSignal_v_2_o_o_gdbusobject_gdbusinterface(
+      this.handle,
+      'interface-removed',
+      callback,
+    );
+  }
+
+  /// Emitted when @object is added to @manager.
+  int onObjectAdded(void Function(GDBusObject object) callback) {
+    return _connectSignal_v_1_o_gdbusobject(
+      this.handle,
+      'object-added',
+      callback,
+    );
+  }
+
+  /// Emitted when @object is removed from @manager.
+  int onObjectRemoved(void Function(GDBusObject object) callback) {
+    return _connectSignal_v_1_o_gdbusobject(
+      this.handle,
+      'object-removed',
+      callback,
+    );
   }
 
   /// Starts asynchronous initialization of the object implementing the

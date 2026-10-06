@@ -30,7 +30,7 @@ class GtkTreeListRowSorter extends GtkSorter {
           >('gtk_tree_list_row_sorter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeListRowSorter([GtkSorter? sorter])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkTreeListRowSorterNew(sorter?.handle ?? ffi.nullptr),
         owned: true,
       );

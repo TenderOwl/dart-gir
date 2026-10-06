@@ -31,7 +31,7 @@ class GtkCellRendererPixbuf extends GtkCellRenderer {
         'gtk_cell_renderer_pixbuf_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererPixbuf()
-    : super.fromPointer(_gtkCellRendererPixbufNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererPixbufNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

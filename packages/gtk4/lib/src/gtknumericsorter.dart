@@ -21,7 +21,7 @@ class GtkNumericSorter extends GtkSorter {
           >('gtk_numeric_sorter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkNumericSorter([GtkExpression? expression])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkNumericSorterNew(expression?.handle ?? ffi.nullptr),
         owned: true,
       );

@@ -33,7 +33,12 @@ part of '../gtk4.dart';
 /// # CSS names
 ///
 /// `GtkColorChooserWidget` has a single CSS node with name colorchooser.
-class GtkColorChooserWidget extends GtkWidget {
+class GtkColorChooserWidget extends GtkWidget
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkColorChooser,
+        GtkConstraintTarget {
   GtkColorChooserWidget.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -43,7 +48,7 @@ class GtkColorChooserWidget extends GtkWidget {
         'gtk_color_chooser_widget_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkColorChooserWidget()
-    : super.fromPointer(_gtkColorChooserWidgetNew(), owned: true);
+    : this.fromPointer(_gtkColorChooserWidgetNew(), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.
@@ -214,6 +219,19 @@ class GtkColorChooserWidget extends GtkWidget {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when a color is activated from the color chooser.
+  ///
+  /// This usually happens when the user clicks a color swatch,
+  /// or a color is selected and the user presses one of the keys
+  /// Space, Shift+Space, Return or Enter.
+  int onColorActivated(void Function(GdkRGBA color) callback) {
+    return _connectSignal_v_1_o_gdkrgba(
+      this.handle,
+      'color-activated',
+      callback,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

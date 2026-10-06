@@ -26,7 +26,7 @@ part of '../gio.dart';
 ///
 /// Note, when [porting from GnomeVFS](migrating-gnome-vfs.html), `GMount` is the
 /// moral equivalent of `GnomeVFSVolume`.
-final class GMount {
+class GMount {
   GMount.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

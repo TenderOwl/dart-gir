@@ -77,7 +77,8 @@ part of '../gtk4.dart';
 /// on the message type.
 /// If the info bar shows a close button, that button will have the .close
 /// style class applied.
-class GtkInfoBar extends GtkWidget {
+class GtkInfoBar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkInfoBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkInfoBar` object.
@@ -85,7 +86,7 @@ class GtkInfoBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_info_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkInfoBar() : super.fromPointer(_gtkInfoBarNew(), owned: true);
+  GtkInfoBar() : this.fromPointer(_gtkInfoBarNew(), owned: true);
 
   /// Add an activatable widget to the action area of a `GtkInfoBar`.
   ///

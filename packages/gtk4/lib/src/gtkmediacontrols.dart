@@ -9,7 +9,8 @@ part of '../gtk4.dart';
 /// </picture>
 ///
 /// Usually, `GtkMediaControls` is used as part of [class@Gtk.Video].
-class GtkMediaControls extends GtkWidget {
+class GtkMediaControls extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkMediaControls.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -22,7 +23,7 @@ class GtkMediaControls extends GtkWidget {
           >('gtk_media_controls_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMediaControls([GtkMediaStream? stream])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkMediaControlsNew(stream?.handle ?? ffi.nullptr),
         owned: true,
       );

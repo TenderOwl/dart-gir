@@ -15,7 +15,7 @@ class GtkIMMulticontext extends GtkIMContext {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_im_multicontext_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkIMMulticontext() : super.fromPointer(_gtkImMulticontextNew(), owned: true);
+  GtkIMMulticontext() : this.fromPointer(_gtkImMulticontextNew(), owned: true);
 
   /// Gets the id of the currently active delegate of the @context.
   static final _gtkImMulticontextGetContextId =

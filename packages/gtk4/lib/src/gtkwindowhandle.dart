@@ -17,7 +17,8 @@ part of '../gtk4.dart';
 ///
 /// Starting from GTK 4.12, `GtkWindowHandle` uses the [enum@Gtk.AccessibleRole.generic]
 /// role.
-class GtkWindowHandle extends GtkWidget {
+class GtkWindowHandle extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkWindowHandle.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -26,7 +27,7 @@ class GtkWindowHandle extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_window_handle_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkWindowHandle() : super.fromPointer(_gtkWindowHandleNew(), owned: true);
+  GtkWindowHandle() : this.fromPointer(_gtkWindowHandleNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _gtkWindowHandleGetChild =

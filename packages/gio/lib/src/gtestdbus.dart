@@ -89,7 +89,7 @@ class GTestDBus extends GObject {
         'g_test_dbus_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GTestDBus(GTestDBusFlags flags)
-    : super.fromPointer(_gTestDbusNew(flags.value), owned: true);
+    : this.fromPointer(_gTestDbusNew(flags.value), owned: true);
 
   /// Add a path where dbus-daemon will look up .service files. This can't be
   /// called after g_test_dbus_up().

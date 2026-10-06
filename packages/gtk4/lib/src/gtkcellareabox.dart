@@ -20,7 +20,8 @@ part of '../gtk4.dart';
 /// configured by configuring the `GtkCellAreaBox` align child cell property
 /// with gtk_cell_area_cell_set_property() or by specifying the "align"
 /// argument to gtk_cell_area_box_pack_start() and gtk_cell_area_box_pack_end().
-class GtkCellAreaBox extends GtkCellArea {
+class GtkCellAreaBox extends GtkCellArea
+    implements GtkBuildable, GtkCellLayout, GtkOrientable {
   GtkCellAreaBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new `GtkCellAreaBox`.
@@ -28,7 +29,7 @@ class GtkCellAreaBox extends GtkCellArea {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_area_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCellAreaBox() : super.fromPointer(_gtkCellAreaBoxNew(), owned: true);
+  GtkCellAreaBox() : this.fromPointer(_gtkCellAreaBoxNew(), owned: true);
 
   /// Gets the spacing added between cell renderers.
   static final _gtkCellAreaBoxGetSpacing =

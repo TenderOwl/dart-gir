@@ -5,7 +5,7 @@ part of '../gtk4.dart';
 ///
 /// `GtkCellRendererProgress` renders a numeric value as a progress par in a cell.
 /// Additionally, it can display a text on top of the progress bar.
-class GtkCellRendererProgress extends GtkCellRenderer {
+class GtkCellRendererProgress extends GtkCellRenderer implements GtkOrientable {
   GtkCellRendererProgress.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -15,7 +15,7 @@ class GtkCellRendererProgress extends GtkCellRenderer {
         'gtk_cell_renderer_progress_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererProgress()
-    : super.fromPointer(_gtkCellRendererProgressNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererProgressNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

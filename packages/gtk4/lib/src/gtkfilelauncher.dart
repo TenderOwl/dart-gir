@@ -25,7 +25,7 @@ class GtkFileLauncher extends GObject {
           >('gtk_file_launcher_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFileLauncher([GFile? file])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkFileLauncherNew(file?.handle ?? ffi.nullptr),
         owned: true,
       );

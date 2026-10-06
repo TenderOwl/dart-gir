@@ -161,13 +161,13 @@ final _gPollableSourceNewFull =
           )
         >();
 GSource pollableSourceNewFull(
-  ffi.Pointer<ffi.Void> pollableStream, [
+  GObject pollableStream, [
   GSource? childSource,
   GCancellable? cancellable,
 ]) {
   return GSource.fromPointer(
     _gPollableSourceNewFull(
-      pollableStream,
+      pollableStream.handle,
       childSource?.handle ?? ffi.nullptr,
       cancellable?.handle ?? ffi.nullptr,
     ),

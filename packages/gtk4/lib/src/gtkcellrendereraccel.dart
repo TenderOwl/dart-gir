@@ -16,7 +16,7 @@ class GtkCellRendererAccel extends GtkCellRendererText {
         'gtk_cell_renderer_accel_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererAccel()
-    : super.fromPointer(_gtkCellRendererAccelNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererAccelNew(), owned: true);
 
   /// Gets emitted when the user has removed the accelerator.
   int onAccelCleared(void Function(String pathString) callback) {

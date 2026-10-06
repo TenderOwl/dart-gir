@@ -60,7 +60,14 @@ part of '../gtk4.dart';
 ///
 /// `GtkPrintUnixDialog` has a single CSS node with name window. The style classes
 /// dialog and print are added.
-class GtkPrintUnixDialog extends GtkDialog {
+class GtkPrintUnixDialog extends GtkDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkNative,
+        GtkRoot,
+        GtkShortcutManager {
   GtkPrintUnixDialog.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

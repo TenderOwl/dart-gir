@@ -3,7 +3,7 @@ part of '../gio.dart';
 
 /// `GCharsetConverter` is an implementation of [iface@Gio.Converter] based on
 /// [struct@GLib.IConv].
-class GCharsetConverter extends GObject {
+class GCharsetConverter extends GObject implements GConverter, GInitable {
   GCharsetConverter.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

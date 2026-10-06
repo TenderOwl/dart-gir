@@ -578,7 +578,7 @@ class GTask extends GObject {
             )
           >();
   factory GTask(
-    ffi.Pointer<ffi.Void> sourceObject,
+    GObject? sourceObject,
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -599,7 +599,7 @@ class GTask extends GObject {
           >.isolateLocal(callback);
     try {
       final _ret = _gTaskNew(
-        sourceObject,
+        sourceObject?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
         callbackData,
@@ -703,8 +703,10 @@ class GTask extends GObject {
             >
           >('g_task_get_source_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getSourceObject() {
-    return _gTaskGetSourceObject(this.handle);
+  GObject? getSourceObjectTask() {
+    return (_gTaskGetSourceObject(this.handle)) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_gTaskGetSourceObject(this.handle));
   }
 
   /// Gets @task's source tag. See g_task_set_source_tag().
@@ -1426,11 +1428,12 @@ class GTask extends GObject {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  static bool isValid(
-    ffi.Pointer<ffi.Void> result,
-    ffi.Pointer<ffi.Void> sourceObject,
-  ) {
-    return (_gTaskIsValid(result, sourceObject)) != 0;
+  static bool isValid(GAsyncResult result, [GObject? sourceObject]) {
+    return (_gTaskIsValid(
+          result.handle,
+          sourceObject?.handle ?? ffi.nullptr,
+        )) !=
+        0;
   }
 
   /// Creates a #GTask and then immediately calls g_task_return_error()
@@ -1479,7 +1482,7 @@ class GTask extends GObject {
             )
           >();
   static void reportError(
-    ffi.Pointer<ffi.Void> sourceObject,
+    GObject? sourceObject,
     void Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
@@ -1501,7 +1504,7 @@ class GTask extends GObject {
           >.isolateLocal(callback);
     try {
       _gTaskReportError(
-        sourceObject,
+        sourceObject?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
         callbackData,
         sourceTag,

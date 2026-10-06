@@ -42,7 +42,8 @@ part of '../gtk4.dart';
 /// respectively, as well as a center node that represents the center child.
 ///
 /// Each of the boxes contains children packed for that side.
-class GtkActionBar extends GtkWidget {
+class GtkActionBar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkActionBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new action bar widget.
@@ -50,7 +51,7 @@ class GtkActionBar extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_action_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkActionBar() : super.fromPointer(_gtkActionBarNew(), owned: true);
+  GtkActionBar() : this.fromPointer(_gtkActionBarNew(), owned: true);
 
   /// Retrieves the center bar widget of the bar.
   static final _gtkActionBarGetCenterWidget =

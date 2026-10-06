@@ -139,7 +139,7 @@ part of '../gtk4.dart';
 ///
 /// In contrast to SVG 1.1 and 2.0, we allow the `transform` attribute
 /// to be animated with `<animate>`.
-class GtkSvg extends GObject {
+class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
   GtkSvg.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a new, empty SVG paintable.
@@ -147,7 +147,7 @@ class GtkSvg extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_svg_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSvg() : super.fromPointer(_gtkSvgNew(), owned: true);
+  GtkSvg() : this.fromPointer(_gtkSvgNew(), owned: true);
 
   /// Parses the SVG data in @bytes and creates a paintable.
   static final _gtkSvgNewFromBytes =
@@ -158,7 +158,7 @@ class GtkSvg extends GObject {
           >('gtk_svg_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSvg.fromBytes(GBytes bytes)
-    : super.fromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
+    : this.fromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
 
   /// Parses the SVG data in the resource and creates a paintable.
   static final _gtkSvgNewFromResource =
@@ -446,6 +446,28 @@ class GtkSvg extends GObject {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
+  }
+
   /// Compute a concrete size for the `GdkPaintable`.
   ///
   /// Applies the sizing algorithm outlined in the
@@ -659,7 +681,7 @@ class GtkSvg extends GObject {
               double,
             )
           >();
-  void snapshot(GtkSnapshot snapshot, double width, double height) {
+  void snapshot(GdkSnapshot snapshot, double width, double height) {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
   }
 

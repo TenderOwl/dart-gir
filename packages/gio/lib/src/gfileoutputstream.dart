@@ -15,7 +15,7 @@ part of '../gio.dart';
 /// [method@Gio.Seekable.seek]. To find out if a file output stream supports
 /// truncating, use [method@Gio.Seekable.can_truncate]. To truncate a file output
 /// stream, use [method@Gio.Seekable.truncate].
-class GFileOutputStream extends GOutputStream {
+class GFileOutputStream extends GOutputStream implements GSeekable {
   GFileOutputStream.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 

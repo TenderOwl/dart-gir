@@ -106,8 +106,8 @@ final _gClearSignalHandler =
           >
         >('g_clear_signal_handler')
         .asFunction<void Function(int, ffi.Pointer<ffi.Void>)>();
-void clearSignalHandler(int handlerIdPtr, ffi.Pointer<ffi.Void> instance) {
-  _gClearSignalHandler(handlerIdPtr, instance);
+void clearSignalHandler(int handlerIdPtr, GObject instance) {
+  _gClearSignalHandler(handlerIdPtr, instance.handle);
 }
 
 /// Returns the #GEnumValue for a value.

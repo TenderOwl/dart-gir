@@ -22,7 +22,7 @@ part of '../gio.dart';
 /// do not, and [method@Gio.Socket.close] is called on the base socket, the
 /// `GDtlsConnection` will not raise a `G_IO_ERROR_NOT_CONNECTED` error on
 /// further I/O.
-final class GDtlsConnection {
+class GDtlsConnection {
   GDtlsConnection.fromPointer(this.handle);
   final ffi.Pointer<ffi.Void> handle;
 

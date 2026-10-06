@@ -24,7 +24,7 @@ class GskTransformNode extends GskRenderNode {
             )
           >();
   GskTransformNode(GskRenderNode child, [GskTransform? transform])
-    : super.fromPointer(
+    : this.fromPointer(
         _gskTransformNodeNew(child.handle, transform?.handle ?? ffi.nullptr),
         owned: true,
       );

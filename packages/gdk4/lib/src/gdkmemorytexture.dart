@@ -2,7 +2,8 @@
 part of '../gdk4.dart';
 
 /// A `GdkTexture` representing image data in memory.
-class GdkMemoryTexture extends GdkTexture {
+class GdkMemoryTexture extends GdkTexture
+    implements GdkPaintable, GIcon, GLoadableIcon {
   GdkMemoryTexture.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
@@ -37,10 +38,32 @@ class GdkMemoryTexture extends GdkTexture {
     GdkMemoryFormat format,
     GBytes bytes,
     int stride,
-  ) : super.fromPointer(
+  ) : this.fromPointer(
         _gdkMemoryTextureNew(width, height, format.value, bytes.handle, stride),
         owned: true,
       );
+
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
+  }
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

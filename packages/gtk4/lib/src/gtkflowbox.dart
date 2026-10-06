@@ -61,7 +61,8 @@ part of '../gtk4.dart';
 ///
 /// `GtkFlowBox` uses the [enum@Gtk.AccessibleRole.grid] role, and `GtkFlowBoxChild`
 /// uses the [enum@Gtk.AccessibleRole.grid_cell] role.
-class GtkFlowBox extends GtkWidget {
+class GtkFlowBox extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkFlowBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
   /// Creates a `GtkFlowBox`.
@@ -69,7 +70,7 @@ class GtkFlowBox extends GtkWidget {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_flow_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFlowBox() : super.fromPointer(_gtkFlowBoxNew(), owned: true);
+  GtkFlowBox() : this.fromPointer(_gtkFlowBoxNew(), owned: true);
 
   /// Adds @child to the end of @self.
   ///

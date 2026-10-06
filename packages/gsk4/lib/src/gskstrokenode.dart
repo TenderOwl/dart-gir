@@ -32,7 +32,7 @@ class GskStrokeNode extends GskRenderNode {
             )
           >();
   GskStrokeNode(GskRenderNode child, GskPath path, GskStroke stroke)
-    : super.fromPointer(
+    : this.fromPointer(
         _gskStrokeNodeNew(child.handle, path.handle, stroke.handle),
         owned: true,
       );

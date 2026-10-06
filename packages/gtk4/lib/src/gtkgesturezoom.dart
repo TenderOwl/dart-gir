@@ -15,7 +15,7 @@ class GtkGestureZoom extends GtkGesture {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_zoom_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGestureZoom() : super.fromPointer(_gtkGestureZoomNew(), owned: true);
+  GtkGestureZoom() : this.fromPointer(_gtkGestureZoomNew(), owned: true);
 
   /// Gets the scale delta.
   ///

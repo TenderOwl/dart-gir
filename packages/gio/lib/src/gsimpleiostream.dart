@@ -33,7 +33,7 @@ class GSimpleIOStream extends GIOStream {
             )
           >();
   GSimpleIOStream(GInputStream inputStream, GOutputStream outputStream)
-    : super.fromPointer(
+    : this.fromPointer(
         _gSimpleIoStreamNew(inputStream.handle, outputStream.handle),
         owned: true,
       );

@@ -18,7 +18,7 @@ class GtkListHeaderProps {
 
   int get end => _self.getEnd();
 
-  ffi.Pointer<ffi.Void> get item => _self.getItem();
+  GObject? get item => _self.getItem();
 
   int get nItems => _self.getNItems();
 

@@ -762,6 +762,75 @@ int _connectSignal_v_1_u_gtkstateflags(
   }
 }
 
+/// Registry of Dart callbacks for bucket `v_3_i_i_i_int_int_int`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_3_i_i_i_int_int_int =
+    <int, void Function(int position, int removed, int added)>{};
+
+/// Trampoline invoked by GObject for bucket `v_3_i_i_i_int_int_int`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_3_i_i_i_int_int_int(
+  ffi.Pointer<ffi.Void> instance_,
+  int position,
+  int removed,
+  int added,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_3_i_i_i_int_int_int[id]!;
+  cb(position, removed, added);
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_3_i_i_i_int_int_int =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Int32,
+        ffi.Int32,
+        ffi.Int32,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_3_i_i_i_int_int_int);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_3_i_i_i_int_int_int(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(int position, int removed, int added) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_3_i_i_i_int_int_int[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_v_3_i_i_i_int_int_int;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_3_i_i_i_int_int_int.nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
 /// Registry of Dart callbacks for bucket `v_1_i_gtkfilterchange`. Keyed by an int
 /// we pass via `g_signal_connect_data` as the user_data pointer.
 final _signalRegistry_v_1_i_gtkfilterchange =
@@ -1064,6 +1133,152 @@ int _connectSignal_v_1_o_gtkwindow(
       // signature; GLib dispatches via the signal's
       // registered marshaller at call time.
       _signalCallable_v_1_o_gtkwindow.nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
+/// Registry of Dart callbacks for bucket `v_2_s_b_string_bool`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_2_s_b_string_bool =
+    <int, void Function(String actionName, bool enabled)>{};
+
+/// Trampoline invoked by GObject for bucket `v_2_s_b_string_bool`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_2_s_b_string_bool(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<Utf8> actionName,
+  bool enabled,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_2_s_b_string_bool[id]!;
+  cb(
+    ((actionName) == ffi.nullptr
+        ? ""
+        : (actionName).cast<Utf8>().toDartString()),
+    enabled,
+  );
+  if ((actionName) != ffi.nullptr) gFree((actionName).cast());
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_2_s_b_string_bool =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<Utf8>,
+        ffi.Bool,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_2_s_b_string_bool);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_2_s_b_string_bool(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(String actionName, bool enabled) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_2_s_b_string_bool[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_v_2_s_b_string_bool;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_2_s_b_string_bool.nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
+/// Registry of Dart callbacks for bucket `v_2_s_o_string_gvariant`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_2_s_o_string_gvariant =
+    <int, void Function(String actionName, GVariant value)>{};
+
+/// Trampoline invoked by GObject for bucket `v_2_s_o_string_gvariant`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_2_s_o_string_gvariant(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<Utf8> actionName,
+  ffi.Pointer<ffi.Void> value,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_2_s_o_string_gvariant[id]!;
+  cb(
+    ((actionName) == ffi.nullptr
+        ? ""
+        : (actionName).cast<Utf8>().toDartString()),
+    GVariant.fromPointer(value),
+  );
+  if ((actionName) != ffi.nullptr) gFree((actionName).cast());
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_2_s_o_string_gvariant =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<Utf8>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_2_s_o_string_gvariant);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_2_s_o_string_gvariant(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(String actionName, GVariant value) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_2_s_o_string_gvariant[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_v_2_s_o_string_gvariant;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_2_s_o_string_gvariant.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
@@ -1909,6 +2124,70 @@ int _connectSignal_v_2_s_o_string_gtktreeiter(
       // signature; GLib dispatches via the signal's
       // registered marshaller at call time.
       _signalCallable_v_2_s_o_string_gtktreeiter.nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
+/// Registry of Dart callbacks for bucket `v_1_o_gdkrgba`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_1_o_gdkrgba = <int, void Function(GdkRGBA color)>{};
+
+/// Trampoline invoked by GObject for bucket `v_1_o_gdkrgba`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_1_o_gdkrgba(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<ffi.Void> color,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_1_o_gdkrgba[id]!;
+  cb(GdkRGBA.fromPointer(color));
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_1_o_gdkrgba =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_1_o_gdkrgba);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_1_o_gdkrgba(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(GdkRGBA color) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_1_o_gdkrgba[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_v_1_o_gdkrgba;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_1_o_gdkrgba.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
@@ -2850,6 +3129,80 @@ int _connectSignal_b_3_o_d_d_gdkdrop_double_double(
       // signature; GLib dispatches via the signal's
       // registered marshaller at call time.
       _signalCallable_b_3_o_d_d_gdkdrop_double_double.nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
+/// Registry of Dart callbacks for bucket `v_3_s_i_i_string_int_int`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_3_s_i_i_string_int_int =
+    <int, void Function(String text, int length, int position)>{};
+
+/// Trampoline invoked by GObject for bucket `v_3_s_i_i_string_int_int`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_3_s_i_i_string_int_int(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<Utf8> text,
+  int length,
+  int position,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_3_s_i_i_string_int_int[id]!;
+  cb(
+    ((text) == ffi.nullptr ? "" : (text).cast<Utf8>().toDartString()),
+    length,
+    position,
+  );
+  if ((text) != ffi.nullptr) gFree((text).cast());
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_3_s_i_i_string_int_int =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<Utf8>,
+        ffi.Int32,
+        ffi.Int32,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_3_s_i_i_string_int_int);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_3_s_i_i_string_int_int(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(String text, int length, int position) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_3_s_i_i_string_int_int[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_v_3_s_i_i_string_int_int;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_3_s_i_i_string_int_int.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
@@ -4254,6 +4607,73 @@ int _connectSignal_v_1_o_gtklistboxrow(
   }
 }
 
+/// Registry of Dart callbacks for bucket `v_2_o_o_gtktreepath_gtktreeiter`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter =
+    <int, void Function(GtkTreePath path, GtkTreeIter iter)>{};
+
+/// Trampoline invoked by GObject for bucket `v_2_o_o_gtktreepath_gtktreeiter`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_2_o_o_gtktreepath_gtktreeiter(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<ffi.Void> path,
+  ffi.Pointer<ffi.Void> iter,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter[id]!;
+  cb(GtkTreePath.fromPointer(path), GtkTreeIter.fromPointer(iter));
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_2_o_o_gtktreepath_gtktreeiter =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_2_o_o_gtktreepath_gtktreeiter);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_2_o_o_gtktreepath_gtktreeiter(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(GtkTreePath path, GtkTreeIter iter) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter[id] = callback;
+  _signalRegistryOwner[id] = _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_2_o_o_gtktreepath_gtktreeiter.nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
 /// Registry of Dart callbacks for bucket `v_4_s_s_s_u_string_string_string_gaskpasswordflags`. Keyed by an int
 /// we pass via `g_signal_connect_data` as the user_data pointer.
 final _signalRegistry_v_4_s_s_s_u_string_string_string_gaskpasswordflags =
@@ -4404,80 +4824,6 @@ int _connectSignal_v_1_i_gmountoperationresult(
       // signature; GLib dispatches via the signal's
       // registered marshaller at call time.
       _signalCallable_v_1_i_gmountoperationresult.nativeFunction
-          .cast<
-            ffi.NativeFunction<
-              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >(),
-      idPtr.cast(),
-      _destroySignalStateCallable.nativeFunction,
-      0,
-    );
-  } finally {
-    calloc.free(namePtr);
-  }
-}
-
-/// Registry of Dart callbacks for bucket `v_3_s_i_i_string_int_int`. Keyed by an int
-/// we pass via `g_signal_connect_data` as the user_data pointer.
-final _signalRegistry_v_3_s_i_i_string_int_int =
-    <int, void Function(String message, int timeLeft, int bytesLeft)>{};
-
-/// Trampoline invoked by GObject for bucket `v_3_s_i_i_string_int_int`. Reads
-/// the handler id from `user_data`, converts the FFI args, and
-/// runs the Dart callback.
-void _signalTrampoline_v_3_s_i_i_string_int_int(
-  ffi.Pointer<ffi.Void> instance_,
-  ffi.Pointer<Utf8> message,
-  int timeLeft,
-  int bytesLeft,
-  ffi.Pointer<ffi.Void> userData,
-) {
-  final id = userData.cast<ffi.IntPtr>().value;
-  final cb = _signalRegistry_v_3_s_i_i_string_int_int[id]!;
-  cb(
-    ((message) == ffi.nullptr ? "" : (message).cast<Utf8>().toDartString()),
-    timeLeft,
-    bytesLeft,
-  );
-  if ((message) != ffi.nullptr) gFree((message).cast());
-}
-
-/// Per-package singleton. Never closed — must stay reachable for
-/// as long as any connection in this bucket is alive.
-final _signalCallable_v_3_s_i_i_string_int_int =
-    ffi.NativeCallable<
-      ffi.Void Function(
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<Utf8>,
-        ffi.Int32,
-        ffi.Int32,
-        ffi.Pointer<ffi.Void>,
-      )
-    >.isolateLocal(_signalTrampoline_v_3_s_i_i_string_int_int);
-
-/// Registers [callback] against [signalName] on [instance] via
-/// `g_signal_connect_data`. Returns the handler ID.
-int _connectSignal_v_3_s_i_i_string_int_int(
-  ffi.Pointer<ffi.Void> instance,
-  String signalName,
-  void Function(String message, int timeLeft, int bytesLeft) callback,
-) {
-  final id = _nextSignalId++;
-  _signalRegistry_v_3_s_i_i_string_int_int[id] = callback;
-  _signalRegistryOwner[id] = _signalRegistry_v_3_s_i_i_string_int_int;
-  final idPtr = calloc<ffi.IntPtr>()..value = id;
-  final namePtr = signalName.toNativeUtf8();
-  try {
-    return _gSignalConnectData(
-      instance,
-      namePtr.cast<Utf8>(),
-      // Cast to `Pointer<NativeFunction<void Function(
-      // Pointer<Void>, Pointer<Void>)>>` because
-      // `g_signal_connect_data` is bound against that generic
-      // signature; GLib dispatches via the signal's
-      // registered marshaller at call time.
-      _signalCallable_v_3_s_i_i_string_int_int.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
@@ -5397,6 +5743,74 @@ int _connectSignal_v_3_o_o_o_gtkwidget_gtkpagesetup_gtkprintsettings(
       // registered marshaller at call time.
       _signalCallable_v_3_o_o_o_gtkwidget_gtkpagesetup_gtkprintsettings
           .nativeFunction
+          .cast<
+            ffi.NativeFunction<
+              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >(),
+      idPtr.cast(),
+      _destroySignalStateCallable.nativeFunction,
+      0,
+    );
+  } finally {
+    calloc.free(namePtr);
+  }
+}
+
+/// Registry of Dart callbacks for bucket `v_2_o_o_gtkprintcontext_gtkpagesetup`. Keyed by an int
+/// we pass via `g_signal_connect_data` as the user_data pointer.
+final _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup =
+    <int, void Function(GtkPrintContext context, GtkPageSetup pageSetup)>{};
+
+/// Trampoline invoked by GObject for bucket `v_2_o_o_gtkprintcontext_gtkpagesetup`. Reads
+/// the handler id from `user_data`, converts the FFI args, and
+/// runs the Dart callback.
+void _signalTrampoline_v_2_o_o_gtkprintcontext_gtkpagesetup(
+  ffi.Pointer<ffi.Void> instance_,
+  ffi.Pointer<ffi.Void> context,
+  ffi.Pointer<ffi.Void> pageSetup,
+  ffi.Pointer<ffi.Void> userData,
+) {
+  final id = userData.cast<ffi.IntPtr>().value;
+  final cb = _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup[id]!;
+  cb(GtkPrintContext.fromPointer(context), GtkPageSetup.fromPointer(pageSetup));
+}
+
+/// Per-package singleton. Never closed — must stay reachable for
+/// as long as any connection in this bucket is alive.
+final _signalCallable_v_2_o_o_gtkprintcontext_gtkpagesetup =
+    ffi.NativeCallable<
+      ffi.Void Function(
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+        ffi.Pointer<ffi.Void>,
+      )
+    >.isolateLocal(_signalTrampoline_v_2_o_o_gtkprintcontext_gtkpagesetup);
+
+/// Registers [callback] against [signalName] on [instance] via
+/// `g_signal_connect_data`. Returns the handler ID.
+int _connectSignal_v_2_o_o_gtkprintcontext_gtkpagesetup(
+  ffi.Pointer<ffi.Void> instance,
+  String signalName,
+  void Function(GtkPrintContext context, GtkPageSetup pageSetup) callback,
+) {
+  final id = _nextSignalId++;
+  _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup[id] = callback;
+  _signalRegistryOwner[id] =
+      _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup;
+  final idPtr = calloc<ffi.IntPtr>()..value = id;
+  final namePtr = signalName.toNativeUtf8();
+  try {
+    return _gSignalConnectData(
+      instance,
+      namePtr.cast<Utf8>(),
+      // Cast to `Pointer<NativeFunction<void Function(
+      // Pointer<Void>, Pointer<Void>)>>` because
+      // `g_signal_connect_data` is bound against that generic
+      // signature; GLib dispatches via the signal's
+      // registered marshaller at call time.
+      _signalCallable_v_2_o_o_gtkprintcontext_gtkpagesetup.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
@@ -7115,205 +7529,6 @@ int _connectSignal_b_2_o_o_gtktreeiter_gtktreepath(
       // signature; GLib dispatches via the signal's
       // registered marshaller at call time.
       _signalCallable_b_2_o_o_gtktreeiter_gtktreepath.nativeFunction
-          .cast<
-            ffi.NativeFunction<
-              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >(),
-      idPtr.cast(),
-      _destroySignalStateCallable.nativeFunction,
-      0,
-    );
-  } finally {
-    calloc.free(namePtr);
-  }
-}
-
-/// Registry of Dart callbacks for bucket `v_1_o_gdkrgba`. Keyed by an int
-/// we pass via `g_signal_connect_data` as the user_data pointer.
-final _signalRegistry_v_1_o_gdkrgba = <int, void Function(GdkRGBA color)>{};
-
-/// Trampoline invoked by GObject for bucket `v_1_o_gdkrgba`. Reads
-/// the handler id from `user_data`, converts the FFI args, and
-/// runs the Dart callback.
-void _signalTrampoline_v_1_o_gdkrgba(
-  ffi.Pointer<ffi.Void> instance_,
-  ffi.Pointer<ffi.Void> color,
-  ffi.Pointer<ffi.Void> userData,
-) {
-  final id = userData.cast<ffi.IntPtr>().value;
-  final cb = _signalRegistry_v_1_o_gdkrgba[id]!;
-  cb(GdkRGBA.fromPointer(color));
-}
-
-/// Per-package singleton. Never closed — must stay reachable for
-/// as long as any connection in this bucket is alive.
-final _signalCallable_v_1_o_gdkrgba =
-    ffi.NativeCallable<
-      ffi.Void Function(
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-      )
-    >.isolateLocal(_signalTrampoline_v_1_o_gdkrgba);
-
-/// Registers [callback] against [signalName] on [instance] via
-/// `g_signal_connect_data`. Returns the handler ID.
-int _connectSignal_v_1_o_gdkrgba(
-  ffi.Pointer<ffi.Void> instance,
-  String signalName,
-  void Function(GdkRGBA color) callback,
-) {
-  final id = _nextSignalId++;
-  _signalRegistry_v_1_o_gdkrgba[id] = callback;
-  _signalRegistryOwner[id] = _signalRegistry_v_1_o_gdkrgba;
-  final idPtr = calloc<ffi.IntPtr>()..value = id;
-  final namePtr = signalName.toNativeUtf8();
-  try {
-    return _gSignalConnectData(
-      instance,
-      namePtr.cast<Utf8>(),
-      // Cast to `Pointer<NativeFunction<void Function(
-      // Pointer<Void>, Pointer<Void>)>>` because
-      // `g_signal_connect_data` is bound against that generic
-      // signature; GLib dispatches via the signal's
-      // registered marshaller at call time.
-      _signalCallable_v_1_o_gdkrgba.nativeFunction
-          .cast<
-            ffi.NativeFunction<
-              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >(),
-      idPtr.cast(),
-      _destroySignalStateCallable.nativeFunction,
-      0,
-    );
-  } finally {
-    calloc.free(namePtr);
-  }
-}
-
-/// Registry of Dart callbacks for bucket `v_2_o_o_gtkprintcontext_gtkpagesetup`. Keyed by an int
-/// we pass via `g_signal_connect_data` as the user_data pointer.
-final _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup =
-    <int, void Function(GtkPrintContext context, GtkPageSetup pageSetup)>{};
-
-/// Trampoline invoked by GObject for bucket `v_2_o_o_gtkprintcontext_gtkpagesetup`. Reads
-/// the handler id from `user_data`, converts the FFI args, and
-/// runs the Dart callback.
-void _signalTrampoline_v_2_o_o_gtkprintcontext_gtkpagesetup(
-  ffi.Pointer<ffi.Void> instance_,
-  ffi.Pointer<ffi.Void> context,
-  ffi.Pointer<ffi.Void> pageSetup,
-  ffi.Pointer<ffi.Void> userData,
-) {
-  final id = userData.cast<ffi.IntPtr>().value;
-  final cb = _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup[id]!;
-  cb(GtkPrintContext.fromPointer(context), GtkPageSetup.fromPointer(pageSetup));
-}
-
-/// Per-package singleton. Never closed — must stay reachable for
-/// as long as any connection in this bucket is alive.
-final _signalCallable_v_2_o_o_gtkprintcontext_gtkpagesetup =
-    ffi.NativeCallable<
-      ffi.Void Function(
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-      )
-    >.isolateLocal(_signalTrampoline_v_2_o_o_gtkprintcontext_gtkpagesetup);
-
-/// Registers [callback] against [signalName] on [instance] via
-/// `g_signal_connect_data`. Returns the handler ID.
-int _connectSignal_v_2_o_o_gtkprintcontext_gtkpagesetup(
-  ffi.Pointer<ffi.Void> instance,
-  String signalName,
-  void Function(GtkPrintContext context, GtkPageSetup pageSetup) callback,
-) {
-  final id = _nextSignalId++;
-  _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup[id] = callback;
-  _signalRegistryOwner[id] =
-      _signalRegistry_v_2_o_o_gtkprintcontext_gtkpagesetup;
-  final idPtr = calloc<ffi.IntPtr>()..value = id;
-  final namePtr = signalName.toNativeUtf8();
-  try {
-    return _gSignalConnectData(
-      instance,
-      namePtr.cast<Utf8>(),
-      // Cast to `Pointer<NativeFunction<void Function(
-      // Pointer<Void>, Pointer<Void>)>>` because
-      // `g_signal_connect_data` is bound against that generic
-      // signature; GLib dispatches via the signal's
-      // registered marshaller at call time.
-      _signalCallable_v_2_o_o_gtkprintcontext_gtkpagesetup.nativeFunction
-          .cast<
-            ffi.NativeFunction<
-              void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >(),
-      idPtr.cast(),
-      _destroySignalStateCallable.nativeFunction,
-      0,
-    );
-  } finally {
-    calloc.free(namePtr);
-  }
-}
-
-/// Registry of Dart callbacks for bucket `v_2_o_o_gtktreepath_gtktreeiter`. Keyed by an int
-/// we pass via `g_signal_connect_data` as the user_data pointer.
-final _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter =
-    <int, void Function(GtkTreePath path, GtkTreeIter iter)>{};
-
-/// Trampoline invoked by GObject for bucket `v_2_o_o_gtktreepath_gtktreeiter`. Reads
-/// the handler id from `user_data`, converts the FFI args, and
-/// runs the Dart callback.
-void _signalTrampoline_v_2_o_o_gtktreepath_gtktreeiter(
-  ffi.Pointer<ffi.Void> instance_,
-  ffi.Pointer<ffi.Void> path,
-  ffi.Pointer<ffi.Void> iter,
-  ffi.Pointer<ffi.Void> userData,
-) {
-  final id = userData.cast<ffi.IntPtr>().value;
-  final cb = _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter[id]!;
-  cb(GtkTreePath.fromPointer(path), GtkTreeIter.fromPointer(iter));
-}
-
-/// Per-package singleton. Never closed — must stay reachable for
-/// as long as any connection in this bucket is alive.
-final _signalCallable_v_2_o_o_gtktreepath_gtktreeiter =
-    ffi.NativeCallable<
-      ffi.Void Function(
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-      )
-    >.isolateLocal(_signalTrampoline_v_2_o_o_gtktreepath_gtktreeiter);
-
-/// Registers [callback] against [signalName] on [instance] via
-/// `g_signal_connect_data`. Returns the handler ID.
-int _connectSignal_v_2_o_o_gtktreepath_gtktreeiter(
-  ffi.Pointer<ffi.Void> instance,
-  String signalName,
-  void Function(GtkTreePath path, GtkTreeIter iter) callback,
-) {
-  final id = _nextSignalId++;
-  _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter[id] = callback;
-  _signalRegistryOwner[id] = _signalRegistry_v_2_o_o_gtktreepath_gtktreeiter;
-  final idPtr = calloc<ffi.IntPtr>()..value = id;
-  final namePtr = signalName.toNativeUtf8();
-  try {
-    return _gSignalConnectData(
-      instance,
-      namePtr.cast<Utf8>(),
-      // Cast to `Pointer<NativeFunction<void Function(
-      // Pointer<Void>, Pointer<Void>)>>` because
-      // `g_signal_connect_data` is bound against that generic
-      // signature; GLib dispatches via the signal's
-      // registered marshaller at call time.
-      _signalCallable_v_2_o_o_gtktreepath_gtktreeiter.nativeFunction
           .cast<
             ffi.NativeFunction<
               void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)

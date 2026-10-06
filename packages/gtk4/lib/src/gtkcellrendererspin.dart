@@ -24,7 +24,7 @@ class GtkCellRendererSpin extends GtkCellRendererText {
         'gtk_cell_renderer_spin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererSpin()
-    : super.fromPointer(_gtkCellRendererSpinNew(), owned: true);
+    : this.fromPointer(_gtkCellRendererSpinNew(), owned: true);
 
   /// This signal is emitted after @renderer has been edited.
   ///
