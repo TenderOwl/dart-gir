@@ -10,13 +10,11 @@
 // Usage:
 //   dart run tool/build_api_docs.dart [--verbose]
 //
-// The script deliberately depends only on `dart:` + `package:yaml` so it
-// works against a freshly cloned workspace (after `dart pub get` for
-// the workspace root's dev_dependencies).
+// The script deliberately depends only on `dart:` (no extra packages)
+// so it works against a freshly cloned workspace without forcing
+// dependency re-resolution.
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:yaml/yaml.dart';
 
 const String _pubspecFile = 'pubspec.yaml';
 const String _outputDir = 'site/docs';
@@ -124,19 +122,45 @@ Set<String> _readWorkspacePackages() {
     stderr.writeln('build_api_docs: $_pubspecFile not found');
     exit(2);
   }
-  final root = loadYaml(pubspec.readAsStringSync()) as YamlMap;
-  final workspace = root['workspace'];
-  if (workspace is! YamlList) {
+  return _parseWorkspaceList(pubspec.readAsStringSync());
+}
+
+/// Hand-rolled mini-parser for the `workspace:` section of
+/// `pubspec.yaml`. Avoids pulling `package:yaml` (which would force
+/// a re-resolution of the workspace's `analyzer` constraint and
+/// break `dart test`).
+Set<String> _parseWorkspaceList(String content) {
+  final lines = content.split('\n');
+  var inWorkspace = false;
+  final packages = <String>{};
+  for (final raw in lines) {
+    final line = raw.trimRight();
+    if (line.startsWith('workspace:')) {
+      inWorkspace = line.endsWith(':') || line == 'workspace:';
+      continue;
+    }
+    if (!inWorkspace) continue;
+    if (line.isEmpty || line.startsWith('#')) continue;
+    if (!line.startsWith(' ') && !line.startsWith('\t')) {
+      // Out of the workspace section (top-level key).
+      inWorkspace = false;
+      continue;
+    }
+    // Match `  - packages/<name>` and `  - example` / `  - generator`.
+    final dash = line.indexOf('-');
+    if (dash < 0) continue;
+    final entry = line.substring(dash + 1).trim();
+    if (entry.startsWith('packages/')) {
+      packages.add(entry.substring('packages/'.length));
+    }
+  }
+  if (packages.isEmpty) {
     stderr.writeln(
         'build_api_docs: $_pubspecFile has no `workspace:` list — '
         'expected the 14 binding package directories.');
     exit(2);
   }
-  return workspace
-      .cast<String>()
-      .where((p) => p.startsWith('packages/'))
-      .map((p) => p.substring('packages/'.length))
-      .toSet();
+  return packages;
 }
 
 class _Counts {
