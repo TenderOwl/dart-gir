@@ -22,6 +22,8 @@ dependencies:
     path: ../../packages/glib
   gtk4:
     path: ../../packages/gtk4
+  gtk_source5:
+    path: ../../packages/gtk_source5
 
 dev_dependencies:
   lints: ^6.0.0

@@ -23,6 +23,10 @@ class NotepadApp {
 
   void onActivate() {
     window ??= NotepadWindow(app);
+    window!.onCloseRequest(() {
+      quit();
+      return false;
+    });
 
     window!.present();
   }
