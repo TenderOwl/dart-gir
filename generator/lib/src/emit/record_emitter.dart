@@ -15,6 +15,13 @@ class RecordEmitter {
 
   final EmitContext ctx;
 
+  /// Namespace functions to re-emit as static methods on the owning GIR
+  /// record / union / interface. Populated by `PackageEmitter.emit()`
+  /// once per package and read in `_emit` — see `class_emitter.dart`
+  /// "Static class functions" for the detection rule (`moved-to` value
+  /// has no dot).
+  Map<String, StaticClassFunction> staticClassFunctions = const {};
+
   String? emitRecord(GirRecord rec) =>
       _emit(rec, rec.constructors, rec.methods, rec.functions, rec.doc);
 
@@ -23,14 +30,14 @@ class RecordEmitter {
 
   /// Interfaces are emitted as opaque handle classes (no vtable support yet).
   String? emitInterface(GirInterface i) => _emit(
-        i,
-        const [],
-        i.methods,
-        i.functions,
-        i.doc,
-        signals: i.signals,
-        isInterface: true,
-      );
+    i,
+    const [],
+    i.methods,
+    i.functions,
+    i.doc,
+    signals: i.signals,
+    isInterface: true,
+  );
 
   String? _emit(
     GirRegisteredType type,
@@ -43,8 +50,11 @@ class RecordEmitter {
   }) {
     final dartName = ctx.dartTypeName(ctx.namespace.name, type.name);
     if (ctx.isDuplicateType(type)) {
-      ctx.report.skip('record', dartName,
-          'duplicate declaration owned by an earlier namespace');
+      ctx.report.skip(
+        'record',
+        dartName,
+        'duplicate declaration owned by an earlier namespace',
+      );
       return null;
     }
     if (!ctx.claimName(dartName)) {
@@ -94,7 +104,9 @@ class RecordEmitter {
     b.writeln('/// Use this when another wrapper returns this class\'s');
     b.writeln('/// instance but the caller needs the destination class\'s');
     b.writeln('/// methods. Pass the destination class\'s `fromPointer` as');
-    b.writeln('/// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.');
+    b.writeln(
+      '/// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.',
+    );
     b.writeln('/// The handle is forwarded as-is; the original wrapper');
     b.writeln('/// (which produced this object) remains the owner.');
     b.writeln('T cast<T extends Object>(');
@@ -115,26 +127,42 @@ class RecordEmitter {
         ctx.report.skip('constructor', '$dartName.$name', 'name collision');
         continue;
       }
-      final code = callables.emit(c,
-          dartName: name,
-          ownerName: dartName,
-          classMember: true,
-          factoryClass: dartName,
-          factoryOwned: false);
+      final code = callables.emit(
+        c,
+        dartName: name,
+        ownerName: dartName,
+        classMember: true,
+        factoryClass: dartName,
+        factoryOwned: false,
+      );
       if (code != null) b.writeln(_indent(code));
     }
     for (final m in methods) {
-      final name = CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
-      if (CallableEmitter.conflictsWithObjectMember(name) ||
-          !memberNames.add(name)) {
-        ctx.report.skip('method', '$dartName.$name', 'name collision');
-        continue;
+      final name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(m.name)),
+      );
+      // Moved-to methods are skipped at emission time (the
+      // canonical landing site is a namespace function or another
+      // class method, depending on whether the value contains a
+      // dot). Don't reserve the Dart member name — the namespace
+      // function brought to this class as a static method may
+      // normalise to the same identifier (e.g. `_register` →
+      // `register` colliding with `resources_register`'s
+      // normalised `resourcesRegister`).
+      if (m.movedTo == null) {
+        if (CallableEmitter.conflictsWithObjectMember(name) ||
+            !memberNames.add(name)) {
+          ctx.report.skip('method', '$dartName.$name', 'name collision');
+          continue;
+        }
       }
-      final code = callables.emit(m,
-          dartName: name,
-          ownerName: dartName,
-          classMember: true,
-          selfArgExpr: 'this.handle');
+      final code = callables.emit(
+        m,
+        dartName: name,
+        ownerName: dartName,
+        classMember: true,
+        selfArgExpr: 'this.handle',
+      );
       if (code != null) b.writeln(_indent(code));
       // `*Callback` lifetime-safe overload for async methods. Skip when
       // the base wrapper was skipped (shadowed/moved/...).
@@ -154,13 +182,47 @@ class RecordEmitter {
       }
     }
     for (final f in functions) {
-      final name = CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(f.name)));
+      final name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(f.name)),
+      );
       if (!memberNames.add(name)) {
         ctx.report.skip('function', '$dartName.$name', 'name collision');
         continue;
       }
-      final code = callables.emit(f,
-          dartName: name, ownerName: dartName, staticMember: true);
+      final code = callables.emit(
+        f,
+        dartName: name,
+        ownerName: dartName,
+        staticMember: true,
+      );
+      if (code != null) b.writeln(_indent(code));
+    }
+    // Static class functions (namespace functions brought to this
+    // record/union/interface as `static` methods because a sibling
+    // `<method>` carries `moved-to="<bare>"`). The pre-scan in
+    // `PackageEmitter.emit()` built the map; we filter by the owning
+    // type's Dart name. The corresponding namespace function is suppressed
+    // by `FunctionEmitter.emitFunction`.
+    for (final entry in staticClassFunctions.values) {
+      if (entry.ownerClassDartName != dartName) continue;
+      final name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(entry.namespaceFunctionName)),
+      );
+      if (CallableEmitter.conflictsWithObjectMember(name) ||
+          !memberNames.add(name)) {
+        ctx.report.skip(
+          'function',
+          '$dartName.$name',
+          'name collision (static class function from ${entry.fn.cIdentifier ?? entry.namespaceFunctionName})',
+        );
+        continue;
+      }
+      final code = callables.emit(
+        entry.fn,
+        dartName: name,
+        ownerName: dartName,
+        staticMember: true,
+      );
       if (code != null) b.writeln(_indent(code));
     }
     final entries = <({GirSignal signal, GirNamespace? ns})>[
@@ -187,8 +249,6 @@ class RecordEmitter {
     return escapeKeyword(toLowerCamel(name));
   }
 
-  static String _indent(String code) => code
-      .split('\n')
-      .map((l) => l.isEmpty ? l : '  $l')
-      .join('\n');
+  static String _indent(String code) =>
+      code.split('\n').map((l) => l.isEmpty ? l : '  $l').join('\n');
 }

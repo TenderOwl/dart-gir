@@ -27,8 +27,7 @@ class PackageEmitter {
     required this.packagesDir,
     required this.emittedPackages,
     Set<String>? emittedPropsClassNames,
-  }) : emittedPropsClassNames =
-            emittedPropsClassNames ?? <String>{};
+  }) : emittedPropsClassNames = emittedPropsClassNames ?? <String>{};
 
   final GirNamespace namespace;
   final List<GirNamespace> allNamespaces;
@@ -86,7 +85,64 @@ class PackageEmitter {
       if (code != null) categories['enums']!.add(code);
     }
 
-    final functionEmitter = FunctionEmitter(ctx);
+    final recordEmitter = RecordEmitter(ctx);
+
+    // Pre-scan namespace `<method>` entries for `moved-to="<bare>"`
+    // (no dot in the value — the target is a namespace function, not
+    // another class method). Each such pair identifies a static class
+    // function: the generator re-emits the namespace function as a
+    // `static` method on the owning GIR class instead of as a
+    // top-level function. The class-level `<method>` is dropped by
+    // the existing `movedTo != null` skip rule in `CallableEmitter`.
+    //
+    // Keyed by `c:identifier` so a method and its namespace function
+    // always agree (they share the C symbol). The class/record
+    // emitters index by `ownerClassDartName` to filter their slice.
+    final staticClassFunctions = <String, StaticClassFunction>{};
+    final nsFnsByName = <String, GirFunction>{
+      for (final f in namespace.functions) f.name: f,
+    };
+    void collectStaticFunctions(
+      List<GirMethod> methods,
+      String ownerLocalName,
+    ) {
+      for (final m in methods) {
+        final moved = m.movedTo;
+        if (moved == null || moved.contains('.')) continue;
+        if (m.cIdentifier == null) continue;
+        final nsFn = nsFnsByName[moved];
+        if (nsFn == null) continue;
+        // Last-write-wins on duplicate c:identifier — in-scope GIR
+        // doesn't exhibit this; a future regression would surface as
+        // a class collision in the relevant emitter.
+        staticClassFunctions[m.cIdentifier!] = (
+          cIdentifier: m.cIdentifier!,
+          ownerClassDartName: ctx.dartTypeName(
+            ctx.namespace.name,
+            ownerLocalName,
+          ),
+          namespaceFunctionName: moved,
+          fn: nsFn,
+        );
+      }
+    }
+
+    for (final c in namespace.classes) {
+      collectStaticFunctions(c.methods, c.name);
+    }
+    for (final i in namespace.interfaces) {
+      collectStaticFunctions(i.methods, i.name);
+    }
+    for (final r in namespace.records) {
+      collectStaticFunctions(r.methods, r.name);
+    }
+    for (final u in namespace.unions) {
+      collectStaticFunctions(u.methods, u.name);
+    }
+    recordEmitter.staticClassFunctions = staticClassFunctions;
+
+    final functionEmitter = FunctionEmitter(ctx)
+      ..staticClassFunctions = staticClassFunctions;
     for (final c in namespace.constants) {
       final code = functionEmitter.emitConstant(c);
       if (code != null) categories['constants']!.add(code);
@@ -107,7 +163,6 @@ class PackageEmitter {
       }
     }
 
-    final recordEmitter = RecordEmitter(ctx);
     for (final r in namespace.records) {
       final code = recordEmitter.emitRecord(r);
       if (code != null) categories['records']!.add(code);
@@ -117,8 +172,8 @@ class PackageEmitter {
       if (code != null) categories['records']!.add(code);
     }
 
-    final classEmitter =
-        ClassEmitter(ctx, emittedPackages: emittedPackages);
+    final classEmitter = ClassEmitter(ctx, emittedPackages: emittedPackages)
+      ..staticClassFunctions = staticClassFunctions;
     // Track fully-qualified props class names that have been emitted
     // for at least one accessor across the workspace. Child class
     // emissions consult this set before emitting `extends <parentProps>`
@@ -236,19 +291,22 @@ class PackageEmitter {
       }
     }
 
-    File(p.join(pkgDir, 'lib', '$pkg.dart')).writeAsStringSync(barrelFor(
-      pkg,
-      crossImports: ctx.imports,
-      usesFfiPackage: ctx.usesFfiString || ctx.usesMalloc,
-      usesGirFfi: ctx.usesGirFfi,
-      parts: parts,
-    ));
+    File(p.join(pkgDir, 'lib', '$pkg.dart')).writeAsStringSync(
+      barrelFor(
+        pkg,
+        crossImports: ctx.imports,
+        usesFfiPackage: ctx.usesFfiString || ctx.usesMalloc,
+        usesGirFfi: ctx.usesGirFfi,
+        parts: parts,
+      ),
+    );
     File(p.join(pkgDir, 'pubspec.yaml'))
         .writeAsStringSync(pubspecFor(pkg, ctx.imports));
     File(p.join(pkgDir, 'analysis_options.yaml'))
         .writeAsStringSync(analysisOptionsFor());
     File(p.join(pkgDir, 'skip_report.txt')).writeAsStringSync(
-        report.format('package $pkg (${namespace.name} ${namespace.version})'));
+      report.format('package $pkg (${namespace.name} ${namespace.version})'),
+    );
 
     Process.runSync('dart', ['format', pkgDir]);
     return report;
@@ -261,8 +319,7 @@ class PackageEmitter {
     var lines = 0;
     for (final decl in decls) {
       final declLines = '\n'.allMatches(decl).length + 2;
-      if (lines + declLines > _maxLinesPerFile &&
-          chunks.last.isNotEmpty) {
+      if (lines + declLines > _maxLinesPerFile && chunks.last.isNotEmpty) {
         chunks.add(StringBuffer());
         lines = 0;
       }

@@ -25,112 +25,6 @@ class GdkEvent {
     return factory(handle);
   }
 
-  /// Returns the relative angle from @event1 to @event2.
-  ///
-  /// The relative angle is the angle between the X axis and the line
-  /// through both events' positions. The rotation direction for positive
-  /// angles is from the positive X axis towards the positive Y axis.
-  ///
-  /// This assumes that both events have X/Y information.
-  /// If not, this function returns %FALSE.
-  static final _gdkEventsGetAngle =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Double>,
-              )
-            >
-          >('gdk_events_get_angle')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >();
-  (bool, double) getAngle(GdkEvent event2) {
-    final _out0 = malloc<ffi.Double>();
-    try {
-      final _ret = _gdkEventsGetAngle(this.handle, event2.handle, _out0);
-      return ((_ret) != 0, _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Returns the point halfway between the events' positions.
-  ///
-  /// This assumes that both events have X/Y information.
-  /// If not, this function returns %FALSE.
-  static final _gdkEventsGetCenter =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Double>,
-                ffi.Pointer<ffi.Double>,
-              )
-            >
-          >('gdk_events_get_center')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >();
-  (bool, double, double) getCenter(GdkEvent event2) {
-    final _out0 = malloc<ffi.Double>();
-    final _out1 = malloc<ffi.Double>();
-    try {
-      final _ret = _gdkEventsGetCenter(
-        this.handle,
-        event2.handle,
-        _out0,
-        _out1,
-      );
-      return ((_ret) != 0, _out0.value, _out1.value);
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-    }
-  }
-
-  /// Returns the distance between the event locations.
-  ///
-  /// This assumes that both events have X/Y information.
-  /// If not, this function returns %FALSE.
-  static final _gdkEventsGetDistance =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Double>,
-              )
-            >
-          >('gdk_events_get_distance')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >();
-  (bool, double) getDistance(GdkEvent event2) {
-    final _out0 = malloc<ffi.Double>();
-    try {
-      final _ret = _gdkEventsGetDistance(this.handle, event2.handle, _out0);
-      return ((_ret) != 0, _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
   /// Extract the axis value for a particular axis use from
   /// an event structure.
   ///
@@ -402,5 +296,114 @@ class GdkEvent {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gdkEventUnref(this.handle);
+  }
+
+  /// Returns the relative angle from @event1 to @event2.
+  ///
+  /// The relative angle is the angle between the X axis and the line
+  /// through both events' positions. The rotation direction for positive
+  /// angles is from the positive X axis towards the positive Y axis.
+  ///
+  /// This assumes that both events have X/Y information.
+  /// If not, this function returns %FALSE.
+  static final _gdkEventsGetAngle =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gdk_events_get_angle')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  static (bool, double) eventsGetAngle(GdkEvent event1, GdkEvent event2) {
+    final _out0 = malloc<ffi.Double>();
+    try {
+      final _ret = _gdkEventsGetAngle(event1.handle, event2.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
+  /// Returns the point halfway between the events' positions.
+  ///
+  /// This assumes that both events have X/Y information.
+  /// If not, this function returns %FALSE.
+  static final _gdkEventsGetCenter =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gdk_events_get_center')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  static (bool, double, double) eventsGetCenter(
+    GdkEvent event1,
+    GdkEvent event2,
+  ) {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      final _ret = _gdkEventsGetCenter(
+        event1.handle,
+        event2.handle,
+        _out0,
+        _out1,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Returns the distance between the event locations.
+  ///
+  /// This assumes that both events have X/Y information.
+  /// If not, this function returns %FALSE.
+  static final _gdkEventsGetDistance =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gdk_events_get_distance')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  static (bool, double) eventsGetDistance(GdkEvent event1, GdkEvent event2) {
+    final _out0 = malloc<ffi.Double>();
+    try {
+      final _ret = _gdkEventsGetDistance(event1.handle, event2.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 }

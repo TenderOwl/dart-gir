@@ -15,7 +15,7 @@ String? _emptyToNull(String? s) => (s == null || s.isEmpty) ? null : s;
 /// Root of a parsed .gir file.
 class GirRepository {
   GirRepository({required this.namespace, List<GirInclude>? includes})
-      : includes = List.unmodifiable(includes ?? const []);
+    : includes = List.unmodifiable(includes ?? const []);
 
   final GirNamespace namespace;
   final List<GirInclude> includes;
@@ -51,22 +51,22 @@ class GirNamespace {
     List<GirCallback>? callbacks,
     List<GirFunction>? functions,
     List<GirConstant>? constants,
-  })  : sharedLibraries = List.unmodifiable(
-          (sharedLibrary ?? '')
-              .split(',')
-              .map((s) => s.trim())
-              .where((s) => s.isNotEmpty),
-        ),
-        aliases = List.unmodifiable(aliases ?? const []),
-        classes = List.unmodifiable(classes ?? const []),
-        interfaces = List.unmodifiable(interfaces ?? const []),
-        records = List.unmodifiable(records ?? const []),
-        unions = List.unmodifiable(unions ?? const []),
-        enumerations = List.unmodifiable(enumerations ?? const []),
-        bitfields = List.unmodifiable(bitfields ?? const []),
-        callbacks = List.unmodifiable(callbacks ?? const []),
-        functions = List.unmodifiable(functions ?? const []),
-        constants = List.unmodifiable(constants ?? const []);
+  }) : sharedLibraries = List.unmodifiable(
+         (sharedLibrary ?? '')
+             .split(',')
+             .map((s) => s.trim())
+             .where((s) => s.isNotEmpty),
+       ),
+       aliases = List.unmodifiable(aliases ?? const []),
+       classes = List.unmodifiable(classes ?? const []),
+       interfaces = List.unmodifiable(interfaces ?? const []),
+       records = List.unmodifiable(records ?? const []),
+       unions = List.unmodifiable(unions ?? const []),
+       enumerations = List.unmodifiable(enumerations ?? const []),
+       bitfields = List.unmodifiable(bitfields ?? const []),
+       callbacks = List.unmodifiable(callbacks ?? const []),
+       functions = List.unmodifiable(functions ?? const []),
+       constants = List.unmodifiable(constants ?? const []);
 
   final String name;
   final String version;
@@ -205,6 +205,7 @@ class GirMethod extends GirFunction {
     super.introspectable,
     super.shadows,
     super.shadowedBy,
+    super.movedTo,
     this.finishFunc,
     this.instanceParameter,
   });
@@ -422,14 +423,14 @@ class GirClass extends GirRegisteredType {
     super.deprecated,
     super.version,
     super.doc,
-  })  : implements_ = List.unmodifiable(implements_ ?? const []),
-        constructors = List.unmodifiable(constructors ?? const []),
-        methods = List.unmodifiable(methods ?? const []),
-        functions = List.unmodifiable(functions ?? const []),
-        virtualMethods = List.unmodifiable(virtualMethods ?? const []),
-        properties = List.unmodifiable(properties ?? const []),
-        signals = List.unmodifiable(signals ?? const []),
-        fields = List.unmodifiable(fields ?? const []);
+  }) : implements_ = List.unmodifiable(implements_ ?? const []),
+       constructors = List.unmodifiable(constructors ?? const []),
+       methods = List.unmodifiable(methods ?? const []),
+       functions = List.unmodifiable(functions ?? const []),
+       virtualMethods = List.unmodifiable(virtualMethods ?? const []),
+       properties = List.unmodifiable(properties ?? const []),
+       signals = List.unmodifiable(signals ?? const []),
+       fields = List.unmodifiable(fields ?? const []);
 
   final String? glibTypeName;
   final String? glibGetValueFunc;
@@ -461,11 +462,11 @@ class GirInterface extends GirRegisteredType {
     super.deprecated,
     super.version,
     super.doc,
-  })  : methods = List.unmodifiable(methods ?? const []),
-        functions = List.unmodifiable(functions ?? const []),
-        virtualMethods = List.unmodifiable(virtualMethods ?? const []),
-        properties = List.unmodifiable(properties ?? const []),
-        signals = List.unmodifiable(signals ?? const []);
+  }) : methods = List.unmodifiable(methods ?? const []),
+       functions = List.unmodifiable(functions ?? const []),
+       virtualMethods = List.unmodifiable(virtualMethods ?? const []),
+       properties = List.unmodifiable(properties ?? const []),
+       signals = List.unmodifiable(signals ?? const []);
 
   final String? glibTypeName;
   final List<GirMethod> methods;
@@ -488,10 +489,10 @@ class GirRecord extends GirRegisteredType {
     super.deprecated,
     super.version,
     super.doc,
-  })  : fields = List.unmodifiable(fields ?? const []),
-        constructors = List.unmodifiable(constructors ?? const []),
-        methods = List.unmodifiable(methods ?? const []),
-        functions = List.unmodifiable(functions ?? const []);
+  }) : fields = List.unmodifiable(fields ?? const []),
+       constructors = List.unmodifiable(constructors ?? const []),
+       methods = List.unmodifiable(methods ?? const []),
+       functions = List.unmodifiable(functions ?? const []);
 
   /// Non-null when the record is a boxed type (`glib:is-gtype-struct-for`
   /// absent and `glib:type-name` present).
@@ -517,10 +518,10 @@ class GirUnion extends GirRegisteredType {
     super.deprecated,
     super.version,
     super.doc,
-  })  : fields = List.unmodifiable(fields ?? const []),
-        constructors = List.unmodifiable(constructors ?? const []),
-        methods = List.unmodifiable(methods ?? const []),
-        functions = List.unmodifiable(functions ?? const []);
+  }) : fields = List.unmodifiable(fields ?? const []),
+       constructors = List.unmodifiable(constructors ?? const []),
+       methods = List.unmodifiable(methods ?? const []),
+       functions = List.unmodifiable(functions ?? const []);
 
   final String? glibTypeName;
   final List<GirField> fields;
@@ -540,9 +541,9 @@ class GirEnum extends GirRegisteredType {
     super.deprecated,
     super.version,
     super.doc,
-  })  : members = List.unmodifiable(members ?? const []),
-        functions = List.unmodifiable(functions ?? const []),
-        methods = List.unmodifiable(methods ?? const []);
+  }) : members = List.unmodifiable(members ?? const []),
+       functions = List.unmodifiable(functions ?? const []),
+       methods = List.unmodifiable(methods ?? const []);
 
   final String? glibTypeName;
   final List<GirEnumMember> members;

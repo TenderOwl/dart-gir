@@ -14,6 +14,14 @@ class FunctionEmitter {
 
   final EmitContext ctx;
 
+  /// Namespace functions to suppress because a sibling `<method>` on a
+  /// class/record/interface/union declared `moved-to="<bare>"` and the
+  /// class emitter is re-emitting the function as a `static` method.
+  /// Keyed by `c:identifier` (the shared C symbol). Populated by
+  /// `PackageEmitter.emit()`; read in `emitFunction` /
+  /// `emitAsyncFunctionOverload`.
+  Map<String, StaticClassFunction> staticClassFunctions = const {};
+
   /// Public Dart name for a namespace function: lowerCamel of the C symbol
   /// minus the namespace symbol prefix (`g_utf8_strlen` → `utf8Strlen`).
   String publicName(GirFunction fn) {
@@ -34,6 +42,20 @@ class FunctionEmitter {
   /// Returns null when the function is skipped (the caller records the
   /// reason in the report).
   String? emitFunction(GirFunction fn) {
+    // Functions promoted to a `static` method on the owning GIR class
+    // are not emitted at top level — see `class_emitter.dart` "Static
+    // class functions". Surface the move in the skip report so users
+    // know where the call lives.
+    final promoted = staticClassFunctions[fn.cIdentifier ?? ''];
+    if (promoted != null && promoted.fn.cIdentifier == fn.cIdentifier) {
+      ctx.report.skip(
+        'callable',
+        '${ctx.namespace.name}.${fn.name}',
+        'brought to ${promoted.ownerClassDartName} as '
+            '${toLowerCamel(promoted.namespaceFunctionName)}',
+      );
+      return null;
+    }
     var name = escapeKeyword(publicName(fn));
     if (name.isEmpty) {
       ctx.report.skip('function', fn.name, 'empty public name');
@@ -53,11 +75,23 @@ class FunctionEmitter {
 
   /// Returns the lifetime-safe `*Callback` convenience overload for
   /// async namespace functions, when applicable. Returns null when
-  /// there is no async callback or the callback type isn't a
-  /// `GAsyncReadyCallback`. The caller is responsible for collecting
-  /// the result and ensuring the name doesn't collide.
+  /// there is no async callback, the callback type isn't a
+  /// `GAsyncReadyCallback`, or the base function was promoted to a
+  /// class — the overload follows the base wrapper's fate. The caller
+  /// is responsible for collecting the result and ensuring the name
+  /// doesn't collide.
   String? emitAsyncFunctionOverload(GirFunction fn, String baseDartName) {
     if (!fn.parameters.any((p) => p.scope == 'async')) return null;
+    final promoted = staticClassFunctions[fn.cIdentifier ?? ''];
+    if (promoted != null && promoted.fn.cIdentifier == fn.cIdentifier) {
+      // No `*Callback` overload is emitted at top level; the static
+      // method on the class doesn't carry one either (the class emitter
+      // doesn't have an async-callback overload path). Users wanting
+      // lifetime-safe async dispatch for these can fall back to the
+      // raw `AsyncCallbackEmitter.emitFunctionOverload` shape — out of
+      // scope for this change.
+      return null;
+    }
     return AsyncCallbackEmitter(ctx).emitFunctionOverload(
       fn,
       dartName: baseDartName,
@@ -97,7 +131,10 @@ class FunctionEmitter {
           v = v.replaceAll(RegExp(r'[fF]$'), '');
           if (double.tryParse(v) == null) {
             ctx.report.skip(
-                'constant', label, 'unparseable double value: $value');
+              'constant',
+              label,
+              'unparseable double value: $value',
+            );
             return null;
           }
           if (!v.contains('.') && !v.contains('e') && !v.contains('E')) {
@@ -106,7 +143,10 @@ class FunctionEmitter {
           literal = v;
         } else {
           ctx.report.skip(
-              'constant', label, 'unsupported primitive type ${m.dartType}');
+            'constant',
+            label,
+            'unsupported primitive type ${m.dartType}',
+          );
           return null;
         }
       case TypeKind.string:
@@ -121,7 +161,10 @@ class FunctionEmitter {
             literal = 'false';
           default:
             ctx.report.skip(
-                'constant', label, 'unparseable boolean value: $value');
+              'constant',
+              label,
+              'unparseable boolean value: $value',
+            );
             return null;
         }
       default:

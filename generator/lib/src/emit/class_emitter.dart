@@ -20,6 +20,13 @@ class ClassEmitter {
   /// extended.
   final Set<String> emittedPackages;
 
+  /// Namespace functions to re-emit as static methods on the owning GIR
+  /// class. Populated by `PackageEmitter.emit()` once per package and
+  /// read in `emitClass` — see `class_emitter.dart` "Static class
+  /// functions" for the detection rule (`moved-to` value has no dot).
+  /// Optional so the emitter remains constructible without the pre-scan.
+  Map<String, StaticClassFunction> staticClassFunctions = const {};
+
   /// Set by [emitClass] when the class has at least one emitted
   /// property accessor. The caller should append this string as a
   /// top-level class declaration in the same part file, immediately
@@ -70,8 +77,11 @@ class ClassEmitter {
     pendingPropsClass = null;
     final dartName = ctx.dartTypeName(ctx.namespace.name, cls.name);
     if (ctx.isDuplicateType(cls)) {
-      ctx.report.skip('class', dartName,
-          'duplicate declaration owned by an earlier namespace');
+      ctx.report.skip(
+        'class',
+        dartName,
+        'duplicate declaration owned by an earlier namespace',
+      );
       return null;
     }
     if (!ctx.claimName(dartName)) {
@@ -84,16 +94,22 @@ class ClassEmitter {
     if (cls.parent != null) {
       final found = ctx.findClass(cls.parent!);
       if (found == null) {
-        ctx.report.skip('class', dartName,
-            'parent ${cls.parent} not found; emitted without superclass');
+        ctx.report.skip(
+          'class',
+          dartName,
+          'parent ${cls.parent} not found; emitted without superclass',
+        );
       } else {
         final (parentNs, parentCls) = found;
         final parentPkg = parentNs.name == ctx.namespace.name
             ? null
             : packageNameFor(parentNs);
         if (parentPkg != null && !emittedPackages.contains(parentPkg)) {
-          ctx.report.skip('class', dartName,
-              'parent ${cls.parent} is in non-generated package $parentPkg');
+          ctx.report.skip(
+            'class',
+            dartName,
+            'parent ${cls.parent} is in non-generated package $parentPkg',
+          );
         } else {
           parentName = ctx.dartTypeName(parentNs.name, parentCls.name);
           if (parentPkg != null) ctx.imports.add(parentPkg);
@@ -178,11 +194,13 @@ class ClassEmitter {
       b.writeln('final bool owned;');
       if (rooted) {
         b.writeln(
-            'void _attachFinalizer() => gobjectFinalizer.attach(this, handle, detach: this);');
+          'void _attachFinalizer() => gobjectFinalizer.attach(this, handle, detach: this);',
+        );
       }
     } else {
       b.writeln(
-          '$dartName.fromPointer(super.handle, {super.owned}) : super.fromPointer();');
+        '$dartName.fromPointer(super.handle, {super.owned}) : super.fromPointer();',
+      );
     }
     // `cast<T>(factory)` lets the user recover the destination class's
     // methods from a borrowed wrapper (e.g. `GObject` from
@@ -201,7 +219,9 @@ class ClassEmitter {
     b.writeln('/// Use this when another wrapper returns this class\'s');
     b.writeln('/// instance but the caller needs the destination class\'s');
     b.writeln('/// methods. Pass the destination class\'s `fromPointer` as');
-    b.writeln('/// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.');
+    b.writeln(
+      '/// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.',
+    );
     b.writeln('/// The handle is forwarded as-is; the original wrapper');
     b.writeln('/// (which produced this object) remains the owner.');
     b.writeln('T cast<T extends Object>(');
@@ -222,17 +242,20 @@ class ClassEmitter {
         ctx.report.skip('constructor', '$dartName.$name', 'name collision');
         continue;
       }
-      final code = callables.emit(c,
-          dartName: name,
-          ownerName: dartName,
-          classMember: true,
-          factoryClass: dartName,
-          sinkFloating: sink);
+      final code = callables.emit(
+        c,
+        dartName: name,
+        ownerName: dartName,
+        classMember: true,
+        factoryClass: dartName,
+        sinkFloating: sink,
+      );
       if (code != null) b.writeln(_indent(code));
     }
     for (final m in cls.methods) {
-      var name =
-          CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
+      var name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(m.name)),
+      );
       // A member whose inherited signature differs (return type, parameter
       // types, nullability) is not a valid Dart override; rename it by
       // appending the class's GIR name (`activate` on AdwActionRow →
@@ -240,8 +263,11 @@ class ClassEmitter {
       final ancestorSig = ancestorSigs[name];
       if (ancestorSig != null && ancestorSig != _methodKey(m)) {
         final renamed = '$name${cls.name}';
-        ctx.report.skip('renamed', '$dartName.$name',
-            'override-incompatible with ancestor; renamed to $renamed');
+        ctx.report.skip(
+          'renamed',
+          '$dartName.$name',
+          'override-incompatible with ancestor; renamed to $renamed',
+        );
         name = renamed;
       }
       // Same defensive rule for implemented interfaces: a class method
@@ -254,8 +280,11 @@ class ClassEmitter {
       final ifaceSig = interfaceSigs[name];
       if (ifaceSig != null && ifaceSig != _methodKey(m)) {
         final renamed = '$name${cls.name}';
-        ctx.report.skip('renamed', '$dartName.$name',
-            'override-incompatible with interface; renamed to $renamed');
+        ctx.report.skip(
+          'renamed',
+          '$dartName.$name',
+          'override-incompatible with interface; renamed to $renamed',
+        );
         name = renamed;
         // The rename removes the implements-clause guarantee for this
         // interface, so drop it from the implements list.
@@ -273,16 +302,27 @@ class ClassEmitter {
           }
         }
       }
-      if (CallableEmitter.conflictsWithObjectMember(name) ||
-          !memberNames.add(name)) {
-        ctx.report.skip('method', '$dartName.$name', 'name collision');
-        continue;
+      // Moved-to methods are skipped at emission time — the
+      // canonical landing site is a namespace function or another
+      // class method (depending on whether the value contains a
+      // dot). Don't reserve the Dart member name: the namespace
+      // function brought to this class as a static method may
+      // normalise to the same identifier (`_register` → `register`
+      // is fine; an artificial `_bar`/`bar` would collide).
+      if (m.movedTo == null) {
+        if (CallableEmitter.conflictsWithObjectMember(name) ||
+            !memberNames.add(name)) {
+          ctx.report.skip('method', '$dartName.$name', 'name collision');
+          continue;
+        }
       }
-      final code = callables.emit(m,
-          dartName: name,
-          ownerName: dartName,
-          classMember: true,
-          selfArgExpr: 'this.handle');
+      final code = callables.emit(
+        m,
+        dartName: name,
+        ownerName: dartName,
+        classMember: true,
+        selfArgExpr: 'this.handle',
+      );
       if (code != null) b.writeln(_indent(code));
       // `*Callback` lifetime-safe overload for async methods. Generated
       // alongside the base wrapper when a parameter is `scope="async"`.
@@ -303,20 +343,55 @@ class ClassEmitter {
       }
     }
     for (final f in cls.functions) {
-      final name = CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(f.name)));
+      final name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(f.name)),
+      );
       if (!memberNames.add(name)) {
         ctx.report.skip('function', '$dartName.$name', 'name collision');
         continue;
       }
-      final code = callables.emit(f,
-          dartName: name, ownerName: dartName, staticMember: true);
+      final code = callables.emit(
+        f,
+        dartName: name,
+        ownerName: dartName,
+        staticMember: true,
+      );
+      if (code != null) b.writeln(_indent(code));
+    }
+    // Static class functions (namespace functions brought to this
+    // class as `static` methods because a sibling `<method>` carries
+    // `moved-to="<bare>"`). The pre-scan in `PackageEmitter.emit()`
+    // built the map; we filter by the owning class's Dart name. The
+    // corresponding namespace function is suppressed by
+    // `FunctionEmitter.emitFunction` so there's only one call site.
+    for (final entry in staticClassFunctions.values) {
+      if (entry.ownerClassDartName != dartName) continue;
+      final name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(entry.namespaceFunctionName)),
+      );
+      if (CallableEmitter.conflictsWithObjectMember(name) ||
+          !memberNames.add(name)) {
+        ctx.report.skip(
+          'function',
+          '$dartName.$name',
+          'name collision (static class function from ${entry.fn.cIdentifier ?? entry.namespaceFunctionName})',
+        );
+        continue;
+      }
+      final code = callables.emit(
+        entry.fn,
+        dartName: name,
+        ownerName: dartName,
+        staticMember: true,
+      );
       if (code != null) b.writeln(_indent(code));
     }
     final inherited = inheritedSignals(cls, ctx);
     final allSignals = [...cls.signals, ...inherited];
     final entries = <({GirSignal signal, GirNamespace? ns})>[
       for (final s in cls.signals) (signal: s, ns: ctx.namespace),
-      for (final i in inherited) (signal: i, ns: _signalOwnerNs(cls, i.name, ctx)),
+      for (final i in inherited)
+        (signal: i, ns: _signalOwnerNs(cls, i.name, ctx)),
     ];
     final signalCode = emitSignalConnectors(
       ctx,
@@ -335,15 +410,17 @@ class ClassEmitter {
     // The interface's own `final class` keeps its methods so wrapping
     // opaque pointers still works.
     if (cls.implements_.isNotEmpty) {
-      b.writeln(_emitInterfaceMirrors(
-        cls,
-        dartName,
-        callables,
-        memberNames,
-        interfaceSigs,
-        inheritedSigs,
-        implementsOk.isEmpty ? null : implementsOk,
-      ));
+      b.writeln(
+        _emitInterfaceMirrors(
+          cls,
+          dartName,
+          callables,
+          memberNames,
+          interfaceSigs,
+          inheritedSigs,
+          implementsOk.isEmpty ? null : implementsOk,
+        ),
+      );
     }
 
     // `props` accessor — PyGObject-style typed property namespace. The
@@ -369,8 +446,10 @@ class ClassEmitter {
         // parent's static type, breaking the covariant return on the
         // public `props` getter below (e.g. `GtkButtonProps get props
         // => _props` would reject `_props` as `GtkWidgetProps`).
-        b.writeln('  late final $propsClassName _props = '
-            '$propsClassName(this);');
+        b.writeln(
+          '  late final $propsClassName _props = '
+          '$propsClassName(this);',
+        );
         b.writeln('  $propsClassName get props => _props;');
       }
     }
@@ -381,7 +460,8 @@ class ClassEmitter {
     // entries). Without this rewrite, the header would include
     // `implements <Name>` for an interface whose methods were
     // renamed away, which Dart's analyzer would reject.
-    final header = 'class $dartName${parentName != null ? ' extends $parentName' : ''}'
+    final header =
+        'class $dartName${parentName != null ? ' extends $parentName' : ''}'
         '${parentName == null && rooted ? ' implements ffi.Finalizable' : ''}'
         '${implementsOk.isNotEmpty ? ' implements ${implementsOk.join(', ')}' : ''} {';
     return b.toString().replaceFirst('__DART_GIR_HEADER_PLACEHOLDER__', header);
@@ -441,8 +521,7 @@ class ClassEmitter {
     if (cls.parent != null) {
       final found = ctx.findClass(cls.parent!);
       if (found != null && wouldEmitPropsClass(found.$2)) {
-        final parentDartName =
-            ctx.dartTypeName(found.$1.name, found.$2.name);
+        final parentDartName = ctx.dartTypeName(found.$1.name, found.$2.name);
         extendsClause = '${parentDartName}Props';
       }
     }
@@ -451,8 +530,10 @@ class ClassEmitter {
     // single package the props classes are leaf-most classes, but
     // cross-package subclassing (e.g. `AdwAvatar extends GtkWidget`)
     // makes them mid-hierarchy.
-    b.writeln('class $propsClassName '
-        '${extendsClause != null ? 'extends $extendsClause ' : ''}{');
+    b.writeln(
+      'class $propsClassName '
+      '${extendsClause != null ? 'extends $extendsClause ' : ''}{',
+    );
     // Constructor forwards `_self` to the parent props class when
     // extending one. Use an initializing formal on the super call to
     // give it the child's `_self` — Dart allows `super.x` only when
@@ -504,8 +585,11 @@ class ClassEmitter {
     final ownerNs = _namespaceOfClass(owner) ?? ctx.namespace;
     final propertyType = _resolvePropertyType(prop, ownerNs);
     if (propertyType == null) {
-      ctx.report.skip('property', '$dartName.${prop.name}',
-          'unsupported type ${prop.type?.name ?? prop.type?.cType}');
+      ctx.report.skip(
+        'property',
+        '$dartName.${prop.name}',
+        'unsupported type ${prop.type?.name ?? prop.type?.cType}',
+      );
       return null;
     }
     // Find the backing typed methods. Match by GIR name (the
@@ -525,8 +609,11 @@ class ClassEmitter {
       final effectiveGetterName = prop.getter ?? 'get_${prop.name}';
       final m = _findMethodByName(owner, effectiveGetterName);
       if (m == null) {
-        ctx.report.skip('property', '$dartName.${prop.name}',
-            'missing getter $effectiveGetterName');
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'missing getter $effectiveGetterName',
+        );
         return null;
       }
       // The property getter exposes zero non-self arguments. A
@@ -548,9 +635,12 @@ class ClassEmitter {
       // mapping. The user can still call the renamed method
       // directly.
       if (_wasRenamed(m, owner)) {
-        ctx.report.skip('property', '$dartName.${prop.name}',
-            'getter $effectiveGetterName was renamed; '
-            'call the renamed method directly');
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'getter $effectiveGetterName was renamed; '
+              'call the renamed method directly',
+        );
         return null;
       }
       // Resolve the typed method's return type via `bridgeFor` so
@@ -585,8 +675,11 @@ class ClassEmitter {
         // writable but have no public setter — they're set via the
         // class constructor. Fall back to read-only rather than
         // dropping the whole property.
-        ctx.report.skip('property', '$dartName.${prop.name}',
-            'construct-only or no public setter; emitting getter only');
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'construct-only or no public setter; emitting getter only',
+        );
       } else if (m.parameters.length > 1) {
         // The property setter exposes exactly one value (the
         // property's own value). C functions that take an extra
@@ -595,28 +688,33 @@ class ClassEmitter {
         // represented as a single-arg props setter. Skip with a
         // precise reason; the user can still call the typed method
         // directly.
-        ctx.report.skip('property', '$dartName.${prop.name}',
-            'setter $effectiveSetterName takes '
-            '${m.parameters.length} args; props layer only supports 1');
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'setter $effectiveSetterName takes '
+              '${m.parameters.length} args; props layer only supports 1',
+        );
       } else if (_wasRenamed(m, owner)) {
-        ctx.report.skip('property', '$dartName.${prop.name}',
-            'setter $effectiveSetterName was renamed; '
-            'call the renamed method directly');
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'setter $effectiveSetterName was renamed; '
+              'call the renamed method directly',
+        );
       } else if (m.parameters.isNotEmpty &&
-          !_matchesPropertyType(
-            m.parameters.first.type,
-            prop.type,
-            owner,
-          )) {
+          !_matchesPropertyType(m.parameters.first.type, prop.type, owner)) {
         // The typed setter's parameter type is narrower than the
         // property's declared type (e.g. `set_visible_page(Adw…Page)`
         // when the property type is `Gtk.Widget`). Without a
         // covariant cast we'd need a Dart `as`; rather than emit an
         // unsafe cast, skip the property. The user can still call
         // the typed method directly with the narrower type.
-        ctx.report.skip('property', '$dartName.${prop.name}',
-            'setter $effectiveSetterName parameter type does '
-            'not match property type; skipping');
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'setter $effectiveSetterName parameter type does '
+              'not match property type; skipping',
+        );
       } else {
         // Resolve the typed setter's parameter type via `bridgeFor`
         // for the same nullability reasons as the getter: the props
@@ -663,10 +761,7 @@ class ClassEmitter {
   /// not bare `Widget`.
   String? _resolvePropertyType(GirProperty prop, GirNamespace ownerNs) {
     if (prop.type == null) return null;
-    final mapping = ctx.resolver.resolve(
-      prop.type!,
-      currentNamespace: ownerNs,
-    );
+    final mapping = ctx.resolver.resolve(prop.type!, currentNamespace: ownerNs);
     if (mapping.dartType.isEmpty ||
         mapping.dartType == 'unsupported' ||
         mapping.kind.toString().contains('unsupported')) {
@@ -758,17 +853,13 @@ class ClassEmitter {
   /// method `get_label`. Falls back to the GIR name when the prefix
   /// is missing.
   String _getterName(GirMethod m) =>
-      CallableEmitter.safeMemberName(
-        escapeKeyword(toLowerCamel(m.name)),
-      );
+      CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
 
   /// Computes the Dart-level setter name (e.g. `setLabel`) from a GIR
   /// method `set_label`. Falls back to the GIR name when the prefix
   /// is missing.
   String _setterName(GirMethod m) =>
-      CallableEmitter.safeMemberName(
-        escapeKeyword(toLowerCamel(m.name)),
-      );
+      CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
 
   /// Returns `true` when [mType] (the typed setter's first parameter
   /// type) is the same Dart type as [propType] (the property's
@@ -793,8 +884,9 @@ class ClassEmitter {
   /// same-named method. Detected by comparing the candidate's
   /// signature key against the ancestor chain's combined map.
   bool _wasRenamed(GirMethod m, GirClass owner) {
-    final name =
-        CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
+    final name = CallableEmitter.safeMemberName(
+      escapeKeyword(toLowerCamel(m.name)),
+    );
     // Walk the owner chain and collect ancestor signatures for the
     // same Dart name. If any ancestor has a same-named method with
     // a different signature, the leaf's emission would have renamed.
@@ -861,8 +953,11 @@ class ClassEmitter {
     for (final implName in cls.implements_) {
       final found = ctx.findInterface(implName);
       if (found == null) {
-        ctx.report.skip('method', '$dartName.${cls.name}',
-            'interface $implName not found');
+        ctx.report.skip(
+          'method',
+          '$dartName.${cls.name}',
+          'interface $implName not found',
+        );
         continue;
       }
       final (ifaceNs, iface) = found;
@@ -877,8 +972,11 @@ class ClassEmitter {
       final ifacePkg = packageNameFor(ifaceNs);
       if (ifacePkg != packageNameFor(ctx.namespace) &&
           !emittedPackages.contains(ifacePkg)) {
-        ctx.report.skip('method', '$dartName.${cls.name}',
-            'interface $implName is in non-generated package $ifacePkg');
+        ctx.report.skip(
+          'method',
+          '$dartName.${cls.name}',
+          'interface $implName is in non-generated package $ifacePkg',
+        );
         continue;
       }
       if (ifacePkg != packageNameFor(ctx.namespace) &&
@@ -889,8 +987,9 @@ class ClassEmitter {
       // class declares it twice (rare, but harmless).
       if (!seenInterfaces.add('${ifaceNs.name}.${iface.name}')) continue;
       for (final m in iface.methods) {
-        var name =
-            CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
+        var name = CallableEmitter.safeMemberName(
+          escapeKeyword(toLowerCamel(m.name)),
+        );
         final mirroredKey = _methodKey(m);
         // Override-incompatible with the parent class's same-named
         // method → rename so we don't shadow it with a different
@@ -900,15 +999,19 @@ class ClassEmitter {
         final inheritedSig = inheritedSigs[name];
         if (inheritedSig != null && inheritedSig != mirroredKey) {
           final renamed = '$name${cls.name}';
-          ctx.report.skip('renamed', '$dartName.$name',
-              'override-incompatible with ancestor; renamed to $renamed');
+          ctx.report.skip(
+            'renamed',
+            '$dartName.$name',
+            'override-incompatible with ancestor; renamed to $renamed',
+          );
           name = renamed;
           // The rename means the class no longer matches the
           // interface's signature — drop it from the implements
           // clause so Dart's structural check doesn't reject the
           // declaration.
           satisfiedIfDangling?.remove(
-              ctx.dartTypeName(ifaceNs.name, iface.name));
+            ctx.dartTypeName(ifaceNs.name, iface.name),
+          );
         }
         // Override-incompatible with the interface's own expected
         // signature → rename so the class doesn't claim to satisfy
@@ -917,29 +1020,35 @@ class ClassEmitter {
         final ifaceSig = interfaceSigs[name];
         if (ifaceSig != null && ifaceSig != mirroredKey) {
           final renamed = '$name${cls.name}';
-          ctx.report.skip('renamed', '$dartName.$name',
-              'override-incompatible with interface; renamed to $renamed');
+          ctx.report.skip(
+            'renamed',
+            '$dartName.$name',
+            'override-incompatible with interface; renamed to $renamed',
+          );
           name = renamed;
           satisfiedIfDangling?.remove(
-              ctx.dartTypeName(ifaceNs.name, iface.name));
+            ctx.dartTypeName(ifaceNs.name, iface.name),
+          );
         }
         if (CallableEmitter.conflictsWithObjectMember(name) ||
             !memberNames.add(name)) {
           ctx.report.skip('method', '$dartName.$name', 'name collision');
           continue;
         }
-        final code = callables.emit(m,
-            dartName: name,
-            ownerName: dartName,
-            classMember: true,
-            selfArgExpr: 'this.handle',
-            // Resolve parameter and return types against the
-            // interface's own namespace, not the implementing class's.
-            // `GdkPaintable.snapshot(GdkSnapshot, …)` and a Gtk mirror
-            // for `GtkIconPaintable` would otherwise re-bind `Snapshot`
-            // to the local `GtkSnapshot` class and break the
-            // `implements GdkPaintable` structural check.
-            relativeTo: ifaceNs);
+        final code = callables.emit(
+          m,
+          dartName: name,
+          ownerName: dartName,
+          classMember: true,
+          selfArgExpr: 'this.handle',
+          // Resolve parameter and return types against the
+          // interface's own namespace, not the implementing class's.
+          // `GdkPaintable.snapshot(GdkSnapshot, …)` and a Gtk mirror
+          // for `GtkIconPaintable` would otherwise re-bind `Snapshot`
+          // to the local `GtkSnapshot` class and break the
+          // `implements GdkPaintable` structural check.
+          relativeTo: ifaceNs,
+        );
         if (code != null) b.writeln(_indent(code));
         // Async-callback lifetime-safe overload — same detection rule
         // as class methods (line 143-156).
@@ -982,8 +1091,9 @@ class ClassEmitter {
       if (found == null) break;
       current = found.$2;
       for (final m in current.methods) {
-        final name =
-            CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
+        final name = CallableEmitter.safeMemberName(
+          escapeKeyword(toLowerCamel(m.name)),
+        );
         map.putIfAbsent(name, () => _methodKey(m));
       }
       for (final implName in current.implements_) {
@@ -1075,8 +1185,9 @@ class ClassEmitter {
     }
     // 2. The class's own declared methods override parent methods.
     for (final m in cls.methods) {
-      final name =
-          CallableEmitter.safeMemberName(escapeKeyword(toLowerCamel(m.name)));
+      final name = CallableEmitter.safeMemberName(
+        escapeKeyword(toLowerCamel(m.name)),
+      );
       map.putIfAbsent(name, () => _methodKey(m));
     }
     // 3. Note: cls.implements_ is intentionally NOT included — the
@@ -1097,7 +1208,10 @@ class ClassEmitter {
   /// in `gobject`, not in `gio`, so mirroring `Gio.ListModel.getItem`
   /// onto a Pango class needs `gobject`, not `gio`).
   bool _interfaceNeedsImport(
-      GirInterface iface, GirNamespace ifaceNs, String ifacePkg) {
+    GirInterface iface,
+    GirNamespace ifaceNs,
+    String ifacePkg,
+  ) {
     bool refsForeignWrapper(GirFunction m) {
       final types = <GirTypeRef?>[
         m.returnType,
@@ -1144,8 +1258,10 @@ class ClassEmitter {
     }
 
     final params = m.parameters
-        .map((p) =>
-            '${p.direction.name}:${typeKey(p.type)}${p.nullable ? '?' : ''}')
+        .map(
+          (p) =>
+              '${p.direction.name}:${typeKey(p.type)}${p.nullable ? '?' : ''}',
+        )
         .join(',');
     return '${typeKey(m.returnType)}${m.returnNullable ? '?' : ''}($params)';
   }

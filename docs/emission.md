@@ -70,6 +70,19 @@ Output for `final class GtkButton extends GtkWidget implements ffi.Finalizable`:
   `GtkWidget.activate` has a different signature). The skip reason
   `override-incompatible with ancestor; renamed to <name>` is recorded.
 * `<function>` → `static R name(...)` with no self-arg.
+* **Static class functions (moved-to without class prefix)** — when a
+  GIR `<method>` inside the class / record / interface / union carries
+  `moved-to="<bare>"` (the value has no dot, so the target is a
+  namespace function, not another class method), the class-level
+  method is dropped via the existing `movedTo != null` skip rule and
+  the corresponding namespace `<function>` is re-emitted as a
+  `static` method on this class. The Dart name is
+  `toLowerCamel(namespaceFunctionName)`. The six entries that
+  trigger this in the in-scope GIRs are `GResource.resourcesRegister`
+  / `resourcesUnregister` and `GdkEvent.eventsGetAngle` /
+  `eventsGetCenter` / `eventsGetDistance`. `g_iconv` (GIconv) is
+  `introspectable="0"` and is already skipped upstream — the static
+  promotion doesn't fire there.
 * **Inherited typed `onSignalName` methods** are appended after methods
   — see [signals.md](./signals.md) for details.
 * **Interface-mirrored methods** are appended last — see

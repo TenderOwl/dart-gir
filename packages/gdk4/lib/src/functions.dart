@@ -638,112 +638,6 @@ bool contentSerializeFinish(GAsyncResult result) {
   }
 }
 
-/// Returns the relative angle from @event1 to @event2.
-///
-/// The relative angle is the angle between the X axis and the line
-/// through both events' positions. The rotation direction for positive
-/// angles is from the positive X axis towards the positive Y axis.
-///
-/// This assumes that both events have X/Y information.
-/// If not, this function returns %FALSE.
-final _gdkEventsGetAngle =
-    gdk4Lookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >
-        >('gdk_events_get_angle')
-        .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Double>,
-          )
-        >();
-(bool, double) eventsGetAngle(GdkEvent event1, GdkEvent event2) {
-  final _out0 = malloc<ffi.Double>();
-  try {
-    final _ret = _gdkEventsGetAngle(event1.handle, event2.handle, _out0);
-    return ((_ret) != 0, _out0.value);
-  } finally {
-    malloc.free(_out0);
-  }
-}
-
-/// Returns the point halfway between the events' positions.
-///
-/// This assumes that both events have X/Y information.
-/// If not, this function returns %FALSE.
-final _gdkEventsGetCenter =
-    gdk4Lookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >
-        >('gdk_events_get_center')
-        .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Double>,
-            ffi.Pointer<ffi.Double>,
-          )
-        >();
-(bool, double, double) eventsGetCenter(GdkEvent event1, GdkEvent event2) {
-  final _out0 = malloc<ffi.Double>();
-  final _out1 = malloc<ffi.Double>();
-  try {
-    final _ret = _gdkEventsGetCenter(
-      event1.handle,
-      event2.handle,
-      _out0,
-      _out1,
-    );
-    return ((_ret) != 0, _out0.value, _out1.value);
-  } finally {
-    malloc.free(_out0);
-    malloc.free(_out1);
-  }
-}
-
-/// Returns the distance between the event locations.
-///
-/// This assumes that both events have X/Y information.
-/// If not, this function returns %FALSE.
-final _gdkEventsGetDistance =
-    gdk4Lookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >
-        >('gdk_events_get_distance')
-        .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Double>,
-          )
-        >();
-(bool, double) eventsGetDistance(GdkEvent event1, GdkEvent event2) {
-  final _out0 = malloc<ffi.Double>();
-  try {
-    final _ret = _gdkEventsGetDistance(event1.handle, event2.handle, _out0);
-    return ((_ret) != 0, _out0.value);
-  } finally {
-    malloc.free(_out0);
-  }
-}
-
 /// Canonicalizes the given mime type and interns the result.
 ///
 /// If @string is not a valid mime type, %NULL is returned instead.
@@ -933,4 +827,56 @@ GdkPixbuf? pixbufGetFromTexture(GdkTexture texture) {
   return (_gdkPixbufGetFromTexture(texture.handle)) == ffi.nullptr
       ? null
       : GdkPixbuf.fromPointer(_gdkPixbufGetFromTexture(texture.handle));
+}
+
+/// Sets a list of backends that GDK should try to use.
+///
+/// This can be useful if your application does not
+/// work with certain GDK backends.
+///
+/// By default, GDK tries all included backends.
+///
+/// For example:
+///
+/// ```c
+/// gdk_set_allowed_backends ("wayland,macos,*");
+/// ```
+///
+/// instructs GDK to try the Wayland backend first, followed by the
+/// MacOs backend, and then all others.
+///
+/// If the `GDK_BACKEND` environment variable is set, it determines
+/// what backends are tried in what order, while still respecting the
+/// set of allowed backends that are specified by this function.
+///
+/// The possible backend names are:
+///
+/// - `broadway`
+/// - `macos`
+/// - `wayland`.
+/// - `win32`
+/// - `x11`
+///
+/// You can also include a `*` in the list to try all remaining backends.
+///
+/// This call must happen prior to functions that open a display, such
+/// as [func@Gdk.Display.open], `gtk_init()`, or `gtk_init_check()`
+/// in order to take effect.
+final _gdkSetAllowedBackends =
+    gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<Utf8>)>>(
+      'gdk_set_allowed_backends',
+    ).asFunction<void Function(ffi.Pointer<Utf8>)>();
+void setAllowedBackends(String backends) {
+  withNativeString(backends, (nativeBackends) {
+    _gdkSetAllowedBackends(nativeBackends.cast<Utf8>());
+  });
+}
+
+/// Converts from a Unicode character to a key symbol.
+final _gdkUnicodeToKeyval =
+    gdk4Lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Uint32)>>(
+      'gdk_unicode_to_keyval',
+    ).asFunction<int Function(int)>();
+int unicodeToKeyval(int wc) {
+  return _gdkUnicodeToKeyval(wc);
 }

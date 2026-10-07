@@ -236,28 +236,6 @@ final class GResource {
     }
   }
 
-  /// Registers the resource with the process-global set of resources.
-  ///
-  /// Once a resource is registered the files in it can be accessed
-  /// with the global resource lookup functions like
-  /// [func@Gio.resources_lookup_data].
-  static final _gResourcesRegister =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_resources_register',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void register() {
-    _gResourcesRegister(this.handle);
-  }
-
-  /// Unregisters the resource from the process-global set of resources.
-  static final _gResourcesUnregister =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_resources_unregister',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unregister() {
-    _gResourcesUnregister(this.handle);
-  }
-
   /// Returns whether the specified @path in the resource
   /// has children.
   static final _gResourceHasChildren =
@@ -441,6 +419,28 @@ final class GResource {
         calloc.free(_error);
       }
     });
+  }
+
+  /// Registers the resource with the process-global set of resources.
+  ///
+  /// Once a resource is registered the files in it can be accessed
+  /// with the global resource lookup functions like
+  /// [func@Gio.resources_lookup_data].
+  static final _gResourcesRegister =
+      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_resources_register',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  static void resourcesRegister(GResource resource) {
+    _gResourcesRegister(resource.handle);
+  }
+
+  /// Unregisters the resource from the process-global set of resources.
+  static final _gResourcesUnregister =
+      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_resources_unregister',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  static void resourcesUnregister(GResource resource) {
+    _gResourcesUnregister(resource.handle);
   }
 }
 

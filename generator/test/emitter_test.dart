@@ -208,28 +208,25 @@ void main() {
       expect(report.entries.single.reason, contains('array'));
     });
 
-    test(
-      'skips introspectable="0" function naming the canonical sibling',
-      () {
-        final report = GenerationReport();
-        final fn = GirFunction(
-          name: 'idle_add',
-          cIdentifier: 'g_idle_add',
-          introspectable: false,
-          shadowedBy: 'idle_add_full',
-          returnType: const GirTypeRef(name: 'guint', cType: 'guint'),
-        );
-        final ns = _glibNs(functions: [fn]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = FunctionEmitter(ctx).emitFunction(fn);
-        expect(code, isNull);
-        expect(report.entries.single.category, 'callable');
-        expect(
-          report.entries.single.reason,
-          'introspectable=0 (C macro; use idle_add_full)',
-        );
-      },
-    );
+    test('skips introspectable="0" function naming the canonical sibling', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'idle_add',
+        cIdentifier: 'g_idle_add',
+        introspectable: false,
+        shadowedBy: 'idle_add_full',
+        returnType: const GirTypeRef(name: 'guint', cType: 'guint'),
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNull);
+      expect(report.entries.single.category, 'callable');
+      expect(
+        report.entries.single.reason,
+        'introspectable=0 (C macro; use idle_add_full)',
+      );
+    });
 
     test(
       'skips introspectable="0" function without a sibling with bare reason',
@@ -249,216 +246,211 @@ void main() {
       },
     );
 
-    test('emits nullable callback parameter with conditional NativeCallable',
-        () {
-      final report = GenerationReport();
-      // Callbacks declared in the same namespace so the bridge resolves.
-      final sourceFunc = GirCallback(
-        name: 'SourceFunc',
-        cType: 'GSourceFunc',
-        returnType: const GirTypeRef(name: 'gboolean'),
-        parameters: const [
-          GirParameter(
-            name: 'data',
-            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-          ),
-        ],
-      );
-      final destroyNotify = GirCallback(
-        name: 'DestroyNotify',
-        cType: 'GDestroyNotify',
-        returnType: const GirTypeRef(name: 'none'),
-        parameters: const [
-          GirParameter(
-            name: 'data',
-            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-          ),
-        ],
-      );
-      final fn = GirFunction(
-        name: 'idle_add_full',
-        cIdentifier: 'g_idle_add_full',
-        returnType: const GirTypeRef(name: 'guint', cType: 'guint'),
-        parameters: const [
-          GirParameter(
-            name: 'priority',
-            type: GirTypeRef(name: 'gint', cType: 'gint'),
-          ),
-          GirParameter(
-            name: 'function_',
-            type: GirTypeRef(name: 'SourceFunc', cType: 'GSourceFunc'),
-          ),
-          GirParameter(
-            name: 'data',
-            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-            nullable: true,
-          ),
-          GirParameter(
-            name: 'notify',
-            type: GirTypeRef(name: 'DestroyNotify', cType: 'GDestroyNotify'),
-            nullable: true,
-          ),
-        ],
-      );
-      final ns = _glibNs(
-        functions: [fn],
-        callbacks: [sourceFunc, destroyNotify],
-      );
-      final ctx = _ctx(ns, [ns], report);
-      final code = FunctionEmitter(ctx).emitFunction(fn)!;
-      expect(report.totalSkipped, 0);
-      // Wrapper parameter type is nullable for the callback.
-      expect(code, contains('void Function(ffi.Pointer<ffi.Void>)? notify'));
-      // Trailing optional positional parameters — both `data` (nullable
-      // gpointer, see the nullable-gpointer test below) and `notify`
-      // (nullable callback) are optional because they have a nullable
-      // wrapper type.
-      expect(
-        code,
-        contains('[ffi.Pointer<ffi.Void>? data, '
-            'void Function(ffi.Pointer<ffi.Void>)? notify]'),
-      );
-      // Native side gets a null pointer when the user passes nothing —
-      // match on the actual variable name (`_nc4`) used for the 4th param.
-      expect(code, contains('_nc4?.nativeFunction ?? ffi.nullptr'));
-      // Native side for the nullable gpointer data — same shape, no
-      // NativeCallable needed.
-      expect(code, contains('data ?? ffi.nullptr'));
-      // Lifecycle: NativeCallable only allocated when non-null; close is
-      // also conditional so we don't dereference a null instance.
-      expect(code, contains('notify == null ? null'));
-      expect(code, contains('_nc4?.close();'));
-    });
-
     test(
-      'nullable gpointer parameter emits ffi.Pointer<ffi.Void>? wrapper '
-      'and converts null → ffi.nullptr at the FFI call site',
+      'emits nullable callback parameter with conditional NativeCallable',
       () {
         final report = GenerationReport();
-        // The canonical case: `progressCallbackData` on
-        // `gtk_source_file_loader_load_async` — GIR declares
-        // `<parameter … nullable="1" allow-none="1"><type name="gpointer"
-        // c:type="gpointer"/></parameter>`. The bridge must surface the
-        // parameter as nullable and feed `ffi.nullptr` to the FFI
-        // lookup when the user passes null.
-        final fn = GirFunction(
-          name: 'load_async',
-          cIdentifier: 'gtk_source_file_loader_load_async',
+        // Callbacks declared in the same namespace so the bridge resolves.
+        final sourceFunc = GirCallback(
+          name: 'SourceFunc',
+          cType: 'GSourceFunc',
+          returnType: const GirTypeRef(name: 'gboolean'),
+          parameters: const [
+            GirParameter(
+              name: 'data',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        );
+        final destroyNotify = GirCallback(
+          name: 'DestroyNotify',
+          cType: 'GDestroyNotify',
           returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'data',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        );
+        final fn = GirFunction(
+          name: 'idle_add_full',
+          cIdentifier: 'g_idle_add_full',
+          returnType: const GirTypeRef(name: 'guint', cType: 'guint'),
           parameters: const [
             GirParameter(
               name: 'priority',
               type: GirTypeRef(name: 'gint', cType: 'gint'),
             ),
             GirParameter(
+              name: 'function_',
+              type: GirTypeRef(name: 'SourceFunc', cType: 'GSourceFunc'),
+            ),
+            GirParameter(
               name: 'data',
               type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
               nullable: true,
             ),
-          ],
-        );
-        final ns = _glibNs(functions: [fn]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = FunctionEmitter(ctx).emitFunction(fn)!;
-        expect(report.totalSkipped, 0);
-        // User-facing parameter type carries the `?`.
-        expect(code, contains('ffi.Pointer<ffi.Void>? data'));
-        // Native slot conversion: when the user passes `null` the
-        // bridge substitutes `ffi.nullptr` so the FFI signature stays
-        // valid. Match on the parameter's local name.
-        expect(code, contains('data ?? ffi.nullptr'));
-      },
-    );
-
-    test(
-      'non-nullable gpointer parameter keeps ffi.Pointer<ffi.Void> '
-      '(no spurious `?`, no null conversion at the FFI call site)',
-      () {
-        final report = GenerationReport();
-        // Counter-test to the nullable case above: a non-nullable
-        // `gpointer` (GIR `<type … c:type="gpointer"/>` without
-        // `nullable="1"`) must still emit the old shape so existing
-        // non-nullable call sites don't suddenly reject a non-null
-        // pointer under stricter type-checking downstream.
-        final fn = GirFunction(
-          name: 'take_handle',
-          cIdentifier: 'some_take_handle',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
             GirParameter(
-              name: 'handle',
-              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              name: 'notify',
+              type: GirTypeRef(name: 'DestroyNotify', cType: 'GDestroyNotify'),
+              nullable: true,
             ),
           ],
         );
-        final ns = _glibNs(functions: [fn]);
+        final ns = _glibNs(
+          functions: [fn],
+          callbacks: [sourceFunc, destroyNotify],
+        );
         final ctx = _ctx(ns, [ns], report);
         final code = FunctionEmitter(ctx).emitFunction(fn)!;
         expect(report.totalSkipped, 0);
-        expect(code, contains('ffi.Pointer<ffi.Void> handle'));
-        expect(code, isNot(contains('ffi.Pointer<ffi.Void>? handle')));
-        // No `?? ffi.nullptr` substitution when nullable=false.
-        expect(code, isNot(contains('handle ?? ffi.nullptr')));
-      },
-    );
-
-    test(
-      'record / interface / union emit a `cast<T>(factory)` method on the '
-      'wrapper so users can recover the destination class from a borrowed handle',
-      () {
-        final report = GenerationReport();
-        // `GFile` is the canonical case — emitted as `class GFile {`
-        // (interface after the implements-clause work) with a plain
-        // `fromPointer(handle, {bool owned = false})` constructor and
-        // a `handle` field. The `cast<T>` method must be there so
-        // `item.cast<GFile>(GFile.fromPointer)` works when `item` is
-        // a `GObject` (the borrowed wrapper from `GListModel.getObject`).
-        final ns = GirNamespace(
-          name: 'Gio',
-          version: '2.0',
-          sharedLibrary: 'libgio-2.0.so.0',
-          cIdentifierPrefixes: const ['Gio', 'gio'],
-          cSymbolPrefixes: const ['gio'],
-          interfaces: [
-            GirInterface(
-              name: 'File',
-              cType: 'GFile',
-              methods: const [],
-              functions: const [],
-              doc: '',
-            ),
-          ],
-        );
-        final ctx = _ctx(ns, [ns], report);
-        final code = RecordEmitter(ctx).emitInterface(ns.interfaces.first)!;
-        expect(report.totalSkipped, 0);
-        // The fromPointer signature takes the {bool owned} named param
-        // so existing callers that want to transfer ownership directly
-        // (`GFile.fromPointer(handle, owned: true)`) keep working.
-        // The Dart name is `GioFile` — the namespace `Gio` prefix gets
-        // prepended to the local GIR name `File`.
-        expect(
-          code,
-          contains('GioFile.fromPointer(this.handle, {bool owned = false})'),
-        );
-        // cast<T>(factory) re-wraps handle as T via the user-provided
-        // callback. Bound is `Object` (not `GObject`) so this works for
-        // interfaces like `GFile` that don't have an `extends` clause
-        // in their Dart declaration. The factory parameter has the
-        // minimal universal shape so a user-side forwarding
-        // `fromPointer(handle)` without `{bool owned}` is enough.
+        // Wrapper parameter type is nullable for the callback.
+        expect(code, contains('void Function(ffi.Pointer<ffi.Void>)? notify'));
+        // Trailing optional positional parameters — both `data` (nullable
+        // gpointer, see the nullable-gpointer test below) and `notify`
+        // (nullable callback) are optional because they have a nullable
+        // wrapper type.
         expect(
           code,
           contains(
-            'T cast<T extends Object>(\n'
-            '  T Function(ffi.Pointer<ffi.Void>) factory,\n'
-            ') {\n'
-            '  return factory(handle);\n'
-            '}',
+            '[ffi.Pointer<ffi.Void>? data, '
+            'void Function(ffi.Pointer<ffi.Void>)? notify]',
           ),
         );
+        // Native side gets a null pointer when the user passes nothing —
+        // match on the actual variable name (`_nc4`) used for the 4th param.
+        expect(code, contains('_nc4?.nativeFunction ?? ffi.nullptr'));
+        // Native side for the nullable gpointer data — same shape, no
+        // NativeCallable needed.
+        expect(code, contains('data ?? ffi.nullptr'));
+        // Lifecycle: NativeCallable only allocated when non-null; close is
+        // also conditional so we don't dereference a null instance.
+        expect(code, contains('notify == null ? null'));
+        expect(code, contains('_nc4?.close();'));
       },
     );
+
+    test('nullable gpointer parameter emits ffi.Pointer<ffi.Void>? wrapper '
+        'and converts null → ffi.nullptr at the FFI call site', () {
+      final report = GenerationReport();
+      // The canonical case: `progressCallbackData` on
+      // `gtk_source_file_loader_load_async` — GIR declares
+      // `<parameter … nullable="1" allow-none="1"><type name="gpointer"
+      // c:type="gpointer"/></parameter>`. The bridge must surface the
+      // parameter as nullable and feed `ffi.nullptr` to the FFI
+      // lookup when the user passes null.
+      final fn = GirFunction(
+        name: 'load_async',
+        cIdentifier: 'gtk_source_file_loader_load_async',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'priority',
+            type: GirTypeRef(name: 'gint', cType: 'gint'),
+          ),
+          GirParameter(
+            name: 'data',
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            nullable: true,
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(report.totalSkipped, 0);
+      // User-facing parameter type carries the `?`.
+      expect(code, contains('ffi.Pointer<ffi.Void>? data'));
+      // Native slot conversion: when the user passes `null` the
+      // bridge substitutes `ffi.nullptr` so the FFI signature stays
+      // valid. Match on the parameter's local name.
+      expect(code, contains('data ?? ffi.nullptr'));
+    });
+
+    test('non-nullable gpointer parameter keeps ffi.Pointer<ffi.Void> '
+        '(no spurious `?`, no null conversion at the FFI call site)', () {
+      final report = GenerationReport();
+      // Counter-test to the nullable case above: a non-nullable
+      // `gpointer` (GIR `<type … c:type="gpointer"/>` without
+      // `nullable="1"`) must still emit the old shape so existing
+      // non-nullable call sites don't suddenly reject a non-null
+      // pointer under stricter type-checking downstream.
+      final fn = GirFunction(
+        name: 'take_handle',
+        cIdentifier: 'some_take_handle',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'handle',
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(report.totalSkipped, 0);
+      expect(code, contains('ffi.Pointer<ffi.Void> handle'));
+      expect(code, isNot(contains('ffi.Pointer<ffi.Void>? handle')));
+      // No `?? ffi.nullptr` substitution when nullable=false.
+      expect(code, isNot(contains('handle ?? ffi.nullptr')));
+    });
+
+    test('record / interface / union emit a `cast<T>(factory)` method on the '
+        'wrapper so users can recover the destination class from a borrowed handle', () {
+      final report = GenerationReport();
+      // `GFile` is the canonical case — emitted as `class GFile {`
+      // (interface after the implements-clause work) with a plain
+      // `fromPointer(handle, {bool owned = false})` constructor and
+      // a `handle` field. The `cast<T>` method must be there so
+      // `item.cast<GFile>(GFile.fromPointer)` works when `item` is
+      // a `GObject` (the borrowed wrapper from `GListModel.getObject`).
+      final ns = GirNamespace(
+        name: 'Gio',
+        version: '2.0',
+        sharedLibrary: 'libgio-2.0.so.0',
+        cIdentifierPrefixes: const ['Gio', 'gio'],
+        cSymbolPrefixes: const ['gio'],
+        interfaces: [
+          GirInterface(
+            name: 'File',
+            cType: 'GFile',
+            methods: const [],
+            functions: const [],
+            doc: '',
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitInterface(ns.interfaces.first)!;
+      expect(report.totalSkipped, 0);
+      // The fromPointer signature takes the {bool owned} named param
+      // so existing callers that want to transfer ownership directly
+      // (`GFile.fromPointer(handle, owned: true)`) keep working.
+      // The Dart name is `GioFile` — the namespace `Gio` prefix gets
+      // prepended to the local GIR name `File`.
+      expect(
+        code,
+        contains('GioFile.fromPointer(this.handle, {bool owned = false})'),
+      );
+      // cast<T>(factory) re-wraps handle as T via the user-provided
+      // callback. Bound is `Object` (not `GObject`) so this works for
+      // interfaces like `GFile` that don't have an `extends` clause
+      // in their Dart declaration. The factory parameter has the
+      // minimal universal shape so a user-side forwarding
+      // `fromPointer(handle)` without `{bool owned}` is enough.
+      expect(
+        code,
+        contains(
+          'T cast<T extends Object>(\n'
+          '  T Function(ffi.Pointer<ffi.Void>) factory,\n'
+          ') {\n'
+          '  return factory(handle);\n'
+          '}',
+        ),
+      );
+    });
 
     test(
       'record OUT param (caller-allocates) uses HeapAnchor, omits manual free',
@@ -508,17 +500,17 @@ void main() {
         // (A manually freed buffer would invalidate the returned
         // wrapper's handle and trip the GTK-side null deref that
         // motivated the fix.)
-        expect(
-          code,
-          isNot(contains('malloc.free(_out0);')),
-        );
+        expect(code, isNot(contains('malloc.free(_out0);')));
 
         // The C call writes into the buffer via a `cast<ffi.Void>()`.
         expect(code, contains('_gtkTextBufferGetStartIter('));
         expect(code, contains('_out0.cast<ffi.Void>()'));
 
         // The wrapper extracts via `T.fromPointer(_buffer.cast<ffi.Void>())`.
-        expect(code, contains('GtkTextIter.fromPointer(_out0.cast<ffi.Void>())'));
+        expect(
+          code,
+          contains('GtkTextIter.fromPointer(_out0.cast<ffi.Void>())'),
+        );
 
         // The HeapAnchor helper comes from `package:gir_ffi/gir_ffi.dart`
         // — assert the import was registered so the library emitter
@@ -903,69 +895,73 @@ void main() {
     GirNamespace nsWith({
       required List<GirInterface> interfaces,
       required List<GirClass> classes,
-    }) =>
-        GirNamespace(
-          name: 'Gtk',
-          version: '4.0',
-          sharedLibrary: 'libgtk-4.so.1',
-          cIdentifierPrefixes: const ['Gtk', 'gtk'],
-          cSymbolPrefixes: const ['gtk'],
-          classes: classes,
-          interfaces: interfaces,
-        );
+    }) => GirNamespace(
+      name: 'Gtk',
+      version: '4.0',
+      sharedLibrary: 'libgtk-4.so.1',
+      cIdentifierPrefixes: const ['Gtk', 'gtk'],
+      cSymbolPrefixes: const ['gtk'],
+      classes: classes,
+      interfaces: interfaces,
+    );
 
-    test('class implementing one interface gets interface methods mirrored', () {
-      final report = GenerationReport();
-      final iface = GirInterface(
-        name: 'Actionable',
-        cType: 'GtkActionable',
-        methods: [
-          GirMethod(
-            name: 'get_action_name',
-            cIdentifier: 'gtk_actionable_get_action_name',
-            returnType: GirTypeRef(name: 'utf8', cType: 'const gchar*'),
-          ),
-          GirMethod(
-            name: 'set_action_name',
-            cIdentifier: 'gtk_actionable_set_action_name',
-            parameters: [
-              GirParameter(
-                name: 'action_name',
-                nullable: true,
-                type: GirTypeRef(name: 'utf8', cType: 'const gchar*'),
-              ),
-            ],
-          ),
-        ],
-      );
-      final button = GirClass(
-        name: 'Button',
-        cType: 'GtkButton',
-        parent: 'Widget',
-        implements_: const ['Actionable'],
-      );
-      final ns = nsWith(
-        interfaces: [iface],
-        classes: [
-          GirClass(name: 'Object', cType: 'GObject'),
-          GirClass(name: 'Widget', cType: 'GtkWidget', parent: 'Object'),
-          button,
-        ],
-      );
-      final ctx = _ctx(ns, [ns], report);
-      final code =
-          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
-      expect(code, isNotNull);
-      expect(report.totalSkipped, 0);
-      // Both interface methods are mirrored onto the class.
-      expect(code, contains('String getActionName()'));
-      expect(code, contains('void setActionName([String? actionName])'));
-      // Native bindings for the interface methods are present.
-      expect(code, contains('_gtkActionableGetActionName'));
-      expect(code, contains('_gtkActionableSetActionName'));
-      // The wrapper threads `this.handle` as the first native argument.
-      expect(code, contains('_gtkActionableGetActionName(this.handle'));
-    });
+    test(
+      'class implementing one interface gets interface methods mirrored',
+      () {
+        final report = GenerationReport();
+        final iface = GirInterface(
+          name: 'Actionable',
+          cType: 'GtkActionable',
+          methods: [
+            GirMethod(
+              name: 'get_action_name',
+              cIdentifier: 'gtk_actionable_get_action_name',
+              returnType: GirTypeRef(name: 'utf8', cType: 'const gchar*'),
+            ),
+            GirMethod(
+              name: 'set_action_name',
+              cIdentifier: 'gtk_actionable_set_action_name',
+              parameters: [
+                GirParameter(
+                  name: 'action_name',
+                  nullable: true,
+                  type: GirTypeRef(name: 'utf8', cType: 'const gchar*'),
+                ),
+              ],
+            ),
+          ],
+        );
+        final button = GirClass(
+          name: 'Button',
+          cType: 'GtkButton',
+          parent: 'Widget',
+          implements_: const ['Actionable'],
+        );
+        final ns = nsWith(
+          interfaces: [iface],
+          classes: [
+            GirClass(name: 'Object', cType: 'GObject'),
+            GirClass(name: 'Widget', cType: 'GtkWidget', parent: 'Object'),
+            button,
+          ],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code = ClassEmitter(
+          ctx,
+          emittedPackages: const {'gtk4'},
+        ).emitClass(button)!;
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+        // Both interface methods are mirrored onto the class.
+        expect(code, contains('String getActionName()'));
+        expect(code, contains('void setActionName([String? actionName])'));
+        // Native bindings for the interface methods are present.
+        expect(code, contains('_gtkActionableGetActionName'));
+        expect(code, contains('_gtkActionableSetActionName'));
+        // The wrapper threads `this.handle` as the first native argument.
+        expect(code, contains('_gtkActionableGetActionName(this.handle'));
+      },
+    );
 
     test('class implementing two interfaces gets methods from both', () {
       final report = GenerationReport();
@@ -1006,72 +1002,76 @@ void main() {
         ],
       );
       final ctx = _ctx(ns, [ns], report);
-      final code =
-          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4'},
+      ).emitClass(button)!;
       expect(code, contains('String getActionName()'));
       expect(code, contains('String getBuildableId()'));
     });
 
-    test(
-      'override-incompatible interface method with parent ancestor '
-      'is renamed',
-      () {
-        final report = GenerationReport();
-        // Parent class has `activate(GdkEvent*) -> bool`; interface has
-        // `activate() -> void`. When mirrored onto the child, the
-        // child's own `activate(GdkEvent*) -> bool` shadows the parent
-        // — the mirror must rename to `activateWidget` to avoid
-        // `invalid_override`.
-        final actionable = GirInterface(
-          name: 'Actionable',
-          cType: 'IActionable',
-          methods: [
-            GirMethod(
-              name: 'activate',
-              cIdentifier: 'i_actionable_activate',
-              returnType: GirTypeRef(name: 'none'),
-            ),
-          ],
-        );
-        final widget = GirClass(
-          name: 'Widget',
-          cType: 'IWidget',
-          parent: 'Object',
-          methods: [
-            GirMethod(
-              name: 'activate',
-              cIdentifier: 'i_widget_activate',
-              returnType: GirTypeRef(name: 'gboolean'),
-            ),
-          ],
-        );
-        final button = GirClass(
-          name: 'Button',
-          cType: 'IButton',
-          parent: 'Widget',
-          implements_: const ['Actionable'],
-        );
-        final ns = nsWith(
-          interfaces: [actionable],
-          classes: [
-            GirClass(name: 'Object', cType: 'IObject'),
-            widget,
-            button,
-          ],
-        );
-        final ctx = _ctx(ns, [ns], report);
-        final code =
-            ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
-        expect(code, contains('void activateButton()'));
-        // Original parent's `activate` is preserved (the rename only
-        // affects the mirrored interface method on the child).
-        expect(report.entries.any(
+    test('override-incompatible interface method with parent ancestor '
+        'is renamed', () {
+      final report = GenerationReport();
+      // Parent class has `activate(GdkEvent*) -> bool`; interface has
+      // `activate() -> void`. When mirrored onto the child, the
+      // child's own `activate(GdkEvent*) -> bool` shadows the parent
+      // — the mirror must rename to `activateWidget` to avoid
+      // `invalid_override`.
+      final actionable = GirInterface(
+        name: 'Actionable',
+        cType: 'IActionable',
+        methods: [
+          GirMethod(
+            name: 'activate',
+            cIdentifier: 'i_actionable_activate',
+            returnType: GirTypeRef(name: 'none'),
+          ),
+        ],
+      );
+      final widget = GirClass(
+        name: 'Widget',
+        cType: 'IWidget',
+        parent: 'Object',
+        methods: [
+          GirMethod(
+            name: 'activate',
+            cIdentifier: 'i_widget_activate',
+            returnType: GirTypeRef(name: 'gboolean'),
+          ),
+        ],
+      );
+      final button = GirClass(
+        name: 'Button',
+        cType: 'IButton',
+        parent: 'Widget',
+        implements_: const ['Actionable'],
+      );
+      final ns = nsWith(
+        interfaces: [actionable],
+        classes: [
+          GirClass(name: 'Object', cType: 'IObject'),
+          widget,
+          button,
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4'},
+      ).emitClass(button)!;
+      expect(code, contains('void activateButton()'));
+      // Original parent's `activate` is preserved (the rename only
+      // affects the mirrored interface method on the child).
+      expect(
+        report.entries.any(
           (e) =>
               e.category == 'renamed' &&
               e.reason.contains('override-incompatible with ancestor'),
-        ), isTrue);
-      },
-    );
+        ),
+        isTrue,
+      );
+    });
 
     test('unresolved interface name is reported as a skip', () {
       final report = GenerationReport();
@@ -1090,13 +1090,19 @@ void main() {
         ],
       );
       final ctx = _ctx(ns, [ns], report);
-      final code =
-          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(button)!;
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4'},
+      ).emitClass(button)!;
       expect(code, isNotNull);
-      expect(report.entries.any(
-        (e) =>
-            e.category == 'method' && e.reason.contains('NoSuchIface not found'),
-      ), isTrue);
+      expect(
+        report.entries.any(
+          (e) =>
+              e.category == 'method' &&
+              e.reason.contains('NoSuchIface not found'),
+        ),
+        isTrue,
+      );
     });
 
     test('interface in non-emitted package is reported as a skip', () {
@@ -1112,16 +1118,19 @@ void main() {
           ),
         ],
       );
-      final gtk = nsWith(interfaces: const [], classes: [
-        GirClass(name: 'Object', cType: 'IObject'),
-        GirClass(name: 'Widget', cType: 'IWidget', parent: 'Object'),
-        GirClass(
-          name: 'Button',
-          cType: 'IButton',
-          parent: 'Widget',
-          implements_: const ['Actionable'],
-        ),
-      ]);
+      final gtk = nsWith(
+        interfaces: const [],
+        classes: [
+          GirClass(name: 'Object', cType: 'IObject'),
+          GirClass(name: 'Widget', cType: 'IWidget', parent: 'Object'),
+          GirClass(
+            name: 'Button',
+            cType: 'IButton',
+            parent: 'Widget',
+            implements_: const ['Actionable'],
+          ),
+        ],
+      );
       final other = GirNamespace(
         name: 'Other',
         version: '1.0',
@@ -1131,16 +1140,19 @@ void main() {
         interfaces: [crossIface],
       );
       final ctx = _ctx(gtk, [gtk, other], report);
-      final code =
-          ClassEmitter(ctx, emittedPackages: const {'gtk4'}).emitClass(
-        gtk.classes[2],
-      )!;
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4'},
+      ).emitClass(gtk.classes[2])!;
       expect(code, isNotNull);
-      expect(report.entries.any(
-        (e) =>
-            e.category == 'method' &&
-            e.reason.contains('Actionable is in non-generated package'),
-      ), isTrue);
+      expect(
+        report.entries.any(
+          (e) =>
+              e.category == 'method' &&
+              e.reason.contains('Actionable is in non-generated package'),
+        ),
+        isTrue,
+      );
     });
 
     test('cross-package interface mirror adds the foreign import', () {
@@ -1157,8 +1169,10 @@ void main() {
           GirMethod(
             name: 'get_internal_child',
             cIdentifier: 'gtk_buildable_get_internal_child',
-            returnType:
-                const GirTypeRef(name: 'Gtk.Widget', cType: 'GtkWidget*'),
+            returnType: const GirTypeRef(
+              name: 'Gtk.Widget',
+              cType: 'GtkWidget*',
+            ),
           ),
         ],
       );
@@ -1193,8 +1207,10 @@ void main() {
         ],
       );
       final ctx = _ctx(foo, [gtk, foo], report);
-      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'foo'})
-          .emitClass(foo.classes[0]);
+      ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4', 'foo'},
+      ).emitClass(foo.classes[0]);
       expect(ctx.imports.contains('gtk4'), isTrue);
     });
 
@@ -1284,8 +1300,10 @@ void main() {
         callbacks: [asyncReady],
       );
       final ctx = _ctx(nsWithCallbacks, [nsWithCallbacks], report);
-      final code = ClassEmitter(ctx, emittedPackages: const {'glib'})
-          .emitClass(obj)!;
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'glib'},
+      ).emitClass(obj)!;
       expect(code, isNotNull);
       // Base wrapper for the mirrored async method.
       expect(code, contains('void initAsync('));
@@ -1300,15 +1318,13 @@ void main() {
     // so `isGObjectRooted(cls)` recognises the chain. The props
     // layer only emits for GObject-rooted classes.
     GirNamespace gobjectNs() => GirNamespace(
-          name: 'GObject',
-          version: '2.0',
-          sharedLibrary: 'libgobject-2.0.so.0',
-          cIdentifierPrefixes: const ['GObject', 'gobject'],
-          cSymbolPrefixes: const ['gobject'],
-          classes: [
-            GirClass(name: 'Object', cType: 'GObject'),
-          ],
-        );
+      name: 'GObject',
+      version: '2.0',
+      sharedLibrary: 'libgobject-2.0.so.0',
+      cIdentifierPrefixes: const ['GObject', 'gobject'],
+      cSymbolPrefixes: const ['gobject'],
+      classes: [GirClass(name: 'Object', cType: 'GObject')],
+    );
 
     // Build a class with a single property whose getter and setter
     // are present in `cls.methods`. The props layer delegates to
@@ -1383,9 +1399,11 @@ void main() {
       // and reject the assignment.
       expect(code, contains('GtkTestButtonProps get props => _props;'));
       expect(
-          code,
-          contains(
-              'late final GtkTestButtonProps _props = GtkTestButtonProps(this);'));
+        code,
+        contains(
+          'late final GtkTestButtonProps _props = GtkTestButtonProps(this);',
+        ),
+      );
       // The props companion class has the typed accessor pair.
       final propsCode = emitter.pendingPropsClass!;
       expect(propsCode, contains('String get label'));
@@ -1477,15 +1495,15 @@ void main() {
         classes: [obj, cls],
       );
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
-      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'gobject'})
-          .emitClass(cls);
+      ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4', 'gobject'},
+      ).emitClass(cls);
       // The property accessor is skipped; no props class is
       // emitted because every property failed.
       expect(
         report.entries.any(
-          (e) =>
-              e.category == 'property' &&
-              e.reason.contains('takes 1 args'),
+          (e) => e.category == 'property' && e.reason.contains('takes 1 args'),
         ),
         isTrue,
       );
@@ -1496,11 +1514,7 @@ void main() {
       // The leaf's `props` accessor should expose it via the
       // inherited signature.
       final report = GenerationReport();
-      final leaf = GirClass(
-        name: 'Leaf',
-        cType: 'TestLeaf',
-        parent: 'Widget',
-      );
+      final leaf = GirClass(name: 'Leaf', cType: 'TestLeaf', parent: 'Widget');
       final widget = GirClass(
         name: 'Widget',
         cType: 'TestWidget',
@@ -1531,7 +1545,9 @@ void main() {
       );
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
       final emitter = ClassEmitter(
-          ctx, emittedPackages: const {'gtk4', 'gobject'});
+        ctx,
+        emittedPackages: const {'gtk4', 'gobject'},
+      );
       emitter.emitClass(leaf);
       final propsCode = emitter.pendingPropsClass!;
       expect(propsCode, contains('bool get canFocus'));
@@ -1588,101 +1604,106 @@ void main() {
         classes: [obj, cls],
       );
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
-      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'gobject'})
-          .emitClass(cls);
+      ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4', 'gobject'},
+      ).emitClass(cls);
       expect(
         report.entries.any(
-          (e) =>
-              e.category == 'property' && e.reason.contains('takes 2 args'),
+          (e) => e.category == 'property' && e.reason.contains('takes 2 args'),
         ),
         isTrue,
       );
     });
 
-    test('property whose setter type is narrower than property type is skipped',
-        () {
-      // set_visible_page(AdwPreferencesPage) — the typed setter's
-      // parameter is narrower than the property's declared type
-      // (Gtk.Widget). Casting would be unsafe; skip.
-      final report = GenerationReport();
-      final cls = GirClass(
-        name: 'PageHolder',
-        cType: 'TestPageHolder',
-        parent: 'GObject.Object',
-        methods: [
-          GirMethod(
-            name: 'get_visible_page',
-            cIdentifier: 'test_get_visible_page',
-            returnType: GirTypeRef(name: 'Gtk.Widget'),
-          ),
-          GirMethod(
-            name: 'set_visible_page',
-            cIdentifier: 'test_set_visible_page',
-            parameters: [
-              GirParameter(
-                name: 'page',
-                type: GirTypeRef(
-                  name: 'Adw.PreferencesPage',
-                  cType: 'AdwPreferencesPage*',
+    test(
+      'property whose setter type is narrower than property type is skipped',
+      () {
+        // set_visible_page(AdwPreferencesPage) — the typed setter's
+        // parameter is narrower than the property's declared type
+        // (Gtk.Widget). Casting would be unsafe; skip.
+        final report = GenerationReport();
+        final cls = GirClass(
+          name: 'PageHolder',
+          cType: 'TestPageHolder',
+          parent: 'GObject.Object',
+          methods: [
+            GirMethod(
+              name: 'get_visible_page',
+              cIdentifier: 'test_get_visible_page',
+              returnType: GirTypeRef(name: 'Gtk.Widget'),
+            ),
+            GirMethod(
+              name: 'set_visible_page',
+              cIdentifier: 'test_set_visible_page',
+              parameters: [
+                GirParameter(
+                  name: 'page',
+                  type: GirTypeRef(
+                    name: 'Adw.PreferencesPage',
+                    cType: 'AdwPreferencesPage*',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          ],
+          properties: const [
+            GirProperty(
+              name: 'visible-page',
+              type: GirTypeRef(name: 'Gtk.Widget'),
+              writable: true,
+              getter: 'get_visible_page',
+              setter: 'set_visible_page',
+            ),
+          ],
+        );
+        final obj = GirClass(name: 'Object', cType: 'GObject');
+        final widget = GirClass(name: 'Widget', cType: 'GtkWidget');
+        final ns = GirNamespace(
+          name: 'Gtk',
+          version: '4.0',
+          sharedLibrary: 'libgtk-4.0.so.0',
+          cIdentifierPrefixes: const ['Gtk', 'gtk'],
+          cSymbolPrefixes: const ['gtk'],
+          classes: [obj, widget, cls],
+        );
+        final ctx = _ctx(ns, [ns, gobjectNs()], report);
+        ClassEmitter(
+          ctx,
+          emittedPackages: const {'gtk4', 'gobject'},
+        ).emitClass(cls);
+        expect(
+          report.entries.any(
+            (e) =>
+                e.category == 'property' &&
+                e.reason.contains('parameter type does not match'),
           ),
-        ],
-        properties: const [
-          GirProperty(
-            name: 'visible-page',
-            type: GirTypeRef(name: 'Gtk.Widget'),
-            writable: true,
-            getter: 'get_visible_page',
-            setter: 'set_visible_page',
-          ),
-        ],
-      );
-      final obj = GirClass(name: 'Object', cType: 'GObject');
-      final widget = GirClass(name: 'Widget', cType: 'GtkWidget');
-      final ns = GirNamespace(
-        name: 'Gtk',
-        version: '4.0',
-        sharedLibrary: 'libgtk-4.0.so.0',
-        cIdentifierPrefixes: const ['Gtk', 'gtk'],
-        cSymbolPrefixes: const ['gtk'],
-        classes: [obj, widget, cls],
-      );
-      final ctx = _ctx(ns, [ns, gobjectNs()], report);
-      ClassEmitter(ctx, emittedPackages: const {'gtk4', 'gobject'})
-          .emitClass(cls);
-      expect(
-        report.entries.any(
-          (e) =>
-              e.category == 'property' &&
-              e.reason.contains('parameter type does not match'),
-        ),
-        isTrue,
-      );
-    });
+          isTrue,
+        );
+      },
+    );
   });
 
   group('AsyncCallbackEmitter', () {
     GirCallback asyncReadyCallback() => GirCallback(
-          name: 'AsyncReadyCallback',
-          cType: 'GAsyncReadyCallback',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
-            GirParameter(
-              name: 'source_object',
-              type: GirTypeRef(name: 'Object', cType: 'GObject*'),
-            ),
-            GirParameter(
-              name: 'res',
-              type: GirTypeRef(name: 'AsyncResult', cType: 'GAsyncResult*'),
-            ),
-            GirParameter(
-              name: 'data',
-              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
-            ),
-          ],
-        );
+      name: 'AsyncReadyCallback',
+      cType: 'GAsyncReadyCallback',
+      returnType: const GirTypeRef(name: 'none'),
+      parameters: const [
+        GirParameter(
+          name: 'source_object',
+          type: GirTypeRef(name: 'Object', cType: 'GObject*'),
+        ),
+        GirParameter(
+          name: 'res',
+          type: GirTypeRef(name: 'AsyncResult', cType: 'GAsyncResult*'),
+        ),
+        GirParameter(
+          name: 'data',
+          type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+        ),
+      ],
+    );
 
     test(
       'emits *Callback convenience overload with typed registry + trampoline',
@@ -1720,16 +1741,29 @@ void main() {
         expect(code, isNotNull);
         expect(report.totalSkipped, 0);
         // Typed callback signature for GAsyncReadyCallback.
-        expect(code, contains('void Function(GObject?, GAsyncResult) callback'));
+        expect(
+          code,
+          contains('void Function(GObject?, GAsyncResult) callback'),
+        );
         // user_data is hidden from the wrapper.
         expect(code, isNot(contains('Pointer<ffi.Void> userData')));
         // Registry + sequence counter + permanent function pointer.
         // (Top-level for namespace functions; static on class members.)
-        expect(code, contains('final _openCallbackRegistry = '
-            '<int, void Function(GObject?, GAsyncResult)>{};'));
+        expect(
+          code,
+          contains(
+            'final _openCallbackRegistry = '
+            '<int, void Function(GObject?, GAsyncResult)>{};',
+          ),
+        );
         expect(code, contains('int _openCallbackSeq = 0;'));
-        expect(code, contains('final _openCallbackPtr = '
-            'ffi.Pointer.fromFunction<'));
+        expect(
+          code,
+          contains(
+            'final _openCallbackPtr = '
+            'ffi.Pointer.fromFunction<',
+          ),
+        );
         // Trampoline that looks up by id, calls the typed callback,
         // and frees the data pointer.
         expect(code, contains('void _openCallbackTrampoline('));
@@ -1746,78 +1780,72 @@ void main() {
       },
     );
 
-    test(
-      'skips when callback type is not GAsyncReadyCallback',
-      () {
-        final report = GenerationReport();
-        // A non-GAsyncReadyCallback progress callback (just a marker).
-        final cb = GirCallback(
-          name: 'FileProgressCallback',
-          cType: 'GFileProgressCallback',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
-            GirParameter(
-              name: 'current_num_bytes',
-              type: GirTypeRef(name: 'goffset', cType: 'goffset'),
+    test('skips when callback type is not GAsyncReadyCallback', () {
+      final report = GenerationReport();
+      // A non-GAsyncReadyCallback progress callback (just a marker).
+      final cb = GirCallback(
+        name: 'FileProgressCallback',
+        cType: 'GFileProgressCallback',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'current_num_bytes',
+            type: GirTypeRef(name: 'goffset', cType: 'goffset'),
+          ),
+          GirParameter(
+            name: 'total_num_bytes',
+            type: GirTypeRef(name: 'goffset', cType: 'goffset'),
+          ),
+        ],
+      );
+      final fn = GirFunction(
+        name: 'copy',
+        cIdentifier: 'g_file_copy',
+        parameters: const [
+          GirParameter(
+            name: 'progress_callback',
+            scope: 'async',
+            type: GirTypeRef(
+              name: 'FileProgressCallback',
+              cType: 'GFileProgressCallback',
             ),
-            GirParameter(
-              name: 'total_num_bytes',
-              type: GirTypeRef(name: 'goffset', cType: 'goffset'),
-            ),
-          ],
-        );
-        final fn = GirFunction(
-          name: 'copy',
-          cIdentifier: 'g_file_copy',
-          parameters: const [
-            GirParameter(
-              name: 'progress_callback',
-              scope: 'async',
-              type: GirTypeRef(
-                name: 'FileProgressCallback',
-                cType: 'GFileProgressCallback',
-              ),
-            ),
-          ],
-        );
-        final ns = _glibNs(functions: [fn], callbacks: [cb]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
-          fn,
-          dartName: 'copy',
-          ownerName: 'GLib',
-          nativeBindingName: '_gFileCopy',
-        );
-        expect(code, isNull);
-      },
-    );
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn], callbacks: [cb]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
+        fn,
+        dartName: 'copy',
+        ownerName: 'GLib',
+        nativeBindingName: '_gFileCopy',
+      );
+      expect(code, isNull);
+    });
 
-    test(
-      'returns null when no scope="async" parameter is present',
-      () {
-        final report = GenerationReport();
-        final fn = GirFunction(
-          name: 'utf8_strlen',
-          cIdentifier: 'g_utf8_strlen',
-          returnType: const GirTypeRef(name: 'glong', cType: 'glong'),
-          parameters: const [
-            GirParameter(
-              name: 'str',
-              type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
-            ),
-          ],
-        );
-        final ns = _glibNs(functions: [fn]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
-          fn,
-          dartName: 'utf8Strlen',
-          ownerName: 'GLib',
-          nativeBindingName: '_gUtf8Strlen',
-        );
-        expect(code, isNull);
-      },
-    );
+    test('returns null when no scope="async" parameter is present', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'utf8_strlen',
+        cIdentifier: 'g_utf8_strlen',
+        returnType: const GirTypeRef(name: 'glong', cType: 'glong'),
+        parameters: const [
+          GirParameter(
+            name: 'str',
+            type: GirTypeRef(name: 'utf8', cType: 'gchar*'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
+        fn,
+        dartName: 'utf8Strlen',
+        ownerName: 'GLib',
+        nativeBindingName: '_gUtf8Strlen',
+      );
+      expect(code, isNull);
+    });
   });
 
   group('PackageEmitter file layout', () {
@@ -1840,11 +1868,7 @@ void main() {
         cIdentifierPrefixes: const ['GObject', 'gobject'],
         cSymbolPrefixes: const ['gobject'],
         classes: [
-          GirClass(
-            name: 'Object',
-            cType: 'GObject',
-            glibTypeName: 'GObject',
-          ),
+          GirClass(name: 'Object', cType: 'GObject', glibTypeName: 'GObject'),
         ],
       );
       // The leaf class: must land in `gtkbutton.dart`. Must also
@@ -1912,19 +1936,24 @@ void main() {
       // Per-class files exist with the right names.
       final gtkSrc = Directory('${tmp.path}/gtk4/lib/src');
       expect(gtkSrc.existsSync(), isTrue);
-      expect(File('${gtkSrc.path}/gtkbutton.dart').existsSync(), isTrue,
-          reason: 'class GtkButton must live in gtkbutton.dart');
-      expect(File('${gtkSrc.path}/gtkbutton_props.dart').existsSync(),
-          isTrue,
-          reason: 'class GtkButtonProps must live in gtkbutton_props.dart');
+      expect(
+        File('${gtkSrc.path}/gtkbutton.dart').existsSync(),
+        isTrue,
+        reason: 'class GtkButton must live in gtkbutton.dart',
+      );
+      expect(
+        File('${gtkSrc.path}/gtkbutton_props.dart').existsSync(),
+        isTrue,
+        reason: 'class GtkButtonProps must live in gtkbutton_props.dart',
+      );
 
       // Each file contains exactly the class whose name it bears.
-      final hostSource =
-          File('${gtkSrc.path}/gtkbutton.dart').readAsStringSync();
+      final hostSource = File('${gtkSrc.path}/gtkbutton.dart')
+          .readAsStringSync();
       expect(hostSource, contains('class GtkButton extends GObjectObject {'));
       expect(hostSource, isNot(contains('class GtkButtonProps')));
-      final propsSource =
-          File('${gtkSrc.path}/gtkbutton_props.dart').readAsStringSync();
+      final propsSource = File('${gtkSrc.path}/gtkbutton_props.dart')
+          .readAsStringSync();
       // The GObject.Object parent class declares no properties, so
       // there is no `GObjectObjectProps` for the leaf's props class
       // to extend — the leaf's companion class is a standalone
@@ -1935,22 +1964,31 @@ void main() {
       // No `classes_*.dart` chunked class files are produced.
       final chunked = gtkSrc
           .listSync()
-          .where((e) => e.path.split(Platform.pathSeparator).last
-              .startsWith('classes_'))
+          .where(
+            (e) => e.path
+                .split(Platform.pathSeparator)
+                .last
+                .startsWith('classes_'),
+          )
           .toList();
-      expect(chunked, isEmpty,
-          reason: 'classes must be one-per-file, not chunked');
+      expect(
+        chunked,
+        isEmpty,
+        reason: 'classes must be one-per-file, not chunked',
+      );
 
       // The barrel lists per-class files in declaration order — host
       // class first, then its props companion — so IDE jump-to-source
       // visits them in GIR declaration order.
       final barrel = File('${tmp.path}/gtk4/lib/gtk4.dart').readAsStringSync();
       final hostIdx = barrel.indexOf("part 'src/gtkbutton.dart';");
-      final propsIdx =
-          barrel.indexOf("part 'src/gtkbutton_props.dart';");
+      final propsIdx = barrel.indexOf("part 'src/gtkbutton_props.dart';");
       expect(hostIdx, greaterThanOrEqualTo(0));
-      expect(propsIdx, greaterThan(hostIdx),
-          reason: 'props companion must follow its host in the barrel');
+      expect(
+        propsIdx,
+        greaterThan(hostIdx),
+        reason: 'props companion must follow its host in the barrel',
+      );
     });
 
     test('class with <implements> emits the implements clause and adds '
@@ -1977,11 +2015,7 @@ void main() {
       );
       // GObject.Object is the parent class for the implementing class.
       // We reuse `Object` as the GIR name and let the resolver bind it.
-      final obj = GirClass(
-        name: 'Object',
-        cType: 'GObject',
-        abstract: false,
-      );
+      final obj = GirClass(name: 'Object', cType: 'GObject', abstract: false);
       final gio = GirNamespace(
         name: 'Gio',
         version: '2.0',
@@ -2007,8 +2041,10 @@ void main() {
         ],
       );
       final ctx = _ctx(pkg, [gio, pkg], report);
-      final code = ClassEmitter(ctx, emittedPackages: const {'gio', 'pkg'})
-          .emitClass(pkg.classes[0])!;
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gio', 'pkg'},
+      ).emitClass(pkg.classes[0])!;
       // Implements clause is emitted with the interface's Dart name.
       // For Gio's `Action` interface the Dart name is `GAction`
       // (the cIdentifier prefix `G` + the GIR name `Action`); see
@@ -2016,14 +2052,16 @@ void main() {
       expect(code, contains('implements GAction'));
       // The foreign package must be added to the imports — without
       // it the implements identifier wouldn't resolve at compile time.
-      expect(ctx.imports.contains('gio'), isTrue,
-          reason: 'foreign interface package must be imported');
+      expect(
+        ctx.imports.contains('gio'),
+        isTrue,
+        reason: 'foreign interface package must be imported',
+      );
       // The mirrored method body still references the right package.
       expect(code, contains('g_action_activate'));
     });
 
-    test('class with renamed interface method omits the implements clause',
-        () {
+    test('class with renamed interface method omits the implements clause', () {
       // When the interface's method would collide with a parent class's
       // method whose signature differs, the emitter renames the
       // mirror (Phase-1 guardrail at class_emitter.dart's
@@ -2088,20 +2126,264 @@ void main() {
         ],
       );
       final ctx = _ctx(pkg, [pkg], report);
-      final code = ClassEmitter(ctx, emittedPackages: const {'pkg'})
-          .emitClass(pkg.classes[1])!;
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'pkg'},
+      ).emitClass(pkg.classes[1])!;
       // The parent class's handleEvent returns bool; the interface's
       // mirror wants to return void. The signatures differ, so the
       // mirror is renamed to `handleEventWidget`.
-      expect(code, contains('handleEventWidget'),
-          reason: 'mirror should be renamed to avoid signature clash '
-              'with parent class');
+      expect(
+        code,
+        contains('handleEventWidget'),
+        reason:
+            'mirror should be renamed to avoid signature clash '
+            'with parent class',
+      );
       // Implements clause is omitted because the rename makes the
       // class not structurally satisfy the interface.
-      expect(code, isNot(contains('implements Collidable')),
-          reason: 'implements clause must be omitted when a rename '
-              'leaves the class not structurally satisfying the '
-              'interface');
+      expect(
+        code,
+        isNot(contains('implements Collidable')),
+        reason:
+            'implements clause must be omitted when a rename '
+            'leaves the class not structurally satisfying the '
+            'interface',
+      );
+    });
+  });
+
+  group('Static class functions (moved-to without class prefix)', () {
+    // When a GIR `<method>` inside a record / class / interface / union
+    // carries `moved-to="<bare>"` (the value has no dot, so the target
+    // is a namespace function, not another class method), the
+    // generator re-emits the namespace function as a `static` method
+    // on the owning class and drops the class-level `<method>` via the
+    // existing `movedTo != null` skip rule. These tests pin down the
+    // three branches: positive (bare moved-to promotes to static),
+    // negative (dotted moved-to still skips with no promotion), and
+    // regression (instance methods without moved-to are unchanged).
+    test('positive: bare moved-to promotes the namespace function to a '
+        'static method on the record and skips the class-level method', () {
+      final tmp = Directory.systemTemp.createTempSync('pkgemit_staticfn_pos_');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+
+      final ns = GirNamespace(
+        name: 'Demo',
+        version: '1.0',
+        sharedLibrary: 'libdemo-1.0.so.0',
+        cIdentifierPrefixes: const ['Demo'],
+        cSymbolPrefixes: const ['demo'],
+        // The namespace function `g_foo_bar` is the canonical landing
+        // site for the class-level `_bar` method on `Foo`.
+        functions: [
+          GirFunction(
+            name: 'bar',
+            cIdentifier: 'g_foo_bar',
+            returnType: const GirTypeRef(name: 'none'),
+            parameters: const [
+              GirParameter(
+                name: 'arg',
+                type: GirTypeRef(name: 'Foo'),
+              ),
+            ],
+          ),
+        ],
+        records: [
+          GirRecord(
+            name: 'Foo',
+            cType: 'DemoFoo',
+            disguised: true,
+            glibTypeName: 'DemoFoo',
+            methods: [
+              // `moved-to="bar"` (no dot) — the generator must treat
+              // this as a static class function and bring the
+              // namespace `bar` to `Foo` as `static void bar(Foo arg)`.
+              GirMethod(
+                name: '_bar',
+                cIdentifier: 'g_foo_bar',
+                movedTo: 'bar',
+                returnType: const GirTypeRef(name: 'none'),
+                instanceParameter: const GirParameter(
+                  name: 'arg',
+                  type: GirTypeRef(name: 'Foo'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+      final emitter = PackageEmitter(
+        namespace: ns,
+        allNamespaces: [ns],
+        packagesDir: tmp.path,
+        emittedPackages: const {'demo'},
+      );
+      final report = emitter.emit();
+
+      // The record file contains the promoted static method, taking
+      // the record type as an explicit argument rather than via
+      // `this.handle`. Records are emitted into the chunked
+      // `records.dart` file (one per file is reserved for classes
+      // via `classFiles`; see `PackageEmitter.emit`).
+      final recordSrc = File('${tmp.path}/demo1/lib/src/records.dart')
+          .readAsStringSync();
+      // The parameter name (`arg`) and method name (`bar`) come from
+      // the GIR; the parameter type resolves to `DemoFoo` because
+      // the GIR type `Foo` is the local name in the `Demo` namespace
+      // — `dartTypeName('Demo', 'Foo')` produces `DemoFoo`.
+      expect(
+        recordSrc,
+        contains('static void bar(DemoFoo arg)'),
+        reason: 'namespace function must be promoted to a static method',
+      );
+      expect(
+        recordSrc,
+        contains('arg.handle'),
+        reason:
+            'native binding must forward to arg.handle, not '
+            'this.handle',
+      );
+      // The class-level instance method body is gone.
+      expect(
+        recordSrc,
+        isNot(contains('void bar() {')),
+        reason: 'no instance-method body should be emitted',
+      );
+
+      // The functions chunk does NOT contain a top-level `bar` —
+      // the skip report mentions the move instead.
+      final functionsFile = File('${tmp.path}/demo1/lib/src/functions.dart');
+      if (functionsFile.existsSync()) {
+        final functionsSrc = functionsFile.readAsStringSync();
+        expect(
+          functionsSrc,
+          isNot(contains('void bar(')),
+          reason: 'namespace function must not be emitted at top level',
+        );
+      }
+      final brought = report.entries
+          .where((e) => e.reason.startsWith('brought to '))
+          .toList();
+      expect(
+        brought,
+        isNotEmpty,
+        reason: 'skip report must mention the promotion',
+      );
+      expect(
+        brought.any((e) => e.name == 'Demo.bar'),
+        isTrue,
+        reason: 'skip entry must identify the moved namespace function',
+      );
+    });
+
+    test('negative: dotted moved-to (target = another class method) is '
+        'skipped with no static promotion', () {
+      // The `moved-to="Other.method"` case (the canonical GLib /
+      // GObject pattern for redirects like
+      // `Action.parse_detailed_name`) keeps the existing skip-only
+      // behaviour. The class-level `<method>` is dropped by the
+      // `movedTo != null` rule — no static method lands on the
+      // owning class.
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'Demo',
+        version: '1.0',
+        sharedLibrary: 'libdemo-1.0.so.0',
+        cIdentifierPrefixes: const ['Demo'],
+        cSymbolPrefixes: const ['demo'],
+        records: [
+          GirRecord(
+            name: 'Foo',
+            cType: 'DemoFoo',
+            disguised: true,
+            glibTypeName: 'DemoFoo',
+            methods: [
+              GirMethod(
+                name: 'paint',
+                cIdentifier: 'demo_foo_paint',
+                movedTo: 'Other.paint',
+                returnType: const GirTypeRef(name: 'none'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records[0])!;
+      // No static method lands on Foo — `movedTo != null` drops it.
+      expect(
+        code,
+        isNot(contains('static void paint(')),
+        reason: 'dotted moved-to must not produce a static method',
+      );
+      // The skip report mentions the canonical target.
+      expect(
+        report.entries.any(
+          (e) => e.category == 'callable' && e.reason == 'moved to Other.paint',
+        ),
+        isTrue,
+        reason: 'skip reason must surface the moved-to target',
+      );
+    });
+
+    test('regression: instance method without moved-to is unchanged '
+        '(no static promotion, instance body still uses this.handle)', () {
+      // A `<method>` with `<instance-parameter>` and no `moved-to`
+      // stays an instance method that forwards `this.handle`. This
+      // is the existing behaviour for real instance methods
+      // (`gtk_widget_show(GtkWidget* self)`) — confirm the new
+      // static-class-function path doesn't accidentally widen.
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'Demo',
+        version: '1.0',
+        sharedLibrary: 'libdemo-1.0.so.0',
+        cIdentifierPrefixes: const ['Demo'],
+        cSymbolPrefixes: const ['demo'],
+        records: [
+          GirRecord(
+            name: 'Foo',
+            cType: 'DemoFoo',
+            disguised: true,
+            glibTypeName: 'DemoFoo',
+            methods: [
+              GirMethod(
+                name: 'paint',
+                cIdentifier: 'demo_foo_paint',
+                returnType: const GirTypeRef(name: 'none'),
+                instanceParameter: const GirParameter(
+                  name: 'self',
+                  type: GirTypeRef(name: 'Foo'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records[0])!;
+      // Instance method body still uses `this.handle`.
+      expect(
+        code,
+        contains('void paint()'),
+        reason: 'real instance method must remain an instance method',
+      );
+      expect(
+        code,
+        contains('this.handle'),
+        reason: 'instance method body must still use this.handle',
+      );
+      expect(
+        code,
+        isNot(contains('static void paint(')),
+        reason: 'instance method must not be promoted to static',
+      );
+      expect(
+        report.entries.any((e) => e.reason.startsWith('brought to ')),
+        isFalse,
+        reason: 'no static-promotion skip entry should be produced',
+      );
     });
   });
 }

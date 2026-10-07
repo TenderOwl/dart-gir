@@ -10,6 +10,32 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 
 ## Unreleased
 
+### Changed
+- **Static class functions**: when a GIR `<method>` inside a
+  `<class>` / `<record>` / `<interface>` / `<union>` carries
+  `moved-to="<bare>"` (the value has no dot, so the target is a
+  namespace function, not another class method), the generator drops
+  the class-level method and re-emits the namespace function as a
+  `static` method on the owning class. The Dart name is
+  `toLowerCamel(<GIR function name>)`. Six entries trigger this in
+  the in-scope GIRs:
+  - `GResource.resourcesRegister(GResource)` / `resourcesUnregister(GResource)`
+    — replaces the broken `GResource.register()` instance method
+    (which silently dropped extra `GResource*` parameters) and the
+    top-level `Gio.resourcesRegister(resource)` wrapper.
+  - `GdkEvent.eventsGetAngle(GdkEvent, GdkEvent)`,
+    `eventsGetCenter(GdkEvent, GdkEvent)`,
+    `eventsGetDistance(GdkEvent, GdkEvent)` — replaces the broken
+    instance methods that passed `this.handle` for one of the two
+    events and dropped the other.
+
+  Call sites that previously used
+  `GResource.register()` / `GdkEvent.getAngle()` / `Gio.resourcesRegister(r)`
+  must be updated to the new static-method form. The skip report
+  (`packages/<lib>/skip_report.txt`) records each move as
+  `brought to <Class> as <methodName>`. See
+  [emission.md](./docs/emission.md#class--record--interface-members).
+
 ### Added
 - **Typed signal helpers** (`onSignalName(<typed callback>)`) on every
   GObject subclass with a supported signal. Examples:

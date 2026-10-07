@@ -117,9 +117,9 @@ when the type cannot be mapped (recorded in the skip report).
 | Emitter | Output |
 |---|---|
 | `EnumEmitter` | One Dart `enum` per GIR `<enumeration>`, plus a wrapper class with constants and `fromValue` for bitfields |
-| `FunctionEmitter` | Top-level Dart functions + `const` declarations for `<function>` and `<constant>` |
-| `RecordEmitter` | Opaque pointer wrapper classes for `<record>` and `<union>` plus `<interface>` (non-`final`, so other classes can `implements` them) |
-| `ClassEmitter` | Pointer-wrapper classes with constructors, instance methods, static functions, the `implements` clause on every GIR `<implements>` target, mirrored interface methods, **and** inherited typed `onSignalName` helpers |
+| `FunctionEmitter` | Top-level Dart functions + `const` declarations for `<function>` and `<constant>`. Skips functions whose `c:identifier` is in the `staticClassFunctions` map — the class emitter re-emits them as `static` methods. |
+| `RecordEmitter` | Opaque pointer wrapper classes for `<record>` and `<union>` plus `<interface>` (non-`final`, so other classes can `implements` them). Picks up static-method promotions from `staticClassFunctions`. |
+| `ClassEmitter` | Pointer-wrapper classes with constructors, instance methods, static functions, the `implements` clause on every GIR `<implements>` target, mirrored interface methods, **and** inherited typed `onSignalName` helpers. Picks up static-method promotions from `staticClassFunctions`. |
 | `CallbackEmitter` | Dart `typedef` aliases for `<callback>` declarations |
 | `SignalEmitter` (in `signals_emitter.dart`) | `onSignalName` method bodies emitted per class via `emitSignalConnectors` |
 | `SignalHelper` (in `signals_helper.dart`) | The per-package `lib/src/signals.dart` file: per-bucket trampolines + registries + `connectSignal` escape hatch |

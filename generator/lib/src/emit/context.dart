@@ -7,6 +7,29 @@ import '../resolve/types.dart';
 import 'callback_emitter.dart';
 import 'report.dart';
 
+/// A namespace `<function>` whose `<method>` GIR sibling carries
+/// `moved-to="<bare>"` (i.e. the moved-to value has no dot, so the
+/// target is a namespace function, not another class method). The
+/// generator re-emits the namespace function as a `static` method on
+/// the owning GIR class instead of as a top-level function; the
+/// `<method>` itself is skipped via the existing `movedTo != null` rule.
+typedef StaticClassFunction = ({
+  /// C symbol shared by both the `<method>` and the namespace `<function>`.
+  String cIdentifier,
+
+  /// Dart class name of the owning GIR declaration (e.g. `GResource`,
+  /// `GdkEvent`). Matches `ctx.dartTypeName(ctx.namespace.name, type.name)`.
+  String ownerClassDartName,
+
+  /// GIR `name` attribute of the namespace `<function>`. The Dart method
+  /// name is `toLowerCamel(namespaceFunctionName)`.
+  String namespaceFunctionName,
+
+  /// The actual namespace `<function>` element. Carries the parameter
+  /// list and return type used to emit the static-method body.
+  GirFunction fn,
+});
+
 /// How a GIR type is marshalled across the FFI boundary for one usage site.
 class TypeBridge {
   const TypeBridge({
@@ -465,8 +488,7 @@ class EmitContext {
                 : 'ffi.Pointer<ffi.Void>',
             nativeType: 'ffi.Pointer<ffi.Void>',
             dartFfiType: 'ffi.Pointer<ffi.Void>',
-            toNative:
-                nullable ? (e) => '$e ?? ffi.nullptr' : _id,
+            toNative: nullable ? (e) => '$e ?? ffi.nullptr' : _id,
             fromNative: nullable
                 ? (e) => '($e) == ffi.nullptr ? null : ($e)'
                 : _id,
@@ -534,7 +556,7 @@ class EmitContext {
             outAllocSize: 256,
             outExtract: nullable
                 ? (v) =>
-                    '($v) == ffi.nullptr ? null : $t.fromPointer($v.cast<ffi.Void>())'
+                      '($v) == ffi.nullptr ? null : $t.fromPointer($v.cast<ffi.Void>())'
                 : (v) => '$t.fromPointer($v.cast<ffi.Void>())',
           ),
           null,
@@ -657,8 +679,7 @@ class EmitContext {
       toNative = (e) =>
           '$e == null ? null : ffi.NativeCallable<$sig>.isolateLocal($e$sentinelArg)';
     } else {
-      toNative = (e) =>
-          'ffi.NativeCallable<$sig>.isolateLocal($e$sentinelArg)';
+      toNative = (e) => 'ffi.NativeCallable<$sig>.isolateLocal($e$sentinelArg)';
     }
     return (
       TypeBridge(
