@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="SampleWindow" parent="GtkApplicationWindow">
+    <property name="title">Sample</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="counterLabel">
+            <property name="label">Not clicked</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="increment">
+            <property name="label">Click me</property>
+            <signal name="clicked" handler="on_increment_clicked"/>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

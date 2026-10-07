@@ -1,0 +1,278 @@
+/// Pure codegen for the `_$<className>Template` mixin.
+///
+/// Takes a `ClassTemplatePlan` plus the resolved template
+/// XML, returns a Dart source string. No I/O, no FFI, no
+/// analyzer — just string assembly. Tested in
+/// `test/codegen_test.dart`.
+///
+/// The first cut wires:
+///   - `GtkWidgetClass.setTemplate(bytes)` with the
+///     `gbytesFromString`-wrapped XML.
+///   - `bindTemplateChildFull` for every `<object id="…">`
+///     in the template (the XML is the source of truth for
+///     child names and types; the user's
+///     `@GtkTemplateChild` annotations are documented but
+///     not consulted by the codegen in the first cut).
+///   - Per-instance `late final <Type> <id>` fields on the
+///     mixin, populated by `getTemplateChild` after
+///     `initTemplate()`.
+///
+/// The first cut does **not** wire callbacks — the existing
+/// `bindTemplateCallbackFull` binding only takes
+/// `void Function()` with no instance pointer, and bridging
+/// that to a user-declared instance method requires either
+/// a per-instance `NativeCallable` allocation or a
+/// process-global "current instance" sentinel. Both are
+/// recorded under "Unresolved decisions" in the approved
+/// plan. Until the bridge lands, the user wires callbacks
+/// manually with `connectSignal(...)` from their
+/// constructor.
+library;
+
+import 'builder_plan.dart';
+
+/// One child element from the template XML.
+///
+/// `id` is the widget id (`<object id="…">`); `typeName` is
+/// the Dart type from the `class` attribute (e.g.
+/// `GtkLabel`). The codegen uses both: `id` is passed to
+/// `bindTemplateChildFull` / `getTemplateChild`; `typeName`
+/// is the declared type of the `late final` field and the
+/// argument to `typeFromName(...)`.
+class TemplateChildSpec {
+  const TemplateChildSpec({required this.id, required this.typeName});
+
+  final String id;
+  final String typeName;
+}
+
+/// One callback from the user's class.
+///
+/// `callbackName` is the `snake_case` form GTK looks up in
+/// the template XML; `methodName` is the Dart method on the
+/// user class. The first cut captures the spec but does
+/// not emit any wiring — see the file-level doc comment.
+class TemplateCallbackSpec {
+  const TemplateCallbackSpec({
+    required this.callbackName,
+    required this.methodName,
+  });
+
+  final String callbackName;
+  final String methodName;
+}
+
+/// Resolved input to the codegen. The scanner produces a
+/// `ClassTemplatePlan`; the Builder's `build()` resolves the
+/// template XML (from inline content or by reading the
+/// package-root file) and packages it together with the
+/// parent type into a `CodegenInput`.
+class CodegenInput {
+  const CodegenInput({
+    required this.className,
+    required this.parentType,
+    required this.xmlString,
+    required this.children,
+    required this.callbacks,
+  });
+
+  /// Build a `CodegenInput` from a `ClassTemplatePlan` plus
+  /// the resolved XML and the children list extracted from
+  /// the XML. The plan's `callbacks` list is forwarded
+  /// unchanged; the plan's `children` list (from
+  /// `@GtkTemplateChild` annotations) is **not** consulted
+  /// in the first cut — the XML is the source of truth.
+  factory CodegenInput.fromPlan(
+    ClassTemplatePlan plan, {
+    required String xmlString,
+    required List<TemplateChildSpec> xmlChildren,
+  }) {
+    return CodegenInput(
+      className: plan.className,
+      parentType: plan.parentType,
+      xmlString: xmlString,
+      children: xmlChildren,
+      callbacks: plan.callbacks
+          .map(
+            (cb) => TemplateCallbackSpec(
+              callbackName: cb.callbackName,
+              methodName: cb.methodName,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  final String className;
+  final String parentType;
+  final String xmlString;
+  final List<TemplateChildSpec> children;
+  final List<TemplateCallbackSpec> callbacks;
+}
+
+/// Pure: turns [input] into a Dart source string.
+///
+/// The shape of the emitted file:
+///   - Header comment.
+///   - Imports (`dart:ffi`, `package:gtk4/gtk4.dart`,
+///     `package:gtk_templates/gtk_templates.dart`).
+///   - The template XML as a top-level `String` constant.
+///   - Two `List<TemplateChildSpec>` / `List<TemplateCallbackSpec>`
+///     constants the mixin iterates over.
+///   - The `_TemplateChildSpec` and `_TemplateCallbackSpec`
+///     classes.
+///   - The mixin itself, with a one-shot class init, a
+///     per-instance init, and a `late final` per child.
+String codegenMixin(CodegenInput input) {
+  final buffer = StringBuffer();
+  final className = input.className;
+  final xmlConstName = '_\$${className}Template_xml';
+  final childrenListName = '_\$${className}Template_children';
+  final callbacksListName = '_\$${className}Template_callbacks';
+  final mixinName = '_\$${className}Template';
+
+  // ---- header ---------------------------------------------------------
+  buffer
+    ..writeln('// GENERATED by gtk_templates_builder. Do not edit by hand.')
+    ..writeln('// Source:  <builder input>')
+    ..writeln('// Class:   $className')
+    ..writeln('//')
+    ..writeln('// ignore_for_file: type=lint')
+    ..writeln();
+
+  // ---- imports --------------------------------------------------------
+  buffer
+    ..writeln("import 'dart:ffi' as ffi;")
+    ..writeln()
+    ..writeln("import 'package:gtk4/gtk4.dart';")
+    ..writeln("import 'package:gtk_templates/gtk_templates.dart';")
+    ..writeln();
+
+  // ---- spec classes ---------------------------------------------------
+  buffer
+    ..writeln('class _TemplateChildSpec {')
+    ..writeln('  const _TemplateChildSpec(this.id, this.typeName);')
+    ..writeln('  final String id;')
+    ..writeln('  final String typeName;')
+    ..writeln('}')
+    ..writeln()
+    ..writeln('class _TemplateCallbackSpec {')
+    ..writeln('  const _TemplateCallbackSpec(this.callbackName, this.methodName);')
+    ..writeln('  final String callbackName;')
+    ..writeln('  final String methodName;')
+    ..writeln('}')
+    ..writeln();
+
+  // ---- XML constant ---------------------------------------------------
+  buffer
+    ..writeln("const String $xmlConstName = '''")
+    ..write(input.xmlString)
+    ..writeln("''';")
+    ..writeln();
+
+  // ---- children list --------------------------------------------------
+  buffer.writeln('const List<_TemplateChildSpec> $childrenListName = [');
+  for (final c in input.children) {
+    buffer.writeln("  _TemplateChildSpec('${c.id}', '${c.typeName}'),");
+  }
+  buffer
+    ..writeln('];')
+    ..writeln();
+
+  // ---- callbacks list (first cut: passed through; not consumed yet) --
+  buffer.writeln('const List<_TemplateCallbackSpec> $callbacksListName = [');
+  for (final cb in input.callbacks) {
+    buffer.writeln(
+      "  _TemplateCallbackSpec('${cb.callbackName}', '${cb.methodName}'),",
+    );
+  }
+  buffer
+    ..writeln('];')
+    ..writeln();
+
+  // ---- the mixin ------------------------------------------------------
+  buffer.writeln('mixin $mixinName on ${input.parentType} {');
+  buffer.writeln('  // Class-level state, computed once on first instance.');
+  buffer.writeln('  static bool _classInitialized = false;');
+  buffer.writeln('  static late final GBytes _templateBytes;');
+  buffer.writeln();
+  buffer.writeln('  static GBytes _ensureClassInit() {');
+  buffer.writeln('    if (_classInitialized) return _templateBytes;');
+  buffer.writeln('    _classInitialized = true;');
+  buffer.writeln('    _templateBytes = gbytesFromString($xmlConstName);');
+  buffer.writeln('    return _templateBytes;');
+  buffer.writeln('  }');
+  buffer.writeln();
+  buffer.writeln('  // Per-instance init: bound by the first read of a');
+  buffer.writeln('  // generated field. Idempotent.');
+  buffer.writeln('  bool _instanceInitialized = false;');
+  buffer.writeln('  void _ensureInstanceInit() {');
+  buffer.writeln('    if (_instanceInitialized) return;');
+  buffer.writeln('    _instanceInitialized = true;');
+  buffer.writeln('    _ensureClassInit();');
+  buffer.writeln('    final widgetClass = getWidgetClass(this as GtkWidget);');
+  buffer.writeln('    if (widgetClass == null) {');
+  buffer.writeln('      throw StateError(');
+  buffer.writeln(
+    "        'gtk_templates: could not resolve widget class for "
+    '\$runtimeType\',',
+  );
+  buffer.writeln('      );');
+  buffer.writeln('    }');
+  buffer.writeln('    widgetClass.setTemplate(_templateBytes);');
+  buffer.writeln('    for (final child in $childrenListName) {');
+  buffer.writeln('      widgetClass.bindTemplateChildFull(child.id, false, 0);');
+  buffer.writeln('    }');
+  buffer.writeln('    // Callbacks are not auto-wired in the first cut. The');
+  buffer.writeln('    // user wires them with connectSignal(...) from their');
+  buffer.writeln('    // constructor; the callback table is preserved for');
+  buffer.writeln('    // the follow-up that emits a trampoline.');
+  buffer.writeln('    (this as GtkWidget).initTemplate();');
+  buffer.writeln('  }');
+  buffer.writeln();
+
+  // ---- per-child late final fields -----------------------------------
+  for (final c in input.children) {
+    buffer.writeln('  late final ${c.typeName} ${c.id} = () {');
+    buffer.writeln('    _ensureInstanceInit();');
+    buffer.writeln(
+      "    final raw = (this as GtkWidget).getTemplateChild("
+      "typeFromName('${c.typeName}'), '${c.id}');",
+    );
+    buffer.writeln('    return raw.cast<${c.typeName}>();');
+    buffer.writeln('  }();');
+    buffer.writeln();
+  }
+
+  buffer.writeln('}');
+  buffer.writeln();
+
+  return buffer.toString();
+}
+
+/// Extracts `<object class="X" id="Y">` (or self-closing)
+/// entries from [xml].
+///
+/// A small regex-based extractor — the codegen only needs
+/// the class name and the id, and the template XML is
+/// well-formed (we control the user's source). Nested
+/// `<object>`s (children of a top-level object) are also
+/// captured, matching what `bindTemplateChildFull` actually
+/// binds: every `id` is reachable.
+///
+/// Returned order matches the source order, which is what
+/// the codegen uses to keep generated code stable across
+/// regenerations.
+List<TemplateChildSpec> extractChildrenFromXml(String xml) {
+  final result = <TemplateChildSpec>[];
+  final pattern = RegExp(
+    r'''<object\s[^>]*?class="([^"]+)"[^>]*?id="([^"]+)"[^>]*?/?>''',
+    multiLine: true,
+  );
+  for (final m in pattern.allMatches(xml)) {
+    final typeName = m.group(1)!;
+    final id = m.group(2)!;
+    result.add(TemplateChildSpec(id: id, typeName: typeName));
+  }
+  return result;
+}

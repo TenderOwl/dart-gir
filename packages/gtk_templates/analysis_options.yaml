@@ -1,0 +1,8 @@
+include: package:lints/core.yaml
+
+analyzer:
+  errors:
+    # GIR / runtime docs often contain angle brackets (e.g.
+    # `<GtkWidget*>`); keep this override so emitted docs don't
+    # get flagged.
+    unintended_html_in_doc_comment: ignore

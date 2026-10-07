@@ -21,6 +21,8 @@ workspace:
   - packages/gsk4
   - packages/gtk4
   - packages/gtk_source5
+  - packages/gtk_templates
+  - packages/gtk_templates_builder
   - packages/pango
 
 dev_dependencies:

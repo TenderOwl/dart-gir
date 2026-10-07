@@ -1,0 +1,16 @@
+include: package:lints/core.yaml
+
+analyzer:
+  errors:
+    # `package:analyzer` carries lengthy `<...>` type names in
+    # its public API; the builder references them in doc
+    # comments without escaping.
+    unintended_html_in_doc_comment: ignore
+
+  exclude:
+    # The fixture file is consumed as text by the builder
+    # scanner; it is not part of the build. Skip it from
+    # analysis so we don't fight `depend_on_referenced_packages`
+    # for `gtk4` / `gtk_templates` which the builder pulls in
+    # only transitively.
+    - test/fixtures/**
