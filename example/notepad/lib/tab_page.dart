@@ -1,5 +1,6 @@
 import 'package:adw/adw.dart';
 import 'package:gio/gio.dart';
+import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
 import 'package:gtk4/gtk4.dart';
 import 'package:gtk_source5/gtk_source5.dart';
@@ -114,15 +115,13 @@ class TabPage extends AdwBin {
   }
 
   void onLoadComplete(GObject? source, GAsyncResult result) {
-    // Calling `loadFinish` is what actually populates the buffer —
-    // it's documented to update the buffer as a side effect. Without
-    // this call the async operation completes but the buffer stays
-    // empty, so the tab opens but shows nothing.
     try {
-      final success = loader.loadFinish(result);
-      print('finished loading into tab: $success');
+      loader.loadFinish(result);
     } catch (e) {
-      print('failed to load file: $e');
+      activateActionVariant(
+        'app.show-toast',
+        GVariant.string('Failed to load file.'),
+      );
     }
   }
 }

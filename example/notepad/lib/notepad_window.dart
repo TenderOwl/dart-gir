@@ -141,4 +141,8 @@ class NotepadWindow extends AdwApplicationWindow {
 
     openDialog = null;
   }
+
+  void showToast(String title) {
+    toastOverlay.addToast(AdwToast(title));
+  }
 }

@@ -19,6 +19,7 @@ class NotepadApp {
     createAction("quit", (_) => quit(), "<Primary>Q");
     createAction("preferences", (_) => onPreferencesAction(), "<Primary>comma");
     createAction("about", (_) => onAboutAction());
+    createAction("show-toast", onShowToast, null, GVariantType('s'));
   }
 
   void onActivate() {
@@ -73,5 +74,12 @@ class NotepadApp {
       ..setWebsite("https://github.com/tenderowl/dart-gir");
 
     about.present(window);
+  }
+
+  void onShowToast(GVariant? params) {
+    final (String, int)? result = params?.getString();
+    if (result == null) return;
+    final (text, _) = result;
+    window?.showToast(text);
   }
 }
