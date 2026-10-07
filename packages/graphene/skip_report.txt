@@ -1,13 +1,15 @@
 # Skip report for package graphene (Graphene 1.0)
-Total skipped: 37
+Total skipped: 34
 
 ## By category
-callable: 37
+callable: 34
 
 ## By reason
 unsupported out parameter dest (ffi.Pointer<ffi.Float>): 3
 parameter vertices: array of TypeKind.record (later phase): 2
-moved to Vec2.one: 1
+moved to Box.empty: 1
+moved to Box.infinite: 1
+moved to Box.minus_one: 1
 moved to Box.one: 1
 moved to Box.one_minus_one: 1
 moved to Box.zero: 1
@@ -16,7 +18,7 @@ moved to Point.zero: 1
 moved to Rect.alloc: 1
 moved to Rect.zero: 1
 moved to Size.zero: 1
-moved to Box.empty: 1
+moved to Vec2.one: 1
 moved to Vec2.x_axis: 1
 moved to Vec2.y_axis: 1
 moved to Vec2.zero: 1
@@ -26,19 +28,14 @@ moved to Vec3.y_axis: 1
 moved to Vec3.z_axis: 1
 moved to Vec3.zero: 1
 moved to Vec4.one: 1
-moved to Box.infinite: 1
+moved to Vec4.w_axis: 1
 moved to Vec4.x_axis: 1
 moved to Vec4.y_axis: 1
 moved to Vec4.z_axis: 1
 moved to Vec4.zero: 1
-moved to Box.minus_one: 1
 parameter planes: array of TypeKind.record (later phase): 1
 unsupported out parameter v (ffi.Pointer<ffi.Float>): 1
-parameter d_x: nullable scalar parameter (gfloat): 1
 parameter points: array of TypeKind.record (later phase): 1
-parameter deg_x: nullable scalar parameter (gfloat): 1
-parameter rad_x: nullable scalar parameter (gfloat): 1
-moved to Vec4.w_axis: 1
 
 ## First 50 entries
 [callable] Graphene.boxEmpty — moved to Box.empty
@@ -70,10 +67,7 @@ moved to Vec4.w_axis: 1
 [callable] GrapheneBox.getVertices — parameter vertices: array of TypeKind.record (later phase)
 [callable] GrapheneFrustum.getPlanes — parameter planes: array of TypeKind.record (later phase)
 [callable] GrapheneMatrix.toFloat — unsupported out parameter v (ffi.Pointer<ffi.Float>)
-[callable] GraphenePoint.distance — parameter d_x: nullable scalar parameter (gfloat)
 [callable] GrapheneQuad.initFromPoints — parameter points: array of TypeKind.record (later phase)
-[callable] GrapheneQuaternion.toAngles — parameter deg_x: nullable scalar parameter (gfloat)
-[callable] GrapheneQuaternion.toRadians — parameter rad_x: nullable scalar parameter (gfloat)
 [callable] GrapheneRect.getVertices — parameter vertices: array of TypeKind.record (later phase)
 [callable] GrapheneVec2.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)
 [callable] GrapheneVec3.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)

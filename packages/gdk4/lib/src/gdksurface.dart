@@ -256,6 +256,56 @@ class GdkSurface extends GObject {
           );
   }
 
+  /// Obtains the current device position and modifier state.
+  ///
+  /// The position is given in coordinates relative to the upper
+  /// left corner of @surface.
+  static final _gdkSurfaceGetDevicePosition =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gdk_surface_get_device_position')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (bool, double, double, GdkModifierType) getDevicePosition(GdkDevice device) {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    final _out2 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gdkSurfaceGetDevicePosition(
+        this.handle,
+        device.handle,
+        _out0,
+        _out1,
+        _out2,
+      );
+      return (
+        (_ret) != 0,
+        _out0.value,
+        _out1.value,
+        GdkModifierType(_out2.value),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+    }
+  }
+
   /// Gets the `GdkDisplay` associated with a `GdkSurface`.
   static final _gdkSurfaceGetDisplay =
       gdk4Lookup<

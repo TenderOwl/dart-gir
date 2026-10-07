@@ -236,6 +236,62 @@ final class GResource {
     }
   }
 
+  /// Looks for a file at the specified @path in the resource and
+  /// if found returns information about it.
+  ///
+  /// @lookup_flags controls the behaviour of the lookup.
+  ///
+  /// The only error this can return is %G_RESOURCE_ERROR_NOT_FOUND, if @path was
+  /// not found in @resource.
+  static final _gResourceGetInfo =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_resource_get_info')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int, int) getInfo(String path, GResourceLookupFlags lookupFlags) {
+    return withNativeString(path, (nativePath) {
+      final _out0 = malloc<ffi.Size>();
+      final _out1 = malloc<ffi.Uint32>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gResourceGetInfo(
+          this.handle,
+          nativePath.cast<Utf8>(),
+          lookupFlags.value,
+          _out0,
+          _out1,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return ((_ret) != 0, _out0.value, _out1.value);
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Returns whether the specified @path in the resource
   /// has children.
   static final _gResourceHasChildren =
@@ -447,24 +503,6 @@ final class GResource {
 /// Provides an interface for implementing seekable functionality on I/O Streams.
 final class GSeekableIface {
   GSeekableIface.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// Class structure for #GSettingsBackend.
-final class GSettingsBackendClass {
-  GSettingsBackendClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

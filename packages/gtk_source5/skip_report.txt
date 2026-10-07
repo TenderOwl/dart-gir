@@ -1,9 +1,9 @@
 # Skip report for package gtk_source5 (GtkSource 5)
-Total skipped: 253
+Total skipped: 246
 
 ## By category
 property: 211
-callable: 34
+callable: 27
 renamed: 4
 method: 2
 signal: 2
@@ -15,7 +15,6 @@ return: string list return type (null): 11
 missing getter get_height-request: 11
 missing getter get_width-request: 11
 inout parameter iter: 5
-parameter has_wrapped_around: nullable scalar parameter (gboolean): 4
 return: array of TypeKind.interface (later phase): 3
 missing getter get_lines: 3
 missing getter get_weight-set: 2
@@ -24,7 +23,6 @@ missing getter get_markup: 2
 missing getter get_text: 2
 missing getter get_priority: 2
 missing getter get_title: 2
-parameter width: nullable scalar parameter (gint): 2
 missing getter get_font-desc: 2
 missing getter get_im-module: 2
 unsupported return type: utf8: 2
@@ -36,7 +34,8 @@ missing getter get_strikethrough: 2
 missing getter get_strikethrough-set: 2
 missing getter get_underline-set: 2
 missing getter get_weight: 2
-missing getter get_foreground: 1
+missing getter get_italic: 1
+missing getter get_minimum-word-size: 1
 missing getter get_proposals-batch-size: 1
 missing getter get_scan-batch-size: 1
 missing getter get_read-only: 1
@@ -44,35 +43,33 @@ missing getter get_window-type: 1
 override-incompatible with ancestor; renamed to activateGutterRenderer: 1
 getter get_text takes 3 args; props layer only supports 0: 1
 override-incompatible with ancestor; renamed to measureGutterRendererText: 1
-parameter priority: nullable scalar parameter (guint): 1
 missing getter get_hover-delay: 1
 override-incompatible with ancestor; renamed to insertAfterHoverDisplay: 1
 missing getter get_remember-info-visibility: 1
 missing getter get_select-on-show: 1
 missing getter get_show-icons: 1
 getter get_background takes 1 args; props layer only supports 0: 1
-moved to FileLoaderError.quark: 1
 missing getter get_buffer: 1
 missing getter get_background: 1
-missing getter get_paintable: 1
+moved to FileLoaderError.quark: 1
 missing getter get_bold: 1
 missing getter get_bold-set: 1
+missing getter get_foreground: 1
+missing getter get_paintable: 1
 moved to Encoding.get_all: 1
-moved to FileSaverError.quark: 1
-missing getter get_italic: 1
 missing getter get_italic-set: 1
 missing getter get_line-background: 1
 missing getter get_line-background-set: 1
 missing getter get_pango-underline: 1
+moved to FileSaverError.quark: 1
 introspectable=0 (C macro; use scheduler_add_full): 1
 moved to Encoding.get_current: 1
 moved to Encoding.get_default_candidates: 1
-moved to Encoding.get_from_charset: 1
 missing getter get_underline-color: 1
 missing getter get_underline-color-set: 1
+moved to Encoding.get_from_charset: 1
 missing getter get_cursor-position: 1
 moved to Encoding.get_utf8: 1
-missing getter get_minimum-word-size: 1
 missing getter get_draw-spaces: 1
 missing getter get_draw-spaces-set: 1
 missing getter get_accumulative-margin: 1
@@ -173,7 +170,6 @@ missing getter get_letter-spacing-set: 1
 [property] GtkSourceBuffer.cursor-position — missing getter get_cursor-position
 [property] GtkSourceBuffer.tag-table — construct-only or no public setter; emitting getter only
 [property] GtkSourceBuffer.text — getter get_text takes 3 args; props layer only supports 0
-[callable] GtkSourceCompletion.fuzzyMatch — parameter priority: nullable scalar parameter (guint)
 [property] GtkSourceCompletion.remember-info-visibility — missing getter get_remember-info-visibility
 [property] GtkSourceCompletion.select-on-show — missing getter get_select-on-show
 [property] GtkSourceCompletion.show-icons — missing getter get_show-icons
@@ -206,3 +202,4 @@ missing getter get_letter-spacing-set: 1
 [property] GtkSourceFileSaver.location — construct-only or no public setter; emitting getter only
 [property] GtkSourceGutter.view — construct-only or no public setter; emitting getter only
 [property] GtkSourceGutter.window-type — missing getter get_window-type
+[property] GtkSourceGutter.css-classes — unsupported type null

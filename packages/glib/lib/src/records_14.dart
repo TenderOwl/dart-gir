@@ -352,6 +352,32 @@ final class GMainContext {
     _gMainContextPopThreadDefault(this.handle);
   }
 
+  /// Prepares to poll sources within a main loop.
+  ///
+  /// The resulting information
+  /// for polling is determined by calling [method@GLib.MainContext.query].
+  ///
+  /// You must have successfully acquired the context with
+  /// [method@GLib.MainContext.acquire] before you may call this function.
+  static final _gMainContextPrepare =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Int32>)
+            >
+          >('g_main_context_prepare')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Int32>)
+          >();
+  (bool, int) prepare() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gMainContextPrepare(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Acquires @context and sets it as the thread-default context for the
   /// current thread. This will cause certain asynchronous operations
   /// (such as most [Gio](../gio/index.html)-based I/O) which are

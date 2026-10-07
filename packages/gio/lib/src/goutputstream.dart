@@ -810,6 +810,74 @@ class GOutputStream extends GObject {
     }
   }
 
+  /// Tries to write @count bytes from @buffer into the stream. Will block
+  /// during the operation.
+  ///
+  /// This function is similar to g_output_stream_write(), except it tries to
+  /// write as many bytes as requested, only stopping on an error.
+  ///
+  /// On a successful write of @count bytes, %TRUE is returned, and @bytes_written
+  /// is set to @count.
+  ///
+  /// If there is an error during the operation %FALSE is returned and @error
+  /// is set to indicate the error status.
+  ///
+  /// As a special exception to the normal conventions for functions that
+  /// use #GError, if this function returns %FALSE (and sets @error) then
+  /// @bytes_written will be set to the number of bytes that were
+  /// successfully written before the error was encountered.  This
+  /// functionality is only available from C.  If you need it from another
+  /// language then you must write your own loop around
+  /// g_output_stream_write().
+  static final _gOutputStreamWriteAll =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_write_all')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) writeAll(
+    ffi.Pointer<ffi.Uint8> buffer,
+    int count, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWriteAll(
+        this.handle,
+        buffer,
+        count,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// Request an asynchronous write of @count bytes from @buffer into
   /// the stream. When the operation is finished @callback will be called.
   /// You can then call g_output_stream_write_all_finish() to get the result of the
@@ -952,6 +1020,55 @@ class GOutputStream extends GObject {
       _writeAllAsyncCallbackPtr,
       _data.cast<ffi.Void>(),
     );
+  }
+
+  /// Finishes an asynchronous stream write operation started with
+  /// g_output_stream_write_all_async().
+  ///
+  /// As a special exception to the normal conventions for functions that
+  /// use #GError, if this function returns %FALSE (and sets @error) then
+  /// @bytes_written will be set to the number of bytes that were
+  /// successfully written before the error was encountered.  This
+  /// functionality is only available from C.  If you need it from another
+  /// language then you must write your own loop around
+  /// g_output_stream_write_async().
+  static final _gOutputStreamWriteAllFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_write_all_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) writeAllFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWriteAllFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
   }
 
   /// Request an asynchronous write of @count bytes from @buffer into
@@ -1372,6 +1489,149 @@ class GOutputStream extends GObject {
     }
   }
 
+  /// Tries to write the bytes contained in the @n_vectors @vectors into the
+  /// stream. Will block during the operation.
+  ///
+  /// If @n_vectors is 0 or the sum of all bytes in @vectors is 0, returns 0 and
+  /// does nothing.
+  ///
+  /// On success, the number of bytes written to the stream is returned.
+  /// It is not an error if this is not the same as the requested size, as it
+  /// can happen e.g. on a partial I/O error, or if there is not enough
+  /// storage in the stream. All writes block until at least one byte
+  /// is written or an error occurs; 0 is never returned (unless
+  /// @n_vectors is 0 or the sum of all bytes in @vectors is 0).
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned. If an
+  /// operation was partially finished when the operation was cancelled the
+  /// partial result will be returned, without an error.
+  ///
+  /// Some implementations of g_output_stream_writev() may have limitations on the
+  /// aggregate buffer size, and will return %G_IO_ERROR_INVALID_ARGUMENT if these
+  /// are exceeded. For example, when writing to a local file on UNIX platforms,
+  /// the aggregate buffer size must not exceed %G_MAXSSIZE bytes.
+  static final _gOutputStreamWritev =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_writev')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) writev(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWritev(
+        this.handle,
+        vectors,
+        nVectors,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Tries to write the bytes contained in the @n_vectors @vectors into the
+  /// stream. Will block during the operation.
+  ///
+  /// This function is similar to g_output_stream_writev(), except it tries to
+  /// write as many bytes as requested, only stopping on an error.
+  ///
+  /// On a successful write of all @n_vectors vectors, %TRUE is returned, and
+  /// @bytes_written is set to the sum of all the sizes of @vectors.
+  ///
+  /// If there is an error during the operation %FALSE is returned and @error
+  /// is set to indicate the error status.
+  ///
+  /// As a special exception to the normal conventions for functions that
+  /// use #GError, if this function returns %FALSE (and sets @error) then
+  /// @bytes_written will be set to the number of bytes that were
+  /// successfully written before the error was encountered.  This
+  /// functionality is only available from C. If you need it from another
+  /// language then you must write your own loop around
+  /// g_output_stream_write().
+  ///
+  /// The content of the individual elements of @vectors might be changed by this
+  /// function.
+  static final _gOutputStreamWritevAll =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_writev_all')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) writevAll(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWritevAll(
+        this.handle,
+        vectors,
+        nVectors,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// Request an asynchronous write of the bytes contained in the @n_vectors @vectors into
   /// the stream. When the operation is finished @callback will be called.
   /// You can then call g_output_stream_writev_all_finish() to get the result of the
@@ -1515,6 +1775,55 @@ class GOutputStream extends GObject {
       _writevAllAsyncCallbackPtr,
       _data.cast<ffi.Void>(),
     );
+  }
+
+  /// Finishes an asynchronous stream write operation started with
+  /// g_output_stream_writev_all_async().
+  ///
+  /// As a special exception to the normal conventions for functions that
+  /// use #GError, if this function returns %FALSE (and sets @error) then
+  /// @bytes_written will be set to the number of bytes that were
+  /// successfully written before the error was encountered.  This
+  /// functionality is only available from C.  If you need it from another
+  /// language then you must write your own loop around
+  /// g_output_stream_writev_async().
+  static final _gOutputStreamWritevAllFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_writev_all_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) writevAllFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWritevAllFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
   }
 
   /// Request an asynchronous write of the bytes contained in @n_vectors @vectors into
@@ -1674,6 +1983,46 @@ class GOutputStream extends GObject {
       _writevAsyncCallbackPtr,
       _data.cast<ffi.Void>(),
     );
+  }
+
+  /// Finishes a stream writev operation.
+  static final _gOutputStreamWritevFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_output_stream_writev_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) writevFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gOutputStreamWritevFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
   }
 
   /// The notify signal is emitted on an object when one of its properties has

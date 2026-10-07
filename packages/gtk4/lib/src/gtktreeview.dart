@@ -699,6 +699,93 @@ class GtkTreeView extends GtkWidget
     } finally {}
   }
 
+  /// Determines the destination row for a given position.  @drag_x and
+  /// @drag_y are expected to be in widget coordinates.  This function is only
+  /// meaningful if @tree_view is realized.  Therefore this function will always
+  /// return %FALSE if @tree_view is not realized or does not have a model.
+  static final _gtkTreeViewGetDestRowAtPos =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_view_get_dest_row_at_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkTreeViewDropPosition) getDestRowAtPos(
+    int dragX,
+    int dragY,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkTreeViewGetDestRowAtPos(
+        this.handle,
+        dragX,
+        dragY,
+        _out0.cast<ffi.Void>(),
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        GtkTreeViewDropPosition.fromValue(_out1.value),
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets information about the row that is highlighted for feedback.
+  static final _gtkTreeViewGetDragDestRow =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_view_get_drag_dest_row')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (GtkTreePath?, GtkTreeViewDropPosition) getDragDestRow() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkTreeViewGetDragDestRow(this.handle, _out0.cast<ffi.Void>(), _out1);
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        GtkTreeViewDropPosition.fromValue(_out1.value),
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns whether or not the tree allows to start interactive searching
   /// by typing in text.
   static final _gtkTreeViewGetEnableSearch =
@@ -825,6 +912,84 @@ class GtkTreeView extends GtkWidget
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getNColumns() {
     return _gtkTreeViewGetNColumns(this.handle);
+  }
+
+  /// Finds the path at the point (@x, @y), relative to bin_window coordinates.
+  /// That is, @x and @y are relative to an events coordinates. Widget-relative
+  /// coordinates must be converted using
+  /// gtk_tree_view_convert_widget_to_bin_window_coords(). It is primarily for
+  /// things like popup menus. If @path is non-%NULL, then it will be filled
+  /// with the `GtkTreePath` at that point.  This path should be freed with
+  /// gtk_tree_path_free().  If @column is non-%NULL, then it will be filled
+  /// with the column at that point.  @cell_x and @cell_y return the coordinates
+  /// relative to the cell background (i.e. the @background_area passed to
+  /// gtk_cell_renderer_render()).  This function is only meaningful if
+  /// @tree_view is realized.  Therefore this function will always return %FALSE
+  /// if @tree_view is not realized or does not have a model.
+  ///
+  /// For converting widget coordinates (eg. the ones you get from
+  /// GtkWidget::query-tooltip), please see
+  /// gtk_tree_view_convert_widget_to_bin_window_coords().
+  static final _gtkTreeViewGetPathAtPos =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_view_get_path_at_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkTreeViewColumn?, int, int) getPathAtPos(
+    int x,
+    int y,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkTreeViewGetPathAtPos(
+        this.handle,
+        x,
+        y,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2,
+        _out3,
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTreeViewColumn.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value,
+        _out3.value,
+      );
+    } finally {
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
   }
 
   /// Retrieves whether the user can reorder the tree via drag-and-drop. See
@@ -1165,6 +1330,85 @@ class GtkTreeView extends GtkWidget
         _nc6.close();
       }
     });
+  }
+
+  /// Determine whether the point (@x, @y) in @tree_view is blank, that is no
+  /// cell content nor an expander arrow is drawn at the location. If so, the
+  /// location can be considered as the background. You might wish to take
+  /// special action on clicks on the background, such as clearing a current
+  /// selection, having a custom context menu or starting rubber banding.
+  ///
+  /// The @x and @y coordinate that are provided must be relative to bin_window
+  /// coordinates.  Widget-relative coordinates must be converted using
+  /// gtk_tree_view_convert_widget_to_bin_window_coords().
+  ///
+  /// For converting widget coordinates (eg. the ones you get from
+  /// GtkWidget::query-tooltip), please see
+  /// gtk_tree_view_convert_widget_to_bin_window_coords().
+  ///
+  /// The @path, @column, @cell_x and @cell_y arguments will be filled in
+  /// likewise as for gtk_tree_view_get_path_at_pos().  Please see
+  /// gtk_tree_view_get_path_at_pos() for more information.
+  static final _gtkTreeViewIsBlankAtPos =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_view_is_blank_at_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkTreeViewColumn?, int, int) isBlankAtPos(
+    int x,
+    int y,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkTreeViewIsBlankAtPos(
+        this.handle,
+        x,
+        y,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2,
+        _out3,
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTreeViewColumn.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value,
+        _out3.value,
+      );
+    } finally {
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
   }
 
   /// Returns whether a rubber banding operation is currently being done

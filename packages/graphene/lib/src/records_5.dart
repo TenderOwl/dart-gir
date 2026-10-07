@@ -476,6 +476,42 @@ final class GrapheneQuaternion {
     }
   }
 
+  /// Converts a #graphene_quaternion_t to its corresponding rotations
+  /// on the [Euler angles](http://en.wikipedia.org/wiki/Euler_angles)
+  /// on each axis.
+  static final _grapheneQuaternionToAngles =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_quaternion_to_angles')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  (double, double, double) toAngles() {
+    final _out0 = malloc<ffi.Float>();
+    final _out1 = malloc<ffi.Float>();
+    final _out2 = malloc<ffi.Float>();
+    try {
+      _grapheneQuaternionToAngles(this.handle, _out0, _out1, _out2);
+      return (_out0.value, _out1.value, _out2.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+    }
+  }
+
   /// Converts a quaternion into a transformation matrix expressing
   /// the rotation defined by the #graphene_quaternion_t.
   static final _grapheneQuaternionToMatrix =
@@ -496,6 +532,42 @@ final class GrapheneQuaternion {
     } finally {}
   }
 
+  /// Converts a #graphene_quaternion_t to its corresponding rotations
+  /// on the [Euler angles](http://en.wikipedia.org/wiki/Euler_angles)
+  /// on each axis.
+  static final _grapheneQuaternionToRadians =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_quaternion_to_radians')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  (double, double, double) toRadians() {
+    final _out0 = malloc<ffi.Float>();
+    final _out1 = malloc<ffi.Float>();
+    final _out2 = malloc<ffi.Float>();
+    try {
+      _grapheneQuaternionToRadians(this.handle, _out0, _out1, _out2);
+      return (_out0.value, _out1.value, _out2.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+    }
+  }
+
   /// Copies the components of a #graphene_quaternion_t into a
   /// #graphene_vec4_t.
   static final _grapheneQuaternionToVec4 =
@@ -514,407 +586,5 @@ final class GrapheneQuaternion {
       _grapheneQuaternionToVec4(this.handle, _out0.cast<ffi.Void>());
       return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
     } finally {}
-  }
-}
-
-/// A ray emitted from an origin in a given direction.
-///
-/// The contents of the `graphene_ray_t` structure are private, and should not
-/// be modified directly.
-final class GrapheneRay {
-  GrapheneRay.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Allocates a new #graphene_ray_t structure.
-  ///
-  /// The contents of the returned structure are undefined.
-  static final _grapheneRayAlloc =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_ray_alloc',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneRay.alloc() : this.fromPointer(_grapheneRayAlloc());
-
-  /// Checks whether the two given #graphene_ray_t are equal.
-  static final _grapheneRayEqual =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(GrapheneRay b) {
-    return (_grapheneRayEqual(this.handle, b.handle)) != 0;
-  }
-
-  /// Frees the resources allocated by graphene_ray_alloc().
-  static final _grapheneRayFree =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_ray_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _grapheneRayFree(this.handle);
-  }
-
-  /// Computes the point on the given #graphene_ray_t that is closest to the
-  /// given point @p.
-  static final _grapheneRayGetClosestPointToPoint =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_ray_get_closest_point_to_point')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GraphenePoint3D getClosestPointToPoint(GraphenePoint3D p) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetClosestPointToPoint(
-        this.handle,
-        p.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Retrieves the direction of the given #graphene_ray_t.
-  static final _grapheneRayGetDirection =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_get_direction')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneVec3 getDirection() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetDirection(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Computes the distance of the origin of the given #graphene_ray_t from the
-  /// given plane.
-  ///
-  /// If the ray does not intersect the plane, this function returns `INFINITY`.
-  static final _grapheneRayGetDistanceToPlane =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Float Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_get_distance_to_plane')
-          .asFunction<
-            double Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  double getDistanceToPlane(GraphenePlane p) {
-    return _grapheneRayGetDistanceToPlane(this.handle, p.handle);
-  }
-
-  /// Computes the distance of the closest approach between the
-  /// given #graphene_ray_t @r and the point @p.
-  ///
-  /// The closest approach to a ray from a point is the distance
-  /// between the point and the projection of the point on the
-  /// ray itself.
-  static final _grapheneRayGetDistanceToPoint =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Float Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_get_distance_to_point')
-          .asFunction<
-            double Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  double getDistanceToPoint(GraphenePoint3D p) {
-    return _grapheneRayGetDistanceToPoint(this.handle, p.handle);
-  }
-
-  /// Retrieves the origin of the given #graphene_ray_t.
-  static final _grapheneRayGetOrigin =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_get_origin')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GraphenePoint3D getOrigin() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetOrigin(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Retrieves the coordinates of a point at the distance @t along the
-  /// given #graphene_ray_t.
-  static final _grapheneRayGetPositionAt =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_ray_get_position_at')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, double, ffi.Pointer<ffi.Void>)
-          >();
-  GraphenePoint3D getPositionAt(double t) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetPositionAt(this.handle, t, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Initializes the given #graphene_ray_t using the given @origin
-  /// and @direction values.
-  static final _grapheneRayInit =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_ray_init')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneRay init([GraphenePoint3D? origin, GrapheneVec3? direction]) {
-    return GrapheneRay.fromPointer(
-      _grapheneRayInit(
-        this.handle,
-        origin?.handle ?? ffi.nullptr,
-        direction?.handle ?? ffi.nullptr,
-      ),
-    );
-  }
-
-  /// Initializes the given #graphene_ray_t using the origin and direction
-  /// values of another #graphene_ray_t.
-  static final _grapheneRayInitFromRay =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_ray_init_from_ray')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneRay initFromRay(GrapheneRay src) {
-    return GrapheneRay.fromPointer(
-      _grapheneRayInitFromRay(this.handle, src.handle),
-    );
-  }
-
-  /// Initializes the given #graphene_ray_t using the given vectors.
-  static final _grapheneRayInitFromVec3 =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_ray_init_from_vec3')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneRay initFromVec3([GrapheneVec3? origin, GrapheneVec3? direction]) {
-    return GrapheneRay.fromPointer(
-      _grapheneRayInitFromVec3(
-        this.handle,
-        origin?.handle ?? ffi.nullptr,
-        direction?.handle ?? ffi.nullptr,
-      ),
-    );
-  }
-
-  /// Intersects the given #graphene_ray_t @r with the given
-  /// #graphene_box_t @b.
-  static final _grapheneRayIntersectBox =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Float>,
-              )
-            >
-          >('graphene_ray_intersect_box')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Float>,
-            )
-          >();
-  (GrapheneRayIntersectionKind, double) intersectBox(GrapheneBox b) {
-    final _out0 = malloc<ffi.Float>();
-    try {
-      final _ret = _grapheneRayIntersectBox(this.handle, b.handle, _out0);
-      return (GrapheneRayIntersectionKind.fromValue(_ret), _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Intersects the given #graphene_ray_t @r with the given
-  /// #graphene_sphere_t @s.
-  static final _grapheneRayIntersectSphere =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Float>,
-              )
-            >
-          >('graphene_ray_intersect_sphere')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Float>,
-            )
-          >();
-  (GrapheneRayIntersectionKind, double) intersectSphere(GrapheneSphere s) {
-    final _out0 = malloc<ffi.Float>();
-    try {
-      final _ret = _grapheneRayIntersectSphere(this.handle, s.handle, _out0);
-      return (GrapheneRayIntersectionKind.fromValue(_ret), _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Intersects the given #graphene_ray_t @r with the given
-  /// #graphene_triangle_t @t.
-  static final _grapheneRayIntersectTriangle =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Float>,
-              )
-            >
-          >('graphene_ray_intersect_triangle')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Float>,
-            )
-          >();
-  (GrapheneRayIntersectionKind, double) intersectTriangle(GrapheneTriangle t) {
-    final _out0 = malloc<ffi.Float>();
-    try {
-      final _ret = _grapheneRayIntersectTriangle(this.handle, t.handle, _out0);
-      return (GrapheneRayIntersectionKind.fromValue(_ret), _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Checks whether the given #graphene_ray_t @r intersects the
-  /// given #graphene_box_t @b.
-  ///
-  /// See also: graphene_ray_intersect_box()
-  static final _grapheneRayIntersectsBox =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_intersects_box')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool intersectsBox(GrapheneBox b) {
-    return (_grapheneRayIntersectsBox(this.handle, b.handle)) != 0;
-  }
-
-  /// Checks if the given #graphene_ray_t @r intersects the
-  /// given #graphene_sphere_t @s.
-  ///
-  /// See also: graphene_ray_intersect_sphere()
-  static final _grapheneRayIntersectsSphere =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_intersects_sphere')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool intersectsSphere(GrapheneSphere s) {
-    return (_grapheneRayIntersectsSphere(this.handle, s.handle)) != 0;
-  }
-
-  /// Checks whether the given #graphene_ray_t @r intersects the
-  /// given #graphene_triangle_t @b.
-  ///
-  /// See also: graphene_ray_intersect_triangle()
-  static final _grapheneRayIntersectsTriangle =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_ray_intersects_triangle')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool intersectsTriangle(GrapheneTriangle t) {
-    return (_grapheneRayIntersectsTriangle(this.handle, t.handle)) != 0;
   }
 }

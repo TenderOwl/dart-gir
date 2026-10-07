@@ -178,6 +178,56 @@ final class GskPath {
     } finally {}
   }
 
+  /// Computes the closest point on the path to the given point.
+  ///
+  /// If there is no point closer than the given threshold,
+  /// false is returned.
+  static final _gskPathGetClosestPoint =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Float,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('gsk_path_get_closest_point')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  (bool, GskPathPoint, double) getClosestPoint(
+    GraphenePoint point,
+    double threshold,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Float>();
+    try {
+      final _ret = _gskPathGetClosestPoint(
+        this.handle,
+        point.handle,
+        threshold,
+        _out0.cast<ffi.Void>(),
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        GskPathPoint.fromPointer(_out0.cast<ffi.Void>()),
+        _out1.value,
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets the end point of the path.
   ///
   /// An empty path has no points, so false

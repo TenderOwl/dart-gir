@@ -87,6 +87,32 @@ class GskRadialGradientNode extends GskRenderNode {
     );
   }
 
+  /// Retrieves the color stops in the gradient.
+  static final _gskRadialGradientNodeGetColorStops =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gsk_radial_gradient_node_get_color_stops')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getColorStops() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gskRadialGradientNodeGetColorStops(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Retrieves the end value for the gradient.
   static final _gskRadialGradientNodeGetEnd =
       gsk4Lookup<ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>>(

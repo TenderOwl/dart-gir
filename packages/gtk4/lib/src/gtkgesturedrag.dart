@@ -32,6 +32,74 @@ class GtkGestureDrag extends GtkGestureSingle {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkGestureDrag() : this.fromPointer(_gtkGestureDragNew(), owned: true);
 
+  /// Gets the offset from the start point.
+  ///
+  /// If the @gesture is active, this function returns %TRUE and
+  /// fills in @x and @y with the coordinates of the current point,
+  /// as an offset to the starting drag point.
+  static final _gtkGestureDragGetOffset =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_gesture_drag_get_offset')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (bool, double, double) getOffset() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      final _ret = _gtkGestureDragGetOffset(this.handle, _out0, _out1);
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets the point where the drag started.
+  ///
+  /// If the @gesture is active, this function returns %TRUE
+  /// and fills in @x and @y with the drag start coordinates,
+  /// in widget-relative coordinates.
+  static final _gtkGestureDragGetStartPoint =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_gesture_drag_get_start_point')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (bool, double, double) getStartPoint() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      final _ret = _gtkGestureDragGetStartPoint(this.handle, _out0, _out1);
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Emitted whenever dragging starts.
   int onDragBegin(void Function(double startX, double startY) callback) {
     return _connectSignal_v_2_d_d_double_double(

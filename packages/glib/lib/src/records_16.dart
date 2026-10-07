@@ -173,6 +173,39 @@ final class GMarkupParseContext {
     return _gMarkupParseContextGetOffset(this.handle);
   }
 
+  /// Retrieves the current line number and the number of the character on
+  /// that line. Intended for use in error messages; there are no strict
+  /// semantics for what constitutes the "current" line number other than
+  /// "the best number we could come up with for error messages."
+  static final _gMarkupParseContextGetPosition =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_markup_parse_context_get_position')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPosition() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gMarkupParseContextGetPosition(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Retrieves the start position of the current start or end tag.
   ///
   /// This function can be used in the `start_element` or `end_element`

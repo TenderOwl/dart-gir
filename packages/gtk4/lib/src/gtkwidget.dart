@@ -1898,6 +1898,45 @@ class GtkWidget extends GInitiallyUnowned
     return _gtkWidgetGetSize(this.handle, orientation.value);
   }
 
+  /// Gets the size request that was explicitly set for the widget.
+  ///
+  /// A value of -1 stored in @width or @height indicates that that
+  /// dimension has not been set explicitly and the natural requisition
+  /// of the widget will be used instead.
+  ///
+  /// See [method@Gtk.Widget.set_size_request].
+  ///
+  /// To get the size a widget will actually request, call
+  /// [method@Gtk.Widget.measure] instead of this function.
+  static final _gtkWidgetGetSizeRequest =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_widget_get_size_request')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getSizeRequest() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkWidgetGetSizeRequest(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns the widget state as a flag set.
   ///
   /// It is worth mentioning that the effective [flags@Gtk.StateFlags.insensitive]
@@ -2465,6 +2504,63 @@ class GtkWidget extends GInitiallyUnowned
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void map() {
     _gtkWidgetMap(this.handle);
+  }
+
+  /// Measures @widget in the orientation @orientation and for the given @for_size.
+  ///
+  /// As an example, if @orientation is %GTK_ORIENTATION_HORIZONTAL and @for_size
+  /// is 300, this functions will compute the minimum and natural width of @widget
+  /// if it is allocated at a height of 300 pixels.
+  ///
+  /// See [GtkWidget’s geometry management section](class.Widget.html#height-for-width-geometry-management) for
+  /// a more details on implementing `GtkWidgetClass.measure()`.
+  static final _gtkWidgetMeasure =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_widget_measure')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int, int, int) measure(GtkOrientation orientation, int forSize) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      _gtkWidgetMeasure(
+        this.handle,
+        orientation.value,
+        forSize,
+        _out0,
+        _out1,
+        _out2,
+        _out3,
+      );
+      return (_out0.value, _out1.value, _out2.value, _out3.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
   }
 
   /// Emits the [signal@Gtk.Widget::mnemonic-activate] signal.
@@ -3508,6 +3604,58 @@ class GtkWidget extends GInitiallyUnowned
           >();
   void snapshotChild(GtkWidget child, GtkSnapshot snapshot) {
     _gtkWidgetSnapshotChild(this.handle, child.handle, snapshot.handle);
+  }
+
+  /// Translates coordinates relative to @src_widget’s allocation
+  /// to coordinates relative to @dest_widget’s allocations.
+  ///
+  /// In order to perform this operation, both widget must share
+  /// a common ancestor. If that is not the case, @dest_x and @dest_y
+  /// are set to 0 and false is returned.
+  static final _gtkWidgetTranslateCoordinates =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_widget_translate_coordinates')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (bool, double, double) translateCoordinates(
+    GtkWidget destWidget,
+    double srcX,
+    double srcY,
+  ) {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      final _ret = _gtkWidgetTranslateCoordinates(
+        this.handle,
+        destWidget.handle,
+        srcX,
+        srcY,
+        _out0,
+        _out1,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Triggers a tooltip query on the display of the widget.

@@ -1,8 +1,8 @@
 # Skip report for package glib (GLib 2.0)
-Total skipped: 391
+Total skipped: 351
 
 ## By category
-callable: 372
+callable: 332
 alias: 13
 constant: 2
 callback: 2
@@ -11,49 +11,45 @@ constructor: 1
 
 ## By reason
 introspectable=0: 98
-parameter length: nullable scalar parameter (gsize): 18
-return: string list return type (null): 16
+return: string list return type (null): 25
 aliases are resolved to their target: 13
-parameter bytes_read: nullable scalar parameter (gsize): 6
-parameter items_read: nullable scalar parameter (glong): 6
+return: array of TypeKind.string (later phase): 6
 parameter string: array of TypeKind.string (later phase): 6
 parameter strv: array of TypeKind.string (later phase): 3
-parameter child_pid: nullable scalar parameter (Pid): 3
 return: unknown type: time_t: 3
-parameter port: nullable scalar parameter (gint): 3
 unsupported out parameter out (ffi.Pointer<ffi.Uint8>): 2
+unsupported out parameter end (ffi.Pointer<ffi.Uint8>): 2
 array parameter in callback signature: 2
 inout parameter rc: 2
 unsupported out parameter standard_output (ffi.Pointer<ffi.Uint8>): 2
-unsupported out parameter end (ffi.Pointer<ffi.Uint8>): 2
-parameter count: nullable scalar parameter (guint): 2
+parameter stamp: unknown type: time_t: 2
 parameter list: array of TypeKind.string (later phase): 2
-parameter start_pos: nullable scalar parameter (gint): 2
 inout parameter location: 2
 parameter entries: array of TypeKind.record (later phase): 2
-return: array of TypeKind.string (later phase): 2
 name collision: 2
-moved to Hook.insert_sorted: 1
+moved to Hook.destroy: 1
+moved to ByteArray.set_size: 1
+moved to ByteArray.sized_new: 1
+moved to ByteArray.sort: 1
 moved to ByteArray.sort_with_data: 1
 moved to ByteArray.steal: 1
 moved to ByteArray.unref: 1
 moved to Checksum.type_get_length: 1
 introspectable=0 (C macro; use child_watch_add_full): 1
-parameter out_num: nullable scalar parameter (gint64): 1
 moved to Date.get_days_in_month: 1
 moved to Date.get_monday_weeks_in_year: 1
 moved to Date.get_sunday_weeks_in_year: 1
 moved to Date.get_weeks_in_year: 1
 moved to Date.is_leap_year: 1
 moved to Date.strftime: 1
-moved to Date.valid_day: 1
+moved to AsyncQueue.new: 1
 moved to Date.valid_dmy: 1
 moved to Date.valid_julian: 1
 moved to Date.valid_month: 1
 moved to Date.valid_weekday: 1
 moved to Date.valid_year: 1
 moved to Dir.make_tmp: 1
-parameter out_num: nullable scalar parameter (guint64): 1
+moved to AsyncQueue.new_full: 1
 moved to Error.domain_register: 1
 moved to Error.domain_register_static: 1
 unsupported out parameter contents (ffi.Pointer<ffi.Uint8>): 1
@@ -78,11 +74,11 @@ moved to HashTable.steal: 1
 moved to HashTable.steal_all: 1
 moved to HashTable.steal_extended: 1
 moved to HashTable.unref: 1
-moved to Hook.destroy: 1
+name collision: csetA2Z: 1
 moved to Hook.destroy_link: 1
 moved to Hook.free: 1
 moved to Hook.insert_before: 1
-name collision: csetA2Z: 1
+moved to Hook.insert_sorted: 1
 moved to Hook.prepend: 1
 moved to Hook.unref: 1
 introspectable=0 (C macro; use idle_add_full): 1
@@ -93,7 +89,7 @@ moved to KeyFile.error_quark: 1
 moved to List.pop_allocator: 1
 moved to List.push_allocator: 1
 introspectable=0 (C macro; use log_set_handler_full): 1
-moved to AsyncQueue.new: 1
+inout parameter text: 1
 parameter func: callback LogWriterFunc has unsupported signature: 1
 moved to MainContext.default: 1
 moved to MainContext.get_thread_default: 1
@@ -107,9 +103,8 @@ moved to Once.init_enter_pointer: 1
 moved to Once.init_leave: 1
 moved to Once.init_leave_pointer: 1
 moved to PathBuf.equal: 1
-parameter out_ptr: nullable scalar parameter (guintptr): 1
 inout parameter err: 1
-moved to AsyncQueue.new_full: 1
+unparseable int value: 18446744073709551615: 1
 moved to Regex.check_replacement: 1
 moved to Regex.error_quark: 1
 moved to Regex.escape_nul: 1
@@ -128,16 +123,14 @@ moved to Sequence.set: 1
 moved to Sequence.sort_changed: 1
 moved to Sequence.sort_changed_iter: 1
 moved to Sequence.swap: 1
-parameter argcp: nullable scalar parameter (gint): 1
+parameter argvp: array of TypeKind.string (later phase): 1
 moved to SList.pop_allocator: 1
 moved to SList.push_allocator: 1
 moved to Source.remove: 1
 moved to Source.remove_by_funcs_user_data: 1
 moved to Source.remove_by_user_data: 1
 moved to Source.set_name_by_id: 1
-inout parameter text: 1
-parameter child_pid_out: nullable scalar parameter (Pid): 1
-unparseable int value: 18446744073709551615: 1
+moved to BookmarkFile.error_quark: 1
 parameter ascii_alternates: array of TypeKind.string (later phase): 1
 moved to Thread.error_quark: 1
 moved to Thread.exit: 1
@@ -145,19 +138,17 @@ moved to ThreadPool.get_max_idle_time: 1
 moved to ThreadPool.get_max_unused_threads: 1
 moved to ThreadPool.get_num_unused_threads: 1
 moved to ThreadPool.set_max_idle_time: 1
-moved to ThreadPool.set_max_unused_threads: 1
+moved to ByteArray.append: 1
 moved to ThreadPool.stop_unused_threads: 1
 moved to Thread.self: 1
 moved to Thread.yield: 1
 moved to TimeVal.from_iso8601: 1
 introspectable=0 (C macro; use timeout_add_full): 1
 introspectable=0 (C macro; use timeout_add_seconds_full): 1
-parameter out_val: nullable scalar parameter (gint): 1
+moved to TrashStack.height: 1
 moved to TrashStack.peek: 1
 moved to TrashStack.pop: 1
 moved to TrashStack.push: 1
-moved to BookmarkFile.error_quark: 1
-parameter result: nullable scalar parameter (gunichar): 1
 moved to UnicodeScript.from_iso15924: 1
 moved to UnicodeScript.to_iso15924: 1
 moved to Uri.build: 1
@@ -180,8 +171,7 @@ moved to Uri.split_with_user: 1
 moved to Uri.unescape_bytes: 1
 moved to Uri.unescape_segment: 1
 moved to Uri.unescape_string: 1
-parameter items_written: nullable scalar parameter (glong): 1
-moved to ByteArray.append: 1
+moved to ThreadPool.set_max_unused_threads: 1
 moved to Variant.is_object_path: 1
 moved to Variant.is_signature: 1
 moved to Variant.parse: 1
@@ -196,43 +186,30 @@ moved to ByteArray.free: 1
 moved to ByteArray.free_to_bytes: 1
 moved to ByteArray.new: 1
 parameter added: unknown type: time_t: 1
-parameter stamp: unknown type: time_t: 1
 parameter groups: array of TypeKind.string (later phase): 1
 parameter modified: unknown type: time_t: 1
 parameter visited: unknown type: time_t: 1
-parameter len: nullable scalar parameter (gsize): 1
-parameter size: nullable scalar parameter (gsize): 1
 parameter timet: unknown type: time_t: 1
-parameter year: nullable scalar parameter (gint): 1
-parameter length: nullable scalar parameter (gint): 1
 unsupported out parameter buf (ffi.Pointer<ffi.Uint8>): 1
 parameter terminator_pos: nullable scalar parameter (gsize): 1
 unsupported out parameter str_return (ffi.Pointer<ffi.Uint8>): 1
 moved to ByteArray.new_take: 1
-parameter priority: nullable scalar parameter (gint): 1
 unsupported out parameter fds (ffi.Pointer<ffi.Void>): 1
-parameter line_number: nullable scalar parameter (gint): 1
 moved to ByteArray.prepend: 1
 moved to ByteArray.ref: 1
-moved to ByteArray.remove_index: 1
 inout parameter argc: 1
 parameter arguments: array of TypeKind.string (later phase): 1
-moved to ByteArray.remove_index_fast: 1
-parameter has_references: nullable scalar parameter (gboolean): 1
-moved to ByteArray.remove_range: 1
+moved to ByteArray.remove_index: 1
 inout parameter time_: 1
-moved to ByteArray.set_size: 1
-moved to ByteArray.sized_new: 1
-moved to ByteArray.sort: 1
-moved to TrashStack.height: 1
+moved to ByteArray.remove_index_fast: 1
+moved to ByteArray.remove_range: 1
+moved to Date.valid_day: 1
 
 ## First 50 entries
 [constant] GLib.CSET_a_2_z — name collision: csetA2Z
 [constant] GLib.MAXUINT64 — unparseable int value: 18446744073709551615
 [callable] GLib.arrayNewTake — introspectable=0
 [callable] GLib.arrayNewTakeZeroTerminated — introspectable=0
-[callable] GLib.asciiStringToSigned — parameter out_num: nullable scalar parameter (gint64)
-[callable] GLib.asciiStringToUnsigned — parameter out_num: nullable scalar parameter (guint64)
 [callable] GLib.assertionMessageCmpnum — introspectable=0
 [callable] GLib.assertionMessageExpr — introspectable=0
 [callable] GLib.asyncQueueNew — moved to AsyncQueue.new
@@ -241,7 +218,6 @@ moved to TrashStack.height: 1
 [callable] GLib.base64DecodeStep — introspectable=0
 [callable] GLib.base64EncodeClose — unsupported out parameter out (ffi.Pointer<ffi.Uint8>)
 [callable] GLib.base64EncodeStep — unsupported out parameter out (ffi.Pointer<ffi.Uint8>)
-[callable] GLib.bitLockAndGet — parameter out_val: nullable scalar parameter (gint)
 [callable] GLib.bookmarkFileErrorQuark — moved to BookmarkFile.error_quark
 [callable] GLib.buildFilename — introspectable=0
 [callable] GLib.buildFilenameValist — introspectable=0
@@ -269,11 +245,14 @@ moved to TrashStack.height: 1
 [callable] GLib.clearPointer — introspectable=0
 [callable] GLib.clearSlist — introspectable=0
 [callable] GLib.condNew — introspectable=0
-[callable] GLib.convert — parameter bytes_read: nullable scalar parameter (gsize)
-[callable] GLib.convertWithFallback — parameter bytes_read: nullable scalar parameter (gsize)
 [callable] GLib.convertWithIconv — introspectable=0
 [callable] GLib.datalistClear — introspectable=0
 [callable] GLib.datalistIdDupData — introspectable=0
 [callable] GLib.datalistIdRemoveNoNotify — introspectable=0
 [callable] GLib.datalistIdReplaceData — introspectable=0
 [callable] GLib.datalistIdSetDataFull — introspectable=0
+[callable] GLib.datalistInit — introspectable=0
+[callable] GLib.datasetIdRemoveNoNotify — introspectable=0
+[callable] GLib.datasetIdSetDataFull — introspectable=0
+[callable] GLib.dateGetDaysInMonth — moved to Date.get_days_in_month
+[callable] GLib.dateGetMondayWeeksInYear — moved to Date.get_monday_weeks_in_year

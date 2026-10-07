@@ -260,6 +260,39 @@ class GtkSpinButton extends GtkWidget
     return _gtkSpinButtonGetDigits(this.handle);
   }
 
+  /// Gets the current step and page the increments
+  /// used by @spin_button.
+  ///
+  /// See [method@Gtk.SpinButton.set_increments].
+  static final _gtkSpinButtonGetIncrements =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_spin_button_get_increments')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (double, double) getIncrements() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      _gtkSpinButtonGetIncrements(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns whether non-numeric text can be typed into the spin button.
   static final _gtkSpinButtonGetNumeric =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -267,6 +300,38 @@ class GtkSpinButton extends GtkWidget
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getNumeric() {
     return (_gtkSpinButtonGetNumeric(this.handle)) != 0;
+  }
+
+  /// Gets the range allowed for @spin_button.
+  ///
+  /// See [method@Gtk.SpinButton.set_range].
+  static final _gtkSpinButtonGetRange =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_spin_button_get_range')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (double, double) getRange() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      _gtkSpinButtonGetRange(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Returns whether the values are corrected to the nearest step.
@@ -1462,6 +1527,42 @@ class GtkSpinButton extends GtkWidget
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getPosition() {
     return _gtkEditableGetPosition(this.handle);
+  }
+
+  /// Retrieves the selection bound of the editable.
+  ///
+  /// @start_pos will be filled with the start of the selection and
+  /// @end_pos with end. If no text was selected both will be identical
+  /// and %FALSE will be returned.
+  ///
+  /// Note that positions are specified in characters, not bytes.
+  static final _gtkEditableGetSelectionBounds =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_editable_get_selection_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int) getSelectionBounds() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkEditableGetSelectionBounds(this.handle, _out0, _out1);
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Retrieves the contents of @editable.

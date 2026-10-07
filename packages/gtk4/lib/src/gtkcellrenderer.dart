@@ -146,6 +146,66 @@ class GtkCellRenderer extends GInitiallyUnowned {
     } finally {}
   }
 
+  /// Fills in @xalign and @yalign with the appropriate values of @cell.
+  static final _gtkCellRendererGetAlignment =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('gtk_cell_renderer_get_alignment')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  (double, double) getAlignment() {
+    final _out0 = malloc<ffi.Float>();
+    final _out1 = malloc<ffi.Float>();
+    try {
+      _gtkCellRendererGetAlignment(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Fills in @width and @height with the appropriate size of @cell.
+  static final _gtkCellRendererGetFixedSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_renderer_get_fixed_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getFixedSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellRendererGetFixedSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Checks whether the given `GtkCellRenderer` is expanded.
   static final _gtkCellRendererGetIsExpanded =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -162,6 +222,114 @@ class GtkCellRenderer extends GInitiallyUnowned {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getIsExpander() {
     return (_gtkCellRendererGetIsExpander(this.handle)) != 0;
+  }
+
+  /// Fills in @xpad and @ypad with the appropriate values of @cell.
+  static final _gtkCellRendererGetPadding =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_renderer_get_padding')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPadding() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellRendererGetPadding(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Retrieves a renderer’s natural size when rendered to @widget.
+  static final _gtkCellRendererGetPreferredHeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_renderer_get_preferred_height')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredHeight(GtkWidget widget) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellRendererGetPreferredHeight(
+        this.handle,
+        widget.handle,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Retrieves a cell renderers’s minimum and natural height if it were rendered to
+  /// @widget with the specified @width.
+  static final _gtkCellRendererGetPreferredHeightForWidth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_renderer_get_preferred_height_for_width')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredHeightForWidth(GtkWidget widget, int width) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellRendererGetPreferredHeightForWidth(
+        this.handle,
+        widget.handle,
+        width,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Retrieves the minimum and natural size of a cell taking
@@ -206,6 +374,84 @@ class GtkCellRenderer extends GInitiallyUnowned {
             : GtkRequisition.fromPointer(_out1.cast<ffi.Void>()),
       );
     } finally {}
+  }
+
+  /// Retrieves a renderer’s natural size when rendered to @widget.
+  static final _gtkCellRendererGetPreferredWidth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_renderer_get_preferred_width')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredWidth(GtkWidget widget) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellRendererGetPreferredWidth(
+        this.handle,
+        widget.handle,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Retrieves a cell renderers’s minimum and natural width if it were rendered to
+  /// @widget with the specified @height.
+  static final _gtkCellRendererGetPreferredWidthForHeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_renderer_get_preferred_width_for_height')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredWidthForHeight(GtkWidget widget, int height) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellRendererGetPreferredWidthForHeight(
+        this.handle,
+        widget.handle,
+        height,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Gets whether the cell renderer prefers a height-for-width layout

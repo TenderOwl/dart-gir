@@ -6,9 +6,14 @@ import '../resolve/naming.dart';
 import 'context.dart';
 
 class _InParam {
-  _InParam(this.name, this.bridge);
+  _InParam(this.name, this.bridge, {required this.paramIndex});
   final String name;
   final TypeBridge bridge;
+  /// Index of the underlying [GirParameter] in the method's
+  /// `fn.parameters` list. Needed because out parameters don't appear
+  /// in `ins`, so the in-only index in `ins` would diverge from the
+  /// outer parameter index used to look up callback allocations.
+  final int paramIndex;
 
   String get nativeVar => 'native${name[0].toUpperCase()}${name.substring(1)}';
 }
@@ -97,6 +102,7 @@ class CallableEmitter {
         p.type,
         nullable: p.nullable,
         transfer: p.transferOwnership,
+        direction: p.direction,
         relativeTo: relativeTo,
       );
       if (bridge == null) {
@@ -107,7 +113,7 @@ class CallableEmitter {
       switch (p.direction) {
         case GirParameterDirection.in_:
           final paramName = escapeKeyword(toLowerCamel(p.name));
-          final inParam = _InParam(paramName, bridge);
+          final inParam = _InParam(paramName, bridge, paramIndex: i);
           ins.add(inParam);
           if (_isCallbackBridge(bridge)) {
             callbackAllocs.add(_CallbackAlloc('_nc${ins.length}', inParam));
@@ -162,7 +168,7 @@ class CallableEmitter {
     // Pre-built arg expression for callback params: when we allocate a
     // NativeCallable above, the C side consumes its `.nativeFunction`.
     final callbackByParam = <int, _CallbackAlloc>{
-      for (final c in callbackAllocs) ins.indexOf(c.inParam): c,
+      for (final c in callbackAllocs) c.inParam.paramIndex: c,
     };
     for (var i = 0; i < fn.parameters.length; i++) {
       final p = fn.parameters[i];

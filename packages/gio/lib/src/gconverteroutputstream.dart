@@ -219,6 +219,74 @@ class GConverterOutputStream extends GFilterOutputStream
     }
   }
 
+  /// Attempts to write the bytes contained in the @n_vectors @vectors to @stream,
+  /// as with g_output_stream_writev(). If @stream is not currently writable,
+  /// this will immediately return %@G_POLLABLE_RETURN_WOULD_BLOCK, and you can
+  /// use g_pollable_output_stream_create_source() to create a #GSource
+  /// that will be triggered when @stream is writable. @error will *not* be
+  /// set in that case.
+  ///
+  /// Note that since this method never blocks, you cannot actually
+  /// use @cancellable to cancel it. However, it will return an error
+  /// if @cancellable has already been cancelled when you call, which
+  /// may happen if you call this method after a source triggers due
+  /// to having been cancelled.
+  ///
+  /// Also note that if %G_POLLABLE_RETURN_WOULD_BLOCK is returned some underlying
+  /// transports like D/TLS require that you re-send the same @vectors and
+  /// @n_vectors in the next write call.
+  ///
+  /// The behaviour of this method is undefined if
+  /// g_pollable_output_stream_can_poll() returns %FALSE for @stream.
+  static final _gPollableOutputStreamWritevNonblocking =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_pollable_output_stream_writev_nonblocking')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GPollableReturn, int) writevNonblocking(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gPollableOutputStreamWritevNonblocking(
+        this.handle,
+        vectors,
+        nVectors,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (GPollableReturn.fromValue(_ret), _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// PyGObject-style typed property accessor. Reads and
   /// writes via the existing `get<Name>` / `set<Name>`
   /// methods; each property here corresponds to a GIR

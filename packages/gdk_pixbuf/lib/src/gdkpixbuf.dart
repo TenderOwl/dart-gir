@@ -1971,6 +1971,46 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     );
   }
 
+  /// Parses an image file far enough to determine its format and size.
+  static final _gdkPixbufGetFileInfo =
+      gdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gdk_pixbuf_get_file_info')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  static (GdkPixbufFormat?, int, int) getFileInfo(String filename) {
+    return withNativeString(filename, (nativeFilename) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1 = malloc<ffi.Int32>();
+      try {
+        final _ret = _gdkPixbufGetFileInfo(
+          nativeFilename.cast<Utf8>(),
+          _out0,
+          _out1,
+        );
+        return (
+          (_ret) == ffi.nullptr ? null : GdkPixbufFormat.fromPointer(_ret),
+          _out0.value,
+          _out1.value,
+        );
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+      }
+    });
+  }
+
   /// Asynchronously parses an image file far enough to determine its
   /// format and size.
   ///

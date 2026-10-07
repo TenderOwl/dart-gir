@@ -555,67 +555,72 @@ class GPollableOutputStream {
       calloc.free(_error);
     }
   }
-}
 
-/// `GPowerProfileMonitor` makes it possible for applications as well as OS
-/// components to monitor system power profiles and act upon them. It currently
-/// only exports whether the system is in “Power Saver” mode (known as
-/// “Low Power” mode on some systems).
-///
-/// When in “Low Power” mode, it is recommended that applications:
-///
-/// - disable automatic downloads;
-/// - reduce the rate of refresh from online sources such as calendar or
-/// email synchronisation;
-/// - reduce the use of expensive visual effects.
-///
-/// It is also likely that OS components providing services to applications will
-/// lower their own background activity, for the sake of the system.
-///
-/// There are a variety of tools that exist for power consumption analysis, but those
-/// usually depend on the OS and hardware used. On Linux, one could use `upower` to
-/// monitor the battery discharge rate, `powertop` to check on the background activity
-/// or activity at all), `sysprof` to inspect CPU usage, and `intel_gpu_time` to
-/// profile GPU usage.
-///
-/// Don’t forget to disconnect the [signal@GObject.Object::notify] signal for
-/// [property@Gio.PowerProfileMonitor:power-saver-enabled], and unref the
-/// `GPowerProfileMonitor` itself when exiting.
-class GPowerProfileMonitor {
-  GPowerProfileMonitor.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  /// Attempts to write the bytes contained in the @n_vectors @vectors to @stream,
+  /// as with g_output_stream_writev(). If @stream is not currently writable,
+  /// this will immediately return %@G_POLLABLE_RETURN_WOULD_BLOCK, and you can
+  /// use g_pollable_output_stream_create_source() to create a #GSource
+  /// that will be triggered when @stream is writable. @error will *not* be
+  /// set in that case.
   ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Gets whether the system is in “Power Saver” mode.
+  /// Note that since this method never blocks, you cannot actually
+  /// use @cancellable to cancel it. However, it will return an error
+  /// if @cancellable has already been cancelled when you call, which
+  /// may happen if you call this method after a source triggers due
+  /// to having been cancelled.
   ///
-  /// You are expected to listen to the
-  /// #GPowerProfileMonitor::notify::power-saver-enabled signal to know when the profile has
-  /// changed.
-  static final _gPowerProfileMonitorGetPowerSaverEnabled =
-      gioLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'g_power_profile_monitor_get_power_saver_enabled',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool getPowerSaverEnabled() {
-    return (_gPowerProfileMonitorGetPowerSaverEnabled(this.handle)) != 0;
-  }
-
-  /// Gets a reference to the default #GPowerProfileMonitor for the system.
-  static final _gPowerProfileMonitorDupDefault =
-      gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'g_power_profile_monitor_dup_default',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GPowerProfileMonitor dupDefault() {
-    return GPowerProfileMonitor.fromPointer(_gPowerProfileMonitorDupDefault());
+  /// Also note that if %G_POLLABLE_RETURN_WOULD_BLOCK is returned some underlying
+  /// transports like D/TLS require that you re-send the same @vectors and
+  /// @n_vectors in the next write call.
+  ///
+  /// The behaviour of this method is undefined if
+  /// g_pollable_output_stream_can_poll() returns %FALSE for @stream.
+  static final _gPollableOutputStreamWritevNonblocking =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_pollable_output_stream_writev_nonblocking')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GPollableReturn, int) writevNonblocking(
+    ffi.Pointer<ffi.Void> vectors,
+    int nVectors, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gPollableOutputStreamWritevNonblocking(
+        this.handle,
+        vectors,
+        nVectors,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (GPollableReturn.fromValue(_ret), _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
   }
 }

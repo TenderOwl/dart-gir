@@ -3233,6 +3233,171 @@ class GFile {
     }
   }
 
+  /// Recursively measures the disk usage of @file.
+  ///
+  /// This is essentially an analog of the 'du' command, but it also
+  /// reports the number of directories and non-directory files encountered
+  /// (including things like symbolic links).
+  ///
+  /// By default, errors are only reported against the toplevel file
+  /// itself.  Errors found while recursing are silently ignored, unless
+  /// %G_FILE_MEASURE_REPORT_ANY_ERROR is given in @flags.
+  ///
+  /// The returned size, @disk_usage, is in bytes and should be formatted
+  /// with g_format_size() in order to get something reasonable for showing
+  /// in a user interface.
+  ///
+  /// @progress_callback and @progress_data can be given to request
+  /// periodic progress updates while scanning.  See the documentation for
+  /// #GFileMeasureProgressCallback for information about when and how the
+  /// callback will be invoked.
+  static final _gFileMeasureDiskUsage =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Int32,
+                      ffi.Uint64,
+                      ffi.Uint64,
+                      ffi.Uint64,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint64>,
+                ffi.Pointer<ffi.Uint64>,
+                ffi.Pointer<ffi.Uint64>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_measure_disk_usage')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Int32,
+                    ffi.Uint64,
+                    ffi.Uint64,
+                    ffi.Uint64,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int, int, int) measureDiskUsage(
+    GFileMeasureFlags flags, [
+    GCancellable? cancellable,
+    void Function(int, int, int, int, ffi.Pointer<ffi.Void>)? progressCallback,
+    ffi.Pointer<ffi.Void>? progressData,
+  ]) {
+    final _nc3 = progressCallback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Int32,
+              ffi.Uint64,
+              ffi.Uint64,
+              ffi.Uint64,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(progressCallback);
+    final _out0 = malloc<ffi.Uint64>();
+    final _out1 = malloc<ffi.Uint64>();
+    final _out2 = malloc<ffi.Uint64>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileMeasureDiskUsage(
+        this.handle,
+        flags.value,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc3?.nativeFunction ?? ffi.nullptr,
+        progressData ?? ffi.nullptr,
+        _out0,
+        _out1,
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value, _out1.value, _out2.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      calloc.free(_error);
+      _nc3?.close();
+    }
+  }
+
+  /// Collects the results from an earlier call to
+  /// g_file_measure_disk_usage_async().  See g_file_measure_disk_usage() for
+  /// more information.
+  static final _gFileMeasureDiskUsageFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint64>,
+                ffi.Pointer<ffi.Uint64>,
+                ffi.Pointer<ffi.Uint64>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_measure_disk_usage_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int, int, int) measureDiskUsageFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Uint64>();
+    final _out1 = malloc<ffi.Uint64>();
+    final _out2 = malloc<ffi.Uint64>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileMeasureDiskUsageFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _out1,
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value, _out1.value, _out2.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      calloc.free(_error);
+    }
+  }
+
   /// Obtains a file or directory monitor for the given file,
   /// depending on the type of the file.
   ///

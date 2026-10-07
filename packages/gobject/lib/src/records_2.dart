@@ -474,23 +474,24 @@ final class GTypeInterface {
             _gTypeInterfacePeek(instanceClass.handle, ifaceType),
           );
   }
-}
 
-/// In order to implement dynamic loading of types based on #GTypeModule,
-/// the @load and @unload functions in #GTypeModuleClass must be implemented.
-final class GTypeModuleClass {
-  GTypeModuleClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  /// Returns the prerequisites of an interfaces type.
+  static final _gTypeInterfacePrerequisites =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Size> Function(ffi.Size, ffi.Pointer<ffi.Uint32>)
+            >
+          >('g_type_interface_prerequisites')
+          .asFunction<
+            ffi.Pointer<ffi.Size> Function(int, ffi.Pointer<ffi.Uint32>)
+          >();
+  static (ffi.Pointer<ffi.Size>, int) prerequisites(int interfaceType) {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gTypeInterfacePrerequisites(interfaceType, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 }

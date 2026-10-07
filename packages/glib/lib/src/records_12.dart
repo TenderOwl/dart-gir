@@ -1773,6 +1773,41 @@ final class GKeyFile {
     });
   }
 
+  /// Outputs @key_file as a string.
+  ///
+  /// Note that this function never reports an error.
+  static final _gKeyFileToData =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_key_file_to_data')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String, int) toData() {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gKeyFileToData(this.handle, _out0, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (stringFromNative((_ret).cast(), free: true)!, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// Decreases the reference count of @key_file by 1.
   ///
   /// If the reference count reaches zero, frees the key file and all its allocated

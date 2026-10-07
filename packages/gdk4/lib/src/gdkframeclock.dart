@@ -142,6 +142,44 @@ class GdkFrameClock extends GObject {
     return _gdkFrameClockGetHistoryStart(this.handle);
   }
 
+  /// Predicts a presentation time, based on history.
+  ///
+  /// Using the frame history stored in the frame clock, finds the last
+  /// known presentation time and refresh interval, and assuming that
+  /// presentation times are separated by the refresh interval,
+  /// predicts a presentation time that is a multiple of the refresh
+  /// interval after the last presentation time, and later than @base_time.
+  static final _gdkFrameClockGetRefreshInfo =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int64,
+                ffi.Pointer<ffi.Int64>,
+                ffi.Pointer<ffi.Int64>,
+              )
+            >
+          >('gdk_frame_clock_get_refresh_info')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int64>,
+              ffi.Pointer<ffi.Int64>,
+            )
+          >();
+  (int, int) getRefreshInfo(int baseTime) {
+    final _out0 = malloc<ffi.Int64>();
+    final _out1 = malloc<ffi.Int64>();
+    try {
+      _gdkFrameClockGetRefreshInfo(this.handle, baseTime, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Retrieves a `GdkFrameTimings` object holding timing information
   /// for the current frame or a recent frame.
   ///

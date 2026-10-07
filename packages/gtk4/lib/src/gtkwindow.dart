@@ -219,6 +219,43 @@ class GtkWindow extends GtkWidget
     return (_gtkWindowGetDecorated(this.handle)) != 0;
   }
 
+  /// Gets the default size of the window.
+  ///
+  /// A value of 0 for the width or height indicates that a default
+  /// size has not been explicitly set for that dimension, so the
+  /// “natural” size of the window will be used.
+  ///
+  /// This function is the recommended way for [saving window state
+  /// across restarts of applications](https://developer.gnome.org/documentation/tutorials/save-state.html).
+  static final _gtkWindowGetDefaultSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_window_get_default_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getDefaultSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkWindowGetDefaultSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns the default widget for @window.
   static final _gtkWindowGetDefaultWidget =
       gtk4Lookup<

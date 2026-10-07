@@ -55,6 +55,54 @@ final class PangoLanguage {
     )!;
   }
 
+  /// Determines the scripts used to to write @language.
+  ///
+  /// If nothing is known about the language tag @language,
+  /// or if @language is %NULL, then %NULL is returned.
+  /// The list of scripts returned starts with the script that the
+  /// language uses most and continues to the one it uses least.
+  ///
+  /// The value @num_script points at will be set to the number
+  /// of scripts in the returned array (or zero if %NULL is returned).
+  ///
+  /// Most languages use only one script for writing, but there are
+  /// some that use two (Latin and Cyrillic for example), and a few
+  /// use three (Japanese for example). Applications should not make
+  /// any assumptions on the maximum number of scripts returned
+  /// though, except that it is positive if the return value is not
+  /// %NULL, and it is a small number.
+  ///
+  /// The [method@Pango.Language.includes_script] function uses this
+  /// function internally.
+  ///
+  /// Note: while the return value is declared as `PangoScript`, the
+  /// returned values are from the `GUnicodeScript` enumeration, which
+  /// may have more values. Callers need to handle unknown values.
+  static final _pangoLanguageGetScripts =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Int32> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_language_get_scripts')
+          .asFunction<
+            ffi.Pointer<ffi.Int32> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Int32>, int) getScripts() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _pangoLanguageGetScripts(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Determines if @script is one of the scripts used to
   /// write @language.
   ///
@@ -186,445 +234,5 @@ final class PangoLayoutClass {
   /// (which produced this object) remains the owner.
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
-  }
-}
-
-/// A `PangoLayoutIter` can be used to iterate over the visual
-/// extents of a `PangoLayout`.
-///
-/// To obtain a `PangoLayoutIter`, use [method@Pango.Layout.get_iter].
-///
-/// The `PangoLayoutIter` structure is opaque, and has no user-visible fields.
-final class PangoLayoutIter {
-  PangoLayoutIter.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Determines whether @iter is on the last line of the layout.
-  static final _pangoLayoutIterAtLastLine =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_at_last_line')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool atLastLine() {
-    return (_pangoLayoutIterAtLastLine(this.handle)) != 0;
-  }
-
-  /// Copies a `PangoLayoutIter`.
-  static final _pangoLayoutIterCopy =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoLayoutIter? copy() {
-    return (_pangoLayoutIterCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutIter.fromPointer(_pangoLayoutIterCopy(this.handle));
-  }
-
-  /// Frees an iterator that's no longer in use.
-  static final _pangoLayoutIterFree =
-      pangoLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'pango_layout_iter_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _pangoLayoutIterFree(this.handle);
-  }
-
-  /// Gets the Y position of the current line's baseline, in layout
-  /// coordinates.
-  ///
-  /// Layout coordinates have the origin at the top left of the entire layout.
-  static final _pangoLayoutIterGetBaseline =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_get_baseline')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getBaseline() {
-    return _pangoLayoutIterGetBaseline(this.handle);
-  }
-
-  /// Gets the extents of the current character, in layout coordinates.
-  ///
-  /// Layout coordinates have the origin at the top left of the entire layout.
-  ///
-  /// Only logical extents can sensibly be obtained for characters;
-  /// ink extents make sense only down to the level of clusters.
-  static final _pangoLayoutIterGetCharExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_get_char_extents')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  PangoRectangle getCharExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _pangoLayoutIterGetCharExtents(this.handle, _out0.cast<ffi.Void>());
-      return PangoRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Gets the extents of the current cluster, in layout coordinates.
-  ///
-  /// Layout coordinates have the origin at the top left of the entire layout.
-  static final _pangoLayoutIterGetClusterExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_layout_iter_get_cluster_extents')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (PangoRectangle?, PangoRectangle?) getClusterExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetClusterExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Gets the current byte index.
-  ///
-  /// Note that iterating forward by char moves in visual order,
-  /// not logical order, so indexes may not be sequential. Also,
-  /// the index may be equal to the length of the text in the
-  /// layout, if on the %NULL run (see [method@Pango.LayoutIter.get_run]).
-  static final _pangoLayoutIterGetIndex =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_get_index')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getIndex() {
-    return _pangoLayoutIterGetIndex(this.handle);
-  }
-
-  /// Gets the layout associated with a `PangoLayoutIter`.
-  static final _pangoLayoutIterGetLayout =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_get_layout')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoLayout? getLayout() {
-    return (_pangoLayoutIterGetLayout(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayout.fromPointer(_pangoLayoutIterGetLayout(this.handle));
-  }
-
-  /// Obtains the extents of the `PangoLayout` being iterated over.
-  static final _pangoLayoutIterGetLayoutExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_layout_iter_get_layout_extents')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (PangoRectangle?, PangoRectangle?) getLayoutExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetLayoutExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Gets the current line.
-  ///
-  /// Use the faster [method@Pango.LayoutIter.get_line_readonly] if
-  /// you do not plan to modify the contents of the line (glyphs,
-  /// glyph widths, etc.).
-  static final _pangoLayoutIterGetLine =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_get_line')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoLayoutLine? getLine() {
-    return (_pangoLayoutIterGetLine(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(_pangoLayoutIterGetLine(this.handle));
-  }
-
-  /// Obtains the extents of the current line.
-  ///
-  /// Extents are in layout coordinates (origin is the top-left corner
-  /// of the entire `PangoLayout`). Thus the extents returned by this
-  /// function will be the same width/height but not at the same x/y
-  /// as the extents returned from [method@Pango.LayoutLine.get_extents].
-  static final _pangoLayoutIterGetLineExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_layout_iter_get_line_extents')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (PangoRectangle?, PangoRectangle?) getLineExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetLineExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Gets the current line for read-only access.
-  ///
-  /// This is a faster alternative to [method@Pango.LayoutIter.get_line],
-  /// but the user is not expected to modify the contents of the line
-  /// (glyphs, glyph widths, etc.).
-  static final _pangoLayoutIterGetLineReadonly =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_get_line_readonly')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoLayoutLine? getLineReadonly() {
-    return (_pangoLayoutIterGetLineReadonly(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(
-            _pangoLayoutIterGetLineReadonly(this.handle),
-          );
-  }
-
-  /// Gets the current run.
-  ///
-  /// When iterating by run, at the end of each line, there's a position
-  /// with a %NULL run, so this function can return %NULL. The %NULL run
-  /// at the end of each line ensures that all lines have at least one run,
-  /// even lines consisting of only a newline.
-  ///
-  /// Use the faster [method@Pango.LayoutIter.get_run_readonly] if you do not
-  /// plan to modify the contents of the run (glyphs, glyph widths, etc.).
-  static final _pangoLayoutIterGetRun =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_get_run')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoGlyphItem? getRun() {
-    return (_pangoLayoutIterGetRun(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItem.fromPointer(_pangoLayoutIterGetRun(this.handle));
-  }
-
-  /// Gets the Y position of the current run's baseline, in layout
-  /// coordinates.
-  ///
-  /// Layout coordinates have the origin at the top left of the entire layout.
-  ///
-  /// The run baseline can be different from the line baseline, for
-  /// example due to superscript or subscript positioning.
-  static final _pangoLayoutIterGetRunBaseline =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_get_run_baseline')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getRunBaseline() {
-    return _pangoLayoutIterGetRunBaseline(this.handle);
-  }
-
-  /// Gets the extents of the current run in layout coordinates.
-  ///
-  /// Layout coordinates have the origin at the top left of the entire layout.
-  static final _pangoLayoutIterGetRunExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_layout_iter_get_run_extents')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (PangoRectangle?, PangoRectangle?) getRunExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetRunExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Gets the current run for read-only access.
-  ///
-  /// When iterating by run, at the end of each line, there's a position
-  /// with a %NULL run, so this function can return %NULL. The %NULL run
-  /// at the end of each line ensures that all lines have at least one run,
-  /// even lines consisting of only a newline.
-  ///
-  /// This is a faster alternative to [method@Pango.LayoutIter.get_run],
-  /// but the user is not expected to modify the contents of the run (glyphs,
-  /// glyph widths, etc.).
-  static final _pangoLayoutIterGetRunReadonly =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_iter_get_run_readonly')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoGlyphItem? getRunReadonly() {
-    return (_pangoLayoutIterGetRunReadonly(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItem.fromPointer(
-            _pangoLayoutIterGetRunReadonly(this.handle),
-          );
-  }
-
-  /// Moves @iter forward to the next character in visual order.
-  ///
-  /// If @iter was already at the end of the layout, returns %FALSE.
-  static final _pangoLayoutIterNextChar =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_next_char')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool nextChar() {
-    return (_pangoLayoutIterNextChar(this.handle)) != 0;
-  }
-
-  /// Moves @iter forward to the next cluster in visual order.
-  ///
-  /// If @iter was already at the end of the layout, returns %FALSE.
-  static final _pangoLayoutIterNextCluster =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_next_cluster')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool nextCluster() {
-    return (_pangoLayoutIterNextCluster(this.handle)) != 0;
-  }
-
-  /// Moves @iter forward to the start of the next line.
-  ///
-  /// If @iter is already on the last line, returns %FALSE.
-  static final _pangoLayoutIterNextLine =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_next_line')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool nextLine() {
-    return (_pangoLayoutIterNextLine(this.handle)) != 0;
-  }
-
-  /// Moves @iter forward to the next run in visual order.
-  ///
-  /// If @iter was already at the end of the layout, returns %FALSE.
-  static final _pangoLayoutIterNextRun =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_iter_next_run')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool nextRun() {
-    return (_pangoLayoutIterNextRun(this.handle)) != 0;
   }
 }

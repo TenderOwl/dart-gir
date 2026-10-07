@@ -87,6 +87,85 @@ class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
     });
   }
 
+  /// Obtains the horizontal position and size of a cell in a column.
+  ///
+  /// If the  cell is not found in the column, @start_pos and @width
+  /// are not changed and %FALSE is returned.
+  static final _gtkTreeViewColumnCellGetPosition =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_view_column_cell_get_position')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int) cellGetPosition(GtkCellRenderer cellRenderer) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkTreeViewColumnCellGetPosition(
+        this.handle,
+        cellRenderer.handle,
+        _out0,
+        _out1,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Obtains the width and height needed to render the column.  This is used
+  /// primarily by the `GtkTreeView`.
+  static final _gtkTreeViewColumnCellGetSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_view_column_cell_get_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int, int, int) cellGetSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      _gtkTreeViewColumnCellGetSize(this.handle, _out0, _out1, _out2, _out3);
+      return (_out0.value, _out1.value, _out2.value, _out3.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
+  }
+
   /// Returns %TRUE if any of the cells packed into the @tree_column are visible.
   /// For this to be meaningful, you must first initialize the cells with
   /// gtk_tree_view_column_cell_set_cell_data()

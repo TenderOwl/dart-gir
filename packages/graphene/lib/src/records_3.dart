@@ -357,6 +357,38 @@ final class GraphenePoint {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GraphenePoint.alloc() : this.fromPointer(_graphenePointAlloc());
 
+  /// Computes the distance between @a and @b.
+  static final _graphenePointDistance =
+      grapheneLookup<
+            ffi.NativeFunction<
+              ffi.Float Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Float>,
+                ffi.Pointer<ffi.Float>,
+              )
+            >
+          >('graphene_point_distance')
+          .asFunction<
+            double Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Float>,
+              ffi.Pointer<ffi.Float>,
+            )
+          >();
+  (double, double, double) distance(GraphenePoint b) {
+    final _out0 = malloc<ffi.Float>();
+    final _out1 = malloc<ffi.Float>();
+    try {
+      final _ret = _graphenePointDistance(this.handle, b.handle, _out0, _out1);
+      return (_ret, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Checks if the two points @a and @b point to the same
   /// coordinates.
   ///

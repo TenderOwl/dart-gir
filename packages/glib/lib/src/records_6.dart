@@ -1010,6 +1010,40 @@ final class GDateTime {
     return _gDateTimeGetYear(this.handle);
   }
 
+  /// Retrieves the Gregorian day, month, and year of a given #GDateTime.
+  static final _gDateTimeGetYmd =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_date_time_get_ymd')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int, int) getYmd() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    try {
+      _gDateTimeGetYmd(this.handle, _out0, _out1, _out2);
+      return (_out0.value, _out1.value, _out2.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+    }
+  }
+
   /// Hashes @datetime into a #guint, suitable for use within #GHashTable.
   static final _gDateTimeHash =
       glibLookup<

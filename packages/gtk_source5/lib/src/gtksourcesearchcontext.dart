@@ -101,6 +101,67 @@ class GtkSourceSearchContext extends GObject {
          owned: true,
        );
 
+  /// Synchronous backward search.
+  ///
+  /// It is recommended to use the asynchronous functions instead, to not block the user interface.
+  /// However, if you are sure that the @buffer is small, this function is more convenient to use.
+  ///
+  /// If the [property@SearchSettings:wrap-around] property is %FALSE, this function
+  /// doesn't try to wrap around.
+  ///
+  /// The @has_wrapped_around out parameter is set independently of whether a match
+  /// is found. So if this function returns %FALSE, @has_wrapped_around will have
+  /// the same value as the [property@SearchSettings:wrap-around] property.
+  static final _gtkSourceSearchContextBackward =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_source_search_context_backward')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?, bool) backward(GtkTextIter iter) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkSourceSearchContextBackward(
+        this.handle,
+        iter.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2,
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value != 0,
+      );
+    } finally {
+      malloc.free(_out2);
+    }
+  }
+
   /// The asynchronous version of [method@SearchContext.backward].
   ///
   /// See the [iface@Gio.AsyncResult] documentation to know how to use this function.
@@ -225,6 +286,130 @@ class GtkSourceSearchContext extends GObject {
     );
   }
 
+  /// Finishes a backward search started with
+  /// [method@SearchContext.backward_async].
+  ///
+  /// See the documentation of [method@SearchContext.backward] for more
+  /// details.
+  static final _gtkSourceSearchContextBackwardFinish =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_source_search_context_backward_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?, bool) backwardFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gtkSourceSearchContextBackwardFinish(
+        this.handle,
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value != 0,
+      );
+    } finally {
+      malloc.free(_out2);
+      calloc.free(_error);
+    }
+  }
+
+  /// Synchronous forward search.
+  ///
+  /// It is recommended to use the asynchronous functions instead, to not block the user interface.
+  /// However, if you are sure that the @buffer is small, this function is more convenient to use.
+  ///
+  /// If the [property@SearchSettings:wrap-around] property is %FALSE, this function
+  /// doesn't try to wrap around.
+  ///
+  /// The @has_wrapped_around out parameter is set independently of whether a match
+  /// is found. So if this function returns %FALSE, @has_wrapped_around will have
+  /// the same value as the  [property@SearchSettings:wrap-around] property.
+  static final _gtkSourceSearchContextForward =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_source_search_context_forward')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?, bool) forward(GtkTextIter iter) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkSourceSearchContextForward(
+        this.handle,
+        iter.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2,
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value != 0,
+      );
+    } finally {
+      malloc.free(_out2);
+    }
+  }
+
   /// The asynchronous version of [method@SearchContext.forward].
   ///
   /// See the [iface@Gio.AsyncResult] documentation to know how to use this function.
@@ -347,6 +532,68 @@ class GtkSourceSearchContext extends GObject {
       _forwardAsyncCallbackPtr,
       _data.cast<ffi.Void>(),
     );
+  }
+
+  /// Finishes a forward search started with [method@SearchContext.forward_async].
+  ///
+  /// See the documentation of [method@SearchContext.forward] for more
+  /// details.
+  static final _gtkSourceSearchContextForwardFinish =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_source_search_context_forward_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GtkTextIter?, GtkTextIter?, bool) forwardFinish(GAsyncResult result) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1Anchor = HeapAnchor.allocate(256);
+    final _out1 = _out1Anchor.buffer;
+    final _out2 = malloc<ffi.Int32>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gtkSourceSearchContextForwardFinish(
+        this.handle,
+        result.handle,
+        _out0.cast<ffi.Void>(),
+        _out1.cast<ffi.Void>(),
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        (_out1) == ffi.nullptr
+            ? null
+            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+        _out2.value != 0,
+      );
+    } finally {
+      malloc.free(_out2);
+      calloc.free(_error);
+    }
   }
 
   static final _gtkSourceSearchContextGetBuffer =

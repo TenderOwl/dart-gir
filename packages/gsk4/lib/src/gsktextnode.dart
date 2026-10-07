@@ -82,6 +82,32 @@ class GskTextNode extends GskRenderNode {
     return PangoFont.fromPointer(_gskTextNodeGetFont(this.handle));
   }
 
+  /// Retrieves the glyph information in the @node.
+  static final _gskTextNodeGetGlyphs =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gsk_text_node_get_glyphs')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getGlyphs() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gskTextNodeGetGlyphs(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Retrieves the number of glyphs in the text node.
   static final _gskTextNodeGetNumGlyphs =
       gsk4Lookup<

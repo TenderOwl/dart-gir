@@ -179,6 +179,36 @@ class GtkPopover extends GtkWidget
     return (_gtkPopoverGetMnemonicsVisible(this.handle)) != 0;
   }
 
+  /// Gets the offset previous set with [method@Gtk.Popover.set_offset].
+  static final _gtkPopoverGetOffset =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_popover_get_offset')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getOffset() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkPopoverGetOffset(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets the rectangle that the popover points to.
   ///
   /// If a rectangle to point to has been set, this function will

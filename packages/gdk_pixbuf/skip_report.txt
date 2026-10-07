@@ -1,9 +1,9 @@
 # Skip report for package gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 23
+Total skipped: 22
 
 ## By category
 property: 9
-callable: 8
+callable: 7
 callback: 5
 method: 1
 
@@ -16,7 +16,6 @@ parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature: 1
 shadowed by get_pixels_with_length: 1
 unsupported out parameter buffer (ffi.Pointer<ffi.Uint8>): 1
 parameter save_func: callback PixbufSaveFunc has unsupported signature: 1
-parameter width: nullable scalar parameter (gint): 1
 name collision: 1
 missing getter get_pixel-bytes: 1
 unsupported type gpointer: 1
@@ -31,7 +30,6 @@ unsupported type gpointer: 1
 [callable] GdkPixbuf.saveToBufferv — unsupported out parameter buffer (ffi.Pointer<ffi.Uint8>)
 [callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature
 [callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
-[callable] GdkPixbuf.getFileInfo — parameter width: nullable scalar parameter (gint)
 [method] GdkPixbuf.toString — name collision
 [property] GdkPixbuf.bits-per-sample — construct-only or no public setter; emitting getter only
 [property] GdkPixbuf.colorspace — construct-only or no public setter; emitting getter only

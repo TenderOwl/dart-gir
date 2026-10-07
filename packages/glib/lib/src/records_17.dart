@@ -131,6 +131,286 @@ final class GMatchInfo {
     });
   }
 
+  /// Retrieves the position in bytes of the capturing parentheses named @name.
+  ///
+  /// If @name is a valid sub pattern name but it didn't match anything
+  /// (e.g. sub pattern `"X"`, matching `"b"` against `"(?P<X>a)?b"`)
+  /// then @start_pos and @end_pos are set to -1 and %TRUE is returned.
+  ///
+  /// As @end_pos is set to the byte after the final byte of the match (on success),
+  /// the length of the match can be calculated as `end_pos - start_pos`.
+  static final _gMatchInfoFetchNamedPos =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_match_info_fetch_named_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int) fetchNamedPos(String name) {
+    return withNativeString(name, (nativeName) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1 = malloc<ffi.Int32>();
+      try {
+        final _ret = _gMatchInfoFetchNamedPos(
+          this.handle,
+          nativeName.cast<Utf8>(),
+          _out0,
+          _out1,
+        );
+        return ((_ret) != 0, _out0.value, _out1.value);
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+      }
+    });
+  }
+
+  /// Returns the start and end positions (in bytes) of a successfully matching
+  /// capture parenthesis.
+  ///
+  /// Valid values for @match_num are `0` for the full text of the match,
+  /// `1` for the first paren set, `2` for the second, and so on.
+  ///
+  /// As @end_pos is set to the byte after the final byte of the match (on success),
+  /// the length of the match can be calculated as `end_pos - start_pos`.
+  ///
+  /// As a best practice, initialize @start_pos and @end_pos to identifiable
+  /// values, such as `G_MAXINT`, so that you can test if
+  /// `g_match_info_fetch_pos()` actually changed the value for a given
+  /// capture parenthesis.
+  ///
+  /// The parameter @match_num corresponds to a matched capture parenthesis. The
+  /// actual value you use for @match_num depends on the method used to generate
+  /// @match_info. The following sections describe those methods.
+  ///
+  /// ## Methods Using Non-deterministic Finite Automata Matching
+  ///
+  /// The methods [method@GLib.Regex.match] and [method@GLib.Regex.match_full]
+  /// return a [struct@GLib.MatchInfo] using traditional (greedy) pattern
+  /// matching, also known as
+  /// [Non-deterministic Finite Automaton](https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton)
+  /// (NFA) matching. You pass the returned `GMatchInfo` from these methods to
+  /// `g_match_info_fetch_pos()` to determine the start and end positions
+  /// of capture parentheses. The values for @match_num correspond to the capture
+  /// parentheses in order, with `0` corresponding to the entire matched string.
+  ///
+  /// @match_num can refer to a capture parenthesis with no match. For example,
+  /// the string `b` matches against the pattern `(a)?b`, but the capture
+  /// parenthesis `(a)` has no match. In this case, `g_match_info_fetch_pos()`
+  /// returns true and sets @start_pos and @end_pos to `-1` when called with
+  /// `match_num` as `1` (for `(a)`).
+  ///
+  /// For an expanded example, a regex pattern is `(a)?(.*?)the (.*)`,
+  /// and a candidate string is `glib regexes are the best`. In this scenario
+  /// there are four capture parentheses numbered 0–3: an implicit one
+  /// for the entire string, and three explicitly declared in the regex pattern.
+  ///
+  /// Given this example, the following table describes the return values
+  /// from `g_match_info_fetch_pos()` for various values of @match_num.
+  ///
+  /// `match_num` | Contents | Return value | Returned `start_pos` | Returned `end_pos`
+  /// ----------- | -------- | ------------ | -------------------- | ------------------
+  /// 0 | Matches entire string | True | 0 | 25
+  /// 1 | Does not match first character | True | -1 | -1
+  /// 2 | All text before `the ` | True | 0 | 17
+  /// 3 | All text after `the ` | True | 21 | 25
+  /// 4 | Capture paren out of range | False | Unchanged | Unchanged
+  ///
+  /// The following code sample and output implements this example.
+  ///
+  /// ``` { .c }
+  /// #include <glib.h>
+  ///
+  /// int
+  /// main (int argc, char *argv[])
+  /// {
+  /// g_autoptr(GError) local_error = NULL;
+  /// const char *regex_pattern = "(a)?(.*?)the (.*)";
+  /// const char *test_string = "glib regexes are the best";
+  /// g_autoptr(GRegex) regex = NULL;
+  ///
+  /// regex = g_regex_new (regex_pattern,
+  /// G_REGEX_DEFAULT,
+  /// G_REGEX_MATCH_DEFAULT,
+  /// &local_error);
+  /// if (regex == NULL)
+  /// {
+  /// g_printerr ("Error creating regex: %s\n", local_error->message);
+  /// return 1;
+  /// }
+  ///
+  /// g_autoptr(GMatchInfo) match_info = NULL;
+  /// g_regex_match (regex, test_string, G_REGEX_MATCH_DEFAULT, &match_info);
+  ///
+  /// int n_matched_strings = g_match_info_get_match_count (match_info);
+  ///
+  /// // Print header line
+  /// g_print ("match_num Contents                  Return value returned start_pos returned end_pos\n");
+  ///
+  /// // Iterate over each capture paren, including one that is out of range as a demonstration.
+  /// for (int match_num = 0; match_num <= n_matched_strings; match_num++)
+  /// {
+  /// gboolean found_match;
+  /// g_autofree char *paren_string = NULL;
+  /// int start_pos = G_MAXINT;
+  /// int end_pos = G_MAXINT;
+  ///
+  /// found_match = g_match_info_fetch_pos (match_info,
+  /// match_num,
+  /// &start_pos,
+  /// &end_pos);
+  ///
+  /// // If no match, display N/A as the found string.
+  /// if (start_pos == G_MAXINT || start_pos == -1)
+  /// paren_string = g_strdup ("N/A");
+  /// else
+  /// paren_string = g_strndup (test_string + start_pos, end_pos - start_pos);
+  ///
+  /// g_print ("%-9d %-25s %-12d %-18d %d\n", match_num, paren_string, found_match, start_pos, end_pos);
+  /// }
+  ///
+  /// return 0;
+  /// }
+  /// ```
+  ///
+  /// ```
+  /// match_num Contents                  Return value returned start_pos returned end_pos
+  /// 0         glib regexes are the best 1            0                  25
+  /// 1         N/A                       1            -1                 -1
+  /// 2         glib regexes are          1            0                  17
+  /// 3         best                      1            21                 25
+  /// 4         N/A                       0            2147483647         2147483647
+  /// ```
+  /// ## Methods Using Deterministic Finite Automata Matching
+  ///
+  /// The methods [method@GLib.Regex.match_all] and
+  /// [method@GLib.Regex.match_all_full]
+  /// return a `GMatchInfo` using
+  /// [Deterministic Finite Automaton](https://en.wikipedia.org/wiki/Deterministic_finite_automaton)
+  /// (DFA) pattern matching. This algorithm detects overlapping matches. You pass
+  /// the returned `GMatchInfo` from these methods to `g_match_info_fetch_pos()`
+  /// to determine the start and end positions of each overlapping match. Use the
+  /// method [method@GLib.MatchInfo.get_match_count] to determine the number
+  /// of overlapping matches.
+  ///
+  /// For example, a regex pattern is `<.*>`, and a candidate string is
+  /// `<a> <b> <c>`. In this scenario there are three implicit capture
+  /// parentheses: one for the entire string, one for `<a> <b>`, and one for `<a>`.
+  ///
+  /// Given this example, the following table describes the return values from
+  /// `g_match_info_fetch_pos()` for various values of @match_num.
+  ///
+  /// `match_num` | Contents | Return value | Returned `start_pos` | Returned `end_pos`
+  /// ----------- | -------- | ------------ | -------------------- | ------------------
+  /// 0 | Matches entire string | True | 0 | 11
+  /// 1 | Matches `<a> <b>` | True | 0 | 7
+  /// 2 | Matches `<a>` | True | 0 | 3
+  /// 3 | Capture paren out of range | False | Unchanged | Unchanged
+  ///
+  /// The following code sample and output implements this example.
+  ///
+  /// ``` { .c }
+  /// #include <glib.h>
+  ///
+  /// int
+  /// main (int argc, char *argv[])
+  /// {
+  /// g_autoptr(GError) local_error = NULL;
+  /// const char *regex_pattern = "<.*>";
+  /// const char *test_string = "<a> <b> <c>";
+  /// g_autoptr(GRegex) regex = NULL;
+  ///
+  /// regex = g_regex_new (regex_pattern,
+  /// G_REGEX_DEFAULT,
+  /// G_REGEX_MATCH_DEFAULT,
+  /// &local_error);
+  /// if (regex == NULL)
+  /// {
+  /// g_printerr ("Error creating regex: %s\n", local_error->message);
+  /// return -1;
+  /// }
+  ///
+  /// g_autoptr(GMatchInfo) match_info = NULL;
+  /// g_regex_match_all (regex, test_string, G_REGEX_MATCH_DEFAULT, &match_info);
+  ///
+  /// int n_matched_strings = g_match_info_get_match_count (match_info);
+  ///
+  /// // Print header line
+  /// g_print ("match_num Contents                  Return value returned start_pos returned end_pos\n");
+  ///
+  /// // Iterate over each capture paren, including one that is out of range as a demonstration.
+  /// for (int match_num = 0; match_num <= n_matched_strings; match_num++)
+  /// {
+  /// gboolean found_match;
+  /// g_autofree char *paren_string = NULL;
+  /// int start_pos = G_MAXINT;
+  /// int end_pos = G_MAXINT;
+  ///
+  /// found_match = g_match_info_fetch_pos (match_info, match_num, &start_pos, &end_pos);
+  ///
+  /// // If no match, display N/A as the found string.
+  /// if (start_pos == G_MAXINT || start_pos == -1)
+  /// paren_string = g_strdup ("N/A");
+  /// else
+  /// paren_string = g_strndup (test_string + start_pos, end_pos - start_pos);
+  ///
+  /// g_print ("%-9d %-25s %-12d %-18d %d\n", match_num, paren_string, found_match, start_pos, end_pos);
+  /// }
+  ///
+  /// return 0;
+  /// }
+  /// ```
+  ///
+  /// ```
+  /// match_num Contents                  Return value returned start_pos returned end_pos
+  /// 0         <a> <b> <c>               1            0                  11
+  /// 1         <a> <b>                   1            0                  7
+  /// 2         <a>                       1            0                  3
+  /// 3         N/A                       0            2147483647         2147483647
+  /// ```
+  static final _gMatchInfoFetchPos =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_match_info_fetch_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int) fetchPos(int matchNum) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gMatchInfoFetchPos(this.handle, matchNum, _out0, _out1);
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// If @match_info is not %NULL, calls g_match_info_unref(); otherwise does
   /// nothing.
   static final _gMatchInfoFree =
@@ -292,404 +572,5 @@ final class GMatchInfo {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gMatchInfoUnref(this.handle);
-  }
-}
-
-final class GMemChunk {
-  GMemChunk.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  static final _gMemChunkAlloc =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_mem_chunk_alloc')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void>? alloc() {
-    return (_gMemChunkAlloc(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMemChunkAlloc(this.handle));
-  }
-
-  static final _gMemChunkAlloc0 =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_mem_chunk_alloc0')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void>? alloc0() {
-    return (_gMemChunkAlloc0(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMemChunkAlloc0(this.handle));
-  }
-
-  static final _gMemChunkClean =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_mem_chunk_clean',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void clean() {
-    _gMemChunkClean(this.handle);
-  }
-
-  static final _gMemChunkDestroy =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_mem_chunk_destroy',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void destroy() {
-    _gMemChunkDestroy(this.handle);
-  }
-
-  static final _gMemChunkFree =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_mem_chunk_free')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void free([ffi.Pointer<ffi.Void>? mem]) {
-    _gMemChunkFree(this.handle, mem ?? ffi.nullptr);
-  }
-
-  static final _gMemChunkPrint =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_mem_chunk_print',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void print() {
-    _gMemChunkPrint(this.handle);
-  }
-
-  static final _gMemChunkReset =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_mem_chunk_reset',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void reset() {
-    _gMemChunkReset(this.handle);
-  }
-
-  static final _gMemChunkInfo =
-      glibLookup<ffi.NativeFunction<ffi.Void Function()>>('g_mem_chunk_info')
-          .asFunction<void Function()>();
-  static void info() {
-    _gMemChunkInfo();
-  }
-}
-
-/// A set of functions used to perform memory allocation. The same #GMemVTable must
-/// be used for all allocations in the same program; a call to g_mem_set_vtable(),
-/// if it exists, should be prior to any use of GLib.
-///
-/// This functions related to this has been deprecated in 2.46, and no longer work.
-final class GMemVTable {
-  GMemVTable.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// The #GNode struct represents one node in a [n-ary tree](data-structures.html#n-ary-trees).
-final class GNode {
-  GNode.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Gets the position of the first child of a #GNode
-  /// which contains the given data.
-  static final _gNodeChildIndex =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_node_child_index')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  int childIndex([ffi.Pointer<ffi.Void>? data]) {
-    return _gNodeChildIndex(this.handle, data ?? ffi.nullptr);
-  }
-
-  /// Gets the position of a #GNode with respect to its siblings.
-  /// @child must be a child of @node. The first child is numbered 0,
-  /// the second 1, and so on.
-  static final _gNodeChildPosition =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_node_child_position')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  int childPosition(GNode child) {
-    return _gNodeChildPosition(this.handle, child.handle);
-  }
-
-  /// Calls a function for each of the children of a #GNode. Note that it
-  /// doesn't descend beneath the child nodes. @func must not do anything
-  /// that would modify the structure of the tree.
-  static final _gNodeChildrenForeach =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint32,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Void Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_node_children_foreach')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void childrenForeach(
-    GTraverseFlags flags,
-    void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func, [
-    ffi.Pointer<ffi.Void>? data,
-  ]) {
-    final _nc2 =
-        ffi.NativeCallable<
-          ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-        >.isolateLocal(func);
-    try {
-      _gNodeChildrenForeach(
-        this.handle,
-        flags.value,
-        _nc2.nativeFunction,
-        data ?? ffi.nullptr,
-      );
-    } finally {
-      _nc2.close();
-    }
-  }
-
-  /// Gets the depth of a #GNode.
-  ///
-  /// If @node is %NULL the depth is 0. The root node has a depth of 1.
-  /// For the children of the root node the depth is 2. And so on.
-  static final _gNodeDepth =
-      glibLookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('g_node_depth')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int depth() {
-    return _gNodeDepth(this.handle);
-  }
-
-  /// Removes @root and its children from the tree, freeing any memory
-  /// allocated.
-  static final _gNodeDestroy =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_node_destroy',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void destroy() {
-    _gNodeDestroy(this.handle);
-  }
-
-  /// Returns %TRUE if @node is an ancestor of @descendant.
-  /// This is true if node is the parent of @descendant,
-  /// or if node is the grandparent of @descendant etc.
-  static final _gNodeIsAncestor =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_node_is_ancestor')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool isAncestor(GNode descendant) {
-    return (_gNodeIsAncestor(this.handle, descendant.handle)) != 0;
-  }
-
-  /// Gets the maximum height of all branches beneath a #GNode.
-  /// This is the maximum distance from the #GNode to all leaf nodes.
-  ///
-  /// If @root is %NULL, 0 is returned. If @root has no children,
-  /// 1 is returned. If @root has children, 2 is returned. And so on.
-  static final _gNodeMaxHeight =
-      glibLookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('g_node_max_height')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int maxHeight() {
-    return _gNodeMaxHeight(this.handle);
-  }
-
-  /// Gets the number of children of a #GNode.
-  static final _gNodeNChildren =
-      glibLookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('g_node_n_children')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int nChildren() {
-    return _gNodeNChildren(this.handle);
-  }
-
-  /// Gets the number of nodes in a tree.
-  static final _gNodeNNodes =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Uint32 Function(ffi.Pointer<ffi.Void>, ffi.Uint32)
-            >
-          >('g_node_n_nodes')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-  int nNodes(GTraverseFlags flags) {
-    return _gNodeNNodes(this.handle, flags.value);
-  }
-
-  /// Reverses the order of the children of a #GNode.
-  /// (It doesn't change the order of the grandchildren.)
-  static final _gNodeReverseChildren =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_node_reverse_children',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void reverseChildren() {
-    _gNodeReverseChildren(this.handle);
-  }
-
-  /// Traverses a tree starting at the given root #GNode.
-  /// It calls the given function for each node visited.
-  /// The traversal can be halted at any point by returning %TRUE from @func.
-  /// @func must not do anything that would modify the structure of the tree.
-  static final _gNodeTraverse =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Uint32,
-                ffi.Int32,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Int32 Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_node_traverse')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              int,
-              int,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Int32 Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void traverse(
-    GTraverseType order,
-    GTraverseFlags flags,
-    int maxDepth,
-    int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func, [
-    ffi.Pointer<ffi.Void>? data,
-  ]) {
-    final _nc4 =
-        ffi.NativeCallable<
-          ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-        >.isolateLocal(func, exceptionalReturn: 0);
-    try {
-      _gNodeTraverse(
-        this.handle,
-        order.value,
-        flags.value,
-        maxDepth,
-        _nc4.nativeFunction,
-        data ?? ffi.nullptr,
-      );
-    } finally {
-      _nc4.close();
-    }
-  }
-
-  /// Unlinks a #GNode from a tree, resulting in two separate trees.
-  static final _gNodeUnlink =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_node_unlink',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unlink() {
-    _gNodeUnlink(this.handle);
-  }
-
-  static final _gNodePopAllocator =
-      glibLookup<ffi.NativeFunction<ffi.Void Function()>>(
-        'g_node_pop_allocator',
-      ).asFunction<void Function()>();
-  static void popAllocator() {
-    _gNodePopAllocator();
-  }
-
-  static final _gNodePushAllocator =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_node_push_allocator',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  static void pushAllocator(GAllocator allocator) {
-    _gNodePushAllocator(allocator.handle);
   }
 }

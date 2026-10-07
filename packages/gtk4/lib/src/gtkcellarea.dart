@@ -1124,6 +1124,218 @@ class GtkCellArea extends GInitiallyUnowned
     );
   }
 
+  /// Retrieves a cell area’s initial minimum and natural height.
+  ///
+  /// @area will store some geometrical information in @context along the way;
+  /// when requesting sizes over an arbitrary number of rows, it’s not important
+  /// to check the @minimum_height and @natural_height of this call but rather to
+  /// consult gtk_cell_area_context_get_preferred_height() after a series of
+  /// requests.
+  static final _gtkCellAreaGetPreferredHeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_get_preferred_height')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredHeight(GtkCellAreaContext context, GtkWidget widget) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaGetPreferredHeight(
+        this.handle,
+        context.handle,
+        widget.handle,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Retrieves a cell area’s minimum and natural height if it would be given
+  /// the specified @width.
+  ///
+  /// @area stores some geometrical information in @context along the way
+  /// while calling gtk_cell_area_get_preferred_width(). It’s important to
+  /// perform a series of gtk_cell_area_get_preferred_width() requests with
+  /// @context first and then call gtk_cell_area_get_preferred_height_for_width()
+  /// on each cell area individually to get the height for width of each
+  /// fully requested row.
+  ///
+  /// If at some point, the width of a single row changes, it should be
+  /// requested with gtk_cell_area_get_preferred_width() again and then
+  /// the full width of the requested rows checked again with
+  /// gtk_cell_area_context_get_preferred_width().
+  static final _gtkCellAreaGetPreferredHeightForWidth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_get_preferred_height_for_width')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredHeightForWidth(
+    GtkCellAreaContext context,
+    GtkWidget widget,
+    int width,
+  ) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaGetPreferredHeightForWidth(
+        this.handle,
+        context.handle,
+        widget.handle,
+        width,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Retrieves a cell area’s initial minimum and natural width.
+  ///
+  /// @area will store some geometrical information in @context along the way;
+  /// when requesting sizes over an arbitrary number of rows, it’s not important
+  /// to check the @minimum_width and @natural_width of this call but rather to
+  /// consult gtk_cell_area_context_get_preferred_width() after a series of
+  /// requests.
+  static final _gtkCellAreaGetPreferredWidth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_get_preferred_width')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredWidth(GtkCellAreaContext context, GtkWidget widget) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaGetPreferredWidth(
+        this.handle,
+        context.handle,
+        widget.handle,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Retrieves a cell area’s minimum and natural width if it would be given
+  /// the specified @height.
+  ///
+  /// @area stores some geometrical information in @context along the way
+  /// while calling gtk_cell_area_get_preferred_height(). It’s important to
+  /// perform a series of gtk_cell_area_get_preferred_height() requests with
+  /// @context first and then call gtk_cell_area_get_preferred_width_for_height()
+  /// on each cell area individually to get the height for width of each
+  /// fully requested row.
+  ///
+  /// If at some point, the height of a single row changes, it should be
+  /// requested with gtk_cell_area_get_preferred_height() again and then
+  /// the full height of the requested rows checked again with
+  /// gtk_cell_area_context_get_preferred_height().
+  static final _gtkCellAreaGetPreferredWidthForHeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_get_preferred_width_for_height')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredWidthForHeight(
+    GtkCellAreaContext context,
+    GtkWidget widget,
+    int height,
+  ) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaGetPreferredWidthForHeight(
+        this.handle,
+        context.handle,
+        widget.handle,
+        height,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets whether the area prefers a height-for-width layout
   /// or a width-for-height layout.
   static final _gtkCellAreaGetRequestMode =
@@ -1263,6 +1475,61 @@ class GtkCellArea extends GInitiallyUnowned
       renderer.handle,
       sibling.handle,
     );
+  }
+
+  /// This is a convenience function for `GtkCellArea` implementations
+  /// to request size for cell renderers. It’s important to use this
+  /// function to request size and then use gtk_cell_area_inner_cell_area()
+  /// at render and event time since this function will add padding
+  /// around the cell for focus painting.
+  static final _gtkCellAreaRequestRenderer =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_request_renderer')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) requestRenderer(
+    GtkCellRenderer renderer,
+    GtkOrientation orientation,
+    GtkWidget widget,
+    int forSize,
+  ) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaRequestRenderer(
+        this.handle,
+        renderer.handle,
+        orientation.value,
+        widget.handle,
+        forSize,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Explicitly sets the currently focused cell to @renderer.

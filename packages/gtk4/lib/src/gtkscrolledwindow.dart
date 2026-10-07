@@ -224,6 +224,42 @@ class GtkScrolledWindow extends GtkWidget
     return GtkCornerType.fromValue(_gtkScrolledWindowGetPlacement(this.handle));
   }
 
+  /// Retrieves the current policy values for the horizontal and vertical
+  /// scrollbars.
+  ///
+  /// See [method@Gtk.ScrolledWindow.set_policy].
+  static final _gtkScrolledWindowGetPolicy =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_scrolled_window_get_policy')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (GtkPolicyType, GtkPolicyType) getPolicy() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkScrolledWindowGetPolicy(this.handle, _out0, _out1);
+      return (
+        GtkPolicyType.fromValue(_out0.value),
+        GtkPolicyType.fromValue(_out1.value),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Reports whether the natural height of the child will be calculated
   /// and propagated through the scrolled window’s requested natural height.
   static final _gtkScrolledWindowGetPropagateNaturalHeight =

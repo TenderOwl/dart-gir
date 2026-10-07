@@ -50,6 +50,40 @@ class GtkCellAreaContext extends GObject {
     _gtkCellAreaContextAllocate(this.handle, width, height);
   }
 
+  /// Fetches the current allocation size for @context.
+  ///
+  /// If the context was not allocated in width or height, or if the
+  /// context was recently reset with gtk_cell_area_context_reset(),
+  /// the returned value will be -1.
+  static final _gtkCellAreaContextGetAllocation =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_context_get_allocation')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getAllocation() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaContextGetAllocation(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Fetches the `GtkCellArea` this @context was created by.
   ///
   /// This is generally unneeded by layouting widgets; however,
@@ -69,6 +103,156 @@ class GtkCellAreaContext extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea getArea() {
     return GtkCellArea.fromPointer(_gtkCellAreaContextGetArea(this.handle));
+  }
+
+  /// Gets the accumulative preferred height for all rows which have been
+  /// requested with this context.
+  ///
+  /// After gtk_cell_area_context_reset() is called and/or before ever
+  /// requesting the size of a `GtkCellArea`, the returned values are 0.
+  static final _gtkCellAreaContextGetPreferredHeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_context_get_preferred_height')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredHeight() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaContextGetPreferredHeight(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets the accumulative preferred height for @width for all rows
+  /// which have been requested for the same said @width with this context.
+  ///
+  /// After gtk_cell_area_context_reset() is called and/or before ever
+  /// requesting the size of a `GtkCellArea`, the returned values are -1.
+  static final _gtkCellAreaContextGetPreferredHeightForWidth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_context_get_preferred_height_for_width')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredHeightForWidth(int width) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaContextGetPreferredHeightForWidth(
+        this.handle,
+        width,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets the accumulative preferred width for all rows which have been
+  /// requested with this context.
+  ///
+  /// After gtk_cell_area_context_reset() is called and/or before ever
+  /// requesting the size of a `GtkCellArea`, the returned values are 0.
+  static final _gtkCellAreaContextGetPreferredWidth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_context_get_preferred_width')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredWidth() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaContextGetPreferredWidth(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets the accumulative preferred width for @height for all rows which
+  /// have been requested for the same said @height with this context.
+  ///
+  /// After gtk_cell_area_context_reset() is called and/or before ever
+  /// requesting the size of a `GtkCellArea`, the returned values are -1.
+  static final _gtkCellAreaContextGetPreferredWidthForHeight =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_cell_area_context_get_preferred_width_for_height')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPreferredWidthForHeight(int height) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkCellAreaContextGetPreferredWidthForHeight(
+        this.handle,
+        height,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Causes the minimum and/or natural height to grow if the new

@@ -151,6 +151,87 @@ class GUnixFDList extends GObject {
     return _gUnixFdListGetLength(this.handle);
   }
 
+  /// Returns the array of file descriptors that is contained in this
+  /// object.
+  ///
+  /// After this call, the descriptors remain the property of @list.  The
+  /// caller must not close them and must not free the array.  The array is
+  /// valid only until @list is changed in any way.
+  ///
+  /// If @length is non-%NULL then it is set to the number of file
+  /// descriptors in the returned array. The returned array is also
+  /// terminated with -1.
+  ///
+  /// This function never returns %NULL. In case there are no file
+  /// descriptors contained in @list, an empty array is returned.
+  static final _gUnixFdListPeekFds =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Int32> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_unix_fd_list_peek_fds')
+          .asFunction<
+            ffi.Pointer<ffi.Int32> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Int32>, int) peekFds() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gUnixFdListPeekFds(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
+  /// Returns the array of file descriptors that is contained in this
+  /// object.
+  ///
+  /// After this call, the descriptors are no longer contained in
+  /// @list. Further calls will return an empty list (unless more
+  /// descriptors have been added).
+  ///
+  /// The return result of this function must be freed with g_free().
+  /// The caller is also responsible for closing all of the file
+  /// descriptors.  The file descriptors in the array are set to
+  /// close-on-exec.
+  ///
+  /// If @length is non-%NULL then it is set to the number of file
+  /// descriptors in the returned array. The returned array is also
+  /// terminated with -1.
+  ///
+  /// This function never returns %NULL. In case there are no file
+  /// descriptors contained in @list, an empty array is returned.
+  static final _gUnixFdListStealFds =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Int32> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_unix_fd_list_steal_fds')
+          .asFunction<
+            ffi.Pointer<ffi.Int32> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Int32>, int) stealFds() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gUnixFdListStealFds(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

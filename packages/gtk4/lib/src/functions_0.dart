@@ -154,6 +154,64 @@ String acceleratorNameWithKeycode(
   )!;
 }
 
+/// Parses a string representing an accelerator.
+///
+/// The format looks like “`<Control>a`” or “`<Shift><Alt>F1`”.
+///
+/// The parser is fairly liberal and allows lower or upper case, and also
+/// abbreviations such as “`<Ctl>`” and “`<Ctrl>`”.
+///
+/// Key names are parsed using [func@Gdk.keyval_from_name]. For character keys
+/// the name is not the symbol, but the lowercase name, e.g. one would use
+/// “`<Ctrl>minus`” instead of “`<Ctrl>-`”.
+///
+/// Modifiers are enclosed in angular brackets `<>`, and match the
+/// [flags@Gdk.ModifierType] mask:
+///
+/// - `<Shift>` for `GDK_SHIFT_MASK`
+/// - `<Ctrl>` for `GDK_CONTROL_MASK`
+/// - `<Alt>` for `GDK_ALT_MASK`
+/// - `<Meta>` for `GDK_META_MASK`
+/// - `<Super>` for `GDK_SUPER_MASK`
+/// - `<Hyper>` for `GDK_HYPER_MASK`
+///
+/// If the parse operation fails, @accelerator_key and @accelerator_mods will
+/// be set to 0 (zero).
+final _gtkAcceleratorParse =
+    gtk4Lookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >
+        >('gtk_accelerator_parse')
+        .asFunction<
+          int Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Uint32>,
+            ffi.Pointer<ffi.Uint32>,
+          )
+        >();
+(bool, int, GdkModifierType) acceleratorParse(String accelerator) {
+  return withNativeString(accelerator, (nativeAccelerator) {
+    final _out0 = malloc<ffi.Uint32>();
+    final _out1 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkAcceleratorParse(
+        nativeAccelerator.cast<Utf8>(),
+        _out0,
+        _out1,
+      );
+      return ((_ret) != 0, _out0.value, GdkModifierType(_out1.value));
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  });
+}
+
 /// Determines whether a given keyval and modifier mask constitute
 /// a valid keyboard accelerator.
 ///
@@ -575,149 +633,4 @@ final _gtkIsInitialized = gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function()>>(
 ).asFunction<int Function()>();
 bool isInitialized() {
   return (_gtkIsInitialized()) != 0;
-}
-
-/// Creates a new `GParamSpec` instance for a property holding a `GtkExpression`.
-///
-/// See `g_param_spec_internal()` for details on the property strings.
-final _gtkParamSpecExpression =
-    gtk4Lookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
-            )
-          >
-        >('gtk_param_spec_expression')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-          )
-        >();
-GParamSpec paramSpecExpression(
-  String name,
-  String nick,
-  String blurb,
-  GParamFlags flags,
-) {
-  return withNativeString(name, (nativeName) {
-    return withNativeString(nick, (nativeNick) {
-      return withNativeString(blurb, (nativeBlurb) {
-        return GParamSpec.fromPointer(
-          _gtkParamSpecExpression(
-            nativeName.cast<Utf8>(),
-            nativeNick.cast<Utf8>(),
-            nativeBlurb.cast<Utf8>(),
-            flags.value,
-          ),
-        );
-      });
-    });
-  });
-}
-
-/// Runs a page setup dialog, letting the user modify the values from @page_setup.
-///
-/// If the user cancels the dialog, the returned `GtkPageSetup` is identical
-/// to the passed in @page_setup, otherwise it contains the modifications
-/// done in the dialog.
-///
-/// Note that this function may use a recursive mainloop to show the page
-/// setup dialog. See [func@Gtk.print_run_page_setup_dialog_async] if this is
-/// a problem.
-final _gtkPrintRunPageSetupDialog =
-    gtk4Lookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('gtk_print_run_page_setup_dialog')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-GtkPageSetup printRunPageSetupDialog(
-  GtkWindow? parent,
-  GtkPageSetup? pageSetup,
-  GtkPrintSettings settings,
-) {
-  return GtkPageSetup.fromPointer(
-    _gtkPrintRunPageSetupDialog(
-      parent?.handle ?? ffi.nullptr,
-      pageSetup?.handle ?? ffi.nullptr,
-      settings.handle,
-    ),
-  );
-}
-
-/// Runs a page setup dialog, letting the user modify the values from @page_setup.
-///
-/// In contrast to [func@Gtk.print_run_page_setup_dialog], this function  returns
-/// after showing the page setup dialog on platforms that support this, and calls
-/// @done_cb from a signal handler for the ::response signal of the dialog.
-final _gtkPrintRunPageSetupDialogAsync =
-    gtk4Lookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('gtk_print_run_page_setup_dialog_async')
-        .asFunction<
-          void Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<
-              ffi.NativeFunction<
-                ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-              >
-            >,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-void printRunPageSetupDialogAsync(
-  GtkWindow? parent,
-  GtkPageSetup? pageSetup,
-  GtkPrintSettings settings,
-  void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) doneCb, [
-  ffi.Pointer<ffi.Void>? data,
-]) {
-  final _nc4 =
-      ffi.NativeCallable<
-        ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-      >.isolateLocal(doneCb);
-  try {
-    _gtkPrintRunPageSetupDialogAsync(
-      parent?.handle ?? ffi.nullptr,
-      pageSetup?.handle ?? ffi.nullptr,
-      settings.handle,
-      _nc4.nativeFunction,
-      data ?? ffi.nullptr,
-    );
-  } finally {
-    _nc4.close();
-  }
 }

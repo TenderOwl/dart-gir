@@ -1,8 +1,8 @@
 # Skip report for package pango (Pango 1.0)
-Total skipped: 86
+Total skipped: 67
 
 ## By category
-callable: 73
+callable: 54
 method: 5
 property: 4
 alias: 3
@@ -13,29 +13,25 @@ unsupported out parameter attrs (ffi.Pointer<ffi.Void>): 6
 name collision: 5
 inout parameter pos: 4
 aliases are resolved to their target: 3
-parameter accel_char: nullable scalar parameter (gunichar): 3
-unsupported out parameter families (ffi.Pointer<ffi.Void>): 2
-return: array of TypeKind.record (later phase): 2
 missing getter get_n-items: 2
-missing getter get_item-type: 2
-inout parameter rect: 2
-parameter width: nullable scalar parameter (gint): 2
-parameter x_pos: nullable scalar parameter (gint): 2
 unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>): 2
-parameter paragraph_delimiter_index: nullable scalar parameter (gint): 1
+return: array of TypeKind.record (later phase): 2
+inout parameter rect: 2
+unsupported out parameter families (ffi.Pointer<ffi.Void>): 2
+missing getter get_item-type: 2
+moved to Gravity.get_for_script_and_width: 1
+moved to BidiType.for_unichar: 1
+inout parameter inclusive: 1
 moved to FontDescription.from_string: 1
-parameter mirrored_ch: nullable scalar parameter (gunichar): 1
 moved to Gravity.get_for_matrix: 1
 moved to Gravity.get_for_script: 1
-moved to Gravity.get_for_script_and_width: 1
+moved to AttrFontFeatures.new: 1
 moved to Gravity.to_rotation: 1
-moved to AttrFontDesc.new: 1
+moved to Language.from_string: 1
 moved to Language.get_default: 1
 moved to Language.get_preferred: 1
 moved to LayoutDeserializeError.quark: 1
 inout parameter pbase_dir: 1
-moved to AttrFontFeatures.new: 1
-parameter value: nullable scalar parameter (gint): 1
 inout parameter thickness: 1
 moved to AttrLanguage.new: 1
 moved to Script.for_unichar: 1
@@ -43,34 +39,23 @@ moved to Script.get_sample_language: 1
 return: string list return type (null): 1
 moved to TabArray.from_string: 1
 moved to AttrList.from_string: 1
-parameter alpha: nullable scalar parameter (guint16): 1
-inout parameter inclusive: 1
-parameter log_attrs: array of TypeKind.record (later phase): 1
-moved to BidiType.for_unichar: 1
-parameter index_: nullable scalar parameter (gint): 1
-parameter num_scripts: nullable scalar parameter (gint): 1
 moved to AttrShape.new: 1
-parameter y0_: nullable scalar parameter (gint): 1
-parameter height: nullable scalar parameter (gint): 1
+parameter log_attrs: array of TypeKind.record (later phase): 1
+moved to AttrShape.new_with_data: 1
 unsupported out parameter ranges (ffi.Pointer<ffi.Int32>): 1
-parameter xscale: nullable scalar parameter (gdouble): 1
 inout parameter dx: 1
-moved to AttrType.get_name: 1
+moved to AttrFontDesc.new: 1
 inout parameter x: 1
-parameter script: nullable scalar parameter (Script): 1
-parameter alignment: nullable scalar parameter (TabAlign): 1
-parameter alignments: nullable scalar parameter (TabAlign): 1
-moved to Language.from_string: 1
+unsupported out parameter locations (ffi.Pointer<ffi.Int32>): 1
+moved to AttrSize.new_absolute: 1
 override-incompatible with ancestor; renamed to refCoverage: 1
 unsupported out parameter bytes (ffi.Pointer<ffi.Uint8>): 1
 unsupported out parameter features (ffi.Pointer<ffi.Void>): 1
 unsupported out parameter sizes (ffi.Pointer<ffi.Int32>): 1
 unsupported out parameter faces (ffi.Pointer<ffi.Void>): 1
-moved to AttrSize.new_absolute: 1
-moved to AttrSize.new: 1
-moved to AttrShape.new_with_data: 1
-parameter line: nullable scalar parameter (gint): 1
+moved to AttrType.get_name: 1
 moved to AttrType.register: 1
+moved to AttrSize.new: 1
 
 ## First 50 entries
 [callable] Pango.attrBreak — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
@@ -88,10 +73,8 @@ moved to AttrType.register: 1
 [callable] Pango.break_ — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
 [callable] Pango.defaultBreak — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
 [callable] Pango.extentsToPixels — inout parameter inclusive
-[callable] Pango.findParagraphBoundary — parameter paragraph_delimiter_index: nullable scalar parameter (gint)
 [callable] Pango.fontDescriptionFromString — moved to FontDescription.from_string
 [callable] Pango.getLogAttrs — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
-[callable] Pango.getMirrorChar — parameter mirrored_ch: nullable scalar parameter (gunichar)
 [callable] Pango.gravityGetForMatrix — moved to Gravity.get_for_matrix
 [callable] Pango.gravityGetForScript — moved to Gravity.get_for_script
 [callable] Pango.gravityGetForScriptAndWidth — moved to Gravity.get_for_script_and_width
@@ -101,9 +84,6 @@ moved to AttrType.register: 1
 [callable] Pango.languageGetPreferred — moved to Language.get_preferred
 [callable] Pango.layoutDeserializeErrorQuark — moved to LayoutDeserializeError.quark
 [callable] Pango.log2visGetEmbeddingLevels — inout parameter pbase_dir
-[callable] Pango.markupParserFinish — parameter accel_char: nullable scalar parameter (gunichar)
-[callable] Pango.parseEnum — parameter value: nullable scalar parameter (gint)
-[callable] Pango.parseMarkup — parameter accel_char: nullable scalar parameter (gunichar)
 [callable] Pango.quantizeLineGeometry — inout parameter thickness
 [callable] Pango.scanInt — inout parameter pos
 [callable] Pango.scanString — inout parameter pos
@@ -115,11 +95,16 @@ moved to AttrType.register: 1
 [callable] Pango.tabArrayFromString — moved to TabArray.from_string
 [callable] Pango.tailorBreak — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
 [method] PangoAttrList.toString — name collision
-[callable] PangoColor.parseWithAlpha — parameter alpha: nullable scalar parameter (guint16)
 [method] PangoColor.toString — name collision
 [method] PangoFontDescription.toString — name collision
 [callable] PangoGlyphItem.getLogicalWidths — unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>)
 [callable] PangoGlyphItem.letterSpace — parameter log_attrs: array of TypeKind.record (later phase)
 [callable] PangoGlyphString.getLogicalWidths — unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>)
-[callable] PangoGlyphString.indexToX — parameter x_pos: nullable scalar parameter (gint)
-[callable] PangoGlyphString.indexToXFull — parameter x_pos: nullable scalar parameter (gint)
+[method] PangoLanguage.toString — name collision
+[callable] PangoLanguage.getPreferred — return: array of TypeKind.record (later phase)
+[callable] PangoLayoutLine.getXRanges — unsupported out parameter ranges (ffi.Pointer<ffi.Int32>)
+[callable] PangoMatrix.transformDistance — inout parameter dx
+[callable] PangoMatrix.transformPixelRectangle — inout parameter rect
+[callable] PangoMatrix.transformPoint — inout parameter x
+[callable] PangoMatrix.transformRectangle — inout parameter rect
+[callable] PangoTabArray.getTabs — unsupported out parameter locations (ffi.Pointer<ffi.Int32>)

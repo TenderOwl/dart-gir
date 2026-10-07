@@ -226,6 +226,53 @@ class GtkTextView extends GtkWidget
         0;
   }
 
+  /// Converts buffer coordinates to window coordinates.
+  static final _gtkTextViewBufferToWindowCoords =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_text_view_buffer_to_window_coords')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) bufferToWindowCoords(
+    GtkTextWindowType win,
+    int bufferX,
+    int bufferY,
+  ) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkTextViewBufferToWindowCoords(
+        this.handle,
+        win.value,
+        bufferX,
+        bufferY,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Moves the given @iter forward by one display (wrapped) line.
   ///
   /// A display line is different from a paragraph. Paragraphs are
@@ -488,6 +535,59 @@ class GtkTextView extends GtkWidget
     } finally {}
   }
 
+  /// Retrieves the iterator pointing to the character at buffer
+  /// coordinates @x and @y.
+  ///
+  /// Buffer coordinates are coordinates for the entire buffer, not just
+  /// the currently-displayed portion. If you have coordinates from an event,
+  /// you have to convert those to buffer coordinates with
+  /// [method@Gtk.TextView.window_to_buffer_coords].
+  ///
+  /// Note that this is different from [method@Gtk.TextView.get_iter_at_location],
+  /// which returns cursor locations, i.e. positions between characters.
+  static final _gtkTextViewGetIterAtPosition =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Int32,
+                ffi.Int32,
+              )
+            >
+          >('gtk_text_view_get_iter_at_position')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              int,
+              int,
+            )
+          >();
+  (bool, GtkTextIter, int) getIterAtPosition(int x, int y) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkTextViewGetIterAtPosition(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        _out1,
+        x,
+        y,
+      );
+      return (
+        (_ret) != 0,
+        GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        _out1.value,
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets a rectangle which roughly contains the character at @iter.
   ///
   /// The rectangle position is in buffer coordinates; use
@@ -739,6 +839,44 @@ class GtkTextView extends GtkWidget
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getTopMargin() {
     return _gtkTextViewGetTopMargin(this.handle);
+  }
+
+  /// Gets the X,Y offset in buffer coordinates of the top-left corner of
+  /// the textview's text contents.
+  ///
+  /// This allows for more-precise positioning than what is provided by
+  /// [method@Gtk.TextView.get_visible_rect] as you can discover what
+  /// device pixel is being quantized for text positioning.
+  ///
+  /// You might want this when making ulterior widgets align with quantized
+  /// device pixels of the textview contents such as line numbers.
+  static final _gtkTextViewGetVisibleOffset =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_text_view_get_visible_offset')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (double, double) getVisibleOffset() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      _gtkTextViewGetVisibleOffset(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Fills @visible_rect with the currently-visible
@@ -1405,6 +1543,54 @@ class GtkTextView extends GtkWidget
           >();
   bool startsDisplayLine(GtkTextIter iter) {
     return (_gtkTextViewStartsDisplayLine(this.handle, iter.handle)) != 0;
+  }
+
+  /// Converts coordinates on the window identified by @win to buffer
+  /// coordinates.
+  static final _gtkTextViewWindowToBufferCoords =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_text_view_window_to_buffer_coords')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) windowToBufferCoords(
+    GtkTextWindowType win,
+    int windowX,
+    int windowY,
+  ) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkTextViewWindowToBufferCoords(
+        this.handle,
+        win.value,
+        windowX,
+        windowY,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Gets emitted when the user asks for it.

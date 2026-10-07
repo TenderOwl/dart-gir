@@ -199,6 +199,49 @@ class GtkSourceCompletion extends GObject {
     });
   }
 
+  /// This helper function can do a fuzzy match for you giving a haystack and
+  /// casefolded needle.
+  ///
+  /// Casefold your needle using [func@GLib.utf8_casefold] before
+  /// running the query.
+  ///
+  /// Score will be set with the score of the match upon success. Otherwise,
+  /// it will be set to zero.
+  static final _gtkSourceCompletionFuzzyMatch =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gtk_source_completion_fuzzy_match')
+          .asFunction<
+            int Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  static (bool, int) fuzzyMatch(String? haystack, String casefoldNeedle) {
+    return withNativeString(haystack, (nativeHaystack) {
+      return withNativeString(casefoldNeedle, (nativeCasefoldNeedle) {
+        final _out0 = malloc<ffi.Uint32>();
+        try {
+          final _ret = _gtkSourceCompletionFuzzyMatch(
+            nativeHaystack.cast<Utf8>(),
+            nativeCasefoldNeedle.cast<Utf8>(),
+            _out0,
+          );
+          return ((_ret) != 0, _out0.value);
+        } finally {
+          malloc.free(_out0);
+        }
+      });
+    });
+  }
+
   /// The "hide" signal is emitted when the completion window should
   /// be hidden.
   int onHide(void Function() callback) {

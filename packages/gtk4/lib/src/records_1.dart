@@ -497,6 +497,178 @@ final class GtkBitsetIter {
   bool isValid() {
     return (_gtkBitsetIterIsValid(this.handle)) != 0;
   }
+
+  /// Moves @iter to the next value in the set.
+  ///
+  /// If it was already pointing to the last value in the set,
+  /// %FALSE is returned and @iter is invalidated.
+  static final _gtkBitsetIterNext =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+            >
+          >('gtk_bitset_iter_next')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+          >();
+  (bool, int) next() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkBitsetIterNext(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
+  /// Moves @iter to the previous value in the set.
+  ///
+  /// If it was already pointing to the first value in the set,
+  /// %FALSE is returned and @iter is invalidated.
+  static final _gtkBitsetIterPrevious =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+            >
+          >('gtk_bitset_iter_previous')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+          >();
+  (bool, int) previous() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkBitsetIterPrevious(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
+  /// Initializes @iter to point to @target.
+  ///
+  /// If @target is not found, finds the next value after it.
+  /// If no value >= @target exists in @set, this function returns %FALSE.
+  static final _gtkBitsetIterInitAt =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gtk_bitset_iter_init_at')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  static (bool, GtkBitsetIter, int) initAt(GtkBitset set_, int target) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkBitsetIterInitAt(
+        _out0.cast<ffi.Void>(),
+        set_.handle,
+        target,
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        GtkBitsetIter.fromPointer(_out0.cast<ffi.Void>()),
+        _out1.value,
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
+  /// Initializes an iterator for @set and points it to the first
+  /// value in @set.
+  ///
+  /// If @set is empty, %FALSE is returned and @value is set to %G_MAXUINT.
+  static final _gtkBitsetIterInitFirst =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gtk_bitset_iter_init_first')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  static (bool, GtkBitsetIter, int) initFirst(GtkBitset set_) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkBitsetIterInitFirst(
+        _out0.cast<ffi.Void>(),
+        set_.handle,
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        GtkBitsetIter.fromPointer(_out0.cast<ffi.Void>()),
+        _out1.value,
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
+  /// Initializes an iterator for @set and points it to the last
+  /// value in @set.
+  ///
+  /// If @set is empty, %FALSE is returned.
+  static final _gtkBitsetIterInitLast =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gtk_bitset_iter_init_last')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  static (bool, GtkBitsetIter, int) initLast(GtkBitset set_) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gtkBitsetIterInitLast(
+        _out0.cast<ffi.Void>(),
+        set_.handle,
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        GtkBitsetIter.fromPointer(_out0.cast<ffi.Void>()),
+        _out1.value,
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
 }
 
 final class GtkBookmarkListClass {
@@ -518,88 +690,6 @@ final class GtkBookmarkListClass {
 
 final class GtkBoolFilterClass {
   GtkBoolFilterClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// Specifies a border around a rectangular area.
-///
-/// Each side can have a different width.
-final class GtkBorder {
-  GtkBorder.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Allocates a new `GtkBorder` struct and initializes its elements to zero.
-  static final _gtkBorderNew =
-      gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_border_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkBorder() : this.fromPointer(_gtkBorderNew());
-
-  /// Copies a `GtkBorder`.
-  static final _gtkBorderCopy =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_border_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkBorder copy() {
-    return GtkBorder.fromPointer(_gtkBorderCopy(this.handle));
-  }
-
-  /// Frees a `GtkBorder`.
-  static final _gtkBorderFree =
-      gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_border_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _gtkBorderFree(this.handle);
-  }
-}
-
-final class GtkBoxClass {
-  GtkBoxClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkBoxLayoutClass {
-  GtkBoxLayoutClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

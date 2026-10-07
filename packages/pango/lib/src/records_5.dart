@@ -341,6 +341,129 @@ final class PangoGlyphString {
     return _pangoGlyphStringGetWidth(this.handle);
   }
 
+  /// Converts from character position to x position.
+  ///
+  /// The X position is measured from the left edge of the run.
+  /// Character positions are obtained using font metrics for ligatures
+  /// where available, and computed by dividing up each cluster
+  /// into equal portions, otherwise.
+  ///
+  /// <picture>
+  /// <source srcset="glyphstring-positions-dark.png" media="(prefers-color-scheme: dark)">
+  /// <img alt="Glyph positions" src="glyphstring-positions-light.png">
+  /// </picture>
+  static final _pangoGlyphStringIndexToX =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_glyph_string_index_to_x')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  int indexToX(
+    String text,
+    int length,
+    PangoAnalysis analysis,
+    int index,
+    bool trailing,
+  ) {
+    return withNativeString(text, (nativeText) {
+      final _out0 = malloc<ffi.Int32>();
+      try {
+        _pangoGlyphStringIndexToX(
+          this.handle,
+          nativeText.cast<Utf8>(),
+          length,
+          analysis.handle,
+          index,
+          trailing ? 1 : 0,
+          _out0,
+        );
+        return _out0.value;
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
+  /// Converts from character position to x position.
+  ///
+  /// This variant of [method@Pango.GlyphString.index_to_x] additionally
+  /// accepts a `PangoLogAttr` array. The grapheme boundary information
+  /// in it can be used to disambiguate positioning inside some complex
+  /// clusters.
+  static final _pangoGlyphStringIndexToXFull =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_glyph_string_index_to_x_full')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  int indexToXFull(
+    String text,
+    int length,
+    PangoAnalysis analysis,
+    PangoLogAttr? attrs,
+    int index,
+    bool trailing,
+  ) {
+    return withNativeString(text, (nativeText) {
+      final _out0 = malloc<ffi.Int32>();
+      try {
+        _pangoGlyphStringIndexToXFull(
+          this.handle,
+          nativeText.cast<Utf8>(),
+          length,
+          analysis.handle,
+          attrs?.handle ?? ffi.nullptr,
+          index,
+          trailing ? 1 : 0,
+          _out0,
+        );
+        return _out0.value;
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
   /// Resize a glyph string to the given length.
   static final _pangoGlyphStringSetSize =
       pangoLookup<
@@ -351,6 +474,65 @@ final class PangoGlyphString {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setSize(int newLen) {
     _pangoGlyphStringSetSize(this.handle, newLen);
+  }
+
+  /// Convert from x offset to character position.
+  ///
+  /// Character positions are computed by dividing up each cluster into
+  /// equal portions. In scripts where positioning within a cluster is
+  /// not allowed (such as Thai), the returned value may not be a valid
+  /// cursor position; the caller must combine the result with the logical
+  /// attributes for the text to compute the valid cursor position.
+  static final _pangoGlyphStringXToIndex =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_glyph_string_x_to_index')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) xToIndex(
+    String text,
+    int length,
+    PangoAnalysis analysis,
+    int xPos,
+  ) {
+    return withNativeString(text, (nativeText) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1 = malloc<ffi.Int32>();
+      try {
+        _pangoGlyphStringXToIndex(
+          this.handle,
+          nativeText.cast<Utf8>(),
+          length,
+          analysis.handle,
+          xPos,
+          _out0,
+          _out1,
+        );
+        return (_out0.value, _out1.value);
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+      }
+    });
   }
 }
 

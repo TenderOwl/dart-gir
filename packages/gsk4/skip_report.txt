@@ -1,14 +1,13 @@
 # Skip report for package gsk4 (Gsk 4.0)
-Total skipped: 21
+Total skipped: 16
 
 ## By category
-callable: 15
+callable: 10
 callback: 2
 method: 2
 property: 2
 
 ## By reason
-parameter n_stops: nullable scalar parameter (gsize): 3
 array parameter in callback signature: 2
 inout parameter point: 2
 name collision: 2
@@ -19,10 +18,8 @@ moved to SerializationError.quark: 1
 moved to Stroke.equal: 1
 moved to Transform.parse: 1
 parameter func: callback PathForeachFunc has unsupported signature: 1
-parameter distance: nullable scalar parameter (gfloat): 1
 parameter border_color: array of TypeKind.record (later phase): 1
 return: array of TypeKind.record (later phase): 1
-parameter n_glyphs: nullable scalar parameter (guint): 1
 
 ## First 50 entries
 [callable] Gsk.componentTransferEqual — moved to ComponentTransfer.equal
@@ -32,17 +29,12 @@ parameter n_glyphs: nullable scalar parameter (guint): 1
 [callable] Gsk.transformParse — moved to Transform.parse
 [callback] GskPathForeachFunc parameter pts — array parameter in callback signature
 [callable] GskPath.foreach — parameter func: callback PathForeachFunc has unsupported signature
-[callable] GskPath.getClosestPoint — parameter distance: nullable scalar parameter (gfloat)
 [callable] GskPath.getNext — inout parameter point
 [callable] GskPath.getPrevious — inout parameter point
 [method] GskPath.toString — name collision
 [method] GskTransform.toString — name collision
 [callable] GskBorderNode. — parameter border_color: array of TypeKind.record (later phase)
 [callable] GskBorderNode.getColors — return: array of TypeKind.record (later phase)
-[callable] GskConicGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
 [property] GskGLShader.resource — construct-only or no public setter; emitting getter only
 [property] GskGLShader.source — construct-only or no public setter; emitting getter only
-[callable] GskLinearGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
-[callable] GskRadialGradientNode.getColorStops — parameter n_stops: nullable scalar parameter (gsize)
-[callable] GskTextNode.getGlyphs — parameter n_glyphs: nullable scalar parameter (guint)
 [callback] GskPathForeachFunc parameter pts — array parameter in callback signature

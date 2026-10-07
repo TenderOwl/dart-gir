@@ -59,6 +59,36 @@ class GTlsPassword extends GObject {
     return GTlsPasswordFlags(_gTlsPasswordGetFlags(this.handle));
   }
 
+  /// Get the password value. If @length is not %NULL then it will be
+  /// filled in with the length of the password value. (Note that the
+  /// password value is not nul-terminated, so you can only pass %NULL
+  /// for @length in contexts where you know the password will have a
+  /// certain fixed length.)
+  static final _gTlsPasswordGetValue =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('g_tls_password_get_value')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) getValue() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gTlsPasswordGetValue(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Get a user readable translated warning. Usually this warning is a
   /// representation of the password flags returned from
   /// g_tls_password_get_flags().

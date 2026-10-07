@@ -384,6 +384,78 @@ PangoDirection findBaseDir(String text, int length) {
   });
 }
 
+/// Locates a paragraph boundary in @text.
+///
+/// A boundary is caused by delimiter characters, such as
+/// a newline, carriage return, carriage return-newline pair,
+/// or Unicode paragraph separator character.
+///
+/// The index of the run of delimiters is returned in
+/// @paragraph_delimiter_index. The index of the start of the
+/// next paragraph (index after all delimiters) is stored n
+/// @next_paragraph_start.
+///
+/// If no delimiters are found, both @paragraph_delimiter_index
+/// and @next_paragraph_start are filled with the length of @text
+/// (an index one off the end).
+final _pangoFindParagraphBoundary =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >
+        >('pango_find_paragraph_boundary')
+        .asFunction<
+          void Function(
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Int32>,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >();
+(int, int) findParagraphBoundary(String text, int length) {
+  return withNativeString(text, (nativeText) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoFindParagraphBoundary(
+        nativeText.cast<Utf8>(),
+        length,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  });
+}
+
+/// Returns the mirrored character of a Unicode character.
+///
+/// Mirror characters are determined by the Unicode mirrored property.
+final _pangoGetMirrorChar =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(ffi.Uint32, ffi.Pointer<ffi.Uint32>)
+          >
+        >('pango_get_mirror_char')
+        .asFunction<int Function(int, ffi.Pointer<ffi.Uint32>)>();
+(bool, int) getMirrorChar(int ch) {
+  final _out0 = malloc<ffi.Uint32>();
+  try {
+    final _ret = _pangoGetMirrorChar(ch, _out0);
+    return ((_ret) != 0, _out0.value);
+  } finally {
+    malloc.free(_out0);
+  }
+}
+
 /// Checks if a character that should not be normally rendered.
 ///
 /// This includes all Unicode characters with "ZERO WIDTH" in their name,
@@ -509,6 +581,67 @@ GList itemizeWithBaseDir(
   });
 }
 
+/// Finishes parsing markup.
+///
+/// After feeding a Pango markup parser some data with [method@GLib.MarkupParseContext.parse],
+/// use this function to get the list of attributes and text out of the
+/// markup. This function will not free @context, use [method@GLib.MarkupParseContext.free]
+/// to do so.
+final _pangoMarkupParserFinish =
+    pangoLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >
+        >('pango_markup_parser_finish')
+        .asFunction<
+          int Function(
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Pointer<Utf8>>,
+            ffi.Pointer<ffi.Uint32>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+          )
+        >();
+(bool, PangoAttrList?, String?, int) markupParserFinish(
+  GMarkupParseContext context,
+) {
+  final _out0Anchor = HeapAnchor.allocate(256);
+  final _out0 = _out0Anchor.buffer;
+  final _out1 = malloc<ffi.Pointer<Utf8>>();
+  final _out2 = malloc<ffi.Uint32>();
+  final _error = calloc<ffi.Pointer<ffi.Void>>();
+  try {
+    final _ret = _pangoMarkupParserFinish(
+      context.handle,
+      _out0.cast<ffi.Void>(),
+      _out1,
+      _out2,
+      _error,
+    );
+    if (_error.value != ffi.nullptr) {
+      throw GlibException.fromError(_error.value);
+    }
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : PangoAttrList.fromPointer(_out0.cast<ffi.Void>()),
+      stringFromNative(_out1.value.cast(), free: true)!,
+      _out2.value,
+    );
+  } finally {
+    malloc.free(_out1);
+    malloc.free(_out2);
+    calloc.free(_error);
+  }
+}
+
 /// Incrementally parses marked-up text to create a plain-text string
 /// and an attribute list.
 ///
@@ -537,142 +670,4 @@ final _pangoMarkupParserNew =
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 GMarkupParseContext markupParserNew(int accelMarker) {
   return GMarkupParseContext.fromPointer(_pangoMarkupParserNew(accelMarker));
-}
-
-/// Parses a font stretch.
-///
-/// The allowed values are
-/// "ultra_condensed", "extra_condensed", "condensed",
-/// "semi_condensed", "normal", "semi_expanded", "expanded",
-/// "extra_expanded" and "ultra_expanded". Case variations are
-/// ignored and the '_' characters may be omitted.
-final _pangoParseStretch =
-    pangoLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Int32,
-            )
-          >
-        >('pango_parse_stretch')
-        .asFunction<
-          int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Int32>, int)
-        >();
-(bool, PangoStretch) parseStretch(String str, bool warn) {
-  return withNativeString(str, (nativeStr) {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      final _ret = _pangoParseStretch(
-        nativeStr.cast<Utf8>(),
-        _out0,
-        warn ? 1 : 0,
-      );
-      return ((_ret) != 0, PangoStretch.fromValue(_out0.value));
-    } finally {
-      malloc.free(_out0);
-    }
-  });
-}
-
-/// Parses a font style.
-///
-/// The allowed values are "normal", "italic" and "oblique", case
-/// variations being
-/// ignored.
-final _pangoParseStyle =
-    pangoLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Int32,
-            )
-          >
-        >('pango_parse_style')
-        .asFunction<
-          int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Int32>, int)
-        >();
-(bool, PangoStyle) parseStyle(String str, bool warn) {
-  return withNativeString(str, (nativeStr) {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      final _ret = _pangoParseStyle(
-        nativeStr.cast<Utf8>(),
-        _out0,
-        warn ? 1 : 0,
-      );
-      return ((_ret) != 0, PangoStyle.fromValue(_out0.value));
-    } finally {
-      malloc.free(_out0);
-    }
-  });
-}
-
-/// Parses a font variant.
-///
-/// The allowed values are "normal", "small-caps", "all-small-caps",
-/// "petite-caps", "all-petite-caps", "unicase" and "title-caps",
-/// case variations being ignored.
-final _pangoParseVariant =
-    pangoLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Int32,
-            )
-          >
-        >('pango_parse_variant')
-        .asFunction<
-          int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Int32>, int)
-        >();
-(bool, PangoVariant) parseVariant(String str, bool warn) {
-  return withNativeString(str, (nativeStr) {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      final _ret = _pangoParseVariant(
-        nativeStr.cast<Utf8>(),
-        _out0,
-        warn ? 1 : 0,
-      );
-      return ((_ret) != 0, PangoVariant.fromValue(_out0.value));
-    } finally {
-      malloc.free(_out0);
-    }
-  });
-}
-
-/// Parses a font weight.
-///
-/// The allowed values are "heavy",
-/// "ultrabold", "bold", "normal", "light", "ultraleight"
-/// and integers. Case variations are ignored.
-final _pangoParseWeight =
-    pangoLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Int32,
-            )
-          >
-        >('pango_parse_weight')
-        .asFunction<
-          int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Int32>, int)
-        >();
-(bool, PangoWeight) parseWeight(String str, bool warn) {
-  return withNativeString(str, (nativeStr) {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      final _ret = _pangoParseWeight(
-        nativeStr.cast<Utf8>(),
-        _out0,
-        warn ? 1 : 0,
-      );
-      return ((_ret) != 0, PangoWeight.fromValue(_out0.value));
-    } finally {
-      malloc.free(_out0);
-    }
-  });
 }

@@ -209,6 +209,52 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
     }
   }
 
+  /// Reads a line from the data input stream.  Note that no encoding
+  /// checks or conversion is performed; the input is not guaranteed to
+  /// be UTF-8, and may in fact have embedded NUL characters.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gDataInputStreamReadLine =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_line')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) readLine([GCancellable? cancellable]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDataInputStreamReadLine(
+        this.handle,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// The asynchronous version of g_data_input_stream_read_line().  It is
   /// an error to have two outstanding calls to this function.
   ///
@@ -332,6 +378,134 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
     );
   }
 
+  /// Finish an asynchronous call started by
+  /// g_data_input_stream_read_line_async().  Note the warning about
+  /// string encoding in g_data_input_stream_read_line() applies here as
+  /// well.
+  static final _gDataInputStreamReadLineFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_line_finish')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) readLineFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDataInputStreamReadLineFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Finish an asynchronous call started by
+  /// g_data_input_stream_read_line_async().
+  static final _gDataInputStreamReadLineFinishUtf8 =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_line_finish_utf8')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String?, int) readLineFinishUtf8(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDataInputStreamReadLineFinishUtf8(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (stringFromNative((_ret).cast(), free: true), _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Reads a UTF-8 encoded line from the data input stream.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gDataInputStreamReadLineUtf8 =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_line_utf8')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String?, int) readLineUtf8([GCancellable? cancellable]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDataInputStreamReadLineUtf8(
+        this.handle,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (stringFromNative((_ret).cast(), free: true), _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// Reads an unsigned 16-bit/2-byte value from @stream.
   ///
   /// In order to get the correct byte order for this read operation,
@@ -452,6 +626,61 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
     } finally {
       calloc.free(_error);
     }
+  }
+
+  /// Reads a string from the data input stream, up to the first
+  /// occurrence of any of the stop characters.
+  ///
+  /// Note that, in contrast to g_data_input_stream_read_until_async(),
+  /// this function consumes the stop character that it finds.
+  ///
+  /// Don't use this function in new code.  Its functionality is
+  /// inconsistent with g_data_input_stream_read_until_async().  Both
+  /// functions will be marked as deprecated in a future release.  Use
+  /// g_data_input_stream_read_upto() instead, but note that that function
+  /// does not consume the stop character.
+  static final _gDataInputStreamReadUntil =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_until')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String, int) readUntil(String stopChars, [GCancellable? cancellable]) {
+    return withNativeString(stopChars, (nativeStopChars) {
+      final _out0 = malloc<ffi.Size>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDataInputStreamReadUntil(
+          this.handle,
+          nativeStopChars.cast<Utf8>(),
+          _out0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (stringFromNative((_ret).cast(), free: true)!, _out0.value);
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
+    });
   }
 
   /// The asynchronous version of g_data_input_stream_read_until().
@@ -593,6 +822,110 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
         _readUntilAsyncCallbackPtr,
         _data.cast<ffi.Void>(),
       );
+    });
+  }
+
+  /// Finish an asynchronous call started by
+  /// g_data_input_stream_read_until_async().
+  static final _gDataInputStreamReadUntilFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_until_finish')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String, int) readUntilFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDataInputStreamReadUntilFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (stringFromNative((_ret).cast(), free: true)!, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Reads a string from the data input stream, up to the first
+  /// occurrence of any of the stop characters.
+  ///
+  /// In contrast to g_data_input_stream_read_until(), this function
+  /// does not consume the stop character. You have to use
+  /// g_data_input_stream_read_byte() to get it before calling
+  /// g_data_input_stream_read_upto() again.
+  ///
+  /// Note that @stop_chars may contain '\0' if @stop_chars_len is
+  /// specified.
+  ///
+  /// The returned string will always be nul-terminated on success.
+  static final _gDataInputStreamReadUpto =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_upto')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String, int) readUpto(
+    String stopChars,
+    int stopCharsLen, [
+    GCancellable? cancellable,
+  ]) {
+    return withNativeString(stopChars, (nativeStopChars) {
+      final _out0 = malloc<ffi.Size>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDataInputStreamReadUpto(
+          this.handle,
+          nativeStopChars.cast<Utf8>(),
+          stopCharsLen,
+          _out0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (stringFromNative((_ret).cast(), free: true)!, _out0.value);
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
     });
   }
 
@@ -741,6 +1074,53 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
         _data.cast<ffi.Void>(),
       );
     });
+  }
+
+  /// Finish an asynchronous call started by
+  /// g_data_input_stream_read_upto_async().
+  ///
+  /// Note that this function does not consume the stop character. You
+  /// have to use g_data_input_stream_read_byte() to get it before calling
+  /// g_data_input_stream_read_upto_async() again.
+  ///
+  /// The returned string will always be nul-terminated on success.
+  static final _gDataInputStreamReadUptoFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_data_input_stream_read_upto_finish')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (String, int) readUptoFinish(GAsyncResult result) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDataInputStreamReadUptoFinish(
+        this.handle,
+        result.handle,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (stringFromNative((_ret).cast(), free: true)!, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
   }
 
   /// This function sets the byte order for the given @stream. All subsequent

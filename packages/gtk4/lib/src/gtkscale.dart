@@ -253,6 +253,43 @@ class GtkScale extends GtkRange
         : PangoLayout.fromPointer(_gtkScaleGetLayout(this.handle));
   }
 
+  /// Obtains the coordinates where the scale will draw the
+  /// `PangoLayout` representing the text in the scale.
+  ///
+  /// Remember when using the `PangoLayout` function you need to
+  /// convert to and from pixels using `PANGO_PIXELS()` or `PANGO_SCALE`.
+  ///
+  /// If the [property@Gtk.Scale:draw-value] property is %FALSE, the return
+  /// values are undefined.
+  static final _gtkScaleGetLayoutOffsets =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_scale_get_layout_offsets')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getLayoutOffsets() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkScaleGetLayoutOffsets(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets the position in which the current value is displayed.
   static final _gtkScaleGetValuePos =
       gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(

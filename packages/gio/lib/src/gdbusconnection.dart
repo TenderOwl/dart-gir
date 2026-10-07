@@ -2020,6 +2020,184 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
     _gDbusConnectionRemoveFilter(this.handle, filterId);
   }
 
+  /// Asynchronously sends @message to the peer represented by @connection.
+  ///
+  /// Unless @flags contain the
+  /// %G_DBUS_SEND_MESSAGE_FLAGS_PRESERVE_SERIAL flag, the serial number
+  /// will be assigned by @connection and set on @message via
+  /// g_dbus_message_set_serial(). If @out_serial is not %NULL, then the
+  /// serial number used will be written to this location prior to
+  /// submitting the message to the underlying transport. While it has a `volatile`
+  /// qualifier, this is a historical artifact and the argument passed to it should
+  /// not be `volatile`.
+  ///
+  /// If @connection is closed then the operation will fail with
+  /// %G_IO_ERROR_CLOSED. If @message is not well-formed,
+  /// the operation fails with %G_IO_ERROR_INVALID_ARGUMENT.
+  ///
+  /// See this [server][class@Gio.DBusConnection#an-example-d-bus-server]
+  /// and [client][class@Gio.DBusConnection#an-example-for-file-descriptor-passing]
+  /// for an example of how to use this low-level API to send and receive
+  /// UNIX file descriptors.
+  ///
+  /// Note that @message must be unlocked, unless @flags contain the
+  /// %G_DBUS_SEND_MESSAGE_FLAGS_PRESERVE_SERIAL flag.
+  static final _gDbusConnectionSendMessage =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_send_message')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, int) sendMessage(GDBusMessage message, GDBusSendMessageFlags flags) {
+    final _out0 = malloc<ffi.Uint32>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusConnectionSendMessage(
+        this.handle,
+        message.handle,
+        flags.value,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Asynchronously sends @message to the peer represented by @connection.
+  ///
+  /// Unless @flags contain the
+  /// %G_DBUS_SEND_MESSAGE_FLAGS_PRESERVE_SERIAL flag, the serial number
+  /// will be assigned by @connection and set on @message via
+  /// g_dbus_message_set_serial(). If @out_serial is not %NULL, then the
+  /// serial number used will be written to this location prior to
+  /// submitting the message to the underlying transport. While it has a `volatile`
+  /// qualifier, this is a historical artifact and the argument passed to it should
+  /// not be `volatile`.
+  ///
+  /// If @connection is closed then the operation will fail with
+  /// %G_IO_ERROR_CLOSED. If @cancellable is canceled, the operation will
+  /// fail with %G_IO_ERROR_CANCELLED. If @message is not well-formed,
+  /// the operation fails with %G_IO_ERROR_INVALID_ARGUMENT.
+  ///
+  /// This is an asynchronous method. When the operation is finished, @callback
+  /// will be invoked in the thread-default main context
+  /// (see [method@GLib.MainContext.push_thread_default])
+  /// of the thread you are calling this method from. You can then call
+  /// g_dbus_connection_send_message_with_reply_finish() to get the result of the operation.
+  /// See g_dbus_connection_send_message_with_reply_sync() for the synchronous version.
+  ///
+  /// Note that @message must be unlocked, unless @flags contain the
+  /// %G_DBUS_SEND_MESSAGE_FLAGS_PRESERVE_SERIAL flag.
+  ///
+  /// See this [server][class@Gio.DBusConnection#an-example-d-bus-server]
+  /// and [client][class@Gio.DBusConnection#an-example-for-file-descriptor-passing]
+  /// for an example of how to use this low-level API to send and receive
+  /// UNIX file descriptors.
+  static final _gDbusConnectionSendMessageWithReply =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_dbus_connection_send_message_with_reply')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  int sendMessageWithReply(
+    GDBusMessage message,
+    GDBusSendMessageFlags flags,
+    int timeoutMsec, [
+    GCancellable? cancellable,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    callback,
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
+    final _nc5 = callback == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(callback);
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      _gDbusConnectionSendMessageWithReply(
+        this.handle,
+        message.handle,
+        flags.value,
+        timeoutMsec,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _nc5?.nativeFunction ?? ffi.nullptr,
+        userData ?? ffi.nullptr,
+      );
+      return _out0.value;
+    } finally {
+      malloc.free(_out0);
+      _nc5?.close();
+    }
+  }
+
   /// Finishes an operation started with g_dbus_connection_send_message_with_reply().
   ///
   /// Note that @error is only set if a local in-process error
@@ -2061,6 +2239,90 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       }
       return GDBusMessage.fromPointer(_ret);
     } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Synchronously sends @message to the peer represented by @connection
+  /// and blocks the calling thread until a reply is received or the
+  /// timeout is reached. See g_dbus_connection_send_message_with_reply()
+  /// for the asynchronous version of this method.
+  ///
+  /// Unless @flags contain the
+  /// %G_DBUS_SEND_MESSAGE_FLAGS_PRESERVE_SERIAL flag, the serial number
+  /// will be assigned by @connection and set on @message via
+  /// g_dbus_message_set_serial(). If @out_serial is not %NULL, then the
+  /// serial number used will be written to this location prior to
+  /// submitting the message to the underlying transport. While it has a `volatile`
+  /// qualifier, this is a historical artifact and the argument passed to it should
+  /// not be `volatile`.
+  ///
+  /// If @connection is closed then the operation will fail with
+  /// %G_IO_ERROR_CLOSED. If @cancellable is canceled, the operation will
+  /// fail with %G_IO_ERROR_CANCELLED. If @message is not well-formed,
+  /// the operation fails with %G_IO_ERROR_INVALID_ARGUMENT.
+  ///
+  /// Note that @error is only set if a local in-process error
+  /// occurred. That is to say that the returned #GDBusMessage object may
+  /// be of type %G_DBUS_MESSAGE_TYPE_ERROR. Use
+  /// g_dbus_message_to_gerror() to transcode this to a #GError.
+  ///
+  /// See this [server][class@Gio.DBusConnection#an-example-d-bus-server]
+  /// and [client][class@Gio.DBusConnection#an-example-for-file-descriptor-passing]
+  /// for an example of how to use this low-level API to send and receive
+  /// UNIX file descriptors.
+  ///
+  /// Note that @message must be unlocked, unless @flags contain the
+  /// %G_DBUS_SEND_MESSAGE_FLAGS_PRESERVE_SERIAL flag.
+  static final _gDbusConnectionSendMessageWithReplySync =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_dbus_connection_send_message_with_reply_sync')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GDBusMessage, int) sendMessageWithReplySync(
+    GDBusMessage message,
+    GDBusSendMessageFlags flags,
+    int timeoutMsec, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Uint32>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gDbusConnectionSendMessageWithReplySync(
+        this.handle,
+        message.handle,
+        flags.value,
+        timeoutMsec,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (GDBusMessage.fromPointer(_ret), _out0.value);
+    } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }

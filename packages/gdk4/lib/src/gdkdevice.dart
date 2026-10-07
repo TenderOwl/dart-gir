@@ -195,6 +195,44 @@ class GdkDevice extends GObject {
     return GdkInputSource.fromValue(_gdkDeviceGetSource(this.handle));
   }
 
+  /// Obtains the surface underneath @device, returning the location of the
+  /// device in @win_x and @win_y.
+  ///
+  /// Returns %NULL if the surface tree under @device is not known to GDK
+  /// (for example, belongs to another application).
+  static final _gdkDeviceGetSurfaceAtPosition =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gdk_device_get_surface_at_position')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (GdkSurface?, double, double) getSurfaceAtPosition() {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      final _ret = _gdkDeviceGetSurfaceAtPosition(this.handle, _out0, _out1);
+      return (
+        (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret),
+        _out0.value,
+        _out1.value,
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns the timestamp of the last activity for this device.
   ///
   /// In practice, this means the timestamp of the last event that was

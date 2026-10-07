@@ -241,6 +241,35 @@ final class GIOChannel {
     return GIOFlags(_gIoChannelGetFlags(this.handle));
   }
 
+  /// This returns the string that #GIOChannel uses to determine
+  /// where in the file a line break occurs. A value of %NULL
+  /// indicates autodetection. Since 2.84, the return value is always
+  /// nul-terminated.
+  static final _gIoChannelGetLineTerm =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_io_channel_get_line_term')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (String, int) getLineTerm() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gIoChannelGetLineTerm(this.handle, _out0);
+      return (stringFromNative((_ret).cast(), free: false)!, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Initializes a #GIOChannel struct.
   ///
   /// This is called by each of the above functions when creating a
@@ -275,6 +304,61 @@ final class GIOChannel {
         _gIoChannelRead(this.handle, nativeBuf.cast<Utf8>(), count, bytesRead),
       );
     });
+  }
+
+  /// Reads a line, including the terminating character(s),
+  /// from a #GIOChannel into a newly-allocated string.
+  /// @str_return will contain allocated memory if the return
+  /// is %G_IO_STATUS_NORMAL.
+  static final _gIoChannelReadLine =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_io_channel_read_line')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GIOStatus, String, int, int) readLine() {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _out1 = malloc<ffi.Size>();
+    final _out2 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gIoChannelReadLine(
+        this.handle,
+        _out0,
+        _out1,
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GIOStatus.fromValue(_ret),
+        stringFromNative(_out0.value.cast(), free: true)!,
+        _out1.value,
+        _out2.value,
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      calloc.free(_error);
+    }
   }
 
   /// Reads a Unicode character from @channel.

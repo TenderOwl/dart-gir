@@ -132,6 +132,39 @@ class GtkRange extends GtkWidget
     return (_gtkRangeGetShowFillLevel(this.handle)) != 0;
   }
 
+  /// This function returns sliders range along the long dimension,
+  /// in widget->window coordinates.
+  ///
+  /// This function is useful mainly for `GtkRange` subclasses.
+  static final _gtkRangeGetSliderRange =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_range_get_slider_range')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getSliderRange() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkRangeGetSliderRange(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// This function is useful mainly for `GtkRange` subclasses.
   ///
   /// See [method@Gtk.Range.set_slider_size_fixed].

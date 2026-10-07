@@ -553,6 +553,125 @@ void main() {
         expect(code, isNot(contains('HeapAnchor')));
       },
     );
+
+    test(
+      'nullable primitive OUT (allow-none + optional) is accepted and reads '
+      'the value back — this is `g_variant_get_string` shaped',
+      () {
+        // GIR: `<parameter name="length" direction="out" optional="1"
+        //   allow-none="1"><type name="gsize" c:type="gsize*"/></parameter>`
+        // combined with a `const gchar*` return value. The generator must
+        // accept the nullable scalar out-parameter (the C function simply
+        // checks for null internally; we always pass a valid pointer) and
+        // emit a `malloc<ffi.Size>()` + `_out0.value` extract.
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'get_string',
+          cIdentifier: 'g_variant_get_string',
+          returnType: const GirTypeRef(name: 'utf8', cType: 'const gchar*'),
+          parameters: const [
+            GirParameter(
+              name: 'length',
+              direction: GirParameterDirection.out,
+              transferOwnership: GirTransferOwnership.full,
+              callerAllocates: false,
+              optional: true,
+              nullable: true,
+              type: GirTypeRef(name: 'gsize', cType: 'gsize*'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, isNotNull,
+            reason: 'nullable OUT scalar must not skip the callable');
+        expect(report.totalSkipped, 0);
+        // The generator allocates the buffer for the OUT scalar and
+        // passes the pointer to the native function.
+        expect(code, contains('malloc<ffi.Size>()'),
+            reason: 'nullable OUT scalar must allocate a buffer');
+        expect(code, contains('malloc.free(_out0);'),
+            reason: 'buffer must be released in the finally block');
+        // The Dart-side return type keeps the scalar alongside the
+        // string (matching `dupString`'s shape).
+        expect(code, contains('_out0.value'),
+            reason: 'native value must be read out of the buffer');
+      },
+    );
+
+    test(
+      'nullable primitive IN (allow-none + optional) is still rejected — '
+      'FFI cannot express `int?` over a primitive pointer',
+      () {
+        // GIR: `<parameter name="value" direction="in" optional="1"
+        //   allow-none="1"><type name="gint" c:type="gint"/></parameter>`
+        // — a plain nullable in scalar. The C function accepts NULL but
+        // Dart FFI cannot pass an `int?` through a primitive pointer,
+        // so the bridge is rejected with the original skip reason.
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'process_int',
+          cIdentifier: 'g_process_int',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'value',
+              direction: GirParameterDirection.in_,
+              optional: true,
+              nullable: true,
+              type: GirTypeRef(name: 'gint', cType: 'gint'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn);
+        expect(code, isNull,
+            reason: 'nullable in scalar must still skip the callable');
+        expect(report.entries, hasLength(1));
+        expect(report.entries.single.reason,
+            'parameter value: nullable scalar parameter (gint)');
+      },
+    );
+
+    test(
+      'nullable boolean OUT is accepted (TypeKind.boolean lift mirrors primitive)',
+      () {
+        // GIR: `<parameter name="result" direction="out" optional="1"
+        //   allow-none="1"><type name="gboolean" c:type="gboolean*"/></parameter>`
+        // — a nullable boolean OUT. The four TypeKinds (primitive /
+        // boolean / enumeration / bitfield) all share the same rule,
+        // so this confirms the lift applies uniformly.
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'probe_flag',
+          cIdentifier: 'g_probe_flag',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'result',
+              direction: GirParameterDirection.out,
+              transferOwnership: GirTransferOwnership.full,
+              callerAllocates: false,
+              optional: true,
+              nullable: true,
+              type: GirTypeRef(name: 'gboolean', cType: 'gboolean*'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, isNotNull,
+            reason: 'nullable boolean OUT must not skip the callable');
+        expect(report.totalSkipped, 0);
+        expect(code, contains('malloc<ffi.Int32>()'),
+            reason: 'boolean OUT uses `gboolean` → `int` mapping');
+        expect(code, contains('_out0.value'),
+            reason: 'read-back extracts the bool value');
+      },
+    );
   });
 
   group('FunctionEmitter.emitConstant', () {

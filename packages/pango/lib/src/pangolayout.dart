@@ -614,6 +614,41 @@ class PangoLayout extends GObject {
     } finally {}
   }
 
+  /// Determines the logical width and height of a `PangoLayout` in device
+  /// units.
+  ///
+  /// [method@Pango.Layout.get_size] returns the width and height
+  /// scaled by %PANGO_SCALE. This is simply a convenience function
+  /// around [method@Pango.Layout.get_pixel_extents].
+  static final _pangoLayoutGetPixelSize =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_layout_get_pixel_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getPixelSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoLayoutGetPixelSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns the current serial number of @layout.
   ///
   /// The serial number is initialized to an small number larger than zero
@@ -645,6 +680,39 @@ class PangoLayout extends GObject {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getSingleParagraphMode() {
     return (_pangoLayoutGetSingleParagraphMode(this.handle)) != 0;
+  }
+
+  /// Determines the logical width and height of a `PangoLayout` in Pango
+  /// units.
+  ///
+  /// This is simply a convenience function around [method@Pango.Layout.get_extents].
+  static final _pangoLayoutGetSize =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_layout_get_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoLayoutGetSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Gets the amount of spacing between the lines of the layout.
@@ -729,6 +797,48 @@ class PangoLayout extends GObject {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   PangoWrapMode getWrap() {
     return PangoWrapMode.fromValue(_pangoLayoutGetWrap(this.handle));
+  }
+
+  /// Converts from byte @index_ within the @layout to line and X position.
+  ///
+  /// The X position is measured from the left edge of the line.
+  static final _pangoLayoutIndexToLineX =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_layout_index_to_line_x')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) indexToLineX(int index, bool trailing) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoLayoutIndexToLineX(
+        this.handle,
+        index,
+        trailing ? 1 : 0,
+        _out0,
+        _out1,
+      );
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Converts from an index within a `PangoLayout` to the onscreen position
@@ -1130,6 +1240,58 @@ class PangoLayout extends GObject {
   void setMarkup(String markup, int length) {
     withNativeString(markup, (nativeMarkup) {
       _pangoLayoutSetMarkup(this.handle, nativeMarkup.cast<Utf8>(), length);
+    });
+  }
+
+  /// Sets the layout text and attribute list from marked-up text.
+  ///
+  /// See [Pango Markup](pango_markup.html)).
+  ///
+  /// Replaces the current text and attribute list.
+  ///
+  /// If @accel_marker is nonzero, the given character will mark the
+  /// character following it as an accelerator. For example, @accel_marker
+  /// might be an ampersand or underscore. All characters marked
+  /// as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
+  /// and the first character so marked will be returned in @accel_char.
+  /// Two @accel_marker characters following each other produce a single
+  /// literal @accel_marker character.
+  static final _pangoLayoutSetMarkupWithAccel =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('pango_layout_set_markup_with_accel')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  int setMarkupWithAccel(String markup, int length, int accelMarker) {
+    return withNativeString(markup, (nativeMarkup) {
+      final _out0 = malloc<ffi.Uint32>();
+      try {
+        _pangoLayoutSetMarkupWithAccel(
+          this.handle,
+          nativeMarkup.cast<Utf8>(),
+          length,
+          accelMarker,
+          _out0,
+        );
+        return _out0.value;
+      } finally {
+        malloc.free(_out0);
+      }
     });
   }
 

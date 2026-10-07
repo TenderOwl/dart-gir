@@ -535,6 +535,50 @@ GIcon contentTypeGetSymbolicIcon(String type_) {
   });
 }
 
+/// Guesses the content type based on example data. If the function is
+/// uncertain, @result_uncertain will be set to %TRUE. Either @filename
+/// or @data may be %NULL, in which case the guess will be based solely
+/// on the other argument.
+final _gContentTypeGuess =
+    gioLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Size,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >
+        >('g_content_type_guess')
+        .asFunction<
+          ffi.Pointer<Utf8> Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Uint8>,
+            int,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >();
+(String, bool) contentTypeGuess(
+  String? filename,
+  ffi.Pointer<ffi.Uint8> data,
+  int dataSize,
+) {
+  return withNativeString(filename, (nativeFilename) {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gContentTypeGuess(
+        nativeFilename.cast<Utf8>(),
+        data,
+        dataSize,
+        _out0,
+      );
+      return (stringFromNative((_ret).cast(), free: true)!, _out0.value != 0);
+    } finally {
+      malloc.free(_out0);
+    }
+  });
+}
+
 /// Determines if @type is a subset of @supertype.
 final _gContentTypeIsA =
     gioLookup<
@@ -773,53 +817,5 @@ void dbusAddressGetStream(
     } finally {
       _nc3?.close();
     }
-  });
-}
-
-final _dbus_address_get_streamCallbackRegistry =
-    <int, void Function(GObject?, GAsyncResult)>{};
-int _dbus_address_get_streamCallbackSeq = 0;
-final _dbus_address_get_streamCallbackPtr =
-    ffi.Pointer.fromFunction<
-      ffi.Void Function(
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-        ffi.Pointer<ffi.Void>,
-      )
-    >(_dbus_address_get_streamCallbackTrampoline);
-void _dbus_address_get_streamCallbackTrampoline(
-  ffi.Pointer<ffi.Void> sourceObject,
-  ffi.Pointer<ffi.Void> res,
-  ffi.Pointer<ffi.Void> data,
-) {
-  final id = data.cast<ffi.IntPtr>().value;
-  final fn = _dbus_address_get_streamCallbackRegistry.remove(id);
-  malloc.free(data);
-  if (fn == null) return;
-  fn(
-    sourceObject == ffi.nullptr
-        ? null
-        : GObject.fromPointer(sourceObject.cast()),
-    GAsyncResult.fromPointer(res.cast()),
-  );
-}
-
-/// Lifetime-safe variant of [dbus_address_get_stream] for use with
-/// async callbacks. See `docs/async.md`.
-void dbus_address_get_streamCallback(
-  String address,
-  GCancellable? cancellable,
-  void Function(GObject?, GAsyncResult) callback,
-) {
-  final id = ++_dbus_address_get_streamCallbackSeq;
-  _dbus_address_get_streamCallbackRegistry[id] = callback;
-  final _data = malloc<ffi.IntPtr>()..value = id;
-  withNativeString(address, (address) {
-    _gDbusAddressGetStream(
-      address.cast<Utf8>(),
-      cancellable?.handle ?? ffi.nullptr,
-      _dbus_address_get_streamCallbackPtr,
-      _data.cast<ffi.Void>(),
-    );
   });
 }

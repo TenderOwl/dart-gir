@@ -30,6 +30,86 @@ class GtkSourceGutterRendererText extends GtkSourceGutterRenderer
   GtkSourceGutterRendererText()
     : this.fromPointer(_gtkSourceGutterRendererTextNew(), owned: true);
 
+  /// Measures the text provided using the pango layout used by the
+  /// #GtkSourceGutterRendererText.
+  static final _gtkSourceGutterRendererTextMeasure =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_source_gutter_renderer_text_measure')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) measureGutterRendererText(String text) {
+    return withNativeString(text, (nativeText) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1 = malloc<ffi.Int32>();
+      try {
+        _gtkSourceGutterRendererTextMeasure(
+          this.handle,
+          nativeText.cast<Utf8>(),
+          _out0,
+          _out1,
+        );
+        return (_out0.value, _out1.value);
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+      }
+    });
+  }
+
+  /// Measures the pango markup provided using the pango layout used by the
+  /// #GtkSourceGutterRendererText.
+  static final _gtkSourceGutterRendererTextMeasureMarkup =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_source_gutter_renderer_text_measure_markup')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) measureMarkup(String markup) {
+    return withNativeString(markup, (nativeMarkup) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1 = malloc<ffi.Int32>();
+      try {
+        _gtkSourceGutterRendererTextMeasureMarkup(
+          this.handle,
+          nativeMarkup.cast<Utf8>(),
+          _out0,
+          _out1,
+        );
+        return (_out0.value, _out1.value);
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+      }
+    });
+  }
+
   static final _gtkSourceGutterRendererTextSetMarkup =
       gtkSource5Lookup<
             ffi.NativeFunction<

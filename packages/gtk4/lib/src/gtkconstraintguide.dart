@@ -36,6 +36,66 @@ class GtkConstraintGuide extends GObject implements GtkConstraintTarget {
   GtkConstraintGuide()
     : this.fromPointer(_gtkConstraintGuideNew(), owned: true);
 
+  /// Gets the maximum size of @guide.
+  static final _gtkConstraintGuideGetMaxSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_constraint_guide_get_max_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getMaxSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkConstraintGuideGetMaxSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets the minimum size of @guide.
+  static final _gtkConstraintGuideGetMinSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_constraint_guide_get_min_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getMinSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkConstraintGuideGetMinSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Retrieves the name set using gtk_constraint_guide_set_name().
   static final _gtkConstraintGuideGetName =
       gtk4Lookup<
@@ -49,6 +109,36 @@ class GtkConstraintGuide extends GObject implements GtkConstraintTarget {
       (_gtkConstraintGuideGetName(this.handle)).cast(),
       free: false,
     );
+  }
+
+  /// Gets the natural size of @guide.
+  static final _gtkConstraintGuideGetNatSize =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_constraint_guide_get_nat_size')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getNatSize() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkConstraintGuideGetNatSize(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Retrieves the strength set using gtk_constraint_guide_set_strength().

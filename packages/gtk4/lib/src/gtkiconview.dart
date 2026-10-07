@@ -267,6 +267,90 @@ class GtkIconView extends GtkWidget
     } finally {}
   }
 
+  /// Determines the destination item for a given position.
+  static final _gtkIconViewGetDestItemAtPos =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_icon_view_get_dest_item_at_pos')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GtkTreePath?, GtkIconViewDropPosition) getDestItemAtPos(
+    int dragX,
+    int dragY,
+  ) {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkIconViewGetDestItemAtPos(
+        this.handle,
+        dragX,
+        dragY,
+        _out0.cast<ffi.Void>(),
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        GtkIconViewDropPosition.fromValue(_out1.value),
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
+  /// Gets information about the item that is highlighted for feedback.
+  static final _gtkIconViewGetDragDestItem =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_icon_view_get_drag_dest_item')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (GtkTreePath?, GtkIconViewDropPosition) getDragDestItem() {
+    final _out0Anchor = HeapAnchor.allocate(256);
+    final _out0 = _out0Anchor.buffer;
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkIconViewGetDragDestItem(this.handle, _out0.cast<ffi.Void>(), _out1);
+      return (
+        (_out0) == ffi.nullptr
+            ? null
+            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+        GtkIconViewDropPosition.fromValue(_out1.value),
+      );
+    } finally {
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets the path and cell for the icon at the given position.
   static final _gtkIconViewGetItemAtPos =
       gtk4Lookup<

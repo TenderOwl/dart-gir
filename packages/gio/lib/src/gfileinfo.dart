@@ -205,6 +205,56 @@ class GFileInfo extends GObject {
     });
   }
 
+  /// Gets the attribute type, value and status for an attribute key.
+  static final _gFileInfoGetAttributeData =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('g_file_info_get_attribute_data')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, GFileAttributeType, ffi.Pointer<ffi.Void>?, GFileAttributeStatus)
+  getAttributeData(String attribute) {
+    return withNativeString(attribute, (nativeAttribute) {
+      final _out0 = malloc<ffi.Int32>();
+      final _out1 = malloc<ffi.Pointer<ffi.Void>>();
+      final _out2 = malloc<ffi.Int32>();
+      try {
+        final _ret = _gFileInfoGetAttributeData(
+          this.handle,
+          nativeAttribute.cast<Utf8>(),
+          _out0,
+          _out1,
+          _out2,
+        );
+        return (
+          (_ret) != 0,
+          GFileAttributeType.fromValue(_out0.value),
+          _out1.value,
+          GFileAttributeStatus.fromValue(_out2.value),
+        );
+      } finally {
+        malloc.free(_out0);
+        malloc.free(_out1);
+        malloc.free(_out2);
+      }
+    });
+  }
+
   /// Gets the value of a byte string attribute as a file path.
   ///
   /// If the attribute does not contain a byte string, `NULL` will be returned.

@@ -371,6 +371,7 @@ class EmitContext {
     bool nullable = false,
     GirTransferOwnership transfer = GirTransferOwnership.none,
     bool forReturn = false,
+    GirParameterDirection direction = GirParameterDirection.in_,
     GirNamespace? relativeTo,
   }) {
     if (ref == null) {
@@ -402,7 +403,13 @@ class EmitContext {
           null,
         );
       case TypeKind.primitive:
-        if (nullable && !forReturn) {
+        // For OUT parameters the generator always allocates a
+        // buffer and reads the result with `outExtract`; the C
+        // function's `allow-none="1"` only says the caller *may*
+        // pass NULL — passing a valid pointer is always accepted.
+        // IN parameters are rejected because FFI can't express
+        // `int?` over a primitive pointer.
+        if (nullable && !forReturn && direction == GirParameterDirection.in_) {
           return (null, 'nullable scalar parameter (${ref.name})');
         }
         return (
@@ -418,7 +425,7 @@ class EmitContext {
           null,
         );
       case TypeKind.boolean:
-        if (nullable && !forReturn) {
+        if (nullable && !forReturn && direction == GirParameterDirection.in_) {
           return (null, 'nullable scalar parameter (${ref.name})');
         }
         return (
@@ -498,7 +505,7 @@ class EmitContext {
           null,
         );
       case TypeKind.enumeration:
-        if (nullable && !forReturn) {
+        if (nullable && !forReturn && direction == GirParameterDirection.in_) {
           return (null, 'nullable scalar parameter (${ref.name})');
         }
         return (
@@ -514,7 +521,7 @@ class EmitContext {
           null,
         );
       case TypeKind.bitfield:
-        if (nullable && !forReturn) {
+        if (nullable && !forReturn && direction == GirParameterDirection.in_) {
           return (null, 'nullable scalar parameter (${ref.name})');
         }
         return (

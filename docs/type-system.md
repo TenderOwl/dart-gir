@@ -100,7 +100,15 @@ generator emits the documented ownership contract and leaves the actual
 
 Nullable scalar parameters (`int?`, `bool?`) are skipped with
 `nullable scalar parameter (<name>)` — the trampoline FFI signature
-can't carry a non-nullable pointer to a nullable scalar.
+can't carry a non-nullable pointer to a nullable scalar. **Exception**:
+when `direction == out` (`optional="1" allow-none="1"` on a
+`<parameter direction="out">`), the generator allocates the buffer
+and reads the result with `outExtract`, so the C function's
+`allow-none="1"` never reaches the FFI boundary — passing a valid
+pointer is always accepted. This brings back methods like
+`GVariant.getString()` (which the user calls as `final (s, _) =
+v.getString();`) and ~50 other previously-skipped callables across
+the corpus.
 
 ## Cross-namespace resolution
 

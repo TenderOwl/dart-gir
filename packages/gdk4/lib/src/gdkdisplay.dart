@@ -492,6 +492,87 @@ class GdkDisplay extends GObject {
     _gdkDisplaySync(this.handle);
   }
 
+  /// Translates the contents of a `GdkEventKey` into a keyval, effective group,
+  /// and level.
+  ///
+  /// Modifiers that affected the translation and are thus unavailable for
+  /// application use are returned in @consumed_modifiers.
+  ///
+  /// The @effective_group is the group that was actually used for the
+  /// translation; some keys such as Enter are not affected by the active
+  /// keyboard group. The @level is derived from @state.
+  ///
+  /// @consumed_modifiers gives modifiers that should be masked out
+  /// from @state when comparing this key press to a keyboard shortcut.
+  /// For instance, on a US keyboard, the `plus` symbol is shifted, so
+  /// when comparing a key press to a `<Control>plus` accelerator `<Shift>`
+  /// should be masked out.
+  ///
+  /// This function should rarely be needed, since `GdkEventKey` already
+  /// contains the translated keyval. It is exported for the benefit of
+  /// virtualized test environments.
+  static final _gdkDisplayTranslateKey =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gdk_display_translate_key')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (bool, int, int, int, GdkModifierType) translateKey(
+    int keycode,
+    GdkModifierType state,
+    int group,
+  ) {
+    final _out0 = malloc<ffi.Uint32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gdkDisplayTranslateKey(
+        this.handle,
+        keycode,
+        state.value,
+        group,
+        _out0,
+        _out1,
+        _out2,
+        _out3,
+      );
+      return (
+        (_ret) != 0,
+        _out0.value,
+        _out1.value,
+        _out2.value,
+        GdkModifierType(_out3.value),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
+  }
+
   /// Gets the default `GdkDisplay`.
   ///
   /// This is a convenience function for:

@@ -251,6 +251,47 @@ class GtkGesture extends GtkEventController {
           );
   }
 
+  /// If @sequence is currently being interpreted by @gesture,
+  /// returns %TRUE and fills in @x and @y with the last coordinates
+  /// stored for that event sequence.
+  ///
+  /// The coordinates are always relative to the widget allocation.
+  static final _gtkGestureGetPoint =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gtk_gesture_get_point')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (bool, double, double) getPoint([GdkEventSequence? sequence]) {
+    final _out0 = malloc<ffi.Double>();
+    final _out1 = malloc<ffi.Double>();
+    try {
+      final _ret = _gtkGestureGetPoint(
+        this.handle,
+        sequence?.handle ?? ffi.nullptr,
+        _out0,
+        _out1,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Returns the @sequence state, as seen by @gesture.
   static final _gtkGestureGetSequenceState =
       gtk4Lookup<

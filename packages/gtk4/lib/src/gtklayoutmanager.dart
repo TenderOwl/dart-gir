@@ -164,6 +164,67 @@ class GtkLayoutManager extends GObject {
     _gtkLayoutManagerLayoutChanged(this.handle);
   }
 
+  /// Measures the size of the @widget using @manager, for the
+  /// given @orientation and size.
+  ///
+  /// See the [class@Gtk.Widget] documentation on layout management for
+  /// more details.
+  static final _gtkLayoutManagerMeasure =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_layout_manager_measure')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int, int, int) measure(
+    GtkWidget widget,
+    GtkOrientation orientation,
+    int forSize,
+  ) {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    final _out2 = malloc<ffi.Int32>();
+    final _out3 = malloc<ffi.Int32>();
+    try {
+      _gtkLayoutManagerMeasure(
+        this.handle,
+        widget.handle,
+        orientation.value,
+        forSize,
+        _out0,
+        _out1,
+        _out2,
+        _out3,
+      );
+      return (_out0.value, _out1.value, _out2.value, _out3.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      malloc.free(_out3);
+    }
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

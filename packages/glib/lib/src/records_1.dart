@@ -215,6 +215,82 @@ final class GBookmarkFile {
     });
   }
 
+  /// Gets the registration information of @app_name for the bookmark for
+  /// @uri.  See g_bookmark_file_set_application_info() for more information about
+  /// the returned data.
+  ///
+  /// The string returned in @app_exec must be freed.
+  ///
+  /// In the event the URI cannot be found, %FALSE is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.  In the
+  /// event that no application with name @app_name has registered a bookmark
+  /// for @uri,  %FALSE is returned and error is set to
+  /// %G_BOOKMARK_FILE_ERROR_APP_NOT_REGISTERED. In the event that unquoting
+  /// the command line fails, an error of the %G_SHELL_ERROR domain is
+  /// set and %FALSE is returned.
+  static final _gBookmarkFileGetApplicationInfo =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_application_info')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, String?, int, GDateTime?) getApplicationInfo(String uri, String name) {
+    return withNativeString(uri, (nativeUri) {
+      return withNativeString(name, (nativeName) {
+        final _out0 = malloc<ffi.Pointer<Utf8>>();
+        final _out1 = malloc<ffi.Uint32>();
+        final _out2Anchor = HeapAnchor.allocate(256);
+        final _out2 = _out2Anchor.buffer;
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gBookmarkFileGetApplicationInfo(
+            this.handle,
+            nativeUri.cast<Utf8>(),
+            nativeName.cast<Utf8>(),
+            _out0,
+            _out1,
+            _out2.cast<ffi.Void>(),
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (
+            (_ret) != 0,
+            stringFromNative(_out0.value.cast(), free: true)!,
+            _out1.value,
+            (_out2) == ffi.nullptr
+                ? null
+                : GDateTime.fromPointer(_out2.cast<ffi.Void>()),
+          );
+        } finally {
+          malloc.free(_out0);
+          malloc.free(_out1);
+          calloc.free(_error);
+        }
+      });
+    });
+  }
+
   /// Retrieves the description of the bookmark for @uri.
   ///
   /// In the event the URI cannot be found, %NULL is returned and
@@ -1286,6 +1362,39 @@ final class GBookmarkFile {
         visited.handle,
       );
     });
+  }
+
+  /// This function outputs @bookmark as a string.
+  static final _gBookmarkFileToData =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_to_data')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) toData() {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gBookmarkFileToData(this.handle, _out0, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
   }
 
   /// This function outputs @bookmark into a file.  The write process is

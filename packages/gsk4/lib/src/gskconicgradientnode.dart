@@ -89,6 +89,32 @@ class GskConicGradientNode extends GskRenderNode {
     );
   }
 
+  /// Retrieves the color stops in the gradient.
+  static final _gskConicGradientNodeGetColorStops =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gsk_conic_gradient_node_get_color_stops')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getColorStops() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gskConicGradientNodeGetColorStops(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Retrieves the number of color stops in the gradient.
   static final _gskConicGradientNodeGetNColorStops =
       gsk4Lookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<ffi.Void>)>>(

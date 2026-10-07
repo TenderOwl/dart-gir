@@ -68,6 +68,54 @@ final class PangoColor {
       return (_pangoColorParse(this.handle, nativeSpec.cast<Utf8>())) != 0;
     });
   }
+
+  /// Fill in the fields of a color from a string specification.
+  ///
+  /// The string can either one of a large set of standard names.
+  /// (Taken from the CSS Color [specification](https://www.w3.org/TR/css-color-4/#named-colors),
+  /// or it can be a hexadecimal value in the form `#rgb`,
+  /// `#rrggbb`, `#rrrgggbbb` or `#rrrrggggbbbb` where `r`, `g`
+  /// and `b` are hex digits of the red, green, and blue components
+  /// of the color, respectively. (White in the four forms is
+  /// `#fff`, `#ffffff`, `#fffffffff` and `#ffffffffffff`.)
+  ///
+  /// Additionally, parse strings of the form `#rgba`, `#rrggbbaa`,
+  /// `#rrrrggggbbbbaaaa`, if @alpha is not %NULL, and set @alpha
+  /// to the value specified by the hex digits for `a`. If no alpha
+  /// component is found in @spec, @alpha is set to 0xffff (for a
+  /// solid color).
+  static final _pangoColorParseWithAlpha =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint16>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('pango_color_parse_with_alpha')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint16>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  (bool, int) parseWithAlpha(String spec) {
+    return withNativeString(spec, (nativeSpec) {
+      final _out0 = malloc<ffi.Uint16>();
+      try {
+        final _ret = _pangoColorParseWithAlpha(
+          this.handle,
+          _out0,
+          nativeSpec.cast<Utf8>(),
+        );
+        return ((_ret) != 0, _out0.value);
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
 }
 
 final class PangoContextClass {

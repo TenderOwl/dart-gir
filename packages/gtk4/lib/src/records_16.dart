@@ -141,6 +141,36 @@ final class GtkTreePath {
     return _gtkTreePathGetDepth(this.handle);
   }
 
+  /// Returns the current indices of @path.
+  ///
+  /// This is an array of integers, each representing a node in a tree.
+  /// It also returns the number of elements in the array.
+  /// The array should not be freed.
+  static final _gtkTreePathGetIndicesWithDepth =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Int32> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_tree_path_get_indices_with_depth')
+          .asFunction<
+            ffi.Pointer<ffi.Int32> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (ffi.Pointer<ffi.Int32>, int) getIndicesWithDepth() {
+    final _out0 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkTreePathGetIndicesWithDepth(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Returns %TRUE if @descendant is a descendant of @path.
   static final _gtkTreePathIsAncestor =
       gtk4Lookup<

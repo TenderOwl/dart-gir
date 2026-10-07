@@ -1547,6 +1547,82 @@ class GSocket extends GObject implements GInitable {
     }
   }
 
+  /// This behaves exactly the same as g_socket_send_message(), except that
+  /// the choice of timeout behavior is determined by the @timeout_us argument
+  /// rather than by @socket's properties.
+  ///
+  /// On error %G_POLLABLE_RETURN_FAILED is returned and @error is set accordingly, or
+  /// if the socket is currently not writable %G_POLLABLE_RETURN_WOULD_BLOCK is
+  /// returned. @bytes_written will contain 0 in both cases.
+  static final _gSocketSendMessageWithTimeout =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int64,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_socket_send_message_with_timeout')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GPollableReturn, int) sendMessageWithTimeout(
+    GSocketAddress? address,
+    ffi.Pointer<ffi.Void> vectors,
+    int numVectors,
+    ffi.Pointer<ffi.Void> messages,
+    int numMessages,
+    int flags,
+    int timeoutUs, [
+    GCancellable? cancellable,
+  ]) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gSocketSendMessageWithTimeout(
+        this.handle,
+        address?.handle ?? ffi.nullptr,
+        vectors,
+        numVectors,
+        messages,
+        numMessages,
+        flags,
+        timeoutUs,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (GPollableReturn.fromValue(_ret), _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
   /// Send multiple data messages from @socket in one go.  This is the most
   /// complicated and fully-featured version of this call. For easier use, see
   /// g_socket_send(), g_socket_send_to(), and g_socket_send_message().

@@ -298,6 +298,35 @@ final class GdkContentFormats {
     });
   }
 
+  /// Gets the `GType`s included in @formats.
+  ///
+  /// Note that @formats may not contain any `GType`s, in particular when
+  /// they are empty. In that case %NULL will be returned.
+  static final _gdkContentFormatsGetGtypes =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Size> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gdk_content_formats_get_gtypes')
+          .asFunction<
+            ffi.Pointer<ffi.Size> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Size>, int) getGtypes() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gdkContentFormatsGetGtypes(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Returns whether the content formats contain any formats.
   static final _gdkContentFormatsIsEmpty =
       gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -630,23 +659,5 @@ final class GdkContentFormatsBuilder {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gdkContentFormatsBuilderUnref(this.handle);
-  }
-}
-
-/// Class structure for `GdkContentProvider`.
-final class GdkContentProviderClass {
-  GdkContentProviderClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

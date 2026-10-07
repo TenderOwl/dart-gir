@@ -335,6 +335,27 @@ bool typeCheckValueHolds(GValue value, int type_) {
   return (_gTypeCheckValueHolds(value.handle, type_)) != 0;
 }
 
+/// Return a newly allocated and 0-terminated array of type IDs, listing
+/// the child types of @type.
+final _gTypeChildren =
+    gobjectLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<ffi.Size> Function(ffi.Size, ffi.Pointer<ffi.Uint32>)
+          >
+        >('g_type_children')
+        .asFunction<
+          ffi.Pointer<ffi.Size> Function(int, ffi.Pointer<ffi.Uint32>)
+        >();
+(ffi.Pointer<ffi.Size>, int) typeChildren(int type_) {
+  final _out0 = malloc<ffi.Uint32>();
+  try {
+    final _ret = _gTypeChildren(type_, _out0);
+    return (_ret, _out0.value);
+  } finally {
+    malloc.free(_out0);
+  }
+}
+
 /// Returns the default interface vtable for the given @g_type.
 ///
 /// If the type is not currently in use, then the default vtable
@@ -557,6 +578,27 @@ void typeInitWithDebugFlags(GTypeDebugFlags debugFlags) {
   _gTypeInitWithDebugFlags(debugFlags.value);
 }
 
+/// Return a newly allocated and 0-terminated array of type IDs, listing
+/// the interface types that @type conforms to.
+final _gTypeInterfaces =
+    gobjectLookup<
+          ffi.NativeFunction<
+            ffi.Pointer<ffi.Size> Function(ffi.Size, ffi.Pointer<ffi.Uint32>)
+          >
+        >('g_type_interfaces')
+        .asFunction<
+          ffi.Pointer<ffi.Size> Function(int, ffi.Pointer<ffi.Uint32>)
+        >();
+(ffi.Pointer<ffi.Size>, int) typeInterfaces(int type_) {
+  final _out0 = malloc<ffi.Uint32>();
+  try {
+    final _ret = _gTypeInterfaces(type_, _out0);
+    return (_ret, _out0.value);
+  } finally {
+    malloc.free(_out0);
+  }
+}
+
 /// If @is_a_type is a derivable type, check whether @type is a
 /// descendant of @is_a_type. If @is_a_type is an interface, check
 /// whether @type conforms to it.
@@ -604,38 +646,4 @@ String typeNameFromInstance(GTypeInstance instance) {
     (_gTypeNameFromInstance(instance.handle)).cast(),
     free: false,
   )!;
-}
-
-/// Given a @leaf_type and a @root_type which is contained in its
-/// ancestry, return the type that @root_type is the immediate parent
-/// of. In other words, this function determines the type that is
-/// derived directly from @root_type which is also a base class of
-/// @leaf_type.  Given a root type and a leaf type, this function can
-/// be used to determine the types and order in which the leaf type is
-/// descended from the root type.
-final _gTypeNextBase =
-    gobjectLookup<ffi.NativeFunction<ffi.Size Function(ffi.Size, ffi.Size)>>(
-      'g_type_next_base',
-    ).asFunction<int Function(int, int)>();
-int typeNextBase(int leafType, int rootType) {
-  return _gTypeNextBase(leafType, rootType);
-}
-
-/// Return the direct parent type of the passed in type. If the passed
-/// in type has no parent, i.e. is a fundamental type, 0 is returned.
-final _gTypeParent =
-    gobjectLookup<ffi.NativeFunction<ffi.Size Function(ffi.Size)>>(
-      'g_type_parent',
-    ).asFunction<int Function(int)>();
-int typeParent(int type_) {
-  return _gTypeParent(type_);
-}
-
-/// Get the corresponding quark of the type IDs name.
-final _gTypeQname =
-    gobjectLookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Size)>>(
-      'g_type_qname',
-    ).asFunction<int Function(int)>();
-int typeQname(int type_) {
-  return _gTypeQname(type_);
 }

@@ -122,6 +122,41 @@ class GdkGLContext extends GdkDrawContext {
     return (_gdkGlContextGetForwardCompatible(this.handle)) != 0;
   }
 
+  /// Retrieves required OpenGL version set as a requirement for the @context
+  /// realization. It will not change even if a greater OpenGL version is supported
+  /// and used after the @context is realized. See
+  /// [method@Gdk.GLContext.get_version] for the real version in use.
+  ///
+  /// See [method@Gdk.GLContext.set_required_version].
+  static final _gdkGlContextGetRequiredVersion =
+      gdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gdk_gl_context_get_required_version')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getRequiredVersion() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gdkGlContextGetRequiredVersion(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Used to retrieves the `GdkGLContext` that this @context share data with.
   ///
   /// As many contexts can share data now and no single shared context exists

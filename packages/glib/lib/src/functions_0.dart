@@ -235,6 +235,143 @@ String asciiStrdown(String str, int len) {
   });
 }
 
+/// A convenience function for converting a string to a signed number.
+///
+/// This function assumes that @str contains only a number of the given
+/// @base that is within inclusive bounds limited by @min and @max. If
+/// this is true, then the converted number is stored in @out_num. An
+/// empty string is not a valid input. A string with leading or
+/// trailing whitespace is also an invalid input.
+///
+/// @base can be between 2 and 36 inclusive. Hexadecimal numbers must
+/// not be prefixed with "0x" or "0X". Such a problem does not exist
+/// for octal numbers, since they were usually prefixed with a zero
+/// which does not change the value of the parsed number.
+///
+/// Parsing failures result in an error with the `G_NUMBER_PARSER_ERROR`
+/// domain. If the input is invalid, the error code will be
+/// [error@GLib.NumberParserError.INVALID]. If the parsed number is out of
+/// bounds - [error@GLib.NumberParserError.OUT_OF_BOUNDS].
+///
+/// See [func@GLib.ascii_strtoll] if you have more complex needs such as
+/// parsing a string which starts with a number, but then has other
+/// characters.
+final _gAsciiStringToSigned =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<Utf8>,
+              ffi.Uint32,
+              ffi.Int64,
+              ffi.Int64,
+              ffi.Pointer<ffi.Int64>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >
+        >('g_ascii_string_to_signed')
+        .asFunction<
+          int Function(
+            ffi.Pointer<Utf8>,
+            int,
+            int,
+            int,
+            ffi.Pointer<ffi.Int64>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+          )
+        >();
+(bool, int) asciiStringToSigned(String str, int base_, int min, int max) {
+  return withNativeString(str, (nativeStr) {
+    final _out0 = malloc<ffi.Int64>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gAsciiStringToSigned(
+        nativeStr.cast<Utf8>(),
+        base_,
+        min,
+        max,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  });
+}
+
+/// A convenience function for converting a string to an unsigned number.
+///
+/// This function assumes that @str contains only a number of the given
+/// @base that is within inclusive bounds limited by @min and @max. If
+/// this is true, then the converted number is stored in @out_num. An
+/// empty string is not a valid input. A string with leading or
+/// trailing whitespace is also an invalid input. A string with a leading sign
+/// (`-` or `+`) is not a valid input for the unsigned parser.
+///
+/// @base can be between 2 and 36 inclusive. Hexadecimal numbers must
+/// not be prefixed with "0x" or "0X". Such a problem does not exist
+/// for octal numbers, since they were usually prefixed with a zero
+/// which does not change the value of the parsed number.
+///
+/// Parsing failures result in an error with the `G_NUMBER_PARSER_ERROR`
+/// domain. If the input is invalid, the error code will be
+/// [error@GLib.NumberParserError.INVALID]. If the parsed number is out of
+/// bounds - [error@GLib.NumberParserError.OUT_OF_BOUNDS].
+///
+/// See [func@GLib.ascii_strtoull] if you have more complex needs such as
+/// parsing a string which starts with a number, but then has other
+/// characters.
+final _gAsciiStringToUnsigned =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<Utf8>,
+              ffi.Uint32,
+              ffi.Uint64,
+              ffi.Uint64,
+              ffi.Pointer<ffi.Uint64>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >
+        >('g_ascii_string_to_unsigned')
+        .asFunction<
+          int Function(
+            ffi.Pointer<Utf8>,
+            int,
+            int,
+            int,
+            ffi.Pointer<ffi.Uint64>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+          )
+        >();
+(bool, int) asciiStringToUnsigned(String str, int base_, int min, int max) {
+  return withNativeString(str, (nativeStr) {
+    final _out0 = malloc<ffi.Uint64>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gAsciiStringToUnsigned(
+        nativeStr.cast<Utf8>(),
+        base_,
+        min,
+        max,
+        _out0,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
+    }
+  });
+}
+
 /// Compare @s1 and @s2, ignoring the case of ASCII characters and any
 /// characters after the first @n in each string. If either string is
 /// less than @n bytes long, comparison will stop at the first nul byte
@@ -473,281 +610,4 @@ final _gAsciiXdigitValue =
     ).asFunction<int Function(int)>();
 int asciiXdigitValue(int c) {
   return _gAsciiXdigitValue(c);
-}
-
-final _gAssertWarning =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-            )
-          >
-        >('g_assert_warning')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-          )
-        >();
-void assertWarning(
-  String logDomain,
-  String file,
-  int line,
-  String prettyFunction,
-  String expression,
-) {
-  withNativeString(logDomain, (nativeLogDomain) {
-    withNativeString(file, (nativeFile) {
-      withNativeString(prettyFunction, (nativePrettyFunction) {
-        withNativeString(expression, (nativeExpression) {
-          _gAssertWarning(
-            nativeLogDomain.cast<Utf8>(),
-            nativeFile.cast<Utf8>(),
-            line,
-            nativePrettyFunction.cast<Utf8>(),
-            nativeExpression.cast<Utf8>(),
-          );
-        });
-      });
-    });
-  });
-}
-
-final _gAssertionMessage =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-            )
-          >
-        >('g_assertion_message')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-          )
-        >();
-void assertionMessage(
-  String domain,
-  String file,
-  int line,
-  String func,
-  String message,
-) {
-  withNativeString(domain, (nativeDomain) {
-    withNativeString(file, (nativeFile) {
-      withNativeString(func, (nativeFunc) {
-        withNativeString(message, (nativeMessage) {
-          _gAssertionMessage(
-            nativeDomain.cast<Utf8>(),
-            nativeFile.cast<Utf8>(),
-            line,
-            nativeFunc.cast<Utf8>(),
-            nativeMessage.cast<Utf8>(),
-          );
-        });
-      });
-    });
-  });
-}
-
-final _gAssertionMessageCmpint =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Uint64,
-              ffi.Pointer<Utf8>,
-              ffi.Uint64,
-              ffi.Int8,
-            )
-          >
-        >('g_assertion_message_cmpint')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            int,
-            int,
-          )
-        >();
-void assertionMessageCmpint(
-  String domain,
-  String file,
-  int line,
-  String func,
-  String expr,
-  int arg1,
-  String cmp,
-  int arg2,
-  int numtype,
-) {
-  withNativeString(domain, (nativeDomain) {
-    withNativeString(file, (nativeFile) {
-      withNativeString(func, (nativeFunc) {
-        withNativeString(expr, (nativeExpr) {
-          withNativeString(cmp, (nativeCmp) {
-            _gAssertionMessageCmpint(
-              nativeDomain.cast<Utf8>(),
-              nativeFile.cast<Utf8>(),
-              line,
-              nativeFunc.cast<Utf8>(),
-              nativeExpr.cast<Utf8>(),
-              arg1,
-              nativeCmp.cast<Utf8>(),
-              arg2,
-              numtype,
-            );
-          });
-        });
-      });
-    });
-  });
-}
-
-final _gAssertionMessageCmpstr =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-            )
-          >
-        >('g_assertion_message_cmpstr')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-          )
-        >();
-void assertionMessageCmpstr(
-  String domain,
-  String file,
-  int line,
-  String func,
-  String expr,
-  String arg1,
-  String cmp,
-  String arg2,
-) {
-  withNativeString(domain, (nativeDomain) {
-    withNativeString(file, (nativeFile) {
-      withNativeString(func, (nativeFunc) {
-        withNativeString(expr, (nativeExpr) {
-          withNativeString(arg1, (nativeArg1) {
-            withNativeString(cmp, (nativeCmp) {
-              withNativeString(arg2, (nativeArg2) {
-                _gAssertionMessageCmpstr(
-                  nativeDomain.cast<Utf8>(),
-                  nativeFile.cast<Utf8>(),
-                  line,
-                  nativeFunc.cast<Utf8>(),
-                  nativeExpr.cast<Utf8>(),
-                  nativeArg1.cast<Utf8>(),
-                  nativeCmp.cast<Utf8>(),
-                  nativeArg2.cast<Utf8>(),
-                );
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-}
-
-final _gAssertionMessageCmpstrv =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Int32,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Size,
-            )
-          >
-        >('g_assertion_message_cmpstrv')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-          )
-        >();
-void assertionMessageCmpstrv(
-  String domain,
-  String file,
-  int line,
-  String func,
-  String expr,
-  String arg1,
-  String arg2,
-  int firstWrongIdx,
-) {
-  withNativeString(domain, (nativeDomain) {
-    withNativeString(file, (nativeFile) {
-      withNativeString(func, (nativeFunc) {
-        withNativeString(expr, (nativeExpr) {
-          withNativeString(arg1, (nativeArg1) {
-            withNativeString(arg2, (nativeArg2) {
-              _gAssertionMessageCmpstrv(
-                nativeDomain.cast<Utf8>(),
-                nativeFile.cast<Utf8>(),
-                line,
-                nativeFunc.cast<Utf8>(),
-                nativeExpr.cast<Utf8>(),
-                nativeArg1.cast<Utf8>(),
-                nativeArg2.cast<Utf8>(),
-                firstWrongIdx,
-              );
-            });
-          });
-        });
-      });
-    });
-  });
 }

@@ -10,6 +10,33 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 
 ## Unreleased
 
+### Fixed
+- **Nullable scalar OUT parameters are now emitted.** The resolver's
+  `bridgeFor` rejected any nullable scalar (primitive, boolean,
+  enumeration, bitfield) on a non-return path, so methods whose only
+  non-instance parameter was a `<parameter direction="out"
+  optional="1" allow-none="1">` (e.g. `GVariant.getString` with its
+  `gsize *length`) were dropped wholesale. The generator allocates
+  the buffer and reads the result with `outExtract`, so the C
+  function's `allow-none="1"` never reaches the FFI boundary —
+  passing a valid pointer is always accepted. The lift is restricted
+  to `direction == out`; nullable IN-direction scalars remain
+  rejected because Dart FFI cannot express `int?` over a primitive
+  pointer. Brings back ~50 methods across the corpus, including:
+  - `GVariant.getString() → (String, int)`
+  - `GVariant.dupBytestring() → (ffi.Pointer<ffi.Uint8>, int)`
+  - `GVariant.getBytestringArray()`, `GVariant.dupBytestringArray()`
+  - `GDBusConnection.sendMessageWithReply()` / `…Sync()`
+  - `GLib.convert` / `convertWithFallback` (the `bytes_read` and
+    `bytes_written` out params no longer drop the call).
+
+  Call sites that previously could not reach these methods must be
+  updated to consume the tuple return shape — e.g.
+  `params?.getString()` is now `(String, int)?`, so the notepad sample
+  destructures it as `final (text, _) = result;`. The skip report
+  for each affected package drops the matching
+  `parameter <name>: nullable scalar parameter (<c type>)` entries.
+
 ### Changed
 - **Static class functions**: when a GIR `<method>` inside a
   `<class>` / `<record>` / `<interface>` / `<union>` carries

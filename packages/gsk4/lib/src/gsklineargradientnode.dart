@@ -58,6 +58,32 @@ class GskLinearGradientNode extends GskRenderNode {
         owned: true,
       );
 
+  /// Retrieves the color stops in the gradient.
+  static final _gskLinearGradientNodeGetColorStops =
+      gsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gsk_linear_gradient_node_get_color_stops')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Void>, int) getColorStops() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gskLinearGradientNodeGetColorStops(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Retrieves the final point of the linear gradient.
   static final _gskLinearGradientNodeGetEnd =
       gsk4Lookup<

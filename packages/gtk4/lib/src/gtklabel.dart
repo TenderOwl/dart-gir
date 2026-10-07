@@ -404,6 +404,42 @@ class GtkLabel extends GtkWidget
     return PangoLayout.fromPointer(_gtkLabelGetLayout(this.handle));
   }
 
+  /// Obtains the coordinates where the label will draw its Pango layout.
+  ///
+  /// The coordinates are useful to convert mouse events into coordinates
+  /// inside the [class@Pango.Layout], e.g. to take some action if some part
+  /// of the label is clicked. Remember when using the [class@Pango.Layout]
+  /// functions you need to convert to and from pixels using `PANGO_PIXELS()`
+  /// or [const@Pango.SCALE].
+  static final _gtkLabelGetLayoutOffsets =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_label_get_layout_offsets')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (int, int) getLayoutOffsets() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _gtkLabelGetLayoutOffsets(this.handle, _out0, _out1);
+      return (_out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Gets the number of lines to which an ellipsized, wrapping
   /// label should be limited.
   ///
@@ -477,6 +513,38 @@ class GtkLabel extends GtkWidget
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool getSelectable() {
     return (_gtkLabelGetSelectable(this.handle)) != 0;
+  }
+
+  /// Gets the selected range of characters in the label.
+  ///
+  /// The returned @start and @end positions are in characters.
+  static final _gtkLabelGetSelectionBounds =
+      gtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_label_get_selection_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int) getSelectionBounds() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkLabelGetSelectionBounds(this.handle, _out0, _out1);
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Returns whether the label is in single line mode.

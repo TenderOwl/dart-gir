@@ -375,6 +375,34 @@ final class GByteArray {
     }
   }
 
+  /// Frees the data in the array and resets the size to zero, while
+  /// the underlying array is preserved for use elsewhere and returned
+  /// to the caller.
+  static final _gByteArraySteal =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('g_byte_array_steal')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  static (ffi.Pointer<ffi.Uint8>, int) steal(ffi.Pointer<ffi.Uint8> array) {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gByteArraySteal(array, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Atomically decrements the reference count of @array by one. If the
   /// reference count drops to 0, all memory allocated by the array is
   /// released. This function is thread-safe and may be called from any
@@ -540,6 +568,40 @@ final class GBytes {
           >();
   bool equal(GBytes bytes2) {
     return (_gBytesEqual(this.handle, bytes2.handle)) != 0;
+  }
+
+  /// Get the byte data in the [struct@GLib.Bytes].
+  ///
+  /// This data should not be modified.
+  ///
+  /// This function will always return the same pointer for a given `GBytes`.
+  ///
+  /// `NULL` may be returned if @size is 0. This is not guaranteed, as the `GBytes`
+  /// may represent an empty string with @data non-`NULL` and @size as 0. `NULL`
+  /// will not be returned if @size is non-zero.
+  static final _gBytesGetData =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Uint8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('g_bytes_get_data')
+          .asFunction<
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (ffi.Pointer<ffi.Uint8>, int) getData() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _gBytesGetData(this.handle, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Gets a pointer to a region in @bytes.
