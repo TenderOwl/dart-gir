@@ -129,7 +129,7 @@ final _gtkSourceSchedulerAddFull =
         >();
 int schedulerAddFull(
   int Function(int, ffi.Pointer<ffi.Void>) callback,
-  ffi.Pointer<ffi.Void> userData,
+  ffi.Pointer<ffi.Void>? userData,
   void Function(ffi.Pointer<ffi.Void>) notify,
 ) {
   final _nc1 =
@@ -143,7 +143,7 @@ int schedulerAddFull(
   try {
     final _ret = _gtkSourceSchedulerAddFull(
       _nc1.nativeFunction,
-      userData,
+      userData ?? ffi.nullptr,
       _nc3.nativeFunction,
     );
     return _ret;

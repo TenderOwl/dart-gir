@@ -12,496 +12,351 @@ part of '../gio.dart';
 ///
 /// See [method@Gio.ActionMap.add_action_entries] for an example.
 final class GActionEntry {
-  GActionEntry.fromPointer(this.handle);
+  GActionEntry.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The virtual function table for [type@Gio.ActionGroup].
 final class GActionGroupInterface {
-  GActionGroupInterface.fromPointer(this.handle);
+  GActionGroupInterface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The virtual function table for [type@Gio.Action].
 final class GActionInterface {
-  GActionInterface.fromPointer(this.handle);
+  GActionInterface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The virtual function table for [iface@Gio.ActionMap].
 final class GActionMapInterface {
-  GActionMapInterface.fromPointer(this.handle);
+  GActionMapInterface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Application Information interface, for operating system portability.
 final class GAppInfoIface {
-  GAppInfoIface.fromPointer(this.handle);
+  GAppInfoIface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GAppLaunchContextClass {
-  GAppLaunchContextClass.fromPointer(this.handle);
+  GAppLaunchContextClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GAppLaunchContextPrivate {
-  GAppLaunchContextPrivate.fromPointer(this.handle);
+  GAppLaunchContextPrivate.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Virtual function table for #GApplication.
 final class GApplicationClass {
-  GApplicationClass.fromPointer(this.handle);
+  GApplicationClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The #GApplicationCommandLineClass-struct
 /// contains private data only.
 final class GApplicationCommandLineClass {
-  GApplicationCommandLineClass.fromPointer(this.handle);
+  GApplicationCommandLineClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GApplicationCommandLinePrivate {
-  GApplicationCommandLinePrivate.fromPointer(this.handle);
+  GApplicationCommandLinePrivate.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GApplicationPrivate {
-  GApplicationPrivate.fromPointer(this.handle);
+  GApplicationPrivate.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Provides an interface for asynchronous initializing object such that
 /// initialization may fail.
 final class GAsyncInitableIface {
-  GAsyncInitableIface.fromPointer(this.handle);
+  GAsyncInitableIface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Interface definition for [iface@Gio.AsyncResult].
 final class GAsyncResultIface {
-  GAsyncResultIface.fromPointer(this.handle);
+  GAsyncResultIface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GBufferedInputStreamClass {
-  GBufferedInputStreamClass.fromPointer(this.handle);
+  GBufferedInputStreamClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GBufferedInputStreamPrivate {
-  GBufferedInputStreamPrivate.fromPointer(this.handle);
+  GBufferedInputStreamPrivate.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GBufferedOutputStreamClass {
-  GBufferedOutputStreamClass.fromPointer(this.handle);
+  GBufferedOutputStreamClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GBufferedOutputStreamPrivate {
-  GBufferedOutputStreamPrivate.fromPointer(this.handle);
+  GBufferedOutputStreamPrivate.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GCancellableClass {
-  GCancellableClass.fromPointer(this.handle);
+  GCancellableClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GCancellablePrivate {
-  GCancellablePrivate.fromPointer(this.handle);
+  GCancellablePrivate.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GCharsetConverterClass {
-  GCharsetConverterClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Provides an interface for converting data from one type
-/// to another type. The conversion can be stateful
-/// and may fail at any place.
-final class GConverterIface {
-  GConverterIface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GConverterInputStreamClass {
-  GConverterInputStreamClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GConverterInputStreamPrivate {
-  GConverterInputStreamPrivate.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GConverterOutputStreamClass {
-  GConverterOutputStreamClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GConverterOutputStreamPrivate {
-  GConverterOutputStreamPrivate.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Class structure for #GCredentials.
-final class GCredentialsClass {
-  GCredentialsClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Information about an annotation.
-final class GDBusAnnotationInfo {
-  GDBusAnnotationInfo.fromPointer(this.handle);
+  GCharsetConverterClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
-  /// If @info is statically allocated does nothing. Otherwise increases
-  /// the reference count.
-  static final _gDbusAnnotationInfoRef =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_annotation_info_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusAnnotationInfo ref() {
-    return GDBusAnnotationInfo.fromPointer(
-      _gDbusAnnotationInfoRef(this.handle),
-    );
-  }
-
-  /// If @info is statically allocated, does nothing. Otherwise decreases
-  /// the reference count of @info. When its reference count drops to 0,
-  /// the memory used is freed.
-  static final _gDbusAnnotationInfoUnref =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dbus_annotation_info_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _gDbusAnnotationInfoUnref(this.handle);
-  }
-}
-
-/// Information about an argument for a method or a signal.
-final class GDBusArgInfo {
-  GDBusArgInfo.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// If @info is statically allocated does nothing. Otherwise increases
-  /// the reference count.
-  static final _gDbusArgInfoRef =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_arg_info_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusArgInfo ref() {
-    return GDBusArgInfo.fromPointer(_gDbusArgInfoRef(this.handle));
-  }
-
-  /// If @info is statically allocated, does nothing. Otherwise decreases
-  /// the reference count of @info. When its reference count drops to 0,
-  /// the memory used is freed.
-  static final _gDbusArgInfoUnref =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dbus_arg_info_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _gDbusArgInfoUnref(this.handle);
-  }
-}
-
-/// Struct used in [func@Gio.DBusError.register_error_domain].
-final class GDBusErrorEntry {
-  GDBusErrorEntry.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Base type for D-Bus interfaces.
-final class GDBusInterfaceIface {
-  GDBusInterfaceIface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Information about a D-Bus interface.
-final class GDBusInterfaceInfo {
-  GDBusInterfaceInfo.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Builds a lookup-cache to speed up
-  /// g_dbus_interface_info_lookup_method(),
-  /// g_dbus_interface_info_lookup_signal() and
-  /// g_dbus_interface_info_lookup_property().
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
-  /// If this has already been called with @info, the existing cache is
-  /// used and its use count is increased.
-  ///
-  /// Note that @info cannot be modified until
-  /// g_dbus_interface_info_cache_release() is called.
-  static final _gDbusInterfaceInfoCacheBuild =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dbus_interface_info_cache_build',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void cacheBuild() {
-    _gDbusInterfaceInfoCacheBuild(this.handle);
-  }
-
-  /// Decrements the usage count for the cache for @info built by
-  /// g_dbus_interface_info_cache_build() (if any) and frees the
-  /// resources used by the cache if the usage count drops to zero.
-  static final _gDbusInterfaceInfoCacheRelease =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dbus_interface_info_cache_release',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void cacheRelease() {
-    _gDbusInterfaceInfoCacheRelease(this.handle);
-  }
-
-  /// Appends an XML representation of @info (and its children) to @string_builder.
-  ///
-  /// This function is typically used for generating introspection XML
-  /// documents at run-time for handling the
-  /// `org.freedesktop.DBus.Introspectable.Introspect`
-  /// method.
-  static final _gDbusInterfaceInfoGenerateXml =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint32,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_dbus_interface_info_generate_xml')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
-          >();
-  void generateXml(int indent, GString stringBuilder) {
-    _gDbusInterfaceInfoGenerateXml(this.handle, indent, stringBuilder.handle);
-  }
-
-  /// Looks up information about a method.
-  ///
-  /// The cost of this function is O(n) in number of methods unless
-  /// g_dbus_interface_info_cache_build() has been used on @info.
-  static final _gDbusInterfaceInfoLookupMethod =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_interface_info_lookup_method')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GDBusMethodInfo? lookupMethod(String name) {
-    return withNativeString(name, (nativeName) {
-      return (_gDbusInterfaceInfoLookupMethod(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusMethodInfo.fromPointer(
-              _gDbusInterfaceInfoLookupMethod(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
-    });
-  }
-
-  /// Looks up information about a property.
-  ///
-  /// The cost of this function is O(n) in number of properties unless
-  /// g_dbus_interface_info_cache_build() has been used on @info.
-  static final _gDbusInterfaceInfoLookupProperty =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_interface_info_lookup_property')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GDBusPropertyInfo? lookupProperty(String name) {
-    return withNativeString(name, (nativeName) {
-      return (_gDbusInterfaceInfoLookupProperty(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusPropertyInfo.fromPointer(
-              _gDbusInterfaceInfoLookupProperty(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
-    });
-  }
-
-  /// Looks up information about a signal.
-  ///
-  /// The cost of this function is O(n) in number of signals unless
-  /// g_dbus_interface_info_cache_build() has been used on @info.
-  static final _gDbusInterfaceInfoLookupSignal =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-              )
-            >
-          >('g_dbus_interface_info_lookup_signal')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-            )
-          >();
-  GDBusSignalInfo? lookupSignal(String name) {
-    return withNativeString(name, (nativeName) {
-      return (_gDbusInterfaceInfoLookupSignal(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusSignalInfo.fromPointer(
-              _gDbusInterfaceInfoLookupSignal(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
-    });
-  }
-
-  /// If @info is statically allocated does nothing. Otherwise increases
-  /// the reference count.
-  static final _gDbusInterfaceInfoRef =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_interface_info_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusInterfaceInfo ref() {
-    return GDBusInterfaceInfo.fromPointer(_gDbusInterfaceInfoRef(this.handle));
-  }
-
-  /// If @info is statically allocated, does nothing. Otherwise decreases
-  /// the reference count of @info. When its reference count drops to 0,
-  /// the memory used is freed.
-  static final _gDbusInterfaceInfoUnref =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dbus_interface_info_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _gDbusInterfaceInfoUnref(this.handle);
-  }
-}
-
-/// Class structure for #GDBusInterfaceSkeleton.
-final class GDBusInterfaceSkeletonClass {
-  GDBusInterfaceSkeletonClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GDBusInterfaceSkeletonPrivate {
-  GDBusInterfaceSkeletonPrivate.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Virtual table for handling properties and method calls for a D-Bus
-/// interface.
-///
-/// Since 2.38, if you want to handle getting/setting D-Bus properties
-/// asynchronously, give %NULL as your get_property() or set_property()
-/// function. The D-Bus call will be directed to your @method_call function,
-/// with the provided @interface_name set to "org.freedesktop.DBus.Properties".
-///
-/// Ownership of the #GDBusMethodInvocation object passed to the
-/// method_call() function is transferred to your handler; you must
-/// call one of the methods of #GDBusMethodInvocation to return a reply
-/// (possibly empty), or an error. These functions also take ownership
-/// of the passed-in invocation object, so unless the invocation
-/// object has otherwise been referenced, it will be then be freed.
-/// Calling one of these functions may be done within your
-/// method_call() implementation but it also can be done at a later
-/// point to handle the method asynchronously.
-///
-/// The usual checks on the validity of the calls is performed. For
-/// `Get` calls, an error is automatically returned if the property does
-/// not exist or the permissions do not allow access. The same checks are
-/// performed for `Set` calls, and the provided value is also checked for
-/// being the correct type.
-///
-/// For both `Get` and `Set` calls, the #GDBusMethodInvocation
-/// passed to the @method_call handler can be queried with
-/// g_dbus_method_invocation_get_property_info() to get a pointer
-/// to the #GDBusPropertyInfo of the property.
-///
-/// If you have readable properties specified in your interface info,
-/// you must ensure that you either provide a non-%NULL @get_property()
-/// function or provide implementations of both the `Get` and `GetAll`
-/// methods on org.freedesktop.DBus.Properties interface in your @method_call
-/// function. Note that the required return type of the `Get` call is
-/// `(v)`, not the type of the property. `GetAll` expects a return value
-/// of type `a{sv}`.
-///
-/// If you have writable properties specified in your interface info,
-/// you must ensure that you either provide a non-%NULL @set_property()
-/// function or provide an implementation of the `Set` call. If implementing
-/// the call, you must return the value of type %G_VARIANT_TYPE_UNIT.
-final class GDBusInterfaceVTable {
-  GDBusInterfaceVTable.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Information about a method on a D-Bus interface.
-final class GDBusMethodInfo {
-  GDBusMethodInfo.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// If @info is statically allocated does nothing. Otherwise increases
-  /// the reference count.
-  static final _gDbusMethodInfoRef =
-      gioLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('g_dbus_method_info_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GDBusMethodInfo ref() {
-    return GDBusMethodInfo.fromPointer(_gDbusMethodInfoRef(this.handle));
-  }
-
-  /// If @info is statically allocated, does nothing. Otherwise decreases
-  /// the reference count of @info. When its reference count drops to 0,
-  /// the memory used is freed.
-  static final _gDbusMethodInfoUnref =
-      gioLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_dbus_method_info_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _gDbusMethodInfoUnref(this.handle);
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
   }
 }

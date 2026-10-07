@@ -588,7 +588,7 @@ final _gtkShowUriFull =
 void showUriFull(
   GtkWindow? parent,
   String uri,
-  int timestamp,
+  int timestamp, [
   GCancellable? cancellable,
   void Function(
     ffi.Pointer<ffi.Void>,
@@ -596,8 +596,8 @@ void showUriFull(
     ffi.Pointer<ffi.Void>,
   )?
   callback,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   withNativeString(uri, (nativeUri) {
     final _nc5 = callback == null
         ? null
@@ -615,7 +615,7 @@ void showUriFull(
         timestamp,
         cancellable?.handle ?? ffi.nullptr,
         _nc5?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc5?.close();

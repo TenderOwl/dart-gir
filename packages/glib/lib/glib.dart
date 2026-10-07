@@ -72,3 +72,7 @@ part 'src/records_32.dart';
 part 'src/records_33.dart';
 part 'src/records_34.dart';
 part 'src/records_35.dart';
+part 'src/records_36.dart';
+part 'src/records_37.dart';
+part 'src/records_38.dart';
+part 'src/records_39.dart';

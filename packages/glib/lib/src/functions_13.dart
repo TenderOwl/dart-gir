@@ -329,15 +329,15 @@ final _gTestQueueDestroy =
           )
         >();
 void testQueueDestroy(
-  void Function(ffi.Pointer<ffi.Void>) destroyFunc,
-  ffi.Pointer<ffi.Void> destroyData,
-) {
+  void Function(ffi.Pointer<ffi.Void>) destroyFunc, [
+  ffi.Pointer<ffi.Void>? destroyData,
+]) {
   final _nc1 =
       ffi.NativeCallable<ffi.Void Function(ffi.Pointer<ffi.Void>)>.isolateLocal(
         destroyFunc,
       );
   try {
-    _gTestQueueDestroy(_nc1.nativeFunction, destroyData);
+    _gTestQueueDestroy(_nc1.nativeFunction, destroyData ?? ffi.nullptr);
   } finally {
     _nc1.close();
   }
@@ -352,8 +352,8 @@ final _gTestQueueFree =
     glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
       'g_test_queue_free',
     ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-void testQueueFree(ffi.Pointer<ffi.Void> gfreePointer) {
-  _gTestQueueFree(gfreePointer);
+void testQueueFree([ffi.Pointer<ffi.Void>? gfreePointer]) {
+  _gTestQueueFree(gfreePointer ?? ffi.nullptr);
 }
 
 /// Gets a reproducible random floating point number.

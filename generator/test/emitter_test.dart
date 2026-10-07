@@ -309,16 +309,156 @@ void main() {
       expect(report.totalSkipped, 0);
       // Wrapper parameter type is nullable for the callback.
       expect(code, contains('void Function(ffi.Pointer<ffi.Void>)? notify'));
-      // Trailing optional positional parameter for the nullable callback.
-      expect(code, contains('[void Function(ffi.Pointer<ffi.Void>)? notify'));
+      // Trailing optional positional parameters — both `data` (nullable
+      // gpointer, see the nullable-gpointer test below) and `notify`
+      // (nullable callback) are optional because they have a nullable
+      // wrapper type.
+      expect(
+        code,
+        contains('[ffi.Pointer<ffi.Void>? data, '
+            'void Function(ffi.Pointer<ffi.Void>)? notify]'),
+      );
       // Native side gets a null pointer when the user passes nothing —
       // match on the actual variable name (`_nc4`) used for the 4th param.
       expect(code, contains('_nc4?.nativeFunction ?? ffi.nullptr'));
+      // Native side for the nullable gpointer data — same shape, no
+      // NativeCallable needed.
+      expect(code, contains('data ?? ffi.nullptr'));
       // Lifecycle: NativeCallable only allocated when non-null; close is
       // also conditional so we don't dereference a null instance.
       expect(code, contains('notify == null ? null'));
       expect(code, contains('_nc4?.close();'));
     });
+
+    test(
+      'nullable gpointer parameter emits ffi.Pointer<ffi.Void>? wrapper '
+      'and converts null → ffi.nullptr at the FFI call site',
+      () {
+        final report = GenerationReport();
+        // The canonical case: `progressCallbackData` on
+        // `gtk_source_file_loader_load_async` — GIR declares
+        // `<parameter … nullable="1" allow-none="1"><type name="gpointer"
+        // c:type="gpointer"/></parameter>`. The bridge must surface the
+        // parameter as nullable and feed `ffi.nullptr` to the FFI
+        // lookup when the user passes null.
+        final fn = GirFunction(
+          name: 'load_async',
+          cIdentifier: 'gtk_source_file_loader_load_async',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'priority',
+              type: GirTypeRef(name: 'gint', cType: 'gint'),
+            ),
+            GirParameter(
+              name: 'data',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              nullable: true,
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(report.totalSkipped, 0);
+        // User-facing parameter type carries the `?`.
+        expect(code, contains('ffi.Pointer<ffi.Void>? data'));
+        // Native slot conversion: when the user passes `null` the
+        // bridge substitutes `ffi.nullptr` so the FFI signature stays
+        // valid. Match on the parameter's local name.
+        expect(code, contains('data ?? ffi.nullptr'));
+      },
+    );
+
+    test(
+      'non-nullable gpointer parameter keeps ffi.Pointer<ffi.Void> '
+      '(no spurious `?`, no null conversion at the FFI call site)',
+      () {
+        final report = GenerationReport();
+        // Counter-test to the nullable case above: a non-nullable
+        // `gpointer` (GIR `<type … c:type="gpointer"/>` without
+        // `nullable="1"`) must still emit the old shape so existing
+        // non-nullable call sites don't suddenly reject a non-null
+        // pointer under stricter type-checking downstream.
+        final fn = GirFunction(
+          name: 'take_handle',
+          cIdentifier: 'some_take_handle',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'handle',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(report.totalSkipped, 0);
+        expect(code, contains('ffi.Pointer<ffi.Void> handle'));
+        expect(code, isNot(contains('ffi.Pointer<ffi.Void>? handle')));
+        // No `?? ffi.nullptr` substitution when nullable=false.
+        expect(code, isNot(contains('handle ?? ffi.nullptr')));
+      },
+    );
+
+    test(
+      'record / interface / union emit a `cast<T>(factory)` method on the '
+      'wrapper so users can recover the destination class from a borrowed handle',
+      () {
+        final report = GenerationReport();
+        // `GFile` is the canonical case — emitted as `class GFile {`
+        // (interface after the implements-clause work) with a plain
+        // `fromPointer(handle, {bool owned = false})` constructor and
+        // a `handle` field. The `cast<T>` method must be there so
+        // `item.cast<GFile>(GFile.fromPointer)` works when `item` is
+        // a `GObject` (the borrowed wrapper from `GListModel.getObject`).
+        final ns = GirNamespace(
+          name: 'Gio',
+          version: '2.0',
+          sharedLibrary: 'libgio-2.0.so.0',
+          cIdentifierPrefixes: const ['Gio', 'gio'],
+          cSymbolPrefixes: const ['gio'],
+          interfaces: [
+            GirInterface(
+              name: 'File',
+              cType: 'GFile',
+              methods: const [],
+              functions: const [],
+              doc: '',
+            ),
+          ],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code = RecordEmitter(ctx).emitInterface(ns.interfaces.first)!;
+        expect(report.totalSkipped, 0);
+        // The fromPointer signature takes the {bool owned} named param
+        // so existing callers that want to transfer ownership directly
+        // (`GFile.fromPointer(handle, owned: true)`) keep working.
+        // The Dart name is `GioFile` — the namespace `Gio` prefix gets
+        // prepended to the local GIR name `File`.
+        expect(
+          code,
+          contains('GioFile.fromPointer(this.handle, {bool owned = false})'),
+        );
+        // cast<T>(factory) re-wraps handle as T via the user-provided
+        // callback. Bound is `Object` (not `GObject`) so this works for
+        // interfaces like `GFile` that don't have an `extends` clause
+        // in their Dart declaration. The factory parameter has the
+        // minimal universal shape so a user-side forwarding
+        // `fromPointer(handle)` without `{bool owned}` is enough.
+        expect(
+          code,
+          contains(
+            'T cast<T extends Object>(\n'
+            '  T Function(ffi.Pointer<ffi.Void>) factory,\n'
+            ') {\n'
+            '  return factory(handle);\n'
+            '}',
+          ),
+        );
+      },
+    );
 
     test(
       'record OUT param (caller-allocates) uses HeapAnchor, omits manual free',
@@ -713,6 +853,34 @@ void main() {
       expect(
         bindingCode,
         contains('GBinding.fromPointer(super.handle, {super.owned})'),
+      );
+      // Both root (GObject) and parented (GBinding) classes emit a
+      // `cast<T>(factory)` method that re-wraps the handle as a
+      // user-specified type via a factory callback. Bound is `Object`
+      // (not the class itself) so subclasses can validly override
+      // — every wrapper in the corpus emits the same signature, and
+      // the factory parameter is the minimal universal shape
+      // (`T Function(Pointer<Void>)`) so a user-side forwarding
+      // `fromPointer(handle)` without `{bool owned}` is enough.
+      expect(
+        objectCode,
+        contains(
+          'T cast<T extends Object>(\n'
+          '  T Function(ffi.Pointer<ffi.Void>) factory,\n'
+          ') {\n'
+          '  return factory(handle);\n'
+          '}',
+        ),
+      );
+      expect(
+        bindingCode,
+        contains(
+          'T cast<T extends Object>(\n'
+          '  T Function(ffi.Pointer<ffi.Void>) factory,\n'
+          ') {\n'
+          '  return factory(handle);\n'
+          '}',
+        ),
       );
       // `<constructor>` now emits a generative constructor (chaining
       // to `this.fromPointer`) so subclasses can do

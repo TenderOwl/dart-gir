@@ -136,6 +136,18 @@ part of '../gdk_pixbuf.dart';
 class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
   GdkPixbuf.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GdkPixbuf` structure and allocates a buffer for it.
   ///
   /// If the allocation of the buffer failed, this function will return `NULL`.
@@ -1598,7 +1610,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           >();
   void saveToStreamvAsync(
     GOutputStream stream,
-    String type_,
+    String type_, [
     List<String?>? optionKeys,
     List<String?>? optionValues,
     GCancellable? cancellable,
@@ -1608,8 +1620,8 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeStringList(optionKeys, (nativeOptionKeys) {
       withNativeStringList(optionValues, (nativeOptionValues) {
         withNativeString(type_, (nativeType_) {
@@ -1631,7 +1643,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
               nativeOptionValues,
               cancellable?.handle ?? ffi.nullptr,
               _nc6?.nativeFunction ?? ffi.nullptr,
-              userData,
+              userData ?? ffi.nullptr,
             );
           } finally {
             _nc6?.close();
@@ -2004,7 +2016,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
             )
           >();
   static void getFileInfoAsync(
-    String filename,
+    String filename, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -2012,8 +2024,8 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(filename, (nativeFilename) {
       final _nc3 = callback == null
           ? null
@@ -2029,7 +2041,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           nativeFilename.cast<Utf8>(),
           cancellable?.handle ?? ffi.nullptr,
           _nc3?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc3?.close();
@@ -2180,7 +2192,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
             )
           >();
   static void newFromStreamAsync(
-    GInputStream stream,
+    GInputStream stream, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -2188,8 +2200,8 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -2204,7 +2216,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
         stream.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -2263,7 +2275,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     GInputStream stream,
     int width,
     int height,
-    bool preserveAspectRatio,
+    bool preserveAspectRatio, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -2271,8 +2283,8 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc6 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -2290,7 +2302,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
         preserveAspectRatio ? 1 : 0,
         cancellable?.handle ?? ffi.nullptr,
         _nc6?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc6?.close();
@@ -2486,7 +2498,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
             )
           >();
   void loadAsync(
-    int size,
+    int size, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -2494,8 +2506,8 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -2511,7 +2523,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
         size,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();

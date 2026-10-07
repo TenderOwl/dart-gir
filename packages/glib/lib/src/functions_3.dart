@@ -351,9 +351,9 @@ final _gDatalistForeach =
         >();
 void datalistForeach(
   GData datalist,
-  void Function(int, ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  void Function(int, ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   final _nc2 =
       ffi.NativeCallable<
         ffi.Void Function(
@@ -363,7 +363,11 @@ void datalistForeach(
         )
       >.isolateLocal(func);
   try {
-    _gDatalistForeach(datalist.handle, _nc2.nativeFunction, userData);
+    _gDatalistForeach(
+      datalist.handle,
+      _nc2.nativeFunction,
+      userData ?? ffi.nullptr,
+    );
   } finally {
     _nc2.close();
   }
@@ -386,9 +390,12 @@ final _gDatalistGetData =
             ffi.Pointer<Utf8>,
           )
         >();
-ffi.Pointer<ffi.Void> datalistGetData(GData datalist, String key) {
+ffi.Pointer<ffi.Void>? datalistGetData(GData datalist, String key) {
   return withNativeString(key, (nativeKey) {
-    return _gDatalistGetData(datalist.handle, nativeKey.cast<Utf8>());
+    return (_gDatalistGetData(datalist.handle, nativeKey.cast<Utf8>())) ==
+            ffi.nullptr
+        ? null
+        : (_gDatalistGetData(datalist.handle, nativeKey.cast<Utf8>()));
   });
 }
 
@@ -412,8 +419,10 @@ final _gDatalistIdGetData =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
-ffi.Pointer<ffi.Void> datalistIdGetData(GData datalist, int keyId) {
-  return _gDatalistIdGetData(datalist.handle, keyId);
+ffi.Pointer<ffi.Void>? datalistIdGetData(GData datalist, int keyId) {
+  return (_gDatalistIdGetData(datalist.handle, keyId)) == ffi.nullptr
+      ? null
+      : (_gDatalistIdGetData(datalist.handle, keyId));
 }
 
 /// Removes multiple keys from a datalist.
@@ -526,9 +535,9 @@ final _gDatasetForeach =
         >();
 void datasetForeach(
   ffi.Pointer<ffi.Void> datasetLocation,
-  void Function(int, ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  void Function(int, ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   final _nc2 =
       ffi.NativeCallable<
         ffi.Void Function(
@@ -538,7 +547,11 @@ void datasetForeach(
         )
       >.isolateLocal(func);
   try {
-    _gDatasetForeach(datasetLocation, _nc2.nativeFunction, userData);
+    _gDatasetForeach(
+      datasetLocation,
+      _nc2.nativeFunction,
+      userData ?? ffi.nullptr,
+    );
   } finally {
     _nc2.close();
   }
@@ -554,11 +567,13 @@ final _gDatasetIdGetData =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
-ffi.Pointer<ffi.Void> datasetIdGetData(
+ffi.Pointer<ffi.Void>? datasetIdGetData(
   ffi.Pointer<ffi.Void> datasetLocation,
   int keyId,
 ) {
-  return _gDatasetIdGetData(datasetLocation, keyId);
+  return (_gDatasetIdGetData(datasetLocation, keyId)) == ffi.nullptr
+      ? null
+      : (_gDatasetIdGetData(datasetLocation, keyId));
 }
 
 /// This is a variant of g_dgettext() that allows specifying a locale
@@ -664,8 +679,8 @@ final _gDirectEqual =
         .asFunction<
           int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
         >();
-bool directEqual(ffi.Pointer<ffi.Void> v1, ffi.Pointer<ffi.Void> v2) {
-  return (_gDirectEqual(v1, v2)) != 0;
+bool directEqual([ffi.Pointer<ffi.Void>? v1, ffi.Pointer<ffi.Void>? v2]) {
+  return (_gDirectEqual(v1 ?? ffi.nullptr, v2 ?? ffi.nullptr)) != 0;
 }
 
 /// Converts a gpointer to a hash value.
@@ -679,8 +694,8 @@ final _gDirectHash =
     glibLookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>>(
       'g_direct_hash',
     ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-int directHash(ffi.Pointer<ffi.Void> v) {
-  return _gDirectHash(v);
+int directHash([ffi.Pointer<ffi.Void>? v]) {
+  return _gDirectHash(v ?? ffi.nullptr);
 }
 
 /// This function is a wrapper of dngettext() which does not translate

@@ -127,8 +127,8 @@ final _gAtomicIntAdd =
           >
         >('g_atomic_int_add')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-int atomicIntAdd(ffi.Pointer<ffi.Void> atomic, int val) {
-  return _gAtomicIntAdd(atomic, val);
+int atomicIntAdd(ffi.Pointer<ffi.Void>? atomic, int val) {
+  return _gAtomicIntAdd(atomic ?? ffi.nullptr, val);
 }
 
 /// Performs an atomic bitwise 'and' of the value of @atomic and @val,
@@ -148,8 +148,8 @@ final _gAtomicIntAnd =
           >
         >('g_atomic_int_and')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-int atomicIntAnd(ffi.Pointer<ffi.Void> atomic, int val) {
-  return _gAtomicIntAnd(atomic, val);
+int atomicIntAnd(ffi.Pointer<ffi.Void>? atomic, int val) {
+  return _gAtomicIntAnd(atomic ?? ffi.nullptr, val);
 }
 
 /// Compares @atomic to @oldval and, if equal, sets it to @newval.
@@ -172,11 +172,16 @@ final _gAtomicIntCompareAndExchange =
         >('g_atomic_int_compare_and_exchange')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int, int)>();
 bool atomicIntCompareAndExchange(
-  ffi.Pointer<ffi.Void> atomic,
+  ffi.Pointer<ffi.Void>? atomic,
   int oldval,
   int newval,
 ) {
-  return (_gAtomicIntCompareAndExchange(atomic, oldval, newval)) != 0;
+  return (_gAtomicIntCompareAndExchange(
+        atomic ?? ffi.nullptr,
+        oldval,
+        newval,
+      )) !=
+      0;
 }
 
 /// Compares @atomic to @oldval and, if equal, sets it to @newval.
@@ -206,14 +211,14 @@ final _gAtomicIntCompareAndExchangeFull =
           int Function(ffi.Pointer<ffi.Void>, int, int, ffi.Pointer<ffi.Int32>)
         >();
 (bool, int) atomicIntCompareAndExchangeFull(
-  ffi.Pointer<ffi.Void> atomic,
+  ffi.Pointer<ffi.Void>? atomic,
   int oldval,
   int newval,
 ) {
   final _out0 = malloc<ffi.Int32>();
   try {
     final _ret = _gAtomicIntCompareAndExchangeFull(
-      atomic,
+      atomic ?? ffi.nullptr,
       oldval,
       newval,
       _out0,
@@ -237,8 +242,8 @@ final _gAtomicIntDecAndTest =
     glibLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
       'g_atomic_int_dec_and_test',
     ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-bool atomicIntDecAndTest(ffi.Pointer<ffi.Void> atomic) {
-  return (_gAtomicIntDecAndTest(atomic)) != 0;
+bool atomicIntDecAndTest([ffi.Pointer<ffi.Void>? atomic]) {
+  return (_gAtomicIntDecAndTest(atomic ?? ffi.nullptr)) != 0;
 }
 
 /// Sets the @atomic to @newval and returns the old value from @atomic.
@@ -256,8 +261,8 @@ final _gAtomicIntExchange =
           >
         >('g_atomic_int_exchange')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-int atomicIntExchange(ffi.Pointer<ffi.Void> atomic, int newval) {
-  return _gAtomicIntExchange(atomic, newval);
+int atomicIntExchange(ffi.Pointer<ffi.Void>? atomic, int newval) {
+  return _gAtomicIntExchange(atomic ?? ffi.nullptr, newval);
 }
 
 /// This function existed before g_atomic_int_add() returned the prior
@@ -270,8 +275,8 @@ final _gAtomicIntExchangeAndAdd =
           >
         >('g_atomic_int_exchange_and_add')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-int atomicIntExchangeAndAdd(ffi.Pointer<ffi.Void> atomic, int val) {
-  return _gAtomicIntExchangeAndAdd(atomic, val);
+int atomicIntExchangeAndAdd(ffi.Pointer<ffi.Void>? atomic, int val) {
+  return _gAtomicIntExchangeAndAdd(atomic ?? ffi.nullptr, val);
 }
 
 /// Gets the current value of @atomic.
@@ -285,8 +290,8 @@ final _gAtomicIntGet =
     glibLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
       'g_atomic_int_get',
     ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-int atomicIntGet(ffi.Pointer<ffi.Void> atomic) {
-  return _gAtomicIntGet(atomic);
+int atomicIntGet([ffi.Pointer<ffi.Void>? atomic]) {
+  return _gAtomicIntGet(atomic ?? ffi.nullptr);
 }
 
 /// Increments the value of @atomic by 1.
@@ -301,8 +306,8 @@ final _gAtomicIntInc =
     glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
       'g_atomic_int_inc',
     ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-void atomicIntInc(ffi.Pointer<ffi.Void> atomic) {
-  _gAtomicIntInc(atomic);
+void atomicIntInc([ffi.Pointer<ffi.Void>? atomic]) {
+  _gAtomicIntInc(atomic ?? ffi.nullptr);
 }
 
 /// Performs an atomic bitwise 'or' of the value of @atomic and @val,
@@ -322,8 +327,8 @@ final _gAtomicIntOr =
           >
         >('g_atomic_int_or')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-int atomicIntOr(ffi.Pointer<ffi.Void> atomic, int val) {
-  return _gAtomicIntOr(atomic, val);
+int atomicIntOr(ffi.Pointer<ffi.Void>? atomic, int val) {
+  return _gAtomicIntOr(atomic ?? ffi.nullptr, val);
 }
 
 /// Sets the value of @atomic to @newval.
@@ -340,8 +345,8 @@ final _gAtomicIntSet =
           >
         >('g_atomic_int_set')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void atomicIntSet(ffi.Pointer<ffi.Void> atomic, int newval) {
-  _gAtomicIntSet(atomic, newval);
+void atomicIntSet(ffi.Pointer<ffi.Void>? atomic, int newval) {
+  _gAtomicIntSet(atomic ?? ffi.nullptr, newval);
 }
 
 /// Performs an atomic bitwise 'xor' of the value of @atomic and @val,
@@ -361,8 +366,8 @@ final _gAtomicIntXor =
           >
         >('g_atomic_int_xor')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-int atomicIntXor(ffi.Pointer<ffi.Void> atomic, int val) {
-  return _gAtomicIntXor(atomic, val);
+int atomicIntXor(ffi.Pointer<ffi.Void>? atomic, int val) {
+  return _gAtomicIntXor(atomic ?? ffi.nullptr, val);
 }
 
 /// Atomically adds @val to the value of @atomic.
@@ -442,11 +447,16 @@ final _gAtomicPointerCompareAndExchange =
           )
         >();
 bool atomicPointerCompareAndExchange(
-  ffi.Pointer<ffi.Void> atomic,
-  ffi.Pointer<ffi.Void> oldval,
-  ffi.Pointer<ffi.Void> newval,
-) {
-  return (_gAtomicPointerCompareAndExchange(atomic, oldval, newval)) != 0;
+  ffi.Pointer<ffi.Void> atomic, [
+  ffi.Pointer<ffi.Void>? oldval,
+  ffi.Pointer<ffi.Void>? newval,
+]) {
+  return (_gAtomicPointerCompareAndExchange(
+        atomic,
+        oldval ?? ffi.nullptr,
+        newval ?? ffi.nullptr,
+      )) !=
+      0;
 }
 
 /// Compares @atomic to @oldval and, if equal, sets it to @newval.
@@ -481,16 +491,16 @@ final _gAtomicPointerCompareAndExchangeFull =
           )
         >();
 (bool, ffi.Pointer<ffi.Void>) atomicPointerCompareAndExchangeFull(
-  ffi.Pointer<ffi.Void> atomic,
-  ffi.Pointer<ffi.Void> oldval,
-  ffi.Pointer<ffi.Void> newval,
-) {
+  ffi.Pointer<ffi.Void> atomic, [
+  ffi.Pointer<ffi.Void>? oldval,
+  ffi.Pointer<ffi.Void>? newval,
+]) {
   final _out0 = malloc<ffi.Pointer<ffi.Void>>();
   try {
     final _ret = _gAtomicPointerCompareAndExchangeFull(
       atomic,
-      oldval,
-      newval,
+      oldval ?? ffi.nullptr,
+      newval ?? ffi.nullptr,
       _out0,
     );
     return ((_ret) != 0, _out0.value);
@@ -522,11 +532,17 @@ final _gAtomicPointerExchange =
             ffi.Pointer<ffi.Void>,
           )
         >();
-ffi.Pointer<ffi.Void> atomicPointerExchange(
-  ffi.Pointer<ffi.Void> atomic,
-  ffi.Pointer<ffi.Void> newval,
-) {
-  return _gAtomicPointerExchange(atomic, newval);
+ffi.Pointer<ffi.Void>? atomicPointerExchange([
+  ffi.Pointer<ffi.Void>? atomic,
+  ffi.Pointer<ffi.Void>? newval,
+]) {
+  return (_gAtomicPointerExchange(
+            atomic ?? ffi.nullptr,
+            newval ?? ffi.nullptr,
+          )) ==
+          ffi.nullptr
+      ? null
+      : (_gAtomicPointerExchange(atomic ?? ffi.nullptr, newval ?? ffi.nullptr));
 }
 
 /// Gets the current value of @atomic.
@@ -543,8 +559,10 @@ final _gAtomicPointerGet =
           >
         >('g_atomic_pointer_get')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-ffi.Pointer<ffi.Void> atomicPointerGet(ffi.Pointer<ffi.Void> atomic) {
-  return _gAtomicPointerGet(atomic);
+ffi.Pointer<ffi.Void>? atomicPointerGet(ffi.Pointer<ffi.Void> atomic) {
+  return (_gAtomicPointerGet(atomic)) == ffi.nullptr
+      ? null
+      : (_gAtomicPointerGet(atomic));
 }
 
 /// Performs an atomic bitwise 'or' of the value of @atomic and @val,
@@ -587,10 +605,10 @@ final _gAtomicPointerSet =
           void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
         >();
 void atomicPointerSet(
-  ffi.Pointer<ffi.Void> atomic,
-  ffi.Pointer<ffi.Void> newval,
-) {
-  _gAtomicPointerSet(atomic, newval);
+  ffi.Pointer<ffi.Void> atomic, [
+  ffi.Pointer<ffi.Void>? newval,
+]) {
+  _gAtomicPointerSet(atomic, newval ?? ffi.nullptr);
 }
 
 /// Performs an atomic bitwise 'xor' of the value of @atomic and @val,

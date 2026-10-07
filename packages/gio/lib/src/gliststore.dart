@@ -9,6 +9,18 @@ part of '../gio.dart';
 class GListStore extends GObject implements GListModel {
   GListStore.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new #GListStore with items of type @item_type. @item_type
   /// must be a subclass of #GObject.
   static final _gListStoreNew =
@@ -112,9 +124,9 @@ class GListStore extends GObject implements GListModel {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    compareFunc,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    compareFunc, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -128,7 +140,7 @@ class GListStore extends GObject implements GListModel {
         this.handle,
         item.handle,
         _nc2.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
       );
       return _ret;
     } finally {
@@ -201,9 +213,9 @@ class GListStore extends GObject implements GListModel {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    compareFunc,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    compareFunc, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -213,7 +225,11 @@ class GListStore extends GObject implements GListModel {
           )
         >.isolateLocal(compareFunc, exceptionalReturn: 0);
     try {
-      _gListStoreSort(this.handle, _nc1.nativeFunction, userData);
+      _gListStoreSort(
+        this.handle,
+        _nc1.nativeFunction,
+        userData ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }

@@ -53,6 +53,18 @@ class GDBusProxy extends GObject
     implements GAsyncInitable, GDBusInterface, GInitable {
   GDBusProxy.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Finishes creating a #GDBusProxy.
   static final _gDbusProxyNewFinish =
       gioLookup<
@@ -351,7 +363,7 @@ class GDBusProxy extends GObject
     String methodName,
     GVariant? parameters,
     GDBusCallFlags flags,
-    int timeoutMsec,
+    int timeoutMsec, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -359,8 +371,8 @@ class GDBusProxy extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(methodName, (nativeMethodName) {
       final _nc6 = callback == null
           ? null
@@ -380,7 +392,7 @@ class GDBusProxy extends GObject
           timeoutMsec,
           cancellable?.handle ?? ffi.nullptr,
           _nc6?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc6?.close();
@@ -614,7 +626,7 @@ class GDBusProxy extends GObject
     String methodName,
     GVariant? parameters,
     GDBusCallFlags flags,
-    int timeoutMsec,
+    int timeoutMsec, [
     GUnixFDList? fdList,
     GCancellable? cancellable,
     void Function(
@@ -623,8 +635,8 @@ class GDBusProxy extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(methodName, (nativeMethodName) {
       final _nc7 = callback == null
           ? null
@@ -645,7 +657,7 @@ class GDBusProxy extends GObject
           fdList?.handle ?? ffi.nullptr,
           cancellable?.handle ?? ffi.nullptr,
           _nc7?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc7?.close();
@@ -1153,7 +1165,7 @@ class GDBusProxy extends GObject
     GDBusInterfaceInfo? info,
     String? name,
     String objectPath,
-    String interfaceName,
+    String interfaceName, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -1161,8 +1173,8 @@ class GDBusProxy extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(name, (nativeName) {
       withNativeString(objectPath, (nativeObjectPath) {
         withNativeString(interfaceName, (nativeInterfaceName) {
@@ -1185,7 +1197,7 @@ class GDBusProxy extends GObject
               nativeInterfaceName.cast<Utf8>(),
               cancellable?.handle ?? ffi.nullptr,
               _nc8?.nativeFunction ?? ffi.nullptr,
-              userData,
+              userData ?? ffi.nullptr,
             );
           } finally {
             _nc8?.close();
@@ -1249,7 +1261,7 @@ class GDBusProxy extends GObject
     GDBusInterfaceInfo? info,
     String name,
     String objectPath,
-    String interfaceName,
+    String interfaceName, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -1257,8 +1269,8 @@ class GDBusProxy extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(name, (nativeName) {
       withNativeString(objectPath, (nativeObjectPath) {
         withNativeString(interfaceName, (nativeInterfaceName) {
@@ -1281,7 +1293,7 @@ class GDBusProxy extends GObject
               nativeInterfaceName.cast<Utf8>(),
               cancellable?.handle ?? ffi.nullptr,
               _nc8?.nativeFunction ?? ffi.nullptr,
-              userData,
+              userData ?? ffi.nullptr,
             );
           } finally {
             _nc8?.close();
@@ -1410,7 +1422,7 @@ class GDBusProxy extends GObject
             )
           >();
   void initAsync(
-    int ioPriority,
+    int ioPriority, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -1418,8 +1430,8 @@ class GDBusProxy extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -1435,7 +1447,7 @@ class GDBusProxy extends GObject
         ioPriority,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();

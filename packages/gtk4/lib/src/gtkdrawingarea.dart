@@ -86,6 +86,18 @@ class GtkDrawingArea extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   GtkDrawingArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new drawing area.
   static final _gtkDrawingAreaNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -215,7 +227,7 @@ class GtkDrawingArea extends GtkWidget
       ffi.Pointer<ffi.Void>,
     )?
     drawFunc,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc1 = drawFunc == null
@@ -237,7 +249,7 @@ class GtkDrawingArea extends GtkWidget
       _gtkDrawingAreaSetDrawFunc(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
     } finally {

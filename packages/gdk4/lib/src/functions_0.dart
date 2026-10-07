@@ -213,7 +213,7 @@ void contentDeserializeAsync(
   GInputStream stream,
   String mimeType,
   int type_,
-  int ioPriority,
+  int ioPriority, [
   GCancellable? cancellable,
   void Function(
     ffi.Pointer<ffi.Void>,
@@ -221,8 +221,8 @@ void contentDeserializeAsync(
     ffi.Pointer<ffi.Void>,
   )?
   callback,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   withNativeString(mimeType, (nativeMimeType) {
     final _nc6 = callback == null
         ? null
@@ -241,7 +241,7 @@ void contentDeserializeAsync(
         ioPriority,
         cancellable?.handle ?? ffi.nullptr,
         _nc6?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc6?.close();
@@ -378,7 +378,7 @@ void contentRegisterDeserializer(
   String mimeType,
   int type_,
   void Function(ffi.Pointer<ffi.Void>) deserialize,
-  ffi.Pointer<ffi.Void> data,
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>) notify,
 ) {
   withNativeString(mimeType, (nativeMimeType) {
@@ -395,7 +395,7 @@ void contentRegisterDeserializer(
         nativeMimeType.cast<Utf8>(),
         type_,
         _nc3.nativeFunction,
-        data,
+        data ?? ffi.nullptr,
         _nc5.nativeFunction,
       );
     } finally {
@@ -443,7 +443,7 @@ void contentRegisterSerializer(
   int type_,
   String mimeType,
   void Function(ffi.Pointer<ffi.Void>) serialize,
-  ffi.Pointer<ffi.Void> data,
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>) notify,
 ) {
   withNativeString(mimeType, (nativeMimeType) {
@@ -460,7 +460,7 @@ void contentRegisterSerializer(
         type_,
         nativeMimeType.cast<Utf8>(),
         _nc3.nativeFunction,
-        data,
+        data ?? ffi.nullptr,
         _nc5.nativeFunction,
       );
     } finally {
@@ -519,7 +519,7 @@ void contentSerializeAsync(
   GOutputStream stream,
   String mimeType,
   GValue value,
-  int ioPriority,
+  int ioPriority, [
   GCancellable? cancellable,
   void Function(
     ffi.Pointer<ffi.Void>,
@@ -527,8 +527,8 @@ void contentSerializeAsync(
     ffi.Pointer<ffi.Void>,
   )?
   callback,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   withNativeString(mimeType, (nativeMimeType) {
     final _nc6 = callback == null
         ? null
@@ -547,7 +547,7 @@ void contentSerializeAsync(
         ioPriority,
         cancellable?.handle ?? ffi.nullptr,
         _nc6?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc6?.close();

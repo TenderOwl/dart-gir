@@ -65,6 +65,18 @@ class GtkFlowBox extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
   GtkFlowBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a `GtkFlowBox`.
   static final _gtkFlowBoxNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -149,7 +161,7 @@ class GtkFlowBox extends GtkWidget
     GListModel? model,
     ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
     createWidgetFunc,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) userDataFreeFunc,
   ) {
     final _nc2 =
@@ -168,7 +180,7 @@ class GtkFlowBox extends GtkWidget
         this.handle,
         model?.handle ?? ffi.nullptr,
         _nc2.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
     } finally {
@@ -461,9 +473,9 @@ class GtkFlowBox extends GtkWidget
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> data,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? data,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Void Function(
@@ -473,7 +485,11 @@ class GtkFlowBox extends GtkWidget
           )
         >.isolateLocal(func);
     try {
-      _gtkFlowBoxSelectedForeach(this.handle, _nc1.nativeFunction, data);
+      _gtkFlowBoxSelectedForeach(
+        this.handle,
+        _nc1.nativeFunction,
+        data ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }
@@ -556,7 +572,7 @@ class GtkFlowBox extends GtkWidget
           >();
   void setFilterFunc(
     int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)? filterFunc,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc1 = filterFunc == null
@@ -572,7 +588,7 @@ class GtkFlowBox extends GtkWidget
       _gtkFlowBoxSetFilterFunc(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
     } finally {
@@ -729,7 +745,7 @@ class GtkFlowBox extends GtkWidget
       ffi.Pointer<ffi.Void>,
     )?
     sortFunc,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc1 = sortFunc == null
@@ -749,7 +765,7 @@ class GtkFlowBox extends GtkWidget
       _gtkFlowBoxSetSortFunc(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
     } finally {

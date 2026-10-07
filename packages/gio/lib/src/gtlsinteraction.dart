@@ -25,6 +25,18 @@ class GTlsInteraction extends GObject {
   GTlsInteraction.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Run synchronous interaction to ask the user for a password. In general,
   /// g_tls_interaction_invoke_ask_password() should be used instead of this
   /// function.
@@ -131,7 +143,7 @@ class GTlsInteraction extends GObject {
             )
           >();
   void askPasswordAsync(
-    GTlsPassword password,
+    GTlsPassword password, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -139,8 +151,8 @@ class GTlsInteraction extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -156,7 +168,7 @@ class GTlsInteraction extends GObject {
         password.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -485,7 +497,7 @@ class GTlsInteraction extends GObject {
           >();
   void requestCertificateAsync(
     GTlsConnection connection,
-    GTlsCertificateRequestFlags flags,
+    GTlsCertificateRequestFlags flags, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -493,8 +505,8 @@ class GTlsInteraction extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc4 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -511,7 +523,7 @@ class GTlsInteraction extends GObject {
         flags.value,
         cancellable?.handle ?? ffi.nullptr,
         _nc4?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc4?.close();

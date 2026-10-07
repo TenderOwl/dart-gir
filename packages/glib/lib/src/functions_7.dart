@@ -53,17 +53,17 @@ final _gLogDefaultHandler =
         >();
 void logDefaultHandler(
   String? logDomain,
-  GLogLevelFlags logLevel,
+  GLogLevelFlags logLevel, [
   String? message,
-  ffi.Pointer<ffi.Void> unusedData,
-) {
+  ffi.Pointer<ffi.Void>? unusedData,
+]) {
   withNativeString(logDomain, (nativeLogDomain) {
     withNativeString(message, (nativeMessage) {
       _gLogDefaultHandler(
         nativeLogDomain.cast<Utf8>(),
         logLevel.value,
         nativeMessage.cast<Utf8>(),
-        unusedData,
+        unusedData ?? ffi.nullptr,
       );
     });
   });
@@ -265,7 +265,7 @@ int logSetHandlerFull(
     ffi.Pointer<ffi.Void>,
   )
   logFunc,
-  ffi.Pointer<ffi.Void> userData,
+  ffi.Pointer<ffi.Void>? userData,
   void Function(ffi.Pointer<ffi.Void>) destroy,
 ) {
   return withNativeString(logDomain, (nativeLogDomain) {
@@ -287,7 +287,7 @@ int logSetHandlerFull(
         nativeLogDomain.cast<Utf8>(),
         logLevels.value,
         _nc3.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
         _nc5.nativeFunction,
       );
       return _ret;
@@ -397,11 +397,16 @@ final _gLogWriterDefault =
 GLogWriterOutput logWriterDefault(
   GLogLevelFlags logLevel,
   ffi.Pointer<ffi.Void> fields,
-  int nFields,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  int nFields, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   return GLogWriterOutput.fromValue(
-    _gLogWriterDefault(logLevel.value, fields, nFields, userData),
+    _gLogWriterDefault(
+      logLevel.value,
+      fields,
+      nFields,
+      userData ?? ffi.nullptr,
+    ),
   );
 }
 
@@ -571,11 +576,16 @@ final _gLogWriterJournald =
 GLogWriterOutput logWriterJournald(
   GLogLevelFlags logLevel,
   ffi.Pointer<ffi.Void> fields,
-  int nFields,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  int nFields, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   return GLogWriterOutput.fromValue(
-    _gLogWriterJournald(logLevel.value, fields, nFields, userData),
+    _gLogWriterJournald(
+      logLevel.value,
+      fields,
+      nFields,
+      userData ?? ffi.nullptr,
+    ),
   );
 }
 
@@ -613,11 +623,16 @@ final _gLogWriterStandardStreams =
 GLogWriterOutput logWriterStandardStreams(
   GLogLevelFlags logLevel,
   ffi.Pointer<ffi.Void> fields,
-  int nFields,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  int nFields, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   return GLogWriterOutput.fromValue(
-    _gLogWriterStandardStreams(logLevel.value, fields, nFields, userData),
+    _gLogWriterStandardStreams(
+      logLevel.value,
+      fields,
+      nFields,
+      userData ?? ffi.nullptr,
+    ),
   );
 }
 
@@ -662,10 +677,10 @@ final _gLogWriterSyslog =
 GLogWriterOutput logWriterSyslog(
   GLogLevelFlags logLevel,
   ffi.Pointer<ffi.Void> fields,
-  int nFields,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  int nFields, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   return GLogWriterOutput.fromValue(
-    _gLogWriterSyslog(logLevel.value, fields, nFields, userData),
+    _gLogWriterSyslog(logLevel.value, fields, nFields, userData ?? ffi.nullptr),
   );
 }

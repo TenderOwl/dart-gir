@@ -50,6 +50,18 @@ class GtkAssistant extends GtkWindow
         GtkShortcutManager {
   GtkAssistant.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GtkAssistant`.
   static final _gtkAssistantNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -368,7 +380,7 @@ class GtkAssistant extends GtkWindow
           >();
   void setForwardPageFunc(
     int Function(int, ffi.Pointer<ffi.Void>)? pageFunc,
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc1 = pageFunc == null
@@ -384,7 +396,7 @@ class GtkAssistant extends GtkWindow
       _gtkAssistantSetForwardPageFunc(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        data,
+        data ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
     } finally {

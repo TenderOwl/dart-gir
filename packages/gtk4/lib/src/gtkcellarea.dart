@@ -318,6 +318,18 @@ class GtkCellArea extends GInitiallyUnowned
     implements GtkBuildable, GtkCellLayout {
   GtkCellArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Activates @area, usually by activating the currently focused
   /// cell, however some subclasses which embed widgets in the area
   /// can also activate a widget if it currently has the focus.
@@ -794,15 +806,19 @@ class GtkCellArea extends GInitiallyUnowned
             )
           >();
   void foreach(
-    int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) callback,
-    ffi.Pointer<ffi.Void> callbackData,
-  ) {
+    int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) callback, [
+    ffi.Pointer<ffi.Void>? callbackData,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
         >.isolateLocal(callback, exceptionalReturn: 0);
     try {
-      _gtkCellAreaForeach(this.handle, _nc1.nativeFunction, callbackData);
+      _gtkCellAreaForeach(
+        this.handle,
+        _nc1.nativeFunction,
+        callbackData ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }
@@ -864,9 +880,9 @@ class GtkCellArea extends GInitiallyUnowned
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    callback,
-    ffi.Pointer<ffi.Void> callbackData,
-  ) {
+    callback, [
+    ffi.Pointer<ffi.Void>? callbackData,
+  ]) {
     final _nc5 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -884,7 +900,7 @@ class GtkCellArea extends GInitiallyUnowned
         cellArea.handle,
         backgroundArea.handle,
         _nc5.nativeFunction,
-        callbackData,
+        callbackData ?? ffi.nullptr,
       );
     } finally {
       _nc5.close();
@@ -1666,7 +1682,7 @@ class GtkCellArea extends GInitiallyUnowned
       ffi.Pointer<ffi.Void>,
     )?
     func,
-    ffi.Pointer<ffi.Void> funcData,
+    ffi.Pointer<ffi.Void>? funcData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc2 = func == null
@@ -1689,7 +1705,7 @@ class GtkCellArea extends GInitiallyUnowned
         this.handle,
         cell.handle,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        funcData,
+        funcData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
     } finally {

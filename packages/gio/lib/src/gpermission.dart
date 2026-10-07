@@ -19,6 +19,18 @@ part of '../gio.dart';
 class GPermission extends GObject {
   GPermission.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Attempts to acquire the permission represented by @permission.
   ///
   /// The precise method by which this happens depends on the permission
@@ -107,7 +119,7 @@ class GPermission extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void acquireAsync(
+  void acquireAsync([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -115,8 +127,8 @@ class GPermission extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -131,7 +143,7 @@ class GPermission extends GObject {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();
@@ -369,7 +381,7 @@ class GPermission extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void releaseAsync(
+  void releaseAsync([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -377,8 +389,8 @@ class GPermission extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -393,7 +405,7 @@ class GPermission extends GObject {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();

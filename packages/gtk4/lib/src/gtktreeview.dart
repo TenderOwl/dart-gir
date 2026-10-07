@@ -96,6 +96,18 @@ class GtkTreeView extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkScrollable {
   GtkTreeView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GtkTreeView` widget.
   static final _gtkTreeViewNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -1119,7 +1131,7 @@ class GtkTreeView extends GtkWidget
       ffi.Pointer<ffi.Void>,
     )
     func,
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>) dnotify,
   ) {
     return withNativeString(title, (nativeTitle) {
@@ -1144,7 +1156,7 @@ class GtkTreeView extends GtkWidget
           nativeTitle.cast<Utf8>(),
           cell.handle,
           _nc4.nativeFunction,
-          data,
+          data ?? ffi.nullptr,
           _nc6.nativeFunction,
         );
         return _ret;
@@ -1205,9 +1217,9 @@ class GtkTreeView extends GtkWidget
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> data,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? data,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Void Function(
@@ -1217,7 +1229,11 @@ class GtkTreeView extends GtkWidget
           )
         >.isolateLocal(func);
     try {
-      _gtkTreeViewMapExpandedRows(this.handle, _nc1.nativeFunction, data);
+      _gtkTreeViewMapExpandedRows(
+        this.handle,
+        _nc1.nativeFunction,
+        data ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }
@@ -1446,7 +1462,7 @@ class GtkTreeView extends GtkWidget
               >,
             )
           >();
-  void setColumnDragFunction(
+  void setColumnDragFunction([
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
@@ -1455,7 +1471,7 @@ class GtkTreeView extends GtkWidget
       ffi.Pointer<ffi.Void>,
     )?
     func,
-    ffi.Pointer<ffi.Void> userData, [
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>)? destroy,
   ]) {
     final _nc1 = func == null
@@ -1478,7 +1494,7 @@ class GtkTreeView extends GtkWidget
       _gtkTreeViewSetColumnDragFunction(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
       );
     } finally {
@@ -1831,14 +1847,14 @@ class GtkTreeView extends GtkWidget
               >,
             )
           >();
-  void setRowSeparatorFunc(
+  void setRowSeparatorFunc([
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )?
     func,
-    ffi.Pointer<ffi.Void> data, [
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>)? destroy,
   ]) {
     final _nc1 = func == null
@@ -1859,7 +1875,7 @@ class GtkTreeView extends GtkWidget
       _gtkTreeViewSetRowSeparatorFunc(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        data,
+        data ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
       );
     } finally {
@@ -1974,8 +1990,8 @@ class GtkTreeView extends GtkWidget
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    searchEqualFunc,
-    ffi.Pointer<ffi.Void> searchUserData, [
+    searchEqualFunc, [
+    ffi.Pointer<ffi.Void>? searchUserData,
     void Function(ffi.Pointer<ffi.Void>)? searchDestroy,
   ]) {
     final _nc1 =
@@ -1997,7 +2013,7 @@ class GtkTreeView extends GtkWidget
       _gtkTreeViewSetSearchEqualFunc(
         this.handle,
         _nc1.nativeFunction,
-        searchUserData,
+        searchUserData ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
       );
     } finally {

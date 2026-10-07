@@ -38,6 +38,18 @@ part of '../gdk4.dart';
 class GdkCursor extends GObject {
   GdkCursor.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new callback-based cursor object.
   ///
   /// Cursors of this kind produce textures for the cursor
@@ -103,7 +115,7 @@ class GdkCursor extends GObject {
       ffi.Pointer<ffi.Void>,
     )
     callback,
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>) destroy, [
     GdkCursor? fallback,
   ]) {
@@ -127,7 +139,7 @@ class GdkCursor extends GObject {
     try {
       final _ret = _gdkCursorNewFromCallback(
         _nc1.nativeFunction,
-        data,
+        data ?? ffi.nullptr,
         _nc3.nativeFunction,
         fallback?.handle ?? ffi.nullptr,
       );

@@ -159,20 +159,29 @@ final _gPointerBitLockMaskPtr =
             ffi.Pointer<ffi.Void>,
           )
         >();
-ffi.Pointer<ffi.Void> pointerBitLockMaskPtr(
-  ffi.Pointer<ffi.Void> ptr,
+ffi.Pointer<ffi.Void>? pointerBitLockMaskPtr(
+  ffi.Pointer<ffi.Void>? ptr,
   int lockBit,
   bool set_,
-  int preserveMask,
-  ffi.Pointer<ffi.Void> preservePtr,
-) {
-  return _gPointerBitLockMaskPtr(
-    ptr,
-    lockBit,
-    set_ ? 1 : 0,
-    preserveMask,
-    preservePtr,
-  );
+  int preserveMask, [
+  ffi.Pointer<ffi.Void>? preservePtr,
+]) {
+  return (_gPointerBitLockMaskPtr(
+            ptr ?? ffi.nullptr,
+            lockBit,
+            set_ ? 1 : 0,
+            preserveMask,
+            preservePtr ?? ffi.nullptr,
+          )) ==
+          ffi.nullptr
+      ? null
+      : (_gPointerBitLockMaskPtr(
+          ptr ?? ffi.nullptr,
+          lockBit,
+          set_ ? 1 : 0,
+          preserveMask,
+          preservePtr ?? ffi.nullptr,
+        ));
 }
 
 /// This is equivalent to g_bit_trylock(), but working on pointers (or
@@ -237,10 +246,10 @@ final _gPointerBitUnlockAndSet =
 void pointerBitUnlockAndSet(
   ffi.Pointer<ffi.Void> address,
   int lockBit,
-  ffi.Pointer<ffi.Void> ptr,
+  ffi.Pointer<ffi.Void>? ptr,
   int preserveMask,
 ) {
-  _gPointerBitUnlockAndSet(address, lockBit, ptr, preserveMask);
+  _gPointerBitUnlockAndSet(address, lockBit, ptr ?? ffi.nullptr, preserveMask);
 }
 
 /// Polls @fds, as with the poll() system call, but portably. (On
@@ -350,9 +359,9 @@ void qsortWithData(
     ffi.Pointer<ffi.Void>,
     ffi.Pointer<ffi.Void>,
   )
-  compareFunc,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  compareFunc, [
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   final _nc4 =
       ffi.NativeCallable<
         ffi.Int32 Function(
@@ -362,7 +371,13 @@ void qsortWithData(
         )
       >.isolateLocal(compareFunc, exceptionalReturn: 0);
   try {
-    _gQsortWithData(pbase, totalElems, size, _nc4.nativeFunction, userData);
+    _gQsortWithData(
+      pbase,
+      totalElems,
+      size,
+      _nc4.nativeFunction,
+      userData ?? ffi.nullptr,
+    );
   } finally {
     _nc4.close();
   }
@@ -624,8 +639,10 @@ final _gRealloc =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
-ffi.Pointer<ffi.Void> reallocFn(ffi.Pointer<ffi.Void> mem, int nBytes) {
-  return _gRealloc(mem, nBytes);
+ffi.Pointer<ffi.Void>? reallocFn(ffi.Pointer<ffi.Void>? mem, int nBytes) {
+  return (_gRealloc(mem ?? ffi.nullptr, nBytes)) == ffi.nullptr
+      ? null
+      : (_gRealloc(mem ?? ffi.nullptr, nBytes));
 }
 
 /// This function is similar to g_realloc(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -646,12 +663,14 @@ final _gReallocN =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
         >();
-ffi.Pointer<ffi.Void> reallocN(
-  ffi.Pointer<ffi.Void> mem,
+ffi.Pointer<ffi.Void>? reallocN(
+  ffi.Pointer<ffi.Void>? mem,
   int nBlocks,
   int nBlockBytes,
 ) {
-  return _gReallocN(mem, nBlocks, nBlockBytes);
+  return (_gReallocN(mem ?? ffi.nullptr, nBlocks, nBlockBytes)) == ffi.nullptr
+      ? null
+      : (_gReallocN(mem ?? ffi.nullptr, nBlocks, nBlockBytes));
 }
 
 /// Compares the current value of @rc with @val.

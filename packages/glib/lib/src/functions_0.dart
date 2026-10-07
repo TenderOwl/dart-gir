@@ -41,12 +41,14 @@ final _gAlignedAlloc =
           >
         >('g_aligned_alloc')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
-ffi.Pointer<ffi.Void> alignedAllocFn(
+ffi.Pointer<ffi.Void>? alignedAllocFn(
   int nBlocks,
   int nBlockBytes,
   int alignment,
 ) {
-  return _gAlignedAlloc(nBlocks, nBlockBytes, alignment);
+  return (_gAlignedAlloc(nBlocks, nBlockBytes, alignment)) == ffi.nullptr
+      ? null
+      : (_gAlignedAlloc(nBlocks, nBlockBytes, alignment));
 }
 
 /// This function is similar to g_aligned_alloc(), but it will
@@ -58,12 +60,14 @@ final _gAlignedAlloc0 =
           >
         >('g_aligned_alloc0')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
-ffi.Pointer<ffi.Void> alignedAlloc0(
+ffi.Pointer<ffi.Void>? alignedAlloc0(
   int nBlocks,
   int nBlockBytes,
   int alignment,
 ) {
-  return _gAlignedAlloc0(nBlocks, nBlockBytes, alignment);
+  return (_gAlignedAlloc0(nBlocks, nBlockBytes, alignment)) == ffi.nullptr
+      ? null
+      : (_gAlignedAlloc0(nBlocks, nBlockBytes, alignment));
 }
 
 /// Frees the memory allocated by g_aligned_alloc().
@@ -71,8 +75,8 @@ final _gAlignedFree =
     glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
       'g_aligned_free',
     ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-void alignedFree(ffi.Pointer<ffi.Void> mem) {
-  _gAlignedFree(mem);
+void alignedFree([ffi.Pointer<ffi.Void>? mem]) {
+  _gAlignedFree(mem ?? ffi.nullptr);
 }
 
 /// Frees the memory pointed to by @mem, assuming it is has the given @size and
@@ -91,8 +95,8 @@ final _gAlignedFreeSized =
           >
         >('g_aligned_free_sized')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int)>();
-void alignedFreeSized(ffi.Pointer<ffi.Void> mem, int alignment, int size) {
-  _gAlignedFreeSized(mem, alignment, size);
+void alignedFreeSized(ffi.Pointer<ffi.Void>? mem, int alignment, int size) {
+  _gAlignedFreeSized(mem ?? ffi.nullptr, alignment, size);
 }
 
 /// Determines the numeric value of a character as a decimal digit. If the

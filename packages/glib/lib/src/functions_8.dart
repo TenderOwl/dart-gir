@@ -150,8 +150,8 @@ final _gMalloc =
     glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_malloc',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> mallocFn(int nBytes) {
-  return _gMalloc(nBytes);
+ffi.Pointer<ffi.Void>? mallocFn(int nBytes) {
+  return (_gMalloc(nBytes)) == ffi.nullptr ? null : (_gMalloc(nBytes));
 }
 
 /// Allocates @n_bytes bytes of memory, initialized to 0's.
@@ -163,8 +163,8 @@ final _gMalloc0 =
     glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_malloc0',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> malloc0(int nBytes) {
-  return _gMalloc0(nBytes);
+ffi.Pointer<ffi.Void>? malloc0(int nBytes) {
+  return (_gMalloc0(nBytes)) == ffi.nullptr ? null : (_gMalloc0(nBytes));
 }
 
 /// This function is similar to g_malloc0(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -177,8 +177,10 @@ final _gMalloc0N =
           ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)>
         >('g_malloc0_n')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-ffi.Pointer<ffi.Void> malloc0N(int nBlocks, int nBlockBytes) {
-  return _gMalloc0N(nBlocks, nBlockBytes);
+ffi.Pointer<ffi.Void>? malloc0N(int nBlocks, int nBlockBytes) {
+  return (_gMalloc0N(nBlocks, nBlockBytes)) == ffi.nullptr
+      ? null
+      : (_gMalloc0N(nBlocks, nBlockBytes));
 }
 
 /// This function is similar to g_malloc(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -191,8 +193,10 @@ final _gMallocN =
           ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)>
         >('g_malloc_n')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-ffi.Pointer<ffi.Void> mallocN(int nBlocks, int nBlockBytes) {
-  return _gMallocN(nBlocks, nBlockBytes);
+ffi.Pointer<ffi.Void>? mallocN(int nBlocks, int nBlockBytes) {
+  return (_gMallocN(nBlocks, nBlockBytes)) == ffi.nullptr
+      ? null
+      : (_gMallocN(nBlocks, nBlockBytes));
 }
 
 final _gMarkupErrorQuark =
@@ -279,8 +283,10 @@ final _gMemdup =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
-ffi.Pointer<ffi.Void> memdup(ffi.Pointer<ffi.Void> mem, int byteSize) {
-  return _gMemdup(mem, byteSize);
+ffi.Pointer<ffi.Void>? memdup(ffi.Pointer<ffi.Void>? mem, int byteSize) {
+  return (_gMemdup(mem ?? ffi.nullptr, byteSize)) == ffi.nullptr
+      ? null
+      : (_gMemdup(mem ?? ffi.nullptr, byteSize));
 }
 
 /// Allocates @byte_size bytes of memory, and copies @byte_size bytes into it
@@ -297,8 +303,10 @@ final _gMemdup2 =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
-ffi.Pointer<ffi.Void> memdup2(ffi.Pointer<ffi.Void> mem, int byteSize) {
-  return _gMemdup2(mem, byteSize);
+ffi.Pointer<ffi.Void>? memdup2(ffi.Pointer<ffi.Void>? mem, int byteSize) {
+  return (_gMemdup2(mem ?? ffi.nullptr, byteSize)) == ffi.nullptr
+      ? null
+      : (_gMemdup2(mem ?? ffi.nullptr, byteSize));
 }
 
 /// A wrapper for the POSIX mkdir() function. The mkdir() function

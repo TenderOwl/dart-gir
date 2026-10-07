@@ -171,6 +171,18 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
   GSimpleAsyncResult.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a #GSimpleAsyncResult.
   ///
   /// The common convention is to create the #GSimpleAsyncResult in the
@@ -216,7 +228,7 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GSimpleAsyncResult(
+  factory GSimpleAsyncResult([
     GObject? sourceObject,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -224,9 +236,9 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-    ffi.Pointer<ffi.Void> sourceTag,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+    ffi.Pointer<ffi.Void>? sourceTag,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -240,8 +252,8 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
       final _ret = _gSimpleAsyncResultNew(
         sourceObject?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
-        sourceTag,
+        userData ?? ffi.nullptr,
+        sourceTag ?? ffi.nullptr,
       );
       return GSimpleAsyncResult.fromPointer(_ret, owned: true);
     } finally {
@@ -293,7 +305,7 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     GError error,
   ) {
     final _nc2 = callback == null
@@ -309,7 +321,7 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
       final _ret = _gSimpleAsyncResultNewFromError(
         sourceObject?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
         error.handle,
       );
       return GSimpleAsyncResult.fromPointer(_ret, owned: true);
@@ -519,14 +531,14 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
             )
           >();
   static bool isValid(
-    GAsyncResult result,
+    GAsyncResult result, [
     GObject? source,
-    ffi.Pointer<ffi.Void> sourceTag,
-  ) {
+    ffi.Pointer<ffi.Void>? sourceTag,
+  ]) {
     return (_gSimpleAsyncResultIsValid(
           result.handle,
           source?.handle ?? ffi.nullptr,
-          sourceTag,
+          sourceTag ?? ffi.nullptr,
         )) !=
         0;
   }
@@ -582,8 +594,10 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
             >
           >('g_async_result_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getUserData() {
-    return _gAsyncResultGetUserData(this.handle);
+  ffi.Pointer<ffi.Void>? getUserData() {
+    return (_gAsyncResultGetUserData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gAsyncResultGetUserData(this.handle));
   }
 
   /// Checks if @res has the given @source_tag (generally a function
@@ -597,8 +611,8 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool isTagged(ffi.Pointer<ffi.Void> sourceTag) {
-    return (_gAsyncResultIsTagged(this.handle, sourceTag)) != 0;
+  bool isTagged([ffi.Pointer<ffi.Void>? sourceTag]) {
+    return (_gAsyncResultIsTagged(this.handle, sourceTag ?? ffi.nullptr)) != 0;
   }
 
   /// If @res is a [class@Gio.SimpleAsyncResult], this is equivalent to

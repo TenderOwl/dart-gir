@@ -23,6 +23,18 @@ part of '../gobject.dart';
 class GSignalGroup extends GObject {
   GSignalGroup.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new #GSignalGroup for target instances of @target_type.
   static final _gSignalGroupNew =
       gobjectLookup<
@@ -123,7 +135,7 @@ class GSignalGroup extends GObject {
   void connectData(
     String detailedSignal,
     void Function() cHandler,
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) notify,
     GConnectFlags flags,
   ) {
@@ -140,7 +152,7 @@ class GSignalGroup extends GObject {
           this.handle,
           nativeDetailedSignal.cast<Utf8>(),
           _nc2.nativeFunction,
-          data,
+          data ?? ffi.nullptr,
           _nc4.nativeFunction,
           flags.value,
         );
@@ -179,9 +191,9 @@ class GSignalGroup extends GObject {
           >();
   void connectSwapped(
     String detailedSignal,
-    void Function() cHandler,
-    ffi.Pointer<ffi.Void> data,
-  ) {
+    void Function() cHandler, [
+    ffi.Pointer<ffi.Void>? data,
+  ]) {
     withNativeString(detailedSignal, (nativeDetailedSignal) {
       final _nc2 = ffi.NativeCallable<ffi.Void Function()>.isolateLocal(
         cHandler,
@@ -191,7 +203,7 @@ class GSignalGroup extends GObject {
           this.handle,
           nativeDetailedSignal.cast<Utf8>(),
           _nc2.nativeFunction,
-          data,
+          data ?? ffi.nullptr,
         );
       } finally {
         _nc2.close();

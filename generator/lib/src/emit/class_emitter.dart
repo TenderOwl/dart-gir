@@ -184,6 +184,31 @@ class ClassEmitter {
       b.writeln(
           '$dartName.fromPointer(super.handle, {super.owned}) : super.fromPointer();');
     }
+    // `cast<T>(factory)` lets the user recover the destination class's
+    // methods from a borrowed wrapper (e.g. `GObject` from
+    // `GListModel.getObject`, `GtkWidget` from `AdwTabPage.getChild`).
+    // The bound is `Object` so subclasses can validly override — most
+    // wrappers in the corpus don't form an `extends` chain (interfaces
+    // like `GFile` are emitted as `class GFile {` with no parent, so
+    // `T extends GObject` would conflict when GFile overrides the
+    // inherited `cast` from any GObject subclass). `Object` is the
+    // trivial bound that lets `T` be any class the user has a
+    // `fromPointer` for; the factory parameter type-checks the
+    // destination.
+    b.writeln();
+    b.writeln('/// Re-wraps this wrapper\'s [handle] as [T] via [factory].');
+    b.writeln('///');
+    b.writeln('/// Use this when another wrapper returns this class\'s');
+    b.writeln('/// instance but the caller needs the destination class\'s');
+    b.writeln('/// methods. Pass the destination class\'s `fromPointer` as');
+    b.writeln('/// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.');
+    b.writeln('/// The handle is forwarded as-is; the original wrapper');
+    b.writeln('/// (which produced this object) remains the owner.');
+    b.writeln('T cast<T extends Object>(');
+    b.writeln('  T Function(ffi.Pointer<ffi.Void>) factory,');
+    b.writeln(') {');
+    b.writeln('  return factory(handle);');
+    b.writeln('}');
 
     for (final c in cls.constructors) {
       final name = RecordEmitter.ctorName(c);

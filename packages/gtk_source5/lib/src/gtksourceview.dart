@@ -63,8 +63,26 @@ part of '../gtk_source5.dart';
 /// document only, you should use a [class@Gtk.TextTag] with the [property@Gtk.TextTag:family] or
 /// [property@Gtk.TextTag:scale] set so that the font size may be scaled relative to
 /// the default font set in CSS.
-class GtkSourceView extends GtkTextView {
+class GtkSourceView extends GtkTextView
+    implements
+        GtkAccessible,
+        GtkAccessibleText,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkScrollable {
   GtkSourceView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `GtkSourceView`.
   ///
@@ -78,7 +96,7 @@ class GtkSourceView extends GtkTextView {
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSourceView() : super.fromPointer(_gtkSourceViewNew(), owned: true);
+  GtkSourceView() : this.fromPointer(_gtkSourceViewNew(), owned: true);
 
   /// Creates a new #GtkSourceView widget displaying the buffer @buffer.
   ///
@@ -91,10 +109,7 @@ class GtkSourceView extends GtkTextView {
           >('gtk_source_view_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceView.withBuffer(GtkSourceBuffer buffer)
-    : super.fromPointer(
-        _gtkSourceViewNewWithBuffer(buffer.handle),
-        owned: true,
-      );
+    : this.fromPointer(_gtkSourceViewNewWithBuffer(buffer.handle), owned: true);
 
   /// Gets the [class@Annotations] associated with @view.
   ///
@@ -1531,6 +1546,115 @@ class GtkSourceView extends GtkTextView {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Updates the position of the caret.

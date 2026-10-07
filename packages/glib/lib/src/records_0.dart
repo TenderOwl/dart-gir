@@ -2,8 +2,21 @@
 part of '../glib.dart';
 
 final class GAllocator {
-  GAllocator.fromPointer(this.handle);
+  GAllocator.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   static final _gAllocatorFree =
       glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
         'g_allocator_free',
@@ -15,16 +28,40 @@ final class GAllocator {
 
 /// Contains the public fields of a `GArray`.
 final class GArray {
-  GArray.fromPointer(this.handle);
+  GArray.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// An opaque data structure which represents an asynchronous queue.
 ///
 /// It should only be accessed through the `g_async_queue_*` functions.
 final class GAsyncQueue {
-  GAsyncQueue.fromPointer(this.handle);
+  GAsyncQueue.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Returns the length of the queue.
   ///
@@ -209,9 +246,9 @@ final class GAsyncQueue {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -221,7 +258,12 @@ final class GAsyncQueue {
           )
         >.isolateLocal(func, exceptionalReturn: 0);
     try {
-      _gAsyncQueuePushSorted(this.handle, data, _nc2.nativeFunction, userData);
+      _gAsyncQueuePushSorted(
+        this.handle,
+        data,
+        _nc2.nativeFunction,
+        userData ?? ffi.nullptr,
+      );
     } finally {
       _nc2.close();
     }
@@ -284,9 +326,9 @@ final class GAsyncQueue {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -300,7 +342,7 @@ final class GAsyncQueue {
         this.handle,
         data,
         _nc2.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2.close();
@@ -438,9 +480,9 @@ final class GAsyncQueue {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -450,7 +492,11 @@ final class GAsyncQueue {
           )
         >.isolateLocal(func, exceptionalReturn: 0);
     try {
-      _gAsyncQueueSort(this.handle, _nc1.nativeFunction, userData);
+      _gAsyncQueueSort(
+        this.handle,
+        _nc1.nativeFunction,
+        userData ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }
@@ -504,9 +550,9 @@ final class GAsyncQueue {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -516,7 +562,11 @@ final class GAsyncQueue {
           )
         >.isolateLocal(func, exceptionalReturn: 0);
     try {
-      _gAsyncQueueSortUnlocked(this.handle, _nc1.nativeFunction, userData);
+      _gAsyncQueueSortUnlocked(
+        this.handle,
+        _nc1.nativeFunction,
+        userData ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }
@@ -544,8 +594,10 @@ final class GAsyncQueue {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  ffi.Pointer<ffi.Void> timedPop(GTimeVal endTime) {
-    return _gAsyncQueueTimedPop(this.handle, endTime.handle);
+  ffi.Pointer<ffi.Void>? timedPop(GTimeVal endTime) {
+    return (_gAsyncQueueTimedPop(this.handle, endTime.handle)) == ffi.nullptr
+        ? null
+        : (_gAsyncQueueTimedPop(this.handle, endTime.handle));
   }
 
   /// Pops data from the @queue. If the queue is empty, blocks until
@@ -572,8 +624,11 @@ final class GAsyncQueue {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  ffi.Pointer<ffi.Void> timedPopUnlocked(GTimeVal endTime) {
-    return _gAsyncQueueTimedPopUnlocked(this.handle, endTime.handle);
+  ffi.Pointer<ffi.Void>? timedPopUnlocked(GTimeVal endTime) {
+    return (_gAsyncQueueTimedPopUnlocked(this.handle, endTime.handle)) ==
+            ffi.nullptr
+        ? null
+        : (_gAsyncQueueTimedPopUnlocked(this.handle, endTime.handle));
   }
 
   /// Pops data from the @queue. If the queue is empty, blocks for
@@ -589,8 +644,10 @@ final class GAsyncQueue {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> timeoutPop(int timeout) {
-    return _gAsyncQueueTimeoutPop(this.handle, timeout);
+  ffi.Pointer<ffi.Void>? timeoutPop(int timeout) {
+    return (_gAsyncQueueTimeoutPop(this.handle, timeout)) == ffi.nullptr
+        ? null
+        : (_gAsyncQueueTimeoutPop(this.handle, timeout));
   }
 
   /// Pops data from the @queue. If the queue is empty, blocks for
@@ -608,8 +665,10 @@ final class GAsyncQueue {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> timeoutPopUnlocked(int timeout) {
-    return _gAsyncQueueTimeoutPopUnlocked(this.handle, timeout);
+  ffi.Pointer<ffi.Void>? timeoutPopUnlocked(int timeout) {
+    return (_gAsyncQueueTimeoutPopUnlocked(this.handle, timeout)) == ffi.nullptr
+        ? null
+        : (_gAsyncQueueTimeoutPopUnlocked(this.handle, timeout));
   }
 
   /// Tries to pop data from the @queue. If no data is available,
@@ -621,8 +680,10 @@ final class GAsyncQueue {
             >
           >('g_async_queue_try_pop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> tryPop() {
-    return _gAsyncQueueTryPop(this.handle);
+  ffi.Pointer<ffi.Void>? tryPop() {
+    return (_gAsyncQueueTryPop(this.handle)) == ffi.nullptr
+        ? null
+        : (_gAsyncQueueTryPop(this.handle));
   }
 
   /// Tries to pop data from the @queue. If no data is available,
@@ -636,8 +697,10 @@ final class GAsyncQueue {
             >
           >('g_async_queue_try_pop_unlocked')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> tryPopUnlocked() {
-    return _gAsyncQueueTryPopUnlocked(this.handle);
+  ffi.Pointer<ffi.Void>? tryPopUnlocked() {
+    return (_gAsyncQueueTryPopUnlocked(this.handle)) == ffi.nullptr
+        ? null
+        : (_gAsyncQueueTryPopUnlocked(this.handle));
   }
 
   /// Releases the queue's lock.

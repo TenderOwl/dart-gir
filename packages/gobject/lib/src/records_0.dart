@@ -3,8 +3,20 @@ part of '../gobject.dart';
 
 /// A #GCClosure is a specialization of #GClosure for C function callbacks.
 final class GCClosure {
-  GCClosure.fromPointer(this.handle);
+  GCClosure.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// A #GClosureMarshal function for use with signals with handlers that
   /// take two boxed pointers as arguments and return a boolean.  If you
@@ -37,17 +49,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalBooleanBoxedBoxed(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -82,17 +94,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalBooleanFlags(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -126,17 +138,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalStringObjectPointer(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -169,17 +181,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidBoolean(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -212,17 +224,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidBoxed(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -255,17 +267,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidChar(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -298,17 +310,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidDouble(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -341,17 +353,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidEnum(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -384,17 +396,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidFlags(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -427,17 +439,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidFloat(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -470,17 +482,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidInt(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -513,17 +525,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidLong(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -556,17 +568,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidObject(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -599,17 +611,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidParam(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -646,17 +658,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidPointer(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -689,17 +701,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidString(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -732,17 +744,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidUchar(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -775,17 +787,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidUint(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -818,17 +830,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidUintPointer(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -861,17 +873,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidUlong(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -904,17 +916,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidVariant(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -946,17 +958,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnValue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalVoidVoid(
       closure.handle,
       returnValue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 
@@ -992,17 +1004,17 @@ final class GCClosure {
     GClosure closure,
     GValue returnGvalue,
     int nParamValues,
-    GValue paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-    ffi.Pointer<ffi.Void> marshalData,
-  ) {
+    GValue paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+    ffi.Pointer<ffi.Void>? marshalData,
+  ]) {
     _gCclosureMarshalGeneric(
       closure.handle,
       returnGvalue.handle,
       nParamValues,
       paramValues.handle,
-      invocationHint,
-      marshalData,
+      invocationHint ?? ffi.nullptr,
+      marshalData ?? ffi.nullptr,
     );
   }
 }
@@ -1052,8 +1064,20 @@ final class GCClosure {
 /// - [method@Closure.invalidate] and invalidation notifiers allow callbacks to be
 /// automatically removed when the objects they point to go away.
 final class GClosure {
-  GClosure.fromPointer(this.handle);
+  GClosure.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// A variant of g_closure_new_simple() which stores @object in the
   /// @data field of the closure and calls g_object_watch_closure() on
@@ -1117,8 +1141,8 @@ final class GClosure {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
-  GClosure.simple(int sizeofClosure, ffi.Pointer<ffi.Void> data)
-    : this.fromPointer(_gClosureNewSimple(sizeofClosure, data));
+  GClosure.simple(int sizeofClosure, [ffi.Pointer<ffi.Void>? data])
+    : this.fromPointer(_gClosureNewSimple(sizeofClosure, data ?? ffi.nullptr));
 
   /// Sets a flag on the closure to indicate that its calling
   /// environment has become invalid, and thus causes any future
@@ -1168,9 +1192,9 @@ final class GClosure {
           >();
   GValue? invoke(
     int nParamValues,
-    ffi.Pointer<ffi.Void> paramValues,
-    ffi.Pointer<ffi.Void> invocationHint,
-  ) {
+    ffi.Pointer<ffi.Void> paramValues, [
+    ffi.Pointer<ffi.Void>? invocationHint,
+  ]) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
     try {
@@ -1179,7 +1203,7 @@ final class GClosure {
         _out0.cast<ffi.Void>(),
         nParamValues,
         paramValues,
-        invocationHint,
+        invocationHint ?? ffi.nullptr,
       );
       return (_out0) == ffi.nullptr
           ? null
@@ -1272,47 +1296,18 @@ final class GClosure {
 }
 
 final class GClosureNotifyData {
-  GClosureNotifyData.fromPointer(this.handle);
+  GClosureNotifyData.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
-}
 
-/// The class of an enumeration type holds information about its
-/// possible values.
-final class GEnumClass {
-  GEnumClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// A structure which contains a single enum value, its name, and its
-/// nickname.
-final class GEnumValue {
-  GEnumValue.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// The class of a flags type holds information about its
-/// possible values.
-final class GFlagsClass {
-  GFlagsClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// A structure which contains a single flags value, its name, and its
-/// nickname.
-final class GFlagsValue {
-  GFlagsValue.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// The class structure for the GInitiallyUnowned type.
-final class GInitiallyUnownedClass {
-  GInitiallyUnownedClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// A structure that provides information to the type system which is
-/// used specifically for managing interface types.
-final class GInterfaceInfo {
-  GInterfaceInfo.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }

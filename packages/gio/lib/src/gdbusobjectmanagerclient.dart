@@ -84,6 +84,18 @@ class GDBusObjectManagerClient extends GObject
   GDBusObjectManagerClient.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Finishes an operation started with g_dbus_object_manager_client_new().
   static final _gDbusObjectManagerClientNewFinish =
       gioLookup<
@@ -203,7 +215,7 @@ class GDBusObjectManagerClient extends GObject
     GBusType busType,
     GDBusObjectManagerClientFlags flags,
     String name,
-    String objectPath,
+    String objectPath, [
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<Utf8>,
@@ -211,7 +223,7 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     getProxyTypeFunc,
-    ffi.Pointer<ffi.Void> getProxyTypeUserData, [
+    ffi.Pointer<ffi.Void>? getProxyTypeUserData,
     void Function(ffi.Pointer<ffi.Void>)? getProxyTypeDestroyNotify,
     GCancellable? cancellable,
   ]) {
@@ -240,7 +252,7 @@ class GDBusObjectManagerClient extends GObject
             nativeName.cast<Utf8>(),
             nativeObjectPath.cast<Utf8>(),
             _nc5?.nativeFunction ?? ffi.nullptr,
-            getProxyTypeUserData,
+            getProxyTypeUserData ?? ffi.nullptr,
             _nc7?.nativeFunction ?? ffi.nullptr,
             cancellable?.handle ?? ffi.nullptr,
             _error,
@@ -318,7 +330,7 @@ class GDBusObjectManagerClient extends GObject
     GDBusConnection connection,
     GDBusObjectManagerClientFlags flags,
     String? name,
-    String objectPath,
+    String objectPath, [
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<Utf8>,
@@ -326,7 +338,7 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     getProxyTypeFunc,
-    ffi.Pointer<ffi.Void> getProxyTypeUserData, [
+    ffi.Pointer<ffi.Void>? getProxyTypeUserData,
     void Function(ffi.Pointer<ffi.Void>)? getProxyTypeDestroyNotify,
     GCancellable? cancellable,
   ]) {
@@ -355,7 +367,7 @@ class GDBusObjectManagerClient extends GObject
             nativeName.cast<Utf8>(),
             nativeObjectPath.cast<Utf8>(),
             _nc5?.nativeFunction ?? ffi.nullptr,
-            getProxyTypeUserData,
+            getProxyTypeUserData ?? ffi.nullptr,
             _nc7?.nativeFunction ?? ffi.nullptr,
             cancellable?.handle ?? ffi.nullptr,
             _error,
@@ -513,7 +525,7 @@ class GDBusObjectManagerClient extends GObject
     GDBusConnection connection,
     GDBusObjectManagerClientFlags flags,
     String name,
-    String objectPath,
+    String objectPath, [
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<Utf8>,
@@ -521,7 +533,7 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     getProxyTypeFunc,
-    ffi.Pointer<ffi.Void> getProxyTypeUserData,
+    ffi.Pointer<ffi.Void>? getProxyTypeUserData,
     void Function(ffi.Pointer<ffi.Void>)? getProxyTypeDestroyNotify,
     GCancellable? cancellable,
     void Function(
@@ -530,8 +542,8 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(name, (nativeName) {
       withNativeString(objectPath, (nativeObjectPath) {
         final _nc5 = getProxyTypeFunc == null
@@ -565,11 +577,11 @@ class GDBusObjectManagerClient extends GObject
             nativeName.cast<Utf8>(),
             nativeObjectPath.cast<Utf8>(),
             _nc5?.nativeFunction ?? ffi.nullptr,
-            getProxyTypeUserData,
+            getProxyTypeUserData ?? ffi.nullptr,
             _nc7?.nativeFunction ?? ffi.nullptr,
             cancellable?.handle ?? ffi.nullptr,
             _nc9?.nativeFunction ?? ffi.nullptr,
-            userData,
+            userData ?? ffi.nullptr,
           );
         } finally {
           _nc5?.close();
@@ -662,7 +674,7 @@ class GDBusObjectManagerClient extends GObject
     GBusType busType,
     GDBusObjectManagerClientFlags flags,
     String name,
-    String objectPath,
+    String objectPath, [
     int Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<Utf8>,
@@ -670,7 +682,7 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     getProxyTypeFunc,
-    ffi.Pointer<ffi.Void> getProxyTypeUserData,
+    ffi.Pointer<ffi.Void>? getProxyTypeUserData,
     void Function(ffi.Pointer<ffi.Void>)? getProxyTypeDestroyNotify,
     GCancellable? cancellable,
     void Function(
@@ -679,8 +691,8 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(name, (nativeName) {
       withNativeString(objectPath, (nativeObjectPath) {
         final _nc5 = getProxyTypeFunc == null
@@ -714,11 +726,11 @@ class GDBusObjectManagerClient extends GObject
             nativeName.cast<Utf8>(),
             nativeObjectPath.cast<Utf8>(),
             _nc5?.nativeFunction ?? ffi.nullptr,
-            getProxyTypeUserData,
+            getProxyTypeUserData ?? ffi.nullptr,
             _nc7?.nativeFunction ?? ffi.nullptr,
             cancellable?.handle ?? ffi.nullptr,
             _nc9?.nativeFunction ?? ffi.nullptr,
-            userData,
+            userData ?? ffi.nullptr,
           );
         } finally {
           _nc5?.close();
@@ -903,7 +915,7 @@ class GDBusObjectManagerClient extends GObject
             )
           >();
   void initAsync(
-    int ioPriority,
+    int ioPriority, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -911,8 +923,8 @@ class GDBusObjectManagerClient extends GObject
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -928,7 +940,7 @@ class GDBusObjectManagerClient extends GObject
         ioPriority,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();

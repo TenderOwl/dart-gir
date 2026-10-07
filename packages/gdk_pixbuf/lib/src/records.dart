@@ -5,16 +5,40 @@ part of '../gdk_pixbuf.dart';
 /// #GdkPixbufAnimation, providing suitable implementations of the
 /// virtual functions.
 final class GdkPixbufAnimationClass {
-  GdkPixbufAnimationClass.fromPointer(this.handle);
+  GdkPixbufAnimationClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Modules supporting animations must derive a type from
 /// #GdkPixbufAnimationIter, providing suitable implementations of the
 /// virtual functions.
 final class GdkPixbufAnimationIterClass {
-  GdkPixbufAnimationIterClass.fromPointer(this.handle);
+  GdkPixbufAnimationIterClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// A `GdkPixbufFormat` contains information about the image format accepted
@@ -23,8 +47,20 @@ final class GdkPixbufAnimationIterClass {
 /// Only modules should access the fields directly, applications should
 /// use the `gdk_pixbuf_format_*` family of functions.
 final class GdkPixbufFormat {
-  GdkPixbufFormat.fromPointer(this.handle);
+  GdkPixbufFormat.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a copy of `format`.
   static final _gdkPixbufFormatCopy =
@@ -176,8 +212,20 @@ final class GdkPixbufFormat {
 }
 
 final class GdkPixbufLoaderClass {
-  GdkPixbufLoaderClass.fromPointer(this.handle);
+  GdkPixbufLoaderClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// A `GdkPixbufModule` contains the necessary functions to load and save
@@ -226,8 +274,20 @@ final class GdkPixbufLoaderClass {
 /// `$libdir/gdk-pixbuf-2.0/$version/loaders.cache`, unless overridden
 /// by the environment variable `GDK_PIXBUF_MODULE_FILE`)
 final class GdkPixbufModule {
-  GdkPixbufModule.fromPointer(this.handle);
+  GdkPixbufModule.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The signature prefix for a module.
@@ -261,11 +321,35 @@ final class GdkPixbufModule {
 /// In the example above, the signature matches e.g. "auud\0" with
 /// relevance 100, and "blau" with relevance 90.
 final class GdkPixbufModulePattern {
-  GdkPixbufModulePattern.fromPointer(this.handle);
+  GdkPixbufModulePattern.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GdkPixbufSimpleAnimClass {
-  GdkPixbufSimpleAnimClass.fromPointer(this.handle);
+  GdkPixbufSimpleAnimClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }

@@ -13,6 +13,18 @@ part of '../gtk4.dart';
 class GtkTextBuffer extends GObject {
   GtkTextBuffer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new text buffer.
   static final _gtkTextBufferNew =
       gtk4Lookup<
@@ -87,7 +99,7 @@ class GtkTextBuffer extends GObject {
     GtkTextBufferNotifyFlags flags,
     void Function(ffi.Pointer<ffi.Void>, int, int, int, ffi.Pointer<ffi.Void>)
     commitNotify,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc2 =
@@ -109,7 +121,7 @@ class GtkTextBuffer extends GObject {
         this.handle,
         flags.value,
         _nc2.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
       return _ret;

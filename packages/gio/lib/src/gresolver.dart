@@ -23,6 +23,18 @@ part of '../gio.dart';
 class GResolver extends GObject {
   GResolver.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Get the timeout applied to all resolver lookups. See #GResolver:timeout.
   static final _gResolverGetTimeout =
       gioLookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>>(
@@ -119,7 +131,7 @@ class GResolver extends GObject {
             )
           >();
   void lookupByAddressAsync(
-    GInetAddress address,
+    GInetAddress address, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -127,8 +139,8 @@ class GResolver extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -144,7 +156,7 @@ class GResolver extends GObject {
         address.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -342,7 +354,7 @@ class GResolver extends GObject {
             )
           >();
   void lookupByNameAsync(
-    String hostname,
+    String hostname, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -350,8 +362,8 @@ class GResolver extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(hostname, (nativeHostname) {
       final _nc3 = callback == null
           ? null
@@ -368,7 +380,7 @@ class GResolver extends GObject {
           nativeHostname.cast<Utf8>(),
           cancellable?.handle ?? ffi.nullptr,
           _nc3?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc3?.close();
@@ -559,7 +571,7 @@ class GResolver extends GObject {
           >();
   void lookupByNameWithFlagsAsync(
     String hostname,
-    GResolverNameLookupFlags flags,
+    GResolverNameLookupFlags flags, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -567,8 +579,8 @@ class GResolver extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(hostname, (nativeHostname) {
       final _nc4 = callback == null
           ? null
@@ -586,7 +598,7 @@ class GResolver extends GObject {
           flags.value,
           cancellable?.handle ?? ffi.nullptr,
           _nc4?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc4?.close();
@@ -786,7 +798,7 @@ class GResolver extends GObject {
           >();
   void lookupRecordsAsync(
     String rrname,
-    GResolverRecordType recordType,
+    GResolverRecordType recordType, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -794,8 +806,8 @@ class GResolver extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(rrname, (nativeRrname) {
       final _nc4 = callback == null
           ? null
@@ -813,7 +825,7 @@ class GResolver extends GObject {
           recordType.value,
           cancellable?.handle ?? ffi.nullptr,
           _nc4?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc4?.close();
@@ -1038,7 +1050,7 @@ class GResolver extends GObject {
   void lookupServiceAsync(
     String service,
     String protocol,
-    String domain,
+    String domain, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -1046,8 +1058,8 @@ class GResolver extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(service, (nativeService) {
       withNativeString(protocol, (nativeProtocol) {
         withNativeString(domain, (nativeDomain) {
@@ -1068,7 +1080,7 @@ class GResolver extends GObject {
               nativeDomain.cast<Utf8>(),
               cancellable?.handle ?? ffi.nullptr,
               _nc5?.nativeFunction ?? ffi.nullptr,
-              userData,
+              userData ?? ffi.nullptr,
             );
           } finally {
             _nc5?.close();

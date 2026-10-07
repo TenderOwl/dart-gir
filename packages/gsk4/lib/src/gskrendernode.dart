@@ -18,6 +18,18 @@ class GskRenderNode {
   final ffi.Pointer<ffi.Void> handle;
   final bool owned;
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Draws the contents of a render node on a cairo context.
   ///
   /// Typically, you'll use this function to implement fallback rendering
@@ -254,7 +266,7 @@ class GskRenderNode {
             )
           >();
   static GskRenderNode? deserialize(
-    GBytes bytes,
+    GBytes bytes, [
     void Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
@@ -262,8 +274,8 @@ class GskRenderNode {
       ffi.Pointer<ffi.Void>,
     )?
     errorFunc,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = errorFunc == null
         ? null
         : ffi.NativeCallable<
@@ -278,7 +290,7 @@ class GskRenderNode {
       final _ret = _gskRenderNodeDeserialize(
         bytes.handle,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
       return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
     } finally {

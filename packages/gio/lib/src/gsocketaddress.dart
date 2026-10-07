@@ -8,6 +8,18 @@ part of '../gio.dart';
 class GSocketAddress extends GObject implements GSocketConnectable {
   GSocketAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a #GSocketAddress subclass corresponding to the native
   /// struct sockaddr @native.
   static final _gSocketAddressNewFromNative =
@@ -67,10 +79,15 @@ class GSocketAddress extends GObject implements GSocketConnectable {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  bool toNative(ffi.Pointer<ffi.Void> dest, int destlen) {
+  bool toNative(ffi.Pointer<ffi.Void>? dest, int destlen) {
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      final _ret = _gSocketAddressToNative(this.handle, dest, destlen, _error);
+      final _ret = _gSocketAddressToNative(
+        this.handle,
+        dest ?? ffi.nullptr,
+        destlen,
+        _error,
+      );
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }

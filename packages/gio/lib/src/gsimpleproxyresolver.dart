@@ -13,6 +13,18 @@ class GSimpleProxyResolver extends GObject implements GProxyResolver {
   GSimpleProxyResolver.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Sets the default proxy on @resolver, to be used for any URIs that
   /// don't match #GSimpleProxyResolver:ignore-hosts or a proxy set
   /// via g_simple_proxy_resolver_set_uri_proxy().
@@ -212,7 +224,7 @@ class GSimpleProxyResolver extends GObject implements GProxyResolver {
             )
           >();
   void lookupAsync(
-    String uri,
+    String uri, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -220,8 +232,8 @@ class GSimpleProxyResolver extends GObject implements GProxyResolver {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(uri, (nativeUri) {
       final _nc3 = callback == null
           ? null
@@ -238,7 +250,7 @@ class GSimpleProxyResolver extends GObject implements GProxyResolver {
           nativeUri.cast<Utf8>(),
           cancellable?.handle ?? ffi.nullptr,
           _nc3?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc3?.close();

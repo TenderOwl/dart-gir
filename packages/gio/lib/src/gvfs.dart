@@ -5,6 +5,18 @@ part of '../gio.dart';
 class GVfs extends GObject {
   GVfs.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Gets a #GFile for @path.
   static final _gVfsGetFileForPath =
       gioLookup<
@@ -180,14 +192,14 @@ class GVfs extends GObject {
             )
           >();
   bool registerUriScheme(
-    String scheme,
+    String scheme, [
     ffi.Pointer<ffi.Void> Function(
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<Utf8>,
       ffi.Pointer<ffi.Void>,
     )?
     uriFunc,
-    ffi.Pointer<ffi.Void> uriData,
+    ffi.Pointer<ffi.Void>? uriData,
     void Function(ffi.Pointer<ffi.Void>)? uriDestroy,
     ffi.Pointer<ffi.Void> Function(
       ffi.Pointer<ffi.Void>,
@@ -195,7 +207,7 @@ class GVfs extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     parseNameFunc,
-    ffi.Pointer<ffi.Void> parseNameData, [
+    ffi.Pointer<ffi.Void>? parseNameData,
     void Function(ffi.Pointer<ffi.Void>)? parseNameDestroy,
   ]) {
     return withNativeString(scheme, (nativeScheme) {
@@ -232,10 +244,10 @@ class GVfs extends GObject {
           this.handle,
           nativeScheme.cast<Utf8>(),
           _nc2?.nativeFunction ?? ffi.nullptr,
-          uriData,
+          uriData ?? ffi.nullptr,
           _nc4?.nativeFunction ?? ffi.nullptr,
           _nc5?.nativeFunction ?? ffi.nullptr,
-          parseNameData,
+          parseNameData ?? ffi.nullptr,
           _nc7?.nativeFunction ?? ffi.nullptr,
         );
         return (_ret) != 0;

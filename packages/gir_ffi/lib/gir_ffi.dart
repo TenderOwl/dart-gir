@@ -57,6 +57,21 @@ R withNativeString<R>(String? value, R Function(Pointer<Char>) body) {
   }
 }
 
+/// Re-wraps a raw native pointer as the user's class via [factory].
+///
+/// Use this when you have a bare `Pointer<Void>` (e.g. from a custom
+/// FFI lookup, from a struct OUT param, from `Pointer.fromAddress`)
+/// and want to recover your subclass's methods. The companion to the
+/// instance `cast<T>(factory)` method on every generated wrapper —
+/// they call this internally when the user passes a raw pointer
+/// instead of a wrapper.
+T castTo<T extends Object>(
+  Pointer<Void> handle,
+  T Function(Pointer<Void>) factory,
+) {
+  return factory(handle);
+}
+
 /// Marshals a nullable `List<String?>` to a NULL-terminated
 /// `Pointer<Pointer<Utf8>>` for the duration of [body], matching how GLib
 /// expects argv-style arrays. Each non-null element is copied to a

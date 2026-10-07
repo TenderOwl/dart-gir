@@ -6,6 +6,18 @@ class GtkTreeListModel extends GObject implements GListModel {
   GtkTreeListModel.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new empty `GtkTreeListModel` displaying @root
   /// with all rows collapsed.
   static final _gtkTreeListModelNew =
@@ -55,7 +67,7 @@ class GtkTreeListModel extends GObject implements GListModel {
     bool autoexpand,
     ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
     createFunc,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) userDestroy,
   ) {
     final _nc4 =
@@ -75,7 +87,7 @@ class GtkTreeListModel extends GObject implements GListModel {
         passthrough ? 1 : 0,
         autoexpand ? 1 : 0,
         _nc4.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
         _nc6.nativeFunction,
       );
       return GtkTreeListModel.fromPointer(_ret, owned: true);

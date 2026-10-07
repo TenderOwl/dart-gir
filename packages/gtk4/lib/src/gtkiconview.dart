@@ -38,6 +38,18 @@ class GtkIconView extends GtkWidget
         GtkScrollable {
   GtkIconView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GtkIconView` widget
   static final _gtkIconViewNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -769,9 +781,9 @@ class GtkIconView extends GtkWidget
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    func,
-    ffi.Pointer<ffi.Void> data,
-  ) {
+    func, [
+    ffi.Pointer<ffi.Void>? data,
+  ]) {
     final _nc1 =
         ffi.NativeCallable<
           ffi.Void Function(
@@ -781,7 +793,11 @@ class GtkIconView extends GtkWidget
           )
         >.isolateLocal(func);
     try {
-      _gtkIconViewSelectedForeach(this.handle, _nc1.nativeFunction, data);
+      _gtkIconViewSelectedForeach(
+        this.handle,
+        _nc1.nativeFunction,
+        data ?? ffi.nullptr,
+      );
     } finally {
       _nc1.close();
     }
@@ -2113,7 +2129,7 @@ class GtkIconView extends GtkWidget
       ffi.Pointer<ffi.Void>,
     )?
     func,
-    ffi.Pointer<ffi.Void> funcData,
+    ffi.Pointer<ffi.Void>? funcData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc2 = func == null
@@ -2136,7 +2152,7 @@ class GtkIconView extends GtkWidget
         this.handle,
         cell.handle,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        funcData,
+        funcData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
     } finally {

@@ -3,8 +3,20 @@ part of '../glib.dart';
 
 /// Contains the public fields of a `GByteArray`.
 final class GByteArray {
-  GByteArray.fromPointer(this.handle);
+  GByteArray.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Adds the given bytes to the end of the `GByteArray`.
   /// The array will grow in size automatically if necessary.
@@ -341,9 +353,9 @@ final class GByteArray {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    compareFunc,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    compareFunc, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 =
         ffi.NativeCallable<
           ffi.Int32 Function(
@@ -353,7 +365,11 @@ final class GByteArray {
           )
         >.isolateLocal(compareFunc, exceptionalReturn: 0);
     try {
-      _gByteArraySortWithData(array, _nc2.nativeFunction, userData);
+      _gByteArraySortWithData(
+        array,
+        _nc2.nativeFunction,
+        userData ?? ffi.nullptr,
+      );
     } finally {
       _nc2.close();
     }
@@ -400,8 +416,20 @@ final class GByteArray {
 /// [struct@GLib.ByteArray], use the [func@GLib.ByteArray.free_to_bytes]
 /// function.
 final class GBytes {
-  GBytes.fromPointer(this.handle);
+  GBytes.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new [struct@GLib.Bytes] from @data.
   ///
@@ -548,8 +576,11 @@ final class GBytes {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int, int)
           >();
-  ffi.Pointer<ffi.Void> getRegion(int elementSize, int offset, int nElements) {
-    return _gBytesGetRegion(this.handle, elementSize, offset, nElements);
+  ffi.Pointer<ffi.Void>? getRegion(int elementSize, int offset, int nElements) {
+    return (_gBytesGetRegion(this.handle, elementSize, offset, nElements)) ==
+            ffi.nullptr
+        ? null
+        : (_gBytesGetRegion(this.handle, elementSize, offset, nElements));
   }
 
   /// Get the size of the byte data in the [struct@GLib.Bytes].
@@ -656,195 +687,6 @@ final class GBytes {
       return (_ret, _out0.value);
     } finally {
       malloc.free(_out0);
-    }
-  }
-}
-
-/// A `GCache` allows sharing of complex data structures, in order to
-/// save system resources.
-///
-/// `GCache` uses keys and values. A `GCache` key describes the properties
-/// of a particular resource. A `GCache` value is the actual resource.
-///
-/// `GCache` has been marked as deprecated, since this API is rarely
-/// used and not very actively maintained.
-final class GCache {
-  GCache.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Frees the memory allocated for the #GCache.
-  ///
-  /// Note that it does not destroy the keys and values which were
-  /// contained in the #GCache.
-  static final _gCacheDestroy =
-      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'g_cache_destroy',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void destroy() {
-    _gCacheDestroy(this.handle);
-  }
-
-  /// Gets the value corresponding to the given key, creating it if
-  /// necessary. It first checks if the value already exists in the
-  /// #GCache, by using the @key_equal_func function passed to
-  /// g_cache_new(). If it does already exist it is returned, and its
-  /// reference count is increased by one. If the value does not currently
-  /// exist, if is created by calling the @value_new_func. The key is
-  /// duplicated by calling @key_dup_func and the duplicated key and value
-  /// are inserted into the #GCache.
-  static final _gCacheInsert =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_cache_insert')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  ffi.Pointer<ffi.Void> insert(ffi.Pointer<ffi.Void> key) {
-    return _gCacheInsert(this.handle, key);
-  }
-
-  /// Calls the given function for each of the keys in the #GCache.
-  ///
-  /// NOTE @func is passed three parameters, the value and key of a cache
-  /// entry and the @user_data. The order of value and key is different
-  /// from the order in which g_hash_table_foreach() passes key-value
-  /// pairs to its callback function !
-  static final _gCacheKeyForeach =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Void Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_cache_key_foreach')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void keyForeach(
-    void Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )
-    func,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
-    final _nc1 =
-        ffi.NativeCallable<
-          ffi.Void Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(func);
-    try {
-      _gCacheKeyForeach(this.handle, _nc1.nativeFunction, userData);
-    } finally {
-      _nc1.close();
-    }
-  }
-
-  /// Decreases the reference count of the given value. If it drops to 0
-  /// then the value and its corresponding key are destroyed, using the
-  /// @value_destroy_func and @key_destroy_func passed to g_cache_new().
-  static final _gCacheRemove =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('g_cache_remove')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void remove(ffi.Pointer<ffi.Void> value) {
-    _gCacheRemove(this.handle, value);
-  }
-
-  /// Calls the given function for each of the values in the #GCache.
-  static final _gCacheValueForeach =
-      glibLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Void Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('g_cache_value_foreach')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Void Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  void valueForeach(
-    void Function(
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-      ffi.Pointer<ffi.Void>,
-    )
-    func,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
-    final _nc1 =
-        ffi.NativeCallable<
-          ffi.Void Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >.isolateLocal(func);
-    try {
-      _gCacheValueForeach(this.handle, _nc1.nativeFunction, userData);
-    } finally {
-      _nc1.close();
     }
   }
 }

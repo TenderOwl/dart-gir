@@ -6,8 +6,20 @@ part of '../graphene.dart';
 /// The contents of the #graphene_euler_t structure are private
 /// and should never be accessed directly.
 final class GrapheneEuler {
-  GrapheneEuler.fromPointer(this.handle);
+  GrapheneEuler.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Allocates a new #graphene_euler_t.
   ///
@@ -449,8 +461,20 @@ final class GrapheneEuler {
 /// The contents of the `graphene_frustum_t` are private, and should not be
 /// modified directly.
 final class GrapheneFrustum {
-  GrapheneFrustum.fromPointer(this.handle);
+  GrapheneFrustum.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Allocates a new #graphene_frustum_t structure.
   ///

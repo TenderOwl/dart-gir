@@ -631,7 +631,7 @@ final _gTestAddDataFunc =
         >();
 void testAddDataFunc(
   String testpath,
-  ffi.Pointer<ffi.Void> testData,
+  ffi.Pointer<ffi.Void>? testData,
   void Function(ffi.Pointer<ffi.Void>) testFunc,
 ) {
   withNativeString(testpath, (nativeTestpath) {
@@ -642,7 +642,7 @@ void testAddDataFunc(
     try {
       _gTestAddDataFunc(
         nativeTestpath.cast<Utf8>(),
-        testData,
+        testData ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
     } finally {
@@ -684,7 +684,7 @@ final _gTestAddDataFuncFull =
         >();
 void testAddDataFuncFull(
   String testpath,
-  ffi.Pointer<ffi.Void> testData,
+  ffi.Pointer<ffi.Void>? testData,
   void Function(ffi.Pointer<ffi.Void>) testFunc,
   void Function(ffi.Pointer<ffi.Void>) dataFreeFunc,
 ) {
@@ -700,7 +700,7 @@ void testAddDataFuncFull(
     try {
       _gTestAddDataFuncFull(
         nativeTestpath.cast<Utf8>(),
-        testData,
+        testData ?? ffi.nullptr,
         _nc3.nativeFunction,
         _nc4.nativeFunction,
       );

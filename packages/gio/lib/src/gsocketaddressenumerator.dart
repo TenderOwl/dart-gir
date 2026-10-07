@@ -20,6 +20,18 @@ class GSocketAddressEnumerator extends GObject {
   GSocketAddressEnumerator.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Retrieves the next #GSocketAddress from @enumerator. Note that this
   /// may block for some amount of time. (Eg, a #GNetworkAddress may need
   /// to do a DNS lookup before it can return an address.) Use
@@ -107,7 +119,7 @@ class GSocketAddressEnumerator extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void nextAsync(
+  void nextAsync([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -115,8 +127,8 @@ class GSocketAddressEnumerator extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -131,7 +143,7 @@ class GSocketAddressEnumerator extends GObject {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();

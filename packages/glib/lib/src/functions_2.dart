@@ -230,8 +230,8 @@ final _gBitLock =
           >
         >('g_bit_lock')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void bitLock(ffi.Pointer<ffi.Void> address, int lockBit) {
-  _gBitLock(address, lockBit);
+void bitLock(ffi.Pointer<ffi.Void>? address, int lockBit) {
+  _gBitLock(address ?? ffi.nullptr, lockBit);
 }
 
 /// Find the position of the first bit set in @mask, searching
@@ -291,8 +291,8 @@ final _gBitTrylock =
           >
         >('g_bit_trylock')
         .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-bool bitTrylock(ffi.Pointer<ffi.Void> address, int lockBit) {
-  return (_gBitTrylock(address, lockBit)) != 0;
+bool bitTrylock(ffi.Pointer<ffi.Void>? address, int lockBit) {
+  return (_gBitTrylock(address ?? ffi.nullptr, lockBit)) != 0;
 }
 
 /// Clears the indicated @lock_bit in @address.  If another thread is
@@ -310,8 +310,8 @@ final _gBitUnlock =
           >
         >('g_bit_unlock')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void bitUnlock(ffi.Pointer<ffi.Void> address, int lockBit) {
-  _gBitUnlock(address, lockBit);
+void bitUnlock(ffi.Pointer<ffi.Void>? address, int lockBit) {
+  _gBitUnlock(address ?? ffi.nullptr, lockBit);
 }
 
 /// This is like [func@GLib.bit_unlock] but also atomically sets @address to
@@ -335,12 +335,12 @@ final _gBitUnlockAndSet =
         >('g_bit_unlock_and_set')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int, int)>();
 void bitUnlockAndSet(
-  ffi.Pointer<ffi.Void> address,
+  ffi.Pointer<ffi.Void>? address,
   int lockBit,
   int newVal,
   int preserveMask,
 ) {
-  _gBitUnlockAndSet(address, lockBit, newVal, preserveMask);
+  _gBitUnlockAndSet(address ?? ffi.nullptr, lockBit, newVal, preserveMask);
 }
 
 final _gBlowChunks = glibLookup<ffi.NativeFunction<ffi.Void Function()>>(
@@ -545,8 +545,8 @@ final _gChildWatchAddFull =
 int childWatchAddFull(
   int priority,
   int pid,
-  void Function(int, int, ffi.Pointer<ffi.Void>) function_,
-  ffi.Pointer<ffi.Void> data, [
+  void Function(int, int, ffi.Pointer<ffi.Void>) function_, [
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>)? notify,
 ]) {
   final _nc3 =
@@ -563,7 +563,7 @@ int childWatchAddFull(
       priority,
       pid,
       _nc3.nativeFunction,
-      data,
+      data ?? ffi.nullptr,
       _nc5?.nativeFunction ?? ffi.nullptr,
     );
     return _ret;

@@ -2,6 +2,323 @@
 part of '../gobject.dart';
 
 /// This structure is used to provide the type system with the information
+/// required to initialize and destruct (finalize) a parameter's class and
+/// instances thereof.
+///
+/// The initialized structure is passed to the g_param_type_register_static()
+/// The type system will perform a deep copy of this structure, so its memory
+/// does not need to be persistent across invocation of
+/// g_param_type_register_static().
+final class GParamSpecTypeInfo {
+  GParamSpecTypeInfo.fromPointer(this.handle, {bool owned = false});
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+}
+
+/// The GParameter struct is an auxiliary structure used
+/// to hand parameter name/value pairs to g_object_newv().
+final class GParameter {
+  GParameter.fromPointer(this.handle, {bool owned = false});
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+}
+
+/// The #GSignalInvocationHint structure is used to pass on additional information
+/// to callbacks during a signal emission.
+final class GSignalInvocationHint {
+  GSignalInvocationHint.fromPointer(this.handle, {bool owned = false});
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+}
+
+/// A structure holding in-depth information for a specific signal.
+///
+/// See also: g_signal_query()
+final class GSignalQuery {
+  GSignalQuery.fromPointer(this.handle, {bool owned = false});
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+}
+
+/// An opaque structure used as the base of all classes.
+final class GTypeClass {
+  GTypeClass.fromPointer(this.handle, {bool owned = false});
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
+  /// Registers a private structure for an instantiatable type.
+  ///
+  /// When an object is allocated, the private structures for
+  /// the type and all of its parent types are allocated
+  /// sequentially in the same memory block as the public
+  /// structures, and are zero-filled.
+  ///
+  /// Note that the accumulated size of the private structures of
+  /// a type and all its parent types cannot exceed 64 KiB.
+  ///
+  /// This function should be called in the type's class_init() function.
+  /// The private structure can be retrieved using the
+  /// G_TYPE_INSTANCE_GET_PRIVATE() macro.
+  ///
+  /// The following example shows attaching a private structure
+  /// MyObjectPrivate to an object MyObject defined in the standard
+  /// GObject fashion in the type's class_init() function.
+  ///
+  /// Note the use of a structure member "priv" to avoid the overhead
+  /// of repeatedly calling MY_OBJECT_GET_PRIVATE().
+  ///
+  /// |[<!-- language="C" -->
+  /// typedef struct _MyObject        MyObject;
+  /// typedef struct _MyObjectPrivate MyObjectPrivate;
+  ///
+  /// struct _MyObject {
+  /// GObject parent;
+  ///
+  /// MyObjectPrivate *priv;
+  /// };
+  ///
+  /// struct _MyObjectPrivate {
+  /// int some_field;
+  /// };
+  ///
+  /// static void
+  /// my_object_class_init (MyObjectClass *klass)
+  /// {
+  /// g_type_class_add_private (klass, sizeof (MyObjectPrivate));
+  /// }
+  ///
+  /// static void
+  /// my_object_init (MyObject *my_object)
+  /// {
+  /// my_object->priv = G_TYPE_INSTANCE_GET_PRIVATE (my_object,
+  /// MY_TYPE_OBJECT,
+  /// MyObjectPrivate);
+  /// // my_object->priv->some_field will be automatically initialised to 0
+  /// }
+  ///
+  /// static int
+  /// my_object_get_some_field (MyObject *my_object)
+  /// {
+  /// MyObjectPrivate *priv;
+  ///
+  /// g_return_val_if_fail (MY_IS_OBJECT (my_object), 0);
+  ///
+  /// priv = my_object->priv;
+  ///
+  /// return priv->some_field;
+  /// }
+  /// ]|
+  static final _gTypeClassAddPrivate =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Size)
+            >
+          >('g_type_class_add_private')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void addPrivate(int privateSize) {
+    _gTypeClassAddPrivate(this.handle, privateSize);
+  }
+
+  static final _gTypeClassGetPrivate =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
+            >
+          >('g_type_class_get_private')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
+          >();
+  ffi.Pointer<ffi.Void>? getPrivate(int privateType) {
+    return (_gTypeClassGetPrivate(this.handle, privateType)) == ffi.nullptr
+        ? null
+        : (_gTypeClassGetPrivate(this.handle, privateType));
+  }
+
+  /// Retrieves the class structure of the immediate parent type of the
+  /// class passed in.
+  ///
+  /// This is a convenience function often needed in class initializers.
+  ///
+  /// Since derived classes hold a reference on their parent classes as
+  /// long as they are instantiated, the returned class will always exist.
+  ///
+  /// This function is essentially equivalent to:
+  /// g_type_class_peek (g_type_parent (G_TYPE_FROM_CLASS (g_class)))
+  static final _gTypeClassPeekParent =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_type_class_peek_parent')
+          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+  GTypeClass peekParent() {
+    return GTypeClass.fromPointer(_gTypeClassPeekParent(this.handle));
+  }
+
+  /// Decrements the reference count of the class structure being passed in.
+  ///
+  /// Once the last reference count of a class has been released, classes
+  /// may be finalized by the type system, so further dereferencing of a
+  /// class pointer after g_type_class_unref() are invalid.
+  static final _gTypeClassUnref =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('g_type_class_unref')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+  void unref() {
+    _gTypeClassUnref(this.handle);
+  }
+
+  static final _gTypeClassAdjustPrivateOffset =
+      gobjectLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
+            >
+          >('g_type_class_adjust_private_offset')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  static void adjustPrivateOffset(
+    ffi.Pointer<ffi.Void>? gClass,
+    int privateSizeOrOffset,
+  ) {
+    _gTypeClassAdjustPrivateOffset(gClass ?? ffi.nullptr, privateSizeOrOffset);
+  }
+
+  /// Retrieves the type class of the given @type.
+  ///
+  /// This function will create the class on demand if it does not exist
+  /// already.
+  ///
+  /// If you don't want to create the class, use g_type_class_peek() instead.
+  static final _gTypeClassGet =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
+          >('g_type_class_get')
+          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
+  static GTypeClass get_(int type_) {
+    return GTypeClass.fromPointer(_gTypeClassGet(type_));
+  }
+
+  /// Retrieves the class for a give type.
+  ///
+  /// This function is essentially the same as g_type_class_get(),
+  /// except that the class may have not been instantiated yet.
+  ///
+  /// As a consequence, this function may return %NULL if the class
+  /// of the type passed in does not currently exist (hasn't been
+  /// referenced before).
+  static final _gTypeClassPeek =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
+          >('g_type_class_peek')
+          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
+  static GTypeClass? peek(int type_) {
+    return (_gTypeClassPeek(type_)) == ffi.nullptr
+        ? null
+        : GTypeClass.fromPointer(_gTypeClassPeek(type_));
+  }
+
+  /// A more efficient version of g_type_class_peek() which works only for
+  /// static types.
+  static final _gTypeClassPeekStatic =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
+          >('g_type_class_peek_static')
+          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
+  static GTypeClass? peekStatic(int type_) {
+    return (_gTypeClassPeekStatic(type_)) == ffi.nullptr
+        ? null
+        : GTypeClass.fromPointer(_gTypeClassPeekStatic(type_));
+  }
+
+  /// Increments the reference count of the class structure belonging to
+  /// @type.
+  ///
+  /// This function will demand-create the class if it doesn't exist already.
+  static final _gTypeClassRef =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>
+          >('g_type_class_ref')
+          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
+  static GTypeClass ref(int type_) {
+    return GTypeClass.fromPointer(_gTypeClassRef(type_));
+  }
+}
+
+/// A structure that provides information to the type system which is
+/// used specifically for managing fundamental types.
+final class GTypeFundamentalInfo {
+  GTypeFundamentalInfo.fromPointer(this.handle, {bool owned = false});
+  final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+}
+
+/// This structure is used to provide the type system with the information
 /// required to initialize and destruct (finalize) a type's class and
 /// its instances.
 ///
@@ -11,14 +328,39 @@ part of '../gobject.dart';
 /// copy of this structure, so its memory does not need to be persistent
 /// across invocation of g_type_register_static().
 final class GTypeInfo {
-  GTypeInfo.fromPointer(this.handle);
+  GTypeInfo.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// An opaque structure used as the base of all type instances.
 final class GTypeInstance {
-  GTypeInstance.fromPointer(this.handle);
+  GTypeInstance.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   static final _gTypeInstanceGetPrivate =
       gobjectLookup<
             ffi.NativeFunction<
@@ -28,15 +370,29 @@ final class GTypeInstance {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> getPrivate(int privateType) {
-    return _gTypeInstanceGetPrivate(this.handle, privateType);
+  ffi.Pointer<ffi.Void>? getPrivate(int privateType) {
+    return (_gTypeInstanceGetPrivate(this.handle, privateType)) == ffi.nullptr
+        ? null
+        : (_gTypeInstanceGetPrivate(this.handle, privateType));
   }
 }
 
 /// An opaque structure used as the base of all interface types.
 final class GTypeInterface {
-  GTypeInterface.fromPointer(this.handle);
+  GTypeInterface.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Returns the corresponding #GTypeInterface structure of the parent type
   /// of the instance type to which @g_iface belongs.
@@ -123,37 +479,18 @@ final class GTypeInterface {
 /// In order to implement dynamic loading of types based on #GTypeModule,
 /// the @load and @unload functions in #GTypeModuleClass must be implemented.
 final class GTypeModuleClass {
-  GTypeModuleClass.fromPointer(this.handle);
+  GTypeModuleClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
-}
 
-/// The #GTypePlugin interface is used by the type system in order to handle
-/// the lifecycle of dynamically loaded types.
-final class GTypePluginClass {
-  GTypePluginClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// A structure holding information for a specific type.
-///
-/// See also: g_type_query()
-final class GTypeQuery {
-  GTypeQuery.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// - `'i'`: Integers, passed as `collect_values[].v_int`
-/// - `'l'`: Longs, passed as `collect_values[].v_long`
-/// - `'d'`: Doubles, passed as `collect_values[].v_double`
-/// - `'p'`: Pointers, passed as `collect_values[].v_pointer`
-///
-/// It should be noted that for variable argument list construction,
-/// ANSI C promotes every type smaller than an integer to an int, and
-/// floats to doubles. So for collection of short int or char, `'i'`
-/// needs to be used, and for collection of floats `'d'`.
-/// The #GTypeValueTable provides the functions required by the #GValue
-/// implementation, to serve as a container for values of a type.
-final class GTypeValueTable {
-  GTypeValueTable.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }

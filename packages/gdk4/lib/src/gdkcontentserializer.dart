@@ -16,6 +16,18 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
   GdkContentSerializer.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Gets the cancellable for the current operation.
   ///
   /// This is the `GCancellable` that was passed to [func@content_serialize_async].
@@ -95,8 +107,10 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
             >
           >('gdk_content_serializer_get_task_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getTaskData() {
-    return _gdkContentSerializerGetTaskData(this.handle);
+  ffi.Pointer<ffi.Void>? getTaskData() {
+    return (_gdkContentSerializerGetTaskData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gdkContentSerializerGetTaskData(this.handle));
   }
 
   /// Gets the user data that was passed when the serializer was registered.
@@ -107,8 +121,10 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
             >
           >('gdk_content_serializer_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getUserData() {
-    return _gdkContentSerializerGetUserData(this.handle);
+  ffi.Pointer<ffi.Void>? getUserData() {
+    return (_gdkContentSerializerGetUserData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gdkContentSerializerGetUserData(this.handle));
   }
 
   /// Gets the `GValue` to read the object to serialize from.
@@ -171,7 +187,7 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
             )
           >();
   void setTaskData(
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>) notify,
   ) {
     final _nc2 =
@@ -179,7 +195,11 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
           ffi.Void Function(ffi.Pointer<ffi.Void>)
         >.isolateLocal(notify);
     try {
-      _gdkContentSerializerSetTaskData(this.handle, data, _nc2.nativeFunction);
+      _gdkContentSerializerSetTaskData(
+        this.handle,
+        data ?? ffi.nullptr,
+        _nc2.nativeFunction,
+      );
     } finally {
       _nc2.close();
     }
@@ -239,8 +259,8 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool isTagged(ffi.Pointer<ffi.Void> sourceTag) {
-    return (_gAsyncResultIsTagged(this.handle, sourceTag)) != 0;
+  bool isTagged([ffi.Pointer<ffi.Void>? sourceTag]) {
+    return (_gAsyncResultIsTagged(this.handle, sourceTag ?? ffi.nullptr)) != 0;
   }
 
   /// If @res is a [class@Gio.SimpleAsyncResult], this is equivalent to

@@ -74,6 +74,18 @@ part of '../gio.dart';
 class GSocket extends GObject implements GInitable {
   GSocket.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new #GSocket with the defined family, type and protocol.
   /// If @protocol is 0 (%G_SOCKET_PROTOCOL_DEFAULT) the default protocol type
   /// for the family and type is used.

@@ -10,9 +10,27 @@ part of '../gtk_source5.dart';
 ///
 /// In `GtkSourceStyleSchemeChooserButton`, a [class@StyleSchemeChooserWidget]
 /// is used to provide a dialog for selecting style schemes.
-class GtkSourceStyleSchemeChooserButton extends GtkButton {
+class GtkSourceStyleSchemeChooserButton extends GtkButton
+    implements
+        GtkAccessible,
+        GtkActionable,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkSourceStyleSchemeChooser {
   GtkSourceStyleSchemeChooserButton.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new #GtkSourceStyleSchemeChooserButton.
   static final _gtkSourceStyleSchemeChooserButtonNew =
@@ -20,7 +38,7 @@ class GtkSourceStyleSchemeChooserButton extends GtkButton {
         'gtk_source_style_scheme_chooser_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkSourceStyleSchemeChooserButton()
-    : super.fromPointer(_gtkSourceStyleSchemeChooserButtonNew(), owned: true);
+    : this.fromPointer(_gtkSourceStyleSchemeChooserButtonNew(), owned: true);
 
   /// Emitted to animate press then release.
   ///
@@ -507,6 +525,115 @@ class GtkSourceStyleSchemeChooserButton extends GtkButton {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      gtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Gets the action name for @actionable.

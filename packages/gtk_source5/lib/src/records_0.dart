@@ -2,58 +2,205 @@
 part of '../gtk_source5.dart';
 
 final class GtkSourceAnnotationClass {
-  GtkSourceAnnotationClass.fromPointer(this.handle);
+  GtkSourceAnnotationClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceAnnotationProviderClass {
-  GtkSourceAnnotationProviderClass.fromPointer(this.handle);
+  GtkSourceAnnotationProviderClass.fromPointer(
+    this.handle, {
+    bool owned = false,
+  });
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceAnnotationsClass {
-  GtkSourceAnnotationsClass.fromPointer(this.handle);
+  GtkSourceAnnotationsClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceBufferClass {
-  GtkSourceBufferClass.fromPointer(this.handle);
+  GtkSourceBufferClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionCellClass {
-  GtkSourceCompletionCellClass.fromPointer(this.handle);
+  GtkSourceCompletionCellClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionClass {
-  GtkSourceCompletionClass.fromPointer(this.handle);
+  GtkSourceCompletionClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionContextClass {
-  GtkSourceCompletionContextClass.fromPointer(this.handle);
+  GtkSourceCompletionContextClass.fromPointer(
+    this.handle, {
+    bool owned = false,
+  });
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionProposalInterface {
-  GtkSourceCompletionProposalInterface.fromPointer(this.handle);
+  GtkSourceCompletionProposalInterface.fromPointer(
+    this.handle, {
+    bool owned = false,
+  });
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionProviderInterface {
-  GtkSourceCompletionProviderInterface.fromPointer(this.handle);
+  GtkSourceCompletionProviderInterface.fromPointer(
+    this.handle, {
+    bool owned = false,
+  });
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionSnippetsClass {
-  GtkSourceCompletionSnippetsClass.fromPointer(this.handle);
+  GtkSourceCompletionSnippetsClass.fromPointer(
+    this.handle, {
+    bool owned = false,
+  });
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceCompletionWordsClass {
-  GtkSourceCompletionWordsClass.fromPointer(this.handle);
+  GtkSourceCompletionWordsClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Character encoding.
@@ -62,8 +209,20 @@ final class GtkSourceCompletionWordsClass {
 /// for example by #GtkSourceFile. Note that the text in GTK widgets is always
 /// encoded in UTF-8.
 final class GtkSourceEncoding {
-  GtkSourceEncoding.fromPointer(this.handle);
+  GtkSourceEncoding.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Used by language bindings.
   static final _gtkSourceEncodingCopy =
@@ -183,287 +342,86 @@ final class GtkSourceEncoding {
 }
 
 final class GtkSourceFileClass {
-  GtkSourceFileClass.fromPointer(this.handle);
+  GtkSourceFileClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceFileLoaderClass {
-  GtkSourceFileLoaderClass.fromPointer(this.handle);
+  GtkSourceFileLoaderClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceFileSaverClass {
-  GtkSourceFileSaverClass.fromPointer(this.handle);
+  GtkSourceFileSaverClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceGutterClass {
-  GtkSourceGutterClass.fromPointer(this.handle);
+  GtkSourceGutterClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class GtkSourceGutterLinesClass {
-  GtkSourceGutterLinesClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceGutterRendererClass {
-  GtkSourceGutterRendererClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceGutterRendererPixbufClass {
-  GtkSourceGutterRendererPixbufClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceGutterRendererTextClass {
-  GtkSourceGutterRendererTextClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceHoverClass {
-  GtkSourceHoverClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceHoverContextClass {
-  GtkSourceHoverContextClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceHoverDisplayClass {
-  GtkSourceHoverDisplayClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceHoverProviderInterface {
-  GtkSourceHoverProviderInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// The virtual function table for #GtkSourceIndenter.
-final class GtkSourceIndenterInterface {
-  GtkSourceIndenterInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceLanguageClass {
-  GtkSourceLanguageClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceLanguageManagerClass {
-  GtkSourceLanguageManagerClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceMapClass {
-  GtkSourceMapClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceMarkAttributesClass {
-  GtkSourceMarkAttributesClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceMarkClass {
-  GtkSourceMarkClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourcePrintCompositorClass {
-  GtkSourcePrintCompositorClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceRegionClass {
-  GtkSourceRegionClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// An opaque datatype.
-///
-/// Ignore all its fields and initialize the iter with [method@Region.get_start_region_iter].
-final class GtkSourceRegionIter {
-  GtkSourceRegionIter.fromPointer(this.handle);
+  GtkSourceGutterLinesClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
-  /// Gets the subregion at this iterator.
-  static final _gtkSourceRegionIterGetSubregion =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gtk_source_region_iter_get_subregion')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (bool, GtkTextIter?, GtkTextIter?) getSubregion() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    try {
-      final _ret = _gtkSourceRegionIterGetSubregion(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        (_out0) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  static final _gtkSourceRegionIterIsEnd =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_region_iter_is_end')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isEnd() {
-    return (_gtkSourceRegionIterIsEnd(this.handle)) != 0;
-  }
-
-  /// Moves @iter to the next subregion.
-  static final _gtkSourceRegionIterNext =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_region_iter_next')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool next() {
-    return (_gtkSourceRegionIterNext(this.handle)) != 0;
-  }
-}
-
-final class GtkSourceSearchContextClass {
-  GtkSourceSearchContextClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceSearchSettingsClass {
-  GtkSourceSearchSettingsClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceSnippetChunkClass {
-  GtkSourceSnippetChunkClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceSnippetClass {
-  GtkSourceSnippetClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceSnippetContextClass {
-  GtkSourceSnippetContextClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceSnippetManagerClass {
-  GtkSourceSnippetManagerClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceSpaceDrawerClass {
-  GtkSourceSpaceDrawerClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleClass {
-  GtkSourceStyleClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleSchemeChooserButtonClass {
-  GtkSourceStyleSchemeChooserButtonClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleSchemeChooserInterface {
-  GtkSourceStyleSchemeChooserInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleSchemeChooserWidgetClass {
-  GtkSourceStyleSchemeChooserWidgetClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleSchemeClass {
-  GtkSourceStyleSchemeClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleSchemeManagerClass {
-  GtkSourceStyleSchemeManagerClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceStyleSchemePreviewClass {
-  GtkSourceStyleSchemePreviewClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceTagClass {
-  GtkSourceTagClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceViewClass {
-  GtkSourceViewClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class GtkSourceVimIMContextClass {
-  GtkSourceVimIMContextClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-/// Interface for completion proposals.
-///
-/// This interface is used to denote that an object is capable of being
-/// a completion proposal for [class@Completion].
-///
-/// Currently, no method or functions are required but additional methods
-/// may be added in the future. Proposals created by
-/// #GtkSourceCompletionProvider can use [func@GObject.IMPLEMENT_INTERFACE] to
-/// implement this with %NULL for the interface init function.
-final class GtkSourceCompletionProposal {
-  GtkSourceCompletionProposal.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Gets the typed-text for the proposal, if supported by the implementation.
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
-  /// Implementing this virtual-function is optional, but can be useful to allow
-  /// external tooling to compare results.
-  static final _gtkSourceCompletionProposalGetTypedText =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_completion_proposal_get_typed_text')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String? getTypedText() {
-    return stringFromNative(
-      (_gtkSourceCompletionProposalGetTypedText(this.handle)).cast(),
-      free: true,
-    );
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
   }
 }

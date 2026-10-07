@@ -13,6 +13,18 @@ part of '../gio.dart';
 class GTlsDatabase extends GObject {
   GTlsDatabase.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Create a handle string for the certificate. The database will only be able
   /// to create a handle for certificates that originate from the database. In
   /// cases where the database cannot create a handle for a certificate, %NULL
@@ -154,7 +166,7 @@ class GTlsDatabase extends GObject {
   void lookupCertificateForHandleAsync(
     String handle,
     GTlsInteraction? interaction,
-    GTlsDatabaseLookupFlags flags,
+    GTlsDatabaseLookupFlags flags, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -162,8 +174,8 @@ class GTlsDatabase extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(handle, (nativeHandle) {
       final _nc5 = callback == null
           ? null
@@ -182,7 +194,7 @@ class GTlsDatabase extends GObject {
           flags.value,
           cancellable?.handle ?? ffi.nullptr,
           _nc5?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc5?.close();
@@ -396,7 +408,7 @@ class GTlsDatabase extends GObject {
   void lookupCertificateIssuerAsync(
     GTlsCertificate certificate,
     GTlsInteraction? interaction,
-    GTlsDatabaseLookupFlags flags,
+    GTlsDatabaseLookupFlags flags, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -404,8 +416,8 @@ class GTlsDatabase extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc5 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -423,7 +435,7 @@ class GTlsDatabase extends GObject {
         flags.value,
         cancellable?.handle ?? ffi.nullptr,
         _nc5?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc5?.close();
@@ -619,7 +631,7 @@ class GTlsDatabase extends GObject {
   void lookupCertificatesIssuedByAsync(
     ffi.Pointer<ffi.Uint8> issuerRawDn,
     GTlsInteraction? interaction,
-    GTlsDatabaseLookupFlags flags,
+    GTlsDatabaseLookupFlags flags, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -627,8 +639,8 @@ class GTlsDatabase extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc5 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -646,7 +658,7 @@ class GTlsDatabase extends GObject {
         flags.value,
         cancellable?.handle ?? ffi.nullptr,
         _nc5?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc5?.close();
@@ -911,7 +923,7 @@ class GTlsDatabase extends GObject {
     String purpose,
     GSocketConnectable? identity,
     GTlsInteraction? interaction,
-    GTlsDatabaseVerifyFlags flags,
+    GTlsDatabaseVerifyFlags flags, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -919,8 +931,8 @@ class GTlsDatabase extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(purpose, (nativePurpose) {
       final _nc7 = callback == null
           ? null
@@ -941,7 +953,7 @@ class GTlsDatabase extends GObject {
           flags.value,
           cancellable?.handle ?? ffi.nullptr,
           _nc7?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc7?.close();

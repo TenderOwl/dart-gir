@@ -6,6 +6,18 @@ class GtkCallbackAction extends GtkShortcutAction {
   GtkCallbackAction.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Create a custom action that calls the given @callback when
   /// activated.
   static final _gtkCallbackActionNew =
@@ -52,7 +64,7 @@ class GtkCallbackAction extends GtkShortcutAction {
       ffi.Pointer<ffi.Void>,
     )
     callback,
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc1 =
@@ -70,7 +82,7 @@ class GtkCallbackAction extends GtkShortcutAction {
     try {
       final _ret = _gtkCallbackActionNew(
         _nc1.nativeFunction,
-        data,
+        data ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
       return GtkCallbackAction.fromPointer(_ret, owned: true);

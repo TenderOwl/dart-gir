@@ -33,10 +33,13 @@ final _gFopen =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, ffi.Pointer<Utf8>)
         >();
-ffi.Pointer<ffi.Void> fopen(String filename, String mode) {
+ffi.Pointer<ffi.Void>? fopen(String filename, String mode) {
   return withNativeString(filename, (nativeFilename) {
     return withNativeString(mode, (nativeMode) {
-      return _gFopen(nativeFilename.cast<Utf8>(), nativeMode.cast<Utf8>());
+      return (_gFopen(nativeFilename.cast<Utf8>(), nativeMode.cast<Utf8>())) ==
+              ffi.nullptr
+          ? null
+          : (_gFopen(nativeFilename.cast<Utf8>(), nativeMode.cast<Utf8>()));
     });
   });
 }
@@ -112,8 +115,8 @@ final _gFree =
     glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
       'g_free',
     ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-void freeFn(ffi.Pointer<ffi.Void> mem) {
-  _gFree(mem);
+void freeFn([ffi.Pointer<ffi.Void>? mem]) {
+  _gFree(mem ?? ffi.nullptr);
 }
 
 /// Frees the memory pointed to by @mem, assuming it is has the given @size.
@@ -132,8 +135,8 @@ final _gFreeSized =
           ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Size)>
         >('g_free_sized')
         .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-void freeSized(ffi.Pointer<ffi.Void> mem, int size) {
-  _gFreeSized(mem, size);
+void freeSized(ffi.Pointer<ffi.Void>? mem, int size) {
+  _gFreeSized(mem ?? ffi.nullptr, size);
 }
 
 /// A wrapper for the POSIX freopen() function. The freopen() function
@@ -160,18 +163,25 @@ final _gFreopen =
             ffi.Pointer<ffi.Void>,
           )
         >();
-ffi.Pointer<ffi.Void> freopen(
+ffi.Pointer<ffi.Void>? freopen(
   String filename,
-  String mode,
-  ffi.Pointer<ffi.Void> stream,
-) {
+  String mode, [
+  ffi.Pointer<ffi.Void>? stream,
+]) {
   return withNativeString(filename, (nativeFilename) {
     return withNativeString(mode, (nativeMode) {
-      return _gFreopen(
-        nativeFilename.cast<Utf8>(),
-        nativeMode.cast<Utf8>(),
-        stream,
-      );
+      return (_gFreopen(
+                nativeFilename.cast<Utf8>(),
+                nativeMode.cast<Utf8>(),
+                stream ?? ffi.nullptr,
+              )) ==
+              ffi.nullptr
+          ? null
+          : (_gFreopen(
+              nativeFilename.cast<Utf8>(),
+              nativeMode.cast<Utf8>(),
+              stream ?? ffi.nullptr,
+            ));
     });
   });
 }

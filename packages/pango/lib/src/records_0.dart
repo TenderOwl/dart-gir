@@ -4,8 +4,20 @@ part of '../pango.dart';
 /// The `PangoAnalysis` structure stores information about
 /// the properties of a segment of text.
 final class PangoAnalysis {
-  PangoAnalysis.fromPointer(this.handle);
+  PangoAnalysis.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The `PangoAttrClass` structure stores the type and operations for
@@ -14,29 +26,77 @@ final class PangoAnalysis {
 /// The functions in this structure should not be called directly. Instead,
 /// one should use the wrapper functions provided for `PangoAttribute`.
 final class PangoAttrClass {
-  PangoAttrClass.fromPointer(this.handle);
+  PangoAttrClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The `PangoAttrColor` structure is used to represent attributes that
 /// are colors.
 final class PangoAttrColor {
-  PangoAttrColor.fromPointer(this.handle);
+  PangoAttrColor.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The `PangoAttrFloat` structure is used to represent attributes with
 /// a float or double value.
 final class PangoAttrFloat {
-  PangoAttrFloat.fromPointer(this.handle);
+  PangoAttrFloat.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// The `PangoAttrFontDesc` structure is used to store an attribute that
 /// sets all aspects of the font description at once.
 final class PangoAttrFontDesc {
-  PangoAttrFontDesc.fromPointer(this.handle);
+  PangoAttrFontDesc.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Create a new font description attribute.
   ///
@@ -57,8 +117,20 @@ final class PangoAttrFontDesc {
 /// The `PangoAttrFontFeatures` structure is used to represent OpenType
 /// font features as an attribute.
 final class PangoAttrFontFeatures {
-  PangoAttrFontFeatures.fromPointer(this.handle);
+  PangoAttrFontFeatures.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Create a new font features tag attribute.
   ///
@@ -83,8 +155,20 @@ final class PangoAttrFontFeatures {
 /// The `PangoAttrInt` structure is used to represent attributes with
 /// an integer or enumeration value.
 final class PangoAttrInt {
-  PangoAttrInt.fromPointer(this.handle);
+  PangoAttrInt.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
@@ -95,8 +179,20 @@ final class PangoAttrInt {
 /// style change, the range of the current style segment and the attributes
 /// currently in effect can be queried.
 final class PangoAttrIterator {
-  PangoAttrIterator.fromPointer(this.handle);
+  PangoAttrIterator.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Copy a `PangoAttrIterator`.
   static final _pangoAttrIteratorCopy =
@@ -248,8 +344,20 @@ final class PangoAttrIterator {
 /// The `PangoAttrLanguage` structure is used to represent attributes that
 /// are languages.
 final class PangoAttrLanguage {
-  PangoAttrLanguage.fromPointer(this.handle);
+  PangoAttrLanguage.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Create a new language tag attribute.
   static final _pangoAttrLanguageNew =
@@ -262,457 +370,4 @@ final class PangoAttrLanguage {
   static PangoAttribute new_(PangoLanguage language) {
     return PangoAttribute.fromPointer(_pangoAttrLanguageNew(language.handle));
   }
-}
-
-/// A `PangoAttrList` represents a list of attributes that apply to a section
-/// of text.
-///
-/// The attributes in a `PangoAttrList` are, in general, allowed to overlap in
-/// an arbitrary fashion. However, if the attributes are manipulated only through
-/// [method@Pango.AttrList.change], the overlap between properties will meet
-/// stricter criteria.
-///
-/// Since the `PangoAttrList` structure is stored as a linear list, it is not
-/// suitable for storing attributes for large amounts of text. In general, you
-/// should not use a single `PangoAttrList` for more than one paragraph of text.
-final class PangoAttrList {
-  PangoAttrList.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Create a new empty attribute list with a reference
-  /// count of one.
-  static final _pangoAttrListNew =
-      pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'pango_attr_list_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  PangoAttrList() : this.fromPointer(_pangoAttrListNew());
-
-  /// Insert the given attribute into the `PangoAttrList`.
-  ///
-  /// It will replace any attributes of the same type
-  /// on that segment and be merged with any adjoining
-  /// attributes that are identical.
-  ///
-  /// This function is slower than [method@Pango.AttrList.insert]
-  /// for creating an attribute list in order (potentially
-  /// much slower for large lists). However,
-  /// [method@Pango.AttrList.insert] is not suitable for
-  /// continually changing a set of attributes since it
-  /// never removes or combines existing attributes.
-  static final _pangoAttrListChange =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_change')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void change(PangoAttribute attr) {
-    _pangoAttrListChange(this.handle, attr.handle);
-  }
-
-  /// Copy @list and return an identical new list.
-  static final _pangoAttrListCopy =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoAttrList? copy() {
-    return (_pangoAttrListCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrList.fromPointer(_pangoAttrListCopy(this.handle));
-  }
-
-  /// Checks whether @list and @other_list contain the same
-  /// attributes and whether those attributes apply to the
-  /// same ranges.
-  ///
-  /// Beware that this will return wrong values if any list
-  /// contains duplicates.
-  static final _pangoAttrListEqual =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(PangoAttrList otherList) {
-    return (_pangoAttrListEqual(this.handle, otherList.handle)) != 0;
-  }
-
-  /// Given a `PangoAttrList` and callback function, removes
-  /// any elements of @list for which @func returns %TRUE and
-  /// inserts them into a new list.
-  static final _pangoAttrListFilter =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Int32 Function(
-                      ffi.Pointer<ffi.Void>,
-                      ffi.Pointer<ffi.Void>,
-                    )
-                  >
-                >,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_attr_list_filter')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Int32 Function(
-                    ffi.Pointer<ffi.Void>,
-                    ffi.Pointer<ffi.Void>,
-                  )
-                >
-              >,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  PangoAttrList? filter(
-    int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func,
-    ffi.Pointer<ffi.Void> data,
-  ) {
-    final _nc1 =
-        ffi.NativeCallable<
-          ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-        >.isolateLocal(func, exceptionalReturn: 0);
-    try {
-      final _ret = _pangoAttrListFilter(this.handle, _nc1.nativeFunction, data);
-      return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
-    } finally {
-      _nc1.close();
-    }
-  }
-
-  /// Gets a list of all attributes in @list.
-  static final _pangoAttrListGetAttributes =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_get_attributes')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSList getAttributes() {
-    return GSList.fromPointer(_pangoAttrListGetAttributes(this.handle));
-  }
-
-  /// Create a iterator initialized to the beginning of the list.
-  ///
-  /// @list must not be modified until this iterator is freed.
-  static final _pangoAttrListGetIterator =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_get_iterator')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoAttrIterator getIterator() {
-    return PangoAttrIterator.fromPointer(
-      _pangoAttrListGetIterator(this.handle),
-    );
-  }
-
-  /// Insert the given attribute into the `PangoAttrList`.
-  ///
-  /// It will be inserted after all other attributes with a
-  /// matching @start_index.
-  static final _pangoAttrListInsert =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_insert')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void insert(PangoAttribute attr) {
-    _pangoAttrListInsert(this.handle, attr.handle);
-  }
-
-  /// Insert the given attribute into the `PangoAttrList`.
-  ///
-  /// It will be inserted before all other attributes with a
-  /// matching @start_index.
-  static final _pangoAttrListInsertBefore =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_insert_before')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void insertBefore(PangoAttribute attr) {
-    _pangoAttrListInsertBefore(this.handle, attr.handle);
-  }
-
-  /// Increase the reference count of the given attribute
-  /// list by one.
-  static final _pangoAttrListRef =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_list_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoAttrList ref() {
-    return PangoAttrList.fromPointer(_pangoAttrListRef(this.handle));
-  }
-
-  /// This function opens up a hole in @list, fills it
-  /// in with attributes from the left, and then merges
-  /// @other on top of the hole.
-  ///
-  /// This operation is equivalent to stretching every attribute
-  /// that applies at position @pos in @list by an amount @len,
-  /// and then calling [method@Pango.AttrList.change] with a copy
-  /// of each attribute in @other in sequence (offset in position
-  /// by @pos, and limited in length to @len).
-  ///
-  /// This operation proves useful for, for instance, inserting
-  /// a pre-edit string in the middle of an edit buffer.
-  ///
-  /// For backwards compatibility, the function behaves differently
-  /// when @len is 0. In this case, the attributes from @other are
-  /// not imited to @len, and are just overlayed on top of @list.
-  ///
-  /// This mode is useful for merging two lists of attributes together.
-  static final _pangoAttrListSplice =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Int32,
-              )
-            >
-          >('pango_attr_list_splice')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-              int,
-            )
-          >();
-  void splice(PangoAttrList other, int pos, int len) {
-    _pangoAttrListSplice(this.handle, other.handle, pos, len);
-  }
-
-  /// Decrease the reference count of the given attribute
-  /// list by one.
-  ///
-  /// If the result is zero, free the attribute list
-  /// and the attributes it contains.
-  static final _pangoAttrListUnref =
-      pangoLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'pango_attr_list_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _pangoAttrListUnref(this.handle);
-  }
-
-  /// Update indices of attributes in @list for a change in the
-  /// text they refer to.
-  ///
-  /// The change that this function applies is removing @remove
-  /// bytes at position @pos and inserting @add bytes instead.
-  ///
-  /// Attributes that fall entirely in the (@pos, @pos + @remove)
-  /// range are removed.
-  ///
-  /// Attributes that start or end inside the (@pos, @pos + @remove)
-  /// range are shortened to reflect the removal.
-  ///
-  /// Attributes start and end positions are updated if they are
-  /// behind @pos + @remove.
-  static final _pangoAttrListUpdate =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Int32,
-                ffi.Int32,
-              )
-            >
-          >('pango_attr_list_update')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int, int, int)>();
-  void update(int pos, int remove, int add) {
-    _pangoAttrListUpdate(this.handle, pos, remove, add);
-  }
-
-  /// Deserializes a `PangoAttrList` from a string.
-  ///
-  /// This is the counterpart to [method@Pango.AttrList.to_string].
-  /// See that functions for details about the format.
-  static final _pangoAttrListFromString =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('pango_attr_list_from_string')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  static PangoAttrList? fromString(String text) {
-    return withNativeString(text, (nativeText) {
-      return (_pangoAttrListFromString(nativeText.cast<Utf8>())) == ffi.nullptr
-          ? null
-          : PangoAttrList.fromPointer(
-              _pangoAttrListFromString(nativeText.cast<Utf8>()),
-            );
-    });
-  }
-}
-
-/// The `PangoAttrShape` structure is used to represent attributes which
-/// impose shape restrictions.
-final class PangoAttrShape {
-  PangoAttrShape.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Create a new shape attribute.
-  ///
-  /// A shape is used to impose a particular ink and logical
-  /// rectangle on the result of shaping a particular glyph.
-  /// This might be used, for instance, for embedding a picture
-  /// or a widget inside a `PangoLayout`.
-  static final _pangoAttrShapeNew =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_attr_shape_new')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  static PangoAttribute new_(
-    PangoRectangle inkRect,
-    PangoRectangle logicalRect,
-  ) {
-    return PangoAttribute.fromPointer(
-      _pangoAttrShapeNew(inkRect.handle, logicalRect.handle),
-    );
-  }
-
-  /// Creates a new shape attribute.
-  ///
-  /// Like [func@Pango.AttrShape.new], but a user data pointer
-  /// is also provided; this pointer can be accessed when later
-  /// rendering the glyph.
-  static final _pangoAttrShapeNewWithData =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<
-                  ffi.NativeFunction<
-                    ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-                  >
-                >,
-                ffi.Pointer<
-                  ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-                >,
-              )
-            >
-          >('pango_attr_shape_new_with_data')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<
-                ffi.NativeFunction<
-                  ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-                >
-              >,
-              ffi.Pointer<
-                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-              >,
-            )
-          >();
-  static PangoAttribute newWithData(
-    PangoRectangle inkRect,
-    PangoRectangle logicalRect,
-    ffi.Pointer<ffi.Void> data, [
-    ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)? copyFunc,
-    void Function(ffi.Pointer<ffi.Void>)? destroyFunc,
-  ]) {
-    final _nc4 = copyFunc == null
-        ? null
-        : ffi.NativeCallable<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-          >.isolateLocal(copyFunc);
-    final _nc5 = destroyFunc == null
-        ? null
-        : ffi.NativeCallable<
-            ffi.Void Function(ffi.Pointer<ffi.Void>)
-          >.isolateLocal(destroyFunc);
-    try {
-      final _ret = _pangoAttrShapeNewWithData(
-        inkRect.handle,
-        logicalRect.handle,
-        data,
-        _nc4?.nativeFunction ?? ffi.nullptr,
-        _nc5?.nativeFunction ?? ffi.nullptr,
-      );
-      return PangoAttribute.fromPointer(_ret);
-    } finally {
-      _nc4?.close();
-      _nc5?.close();
-    }
-  }
-}
-
-/// The `PangoAttrSize` structure is used to represent attributes which
-/// set font size.
-final class PangoAttrSize {
-  PangoAttrSize.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Create a new font-size attribute in fractional points.
-  static final _pangoAttrSizeNew =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>
-          >('pango_attr_size_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  static PangoAttribute new_(int size) {
-    return PangoAttribute.fromPointer(_pangoAttrSizeNew(size));
-  }
-
-  /// Create a new font-size attribute in device units.
-  static final _pangoAttrSizeNewAbsolute =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>
-          >('pango_attr_size_new_absolute')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  static PangoAttribute newAbsolute(int size) {
-    return PangoAttribute.fromPointer(_pangoAttrSizeNewAbsolute(size));
-  }
-}
-
-/// The `PangoAttrString` structure is used to represent attributes with
-/// a string value.
-final class PangoAttrString {
-  PangoAttrString.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
 }

@@ -323,7 +323,7 @@ final _gtkEnumeratePrinters =
         >();
 void enumeratePrinters(
   int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) func,
-  ffi.Pointer<ffi.Void> data,
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>) destroy,
   bool wait,
 ) {
@@ -338,7 +338,7 @@ void enumeratePrinters(
   try {
     _gtkEnumeratePrinters(
       _nc1.nativeFunction,
-      data,
+      data ?? ffi.nullptr,
       _nc3.nativeFunction,
       wait ? 1 : 0,
     );
@@ -702,9 +702,9 @@ void printRunPageSetupDialogAsync(
   GtkWindow? parent,
   GtkPageSetup? pageSetup,
   GtkPrintSettings settings,
-  void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) doneCb,
-  ffi.Pointer<ffi.Void> data,
-) {
+  void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>) doneCb, [
+  ffi.Pointer<ffi.Void>? data,
+]) {
   final _nc4 =
       ffi.NativeCallable<
         ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
@@ -715,7 +715,7 @@ void printRunPageSetupDialogAsync(
       pageSetup?.handle ?? ffi.nullptr,
       settings.handle,
       _nc4.nativeFunction,
-      data,
+      data ?? ffi.nullptr,
     );
   } finally {
     _nc4.close();

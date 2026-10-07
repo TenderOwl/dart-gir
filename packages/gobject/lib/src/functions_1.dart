@@ -296,14 +296,14 @@ final _gSignalAccumulatorFirstWins =
 bool signalAccumulatorFirstWins(
   GSignalInvocationHint ihint,
   GValue returnAccu,
-  GValue handlerReturn,
-  ffi.Pointer<ffi.Void> dummy,
-) {
+  GValue handlerReturn, [
+  ffi.Pointer<ffi.Void>? dummy,
+]) {
   return (_gSignalAccumulatorFirstWins(
         ihint.handle,
         returnAccu.handle,
         handlerReturn.handle,
-        dummy,
+        dummy ?? ffi.nullptr,
       )) !=
       0;
 }
@@ -337,14 +337,14 @@ final _gSignalAccumulatorTrueHandled =
 bool signalAccumulatorTrueHandled(
   GSignalInvocationHint ihint,
   GValue returnAccu,
-  GValue handlerReturn,
-  ffi.Pointer<ffi.Void> dummy,
-) {
+  GValue handlerReturn, [
+  ffi.Pointer<ffi.Void>? dummy,
+]) {
   return (_gSignalAccumulatorTrueHandled(
         ihint.handle,
         returnAccu.handle,
         handlerReturn.handle,
-        dummy,
+        dummy ?? ffi.nullptr,
       )) !=
       0;
 }
@@ -531,19 +531,19 @@ int signalHandlerFind(
   GObject instance,
   GSignalMatchType mask,
   int signalId,
-  int detail,
+  int detail, [
   GClosure? closure,
-  ffi.Pointer<ffi.Void> func,
-  ffi.Pointer<ffi.Void> data,
-) {
+  ffi.Pointer<ffi.Void>? func,
+  ffi.Pointer<ffi.Void>? data,
+]) {
   return _gSignalHandlerFind(
     instance.handle,
     mask.value,
     signalId,
     detail,
     closure?.handle ?? ffi.nullptr,
-    func,
-    data,
+    func ?? ffi.nullptr,
+    data ?? ffi.nullptr,
   );
 }
 
@@ -625,19 +625,19 @@ int signalHandlersBlockMatched(
   GObject instance,
   GSignalMatchType mask,
   int signalId,
-  int detail,
+  int detail, [
   GClosure? closure,
-  ffi.Pointer<ffi.Void> func,
-  ffi.Pointer<ffi.Void> data,
-) {
+  ffi.Pointer<ffi.Void>? func,
+  ffi.Pointer<ffi.Void>? data,
+]) {
   return _gSignalHandlersBlockMatched(
     instance.handle,
     mask.value,
     signalId,
     detail,
     closure?.handle ?? ffi.nullptr,
-    func,
-    data,
+    func ?? ffi.nullptr,
+    data ?? ffi.nullptr,
   );
 }
 
@@ -695,19 +695,19 @@ int signalHandlersDisconnectMatched(
   GObject instance,
   GSignalMatchType mask,
   int signalId,
-  int detail,
+  int detail, [
   GClosure? closure,
-  ffi.Pointer<ffi.Void> func,
-  ffi.Pointer<ffi.Void> data,
-) {
+  ffi.Pointer<ffi.Void>? func,
+  ffi.Pointer<ffi.Void>? data,
+]) {
   return _gSignalHandlersDisconnectMatched(
     instance.handle,
     mask.value,
     signalId,
     detail,
     closure?.handle ?? ffi.nullptr,
-    func,
-    data,
+    func ?? ffi.nullptr,
+    data ?? ffi.nullptr,
   );
 }
 
@@ -755,19 +755,19 @@ int signalHandlersUnblockMatched(
   GObject instance,
   GSignalMatchType mask,
   int signalId,
-  int detail,
+  int detail, [
   GClosure? closure,
-  ffi.Pointer<ffi.Void> func,
-  ffi.Pointer<ffi.Void> data,
-) {
+  ffi.Pointer<ffi.Void>? func,
+  ffi.Pointer<ffi.Void>? data,
+]) {
   return _gSignalHandlersUnblockMatched(
     instance.handle,
     mask.value,
     signalId,
     detail,
     closure?.handle ?? ffi.nullptr,
-    func,
-    data,
+    func ?? ffi.nullptr,
+    data ?? ffi.nullptr,
   );
 }
 

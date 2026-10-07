@@ -15,6 +15,18 @@ class GdkGLTextureBuilder extends GObject {
   GdkGLTextureBuilder.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new texture builder.
   static final _gdkGlTextureBuilderNew =
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -57,10 +69,10 @@ class GdkGLTextureBuilder extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GdkTexture build(
+  GdkTexture build([
     void Function(ffi.Pointer<ffi.Void>)? destroy,
-    ffi.Pointer<ffi.Void> data,
-  ) {
+    ffi.Pointer<ffi.Void>? data,
+  ]) {
     final _nc1 = destroy == null
         ? null
         : ffi.NativeCallable<
@@ -70,7 +82,7 @@ class GdkGLTextureBuilder extends GObject {
       final _ret = _gdkGlTextureBuilderBuild(
         this.handle,
         _nc1?.nativeFunction ?? ffi.nullptr,
-        data,
+        data ?? ffi.nullptr,
       );
       return GdkTexture.fromPointer(_ret);
     } finally {
@@ -156,8 +168,10 @@ class GdkGLTextureBuilder extends GObject {
             >
           >('gdk_gl_texture_builder_get_sync')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getSync() {
-    return _gdkGlTextureBuilderGetSync(this.handle);
+  ffi.Pointer<ffi.Void>? getSync() {
+    return (_gdkGlTextureBuilderGetSync(this.handle)) == ffi.nullptr
+        ? null
+        : (_gdkGlTextureBuilderGetSync(this.handle));
   }
 
   /// Gets the region previously set via gdk_gl_texture_builder_set_update_region() or
@@ -327,8 +341,8 @@ class GdkGLTextureBuilder extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void setSync(ffi.Pointer<ffi.Void> sync_) {
-    _gdkGlTextureBuilderSetSync(this.handle, sync_);
+  void setSync([ffi.Pointer<ffi.Void>? sync_]) {
+    _gdkGlTextureBuilderSetSync(this.handle, sync_ ?? ffi.nullptr);
   }
 
   /// Sets the region to be updated by this texture. Together with

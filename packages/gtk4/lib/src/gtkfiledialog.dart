@@ -12,6 +12,18 @@ part of '../gtk4.dart';
 class GtkFileDialog extends GObject {
   GtkFileDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GtkFileDialog` object.
   static final _gtkFileDialogNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -178,7 +190,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void open(
+  void open([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -187,8 +199,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -204,7 +216,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -337,7 +349,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void openMultiple(
+  void openMultiple([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -346,8 +358,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -363,7 +375,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -503,7 +515,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void openMultipleTextFiles(
+  void openMultipleTextFiles([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -512,8 +524,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -529,7 +541,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -673,7 +685,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void openTextFile(
+  void openTextFile([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -682,8 +694,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -699,7 +711,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -847,7 +859,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void save(
+  void save([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -856,8 +868,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -873,7 +885,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -1006,7 +1018,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void saveTextFile(
+  void saveTextFile([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -1015,8 +1027,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -1032,7 +1044,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -1193,7 +1205,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void selectFolder(
+  void selectFolder([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -1202,8 +1214,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -1219,7 +1231,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();
@@ -1357,7 +1369,7 @@ class GtkFileDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void selectMultipleFolders(
+  void selectMultipleFolders([
     GtkWindow? parent,
     GCancellable? cancellable,
     void Function(
@@ -1366,8 +1378,8 @@ class GtkFileDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -1383,7 +1395,7 @@ class GtkFileDialog extends GObject {
         parent?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();

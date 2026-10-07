@@ -537,7 +537,7 @@ void simpleAsyncReportGerrorInIdle(
     ffi.Pointer<ffi.Void>,
   )?
   callback,
-  ffi.Pointer<ffi.Void> userData,
+  ffi.Pointer<ffi.Void>? userData,
   GError error,
 ) {
   final _nc2 = callback == null
@@ -553,7 +553,7 @@ void simpleAsyncReportGerrorInIdle(
     _gSimpleAsyncReportGerrorInIdle(
       object?.handle ?? ffi.nullptr,
       _nc2?.nativeFunction ?? ffi.nullptr,
-      userData,
+      userData ?? ffi.nullptr,
       error.handle,
     );
   } finally {

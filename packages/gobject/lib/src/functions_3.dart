@@ -149,8 +149,8 @@ final _gTypeSetQdata =
           >
         >('g_type_set_qdata')
         .asFunction<void Function(int, int, ffi.Pointer<ffi.Void>)>();
-void typeSetQdata(int type_, int quark, ffi.Pointer<ffi.Void> data) {
-  _gTypeSetQdata(type_, quark, data);
+void typeSetQdata(int type_, int quark, [ffi.Pointer<ffi.Void>? data]) {
+  _gTypeSetQdata(type_, quark, data ?? ffi.nullptr);
 }
 
 final _gTypeTestFlags =

@@ -29,6 +29,18 @@ class GtkCellView extends GtkWidget
         GtkOrientable {
   GtkCellView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GtkCellView` widget.
   static final _gtkCellViewNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -1044,7 +1056,7 @@ class GtkCellView extends GtkWidget
       ffi.Pointer<ffi.Void>,
     )?
     func,
-    ffi.Pointer<ffi.Void> funcData,
+    ffi.Pointer<ffi.Void>? funcData,
     void Function(ffi.Pointer<ffi.Void>) destroy,
   ) {
     final _nc2 = func == null
@@ -1067,7 +1079,7 @@ class GtkCellView extends GtkWidget
         this.handle,
         cell.handle,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        funcData,
+        funcData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
     } finally {

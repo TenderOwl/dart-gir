@@ -526,6 +526,18 @@ part of '../gio.dart';
 class GTask extends GObject {
   GTask.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a #GTask acting on @source_object, which will eventually be
   /// used to invoke @callback in the current thread-default main context
   /// (see [method@GLib.MainContext.push_thread_default]).
@@ -577,7 +589,7 @@ class GTask extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  factory GTask(
+  factory GTask([
     GObject? sourceObject,
     GCancellable? cancellable,
     void Function(
@@ -586,8 +598,8 @@ class GTask extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> callbackData,
-  ) {
+    ffi.Pointer<ffi.Void>? callbackData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -602,7 +614,7 @@ class GTask extends GObject {
         sourceObject?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        callbackData,
+        callbackData ?? ffi.nullptr,
       );
       return GTask.fromPointer(_ret, owned: true);
     } finally {
@@ -717,8 +729,10 @@ class GTask extends GObject {
             >
           >('g_task_get_source_tag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getSourceTag() {
-    return _gTaskGetSourceTag(this.handle);
+  ffi.Pointer<ffi.Void>? getSourceTag() {
+    return (_gTaskGetSourceTag(this.handle)) == ffi.nullptr
+        ? null
+        : (_gTaskGetSourceTag(this.handle));
   }
 
   /// Gets @task's `task_data`.
@@ -729,8 +743,10 @@ class GTask extends GObject {
             >
           >('g_task_get_task_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getTaskData() {
-    return _gTaskGetTaskData(this.handle);
+  ffi.Pointer<ffi.Void>? getTaskData() {
+    return (_gTaskGetTaskData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gTaskGetTaskData(this.handle));
   }
 
   /// Tests if @task resulted in an error.
@@ -835,14 +851,14 @@ class GTask extends GObject {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  ffi.Pointer<ffi.Void> propagatePointer() {
+  ffi.Pointer<ffi.Void>? propagatePointer() {
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gTaskPropagatePointer(this.handle, _error);
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return _ret;
+      return (_ret) == ffi.nullptr ? null : (_ret);
     } finally {
       calloc.free(_error);
     }
@@ -1030,8 +1046,8 @@ class GTask extends GObject {
               >,
             )
           >();
-  void returnPointer(
-    ffi.Pointer<ffi.Void> result, [
+  void returnPointer([
+    ffi.Pointer<ffi.Void>? result,
     void Function(ffi.Pointer<ffi.Void>)? resultDestroy,
   ]) {
     final _nc2 = resultDestroy == null
@@ -1042,7 +1058,7 @@ class GTask extends GObject {
     try {
       _gTaskReturnPointer(
         this.handle,
-        result,
+        result ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
       );
     } finally {
@@ -1349,8 +1365,8 @@ class GTask extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  void setSourceTag(ffi.Pointer<ffi.Void> sourceTag) {
-    _gTaskSetSourceTag(this.handle, sourceTag);
+  void setSourceTag([ffi.Pointer<ffi.Void>? sourceTag]) {
+    _gTaskSetSourceTag(this.handle, sourceTag ?? ffi.nullptr);
   }
 
   /// Sets @task’s name, used in debugging and profiling.
@@ -1396,8 +1412,8 @@ class GTask extends GObject {
               >,
             )
           >();
-  void setTaskData(
-    ffi.Pointer<ffi.Void> taskData, [
+  void setTaskData([
+    ffi.Pointer<ffi.Void>? taskData,
     void Function(ffi.Pointer<ffi.Void>)? taskDataDestroy,
   ]) {
     final _nc2 = taskDataDestroy == null
@@ -1408,7 +1424,7 @@ class GTask extends GObject {
     try {
       _gTaskSetTaskData(
         this.handle,
-        taskData,
+        taskData ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
       );
     } finally {
@@ -1489,8 +1505,8 @@ class GTask extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> callbackData,
-    ffi.Pointer<ffi.Void> sourceTag,
+    ffi.Pointer<ffi.Void>? callbackData,
+    ffi.Pointer<ffi.Void>? sourceTag,
     GError error,
   ) {
     final _nc2 = callback == null
@@ -1506,8 +1522,8 @@ class GTask extends GObject {
       _gTaskReportError(
         sourceObject?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        callbackData,
-        sourceTag,
+        callbackData ?? ffi.nullptr,
+        sourceTag ?? ffi.nullptr,
         error.handle,
       );
     } finally {
@@ -1552,8 +1568,10 @@ class GTask extends GObject {
             >
           >('g_async_result_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getUserData() {
-    return _gAsyncResultGetUserData(this.handle);
+  ffi.Pointer<ffi.Void>? getUserData() {
+    return (_gAsyncResultGetUserData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gAsyncResultGetUserData(this.handle));
   }
 
   /// Checks if @res has the given @source_tag (generally a function
@@ -1567,8 +1585,8 @@ class GTask extends GObject {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool isTagged(ffi.Pointer<ffi.Void> sourceTag) {
-    return (_gAsyncResultIsTagged(this.handle, sourceTag)) != 0;
+  bool isTagged([ffi.Pointer<ffi.Void>? sourceTag]) {
+    return (_gAsyncResultIsTagged(this.handle, sourceTag ?? ffi.nullptr)) != 0;
   }
 
   /// If @res is a [class@Gio.SimpleAsyncResult], this is equivalent to

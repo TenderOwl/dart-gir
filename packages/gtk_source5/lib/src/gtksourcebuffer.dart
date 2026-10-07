@@ -75,6 +75,18 @@ class GtkSourceBuffer extends GtkTextBuffer {
   GtkSourceBuffer.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new source buffer.
   static final _gtkSourceBufferNew =
       gtkSource5Lookup<
@@ -84,7 +96,7 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >('gtk_source_buffer_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceBuffer([GtkTextTagTable? table])
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkSourceBufferNew(table?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -101,7 +113,7 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >('gtk_source_buffer_new_with_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceBuffer.withLanguage(GtkSourceLanguage language)
-    : super.fromPointer(
+    : this.fromPointer(
         _gtkSourceBufferNewWithLanguage(language.handle),
         owned: true,
       );

@@ -44,7 +44,7 @@ final _gBusGet =
           )
         >();
 void busGet(
-  GBusType busType,
+  GBusType busType, [
   GCancellable? cancellable,
   void Function(
     ffi.Pointer<ffi.Void>,
@@ -52,8 +52,8 @@ void busGet(
     ffi.Pointer<ffi.Void>,
   )?
   callback,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   final _nc3 = callback == null
       ? null
       : ffi.NativeCallable<
@@ -68,7 +68,7 @@ void busGet(
       busType.value,
       cancellable?.handle ?? ffi.nullptr,
       _nc3?.nativeFunction ?? ffi.nullptr,
-      userData,
+      userData ?? ffi.nullptr,
     );
   } finally {
     _nc3?.close();
@@ -743,7 +743,7 @@ final _gDbusAddressGetStream =
           )
         >();
 void dbusAddressGetStream(
-  String address,
+  String address, [
   GCancellable? cancellable,
   void Function(
     ffi.Pointer<ffi.Void>,
@@ -751,8 +751,8 @@ void dbusAddressGetStream(
     ffi.Pointer<ffi.Void>,
   )?
   callback,
-  ffi.Pointer<ffi.Void> userData,
-) {
+  ffi.Pointer<ffi.Void>? userData,
+]) {
   withNativeString(address, (nativeAddress) {
     final _nc3 = callback == null
         ? null
@@ -768,7 +768,7 @@ void dbusAddressGetStream(
         nativeAddress.cast<Utf8>(),
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();

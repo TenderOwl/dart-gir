@@ -65,8 +65,43 @@ class RecordEmitter {
     // unions stay `final class` because they're concrete struct wrappers
     // that aren't meant to be subclassed by user code.
     b.writeln(isInterface ? 'class $dartName {' : 'final class $dartName {');
-    b.writeln('$dartName.fromPointer(this.handle);');
+    // The `{bool owned}` named parameter is always accepted (even
+    // when the class doesn't actually attach a finalizer, because
+    // it's not a `GObject` subclass) so existing callers that don't
+    // pass `owned` keep working through the default value. Note the
+    // cast method's *factory* parameter below doesn't carry `owned` —
+    // the borrowed-reference world the cast method operates in never
+    // needs to transfer ownership, and dropping `owned` from the
+    // factory type lets user subclasses write the shortest possible
+    // forwarding constructor (`fromPointer(handle)`).
+    b.writeln('$dartName.fromPointer(this.handle, {bool owned = false});');
     b.writeln('final ffi.Pointer<ffi.Void> handle;');
+    // `cast<T>(factory)` lets the user recover the destination class's
+    // methods from a borrowed wrapper (e.g. `GObject` from
+    // `GListModel.getObject`, `GtkWidget` from `AdwTabPage.getChild`).
+    // The bound is `Object` rather than `extends $dartName` because
+    // most wrappers in the corpus don't form an `extends` chain
+    // (interfaces like `GFile` are emitted as `class GFile {` with
+    // no parent — they're "structurally" GObject but Dart's static
+    // type system doesn't see the relationship). `Object` is the
+    // trivial bound that lets `T` be any class the user has a
+    // `fromPointer` for; the factory parameter type-checks the
+    // destination. All wrappers emit the same signature so the
+    // subclass overrides are valid.
+    b.writeln();
+    b.writeln('/// Re-wraps this wrapper\'s [handle] as [T] via [factory].');
+    b.writeln('///');
+    b.writeln('/// Use this when another wrapper returns this class\'s');
+    b.writeln('/// instance but the caller needs the destination class\'s');
+    b.writeln('/// methods. Pass the destination class\'s `fromPointer` as');
+    b.writeln('/// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.');
+    b.writeln('/// The handle is forwarded as-is; the original wrapper');
+    b.writeln('/// (which produced this object) remains the owner.');
+    b.writeln('T cast<T extends Object>(');
+    b.writeln('  T Function(ffi.Pointer<ffi.Void>) factory,');
+    b.writeln(') {');
+    b.writeln('  return factory(handle);');
+    b.writeln('}');
 
     for (final c in constructors) {
       final name = RecordEmitter.ctorName(c);

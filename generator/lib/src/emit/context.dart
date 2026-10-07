@@ -451,13 +451,25 @@ class EmitContext {
           null,
         );
       case TypeKind.pointer:
+        // Mirror the `TypeKind.string` null-asymmetry: the wrapper type
+        // the user sees carries the `?` (e.g. `progressCallbackData`
+        // declared `<parameter … nullable="1" allow-none="1">` in
+        // GIR), but the native slot stays non-nullable — `toNative`
+        // converts `null` → `ffi.nullptr` so the FFI call site stays
+        // valid. `fromNative` is only consulted for return values; for
+        // those, a C-side `ffi.nullptr` round-trips into Dart `null`.
         return (
           TypeBridge(
-            wrapperType: 'ffi.Pointer<ffi.Void>',
+            wrapperType: nullable
+                ? 'ffi.Pointer<ffi.Void>?'
+                : 'ffi.Pointer<ffi.Void>',
             nativeType: 'ffi.Pointer<ffi.Void>',
             dartFfiType: 'ffi.Pointer<ffi.Void>',
-            toNative: _id,
-            fromNative: _id,
+            toNative:
+                nullable ? (e) => '$e ?? ffi.nullptr' : _id,
+            fromNative: nullable
+                ? (e) => '($e) == ffi.nullptr ? null : ($e)'
+                : _id,
             outPointee: 'ffi.Pointer<ffi.Void>',
             outExtract: (v) => '$v.value',
           ),

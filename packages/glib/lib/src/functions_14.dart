@@ -389,8 +389,8 @@ final _gTimeoutAddFull =
 int timeoutAddFull(
   int priority,
   int interval,
-  int Function(ffi.Pointer<ffi.Void>) function_,
-  ffi.Pointer<ffi.Void> data, [
+  int Function(ffi.Pointer<ffi.Void>) function_, [
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>)? notify,
 ]) {
   final _nc3 =
@@ -407,7 +407,7 @@ int timeoutAddFull(
       priority,
       interval,
       _nc3.nativeFunction,
-      data,
+      data ?? ffi.nullptr,
       _nc5?.nativeFunction ?? ffi.nullptr,
     );
     return _ret;
@@ -489,8 +489,8 @@ final _gTimeoutAddSecondsFull =
 int timeoutAddSecondsFull(
   int priority,
   int interval,
-  int Function(ffi.Pointer<ffi.Void>) function_,
-  ffi.Pointer<ffi.Void> data, [
+  int Function(ffi.Pointer<ffi.Void>) function_, [
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>)? notify,
 ]) {
   final _nc3 =
@@ -507,7 +507,7 @@ int timeoutAddSecondsFull(
       priority,
       interval,
       _nc3.nativeFunction,
-      data,
+      data ?? ffi.nullptr,
       _nc5?.nativeFunction ?? ffi.nullptr,
     );
     return _ret;
@@ -558,8 +558,8 @@ final _gTryMalloc =
     glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_try_malloc',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> tryMalloc(int nBytes) {
-  return _gTryMalloc(nBytes);
+ffi.Pointer<ffi.Void>? tryMalloc(int nBytes) {
+  return (_gTryMalloc(nBytes)) == ffi.nullptr ? null : (_gTryMalloc(nBytes));
 }
 
 /// Attempts to allocate @n_bytes, initialized to 0's, and returns %NULL on
@@ -568,8 +568,8 @@ final _gTryMalloc0 =
     glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_try_malloc0',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> tryMalloc0(int nBytes) {
-  return _gTryMalloc0(nBytes);
+ffi.Pointer<ffi.Void>? tryMalloc0(int nBytes) {
+  return (_gTryMalloc0(nBytes)) == ffi.nullptr ? null : (_gTryMalloc0(nBytes));
 }
 
 /// This function is similar to g_try_malloc0(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -579,8 +579,10 @@ final _gTryMalloc0N =
           ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)>
         >('g_try_malloc0_n')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-ffi.Pointer<ffi.Void> tryMalloc0N(int nBlocks, int nBlockBytes) {
-  return _gTryMalloc0N(nBlocks, nBlockBytes);
+ffi.Pointer<ffi.Void>? tryMalloc0N(int nBlocks, int nBlockBytes) {
+  return (_gTryMalloc0N(nBlocks, nBlockBytes)) == ffi.nullptr
+      ? null
+      : (_gTryMalloc0N(nBlocks, nBlockBytes));
 }
 
 /// This function is similar to g_try_malloc(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -590,8 +592,10 @@ final _gTryMallocN =
           ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size, ffi.Size)>
         >('g_try_malloc_n')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
-ffi.Pointer<ffi.Void> tryMallocN(int nBlocks, int nBlockBytes) {
-  return _gTryMallocN(nBlocks, nBlockBytes);
+ffi.Pointer<ffi.Void>? tryMallocN(int nBlocks, int nBlockBytes) {
+  return (_gTryMallocN(nBlocks, nBlockBytes)) == ffi.nullptr
+      ? null
+      : (_gTryMallocN(nBlocks, nBlockBytes));
 }
 
 /// Attempts to realloc @mem to a new size, @n_bytes, and returns %NULL
@@ -608,8 +612,10 @@ final _gTryRealloc =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
-ffi.Pointer<ffi.Void> tryRealloc(ffi.Pointer<ffi.Void> mem, int nBytes) {
-  return _gTryRealloc(mem, nBytes);
+ffi.Pointer<ffi.Void>? tryRealloc(ffi.Pointer<ffi.Void>? mem, int nBytes) {
+  return (_gTryRealloc(mem ?? ffi.nullptr, nBytes)) == ffi.nullptr
+      ? null
+      : (_gTryRealloc(mem ?? ffi.nullptr, nBytes));
 }
 
 /// This function is similar to g_try_realloc(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -627,10 +633,13 @@ final _gTryReallocN =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
         >();
-ffi.Pointer<ffi.Void> tryReallocN(
-  ffi.Pointer<ffi.Void> mem,
+ffi.Pointer<ffi.Void>? tryReallocN(
+  ffi.Pointer<ffi.Void>? mem,
   int nBlocks,
   int nBlockBytes,
 ) {
-  return _gTryReallocN(mem, nBlocks, nBlockBytes);
+  return (_gTryReallocN(mem ?? ffi.nullptr, nBlocks, nBlockBytes)) ==
+          ffi.nullptr
+      ? null
+      : (_gTryReallocN(mem ?? ffi.nullptr, nBlocks, nBlockBytes));
 }

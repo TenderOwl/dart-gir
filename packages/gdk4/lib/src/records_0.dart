@@ -2,8 +2,20 @@
 part of '../gdk4.dart';
 
 final class GdkCicpParamsClass {
-  GdkCicpParamsClass.fromPointer(this.handle);
+  GdkCicpParamsClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Provides information to interpret colors and pixels in a variety of ways.
@@ -16,8 +28,20 @@ final class GdkCicpParamsClass {
 ///
 /// `GdkColorState` objects are immutable and therefore threadsafe.
 final class GdkColorState {
-  GdkColorState.fromPointer(this.handle);
+  GdkColorState.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Create a [class@Gdk.CicpParams] representing the colorstate.
   ///
@@ -221,8 +245,20 @@ final class GdkColorState {
 /// The [struct@Gdk.ContentFormatsBuilder] structure is meant to help in this
 /// endeavor.
 final class GdkContentFormats {
-  GdkContentFormats.fromPointer(this.handle);
+  GdkContentFormats.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `GdkContentFormats` for a given `GType`.
   static final _gdkContentFormatsNewForGtype =
@@ -479,8 +515,20 @@ final class GdkContentFormats {
 
 /// Creates `GdkContentFormats` objects.
 final class GdkContentFormatsBuilder {
-  GdkContentFormatsBuilder.fromPointer(this.handle);
+  GdkContentFormatsBuilder.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Create a new `GdkContentFormatsBuilder` object.
   ///
@@ -587,11 +635,18 @@ final class GdkContentFormatsBuilder {
 
 /// Class structure for `GdkContentProvider`.
 final class GdkContentProviderClass {
-  GdkContentProviderClass.fromPointer(this.handle);
+  GdkContentProviderClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
-}
 
-final class GdkDevicePadInterface {
-  GdkDevicePadInterface.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }

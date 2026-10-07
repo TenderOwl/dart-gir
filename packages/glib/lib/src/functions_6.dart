@@ -327,8 +327,8 @@ final _gIdleAddFull =
         >();
 int idleAddFull(
   int priority,
-  int Function(ffi.Pointer<ffi.Void>) function_,
-  ffi.Pointer<ffi.Void> data, [
+  int Function(ffi.Pointer<ffi.Void>) function_, [
+  ffi.Pointer<ffi.Void>? data,
   void Function(ffi.Pointer<ffi.Void>)? notify,
 ]) {
   final _nc2 =
@@ -344,7 +344,7 @@ int idleAddFull(
     final _ret = _gIdleAddFull(
       priority,
       _nc2.nativeFunction,
-      data,
+      data ?? ffi.nullptr,
       _nc4?.nativeFunction ?? ffi.nullptr,
     );
     return _ret;
@@ -359,8 +359,8 @@ final _gIdleRemoveByData =
     glibLookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
       'g_idle_remove_by_data',
     ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-bool idleRemoveByData(ffi.Pointer<ffi.Void> data) {
-  return (_gIdleRemoveByData(data)) != 0;
+bool idleRemoveByData([ffi.Pointer<ffi.Void>? data]) {
+  return (_gIdleRemoveByData(data ?? ffi.nullptr)) != 0;
 }
 
 /// Creates a new idle source.
@@ -544,7 +544,7 @@ int ioAddWatchFull(
   int priority,
   GIOCondition condition,
   int Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>) func,
-  ffi.Pointer<ffi.Void> userData,
+  ffi.Pointer<ffi.Void>? userData,
   void Function(ffi.Pointer<ffi.Void>) notify,
 ) {
   final _nc4 =
@@ -565,7 +565,7 @@ int ioAddWatchFull(
       priority,
       condition.value,
       _nc4.nativeFunction,
-      userData,
+      userData ?? ffi.nullptr,
       _nc6.nativeFunction,
     );
     return _ret;

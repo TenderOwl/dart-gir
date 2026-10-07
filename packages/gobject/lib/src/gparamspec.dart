@@ -18,6 +18,18 @@ class GParamSpec {
   final ffi.Pointer<ffi.Void> handle;
   final bool owned;
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Get the short description of a #GParamSpec.
   static final _gParamSpecGetBlurb =
       gobjectLookup<
@@ -100,8 +112,10 @@ class GParamSpec {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> getQdata(int quark) {
-    return _gParamSpecGetQdata(this.handle, quark);
+  ffi.Pointer<ffi.Void>? getQdata(int quark) {
+    return (_gParamSpecGetQdata(this.handle, quark)) == ffi.nullptr
+        ? null
+        : (_gParamSpecGetQdata(this.handle, quark));
   }
 
   /// If the paramspec redirects operations to another paramspec,
@@ -143,8 +157,8 @@ class GParamSpec {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Void>)
           >();
-  void setQdata(int quark, ffi.Pointer<ffi.Void> data) {
-    _gParamSpecSetQdata(this.handle, quark, data);
+  void setQdata(int quark, [ffi.Pointer<ffi.Void>? data]) {
+    _gParamSpecSetQdata(this.handle, quark, data ?? ffi.nullptr);
   }
 
   /// The initial reference count of a newly created #GParamSpec is 1,
@@ -176,8 +190,10 @@ class GParamSpec {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> stealQdata(int quark) {
-    return _gParamSpecStealQdata(this.handle, quark);
+  ffi.Pointer<ffi.Void>? stealQdata(int quark) {
+    return (_gParamSpecStealQdata(this.handle, quark)) == ffi.nullptr
+        ? null
+        : (_gParamSpecStealQdata(this.handle, quark));
   }
 
   /// Validate a property name for a #GParamSpec. This can be useful for

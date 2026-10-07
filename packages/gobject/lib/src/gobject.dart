@@ -34,6 +34,18 @@ class GObject implements ffi.Finalizable {
   void _attachFinalizer() =>
       gobjectFinalizer.attach(this, handle, detach: this);
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new instance of a #GObject subtype and sets its properties.
   ///
   /// Construction parameters (see %G_PARAM_CONSTRUCT, %G_PARAM_CONSTRUCT_ONLY)
@@ -237,9 +249,12 @@ class GObject implements ffi.Finalizable {
               ffi.Pointer<Utf8>,
             )
           >();
-  ffi.Pointer<ffi.Void> getData(String key) {
+  ffi.Pointer<ffi.Void>? getData(String key) {
     return withNativeString(key, (nativeKey) {
-      return _gObjectGetData(this.handle, nativeKey.cast<Utf8>());
+      return (_gObjectGetData(this.handle, nativeKey.cast<Utf8>())) ==
+              ffi.nullptr
+          ? null
+          : (_gObjectGetData(this.handle, nativeKey.cast<Utf8>()));
     });
   }
 
@@ -297,8 +312,10 @@ class GObject implements ffi.Finalizable {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> getQdata(int quark) {
-    return _gObjectGetQdata(this.handle, quark);
+  ffi.Pointer<ffi.Void>? getQdata(int quark) {
+    return (_gObjectGetQdata(this.handle, quark)) == ffi.nullptr
+        ? null
+        : (_gObjectGetQdata(this.handle, quark));
   }
 
   /// Gets @n_properties properties for an @object.
@@ -498,9 +515,9 @@ class GObject implements ffi.Finalizable {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void setData(String key, ffi.Pointer<ffi.Void> data) {
+  void setData(String key, [ffi.Pointer<ffi.Void>? data]) {
     withNativeString(key, (nativeKey) {
-      _gObjectSetData(this.handle, nativeKey.cast<Utf8>(), data);
+      _gObjectSetData(this.handle, nativeKey.cast<Utf8>(), data ?? ffi.nullptr);
     });
   }
 
@@ -549,9 +566,12 @@ class GObject implements ffi.Finalizable {
               ffi.Pointer<Utf8>,
             )
           >();
-  ffi.Pointer<ffi.Void> stealData(String key) {
+  ffi.Pointer<ffi.Void>? stealData(String key) {
     return withNativeString(key, (nativeKey) {
-      return _gObjectStealData(this.handle, nativeKey.cast<Utf8>());
+      return (_gObjectStealData(this.handle, nativeKey.cast<Utf8>())) ==
+              ffi.nullptr
+          ? null
+          : (_gObjectStealData(this.handle, nativeKey.cast<Utf8>()));
     });
   }
 
@@ -599,8 +619,10 @@ class GObject implements ffi.Finalizable {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  ffi.Pointer<ffi.Void> stealQdata(int quark) {
-    return _gObjectStealQdata(this.handle, quark);
+  ffi.Pointer<ffi.Void>? stealQdata(int quark) {
+    return (_gObjectStealQdata(this.handle, quark)) == ffi.nullptr
+        ? null
+        : (_gObjectStealQdata(this.handle, quark));
   }
 
   /// Reverts the effect of a previous call to
@@ -666,8 +688,8 @@ class GObject implements ffi.Finalizable {
             >
           >('g_object_compat_control')
           .asFunction<int Function(int, ffi.Pointer<ffi.Void>)>();
-  static int compatControl(int what, ffi.Pointer<ffi.Void> data) {
-    return _gObjectCompatControl(what, data);
+  static int compatControl(int what, [ffi.Pointer<ffi.Void>? data]) {
+    return _gObjectCompatControl(what, data ?? ffi.nullptr);
   }
 
   /// Find the #GParamSpec with the given name for an

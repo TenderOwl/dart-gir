@@ -575,9 +575,9 @@ final _gUtime =
           >
         >('g_utime')
         .asFunction<int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)>();
-int utime(String filename, ffi.Pointer<ffi.Void> utb) {
+int utime(String filename, [ffi.Pointer<ffi.Void>? utb]) {
   return withNativeString(filename, (nativeFilename) {
-    return _gUtime(nativeFilename.cast<Utf8>(), utb);
+    return _gUtime(nativeFilename.cast<Utf8>(), utb ?? ffi.nullptr);
   });
 }
 

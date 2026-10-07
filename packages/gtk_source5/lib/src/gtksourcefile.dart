@@ -12,11 +12,24 @@ part of '../gtk_source5.dart';
 /// have still the previous valid values.
 class GtkSourceFile extends GObject {
   GtkSourceFile.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   static final _gtkSourceFileNew =
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSourceFile() : super.fromPointer(_gtkSourceFileNew(), owned: true);
+  GtkSourceFile() : this.fromPointer(_gtkSourceFileNew(), owned: true);
 
   /// Checks synchronously the file on disk, to know whether the file is externally
   /// modified, or has been deleted, and whether the file is read-only.

@@ -18,8 +18,8 @@ final _pangoReadLine =
         .asFunction<
           int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
         >();
-int readLine(ffi.Pointer<ffi.Void> stream, GString str) {
-  return _pangoReadLine(stream, str.handle);
+int readLine(ffi.Pointer<ffi.Void>? stream, GString str) {
+  return _pangoReadLine(stream ?? ffi.nullptr, str.handle);
 }
 
 /// Reorder items from logical order to visual order.

@@ -57,6 +57,18 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
   GDBusConnection.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Finishes an operation started with g_dbus_connection_new().
   static final _gDbusConnectionNewFinish =
       gioLookup<
@@ -321,7 +333,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )
     filterFunction,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) userDataFreeFunc,
   ) {
     final _nc1 =
@@ -341,7 +353,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       final _ret = _gDbusConnectionAddFilter(
         this.handle,
         _nc1.nativeFunction,
-        userData,
+        userData ?? ffi.nullptr,
         _nc3.nativeFunction,
       );
       return _ret;
@@ -455,7 +467,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
     GVariant? parameters,
     GVariantType? replyType,
     GDBusCallFlags flags,
-    int timeoutMsec,
+    int timeoutMsec, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -463,8 +475,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(busName, (nativeBusName) {
       withNativeString(objectPath, (nativeObjectPath) {
         withNativeString(interfaceName, (nativeInterfaceName) {
@@ -491,7 +503,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
                 timeoutMsec,
                 cancellable?.handle ?? ffi.nullptr,
                 _nc10?.nativeFunction ?? ffi.nullptr,
-                userData,
+                userData ?? ffi.nullptr,
               );
             } finally {
               _nc10?.close();
@@ -790,7 +802,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
     GVariant? parameters,
     GVariantType? replyType,
     GDBusCallFlags flags,
-    int timeoutMsec,
+    int timeoutMsec, [
     GUnixFDList? fdList,
     GCancellable? cancellable,
     void Function(
@@ -799,8 +811,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(busName, (nativeBusName) {
       withNativeString(objectPath, (nativeObjectPath) {
         withNativeString(interfaceName, (nativeInterfaceName) {
@@ -828,7 +840,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
                 fdList?.handle ?? ffi.nullptr,
                 cancellable?.handle ?? ffi.nullptr,
                 _nc11?.nativeFunction ?? ffi.nullptr,
-                userData,
+                userData ?? ffi.nullptr,
               );
             } finally {
               _nc11?.close();
@@ -1120,7 +1132,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void close(
+  void close([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -1128,8 +1140,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -1144,7 +1156,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();
@@ -1496,7 +1508,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void flush(
+  void flush([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -1504,8 +1516,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -1520,7 +1532,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();
@@ -1959,7 +1971,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
     String objectPath,
     GDBusSubtreeVTable vtable,
     GDBusSubtreeFlags flags,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) userDataFreeFunc,
   ) {
     return withNativeString(objectPath, (nativeObjectPath) {
@@ -1974,7 +1986,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
           nativeObjectPath.cast<Utf8>(),
           vtable.handle,
           flags.value,
-          userData,
+          userData ?? ffi.nullptr,
           _nc5.nativeFunction,
           _error,
         );
@@ -2198,8 +2210,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
       ffi.Pointer<ffi.Void>,
     )
-    callback,
-    ffi.Pointer<ffi.Void> userData, [
+    callback, [
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>)? userDataFreeFunc,
   ]) {
     return withNativeString(sender, (nativeSender) {
@@ -2234,7 +2246,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
                   nativeArg0.cast<Utf8>(),
                   flags.value,
                   _nc7.nativeFunction,
-                  userData,
+                  userData ?? ffi.nullptr,
                   _nc9?.nativeFunction ?? ffi.nullptr,
                 );
                 return _ret;
@@ -2407,7 +2419,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
   static void new_(
     GIOStream stream,
     String? guid,
-    GDBusConnectionFlags flags,
+    GDBusConnectionFlags flags, [
     GDBusAuthObserver? observer,
     GCancellable? cancellable,
     void Function(
@@ -2416,8 +2428,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(guid, (nativeGuid) {
       final _nc6 = callback == null
           ? null
@@ -2436,7 +2448,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
           observer?.handle ?? ffi.nullptr,
           cancellable?.handle ?? ffi.nullptr,
           _nc6?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc6?.close();
@@ -2507,7 +2519,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
           >();
   static void newForAddress(
     String address,
-    GDBusConnectionFlags flags,
+    GDBusConnectionFlags flags, [
     GDBusAuthObserver? observer,
     GCancellable? cancellable,
     void Function(
@@ -2516,8 +2528,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(address, (nativeAddress) {
       final _nc5 = callback == null
           ? null
@@ -2535,7 +2547,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
           observer?.handle ?? ffi.nullptr,
           cancellable?.handle ?? ffi.nullptr,
           _nc5?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc5?.close();
@@ -2666,7 +2678,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
             )
           >();
   void initAsync(
-    int ioPriority,
+    int ioPriority, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -2674,8 +2686,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc3 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -2691,7 +2703,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
         ioPriority,
         cancellable?.handle ?? ffi.nullptr,
         _nc3?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc3?.close();

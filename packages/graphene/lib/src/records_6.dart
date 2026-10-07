@@ -14,8 +14,20 @@ part of '../graphene.dart';
 /// will internally operate on a normalized copy; all functions returning a
 /// #graphene_rect_t will always return a normalized rectangle.
 final class GrapheneRect {
-  GrapheneRect.fromPointer(this.handle);
+  GrapheneRect.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Checks whether a #graphene_rect_t contains the given coordinates.
   static final _grapheneRectContainsPoint =
@@ -713,11 +725,18 @@ final class GrapheneRect {
 }
 
 final class GrapheneSimd4F {
-  GrapheneSimd4F.fromPointer(this.handle);
+  GrapheneSimd4F.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
-}
 
-final class GrapheneSimd4X4F {
-  GrapheneSimd4X4F.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }

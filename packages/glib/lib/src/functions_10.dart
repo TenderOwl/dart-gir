@@ -451,8 +451,10 @@ final _gSliceAlloc =
     glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_slice_alloc',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> sliceAlloc(int blockSize) {
-  return _gSliceAlloc(blockSize);
+ffi.Pointer<ffi.Void>? sliceAlloc(int blockSize) {
+  return (_gSliceAlloc(blockSize)) == ffi.nullptr
+      ? null
+      : (_gSliceAlloc(blockSize));
 }
 
 /// Allocates a block of memory via g_slice_alloc() and initializes
@@ -464,8 +466,10 @@ final _gSliceAlloc0 =
     glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
       'g_slice_alloc0',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-ffi.Pointer<ffi.Void> sliceAlloc0(int blockSize) {
-  return _gSliceAlloc0(blockSize);
+ffi.Pointer<ffi.Void>? sliceAlloc0(int blockSize) {
+  return (_gSliceAlloc0(blockSize)) == ffi.nullptr
+      ? null
+      : (_gSliceAlloc0(blockSize));
 }
 
 /// Allocates a block of memory from the slice allocator
@@ -484,8 +488,13 @@ final _gSliceCopy =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
         >();
-ffi.Pointer<ffi.Void> sliceCopy(int blockSize, ffi.Pointer<ffi.Void> memBlock) {
-  return _gSliceCopy(blockSize, memBlock);
+ffi.Pointer<ffi.Void>? sliceCopy(
+  int blockSize, [
+  ffi.Pointer<ffi.Void>? memBlock,
+]) {
+  return (_gSliceCopy(blockSize, memBlock ?? ffi.nullptr)) == ffi.nullptr
+      ? null
+      : (_gSliceCopy(blockSize, memBlock ?? ffi.nullptr));
 }
 
 /// Frees a block of memory.
@@ -505,8 +514,8 @@ final _gSliceFree1 =
           ffi.NativeFunction<ffi.Void Function(ffi.Size, ffi.Pointer<ffi.Void>)>
         >('g_slice_free1')
         .asFunction<void Function(int, ffi.Pointer<ffi.Void>)>();
-void sliceFree1(int blockSize, ffi.Pointer<ffi.Void> memBlock) {
-  _gSliceFree1(blockSize, memBlock);
+void sliceFree1(int blockSize, [ffi.Pointer<ffi.Void>? memBlock]) {
+  _gSliceFree1(blockSize, memBlock ?? ffi.nullptr);
 }
 
 /// Frees a linked list of memory blocks of structure type @type.
@@ -531,10 +540,10 @@ final _gSliceFreeChainWithOffset =
         .asFunction<void Function(int, ffi.Pointer<ffi.Void>, int)>();
 void sliceFreeChainWithOffset(
   int blockSize,
-  ffi.Pointer<ffi.Void> memChain,
+  ffi.Pointer<ffi.Void>? memChain,
   int nextOffset,
 ) {
-  _gSliceFreeChainWithOffset(blockSize, memChain, nextOffset);
+  _gSliceFreeChainWithOffset(blockSize, memChain ?? ffi.nullptr, nextOffset);
 }
 
 final _gSliceGetConfig =

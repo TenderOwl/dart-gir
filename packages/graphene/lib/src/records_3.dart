@@ -6,8 +6,20 @@ part of '../graphene.dart';
 /// The contents of the `graphene_plane_t` are private, and should not be
 /// modified directly.
 final class GraphenePlane {
-  GraphenePlane.fromPointer(this.handle);
+  GraphenePlane.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Allocates a new #graphene_plane_t structure.
   ///
@@ -304,8 +316,20 @@ final class GraphenePlane {
 
 /// A point with two coordinates.
 final class GraphenePoint {
-  GraphenePoint.fromPointer(this.handle);
+  GraphenePoint.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Allocates a new #graphene_point_t structure.
   ///
@@ -511,374 +535,5 @@ final class GraphenePoint {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GraphenePoint zero() {
     return GraphenePoint.fromPointer(_graphenePointZero());
-  }
-}
-
-/// A point with three components: X, Y, and Z.
-final class GraphenePoint3D {
-  GraphenePoint3D.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Allocates a #graphene_point3d_t structure.
-  static final _graphenePoint3dAlloc =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_point3d_alloc',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePoint3D.alloc() : this.fromPointer(_graphenePoint3dAlloc());
-
-  /// Computes the cross product of the two given #graphene_point3d_t.
-  static final _graphenePoint3dCross =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_cross')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GraphenePoint3D cross(GraphenePoint3D b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dCross(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Computes the distance between the two given #graphene_point3d_t.
-  static final _graphenePoint3dDistance =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Float Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_distance')
-          .asFunction<
-            double Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (double, GrapheneVec3?) distance(GraphenePoint3D b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _graphenePoint3dDistance(
-        this.handle,
-        b.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return (
-        _ret,
-        (_out0) == ffi.nullptr
-            ? null
-            : GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Computes the dot product of the two given #graphene_point3d_t.
-  static final _graphenePoint3dDot =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Float Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_point3d_dot')
-          .asFunction<
-            double Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  double dot(GraphenePoint3D b) {
-    return _graphenePoint3dDot(this.handle, b.handle);
-  }
-
-  /// Checks whether two given points are equal.
-  static final _graphenePoint3dEqual =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_point3d_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(GraphenePoint3D b) {
-    return (_graphenePoint3dEqual(this.handle, b.handle)) != 0;
-  }
-
-  /// Frees the resources allocated via graphene_point3d_alloc().
-  static final _graphenePoint3dFree =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_point3d_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _graphenePoint3dFree(this.handle);
-  }
-
-  /// Initializes a #graphene_point3d_t with the given coordinates.
-  static final _graphenePoint3dInit =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-                ffi.Float,
-              )
-            >
-          >('graphene_point3d_init')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-              double,
-            )
-          >();
-  GraphenePoint3D init(double x, double y, double z) {
-    return GraphenePoint3D.fromPointer(
-      _graphenePoint3dInit(this.handle, x, y, z),
-    );
-  }
-
-  /// Initializes a #graphene_point3d_t using the coordinates of
-  /// another #graphene_point3d_t.
-  static final _graphenePoint3dInitFromPoint =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_init_from_point')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GraphenePoint3D initFromPoint(GraphenePoint3D src) {
-    return GraphenePoint3D.fromPointer(
-      _graphenePoint3dInitFromPoint(this.handle, src.handle),
-    );
-  }
-
-  /// Initializes a #graphene_point3d_t using the components
-  /// of a #graphene_vec3_t.
-  static final _graphenePoint3dInitFromVec3 =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_init_from_vec3')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GraphenePoint3D initFromVec3(GrapheneVec3 v) {
-    return GraphenePoint3D.fromPointer(
-      _graphenePoint3dInitFromVec3(this.handle, v.handle),
-    );
-  }
-
-  /// Linearly interpolates each component of @a and @b using the
-  /// provided @factor, and places the result in @res.
-  static final _graphenePoint3dInterpolate =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Double,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_interpolate')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              double,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GraphenePoint3D interpolate(GraphenePoint3D b, double factor) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dInterpolate(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Computes the length of the vector represented by the
-  /// coordinates of the given #graphene_point3d_t.
-  static final _graphenePoint3dLength =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_point3d_length')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double length() {
-    return _graphenePoint3dLength(this.handle);
-  }
-
-  /// Checks whether the two points are near each other, within
-  /// an @epsilon factor.
-  static final _graphenePoint3dNear =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-              )
-            >
-          >('graphene_point3d_near')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, double)
-          >();
-  bool near(GraphenePoint3D b, double epsilon) {
-    return (_graphenePoint3dNear(this.handle, b.handle, epsilon)) != 0;
-  }
-
-  /// Computes the normalization of the vector represented by the
-  /// coordinates of the given #graphene_point3d_t.
-  static final _graphenePoint3dNormalize =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_point3d_normalize')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GraphenePoint3D normalize() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dNormalize(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Normalizes the coordinates of a #graphene_point3d_t using the
-  /// given viewport and clipping planes.
-  ///
-  /// The coordinates of the resulting #graphene_point3d_t will be
-  /// in the [ -1, 1 ] range.
-  static final _graphenePoint3dNormalizeViewport =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_normalize_viewport')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GraphenePoint3D normalizeViewport(
-    GrapheneRect viewport,
-    double zNear,
-    double zFar,
-  ) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dNormalizeViewport(
-        this.handle,
-        viewport.handle,
-        zNear,
-        zFar,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Scales the coordinates of the given #graphene_point3d_t by
-  /// the given @factor.
-  static final _graphenePoint3dScale =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_point3d_scale')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, double, ffi.Pointer<ffi.Void>)
-          >();
-  GraphenePoint3D scale(double factor) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dScale(this.handle, factor, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Stores the coordinates of a #graphene_point3d_t into a
-  /// #graphene_vec3_t.
-  static final _graphenePoint3dToVec3 =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_point3d_to_vec3')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneVec3 toVec3() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dToVec3(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Retrieves a constant point with all three coordinates set to 0.
-  static final _graphenePoint3dZero =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_point3d_zero',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GraphenePoint3D zero() {
-    return GraphenePoint3D.fromPointer(_graphenePoint3dZero());
   }
 }

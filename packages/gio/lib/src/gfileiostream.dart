@@ -23,6 +23,18 @@ part of '../gio.dart';
 class GFileIOStream extends GIOStream implements GSeekable {
   GFileIOStream.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Gets the entity tag for the file when it has been written.
   /// This must be called after the stream has been written
   /// and closed, as the etag can change while writing.
@@ -143,7 +155,7 @@ class GFileIOStream extends GIOStream implements GSeekable {
           >();
   void queryInfoAsync(
     String attributes,
-    int ioPriority,
+    int ioPriority, [
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -151,8 +163,8 @@ class GFileIOStream extends GIOStream implements GSeekable {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     withNativeString(attributes, (nativeAttributes) {
       final _nc4 = callback == null
           ? null
@@ -170,7 +182,7 @@ class GFileIOStream extends GIOStream implements GSeekable {
           ioPriority,
           cancellable?.handle ?? ffi.nullptr,
           _nc4?.nativeFunction ?? ffi.nullptr,
-          userData,
+          userData ?? ffi.nullptr,
         );
       } finally {
         _nc4?.close();

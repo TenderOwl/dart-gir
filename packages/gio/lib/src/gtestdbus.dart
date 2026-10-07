@@ -83,6 +83,18 @@ part of '../gio.dart';
 class GTestDBus extends GObject {
   GTestDBus.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Create a new #GTestDBus object.
   static final _gTestDbusNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>>(

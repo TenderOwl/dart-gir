@@ -20,6 +20,18 @@ class GSocketListener extends GObject {
   GSocketListener.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new #GSocketListener with no sockets to listen for.
   /// New listeners can be added with e.g. g_socket_listener_add_address()
   /// or g_socket_listener_add_inet_port().
@@ -124,7 +136,7 @@ class GSocketListener extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void acceptAsync(
+  void acceptAsync([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -132,8 +144,8 @@ class GSocketListener extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -148,7 +160,7 @@ class GSocketListener extends GObject {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();
@@ -343,7 +355,7 @@ class GSocketListener extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void acceptSocketAsync(
+  void acceptSocketAsync([
     GCancellable? cancellable,
     void Function(
       ffi.Pointer<ffi.Void>,
@@ -351,8 +363,8 @@ class GSocketListener extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc2 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -367,7 +379,7 @@ class GSocketListener extends GObject {
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc2?.close();

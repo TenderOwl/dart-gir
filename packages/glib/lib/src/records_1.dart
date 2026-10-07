@@ -39,8 +39,20 @@ part of '../glib.dart';
 /// the on disk representation, using [method@GLib.BookmarkFile.to_data] or
 /// [method@GLib.BookmarkFile.to_file].
 final class GBookmarkFile {
-  GBookmarkFile.fromPointer(this.handle);
+  GBookmarkFile.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new empty #GBookmarkFile object.
   ///

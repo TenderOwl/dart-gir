@@ -15,6 +15,18 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
   GdkContentDeserializer.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Gets the cancellable for the current operation.
   ///
   /// This is the `GCancellable` that was passed to [func@Gdk.content_deserialize_async].
@@ -94,8 +106,10 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
             >
           >('gdk_content_deserializer_get_task_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getTaskData() {
-    return _gdkContentDeserializerGetTaskData(this.handle);
+  ffi.Pointer<ffi.Void>? getTaskData() {
+    return (_gdkContentDeserializerGetTaskData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gdkContentDeserializerGetTaskData(this.handle));
   }
 
   /// Gets the user data that was passed when the deserializer was registered.
@@ -106,8 +120,10 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
             >
           >('gdk_content_deserializer_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  ffi.Pointer<ffi.Void> getUserData() {
-    return _gdkContentDeserializerGetUserData(this.handle);
+  ffi.Pointer<ffi.Void>? getUserData() {
+    return (_gdkContentDeserializerGetUserData(this.handle)) == ffi.nullptr
+        ? null
+        : (_gdkContentDeserializerGetUserData(this.handle));
   }
 
   /// Gets the `GValue` to store the deserialized object in.
@@ -170,7 +186,7 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
             )
           >();
   void setTaskData(
-    ffi.Pointer<ffi.Void> data,
+    ffi.Pointer<ffi.Void>? data,
     void Function(ffi.Pointer<ffi.Void>) notify,
   ) {
     final _nc2 =
@@ -180,7 +196,7 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
     try {
       _gdkContentDeserializerSetTaskData(
         this.handle,
-        data,
+        data ?? ffi.nullptr,
         _nc2.nativeFunction,
       );
     } finally {
@@ -242,8 +258,8 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
           .asFunction<
             int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
-  bool isTagged(ffi.Pointer<ffi.Void> sourceTag) {
-    return (_gAsyncResultIsTagged(this.handle, sourceTag)) != 0;
+  bool isTagged([ffi.Pointer<ffi.Void>? sourceTag]) {
+    return (_gAsyncResultIsTagged(this.handle, sourceTag ?? ffi.nullptr)) != 0;
   }
 
   /// If @res is a [class@Gio.SimpleAsyncResult], this is equivalent to

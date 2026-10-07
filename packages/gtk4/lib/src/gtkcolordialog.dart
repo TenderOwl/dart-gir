@@ -15,6 +15,18 @@ part of '../gtk4.dart';
 class GtkColorDialog extends GObject {
   GtkColorDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Creates a new `GtkColorDialog` object.
   static final _gtkColorDialogNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
@@ -62,7 +74,7 @@ class GtkColorDialog extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void chooseRgba(
+  void chooseRgba([
     GtkWindow? parent,
     GdkRGBA? initialColor,
     GCancellable? cancellable,
@@ -72,8 +84,8 @@ class GtkColorDialog extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     callback,
-    ffi.Pointer<ffi.Void> userData,
-  ) {
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
     final _nc4 = callback == null
         ? null
         : ffi.NativeCallable<
@@ -90,7 +102,7 @@ class GtkColorDialog extends GObject {
         initialColor?.handle ?? ffi.nullptr,
         cancellable?.handle ?? ffi.nullptr,
         _nc4?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
       );
     } finally {
       _nc4?.close();

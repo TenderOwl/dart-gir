@@ -28,6 +28,18 @@ class GSettingsBackend extends GObject {
   GSettingsBackend.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Signals that a single key has possibly changed.  Backend
   /// implementations should call this if a key has possibly changed its
   /// value.
@@ -67,9 +79,13 @@ class GSettingsBackend extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void changed(String key, ffi.Pointer<ffi.Void> originTag) {
+  void changed(String key, [ffi.Pointer<ffi.Void>? originTag]) {
     withNativeString(key, (nativeKey) {
-      _gSettingsBackendChanged(this.handle, nativeKey.cast<Utf8>(), originTag);
+      _gSettingsBackendChanged(
+        this.handle,
+        nativeKey.cast<Utf8>(),
+        originTag ?? ffi.nullptr,
+      );
     });
   }
 
@@ -93,8 +109,12 @@ class GSettingsBackend extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void changedTree(GTree tree, ffi.Pointer<ffi.Void> originTag) {
-    _gSettingsBackendChangedTree(this.handle, tree.handle, originTag);
+  void changedTree(GTree tree, [ffi.Pointer<ffi.Void>? originTag]) {
+    _gSettingsBackendChangedTree(
+      this.handle,
+      tree.handle,
+      originTag ?? ffi.nullptr,
+    );
   }
 
   /// Signals that a list of keys have possibly changed.  Backend
@@ -138,17 +158,17 @@ class GSettingsBackend extends GObject {
             )
           >();
   void keysChanged(
-    String path,
+    String path, [
     List<String?>? items,
-    ffi.Pointer<ffi.Void> originTag,
-  ) {
+    ffi.Pointer<ffi.Void>? originTag,
+  ]) {
     withNativeStringList(items, (nativeItems) {
       withNativeString(path, (nativePath) {
         _gSettingsBackendKeysChanged(
           this.handle,
           nativePath.cast<Utf8>(),
           nativeItems,
-          originTag,
+          originTag ?? ffi.nullptr,
         );
       });
     });
@@ -192,12 +212,12 @@ class GSettingsBackend extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  void pathChanged(String path, ffi.Pointer<ffi.Void> originTag) {
+  void pathChanged(String path, [ffi.Pointer<ffi.Void>? originTag]) {
     withNativeString(path, (nativePath) {
       _gSettingsBackendPathChanged(
         this.handle,
         nativePath.cast<Utf8>(),
-        originTag,
+        originTag ?? ffi.nullptr,
       );
     });
   }

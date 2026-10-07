@@ -591,7 +591,7 @@ void ioSchedulerPushJob(
     ffi.Pointer<ffi.Void>,
   )
   jobFunc,
-  ffi.Pointer<ffi.Void> userData,
+  ffi.Pointer<ffi.Void>? userData,
   void Function(ffi.Pointer<ffi.Void>)? notify,
   int ioPriority, [
   GCancellable? cancellable,
@@ -612,7 +612,7 @@ void ioSchedulerPushJob(
   try {
     _gIoSchedulerPushJob(
       _nc1.nativeFunction,
-      userData,
+      userData ?? ffi.nullptr,
       _nc3?.nativeFunction ?? ffi.nullptr,
       ioPriority,
       cancellable?.handle ?? ffi.nullptr,
