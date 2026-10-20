@@ -598,19 +598,18 @@ class TypeResolver {
         final (declaredIn, target) = found;
         final requiredImport =
             identical(declaredIn, currentNamespace) ||
-                    declaredIn.name == currentNamespace.name
-                ? null
-                : packageNameFor(declaredIn);
-        final dartName =
-            name.contains('.') ? name.split('.').last : name;
+                declaredIn.name == currentNamespace.name
+            ? null
+            : packageNameFor(declaredIn);
+        final dartName = name.contains('.') ? name.split('.').last : name;
 
         TypeMapping mappingFor(TypeKind kind) => TypeMapping(
-              dartType: dartName,
-              nativeType: 'Pointer<ffi.Void>',
-              kind: kind,
-              isPointer: true,
-              requiredImport: requiredImport,
-            );
+          dartType: dartName,
+          nativeType: 'Pointer<ffi.Void>',
+          kind: kind,
+          isPointer: true,
+          requiredImport: requiredImport,
+        );
 
         switch (target) {
           case GirClass():
@@ -638,8 +637,7 @@ class TypeResolver {
               requiredImport: requiredImport,
             );
           case GirAlias(target: final aliasTarget):
-            return resolve(aliasTarget,
-                currentNamespace: currentNamespace);
+            return resolve(aliasTarget, currentNamespace: currentNamespace);
         }
         return TypeMapping.unsupported('unknown type: $name');
       }

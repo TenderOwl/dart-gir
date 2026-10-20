@@ -6,13 +6,9 @@ library;
 /// `HTML`, `Parser`). Internal digits are preserved (`h264` stays `h264`,
 /// `ISO123Code` splits to `ISO123`, `Code`).
 List<String> _words(String input) {
-  final raw = input
-      .split(RegExp(r'[_\-\s]+'))
-      .where((w) => w.isNotEmpty);
+  final raw = input.split(RegExp(r'[_\-\s]+')).where((w) => w.isNotEmpty);
   final words = <String>[];
-  final hump = RegExp(
-    r'[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[a-z0-9]+|\d+',
-  );
+  final hump = RegExp(r'[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[a-z0-9]+|\d+');
   for (final part in raw) {
     final matches = hump.allMatches(part).map((m) => m.group(0)!).toList();
     if (matches.isEmpty) {
@@ -64,15 +60,75 @@ String enumValueName(String cIdentifier, {required String typePrefix}) {
 /// Identifiers that cannot be used directly as Dart member/parameter names:
 /// reserved words plus built-in identifiers that would shadow or break.
 const Set<String> _dartReserved = {
-  'abstract', 'as', 'assert', 'async', 'await', 'base', 'break', 'case',
-  'catch', 'class', 'const', 'continue', 'covariant', 'default', 'deferred',
-  'do', 'dynamic', 'else', 'enum', 'export', 'extends', 'extension',
-  'external', 'factory', 'false', 'final', 'finally', 'for', 'function',
-  'get', 'hide', 'if', 'implements', 'import', 'in', 'interface', 'is',
-  'late', 'library', 'mixin', 'new', 'null', 'of', 'on', 'operator', 'out',
-  'part', 'required', 'rethrow', 'return', 'sealed', 'set', 'show', 'static',
-  'super', 'switch', 'sync', 'this', 'throw', 'true', 'try', 'type',
-  'typedef', 'var', 'void', 'when', 'while', 'with', 'yield',
+  'abstract',
+  'as',
+  'assert',
+  'async',
+  'await',
+  'base',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'covariant',
+  'default',
+  'deferred',
+  'do',
+  'dynamic',
+  'else',
+  'enum',
+  'export',
+  'extends',
+  'extension',
+  'external',
+  'factory',
+  'false',
+  'final',
+  'finally',
+  'for',
+  'function',
+  'get',
+  'hide',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'interface',
+  'is',
+  'late',
+  'library',
+  'mixin',
+  'new',
+  'null',
+  'of',
+  'on',
+  'operator',
+  'out',
+  'part',
+  'required',
+  'rethrow',
+  'return',
+  'sealed',
+  'set',
+  'show',
+  'static',
+  'super',
+  'switch',
+  'sync',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'type',
+  'typedef',
+  'var',
+  'void',
+  'when',
+  'while',
+  'with',
+  'yield',
 };
 
 /// Escapes Dart reserved words by appending a single trailing underscore:

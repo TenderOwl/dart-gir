@@ -57,7 +57,7 @@ class RecordEmitter {
       );
       return null;
     }
-    if (!ctx.claimName(dartName)) {
+    if (!ctx.claimName(dartName, kind: 'record', label: dartName)) {
       ctx.report.skip('record', dartName, 'name collision');
       return null;
     }

@@ -71,10 +71,12 @@ class AsyncCallbackEmitter {
   /// Returns true when [m] has at least one in-parameter that is a
   /// callback with `scope="async"` (the GLib marker for async callbacks).
   bool hasAsyncCallback(GirFunction m) {
-    return m.parameters.any((p) =>
-        p.scope == 'async' &&
-        p.direction == GirParameterDirection.in_ &&
-        p.type != null);
+    return m.parameters.any(
+      (p) =>
+          p.scope == 'async' &&
+          p.direction == GirParameterDirection.in_ &&
+          p.type != null,
+    );
   }
 
   /// Returns the parameter whose `scope="async"` AND whose type is a
@@ -168,11 +170,13 @@ class AsyncCallbackEmitter {
     final overloadParams = <_OverloadParam>[];
     for (final p in m.parameters) {
       if (identical(p, cb)) {
-        overloadParams.add(_OverloadParam(
-          name: toLowerCamel(p.name),
-          bridgeType: userType,
-          isCallback: true,
-        ));
+        overloadParams.add(
+          _OverloadParam(
+            name: toLowerCamel(p.name),
+            bridgeType: userType,
+            isCallback: true,
+          ),
+        );
         continue;
       }
       // Skip userData — the convenience overload always passes null.
@@ -190,11 +194,13 @@ class AsyncCallbackEmitter {
         );
         return null;
       }
-      overloadParams.add(_OverloadParam(
-        name: toLowerCamel(p.name),
-        bridgeType: bridge.wrapperType,
-        bridge: bridge,
-      ));
+      overloadParams.add(
+        _OverloadParam(
+          name: toLowerCamel(p.name),
+          bridgeType: bridge.wrapperType,
+          bridge: bridge,
+        ),
+      );
     }
 
     // Optional parameters: a trailing run of nullable params becomes
@@ -203,7 +209,8 @@ class AsyncCallbackEmitter {
     final optionalParams = <String>[];
     for (var i = 0; i < overloadParams.length; i++) {
       final p = overloadParams[i];
-      final isOptional = p.bridgeType.endsWith('?') &&
+      final isOptional =
+          p.bridgeType.endsWith('?') &&
           overloadParams.skip(i).every((q) => q.bridgeType.endsWith('?'));
       final decl = '${p.bridgeType} ${p.name}';
       if (isOptional) {
@@ -279,23 +286,29 @@ class AsyncCallbackEmitter {
     // String params need withNativeString wrapping; collect them in
     // reverse order for proper nesting.
     final stringIns = m.parameters
-        .where((p) =>
-            p.direction == GirParameterDirection.in_ &&
-            p.type != null &&
-            _bridgeIsString(ctx, p))
+        .where(
+          (p) =>
+              p.direction == GirParameterDirection.in_ &&
+              p.type != null &&
+              _bridgeIsString(ctx, p),
+        )
         .toList();
     final listIns = m.parameters
-        .where((p) =>
-            p.direction == GirParameterDirection.in_ &&
-            p.type != null &&
-            _bridgeIsStringList(ctx, p))
+        .where(
+          (p) =>
+              p.direction == GirParameterDirection.in_ &&
+              p.type != null &&
+              _bridgeIsStringList(ctx, p),
+        )
         .toList();
 
     final b = StringBuffer();
 
     // Registry (Map) + sequence counter.
-    b.writeln('static final $registryName = '
-        '<int, $userType>{};');
+    b.writeln(
+      'static final $registryName = '
+      '<int, $userType>{};',
+    );
     b.writeln('static int $seqName = 0;');
 
     // Permanent function pointer via Pointer.fromFunction.
@@ -320,9 +333,7 @@ class AsyncCallbackEmitter {
     b.writeln('  malloc.free(data);');
     b.writeln('  if (fn == null) return;');
     b.writeln('  fn(');
-    b.writeln(
-      '    sourceObject == ffi.nullptr',
-    );
+    b.writeln('    sourceObject == ffi.nullptr');
     b.writeln('        ? null');
     b.writeln('        : GObject.fromPointer(sourceObject.cast()),');
     b.writeln('    GAsyncResult.fromPointer(res.cast()),');
@@ -342,8 +353,10 @@ class AsyncCallbackEmitter {
       b.writeln('  final ${c.varName} = ${c.bridge.toNative(c.paramName)};');
     }
     b.writeln('  final id = ++$seqName;');
-    b.writeln('  $registryName'
-        '[id] = ${toLowerCamel(cb.name)};');
+    b.writeln(
+      '  $registryName'
+      '[id] = ${toLowerCamel(cb.name)};',
+    );
     b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
     if (callbackAllocs.isNotEmpty) {
       b.writeln('  try {');
@@ -384,8 +397,7 @@ class AsyncCallbackEmitter {
       for (var i = listIns.length - 1; i >= 0; i--) {
         final p = listIns[i];
         final paramName = toLowerCamel(p.name);
-        body =
-            'withNativeStringList($paramName, ($paramName) {\n  $body\n});';
+        body = 'withNativeStringList($paramName, ($paramName) {\n  $body\n});';
       }
       b.writeln('  $body');
     } else {
@@ -420,11 +432,13 @@ class AsyncCallbackEmitter {
     final overloadParams = <_OverloadParam>[];
     for (final p in fn.parameters) {
       if (identical(p, cb)) {
-        overloadParams.add(_OverloadParam(
-          name: toLowerCamel(p.name),
-          bridgeType: userType,
-          isCallback: true,
-        ));
+        overloadParams.add(
+          _OverloadParam(
+            name: toLowerCamel(p.name),
+            bridgeType: userType,
+            isCallback: true,
+          ),
+        );
         continue;
       }
       if (userData != null && identical(p, userData)) continue;
@@ -441,18 +455,21 @@ class AsyncCallbackEmitter {
         );
         return null;
       }
-      overloadParams.add(_OverloadParam(
-        name: toLowerCamel(p.name),
-        bridgeType: bridge.wrapperType,
-        bridge: bridge,
-      ));
+      overloadParams.add(
+        _OverloadParam(
+          name: toLowerCamel(p.name),
+          bridgeType: bridge.wrapperType,
+          bridge: bridge,
+        ),
+      );
     }
 
     final requiredParams = <String>[];
     final optionalParams = <String>[];
     for (var i = 0; i < overloadParams.length; i++) {
       final p = overloadParams[i];
-      final isOptional = p.bridgeType.endsWith('?') &&
+      final isOptional =
+          p.bridgeType.endsWith('?') &&
           overloadParams.skip(i).every((q) => q.bridgeType.endsWith('?'));
       final decl = '${p.bridgeType} ${p.name}';
       if (isOptional) {
@@ -567,7 +584,8 @@ class AsyncCallbackEmitter {
         for (var i = listIns.length - 1; i >= 0; i--) {
           final p = listIns[i];
           final paramName = toLowerCamel(p.name);
-          body = '    withNativeStringList($paramName, ($paramName) {\n'
+          body =
+              '    withNativeStringList($paramName, ($paramName) {\n'
               '  $body\n});';
         }
         b.writeln(body);
@@ -592,8 +610,7 @@ class AsyncCallbackEmitter {
       for (var i = listIns.length - 1; i >= 0; i--) {
         final p = listIns[i];
         final paramName = toLowerCamel(p.name);
-        body =
-            'withNativeStringList($paramName, ($paramName) {\n  $body\n});';
+        body = 'withNativeStringList($paramName, ($paramName) {\n  $body\n});';
       }
       b.writeln('  $body');
     } else {

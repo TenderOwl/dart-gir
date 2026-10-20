@@ -22,39 +22,39 @@ enum FfiShape { void_, pointer, int32, uint32, bool_, double_, string }
 
 extension FfiShapeExt on FfiShape {
   String get code => switch (this) {
-        FfiShape.void_ => 'v',
-        FfiShape.pointer => 'o',
-        FfiShape.int32 => 'i',
-        FfiShape.uint32 => 'u',
-        FfiShape.bool_ => 'b',
-        FfiShape.double_ => 'd',
-        FfiShape.string => 's',
-      };
+    FfiShape.void_ => 'v',
+    FfiShape.pointer => 'o',
+    FfiShape.int32 => 'i',
+    FfiShape.uint32 => 'u',
+    FfiShape.bool_ => 'b',
+    FfiShape.double_ => 'd',
+    FfiShape.string => 's',
+  };
 
   /// The FFI type as written in the trampoline's NativeCallable.
   String get ffiType => switch (this) {
-        FfiShape.void_ => 'ffi.Void',
-        FfiShape.pointer => 'ffi.Pointer<ffi.Void>',
-        FfiShape.int32 => 'ffi.Int32',
-        FfiShape.uint32 => 'ffi.Uint32',
-        FfiShape.bool_ => 'ffi.Bool',
-        FfiShape.double_ => 'ffi.Double',
-        FfiShape.string => 'ffi.Pointer<Utf8>',
-      };
+    FfiShape.void_ => 'ffi.Void',
+    FfiShape.pointer => 'ffi.Pointer<ffi.Void>',
+    FfiShape.int32 => 'ffi.Int32',
+    FfiShape.uint32 => 'ffi.Uint32',
+    FfiShape.bool_ => 'ffi.Bool',
+    FfiShape.double_ => 'ffi.Double',
+    FfiShape.string => 'ffi.Pointer<Utf8>',
+  };
 
   /// Dart-side type of the trampoline parameter. `NativeCallable<T>`
   /// requires the callback function to use the Dart representation of
   /// each native type: `bool` for `ffi.Bool`, `int` for `ffi.Int32` /
   /// `ffi.Uint32`, `double` for `ffi.Double`.
   String get dartType => switch (this) {
-        FfiShape.void_ => 'void',
-        FfiShape.pointer => 'ffi.Pointer<ffi.Void>',
-        FfiShape.int32 => 'int',
-        FfiShape.uint32 => 'int',
-        FfiShape.bool_ => 'bool',
-        FfiShape.double_ => 'double',
-        FfiShape.string => 'ffi.Pointer<Utf8>',
-      };
+    FfiShape.void_ => 'void',
+    FfiShape.pointer => 'ffi.Pointer<ffi.Void>',
+    FfiShape.int32 => 'int',
+    FfiShape.uint32 => 'int',
+    FfiShape.bool_ => 'bool',
+    FfiShape.double_ => 'double',
+    FfiShape.string => 'ffi.Pointer<Utf8>',
+  };
 
   bool get needsFree => this == FfiShape.string;
 }
@@ -65,24 +65,24 @@ enum ReturnShape { void_, int, uint, bool_, double_ }
 
 extension ReturnShapeExt on ReturnShape {
   String get code => switch (this) {
-        ReturnShape.void_ => 'v',
-        ReturnShape.int => 'i',
-        ReturnShape.uint => 'u',
-        ReturnShape.bool_ => 'b',
-        ReturnShape.double_ => 'd',
-      };
+    ReturnShape.void_ => 'v',
+    ReturnShape.int => 'i',
+    ReturnShape.uint => 'u',
+    ReturnShape.bool_ => 'b',
+    ReturnShape.double_ => 'd',
+  };
 
   /// Dart-side return type for the trampoline function. `NativeCallable<T>`
   /// requires T to be a Dart function type with Dart primitives (bool,
   /// int, double, void) — not the FFI typedefs — at the return position.
   /// Args may still use FFI types.
   String get dartReturnType => switch (this) {
-        ReturnShape.void_ => 'void',
-        ReturnShape.int => 'int',
-        ReturnShape.uint => 'int',
-        ReturnShape.bool_ => 'bool',
-        ReturnShape.double_ => 'double',
-      };
+    ReturnShape.void_ => 'void',
+    ReturnShape.int => 'int',
+    ReturnShape.uint => 'int',
+    ReturnShape.bool_ => 'bool',
+    ReturnShape.double_ => 'double',
+  };
 }
 
 /// One typed signal's shape. Signals with the same [bucketId] share a
@@ -136,10 +136,7 @@ class SignalSignature {
 
 /// The result of partitioning one namespace's signals into typed buckets.
 class SignalBuckets {
-  SignalBuckets({
-    required this.signatures,
-    required this.signalToBucketId,
-  });
+  SignalBuckets({required this.signatures, required this.signalToBucketId});
 
   /// One entry per unique signature.
   final Map<String, SignalSignature> signatures;
@@ -244,11 +241,7 @@ String? signalSkipReason(
 }
 
 /// Whether [sig] gets a typed `onSignalName` helper in this release.
-bool isKeptSignal(
-  GirSignal sig,
-  EmitContext ctx, {
-  GirNamespace? relativeTo,
-}) =>
+bool isKeptSignal(GirSignal sig, EmitContext ctx, {GirNamespace? relativeTo}) =>
     signalSkipReason(sig, ctx, relativeTo: relativeTo) == null;
 
 /// Builds the per-namespace [SignalBuckets] partition. Walks [signals],
@@ -277,7 +270,11 @@ SignalBuckets buildSignalBuckets(
 
 // ─── shape classification ──────────────────────────────────────────────
 
-FfiShape? _ffiShapeFor(GirTypeRef? ref, EmitContext ctx, {GirNamespace? relativeTo}) {
+FfiShape? _ffiShapeFor(
+  GirTypeRef? ref,
+  EmitContext ctx, {
+  GirNamespace? relativeTo,
+}) {
   if (ref == null) return null;
   final m = ctx.resolve(ref, relativeTo: relativeTo);
   switch (m.kind) {
@@ -329,12 +326,21 @@ ReturnShape? _returnShapeFor(GirTypeRef? ref) {
   // populate `name` (e.g. `c:type="gboolean"` with `name="gboolean"`).
   final c = ref.cType ?? '';
   if (c == 'gboolean') return ReturnShape.bool_;
-  if (c == 'gint' || c == 'gint8' || c == 'gint16' || c == 'gint32' ||
-      c == 'gshort' || c == 'glong') {
+  if (c == 'gint' ||
+      c == 'gint8' ||
+      c == 'gint16' ||
+      c == 'gint32' ||
+      c == 'gshort' ||
+      c == 'glong') {
     return ReturnShape.int;
   }
-  if (c == 'guint' || c == 'guint8' || c == 'guint16' || c == 'guint32' ||
-      c == 'gushort' || c == 'gulong' || c == 'gsize') {
+  if (c == 'guint' ||
+      c == 'guint8' ||
+      c == 'guint16' ||
+      c == 'guint32' ||
+      c == 'gushort' ||
+      c == 'gulong' ||
+      c == 'gsize') {
     return ReturnShape.uint;
   }
   if (c == 'gdouble' || c == 'gfloat') return ReturnShape.double_;
@@ -359,7 +365,11 @@ ReturnShape? _returnShapeFor(GirTypeRef? ref) {
 
 // ─── signature construction ─────────────────────────────────────────────
 
-SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? relativeTo}) {
+SignalSignature _signatureFor(
+  GirSignal sig,
+  EmitContext ctx, {
+  GirNamespace? relativeTo,
+}) {
   final shapes = <FfiShape>[];
   final argTypes = <String>[];
   final argNames = <String>[];
@@ -368,11 +378,9 @@ SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? rel
     final p = sig.parameters[i];
     final shape = _ffiShapeFor(p.type, ctx, relativeTo: relativeTo)!;
     shapes.add(shape);
-    final bridge = ctx.bridgeFor(
-      p.type,
-      nullable: p.nullable,
-      relativeTo: relativeTo,
-    ).$1!;
+    final bridge = ctx
+        .bridgeFor(p.type, nullable: p.nullable, relativeTo: relativeTo)
+        .$1!;
     argTypes.add(bridge.wrapperType);
     final pname = escapeKeyword(toLowerCamel(p.name));
     argNames.add(pname);
@@ -399,11 +407,11 @@ SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? rel
   final cbReturn = marshallerReturn.dartReturnType;
   final callbackType = '$cbReturn Function(${cbArgs.join(', ')})';
   final dartSuffix = argTypes
-      .map((t) =>
-          t.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toLowerCase())
+      .map((t) => t.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toLowerCase())
       .join('_');
-  final bucketId =
-      dartSuffix.isEmpty ? ffiBucketId : '${ffiBucketId}_$dartSuffix';
+  final bucketId = dartSuffix.isEmpty
+      ? ffiBucketId
+      : '${ffiBucketId}_$dartSuffix';
 
   // Build the NativeCallable type argument. NativeCallable<T> requires T
   // to be written with `dart:ffi` native types; the trampoline function
@@ -434,7 +442,12 @@ SignalSignature _signatureFor(GirSignal sig, EmitContext ctx, {GirNamespace? rel
 /// Builds the trampoline's expression for passing arg [pname] to the
 /// user's Dart callback. `g_free` is reserved for the trampoline body to
 /// run *after* the callback returns (see [signals_helper.emitBucket]).
-String _argMarshal(String pname, FfiShape shape, TypeBridge bridge, bool nullable) {
+String _argMarshal(
+  String pname,
+  FfiShape shape,
+  TypeBridge bridge,
+  bool nullable,
+) {
   switch (shape) {
     case FfiShape.void_:
       return pname;
@@ -481,12 +494,12 @@ String _stringLiteral(String value) {
 /// `T` to be a Dart function type with all FFI native types
 /// (Dart 3.13.x behavior).
 String _ffiReturnType(ReturnShape shape) => switch (shape) {
-      ReturnShape.void_ => 'ffi.Void',
-      ReturnShape.int => 'ffi.Int32',
-      ReturnShape.uint => 'ffi.Uint32',
-      ReturnShape.bool_ => 'ffi.Bool',
-      ReturnShape.double_ => 'ffi.Double',
-    };
+  ReturnShape.void_ => 'ffi.Void',
+  ReturnShape.int => 'ffi.Int32',
+  ReturnShape.uint => 'ffi.Uint32',
+  ReturnShape.bool_ => 'ffi.Bool',
+  ReturnShape.double_ => 'ffi.Double',
+};
 
 /// Returns the inherited signals from [cls]'s parent chain, in declaration
 /// order (deepest ancestor first, then each closer ancestor). Signals

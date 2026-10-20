@@ -187,7 +187,7 @@ class CallbackEmitter {
           'callback',
           label,
           'array parameter in callback signature'
-          '${m.reason != null ? ' (${m.reason})' : ''}',
+              '${m.reason != null ? ' (${m.reason})' : ''}',
         );
         return null;
       case TypeKind.unsupported:

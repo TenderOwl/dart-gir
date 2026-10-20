@@ -6,17 +6,17 @@ import 'package:gir_generator/src/resolve/types.dart' show packageNameFor;
 import 'package:test/test.dart';
 
 GirNamespace _ns() => GirNamespace(
-      name: 'TestNS',
-      version: '1.0',
-      cIdentifierPrefixes: const ['T'],
-    );
+  name: 'TestNS',
+  version: '1.0',
+  cIdentifierPrefixes: const ['T'],
+);
 
 EmitContext _ctx(GirNamespace ns) => EmitContext(
-      namespace: ns,
-      allNamespaces: [ns],
-      report: GenerationReport(),
-      emittedPackages: {packageNameFor(ns)},
-    );
+  namespace: ns,
+  allNamespaces: [ns],
+  report: GenerationReport(),
+  emittedPackages: {packageNameFor(ns)},
+);
 
 void main() {
   test('emits onSignalName for a void(void) signal', () {
@@ -29,12 +29,15 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     expect(code, contains('int onFoo(void Function() callback)'));
-    expect(code, contains(
-      "return _connectSignal_v_0(this.handle, 'foo', callback);",
-    ));
+    expect(
+      code,
+      contains("return _connectSignal_v_0(this.handle, 'foo', callback);"),
+    );
     expect(ctx.report.totalSkipped, 0);
   });
 
@@ -47,7 +50,9 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     expect(code, contains('int onFoo(void Function() callback)'));
     expect(code, contains('int onBar(void Function() callback)'));
@@ -62,7 +67,10 @@ void main() {
       GirSignal(
         name: 'with-arg',
         parameters: const [
-          GirParameter(name: 'pspec', type: GirTypeRef(name: 'ParamSpec')),
+          GirParameter(
+            name: 'pspec',
+            type: GirTypeRef(name: 'ParamSpec'),
+          ),
         ],
       ),
     ];
@@ -71,13 +79,18 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     // `foo` is void(void); `with-arg` is unsupported so its arg-type skip
     // reason comes out — the bucket for the typed signal won't exist.
     expect(code, contains('_connectSignal_v_0'));
-    expect(code, contains('_connectSignal_v_1_o'),
-        skip: 'ParamSpec type is unresolved in the empty test ctx');
+    expect(
+      code,
+      contains('_connectSignal_v_1_o'),
+      skip: 'ParamSpec type is unresolved in the empty test ctx',
+    );
     expect(ctx.report.entries.any((e) => e.category == 'signal'), isTrue);
   });
 
@@ -87,7 +100,10 @@ void main() {
     final sig = GirSignal(
       name: 'event',
       parameters: const [
-        GirParameter(name: 'sender', type: GirTypeRef(name: 'GObject')),
+        GirParameter(
+          name: 'sender',
+          type: GirTypeRef(name: 'GObject'),
+        ),
       ],
     );
     final signals = [sig];
@@ -96,7 +112,9 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     // GObject type is not in the test namespace so it gets a skip;
     // the test simply proves the skip-reason is precise.
@@ -104,28 +122,38 @@ void main() {
     expect(ctx.report.entries.single.reason, contains('unsupported arg type'));
   });
 
-  test('skips a signal with unsupported arg type and reports precise reason',
-      () {
-    final ns = _ns();
-    final ctx = _ctx(ns);
-    final sig = GirSignal(
-      name: 'with-arg',
-      parameters: const [
-        GirParameter(name: 'pspec', type: GirTypeRef(name: 'ParamSpec')),
-      ],
-    );
-    final signals = [sig];
-    final code = emitSignalConnectors(
-      ctx,
-      signals,
-      'TestClass',
-      <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
-    );
-    expect(code, isEmpty);
-    expect(ctx.report.entries.single.category, 'signal');
-    expect(ctx.report.entries.single.reason, contains('unsupported arg type'));
-  });
+  test(
+    'skips a signal with unsupported arg type and reports precise reason',
+    () {
+      final ns = _ns();
+      final ctx = _ctx(ns);
+      final sig = GirSignal(
+        name: 'with-arg',
+        parameters: const [
+          GirParameter(
+            name: 'pspec',
+            type: GirTypeRef(name: 'ParamSpec'),
+          ),
+        ],
+      );
+      final signals = [sig];
+      final code = emitSignalConnectors(
+        ctx,
+        signals,
+        'TestClass',
+        <String>{},
+        buckets: buildSignalBuckets([
+          for (final s in signals) (signal: s, ns: ctx.namespace),
+        ], ctx),
+      );
+      expect(code, isEmpty);
+      expect(ctx.report.entries.single.category, 'signal');
+      expect(
+        ctx.report.entries.single.reason,
+        contains('unsupported arg type'),
+      );
+    },
+  );
 
   test('skips a signal with a non-void return and reports precise reason', () {
     final ns = _ns();
@@ -142,7 +170,9 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     expect(code, isEmpty);
     expect(ctx.report.entries.single.category, 'signal');
@@ -179,7 +209,9 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     expect(code, contains(r"'weird\'signal'"));
   });
@@ -194,7 +226,9 @@ void main() {
       signals,
       'TestClass',
       <String>{},
-      buckets: buildSignalBuckets([for (final s in signals) (signal: s, ns: ctx.namespace)], ctx),
+      buckets: buildSignalBuckets([
+        for (final s in signals) (signal: s, ns: ctx.namespace),
+      ], ctx),
     );
     expect(code, contains('/// Fires when foo happens.'));
   });
@@ -202,16 +236,12 @@ void main() {
   test('inheritedSignals walks the parent chain and deduplicates', () {
     final root = GirClass(
       name: 'Root',
-      signals: [
-        GirSignal(name: 'notify'),
-      ],
+      signals: [GirSignal(name: 'notify')],
     );
     final mid = GirClass(
       name: 'Mid',
       parent: 'TestNS.Root',
-      signals: [
-        GirSignal(name: 'mid-event'),
-      ],
+      signals: [GirSignal(name: 'mid-event')],
     );
     final leaf = GirClass(
       name: 'Leaf',
@@ -246,8 +276,10 @@ void main() {
       name: 'too-many',
       parameters: List.generate(
         6,
-        (i) =>
-            GirParameter(name: 'p$i', type: GirTypeRef(name: 'gint')),
+        (i) => GirParameter(
+          name: 'p$i',
+          type: GirTypeRef(name: 'gint'),
+        ),
       ),
     );
     expect(signalSkipReason(sig, ctx), contains('arity 6'));

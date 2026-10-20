@@ -9,6 +9,9 @@ discoverable from `git ls-files` and easy to link from PRs.
 | [emission.md](./emission.md) | What each emitter (`EnumEmitter`, `FunctionEmitter`, `RecordEmitter`, `ClassEmitter`, `CallableEmitter`, `CallbackEmitter`, signal helper) produces, and how |
 | [type-system.md](./type-system.md) | GIR-to-Dart type mapping rules, transfer ownership, nullable handling, cross-namespace resolution, the `relativeTo` plumbing for inherited signals |
 | [signals.md](./signals.md) | Typed `onSignalName` design: bucket partitioning, what counts as "kept", the `connectSignal` escape hatch, transfer-none strings + `g_free`, destroy-notify, the inheritance walk |
+| [async.md](./async.md) | The GLib `*_async` + `*_finish` pattern: the two wrapper shapes, the callback signature, and how to pair them |
+| [templates.md](./templates.md) | The composite-template stack: annotation surface, scanner plan, the one-part-file-per-source convention, codegen output contract, runtime init order, the callback trampoline, known limits |
+| [subclassing.md](./subclassing.md) | Dart-level subclassing of the generated wrappers: the extendable contract, ownership and lifetime rules, what a covariant override promises, and what a Dart subclass is not |
 | [skip-categories.md](./skip-categories.md) | Every category and reason that shows up in `packages/<lib>/skip_report.txt`, alphabetised |
 
 ## Where to start
@@ -18,5 +21,9 @@ discoverable from `git ls-files` and easy to link from PRs.
   `packages/<lib>/skip_report.txt` for the symbol, then read the
   matching reason in [skip-categories.md](./skip-categories.md).
 * **Debugging a typed-signal issue** — read [signals.md](./signals.md).
+* **Using a GTK composite template in Dart** — read
+  [templates.md](./templates.md).
+* **Extending a generated wrapper** — read
+  [subclassing.md](./subclassing.md).
 * **Modifying the generator** — read [emission.md](./emission.md) and
   [type-system.md](./type-system.md) end to end.

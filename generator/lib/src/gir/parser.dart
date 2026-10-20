@@ -87,6 +87,33 @@ class GirParser {
       }
     }
 
+    // Pick up glib:boxed declarations. These only live in the
+    // glib namespace's GIR (GLib-2.0.gir) — other namespaces
+    // (gobject, gio, pango, …) reference the same types but
+    // their `<glib:boxed>` entries are documentation, not
+    // canonical ownership. Honouring them in non-glib GIRs
+    // duplicates the records in gobject and breaks pango's
+    // transitive imports.
+    if (ns.getAttribute('name') != 'GLib') {
+      // Skip glib:boxed in non-glib namespaces.
+    } else {
+      for (final child in ns.childElements) {
+        if (!_isGlib(child)) continue;
+        if (child.name.local != 'boxed') continue;
+        // The GIR uses the namespaced attribute form: `glib:name`,
+        // `glib:type-name`, `c:symbol-prefix`. Read the attributes
+        // with their prefix so the lookup doesn't depend on the
+        // call-site's namespace inference.
+        final glibName = child.getAttribute('glib:name') ?? '';
+        if (glibName.isEmpty) continue;
+        final typeName = child.getAttribute('glib:type-name') ?? glibName;
+        final cType = child.getAttribute('glib:type-name') ?? typeName;
+        records.add(
+          GirRecord(name: glibName, cType: cType, glibTypeName: typeName),
+        );
+      }
+    }
+
     List<String> prefixes(String? attr) => (attr ?? '')
         .split(',')
         .map((s) => s.trim())
@@ -465,6 +492,8 @@ class GirParser {
 
   bool _isCore(XmlElement e) =>
       e.name.namespaceUri == null || e.name.namespaceUri == girCoreNamespace;
+
+  bool _isGlib(XmlElement e) => e.name.namespaceUri == girGlibNamespace;
 
   bool _introspectable(XmlElement e) =>
       e.getAttribute('introspectable') != '0' &&

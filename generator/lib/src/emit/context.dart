@@ -158,6 +158,20 @@ class EmitContext {
     '${pkgIdent}Lookup',
   };
 
+  /// The declaration that claimed each top-level name.
+  ///
+  /// Recorded alongside [topLevelNames] so that a name collision can
+  /// name the sibling that already holds the name. "duplicate
+  /// constant: Gdk.KEY_Armenian_at and Gdk.KEY_armenian_at both map
+  /// to keyArmenianAt" says what happened and what to do about it;
+  /// "name collision: keyArmenianAt" says only that something went
+  /// wrong.
+  ///
+  /// The names seeded into [topLevelNames] without a declaration —
+  /// the reserved words and the package's own helpers — have no
+  /// owner.
+  final Map<String, NameOwner> topLevelNameOwners = {};
+
   bool usesFfiString = false; // package:ffi Utf8
   bool usesMalloc = false;
   bool usesGirFfi = false; // stringFromNative / withNativeString
@@ -191,7 +205,26 @@ class EmitContext {
   }
 
   /// Claims a top-level declaration name; false when already taken.
-  bool claimName(String name) => topLevelNames.add(name);
+  ///
+  /// [kind] is the kind of declaration claiming the name (`constant`,
+  /// `class`, `enum`, …) and [label] the namespace-qualified GIR
+  /// symbol it came from. Both are recorded so that a later collision
+  /// can name the sibling that already holds the name.
+  bool claimName(String name, {String? kind, String? label}) {
+    if (!topLevelNames.add(name)) return false;
+    if (kind != null || label != null) {
+      topLevelNameOwners[name] = NameOwner(
+        kind ?? label ?? 'declaration',
+        label ?? name,
+      );
+    }
+    return true;
+  }
+
+  /// The declaration that already claimed [name], or null when the
+  /// name was taken by a reserved word or a package helper and so has
+  /// no GIR owner.
+  NameOwner? ownerOf(String name) => topLevelNameOwners[name];
 
   /// The generated package name for the current namespace.
   String get pkg => packageNameFor(namespace);
@@ -835,6 +868,25 @@ class EmitContext {
     }
     return false;
   }
+}
+
+/// The declaration that claimed a top-level Dart name.
+///
+/// Recorded so a later name collision can name the sibling that
+/// already holds the name.
+class NameOwner {
+  const NameOwner(this.kind, this.label);
+
+  /// What kind of declaration claimed the name — `constant`, `class`,
+  /// `enum`, `bitfield`, `record`, `function`, …
+  final String kind;
+
+  /// The namespace-qualified GIR symbol the name came from, e.g.
+  /// `Gdk.KEY_Armenian_at`.
+  final String label;
+
+  @override
+  String toString() => '$kind $label';
 }
 
 String _id(String e) => e;

@@ -9,6 +9,7 @@ class _InParam {
   _InParam(this.name, this.bridge, {required this.paramIndex});
   final String name;
   final TypeBridge bridge;
+
   /// Index of the underlying [GirParameter] in the method's
   /// `fn.parameters` list. Needed because out parameters don't appear
   /// in `ins`, so the in-only index in `ins` would diverge from the
@@ -299,8 +300,9 @@ class CallableEmitter {
     // A generative initializer list has no body to host the
     // `.close()` — falling back to the factory form keeps the
     // lifecycle correct.
-    final hasStringInSet =
-        ins.any((p) => p.bridge.isString || p.bridge.isStringList);
+    final hasStringInSet = ins.any(
+      (p) => p.bridge.isString || p.bridge.isStringList,
+    );
     final hasCallback = callbackAllocs.isNotEmpty;
     if (factoryClass != null &&
         !fn.throws &&
@@ -335,12 +337,11 @@ class CallableEmitter {
         // same expression works here for the rare non-excluded path.
         generativeArgExprs.add(bridge.toNative(inP.name));
       }
-      final generativeCall =
-          '$lookupVar(${generativeArgExprs.join(', ')})';
+      final generativeCall = '$lookupVar(${generativeArgExprs.join(', ')})';
       final generativeHeader = dartName.isEmpty
           ? '$factoryClass($paramList) : $receiver.fromPointer($generativeCall$ownedArg);'
           : '$factoryClass.$dartName($paramList) : '
-              '$receiver.fromPointer($generativeCall$ownedArg);';
+                '$receiver.fromPointer($generativeCall$ownedArg);';
       final b = StringBuffer();
       for (final line in ctx.docLines(fn.doc)) {
         b.writeln(line);
@@ -400,9 +401,7 @@ class CallableEmitter {
           core.add(
             'final ${o.varName}Anchor = HeapAnchor.allocate(${o.bridge.outAllocSize});',
           );
-          core.add(
-            'final ${o.varName} = ${o.varName}Anchor.buffer;',
-          );
+          core.add('final ${o.varName} = ${o.varName}Anchor.buffer;');
         } else {
           core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
         }

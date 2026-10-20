@@ -49,24 +49,28 @@ void main() {
   group('enumValueName', () {
     test('strips the type prefix', () {
       expect(enumValueName('GTK_ALIGN_FILL', typePrefix: 'GTK_ALIGN'), 'fill');
-      expect(enumValueName('G_FILE_TEST_EXISTS', typePrefix: 'G_FILE_TEST'),
-          'exists');
+      expect(
+        enumValueName('G_FILE_TEST_EXISTS', typePrefix: 'G_FILE_TEST'),
+        'exists',
+      );
     });
 
     test('multi-word remainder is camelCased', () {
       expect(
-          enumValueName('GTK_SORT_ASCENDING_ORDER', typePrefix: 'GTK_SORT'),
-          'ascendingOrder');
+        enumValueName('GTK_SORT_ASCENDING_ORDER', typePrefix: 'GTK_SORT'),
+        'ascendingOrder',
+      );
     });
 
     test('member not sharing the prefix is converted as-is', () {
-      expect(enumValueName('GDK_MOTION_NOTIFY', typePrefix: 'GDK_EVENT'),
-          'gdkMotionNotify');
+      expect(
+        enumValueName('GDK_MOTION_NOTIFY', typePrefix: 'GDK_EVENT'),
+        'gdkMotionNotify',
+      );
     });
 
     test('member equal to prefix alone falls back to full name', () {
-      expect(enumValueName('GTK_ALIGN_', typePrefix: 'GTK_ALIGN'),
-          'gtkAlign');
+      expect(enumValueName('GTK_ALIGN_', typePrefix: 'GTK_ALIGN'), 'gtkAlign');
     });
   });
 

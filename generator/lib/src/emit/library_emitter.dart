@@ -14,7 +14,8 @@ String pubspecFor(String pkg, Set<String> crossImports) {
   final b = StringBuffer()
     ..writeln('name: $pkg')
     ..writeln(
-        'description: Generated Dart FFI bindings ($pkg), produced by gir_generator.')
+      'description: Generated Dart FFI bindings ($pkg), produced by gir_generator.',
+    )
     ..writeln('publish_to: none')
     ..writeln('resolution: workspace')
     ..writeln()
@@ -87,8 +88,8 @@ String barrelFor(
     ..writeln("import 'dart:ffi' as ffi;");
   if (usesFfiPackage) b.writeln("import 'package:ffi/ffi.dart';");
   if (usesGirFfi) b.writeln("import 'package:gir_ffi/gir_ffi.dart';");
-  final others =
-      crossImports.where((p) => p != pkg && p != 'gir_ffi').toList()..sort();
+  final others = crossImports.where((p) => p != pkg && p != 'gir_ffi').toList()
+    ..sort();
   for (final p in others) {
     b.writeln("import 'package:$p/$p.dart';");
   }
@@ -102,9 +103,7 @@ String barrelFor(
 /// `src/lib.dart`: native library loading and symbol lookup helpers.
 String libDartFor(GirNamespace ns, String pkg) {
   final id = toLowerCamel(pkg);
-  final libs = ns.sharedLibraries.isEmpty
-      ? <String>[]
-      : ns.sharedLibraries;
+  final libs = ns.sharedLibraries.isEmpty ? <String>[] : ns.sharedLibraries;
   final b = StringBuffer()
     ..writeln(generatedHeader)
     ..writeln("part of '../$pkg.dart';")
@@ -134,7 +133,8 @@ String libDartFor(GirNamespace ns, String pkg) {
     ..writeln()
     ..writeln('/// Looks up [symbol] in each of the ${ns.name} libraries.')
     ..writeln(
-        'ffi.Pointer<T> ${id}Lookup<T extends ffi.NativeType>(String symbol) {')
+      'ffi.Pointer<T> ${id}Lookup<T extends ffi.NativeType>(String symbol) {',
+    )
     ..writeln('for (final lib in ${id}Libs) {')
     ..writeln('try {')
     ..writeln('return lib.lookup<T>(symbol);')
@@ -231,27 +231,20 @@ final gobjectFinalizer = ffi.NativeFinalizer(
 ''';
 }
 
-/// Rewrites the `workspace:` list of the root pubspec to contain `generator`
-/// plus every package under `packages/` and the `example/` app when present.
+/// Rewrites the `workspace:` list of the root pubspec to contain every
+/// package in the repository.
+///
+/// The list is *discovered*, not hard-coded: every directory under the
+/// root that holds a `pubspec.yaml` is a member — `generator/`, each
+/// package under `packages/`, and the apps under `example/`. A
+/// directory that contains another package is not itself a member
+/// unless it has a `pubspec.yaml` of its own: Dart's workspace
+/// implementation refuses a member nested inside another member's
+/// directory, so listing both would break `dart pub get`.
 void syncRootPubspec(String rootDir) {
   final file = File('$rootDir/pubspec.yaml');
   if (!file.existsSync()) return;
-  final packagesDir = Directory('$rootDir/packages');
-  final paths = <String>['generator'];
-  if (packagesDir.existsSync()) {
-    final dirs = packagesDir
-        .listSync()
-        .whereType<Directory>()
-        .where((d) => File('${d.path}/pubspec.yaml').existsSync())
-        .map((d) => 'packages/${d.uri.pathSegments.where((s) => s.isNotEmpty).last}')
-        .toList()
-      ..sort();
-    paths.addAll(dirs);
-  }
-  if (File('$rootDir/example/pubspec.yaml').existsSync()) {
-    paths.add('example');
-  }
-  paths.sort();
+  final paths = _workspaceMembers(rootDir)..sort();
   final lines = file.readAsLinesSync();
   final out = <String>[];
   var i = 0;
@@ -273,4 +266,41 @@ void syncRootPubspec(String rootDir) {
     i++;
   }
   file.writeAsStringSync('${out.join('\n')}\n');
+}
+
+/// Every directory under [rootDir] that holds a `pubspec.yaml`,
+/// relative to [rootDir] and sorted.
+///
+/// The root itself is not a member of its own workspace list.
+///
+/// Directories that are *inside* another package are skipped: a
+/// workspace member may not be nested inside another member.
+List<String> _workspaceMembers(String rootDir) {
+  final root = Directory(rootDir);
+  if (!root.existsSync()) return const [];
+
+  final packages = <String>[];
+  for (final entity in root.listSync(recursive: true, followLinks: false)) {
+    if (entity is! Directory) continue;
+    // Skip hidden directories — `.dart_tool` holds pub's internal
+    // cache of the workspace packages, and `.git` is not Dart at all.
+    final segments = entity.path.split('/');
+    if (segments.any((s) => s.startsWith('.'))) continue;
+    if (!File('${entity.path}/pubspec.yaml').existsSync()) continue;
+    packages.add(entity.path);
+  }
+
+  // Drop anything nested inside another package: the outer package
+  // wins, the nested one is not a member.
+  packages.sort((a, b) => a.length.compareTo(b.length));
+  final kept = <String>[];
+  for (final p in packages) {
+    if (kept.any((k) => p.startsWith('$k/'))) continue;
+    kept.add(p);
+  }
+
+  return kept.map((p) {
+    final relative = p.substring(rootDir.length);
+    return relative.startsWith('/') ? relative.substring(1) : relative;
+  }).toList();
 }

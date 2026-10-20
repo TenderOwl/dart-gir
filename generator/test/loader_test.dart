@@ -10,10 +10,9 @@ void main() {
   // their own `.typelib` files) without containing any `.gir` files.
   // Skip when there are no CGC-side GIR sources to load, since the
   // loader's job is to read those.
-  final available = Directory(girDir).existsSync() &&
-      Directory(girDir)
-          .listSync()
-          .any((e) => e.path.endsWith('.gir'));
+  final available =
+      Directory(girDir).existsSync() &&
+      Directory(girDir).listSync().any((e) => e.path.endsWith('.gir'));
 
   group('GirLoader', skip: available ? null : 'no .gir files at $girDir', () {
     late GirLoader loader;
@@ -52,8 +51,11 @@ void main() {
         final self = names.indexOf(repo.namespace.name);
         for (final include in repo.includes) {
           final dep = names.indexOf(include.name);
-          expect(dep, lessThan(self),
-              reason: '${include.name} should come before ${repo.namespace.name}');
+          expect(
+            dep,
+            lessThan(self),
+            reason: '${include.name} should come before ${repo.namespace.name}',
+          );
         }
       }
     });
@@ -70,8 +72,10 @@ void main() {
     });
 
     test('missing GIR file throws FileSystemException', () {
-      expect(() => loader.load('NoSuch-99.0'),
-          throwsA(isA<FileSystemException>()));
+      expect(
+        () => loader.load('NoSuch-99.0'),
+        throwsA(isA<FileSystemException>()),
+      );
     });
   });
 }

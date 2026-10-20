@@ -60,9 +60,7 @@ String? emitSignalsHelper(EmitContext ctx) {
   b.writeln();
   b.writeln('/// `g_signal_connect_data` is `introspectable="0"` in the GIR,');
   b.writeln('/// so it is looked up via [gobjectLookup] at runtime.');
-  b.writeln(
-    _gSignalConnectDataBinding,
-  );
+  b.writeln(_gSignalConnectDataBinding);
   b.writeln();
 
   // Shared destroy-notify plumbing.
@@ -72,7 +70,9 @@ String? emitSignalsHelper(EmitContext ctx) {
   b.writeln('int _nextSignalId = 1;');
   b.writeln();
   b.writeln('/// Shared destroy-notify invoked by GObject when the closure is');
-  b.writeln('/// finalized (signal disconnected or object destroyed). Frees the');
+  b.writeln(
+    '/// finalized (signal disconnected or object destroyed). Frees the',
+  );
   b.writeln('/// `IntPtr` and removes the registry entry so the Dart callback');
   b.writeln('/// becomes unreachable.');
   b.writeln('void _destroySignalState(');
@@ -85,9 +85,7 @@ String? emitSignalsHelper(EmitContext ctx) {
   b.writeln('}');
   b.writeln();
 
-  b.writeln(
-    'final _destroySignalStateCallable = ffi.NativeCallable<',
-  );
+  b.writeln('final _destroySignalStateCallable = ffi.NativeCallable<');
   b.writeln(
     '  ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)',
   );
@@ -110,7 +108,9 @@ String? emitSignalsHelper(EmitContext ctx) {
   b.writeln('/// Connects [callback] to [signalName] on [instance] via');
   b.writeln('/// `g_signal_connect_data`. Returns the handler ID. This is the');
   b.writeln('/// low-level escape hatch behind the typed `onSignalName`');
-  b.writeln('/// methods — use it for inherited signals, detailed signal names');
+  b.writeln(
+    '/// methods — use it for inherited signals, detailed signal names',
+  );
   b.writeln('/// (`notify::property-name`), or signatures the typed helpers');
   b.writeln('/// don\'t cover yet.');
   b.writeln('int connectSignal(');
@@ -129,16 +129,16 @@ String? emitSignalsHelper(EmitContext ctx) {
 /// `g_cclosure_marshal_VOID__VOID` — both parameters are added by the
 /// emission loop, so [shapes] and [argNames] stay empty.
 SignalSignature _voidVoidSignature() => SignalSignature(
-      bucketId: 'v_0_',
-      marshallerReturn: ReturnShape.void_,
-      shapes: const [],
-      dartReturnType: 'void',
-      trampolineFfiType:
-          'ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)',
-      callbackType: 'void Function()',
-      argNames: const [],
-      argMarshals: const [],
-    );
+  bucketId: 'v_0_',
+  marshallerReturn: ReturnShape.void_,
+  shapes: const [],
+  dartReturnType: 'void',
+  trampolineFfiType:
+      'ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)',
+  callbackType: 'void Function()',
+  argNames: const [],
+  argMarshals: const [],
+);
 
 /// All signals declared on classes and interfaces in the current
 /// namespace, including signals inherited from ancestor classes. The
@@ -246,10 +246,10 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
   b.writeln(
     '/// Registry of Dart callbacks for bucket `$bucketId`. Keyed by an int',
   );
-  b.writeln('/// we pass via `g_signal_connect_data` as the user_data pointer.');
   b.writeln(
-    'final _signalRegistry_$bucketId = <int, ${sig.callbackType}>{};',
+    '/// we pass via `g_signal_connect_data` as the user_data pointer.',
   );
+  b.writeln('final _signalRegistry_$bucketId = <int, ${sig.callbackType}>{};');
   b.writeln();
 
   // 2. Trampoline — receives FFI args + user_data, looks up the Dart
@@ -300,7 +300,9 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
 
   // 3. Per-bucket NativeCallable — app-lifetime singleton. A non-void
   //    return type requires an `exceptionalReturn` fallback.
-  b.writeln('/// Per-package singleton. Never closed — must stay reachable for');
+  b.writeln(
+    '/// Per-package singleton. Never closed — must stay reachable for',
+  );
   b.writeln('/// as long as any connection in this bucket is alive.');
   final exceptionalReturn = switch (sig.marshallerReturn) {
     ReturnShape.void_ => '',

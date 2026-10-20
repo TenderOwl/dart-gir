@@ -10,6 +10,8 @@ file when triaging "why is `<X>` missing from package `<Y>`?".
 |---|---|---|
 | `class` | `ClassEmitter.emitClass` | `parent ... is in non-generated package`, `name collision` |
 | `record` | `RecordEmitter._emit` | `duplicate declaration owned by an earlier namespace`, `name collision` |
+| `constant` | `FunctionEmitter.emitConstant` | `duplicate constant: <A> and <B> both map to <name>`, `unparseable int value` |
+| `property` | `ClassEmitter` | `construct-only or no public setter; emitting getter only`, `missing getter <X>` |
 | `callable` | `CallableEmitter.emit` | `no c:identifier`, `varargs`, `moved to`, `shadowed by` |
 | `method` | `ClassEmitter` | `name collision`, `override-incompatible with ancestor; renamed to <X>` |
 | `function` | `ClassEmitter` / `FunctionEmitter` | `name collision` |
@@ -95,6 +97,32 @@ The signal name contains `::`. Use `connectSignal(handle,
 the same `c:type`. Only the first declaration (in dependency order)
 is emitted; the rest are skipped.
 
+### `duplicate constant: <A> and <B> both map to <name>`
+
+Two `<constant>` elements in the same namespace map to the same Dart
+name, so only the first is emitted. The reason names both GIR symbols
+and the Dart name they collide on.
+
+The dominant instance is GDK's keyvals, which the GIR declares twice
+under two spellings:
+
+```
+[constant] Gdk.KEY_Armenian_at — duplicate constant: Gdk.KEY_Armenian_at and Gdk.KEY_armenian_at both map to keyArmenianAt
+[constant] Gdk.KEY_Serbian_dje  — duplicate constant: Gdk.KEY_Serbian_dje and Gdk.KEY_Serbian_DJE both map to keySerbianDje
+```
+
+`KEY_Armenian_at` and `KEY_armenian_at` are the same X11 keysym under
+two capitalisations, and `toLowerCamel` folds the word segments
+together, so both become `keyArmenianAt`. **The value is not lost** —
+the winning constant is emitted under the shared Dart name, and the
+report tells you which GIR symbol it came from.
+
+This reason replaces the generic `name collision: <name>` for
+constants, which said only that something went wrong. The remaining
+`name collision` entries are the ones where the colliding symbol is
+not a constant — an enum, a class, a record or a function — and those
+still use the generic reason.
+
 ### `duplicate new()`
 
 A class with two unnamed constructors. The GIR corpus shouldn't have
@@ -147,7 +175,9 @@ A member with the same Dart name already exists. Common cases:
 * A signal's `on<Name>` collides with another member named the same.
 * A constructor's name collides with a sibling.
 
-See the message for the colliding name.
+See the message for the colliding name. A collision between two
+*constants* gets its own reason — see
+`duplicate constant: <A> and <B> both map to <name>`.
 
 ### `nullable scalar parameter (<X>)`
 

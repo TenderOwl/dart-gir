@@ -157,7 +157,12 @@ class PackageEmitter {
           f,
           f.name,
         );
-        if (asyncOverload != null && ctx.claimName('${f.name}Callback')) {
+        if (asyncOverload != null &&
+            ctx.claimName(
+              '${f.name}Callback',
+              kind: 'function',
+              label: '${ctx.namespace.name}.${f.name}',
+            )) {
           categories['functions']!.add(asyncOverload);
         }
       }

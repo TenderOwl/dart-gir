@@ -11,7 +11,8 @@ const String _header = '''
 
 const String _footer = '</repository>';
 
-String gir(String namespaceBody) => '''
+String gir(String namespaceBody) =>
+    '''
 $_header
   <namespace name="Test" version="1.0"
       shared-library="libtest-1.0.so.0,libtest-extra.so.0"
@@ -35,8 +36,10 @@ void main() {
       expect(repo.includes.single.version, '2.0');
       expect(repo.namespace.name, 'Test');
       expect(repo.namespace.version, '1.0');
-      expect(repo.namespace.sharedLibraries,
-          ['libtest-1.0.so.0', 'libtest-extra.so.0']);
+      expect(repo.namespace.sharedLibraries, [
+        'libtest-1.0.so.0',
+        'libtest-extra.so.0',
+      ]);
       expect(repo.namespace.cIdentifierPrefixes, ['Test']);
       expect(repo.namespace.cSymbolPrefixes, ['test']);
     });
@@ -44,7 +47,8 @@ void main() {
 
   group('class', () {
     test('with method, property, signal, parent, implements', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <class name="Button" c:type="GtkButton" parent="Widget"
         glib:type-name="GtkButton" glib:get-value-func="gtk_button_get_value">
       <doc>A button widget.</doc>
@@ -78,7 +82,8 @@ void main() {
       </glib:signal>
       <field name="priv"><type name="gint" c:type="gint"/></field>
     </class>
-'''));
+'''),
+      );
 
       final cls = repo.namespace.classes.single;
       expect(cls.name, 'Button');
@@ -119,13 +124,15 @@ void main() {
     });
 
     test('abstract, final and virtual-method flags', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <class name="Base" c:type="TestBase" abstract="1" final="0">
       <virtual-method name="do_thing">
         <return-value><type name="none" c:type="void"/></return-value>
       </virtual-method>
     </class>
-'''));
+'''),
+      );
       final cls = repo.namespace.classes.single;
       expect(cls.abstract, isTrue);
       expect(cls.final_, isFalse);
@@ -133,7 +140,8 @@ void main() {
     });
 
     test('property captures getter, setter, transfer-ownership', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <class name="Button" c:type="TestButton">
       <property name="label"
                 writable="1"
@@ -143,7 +151,8 @@ void main() {
         <type name="utf8" c:type="const gchar*"/>
       </property>
     </class>
-'''));
+'''),
+      );
       final prop = repo.namespace.classes.single.properties.single;
       expect(prop.name, 'label');
       expect(prop.getter, 'get_label');
@@ -155,14 +164,16 @@ void main() {
 
   group('enum and bitfield', () {
     test('enumeration with members', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <enumeration name="Align" c:type="TestAlign" glib:type-name="TestAlign">
       <member name="start" value="0" c:identifier="TEST_ALIGN_START"/>
       <member name="end" value="1" c:identifier="TEST_ALIGN_END"/>
       <member name="big" value="4294967295" c:identifier="TEST_ALIGN_BIG"/>
       <member name="neg" value="-1" c:identifier="TEST_ALIGN_NEG"/>
     </enumeration>
-'''));
+'''),
+      );
       final en = repo.namespace.enumerations.single;
       expect(en.name, 'Align');
       expect(en.members, hasLength(4));
@@ -174,12 +185,14 @@ void main() {
     });
 
     test('bitfield', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <bitfield name="Flags" c:type="TestFlags">
       <member name="a" value="1" c:identifier="TEST_FLAGS_A"/>
       <member name="b" value="2" c:identifier="TEST_FLAGS_B"/>
     </bitfield>
-'''));
+'''),
+      );
       final bf = repo.namespace.bitfields.single;
       expect(bf, isA<GirBitfield>());
       expect(bf.members.map((m) => m.value), [1, 2]);
@@ -188,7 +201,8 @@ void main() {
 
   group('callback', () {
     test('callback with return type and parameters', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <callback name="Func" c:type="TestFunc">
       <doc>Called for each item.</doc>
       <return-value transfer-ownership="none" nullable="1">
@@ -203,7 +217,8 @@ void main() {
         </parameter>
       </parameters>
     </callback>
-'''));
+'''),
+      );
       final cb = repo.namespace.callbacks.single;
       expect(cb.name, 'Func');
       expect(cb.cType, 'TestFunc');
@@ -217,7 +232,8 @@ void main() {
 
   group('record', () {
     test('record with array field', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <record name="Item" c:type="TestItem" glib:type-name="TestItem">
       <field name="count"><type name="gint" c:type="gint"/></field>
       <field name="names">
@@ -229,7 +245,8 @@ void main() {
         <return-value><type name="gint" c:type="gint"/></return-value>
       </method>
     </record>
-'''));
+'''),
+      );
       final rec = repo.namespace.records.single;
       expect(rec.name, 'Item');
       expect(rec.isBoxed, isTrue);
@@ -247,7 +264,8 @@ void main() {
 
   group('function', () {
     test('out parameter, throws, deprecated', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <function name="parse" c:identifier="test_parse" throws="1" deprecated="1" version="2.0">
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
@@ -261,7 +279,8 @@ void main() {
         </parameter>
       </parameters>
     </function>
-'''));
+'''),
+      );
       final fn = repo.namespace.functions.single;
       expect(fn.throws, isTrue);
       expect(fn.deprecated, isTrue);
@@ -274,7 +293,8 @@ void main() {
     });
 
     test('varargs is kept and marked', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <function name="log" c:identifier="test_log">
       <return-value><type name="none" c:type="void"/></return-value>
       <parameters>
@@ -284,27 +304,31 @@ void main() {
         <varargs/>
       </parameters>
     </function>
-'''));
+'''),
+      );
       final fn = repo.namespace.functions.single;
       expect(fn.isVarargs, isTrue);
       expect(fn.parameters.last.isVarargs, isTrue);
     });
 
     test('shadows / shadowed-by kept as raw strings', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <function name="get" c:identifier="test_get" shadowed-by="get_full">
       <return-value><type name="gint" c:type="gint"/></return-value>
     </function>
     <function name="get_full" c:identifier="test_get_full" shadows="get">
       <return-value><type name="gint" c:type="gint"/></return-value>
     </function>
-'''));
+'''),
+      );
       expect(repo.namespace.functions[0].shadowedBy, 'get_full');
       expect(repo.namespace.functions[1].shadows, 'get');
     });
 
     test('glib:finish-func and parameter scope/closure attributes', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <class name="File" c:type="TestFile">
       <method name="load_async" c:identifier="test_file_load_async"
           glib:finish-func="load_finish">
@@ -325,7 +349,8 @@ void main() {
         </parameters>
       </method>
     </class>
-'''));
+'''),
+      );
       final method = repo.namespace.classes.single.methods.single;
       expect(method.finishFunc, 'load_finish');
       final callback = method.parameters[1];
@@ -337,9 +362,9 @@ void main() {
   });
 
   group('filtering and attributes', () {
-    test('introspectable="0" classes are skipped but functions are kept',
-        () {
-      final repo = parser.parse(gir('''
+    test('introspectable="0" classes are skipped but functions are kept', () {
+      final repo = parser.parse(
+        gir('''
     <function name="hidden_macro" c:identifier="test_hidden_macro"
         introspectable="0" shadowed-by="hidden_full">
       <return-value><type name="none" c:type="void"/></return-value>
@@ -348,11 +373,14 @@ void main() {
       <return-value><type name="none" c:type="void"/></return-value>
     </function>
     <class name="HiddenClass" c:type="TestHiddenClass" introspectable="0"/>
-'''));
+'''),
+      );
       // Both functions are kept so CallableEmitter can emit a skip entry
       // naming the canonical sibling (or just `introspectable=0`).
-      expect(repo.namespace.functions.map((f) => f.name),
-          ['hidden_macro', 'visible']);
+      expect(repo.namespace.functions.map((f) => f.name), [
+        'hidden_macro',
+        'visible',
+      ]);
       expect(repo.namespace.functions[0].introspectable, isFalse);
       expect(repo.namespace.functions[0].shadowedBy, 'hidden_full');
       expect(repo.namespace.functions[1].introspectable, isTrue);
@@ -362,7 +390,8 @@ void main() {
     });
 
     test('transfer-ownership container; nullable="true"', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <function name="list" c:identifier="test_list">
       <return-value transfer-ownership="container">
         <type name="GLib.List" c:type="GList*"/>
@@ -373,7 +402,8 @@ void main() {
         </parameter>
       </parameters>
     </function>
-'''));
+'''),
+      );
       final fn = repo.namespace.functions.single;
       expect(fn.returnTransfer, GirTransferOwnership.container);
       expect(fn.parameters.single.nullable, isTrue);
@@ -383,14 +413,16 @@ void main() {
 
   group('misc declarations', () {
     test('alias and constant', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <alias name="MyInt" c:type="TestMyInt">
       <type name="gint" c:type="gint"/>
     </alias>
     <constant name="MAX" value="42" c:type="TEST_MAX">
       <type name="gint" c:type="gint"/>
     </constant>
-'''));
+'''),
+      );
       final alias = repo.namespace.aliases.single;
       expect(alias.name, 'MyInt');
       expect(alias.cType, 'TestMyInt');
@@ -402,7 +434,8 @@ void main() {
     });
 
     test('interface and union', () {
-      final repo = parser.parse(gir('''
+      final repo = parser.parse(
+        gir('''
     <interface name="Iface" c:type="TestIface" glib:type-name="TestIface">
       <method name="act" c:identifier="test_iface_act">
         <return-value><type name="none" c:type="void"/></return-value>
@@ -416,7 +449,8 @@ void main() {
       <field name="i"><type name="gint" c:type="gint"/></field>
       <field name="d"><type name="gdouble" c:type="gdouble"/></field>
     </union>
-'''));
+'''),
+      );
       final iface = repo.namespace.interfaces.single;
       expect(iface.methods.single.instanceParameter!.name, 'self');
       expect(iface.properties.single.name, 'enabled');

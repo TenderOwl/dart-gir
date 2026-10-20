@@ -26,14 +26,17 @@ class EnumEmitter {
     final dartName = ctx.dartTypeName(ctx.namespace.name, e.name);
     if (ctx.isDuplicateType(e)) {
       ctx.report.skip(
-          'enum', dartName, 'duplicate declaration owned by an earlier namespace');
+        'enum',
+        dartName,
+        'duplicate declaration owned by an earlier namespace',
+      );
       return null;
     }
     if (e.members.isEmpty) {
       ctx.report.skip('enum', dartName, 'no members');
       return null;
     }
-    if (!ctx.claimName(dartName)) {
+    if (!ctx.claimName(dartName, kind: 'enum', label: dartName)) {
       ctx.report.skip('enum', dartName, 'name collision');
       return null;
     }
@@ -42,8 +45,11 @@ class EnumEmitter {
     final usedValues = <int>{};
     final members = <(String, int)>[];
     for (final m in e.members) {
-      var name = CallableEmitter.safeMemberName(escapeKeyword(
-          enumValueName(m.cIdentifier ?? m.name, typePrefix: typePrefix)));
+      var name = CallableEmitter.safeMemberName(
+        escapeKeyword(
+          enumValueName(m.cIdentifier ?? m.name, typePrefix: typePrefix),
+        ),
+      );
       if (name.isEmpty || !_isIdentifierStart(name)) name = valueName(m.value);
       if (!usedNames.add(name)) name = '$name${m.value}';
       usedNames.add(name);
@@ -61,15 +67,15 @@ class EnumEmitter {
     b.writeln('const $dartName(this.value);');
     b.writeln('final int value;');
     b.writeln();
-    b.writeln(
-        'static $dartName fromValue(int value) => switch (value) {');
+    b.writeln('static $dartName fromValue(int value) => switch (value) {');
     for (final (name, value) in members) {
       if (usedValues.add(value)) {
         b.writeln('$value => $name,');
       }
     }
     b.writeln(
-        "_ => throw ArgumentError.value(value, 'value', 'Unknown $dartName value'),");
+      "_ => throw ArgumentError.value(value, 'value', 'Unknown $dartName value'),",
+    );
     b.writeln('};');
     b.write('}');
     return b.toString();
@@ -78,15 +84,18 @@ class EnumEmitter {
   String? emitBitfield(GirBitfield e) {
     final dartName = ctx.dartTypeName(ctx.namespace.name, e.name);
     if (ctx.isDuplicateType(e)) {
-      ctx.report.skip('bitfield', dartName,
-          'duplicate declaration owned by an earlier namespace');
+      ctx.report.skip(
+        'bitfield',
+        dartName,
+        'duplicate declaration owned by an earlier namespace',
+      );
       return null;
     }
     if (e.members.isEmpty) {
       ctx.report.skip('bitfield', dartName, 'no members');
       return null;
     }
-    if (!ctx.claimName(dartName)) {
+    if (!ctx.claimName(dartName, kind: 'bitfield', label: dartName)) {
       ctx.report.skip('bitfield', dartName, 'name collision');
       return null;
     }
@@ -104,21 +113,27 @@ class EnumEmitter {
       for (final line in ctx.docLines(m.doc)) {
         b.writeln(line);
       }
-      var name = CallableEmitter.safeMemberName(escapeKeyword(
-          enumValueName(m.cIdentifier ?? m.name, typePrefix: typePrefix)));
+      var name = CallableEmitter.safeMemberName(
+        escapeKeyword(
+          enumValueName(m.cIdentifier ?? m.name, typePrefix: typePrefix),
+        ),
+      );
       if (name.isEmpty || !_isIdentifierStart(name)) name = valueName(m.value);
       if (!usedNames.add(name)) name = '$name${m.value}';
       b.writeln('static const $dartName $name = $dartName(${m.value});');
     }
     b.writeln();
     b.writeln(
-        '$dartName operator |($dartName other) => $dartName(value | other.value);');
+      '$dartName operator |($dartName other) => $dartName(value | other.value);',
+    );
     b.writeln(
-        '$dartName operator &($dartName other) => $dartName(value & other.value);');
+      '$dartName operator &($dartName other) => $dartName(value & other.value);',
+    );
     b.writeln();
     b.writeln('@override');
     b.writeln(
-        'bool operator ==(Object other) => other is $dartName && other.value == value;');
+      'bool operator ==(Object other) => other is $dartName && other.value == value;',
+    );
     b.writeln('@override');
     b.writeln('int get hashCode => value.hashCode;');
     b.writeln('@override');

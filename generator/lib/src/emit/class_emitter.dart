@@ -84,7 +84,7 @@ class ClassEmitter {
       );
       return null;
     }
-    if (!ctx.claimName(dartName)) {
+    if (!ctx.claimName(dartName, kind: 'class', label: dartName)) {
       ctx.report.skip('class', dartName, 'name collision');
       return null;
     }

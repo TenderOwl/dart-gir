@@ -35,15 +35,25 @@ build.
 │   ├── gtk4/              GTK 4
 │   ├── graphene/           Graphene
 │   ├── gsk4/              GSK 4
-│   └── adw/               Libadwaita
+│   ├── adw/               Libadwaita
+│   ├── gtk_templates/     Composite-template runtime (hand-written)
+│   └── gtk_templates_builder/  The build_runner builder that emits the mixins
 │
-└── example/               Consumer example (uses generated packages end-to-end)
+└── example/               Consumer apps (each a workspace member)
+    ├── gtk4_examples/     Small GTK4 demos
+    ├── notepad/           A Gtk4 editor
+    └── todo/              A @GtkTemplate app
 ```
 
 `packages/gir_ffi/` is the only hand-written consumer package. It holds
 runtime helpers used by every generated package (`stringFromNative`,
 `withNativeString`, `withNativeStringList`, `gFree`, the cross-package
 native-library opener, `GlibException` factory).
+
+No package may live inside another package's directory — Dart's
+workspace refuses a member nested inside another member. That is why
+`example/` holds no `pubspec.yaml` of its own: the three apps sit
+side by side under it.
 
 ## Generation pipeline
 
@@ -172,4 +182,4 @@ emitter-specific — see [skip-categories.md](./skip-categories.md).
 4. Inspect `packages/<lib>/skip_report.txt` to triage what didn't make it
    on the first run.
 5. Add a smoke test under `packages/<lib>/test/`.
-6. Update `example/bin/example.dart` to demonstrate the new bindings.
+6. Update `example/gtk4_examples/bin/example.dart` to demonstrate the new bindings.

@@ -61,9 +61,9 @@ class FunctionEmitter {
       ctx.report.skip('function', fn.name, 'empty public name');
       return null;
     }
-    if (!ctx.claimName(name)) {
+    if (!ctx.claimName(name, kind: 'function', label: fn.name)) {
       final alt = '${name}Fn';
-      if (!ctx.claimName(alt)) {
+      if (!ctx.claimName(alt, kind: 'function', label: fn.name)) {
         ctx.report.skip('function', fn.name, 'name collision: $name');
         return null;
       }
@@ -172,8 +172,21 @@ class FunctionEmitter {
         return null;
     }
     var name = escapeKeyword(toLowerCamel(c.name));
-    if (!ctx.claimName(name)) {
-      ctx.report.skip('constant', label, 'name collision: $name');
+    if (!ctx.claimName(name, kind: 'constant', label: label)) {
+      // Two GIR constants that map to the same Dart name — the
+      // common case is GDK's keyvals, which come in two spellings
+      // (`KEY_Armenian_at` and `KEY_armenian_at`) that lowerCamelCase
+      // folds together. Name the sibling so the reader knows which
+      // symbol won the name and why the other one is missing.
+      final owner = ctx.ownerOf(name);
+      ctx.report.skip(
+        'constant',
+        label,
+        owner != null && owner.kind == 'constant'
+            ? 'duplicate constant: $label and ${owner.label} both map '
+                  'to $name'
+            : 'name collision: $name',
+      );
       return null;
     }
     final b = StringBuffer();

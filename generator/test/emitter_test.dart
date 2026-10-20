@@ -34,6 +34,18 @@ EmitContext _ctx(GirNamespace ns, List<GirNamespace> all, GenerationReport r) =>
       emittedPackages: {packageNameFor(ns)},
     );
 
+/// A "GObject.Object"-rooted namespace so `isGObjectRooted(cls)`
+/// recognises the chain. The props layer only emits for GObject-rooted
+/// classes.
+GirNamespace _gobjectNs() => GirNamespace(
+  name: 'GObject',
+  version: '2.0',
+  sharedLibrary: 'libgobject-2.0.so.0',
+  cIdentifierPrefixes: const ['GObject', 'gobject'],
+  cSymbolPrefixes: const ['gobject'],
+  classes: [GirClass(name: 'Object', cType: 'GObject')],
+);
+
 void main() {
   group('EnumEmitter', () {
     test('emits enum with values and fromValue', () {
@@ -554,124 +566,141 @@ void main() {
       },
     );
 
-    test(
-      'nullable primitive OUT (allow-none + optional) is accepted and reads '
-      'the value back — this is `g_variant_get_string` shaped',
-      () {
-        // GIR: `<parameter name="length" direction="out" optional="1"
-        //   allow-none="1"><type name="gsize" c:type="gsize*"/></parameter>`
-        // combined with a `const gchar*` return value. The generator must
-        // accept the nullable scalar out-parameter (the C function simply
-        // checks for null internally; we always pass a valid pointer) and
-        // emit a `malloc<ffi.Size>()` + `_out0.value` extract.
-        final report = GenerationReport();
-        final fn = GirFunction(
-          name: 'get_string',
-          cIdentifier: 'g_variant_get_string',
-          returnType: const GirTypeRef(name: 'utf8', cType: 'const gchar*'),
-          parameters: const [
-            GirParameter(
-              name: 'length',
-              direction: GirParameterDirection.out,
-              transferOwnership: GirTransferOwnership.full,
-              callerAllocates: false,
-              optional: true,
-              nullable: true,
-              type: GirTypeRef(name: 'gsize', cType: 'gsize*'),
-            ),
-          ],
-        );
-        final ns = _glibNs(functions: [fn]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = FunctionEmitter(ctx).emitFunction(fn)!;
-        expect(code, isNotNull,
-            reason: 'nullable OUT scalar must not skip the callable');
-        expect(report.totalSkipped, 0);
-        // The generator allocates the buffer for the OUT scalar and
-        // passes the pointer to the native function.
-        expect(code, contains('malloc<ffi.Size>()'),
-            reason: 'nullable OUT scalar must allocate a buffer');
-        expect(code, contains('malloc.free(_out0);'),
-            reason: 'buffer must be released in the finally block');
-        // The Dart-side return type keeps the scalar alongside the
-        // string (matching `dupString`'s shape).
-        expect(code, contains('_out0.value'),
-            reason: 'native value must be read out of the buffer');
-      },
-    );
+    test('nullable primitive OUT (allow-none + optional) is accepted and reads '
+        'the value back — this is `g_variant_get_string` shaped', () {
+      // GIR: `<parameter name="length" direction="out" optional="1"
+      //   allow-none="1"><type name="gsize" c:type="gsize*"/></parameter>`
+      // combined with a `const gchar*` return value. The generator must
+      // accept the nullable scalar out-parameter (the C function simply
+      // checks for null internally; we always pass a valid pointer) and
+      // emit a `malloc<ffi.Size>()` + `_out0.value` extract.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'get_string',
+        cIdentifier: 'g_variant_get_string',
+        returnType: const GirTypeRef(name: 'utf8', cType: 'const gchar*'),
+        parameters: const [
+          GirParameter(
+            name: 'length',
+            direction: GirParameterDirection.out,
+            transferOwnership: GirTransferOwnership.full,
+            callerAllocates: false,
+            optional: true,
+            nullable: true,
+            type: GirTypeRef(name: 'gsize', cType: 'gsize*'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(
+        code,
+        isNotNull,
+        reason: 'nullable OUT scalar must not skip the callable',
+      );
+      expect(report.totalSkipped, 0);
+      // The generator allocates the buffer for the OUT scalar and
+      // passes the pointer to the native function.
+      expect(
+        code,
+        contains('malloc<ffi.Size>()'),
+        reason: 'nullable OUT scalar must allocate a buffer',
+      );
+      expect(
+        code,
+        contains('malloc.free(_out0);'),
+        reason: 'buffer must be released in the finally block',
+      );
+      // The Dart-side return type keeps the scalar alongside the
+      // string (matching `dupString`'s shape).
+      expect(
+        code,
+        contains('_out0.value'),
+        reason: 'native value must be read out of the buffer',
+      );
+    });
 
-    test(
-      'nullable primitive IN (allow-none + optional) is still rejected — '
-      'FFI cannot express `int?` over a primitive pointer',
-      () {
-        // GIR: `<parameter name="value" direction="in" optional="1"
-        //   allow-none="1"><type name="gint" c:type="gint"/></parameter>`
-        // — a plain nullable in scalar. The C function accepts NULL but
-        // Dart FFI cannot pass an `int?` through a primitive pointer,
-        // so the bridge is rejected with the original skip reason.
-        final report = GenerationReport();
-        final fn = GirFunction(
-          name: 'process_int',
-          cIdentifier: 'g_process_int',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
-            GirParameter(
-              name: 'value',
-              direction: GirParameterDirection.in_,
-              optional: true,
-              nullable: true,
-              type: GirTypeRef(name: 'gint', cType: 'gint'),
-            ),
-          ],
-        );
-        final ns = _glibNs(functions: [fn]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = FunctionEmitter(ctx).emitFunction(fn);
-        expect(code, isNull,
-            reason: 'nullable in scalar must still skip the callable');
-        expect(report.entries, hasLength(1));
-        expect(report.entries.single.reason,
-            'parameter value: nullable scalar parameter (gint)');
-      },
-    );
+    test('nullable primitive IN (allow-none + optional) is still rejected — '
+        'FFI cannot express `int?` over a primitive pointer', () {
+      // GIR: `<parameter name="value" direction="in" optional="1"
+      //   allow-none="1"><type name="gint" c:type="gint"/></parameter>`
+      // — a plain nullable in scalar. The C function accepts NULL but
+      // Dart FFI cannot pass an `int?` through a primitive pointer,
+      // so the bridge is rejected with the original skip reason.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'process_int',
+        cIdentifier: 'g_process_int',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'value',
+            direction: GirParameterDirection.in_,
+            optional: true,
+            nullable: true,
+            type: GirTypeRef(name: 'gint', cType: 'gint'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(
+        code,
+        isNull,
+        reason: 'nullable in scalar must still skip the callable',
+      );
+      expect(report.entries, hasLength(1));
+      expect(
+        report.entries.single.reason,
+        'parameter value: nullable scalar parameter (gint)',
+      );
+    });
 
-    test(
-      'nullable boolean OUT is accepted (TypeKind.boolean lift mirrors primitive)',
-      () {
-        // GIR: `<parameter name="result" direction="out" optional="1"
-        //   allow-none="1"><type name="gboolean" c:type="gboolean*"/></parameter>`
-        // — a nullable boolean OUT. The four TypeKinds (primitive /
-        // boolean / enumeration / bitfield) all share the same rule,
-        // so this confirms the lift applies uniformly.
-        final report = GenerationReport();
-        final fn = GirFunction(
-          name: 'probe_flag',
-          cIdentifier: 'g_probe_flag',
-          returnType: const GirTypeRef(name: 'none'),
-          parameters: const [
-            GirParameter(
-              name: 'result',
-              direction: GirParameterDirection.out,
-              transferOwnership: GirTransferOwnership.full,
-              callerAllocates: false,
-              optional: true,
-              nullable: true,
-              type: GirTypeRef(name: 'gboolean', cType: 'gboolean*'),
-            ),
-          ],
-        );
-        final ns = _glibNs(functions: [fn]);
-        final ctx = _ctx(ns, [ns], report);
-        final code = FunctionEmitter(ctx).emitFunction(fn)!;
-        expect(code, isNotNull,
-            reason: 'nullable boolean OUT must not skip the callable');
-        expect(report.totalSkipped, 0);
-        expect(code, contains('malloc<ffi.Int32>()'),
-            reason: 'boolean OUT uses `gboolean` → `int` mapping');
-        expect(code, contains('_out0.value'),
-            reason: 'read-back extracts the bool value');
-      },
-    );
+    test('nullable boolean OUT is accepted (TypeKind.boolean lift mirrors primitive)', () {
+      // GIR: `<parameter name="result" direction="out" optional="1"
+      //   allow-none="1"><type name="gboolean" c:type="gboolean*"/></parameter>`
+      // — a nullable boolean OUT. The four TypeKinds (primitive /
+      // boolean / enumeration / bitfield) all share the same rule,
+      // so this confirms the lift applies uniformly.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'probe_flag',
+        cIdentifier: 'g_probe_flag',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'result',
+            direction: GirParameterDirection.out,
+            transferOwnership: GirTransferOwnership.full,
+            callerAllocates: false,
+            optional: true,
+            nullable: true,
+            type: GirTypeRef(name: 'gboolean', cType: 'gboolean*'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(
+        code,
+        isNotNull,
+        reason: 'nullable boolean OUT must not skip the callable',
+      );
+      expect(report.totalSkipped, 0);
+      expect(
+        code,
+        contains('malloc<ffi.Int32>()'),
+        reason: 'boolean OUT uses `gboolean` → `int` mapping',
+      );
+      expect(
+        code,
+        contains('_out0.value'),
+        reason: 'read-back extracts the bool value',
+      );
+    });
   });
 
   group('FunctionEmitter.emitConstant', () {
@@ -746,6 +775,97 @@ void main() {
       final code = FunctionEmitter(ctx).emitConstant(ns.constants.single);
       expect(code, isNull);
       expect(report.entries.single.reason, contains('unparseable int'));
+    });
+
+    test('names the sibling when two constants map to the same Dart name', () {
+      // GDK declares its keyvals twice under two capitalisations —
+      // `KEY_Armenian_at` and `KEY_armenian_at` — and `toLowerCamel`
+      // folds both into `keyArmenianAt`. The skip reason must name
+      // both GIR symbols and the shared Dart name, not just say
+      // "name collision".
+      final report = GenerationReport();
+      final ns = _glibNs(
+        constants: [
+          mkConst(
+            'KEY_Armenian_at',
+            '1329',
+            const GirTypeRef(name: 'gint', cType: 'gint'),
+          ),
+          mkConst(
+            'KEY_armenian_at',
+            '1329',
+            const GirTypeRef(name: 'gint', cType: 'gint'),
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final emitter = FunctionEmitter(ctx);
+
+      final first = emitter.emitConstant(ns.constants[0]);
+      expect(first, isNotNull);
+      expect(first, contains('const keyArmenianAt = 1329;'));
+
+      final second = emitter.emitConstant(ns.constants[1]);
+      expect(second, isNull);
+      expect(report.entries, hasLength(1));
+      final entry = report.entries.single;
+      expect(entry.category, 'constant');
+      expect(entry.name, 'GLib.KEY_armenian_at');
+      expect(
+        entry.reason,
+        'duplicate constant: GLib.KEY_armenian_at and '
+        'GLib.KEY_Armenian_at both map to keyArmenianAt',
+      );
+      // The generic reason must not be used for a constant/constant
+      // collision — it says nothing about what to do.
+      expect(entry.reason, isNot(contains('name collision')));
+    });
+
+    test(
+      'keeps the generic name-collision reason for non-constant siblings',
+      () {
+        // A constant whose Dart name is already taken by a *function* is
+        // not a duplicate constant — the reason must not claim that a
+        // second constant exists.
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'probe',
+          cIdentifier: 'g_probe',
+          returnType: const GirTypeRef(name: 'gint', cType: 'gint'),
+        );
+        final ns = _glibNs(
+          functions: [fn],
+          constants: [
+            mkConst(
+              'PROBE',
+              '1',
+              const GirTypeRef(name: 'gint', cType: 'gint'),
+            ),
+          ],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final emitter = FunctionEmitter(ctx);
+        expect(emitter.emitFunction(fn), isNotNull);
+
+        final code = emitter.emitConstant(ns.constants.single);
+        expect(code, isNull);
+        expect(report.entries.single.reason, 'name collision: probe');
+      },
+    );
+
+    test('keeps the generic name-collision reason for reserved names', () {
+      // `malloc` is a name the generated library already occupies; it
+      // has no GIR owner, so the reason stays generic.
+      final report = GenerationReport();
+      final ns = _glibNs(
+        constants: [
+          mkConst('MALLOC', '1', const GirTypeRef(name: 'gint', cType: 'gint')),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitConstant(ns.constants.single);
+      expect(code, isNull);
+      expect(report.entries.single.reason, 'name collision: malloc');
     });
   });
 
@@ -1436,14 +1556,7 @@ void main() {
     // Build a "GObject.Object"-rooted namespace pair (Gtk + GObject)
     // so `isGObjectRooted(cls)` recognises the chain. The props
     // layer only emits for GObject-rooted classes.
-    GirNamespace gobjectNs() => GirNamespace(
-      name: 'GObject',
-      version: '2.0',
-      sharedLibrary: 'libgobject-2.0.so.0',
-      cIdentifierPrefixes: const ['GObject', 'gobject'],
-      cSymbolPrefixes: const ['gobject'],
-      classes: [GirClass(name: 'Object', cType: 'GObject')],
-    );
+    GirNamespace gobjectNs() => _gobjectNs();
 
     // Build a class with a single property whose getter and setter
     // are present in `cls.methods`. The props layer delegates to
@@ -1801,6 +1914,144 @@ void main() {
         );
       },
     );
+  });
+
+  group('Dart-level subclassing contract', () {
+    // A generated GObject class must be extendable from *outside* its
+    // library, so a user can write
+    // `class MyButton extends GtkButton { … }` and narrow a return
+    // type covariantly. `final class` forbids that, and so does a
+    // private (`_`-prefixed) props companion — the companion's name
+    // is part of the public API surface a subclass extends.
+    //
+    // These assertions pin the contract. A change that reintroduced
+    // `final class` here would silently break every downstream
+    // subclass without failing a single test.
+
+    GirClass rootedClass({String name = 'Button', String? parent}) => GirClass(
+      name: name,
+      cType: 'Gtk$name',
+      parent: parent,
+      methods: [
+        GirMethod(
+          name: 'get_label',
+          cIdentifier: 'gtk_${name.toLowerCase()}_get_label',
+          returnType: const GirTypeRef(name: 'utf8'),
+        ),
+      ],
+      properties: [
+        GirProperty(
+          name: 'label',
+          type: const GirTypeRef(name: 'utf8'),
+          getter: 'get_label',
+        ),
+      ],
+    );
+
+    test('a GObject class is emitted as `class`, not `final class`', () {
+      final report = GenerationReport();
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final widget = GirClass(
+        name: 'Widget',
+        cType: 'GtkWidget',
+        parent: 'GObject.Object',
+      );
+      final cls = rootedClass(parent: 'Widget');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, widget, cls],
+      );
+      final ctx = _ctx(ns, [ns, _gobjectNs()], report);
+      final code = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4', 'gobject'},
+      ).emitClass(cls)!;
+
+      expect(code, contains('class GtkButton extends GtkWidget'));
+      expect(
+        code,
+        isNot(contains('final class GtkButton')),
+        reason: 'a `final class` cannot be extended from another package',
+      );
+    });
+
+    test('the props companion is a public, extendable class', () {
+      final report = GenerationReport();
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final widget = GirClass(
+        name: 'Widget',
+        cType: 'GtkWidget',
+        parent: 'GObject.Object',
+      );
+      final cls = rootedClass(parent: 'Widget');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, widget, cls],
+      );
+      final ctx = _ctx(ns, [ns, _gobjectNs()], report);
+      final emitter = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4', 'gobject'},
+      );
+      emitter.emitClass(cls);
+      final propsCode = emitter.pendingPropsClass!;
+
+      // Public: a subclass in another package must be able to name it.
+      expect(propsCode, contains('class GtkButtonProps'));
+      expect(
+        propsCode,
+        isNot(contains('_GtkButtonProps')),
+        reason:
+            'a private props companion cannot be extended from '
+            'another package',
+      );
+      // Extendable.
+      expect(propsCode, isNot(contains('final class GtkButtonProps')));
+    });
+
+    test("a child's props companion extends its parent's props companion", () {
+      // `class MyButtonProps extends GtkButtonProps` is what lets a
+      // user-side props subclass add typed accessors on top of the
+      // generated ones.
+      final report = GenerationReport();
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final widget = GirClass(
+        name: 'Widget',
+        cType: 'GtkWidget',
+        parent: 'GObject.Object',
+      );
+      final parent = rootedClass(name: 'Button', parent: 'Widget');
+      final child = rootedClass(name: 'ToggleButton', parent: 'Button');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, widget, parent, child],
+      );
+      final ctx = _ctx(ns, [ns, _gobjectNs()], report);
+      final emitter = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gtk4', 'gobject'},
+      );
+      emitter.emitClass(parent);
+      emitter.emitClass(child);
+      final propsCode = emitter.pendingPropsClass!;
+
+      expect(
+        propsCode,
+        contains('class GtkToggleButtonProps extends GtkButtonProps'),
+      );
+    });
   });
 
   group('AsyncCallbackEmitter', () {
