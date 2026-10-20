@@ -17,7 +17,25 @@ part of '../gtk4.dart';
 /// The source and target, as well as their attributes, of a `GtkConstraint`
 /// instance are immutable after creation.
 class GtkConstraint extends GObject {
-  GtkConstraint.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkConstraint.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkConstraint>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkConstraint.rawFromPointer(handle, owned: owned);
+  }
+  GtkConstraint.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,6 +48,17 @@ class GtkConstraint extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_constraint_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new constraint representing a relation between a layout
   /// attribute on a source and a layout attribute on a target.
@@ -69,7 +98,7 @@ class GtkConstraint extends GObject {
     double multiplier,
     double constant,
     int strength,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkConstraintNew(
           target?.handle ?? ffi.nullptr,
           targetAttribute.value,
@@ -112,7 +141,7 @@ class GtkConstraint extends GObject {
     GtkConstraintRelation relation,
     double constant,
     int strength,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkConstraintNewConstant(
           target?.handle ?? ffi.nullptr,
           targetAttribute.value,

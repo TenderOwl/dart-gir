@@ -13,7 +13,25 @@ part of '../gtk4.dart';
 /// The `GtkAdjustment` object does not update the value itself. Instead
 /// it is left up to the owner of the `GtkAdjustment` to control the value.
 class GtkAdjustment extends GInitiallyUnowned {
-  GtkAdjustment.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkAdjustment.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkAdjustment>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkAdjustment.rawFromPointer(handle, owned: owned);
+  }
+  GtkAdjustment.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +44,17 @@ class GtkAdjustment extends GInitiallyUnowned {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_adjustment_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `GtkAdjustment`.
   static final _gtkAdjustmentNew =
@@ -58,7 +87,7 @@ class GtkAdjustment extends GInitiallyUnowned {
     double stepIncrement,
     double pageIncrement,
     double pageSize,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkAdjustmentNew(
           value,
           lower,

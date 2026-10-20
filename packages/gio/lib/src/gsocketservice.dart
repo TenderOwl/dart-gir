@@ -28,7 +28,25 @@ part of '../gio.dart';
 /// stop the service are thread-safe so these can be used from threads that
 /// handle incoming clients.
 class GSocketService extends GSocketListener {
-  GSocketService.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSocketService.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSocketService>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSocketService.rawFromPointer(handle, owned: owned);
+  }
+  GSocketService.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -42,6 +60,17 @@ class GSocketService extends GSocketListener {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_socket_service_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GSocketService with no sockets to listen for.
   /// New listeners can be added with e.g. g_socket_listener_add_address()
   /// or g_socket_listener_add_inet_port().
@@ -53,7 +82,7 @@ class GSocketService extends GSocketListener {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_socket_service_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GSocketService() : this.fromPointer(_gSocketServiceNew(), owned: true);
+  GSocketService() : this.rawFromPointer(_gSocketServiceNew(), owned: true);
 
   /// Check whether the service is active or not. An active
   /// service will accept new clients that connect, while

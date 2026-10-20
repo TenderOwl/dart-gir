@@ -28,7 +28,25 @@ class GtkColorButton extends GtkWidget
         GtkBuildable,
         GtkColorChooser,
         GtkConstraintTarget {
-  GtkColorButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkColorButton.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkColorButton>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkColorButton.rawFromPointer(handle, owned: owned);
+  }
+  GtkColorButton.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -42,6 +60,17 @@ class GtkColorButton extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_color_button_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new color button.
   ///
   /// This returns a widget in the form of a small button containing
@@ -53,7 +82,7 @@ class GtkColorButton extends GtkWidget
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_color_button_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkColorButton() : this.fromPointer(_gtkColorButtonNew(), owned: true);
+  GtkColorButton() : this.rawFromPointer(_gtkColorButtonNew(), owned: true);
 
   /// Creates a new color button showing the given color.
   static final _gtkColorButtonNewWithRgba =
@@ -64,7 +93,7 @@ class GtkColorButton extends GtkWidget
           >('gtk_color_button_new_with_rgba')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkColorButton.withRgba(GdkRGBA rgba)
-    : this.fromPointer(_gtkColorButtonNewWithRgba(rgba.handle), owned: true);
+    : this.rawFromPointer(_gtkColorButtonNewWithRgba(rgba.handle), owned: true);
 
   /// Gets whether the dialog is modal.
   static final _gtkColorButtonGetModal =
@@ -814,10 +843,8 @@ class GtkColorButton extends GtkWidget
   GdkRGBA getRgba() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkColorChooserGetRgba(this.handle, _out0.cast<ffi.Void>());
-      return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkColorChooserGetRgba(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(GdkRGBA.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
   }
 
   /// Returns whether the color chooser shows the alpha channel.

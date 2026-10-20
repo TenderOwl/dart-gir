@@ -149,3 +149,108 @@ class HeapAnchor implements Finalizable {
     return anchor;
   }
 }
+
+/// The registry that ties a wrapper to the buffer it points into.
+///
+/// A wrapper built from an OUT parameter points *into* a buffer the
+/// generator allocated for the call — a `GtkTextIter` is not a pointer
+/// to an object, it is a window onto the caller's own memory. If the
+/// buffer dies while the wrapper lives, the wrapper reads freed memory.
+///
+/// The registry is a weak-keyed map: the entry disappears with the
+/// wrapper, and the buffer's own [NativeFinalizer] frees the memory
+/// once nothing holds the anchor any more.
+final Expando<Object> _keepAliveRegistry = Expando<Object>();
+
+/// Ties [anchor] to [wrapper]'s lifetime and returns [wrapper].
+///
+/// The generator calls this for every wrapper it builds from an OUT
+/// parameter's buffer, so the buffer outlives the wrapper that reads
+/// from it.
+T keepAlive<T extends Object>(T wrapper, Object anchor) {
+  _keepAliveRegistry[wrapper] = anchor;
+  return wrapper;
+}
+
+/// The wrapper cache.
+///
+/// Native code hands the same pointer over more than once: a property
+/// getter, a signal argument, a list item. Without a cache every
+/// handover produced a *new* Dart wrapper, so a Dart subclass of a
+/// GObject class lost its identity — and its Dart state — on the way
+/// out of native code.
+///
+/// The entries are **weak**. A strong entry would keep every wrapper
+/// alive forever: its finalizer would never run, the native object
+/// would never be released, and every model object would leak. The Dart
+/// side is owned by the application.
+///
+/// One address can hold several wrappers: the same native object may be
+/// seen through different classes (a `GObject` and a `GtkWidget`, say),
+/// and each of them wants its own view of it.
+final Map<int, List<WeakReference<Object>>> _objectCache =
+    <int, List<WeakReference<Object>>>{};
+
+/// The Dart object registered for [address] that is a [T], if any.
+///
+/// Returns `null` when nothing is registered for the address, when every
+/// registered object has been collected, or when none of them is a [T].
+T? cachedObject<T extends Object>(int address) {
+  final entries = _objectCache[address];
+  if (entries == null) return null;
+  for (var i = 0; i < entries.length; i++) {
+    final hit = entries[i].target;
+    if (hit == null) {
+      // The Dart object is gone; the address may be reused by a later
+      // object, so the stale entry goes.
+      entries.removeAt(i);
+      i--;
+      continue;
+    }
+    if (hit is T) return hit;
+  }
+  if (entries.isEmpty) _objectCache.remove(address);
+  return null;
+}
+
+/// Registers [object] under [address].
+///
+/// A second wrapper for the same address joins the list rather than
+/// replacing the first one: a Dart subclass instance must not be
+/// shadowed by a later, less specific wrapper for the same pointer.
+void registerDartObject(Object object, int address) {
+  final entries = _objectCache.putIfAbsent(
+    address,
+    () => <WeakReference<Object>>[],
+  );
+  for (final entry in entries) {
+    if (identical(entry.target, object)) return;
+  }
+  entries.add(WeakReference(object));
+  _pruneObjectCache();
+}
+
+/// Drops the entries whose Dart object has been collected.
+///
+/// Called from [registerDartObject] so the map cannot grow without
+/// bound; the sweep is amortised — it only runs once the map has grown
+/// past twice the number of live entries.
+void _pruneObjectCache() {
+  if (_objectCache.length < _pruneThreshold) return;
+  var live = 0;
+  for (final entries in _objectCache.values) {
+    entries.removeWhere((entry) => entry.target == null);
+    live += entries.length;
+  }
+  _objectCache.removeWhere((_, entries) => entries.isEmpty);
+  _pruneThreshold = (live * 2).clamp(64, 1 << 20);
+}
+
+/// The size at which the cache is swept.
+int _pruneThreshold = 64;
+
+/// The number of entries in the wrapper cache.
+///
+/// Dead entries are pruned when they are looked up, so this counts the
+/// entries that have not been visited since their object died.
+int get cachedObjectCount => _objectCache.length;

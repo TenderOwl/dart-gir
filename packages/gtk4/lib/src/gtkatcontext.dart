@@ -7,7 +7,25 @@ part of '../gtk4.dart';
 /// is responsible for updating the accessible state in response to state
 /// changes in `GtkAccessible`.
 class GtkATContext extends GObject {
-  GtkATContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkATContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkATContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkATContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkATContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +38,17 @@ class GtkATContext extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_at_context_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `GtkATContext` instance for the given accessible role,
   /// accessible instance, and display connection.
@@ -47,7 +76,7 @@ class GtkATContext extends GObject {
     GtkAccessibleRole accessibleRole,
     GtkAccessible accessible,
     GdkDisplay display,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkAtContextCreate(
           accessibleRole.value,
           accessible.handle,

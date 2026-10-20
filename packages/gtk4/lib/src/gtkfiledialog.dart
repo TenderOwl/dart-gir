@@ -10,7 +10,25 @@ part of '../gtk4.dart';
 /// The dialog is shown with [method@Gtk.FileDialog.open],
 /// [method@Gtk.FileDialog.save], etc.
 class GtkFileDialog extends GObject {
-  GtkFileDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkFileDialog.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkFileDialog>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkFileDialog.rawFromPointer(handle, owned: owned);
+  }
+  GtkFileDialog.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -24,12 +42,23 @@ class GtkFileDialog extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_file_dialog_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkFileDialog` object.
   static final _gtkFileDialogNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_file_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFileDialog() : this.fromPointer(_gtkFileDialogNew(), owned: true);
+  GtkFileDialog() : this.rawFromPointer(_gtkFileDialogNew(), owned: true);
 
   /// Retrieves the text used by the dialog on its accept button.
   static final _gtkFileDialogGetAcceptLabel =

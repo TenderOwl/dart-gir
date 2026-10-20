@@ -29,7 +29,25 @@ part of '../gtk4.dart';
 /// - Return %TRUE from your ::query-tooltip handler. This causes the tooltip
 /// to be show. If you return %FALSE, it will not be shown.
 class GtkTooltip extends GObject {
-  GtkTooltip.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTooltip.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTooltip>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTooltip.rawFromPointer(handle, owned: owned);
+  }
+  GtkTooltip.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -42,6 +60,17 @@ class GtkTooltip extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_tooltip_get_type',
+  ).asFunction<int Function()>()();
 
   /// Replaces the widget packed into the tooltip with
   /// @custom_widget. @custom_widget does not get destroyed when the tooltip goes

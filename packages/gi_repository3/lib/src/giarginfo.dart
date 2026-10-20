@@ -5,7 +5,22 @@ part of '../gi_repository3.dart';
 ///
 /// An argument is always part of a [class@GIRepository.CallableInfo].
 class GIArgInfo extends GIBaseInfo {
-  GIArgInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIArgInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIArgInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GIArgInfo.rawFromPointer(handle, owned: owned);
+  }
+  GIArgInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +33,18 @@ class GIArgInfo extends GIBaseInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_arg_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Obtain the index of the user data argument. This is only valid
   /// for arguments which are callbacks.
@@ -179,10 +206,11 @@ class GIArgInfo extends GIBaseInfo {
   GITypeInfo loadTypeInfo() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _giArgInfoLoadTypeInfo(this.handle, _out0.cast<ffi.Void>());
-      return GITypeInfo.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _giArgInfoLoadTypeInfo(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GITypeInfo.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Obtain if the type of the argument includes the possibility of `NULL`.

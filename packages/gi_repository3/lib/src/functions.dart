@@ -44,14 +44,12 @@ GIArgument typeTagArgumentFromHashPointer(
 ]) {
   final _out0Anchor = HeapAnchor.allocate(256);
   final _out0 = _out0Anchor.buffer;
-  try {
-    _giTypeTagArgumentFromHashPointer(
-      storageType.value,
-      hashPointer ?? ffi.nullptr,
-      _out0.cast<ffi.Void>(),
-    );
-    return GIArgument.fromPointer(_out0.cast<ffi.Void>());
-  } finally {}
+  _giTypeTagArgumentFromHashPointer(
+    storageType.value,
+    hashPointer ?? ffi.nullptr,
+    _out0.cast<ffi.Void>(),
+  );
+  return keepAlive(GIArgument.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
 }
 
 /// Convert a [type@GIRepository.Argument] to data pointer for use in a GLib

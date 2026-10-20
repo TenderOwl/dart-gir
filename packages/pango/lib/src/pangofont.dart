@@ -4,7 +4,25 @@ part of '../pango.dart';
 /// A `PangoFont` is used to represent a font in a
 /// rendering-system-independent manner.
 class PangoFont extends GObject {
-  PangoFont.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory PangoFont.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFont>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return PangoFont.rawFromPointer(handle, owned: owned);
+  }
+  PangoFont.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +35,18 @@ class PangoFont extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      pangoLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'pango_font_get_type',
+      ).asFunction<int Function()>()();
 
   /// Returns a description of the font, with font size set in points.
   ///
@@ -148,22 +178,26 @@ class PangoFont extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoFontGetGlyphExtents(
-        this.handle,
-        glyph,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoFontGetGlyphExtents(
+      this.handle,
+      glyph,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets overall metric information for a font.

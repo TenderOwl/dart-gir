@@ -3,7 +3,25 @@ part of '../gio.dart';
 
 /// A [class@Gio.InetSocketAddress] representing a connection via a proxy server.
 class GProxyAddress extends GInetSocketAddress implements GSocketConnectable {
-  GProxyAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GProxyAddress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GProxyAddress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GProxyAddress.rawFromPointer(handle, owned: owned);
+  }
+  GProxyAddress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -16,6 +34,17 @@ class GProxyAddress extends GInetSocketAddress implements GSocketConnectable {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_proxy_address_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new #GProxyAddress for @inetaddr with @protocol that should
   /// tunnel through @dest_hostname and @dest_port.

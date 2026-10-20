@@ -11,8 +11,25 @@ part of '../gtk_source5.dart';
 /// to populate a `GtkSourceHoverDisplay` on behalf of the user.
 class GtkSourceHoverDisplay extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkSourceHoverDisplay.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceHoverDisplay.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceHoverDisplay>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceHoverDisplay.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceHoverDisplay.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +43,17 @@ class GtkSourceHoverDisplay extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_hover_display_get_type',
+      ).asFunction<int Function()>()();
   static final _gtkSourceHoverDisplayAppend =
       gtkSource5Lookup<
             ffi.NativeFunction<

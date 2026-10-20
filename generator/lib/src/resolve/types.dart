@@ -460,6 +460,32 @@ class TypeResolver {
         elem.cType == 'gchar*';
   }
 
+  /// The GIR records the generator emits as real `ffi.Struct`s.
+  ///
+  /// A record qualifies when the GIR declares no methods and no
+  /// constructors (a struct carries no behaviour), it is not a boxed
+  /// type, and every field has a simple type. In this corpus that is
+  /// the GObject type-system records: the type-system API takes them by
+  /// pointer, so the *caller* builds them — and the layout has to come
+  /// from the GIR instead of hand-written offsets.
+  static const structRecords = <String>{
+    'GObject.TypeInfo',
+    'GObject.TypeQuery',
+    'GObject.TypeFundamentalInfo',
+    'GObject.InterfaceInfo',
+  };
+
+  /// True when [record] is emitted as an `ffi.Struct` rather than as an
+  /// opaque handle wrapper.
+  static bool isStructRecord(GirRecord record, String namespaceName) {
+    if (record.methods.isNotEmpty || record.constructors.isNotEmpty) {
+      return false;
+    }
+    if (record.glibTypeName != null) return false; // a boxed type
+    if (record.fields.isEmpty) return false;
+    return structRecords.contains('$namespaceName.${record.name}');
+  }
+
   /// Maps a bound-length array whose element is an int-sized primitive
   /// (gint-family scalars), boolean, enumeration, or bitfield. The
   /// wrapper signature and the FFI native signature both use

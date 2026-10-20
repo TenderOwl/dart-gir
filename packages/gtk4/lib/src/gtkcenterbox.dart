@@ -41,7 +41,25 @@ part of '../gtk4.dart';
 /// role.
 class GtkCenterBox extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
-  GtkCenterBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCenterBox.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCenterBox>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCenterBox.rawFromPointer(handle, owned: owned);
+  }
+  GtkCenterBox.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -55,12 +73,23 @@ class GtkCenterBox extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_center_box_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCenterBox`.
   static final _gtkCenterBoxNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_center_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCenterBox() : this.fromPointer(_gtkCenterBoxNew(), owned: true);
+  GtkCenterBox() : this.rawFromPointer(_gtkCenterBoxNew(), owned: true);
 
   /// Gets the baseline position of the center box.
   ///

@@ -3,7 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node applying a blur effect to its single child.
 class GskBlurNode extends GskRenderNode {
-  GskBlurNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskBlurNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskBlurNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskBlurNode.rawFromPointer(handle, owned: owned);
+  }
+  GskBlurNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +32,17 @@ class GskBlurNode extends GskRenderNode {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_blur_node_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a render node that blurs the child.
   static final _gskBlurNodeNew =
       gsk4Lookup<
@@ -28,7 +54,7 @@ class GskBlurNode extends GskRenderNode {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
   GskBlurNode(GskRenderNode child, double radius)
-    : this.fromPointer(_gskBlurNodeNew(child.handle, radius), owned: true);
+    : this.rawFromPointer(_gskBlurNodeNew(child.handle, radius), owned: true);
 
   /// Retrieves the child `GskRenderNode` of the blur @node.
   static final _gskBlurNodeGetChild =

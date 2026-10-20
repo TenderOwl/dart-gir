@@ -15,7 +15,25 @@ part of '../gtk_source5.dart';
 /// You can change how long to wait to display the interactive tooltip by
 /// setting the [property@Hover:hover-delay] property in milliseconds.
 class GtkSourceHover extends GObject {
-  GtkSourceHover.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceHover.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceHover>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceHover.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceHover.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,6 +47,17 @@ class GtkSourceHover extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_hover_get_type',
+      ).asFunction<int Function()>()();
   static final _gtkSourceHoverAddProvider =
       gtkSource5Lookup<
             ffi.NativeFunction<

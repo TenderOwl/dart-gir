@@ -4,8 +4,25 @@ part of '../gio.dart';
 /// Data output stream implements [class@Gio.OutputStream] and includes functions
 /// for writing data directly to an output stream.
 class GDataOutputStream extends GFilterOutputStream implements GSeekable {
-  GDataOutputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDataOutputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDataOutputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDataOutputStream.rawFromPointer(handle, owned: owned);
+  }
+  GDataOutputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -19,6 +36,17 @@ class GDataOutputStream extends GFilterOutputStream implements GSeekable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_data_output_stream_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new data output stream for @base_stream.
   static final _gDataOutputStreamNew =
       gioLookup<
@@ -28,7 +56,10 @@ class GDataOutputStream extends GFilterOutputStream implements GSeekable {
           >('g_data_output_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDataOutputStream(GOutputStream baseStream)
-    : this.fromPointer(_gDataOutputStreamNew(baseStream.handle), owned: true);
+    : this.rawFromPointer(
+        _gDataOutputStreamNew(baseStream.handle),
+        owned: true,
+      );
 
   /// Gets the byte order for the stream.
   static final _gDataOutputStreamGetByteOrder =

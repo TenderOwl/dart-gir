@@ -17,7 +17,25 @@ part of '../gtk4.dart';
 /// Starting from GTK 4.12, `GtkAspectFrame` uses the [enum@Gtk.AccessibleRole.generic] role.
 class GtkAspectFrame extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkAspectFrame.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkAspectFrame.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkAspectFrame>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkAspectFrame.rawFromPointer(handle, owned: owned);
+  }
+  GtkAspectFrame.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,6 +48,17 @@ class GtkAspectFrame extends GtkWidget
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_aspect_frame_get_type',
+  ).asFunction<int Function()>()();
 
   /// Create a new `GtkAspectFrame`.
   static final _gtkAspectFrameNew =
@@ -47,7 +76,7 @@ class GtkAspectFrame extends GtkWidget
             ffi.Pointer<ffi.Void> Function(double, double, double, int)
           >();
   GtkAspectFrame(double xalign, double yalign, double ratio, bool obeyChild)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkAspectFrameNew(xalign, yalign, ratio, obeyChild ? 1 : 0),
         owned: true,
       );

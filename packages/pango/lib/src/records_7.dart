@@ -8,7 +8,22 @@ part of '../pango.dart';
 ///
 /// The `PangoLayoutIter` structure is opaque, and has no user-visible fields.
 final class PangoLayoutIter {
-  PangoLayoutIter.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoLayoutIter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoLayoutIter>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoLayoutIter.rawFromPointer(handle, owned: owned);
+  }
+  PangoLayoutIter.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -87,10 +102,11 @@ final class PangoLayoutIter {
   PangoRectangle getCharExtents() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _pangoLayoutIterGetCharExtents(this.handle, _out0.cast<ffi.Void>());
-      return PangoRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _pangoLayoutIterGetCharExtents(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the extents of the current cluster, in layout coordinates.
@@ -118,21 +134,25 @@ final class PangoLayoutIter {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetClusterExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutIterGetClusterExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the current byte index.
@@ -187,21 +207,25 @@ final class PangoLayoutIter {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetLayoutExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutIterGetLayoutExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the current line.
@@ -250,21 +274,25 @@ final class PangoLayoutIter {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetLineExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutIterGetLineExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the current line for read-only access.
@@ -390,21 +418,25 @@ final class PangoLayoutIter {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutIterGetRunExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutIterGetRunExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the current run for read-only access.
@@ -488,7 +520,22 @@ final class PangoLayoutIter {
 /// [method@Pango.Layout.get_line] and are only valid until the text,
 /// attributes, or settings of the parent `PangoLayout` are modified.
 final class PangoLayoutLine {
-  PangoLayoutLine.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoLayoutLine.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoLayoutLine>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoLayoutLine.rawFromPointer(handle, owned: owned);
+  }
+  PangoLayoutLine.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -529,21 +576,25 @@ final class PangoLayoutLine {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutLineGetExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutLineGetExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Computes the height of the line, as the maximum of the heights
@@ -610,21 +661,25 @@ final class PangoLayoutLine {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutLineGetPixelExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutLineGetPixelExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Returns the resolved direction of the line.

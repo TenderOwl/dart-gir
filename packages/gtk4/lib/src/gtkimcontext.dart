@@ -31,7 +31,25 @@ part of '../gtk4.dart';
 /// To connect a widget to the users preferred input method, you should use
 /// [class@Gtk.IMMulticontext].
 class GtkIMContext extends GObject {
-  GtkIMContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkIMContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkIMContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkIMContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkIMContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -44,6 +62,17 @@ class GtkIMContext extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_im_context_get_type',
+  ).asFunction<int Function()>()();
 
   /// Requests the platform to show an on-screen keyboard for user input.
   ///
@@ -201,7 +230,7 @@ class GtkIMContext extends GObject {
               ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<Utf8>>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Int32>,
               )
             >
@@ -210,29 +239,24 @@ class GtkIMContext extends GObject {
             void Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Int32>,
             )
           >();
   (String, PangoAttrList, int) getPreeditString() {
     final _out0 = malloc<ffi.Pointer<Utf8>>();
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     final _out2 = malloc<ffi.Int32>();
     try {
-      _gtkImContextGetPreeditString(
-        this.handle,
-        _out0,
-        _out1.cast<ffi.Void>(),
-        _out2,
-      );
+      _gtkImContextGetPreeditString(this.handle, _out0, _out1, _out2);
       return (
         stringFromNative(_out0.value.cast(), free: true)!,
-        PangoAttrList.fromPointer(_out1.cast<ffi.Void>()),
+        PangoAttrList.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),
         _out2.value,
       );
     } finally {
       malloc.free(_out0);
+      malloc.free(_out1);
       malloc.free(_out2);
     }
   }

@@ -395,7 +395,25 @@ part of '../gtk4.dart';
 /// ```
 class GtkWidget extends GInitiallyUnowned
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkWidget.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkWidget.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkWidget>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkWidget.rawFromPointer(handle, owned: owned);
+  }
+  GtkWidget.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -408,6 +426,17 @@ class GtkWidget extends GInitiallyUnowned
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_widget_get_type',
+  ).asFunction<int Function()>()();
 
   /// Enables or disables an action installed with
   /// [method@Gtk.WidgetClass.install_action].
@@ -781,14 +810,15 @@ class GtkWidget extends GInitiallyUnowned
   (bool, GrapheneRect) computeBounds(GtkWidget target) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkWidgetComputeBounds(
-        this.handle,
-        target.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkWidgetComputeBounds(
+      this.handle,
+      target.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GrapheneRect.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Computes whether a parent widget should give this widget
@@ -843,15 +873,16 @@ class GtkWidget extends GInitiallyUnowned
   (bool, GraphenePoint) computePoint(GtkWidget target, GraphenePoint point) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkWidgetComputePoint(
-        this.handle,
-        target.handle,
-        point.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GraphenePoint.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkWidgetComputePoint(
+      this.handle,
+      target.handle,
+      point.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GraphenePoint.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Computes a matrix suitable to describe a transformation from
@@ -883,14 +914,18 @@ class GtkWidget extends GInitiallyUnowned
   (bool, GrapheneMatrix) computeTransform(GtkWidget target) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkWidgetComputeTransform(
-        this.handle,
-        target.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkWidgetComputeTransform(
+      this.handle,
+      target.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(
+        GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+        _out0Anchor,
+      ),
+    );
   }
 
   /// Tests if a given point is contained in the widget.
@@ -1100,10 +1135,11 @@ class GtkWidget extends GInitiallyUnowned
   GdkRectangle getAllocation() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkWidgetGetAllocation(this.handle, _out0.cast<ffi.Void>());
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkWidgetGetAllocation(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the first ancestor of the widget with type @widget_type.
@@ -1214,10 +1250,8 @@ class GtkWidget extends GInitiallyUnowned
   GdkRGBA getColor() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkWidgetGetColor(this.handle, _out0.cast<ffi.Void>());
-      return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkWidgetGetColor(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(GdkRGBA.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
   }
 
   /// Returns the CSS name of the widget.
@@ -1714,21 +1748,25 @@ class GtkWidget extends GInitiallyUnowned
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _gtkWidgetGetPreferredSize(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : GtkRequisition.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GtkRequisition.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _gtkWidgetGetPreferredSize(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkRequisition.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkRequisition.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Returns the widget’s previous sibling.

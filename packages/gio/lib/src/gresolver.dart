@@ -21,7 +21,25 @@ part of '../gio.dart';
 /// This is an abstract type; subclasses of it implement different resolvers for
 /// different platforms and situations.
 class GResolver extends GObject {
-  GResolver.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GResolver.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GResolver>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GResolver.rawFromPointer(handle, owned: owned);
+  }
+  GResolver.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -34,6 +52,17 @@ class GResolver extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_resolver_get_type',
+  ).asFunction<int Function()>()();
 
   /// Get the timeout applied to all resolver lookups. See #GResolver:timeout.
   static final _gResolverGetTimeout =

@@ -14,8 +14,25 @@ part of '../gtk4.dart';
 /// for each cell is to bind them to columns in your tree model using e.g.
 /// gtk_tree_view_column_add_attribute().
 class GtkCellRendererSpinner extends GtkCellRenderer {
-  GtkCellRendererSpinner.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRendererSpinner.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRendererSpinner>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRendererSpinner.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRendererSpinner.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,6 +46,17 @@ class GtkCellRendererSpinner extends GtkCellRenderer {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_spinner_get_type',
+  ).asFunction<int Function()>()();
+
   /// Returns a new cell renderer which will show a spinner to indicate
   /// activity.
   static final _gtkCellRendererSpinnerNew =
@@ -36,7 +64,7 @@ class GtkCellRendererSpinner extends GtkCellRenderer {
         'gtk_cell_renderer_spinner_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererSpinner()
-    : this.fromPointer(_gtkCellRendererSpinnerNew(), owned: true);
+    : this.rawFromPointer(_gtkCellRendererSpinnerNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

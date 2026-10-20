@@ -170,8 +170,25 @@ part of '../gio.dart';
 /// The complete example can be found here:
 /// [gapplication-example-cmdline3.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gapplication-example-cmdline3.c)
 class GApplicationCommandLine extends GObject {
-  GApplicationCommandLine.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GApplicationCommandLine.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GApplicationCommandLine>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GApplicationCommandLine.rawFromPointer(handle, owned: owned);
+  }
+  GApplicationCommandLine.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -184,6 +201,17 @@ class GApplicationCommandLine extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_application_command_line_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a #GFile corresponding to a filename that was given as part
   /// of the invocation of @cmdline.

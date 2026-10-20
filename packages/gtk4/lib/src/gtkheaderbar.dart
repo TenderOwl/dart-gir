@@ -77,7 +77,25 @@ part of '../gtk4.dart';
 /// `GtkHeaderBar` uses the [enum@Gtk.AccessibleRole.group] role.
 class GtkHeaderBar extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkHeaderBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkHeaderBar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkHeaderBar>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkHeaderBar.rawFromPointer(handle, owned: owned);
+  }
+  GtkHeaderBar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -91,12 +109,23 @@ class GtkHeaderBar extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_header_bar_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkHeaderBar` widget.
   static final _gtkHeaderBarNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_header_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkHeaderBar() : this.fromPointer(_gtkHeaderBarNew(), owned: true);
+  GtkHeaderBar() : this.rawFromPointer(_gtkHeaderBarNew(), owned: true);
 
   /// Gets the decoration layout of the header bar.
   static final _gtkHeaderBarGetDecorationLayout =

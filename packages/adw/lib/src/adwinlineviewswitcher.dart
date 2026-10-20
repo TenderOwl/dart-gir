@@ -43,8 +43,25 @@ part of '../adw.dart';
 /// [class@ViewSwitcherSidebar].
 class AdwInlineViewSwitcher extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
-  AdwInlineViewSwitcher.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwInlineViewSwitcher.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwInlineViewSwitcher>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwInlineViewSwitcher.rawFromPointer(handle, owned: owned);
+  }
+  AdwInlineViewSwitcher.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -58,13 +75,24 @@ class AdwInlineViewSwitcher extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_inline_view_switcher_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwInlineViewSwitcher`.
   static final _adwInlineViewSwitcherNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_inline_view_switcher_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwInlineViewSwitcher()
-    : this.fromPointer(_adwInlineViewSwitcherNew(), owned: true);
+    : this.rawFromPointer(_adwInlineViewSwitcherNew(), owned: true);
 
   /// Gets whether the toggles can be smaller than the natural size of their
   /// contents.

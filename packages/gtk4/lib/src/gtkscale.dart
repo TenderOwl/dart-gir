@@ -100,7 +100,24 @@ class GtkScale extends GtkRange
         GtkBuildable,
         GtkConstraintTarget,
         GtkOrientable {
-  GtkScale.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkScale.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkScale>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkScale.rawFromPointer(handle, owned: owned);
+  }
+  GtkScale.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -114,6 +131,17 @@ class GtkScale extends GtkRange
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_scale_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkScale`.
   static final _gtkScaleNew =
       gtk4Lookup<
@@ -125,7 +153,7 @@ class GtkScale extends GtkRange
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
   GtkScale(GtkOrientation orientation, [GtkAdjustment? adjustment])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkScaleNew(orientation.value, adjustment?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -160,7 +188,7 @@ class GtkScale extends GtkRange
     double min,
     double max,
     double step,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkScaleNewWithRange(orientation.value, min, max, step),
         owned: true,
       );

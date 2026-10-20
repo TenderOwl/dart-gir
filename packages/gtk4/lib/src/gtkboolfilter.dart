@@ -3,7 +3,25 @@ part of '../gtk4.dart';
 
 /// Evaluates a boolean expression to determine whether to include items.
 class GtkBoolFilter extends GtkFilter {
-  GtkBoolFilter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkBoolFilter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkBoolFilter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkBoolFilter.rawFromPointer(handle, owned: owned);
+  }
+  GtkBoolFilter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +35,17 @@ class GtkBoolFilter extends GtkFilter {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_bool_filter_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new bool filter.
   static final _gtkBoolFilterNew =
       gtk4Lookup<
@@ -26,7 +55,7 @@ class GtkBoolFilter extends GtkFilter {
           >('gtk_bool_filter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkBoolFilter([GtkExpression? expression])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkBoolFilterNew(expression?.handle ?? ffi.nullptr),
         owned: true,
       );

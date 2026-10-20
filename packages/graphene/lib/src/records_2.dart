@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the #graphene_matrix_t structure are private and
 /// should never be accessed directly.
 final class GrapheneMatrix {
-  GrapheneMatrix.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneMatrix.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneMatrix>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneMatrix.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneMatrix.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -26,7 +41,7 @@ final class GrapheneMatrix {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_matrix_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneMatrix.alloc() : this.fromPointer(_grapheneMatrixAlloc());
+  GrapheneMatrix.alloc() : this.rawFromPointer(_grapheneMatrixAlloc());
 
   /// Decomposes a transformation matrix into its component transformations.
   ///
@@ -77,24 +92,25 @@ final class GrapheneMatrix {
     final _out3 = _out3Anchor.buffer;
     final _out4Anchor = HeapAnchor.allocate(256);
     final _out4 = _out4Anchor.buffer;
-    try {
-      final _ret = _grapheneMatrixDecompose(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-        _out2.cast<ffi.Void>(),
-        _out3.cast<ffi.Void>(),
-        _out4.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
-        GrapheneVec3.fromPointer(_out1.cast<ffi.Void>()),
+    final _ret = _grapheneMatrixDecompose(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+      _out2.cast<ffi.Void>(),
+      _out3.cast<ffi.Void>(),
+      _out4.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+      keepAlive(GrapheneVec3.fromPointer(_out1.cast<ffi.Void>()), _out1Anchor),
+      keepAlive(
         GrapheneQuaternion.fromPointer(_out2.cast<ffi.Void>()),
-        GrapheneVec3.fromPointer(_out3.cast<ffi.Void>()),
-        GrapheneVec4.fromPointer(_out4.cast<ffi.Void>()),
-      );
-    } finally {}
+        _out2Anchor,
+      ),
+      keepAlive(GrapheneVec3.fromPointer(_out3.cast<ffi.Void>()), _out3Anchor),
+      keepAlive(GrapheneVec4.fromPointer(_out4.cast<ffi.Void>()), _out4Anchor),
+    );
   }
 
   /// Computes the determinant of the given matrix.
@@ -184,10 +200,11 @@ final class GrapheneMatrix {
   GrapheneVec4 getRow(int index) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixGetRow(this.handle, index, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixGetRow(this.handle, index, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the value at the given @row and @col index.
@@ -717,15 +734,16 @@ final class GrapheneMatrix {
   GrapheneMatrix interpolate(GrapheneMatrix b, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixInterpolate(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixInterpolate(
+      this.handle,
+      b.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Inverts the given matrix.
@@ -741,10 +759,14 @@ final class GrapheneMatrix {
   (bool, GrapheneMatrix) inverse() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _grapheneMatrixInverse(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _grapheneMatrixInverse(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(
+        GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+        _out0Anchor,
+      ),
+    );
   }
 
   /// Checks whether the given #graphene_matrix_t is compatible with an
@@ -812,10 +834,11 @@ final class GrapheneMatrix {
   GrapheneMatrix multiply(GrapheneMatrix b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixMultiply(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixMultiply(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Compares the two given #graphene_matrix_t matrices and checks
@@ -851,10 +874,11 @@ final class GrapheneMatrix {
   GrapheneMatrix normalize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixNormalize(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixNormalize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Applies a perspective of @depth to the matrix.
@@ -874,10 +898,11 @@ final class GrapheneMatrix {
   GrapheneMatrix perspective(double depth) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixPerspective(this.handle, depth, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixPerspective(this.handle, depth, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Prints the contents of a matrix to the standard error stream.
@@ -914,14 +939,11 @@ final class GrapheneMatrix {
   GraphenePoint projectPoint(GraphenePoint p) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixProjectPoint(
-        this.handle,
-        p.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixProjectPoint(this.handle, p.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Projects all corners of a #graphene_rect_t using the given matrix.
@@ -947,10 +969,11 @@ final class GrapheneMatrix {
   GrapheneQuad projectRect(GrapheneRect r) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixProjectRect(this.handle, r.handle, _out0.cast<ffi.Void>());
-      return GrapheneQuad.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixProjectRect(this.handle, r.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuad.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Projects a #graphene_rect_t using the given matrix.
@@ -977,14 +1000,15 @@ final class GrapheneMatrix {
   GrapheneRect projectRectBounds(GrapheneRect r) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixProjectRectBounds(
-        this.handle,
-        r.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixProjectRectBounds(
+      this.handle,
+      r.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Adds a rotation transformation to @m, using the given @angle
@@ -1246,14 +1270,15 @@ final class GrapheneMatrix {
   GrapheneRect transformBounds(GrapheneRect r) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformBounds(
-        this.handle,
-        r.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformBounds(
+      this.handle,
+      r.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms the vertices of a #graphene_box_t using the given matrix @m.
@@ -1280,14 +1305,11 @@ final class GrapheneMatrix {
   GrapheneBox transformBox(GrapheneBox b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformBox(
-        this.handle,
-        b.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformBox(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms the given #graphene_point_t using the matrix @m.
@@ -1317,14 +1339,15 @@ final class GrapheneMatrix {
   GraphenePoint transformPoint(GraphenePoint p) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformPoint(
-        this.handle,
-        p.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformPoint(
+      this.handle,
+      p.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms the given #graphene_point3d_t using the matrix @m.
@@ -1354,14 +1377,15 @@ final class GrapheneMatrix {
   GraphenePoint3D transformPoint3d(GraphenePoint3D p) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformPoint3d(
-        this.handle,
-        p.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformPoint3d(
+      this.handle,
+      p.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transform a #graphene_ray_t using the given matrix @m.
@@ -1385,14 +1409,11 @@ final class GrapheneMatrix {
   GrapheneRay transformRay(GrapheneRay r) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformRay(
-        this.handle,
-        r.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneRay.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformRay(this.handle, r.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRay.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms each corner of a #graphene_rect_t using the given matrix @m.
@@ -1420,14 +1441,11 @@ final class GrapheneMatrix {
   GrapheneQuad transformRect(GrapheneRect r) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformRect(
-        this.handle,
-        r.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneQuad.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformRect(this.handle, r.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuad.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms a #graphene_sphere_t using the given matrix @m. The
@@ -1452,14 +1470,15 @@ final class GrapheneMatrix {
   GrapheneSphere transformSphere(GrapheneSphere s) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformSphere(
-        this.handle,
-        s.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneSphere.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformSphere(
+      this.handle,
+      s.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneSphere.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms the given #graphene_vec3_t using the matrix @m.
@@ -1489,14 +1508,11 @@ final class GrapheneMatrix {
   GrapheneVec3 transformVec3(GrapheneVec3 v) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformVec3(
-        this.handle,
-        v.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformVec3(this.handle, v.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms the given #graphene_vec4_t using the matrix @m.
@@ -1522,14 +1538,11 @@ final class GrapheneMatrix {
   GrapheneVec4 transformVec4(GrapheneVec4 v) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTransformVec4(
-        this.handle,
-        v.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTransformVec4(this.handle, v.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Adds a translation transformation to @m using the coordinates
@@ -1563,10 +1576,11 @@ final class GrapheneMatrix {
   GrapheneMatrix transpose() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixTranspose(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixTranspose(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Unprojects the given @point using the @projection matrix and
@@ -1596,15 +1610,16 @@ final class GrapheneMatrix {
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixUnprojectPoint3d(
-        this.handle,
-        modelview.handle,
-        point.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixUnprojectPoint3d(
+      this.handle,
+      modelview.handle,
+      point.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Undoes the transformation on the corners of a #graphene_rect_t using the
@@ -1631,15 +1646,16 @@ final class GrapheneMatrix {
   GrapheneRect untransformBounds(GrapheneRect r, GrapheneRect bounds) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneMatrixUntransformBounds(
-        this.handle,
-        r.handle,
-        bounds.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneMatrixUntransformBounds(
+      this.handle,
+      r.handle,
+      bounds.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Undoes the transformation of a #graphene_point_t using the
@@ -1666,14 +1682,15 @@ final class GrapheneMatrix {
   (bool, GraphenePoint) untransformPoint(GraphenePoint p, GrapheneRect bounds) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _grapheneMatrixUntransformPoint(
-        this.handle,
-        p.handle,
-        bounds.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GraphenePoint.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _grapheneMatrixUntransformPoint(
+      this.handle,
+      p.handle,
+      bounds.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GraphenePoint.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 }

@@ -251,6 +251,50 @@ have no `parent` field in the model), so inherited helpers don't apply.
 If a class implements an interface, the class's own `inheritedSignals`
 walk is what surfaces the interface's signals.
 
+## A signal argument is only as precise as the GIR
+
+The GIR types a signal's arguments, and the generator emits the typed
+helper from that type. For `GtkSignalListItemFactory::setup` the GIR
+says:
+
+```xml
+<parameter name="object" transfer-ownership="none">
+  <type name="GObject.Object"/>
+</parameter>
+```
+
+GTK's C signature is `void (*setup) (GtkSignalListItemFactory *factory,
+GtkListItem *list_item, gpointer user_data)` — the argument really is a
+`GtkListItem` — but the introspection data does not say so. The emitted
+helper is therefore typed with the GIR's type:
+
+```dart
+int onSetup(void Function(GObject object) callback)
+```
+
+A cast does not recover the concrete type:
+
+```dart
+// Throws a TypeError at runtime: the object the trampoline hands over
+// really is a `GObject`, not a `GtkListItem`.
+itemFactory.onSetup((item) => (item as GtkListItem).setChild(TaskRow()));
+```
+
+GLib swallows the exception raised in a signal handler, so the list item
+never gets its child and the row is simply missing — no error the
+programmer sees. Use `cast`, which re-wraps the handle as the real
+type:
+
+```dart
+itemFactory.onSetup((item) {
+  final listItem = item.cast<GtkListItem>(GtkListItem.fromPointer);
+  listItem.setChild(TaskRow());
+});
+```
+
+`GObject.cast` forwards the handle to the factory you name, so the
+wrapper cache finds the same `GtkListItem` again on the next call.
+
 ## Limitations
 
 * Arity > 5 → use `connectSignal` (or open a generator issue with the
@@ -261,3 +305,5 @@ walk is what surfaces the interface's signals.
   `void Function()` callback and read the result via your own
   query method after the signal fires.
 * `weak-ref` → use `g_object_weak_ref` directly through `gobjectLookup`.
+* A signal argument the GIR types as `GObject` stays a `GObject` — use
+  `cast` to reach the concrete type (see above).

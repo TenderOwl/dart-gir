@@ -13,8 +13,25 @@ part of '../adw.dart';
 /// [property@SwipeTracker:reversed] can be used for supporting RTL text
 /// direction.
 class AdwSwipeTracker extends GObject implements GtkOrientable {
-  AdwSwipeTracker.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwSwipeTracker.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwSwipeTracker>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwSwipeTracker.rawFromPointer(handle, owned: owned);
+  }
+  AdwSwipeTracker.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -28,6 +45,17 @@ class AdwSwipeTracker extends GObject implements GtkOrientable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_swipe_tracker_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwSwipeTracker` for @widget.
   static final _adwSwipeTrackerNew =
       adwLookup<
@@ -37,7 +65,7 @@ class AdwSwipeTracker extends GObject implements GtkOrientable {
           >('adw_swipe_tracker_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSwipeTracker(AdwSwipeable swipeable)
-    : this.fromPointer(_adwSwipeTrackerNew(swipeable.handle), owned: true);
+    : this.rawFromPointer(_adwSwipeTrackerNew(swipeable.handle), owned: true);
 
   /// Gets whether to allow swiping for more than one snap point at a time.
   static final _adwSwipeTrackerGetAllowLongSwipes =

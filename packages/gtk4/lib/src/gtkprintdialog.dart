@@ -13,7 +13,25 @@ part of '../gtk4.dart';
 /// [method@Gtk.PrintDialog.print_file]. These APIs follows the GIO async pattern,
 /// and the results can be obtained by calling the corresponding finish methods.
 class GtkPrintDialog extends GObject {
-  GtkPrintDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkPrintDialog.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkPrintDialog>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkPrintDialog.rawFromPointer(handle, owned: owned);
+  }
+  GtkPrintDialog.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -27,12 +45,23 @@ class GtkPrintDialog extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_print_dialog_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkPrintDialog` object.
   static final _gtkPrintDialogNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_print_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPrintDialog() : this.fromPointer(_gtkPrintDialogNew(), owned: true);
+  GtkPrintDialog() : this.rawFromPointer(_gtkPrintDialogNew(), owned: true);
 
   /// Returns the label that will be shown on the
   /// accept button of the print dialog.

@@ -48,7 +48,25 @@ part of '../adw.dart';
 /// </object>
 /// ```
 class AdwBreakpoint extends GObject implements GtkBuildable {
-  AdwBreakpoint.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwBreakpoint.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwBreakpoint>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwBreakpoint.rawFromPointer(handle, owned: owned);
+  }
+  AdwBreakpoint.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -62,6 +80,17 @@ class AdwBreakpoint extends GObject implements GtkBuildable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_breakpoint_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwBreakpoint` with @condition.
   static final _adwBreakpointNew =
       adwLookup<
@@ -71,7 +100,7 @@ class AdwBreakpoint extends GObject implements GtkBuildable {
           >('adw_breakpoint_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBreakpoint(AdwBreakpointCondition condition)
-    : this.fromPointer(_adwBreakpointNew(condition.handle), owned: true);
+    : this.rawFromPointer(_adwBreakpointNew(condition.handle), owned: true);
 
   /// Adds a setter to @self.
   ///

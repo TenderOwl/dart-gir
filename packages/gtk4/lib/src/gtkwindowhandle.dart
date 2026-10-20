@@ -19,8 +19,25 @@ part of '../gtk4.dart';
 /// role.
 class GtkWindowHandle extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkWindowHandle.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkWindowHandle.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkWindowHandle>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkWindowHandle.rawFromPointer(handle, owned: owned);
+  }
+  GtkWindowHandle.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -34,12 +51,23 @@ class GtkWindowHandle extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_window_handle_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkWindowHandle`.
   static final _gtkWindowHandleNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_window_handle_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkWindowHandle() : this.fromPointer(_gtkWindowHandleNew(), owned: true);
+  GtkWindowHandle() : this.rawFromPointer(_gtkWindowHandleNew(), owned: true);
 
   /// Gets the child widget of @self.
   static final _gtkWindowHandleGetChild =

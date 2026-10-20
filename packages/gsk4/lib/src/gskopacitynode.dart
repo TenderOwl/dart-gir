@@ -3,7 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node controlling the opacity of its single child node.
 class GskOpacityNode extends GskRenderNode {
-  GskOpacityNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskOpacityNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskOpacityNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskOpacityNode.rawFromPointer(handle, owned: owned);
+  }
+  GskOpacityNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +32,17 @@ class GskOpacityNode extends GskRenderNode {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_opacity_node_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GskRenderNode` that will drawn the @child with reduced
   /// @opacity.
   static final _gskOpacityNodeNew =
@@ -29,7 +55,10 @@ class GskOpacityNode extends GskRenderNode {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
   GskOpacityNode(GskRenderNode child, double opacity)
-    : this.fromPointer(_gskOpacityNodeNew(child.handle, opacity), owned: true);
+    : this.rawFromPointer(
+        _gskOpacityNodeNew(child.handle, opacity),
+        owned: true,
+      );
 
   /// Gets the child node that is getting opacityed by the given @node.
   static final _gskOpacityNodeGetChild =

@@ -40,7 +40,25 @@ part of '../adw.dart';
 /// becomes monospace, not the title or any extra widgets.
 class AdwExpanderRow extends AdwPreferencesRow
     implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
-  AdwExpanderRow.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwExpanderRow.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwExpanderRow>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwExpanderRow.rawFromPointer(handle, owned: owned);
+  }
+  AdwExpanderRow.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -54,12 +72,23 @@ class AdwExpanderRow extends AdwPreferencesRow
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_expander_row_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwExpanderRow`.
   static final _adwExpanderRowNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_expander_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwExpanderRow() : this.fromPointer(_adwExpanderRowNew(), owned: true);
+  AdwExpanderRow() : this.rawFromPointer(_adwExpanderRowNew(), owned: true);
 
   /// Adds an action widget to @self.
   static final _adwExpanderRowAddAction =

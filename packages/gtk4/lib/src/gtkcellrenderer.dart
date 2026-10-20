@@ -39,8 +39,25 @@ part of '../gtk4.dart';
 /// to “cell-background”. These “set” properties reflect whether a property
 /// has been set or not. You should not set them independently.
 class GtkCellRenderer extends GInitiallyUnowned {
-  GtkCellRenderer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRenderer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRenderer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRenderer.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRenderer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -53,6 +70,17 @@ class GtkCellRenderer extends GInitiallyUnowned {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_get_type',
+  ).asFunction<int Function()>()();
 
   /// Passes an activate event to the cell renderer for possible processing.
   /// Some cell renderers may use events; for example, `GtkCellRendererToggle`
@@ -134,16 +162,17 @@ class GtkCellRenderer extends GInitiallyUnowned {
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkCellRendererGetAlignedArea(
-        this.handle,
-        widget.handle,
-        flags.value,
-        cellArea.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkCellRendererGetAlignedArea(
+      this.handle,
+      widget.handle,
+      flags.value,
+      cellArea.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Fills in @xalign and @yalign with the appropriate values of @cell.
@@ -358,22 +387,26 @@ class GtkCellRenderer extends GInitiallyUnowned {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _gtkCellRendererGetPreferredSize(
-        this.handle,
-        widget.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : GtkRequisition.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GtkRequisition.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _gtkCellRendererGetPreferredSize(
+      this.handle,
+      widget.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkRequisition.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkRequisition.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Retrieves a renderer’s natural size when rendered to @widget.

@@ -40,7 +40,24 @@ part of '../gtk4.dart';
 /// Starting from GTK 4.12, `GtkBox` uses the [enum@Gtk.AccessibleRole.generic] role.
 class GtkBox extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
-  GtkBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkBox.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkBox>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkBox.rawFromPointer(handle, owned: owned);
+  }
+  GtkBox.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -54,6 +71,17 @@ class GtkBox extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_box_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new box.
   static final _gtkBoxNew =
       gtk4Lookup<
@@ -63,7 +91,7 @@ class GtkBox extends GtkWidget
           >('gtk_box_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkBox(GtkOrientation orientation, int spacing)
-    : this.fromPointer(_gtkBoxNew(orientation.value, spacing), owned: true);
+    : this.rawFromPointer(_gtkBoxNew(orientation.value, spacing), owned: true);
 
   /// Adds a child at the end.
   static final _gtkBoxAppend =

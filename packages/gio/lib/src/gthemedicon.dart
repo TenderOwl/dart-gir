@@ -11,7 +11,25 @@ part of '../gio.dart';
 /// resolve the list of names so that fallback icons work nicely with
 /// themes that inherit other themes.
 class GThemedIcon extends GObject implements GIcon {
-  GThemedIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GThemedIcon.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GThemedIcon>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GThemedIcon.rawFromPointer(handle, owned: owned);
+  }
+  GThemedIcon.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -24,6 +42,17 @@ class GThemedIcon extends GObject implements GIcon {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_themed_icon_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new themed icon for @iconname.
   static final _gThemedIconNew =

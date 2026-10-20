@@ -8,8 +8,22 @@ part of '../gdk4.dart';
 /// recognition to the clients, touchpad gestures are typically
 /// processed by the system, resulting in these events.
 class GdkTouchpadEvent extends GdkEvent {
-  GdkTouchpadEvent.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkTouchpadEvent.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkTouchpadEvent>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GdkTouchpadEvent.rawFromPointer(handle, owned: owned);
+  }
+  GdkTouchpadEvent.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +36,17 @@ class GdkTouchpadEvent extends GdkEvent {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_touchpad_event_get_type',
+  ).asFunction<int Function()>()();
 
   /// Extracts delta information from a touchpad event.
   static final _gdkTouchpadEventGetDeltas =

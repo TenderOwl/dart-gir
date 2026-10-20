@@ -122,7 +122,25 @@ part of '../gtk4.dart';
 /// - [enum@Gtk.AccessibleRole.tab_panel] for each page
 class GtkNotebook extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkNotebook.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkNotebook.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkNotebook>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkNotebook.rawFromPointer(handle, owned: owned);
+  }
+  GtkNotebook.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -136,12 +154,23 @@ class GtkNotebook extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_notebook_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkNotebook` widget with no pages.
   static final _gtkNotebookNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_notebook_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkNotebook() : this.fromPointer(_gtkNotebookNew(), owned: true);
+  GtkNotebook() : this.rawFromPointer(_gtkNotebookNew(), owned: true);
 
   /// Appends a page to @notebook.
   static final _gtkNotebookAppendPage =

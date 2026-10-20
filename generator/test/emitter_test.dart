@@ -442,10 +442,15 @@ void main() {
       // (`GFile.fromPointer(handle, owned: true)`) keep working.
       // The Dart name is `GioFile` — the namespace `Gio` prefix gets
       // prepended to the local GIR name `File`.
+      // `fromPointer` is a factory: it consults the wrapper cache so
+      // the same native pointer always yields the same Dart object. The
+      // generative work moves to `rawFromPointer`.
+      expect(code, contains('factory GioFile.fromPointer('));
       expect(
         code,
-        contains('GioFile.fromPointer(this.handle, {bool owned = false})'),
+        contains('GioFile.rawFromPointer(this.handle, {bool owned = false})'),
       );
+      expect(code, contains('cachedObject<GioFile>(handle.address)'));
       // cast<T>(factory) re-wraps handle as T via the user-provided
       // callback. Bound is `Object` (not `GObject`) so this works for
       // interfaces like `GFile` that don't have an `extends` clause
@@ -524,10 +529,129 @@ void main() {
           contains('GtkTextIter.fromPointer(_out0.cast<ffi.Void>())'),
         );
 
+        // ...and the wrapper has to keep the buffer alive: the anchor is
+        // unreachable the moment the method returns, so the collector
+        // would free the buffer while the wrapper still reads from it.
+        // `keepAlive` ties the anchor to the wrapper.
+        expect(
+          code,
+          contains(
+            'keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), '
+            '_out0Anchor)',
+          ),
+        );
+
         // The HeapAnchor helper comes from `package:gir_ffi/gir_ffi.dart`
         // — assert the import was registered so the library emitter
         // wires it in.
         expect(ctx.usesGirFfi, isTrue);
+      },
+    );
+
+    test(
+      'class OUT param with a two-star C type reads the pointer out of a slot',
+      () {
+        final report = GenerationReport();
+        // `GUnixFDList**` — the C function writes a *pointer* into the
+        // caller's slot. The value is the object that pointer refers to,
+        // not the slot itself, so the wrapper must not point at the slot.
+        final fn = GirFunction(
+          name: 'call_with_unix_fd_list',
+          cIdentifier: 'g_dbus_connection_call_with_unix_fd_list',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'fd_list',
+              direction: GirParameterDirection.out,
+              transferOwnership: GirTransferOwnership.full,
+              type: GirTypeRef(name: 'UnixFDList', cType: 'GUnixFDList**'),
+            ),
+          ],
+        );
+        final ns = GirNamespace(
+          name: 'Gio',
+          version: '2.0',
+          sharedLibrary: 'libgio-2.0.so.0',
+          cIdentifierPrefixes: const ['G', 'g'],
+          cSymbolPrefixes: const ['g'],
+          classes: [GirClass(name: 'UnixFDList', cType: 'GUnixFDList')],
+          functions: [fn],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+
+        // The slot is a pointer-sized cell, zeroed so an untouched out
+        // parameter reads as NULL rather than as a wild pointer.
+        expect(
+          code,
+          contains('final _out0 = calloc<ffi.Pointer<ffi.Void>>();'),
+        );
+
+        // The value is the pointer stored in the slot — not the slot.
+        expect(
+          code,
+          contains('GUnixFDList.fromPointer(_out0.value.cast<ffi.Void>()'),
+        );
+        expect(code, isNot(contains('_out0.cast<ffi.Void>()')));
+
+        // `transfer="full"` hands the reference over: the wrapper owns it.
+        expect(code, contains('owned: true'));
+
+        // The slot itself is the caller's memory and is freed right away.
+        expect(code, contains('malloc.free(_out0);'));
+
+        // A pointer slot is not a struct buffer — no anchor, no
+        // keep-alive: the object the pointer refers to owns itself.
+        expect(code, isNot(contains('HeapAnchor')));
+        expect(code, isNot(contains('keepAlive')));
+      },
+    );
+
+    test(
+      'class OUT param with a one-star C type keeps the struct buffer alive',
+      () {
+        final report = GenerationReport();
+        // `GITypeInfo*` — a plain struct exposed as a class by GIR. The
+        // C function writes the struct itself into the caller's buffer,
+        // so the wrapper points *into* that buffer and has to keep it.
+        final fn = GirFunction(
+          name: 'get_type_info',
+          cIdentifier: 'g_irepository_get_type_info',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: const [
+            GirParameter(
+              name: 'info',
+              direction: GirParameterDirection.out,
+              type: GirTypeRef(name: 'TypeInfo', cType: 'GITypeInfo*'),
+            ),
+          ],
+        );
+        final ns = GirNamespace(
+          name: 'GIRepository',
+          version: '3.0',
+          sharedLibrary: 'libgirepository-3.0.so.0',
+          cIdentifierPrefixes: const ['GI', 'gi'],
+          cSymbolPrefixes: const ['gi'],
+          classes: [GirClass(name: 'TypeInfo', cType: 'GITypeInfo')],
+          functions: [fn],
+        );
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn)!;
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+
+        // One star: the struct is written into the buffer, so the
+        // buffer is allocated as a struct and the wrapper keeps it.
+        expect(code, contains('HeapAnchor.allocate(256)'));
+        expect(
+          code,
+          contains(
+            'keepAlive(GITypeInfo.fromPointer(_out0.cast<ffi.Void>()), '
+            '_out0Anchor)',
+          ),
+        );
       },
     );
 
@@ -1032,6 +1156,54 @@ void main() {
   });
 
   group('ClassEmitter', () {
+    test('emits a GType accessor for a class the GIR knows the type of', () {
+      final report = GenerationReport();
+      final gobject = GirNamespace(
+        name: 'GObject',
+        version: '2.0',
+        sharedLibrary: 'libgobject-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['gobject', 'g'],
+        classes: [
+          GirClass(
+            name: 'Object',
+            cType: 'GObject',
+            glibGetType: 'g_object_get_type',
+          ),
+        ],
+      );
+      final ctx = _ctx(gobject, [gobject], report);
+      final emitter = ClassEmitter(ctx, emittedPackages: {'gobject'});
+
+      final code = emitter.emitClass(gobject.classes.first)!;
+      // The accessor names the native type, so user code can write
+      // `GListStore(TaskObject.GType)` without a string lookup.
+      expect(code, contains('static int get GType'));
+      expect(
+        code,
+        contains(
+          "gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>('g_object_get_type')",
+        ),
+      );
+    });
+
+    test('omits the GType accessor when the GIR has no get-type', () {
+      final report = GenerationReport();
+      final gobject = GirNamespace(
+        name: 'GObject',
+        version: '2.0',
+        sharedLibrary: 'libgobject-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['gobject', 'g'],
+        classes: [GirClass(name: 'Object', cType: 'GObject')],
+      );
+      final ctx = _ctx(gobject, [gobject], report);
+      final emitter = ClassEmitter(ctx, emittedPackages: {'gobject'});
+
+      final code = emitter.emitClass(gobject.classes.first)!;
+      expect(code, isNot(contains('static int get GType')));
+    });
+
     test('emits class with parent extends and finalizer base', () {
       final report = GenerationReport();
       final gobject = GirNamespace(
@@ -1072,19 +1244,33 @@ void main() {
         objectCode,
         contains('class GObject implements ffi.Finalizable {'),
       );
+      // `fromPointer` is a factory (the wrapper cache), `rawFromPointer`
+      // is the generative constructor behind it.
+      expect(objectCode, contains('factory GObject.fromPointer('));
       expect(
         objectCode,
-        contains('GObject.fromPointer(this.handle, {this.owned = false})'),
+        contains('GObject.rawFromPointer(this.handle, {this.owned = false})'),
       );
+      expect(objectCode, contains('cachedObject<GObject>(handle.address)'));
+      // The object registers itself, so a native round trip finds it.
+      expect(objectCode, contains('registerDartObject(this, handle.address)'));
+      // `GObject(int objectType)` instantiates an arbitrary native type —
+      // the way a Dart class gets an instance of the type it registered.
+      expect(objectCode, contains('GObject(int objectType)'));
+      expect(objectCode, contains('_gObjectNewv(objectType, 0, ffi.nullptr)'));
       expect(objectCode, contains('_attachFinalizer'));
       expect(ctx.isGObjectRooted(gobject.classes[0]), isTrue);
 
       final bindingCode = emitter.emitClass(gobject.classes[1])!;
       expect(bindingCode, contains('class GBinding extends GObject {'));
+      expect(bindingCode, contains('factory GBinding.fromPointer('));
       expect(
         bindingCode,
-        contains('GBinding.fromPointer(super.handle, {super.owned})'),
+        contains(
+          'GBinding.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();',
+        ),
       );
+      expect(bindingCode, contains('cachedObject<GBinding>(handle.address)'));
       // Both root (GObject) and parented (GBinding) classes emit a
       // `cast<T>(factory)` method that re-wraps the handle as a
       // user-specified type via a factory callback. Bound is `Object`
@@ -1120,7 +1306,7 @@ void main() {
       // work because every generated class/record declares its own
       // `fromPointer` constructor — the redirect targets the same
       // class when there's no parent to delegate to.
-      expect(bindingCode, contains('GBinding() : this.fromPointer('));
+      expect(bindingCode, contains('GBinding() : this.rawFromPointer('));
       expect(bindingCode, contains('GBinding.fromPointer('));
       expect(bindingCode, contains('String dupSource()'));
     });

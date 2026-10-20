@@ -134,7 +134,25 @@ part of '../gdk_pixbuf.dart';
 /// callback on the data, which allows to e.g. write the image
 /// to a socket or store it in a database.
 class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
-  GdkPixbuf.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPixbuf.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPixbuf>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkPixbuf.rawFromPointer(handle, owned: owned);
+  }
+  GdkPixbuf.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -147,6 +165,18 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gdkPixbufLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gdk_pixbuf_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a new `GdkPixbuf` structure and allocates a buffer for it.
   ///
@@ -175,7 +205,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     int bitsPerSample,
     int width,
     int height,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gdkPixbufNew(
           colorspace.value,
           hasAlpha ? 1 : 0,
@@ -225,7 +255,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     int width,
     int height,
     int rowstride,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gdkPixbufNewFromBytes(
           data.handle,
           colorspace.value,

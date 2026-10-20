@@ -27,7 +27,25 @@ class GtkCellView extends GtkWidget
         GtkCellLayout,
         GtkConstraintTarget,
         GtkOrientable {
-  GtkCellView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellView.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellView>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellView.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellView.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -41,12 +59,23 @@ class GtkCellView extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_view_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCellView` widget.
   static final _gtkCellViewNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkCellView() : this.fromPointer(_gtkCellViewNew(), owned: true);
+  GtkCellView() : this.rawFromPointer(_gtkCellViewNew(), owned: true);
 
   /// Creates a new `GtkCellView` widget with a specific `GtkCellArea`
   /// to layout cells and a specific `GtkCellAreaContext`.
@@ -71,7 +100,7 @@ class GtkCellView extends GtkWidget
             )
           >();
   GtkCellView.withContext(GtkCellArea area, GtkCellAreaContext context)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkCellViewNewWithContext(area.handle, context.handle),
         owned: true,
       );
@@ -123,7 +152,10 @@ class GtkCellView extends GtkWidget
           >('gtk_cell_view_new_with_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellView.withTexture(GdkTexture texture)
-    : this.fromPointer(_gtkCellViewNewWithTexture(texture.handle), owned: true);
+    : this.rawFromPointer(
+        _gtkCellViewNewWithTexture(texture.handle),
+        owned: true,
+      );
 
   /// Returns a `GtkTreePath` referring to the currently
   /// displayed row. If no row is currently displayed,

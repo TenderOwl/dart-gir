@@ -13,7 +13,25 @@ part of '../gtk4.dart';
 /// See [class@Gtk.FontDialogButton] for a convenient control
 /// that uses `GtkFontDialog` and presents the results.
 class GtkFontDialog extends GObject {
-  GtkFontDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkFontDialog.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkFontDialog>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkFontDialog.rawFromPointer(handle, owned: owned);
+  }
+  GtkFontDialog.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -27,12 +45,23 @@ class GtkFontDialog extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_font_dialog_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkFontDialog` object.
   static final _gtkFontDialogNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_font_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkFontDialog() : this.fromPointer(_gtkFontDialogNew(), owned: true);
+  GtkFontDialog() : this.rawFromPointer(_gtkFontDialogNew(), owned: true);
 
   /// Presents a font chooser dialog to the user.
   ///
@@ -636,9 +665,9 @@ class GtkFontDialog extends GObject {
               ffi.Int32 Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Pointer<Utf8>>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
@@ -647,27 +676,25 @@ class GtkFontDialog extends GObject {
             int Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (bool, PangoFontDescription, String, PangoLanguage)
   chooseFontAndFeaturesFinish(GAsyncResult result) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _out1 = malloc<ffi.Pointer<Utf8>>();
-    final _out2Anchor = HeapAnchor.allocate(256);
-    final _out2 = _out2Anchor.buffer;
+    final _out2 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gtkFontDialogChooseFontAndFeaturesFinish(
         this.handle,
         result.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _out1,
-        _out2.cast<ffi.Void>(),
+        _out2,
         _error,
       );
       if (_error.value != ffi.nullptr) {
@@ -675,12 +702,17 @@ class GtkFontDialog extends GObject {
       }
       return (
         (_ret) != 0,
-        PangoFontDescription.fromPointer(_out0.cast<ffi.Void>()),
+        PangoFontDescription.fromPointer(
+          _out0.value.cast<ffi.Void>(),
+          owned: true,
+        ),
         stringFromNative(_out1.value.cast(), free: true)!,
-        PangoLanguage.fromPointer(_out2.cast<ffi.Void>()),
+        PangoLanguage.fromPointer(_out2.value.cast<ffi.Void>(), owned: true),
       );
     } finally {
+      malloc.free(_out0);
       malloc.free(_out1);
+      malloc.free(_out2);
       calloc.free(_error);
     }
   }

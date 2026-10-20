@@ -186,7 +186,17 @@ void main() {
       // children list. The XML is the source of truth and
       // is read by the codegen, not the scanner.
       expect(cls.children, isEmpty);
-      expect(cls.callbacks, isEmpty);
+
+      // The fixture declares one `@GtkTemplateCallback` method.
+      expect(cls.callbacks, hasLength(1));
+      expect(cls.callbacks.single.methodName, 'onIconRelease');
+      expect(cls.callbacks.single.callbackName, 'on_icon_release');
+
+      // The scanner records the parameter names of every method, so
+      // the codegen can forward a signal's arguments to the user's
+      // method.
+      expect(cls.methodParameters['onIconRelease'], ['pos']);
+      expect(cls.methodParameters['onIncrementClicked'], isEmpty);
     });
   });
 }

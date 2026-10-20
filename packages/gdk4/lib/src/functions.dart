@@ -334,7 +334,10 @@ final _gdkContentDeserializeFinish =
     if (_error.value != ffi.nullptr) {
       throw GlibException.fromError(_error.value);
     }
-    return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+    return (
+      (_ret) != 0,
+      keepAlive(GValue.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   } finally {
     calloc.free(_error);
   }

@@ -3,6 +3,7 @@ library;
 
 import '../gir/gir.dart';
 import '../resolve/naming.dart';
+import '../resolve/types.dart';
 import 'async_emitter.dart';
 import 'callable.dart';
 import 'context.dart';
@@ -22,8 +23,15 @@ class RecordEmitter {
   /// has no dot).
   Map<String, StaticClassFunction> staticClassFunctions = const {};
 
-  String? emitRecord(GirRecord rec) =>
-      _emit(rec, rec.constructors, rec.methods, rec.functions, rec.doc);
+  String? emitRecord(GirRecord rec) {
+    // The type-system records are emitted as real `ffi.Struct`s: the
+    // caller builds them, so the layout has to be known — and it comes
+    // from the GIR.
+    if (TypeResolver.isStructRecord(rec, ctx.namespace.name)) {
+      return _emitStruct(rec);
+    }
+    return _emit(rec, rec.constructors, rec.methods, rec.functions, rec.doc);
+  }
 
   String? emitUnion(GirUnion u) =>
       _emit(u, u.constructors, u.methods, u.functions, u.doc);
@@ -37,6 +45,7 @@ class RecordEmitter {
     i.doc,
     signals: i.signals,
     isInterface: true,
+    getType: i.glibGetType,
   );
 
   String? _emit(
@@ -47,6 +56,7 @@ class RecordEmitter {
     String? doc, {
     List<GirSignal> signals = const [],
     bool isInterface = false,
+    String? getType,
   }) {
     final dartName = ctx.dartTypeName(ctx.namespace.name, type.name);
     if (ctx.isDuplicateType(type)) {
@@ -62,7 +72,13 @@ class RecordEmitter {
       return null;
     }
     final callables = CallableEmitter(ctx);
-    final memberNames = <String>{'handle', 'fromPointer', dartName};
+    final memberNames = <String>{
+      'handle',
+      'fromPointer',
+      dartName,
+      'GType',
+      '_gType',
+    };
     var unnamedCtorUsed = false;
     final b = StringBuffer();
     for (final line in ctx.docLines(doc)) {
@@ -84,7 +100,14 @@ class RecordEmitter {
     // needs to transfer ownership, and dropping `owned` from the
     // factory type lets user subclasses write the shortest possible
     // forwarding constructor (`fromPointer(handle)`).
-    b.writeln('$dartName.fromPointer(this.handle, {bool owned = false});');
+    // The wrapper cache lives in `package:gir_ffi`.
+    ctx.usesGirFfi = true;
+    // The wrapper cache lives in `package:gir_ffi`.
+    ctx.usesGirFfi = true;
+    b.writeln(_recordFromPointerFactory(dartName));
+    b.writeln('$dartName.rawFromPointer(this.handle, {bool owned = false}) {');
+    b.writeln('registerDartObject(this, handle.address);');
+    b.writeln('}');
     b.writeln('final ffi.Pointer<ffi.Void> handle;');
     // `cast<T>(factory)` lets the user recover the destination class's
     // methods from a borrowed wrapper (e.g. `GObject` from
@@ -114,6 +137,14 @@ class RecordEmitter {
     b.writeln(') {');
     b.writeln('  return factory(handle);');
     b.writeln('}');
+
+    // The interface's native type. `glib:get-type` names the `get_type`
+    // function GLib exports for every registered type.
+    final gTypeAccessor = ctx.gTypeAccessor(getType, what: 'interface');
+    if (gTypeAccessor != null) {
+      b.writeln();
+      b.writeln(gTypeAccessor);
+    }
 
     for (final c in constructors) {
       final name = RecordEmitter.ctorName(c);
@@ -240,6 +271,35 @@ class RecordEmitter {
     return b.toString();
   }
 
+  /// Emits a record as an `ffi.Struct`.
+  ///
+  /// The field list comes from the GIR, so the Dart layout follows the
+  /// C one: the same field order, the same widths, and the C ABI's
+  /// alignment rules in between.
+  String _emitStruct(GirRecord rec) {
+    final dartName = ctx.dartTypeName(ctx.namespace.name, rec.name);
+    final b = StringBuffer();
+    for (final line in ctx.docLines(rec.doc)) {
+      b.writeln(line);
+    }
+    b.writeln('final class $dartName extends ffi.Struct {');
+    for (final field in rec.fields) {
+      final type = field.type;
+      if (type == null) continue;
+      final mapping = ctx.resolve(type);
+      final native = mapping.kind == TypeKind.callback
+          ? 'ffi.Pointer<ffi.Void>'
+          : mapping.nativeType;
+      final (annotation, dartType) = _structFieldTypes(native);
+      if (annotation.isNotEmpty) {
+        b.writeln('  $annotation');
+      }
+      b.writeln('  external $dartType ${field.name};');
+    }
+    b.write('}');
+    return b.toString();
+  }
+
   /// Public name for a GIR constructor (`new` → `''`, `new_with_label` →
   /// `withLabel`).
   static String ctorName(GirConstructor c) {
@@ -251,4 +311,59 @@ class RecordEmitter {
 
   static String _indent(String code) =>
       code.split('\n').map((l) => l.isEmpty ? l : '  $l').join('\n');
+}
+
+/// The `fromPointer` factory every record and interface wrapper gets.
+///
+/// The factory consults the wrapper cache first: the same native pointer
+/// always yields the same Dart object. The generative work moves to
+/// `rawFromPointer`, which the constructor chain calls — a generative
+/// constructor may not redirect to a factory.
+String _recordFromPointerFactory(String dartName) =>
+    '''
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory $dartName.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<$dartName>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return $dartName.rawFromPointer(handle, owned: owned);
+  }''';
+
+/// The Dart FFI declaration of a struct field.
+///
+/// The native type comes from the resolver; a pointer (or a callback,
+/// which is a pointer too) needs no annotation.
+(String, String) _structFieldTypes(String nativeType) {
+  switch (nativeType) {
+    case 'ffi.Int8':
+      return ('@ffi.Int8()', 'int');
+    case 'ffi.Uint8':
+      return ('@ffi.Uint8()', 'int');
+    case 'ffi.Int16':
+      return ('@ffi.Int16()', 'int');
+    case 'ffi.Uint16':
+      return ('@ffi.Uint16()', 'int');
+    case 'ffi.Int32':
+      return ('@ffi.Int32()', 'int');
+    case 'ffi.Uint32':
+      return ('@ffi.Uint32()', 'int');
+    case 'ffi.Int64':
+      return ('@ffi.Int64()', 'int');
+    case 'ffi.Uint64':
+      return ('@ffi.Uint64()', 'int');
+    case 'ffi.Size':
+      return ('@ffi.Size()', 'int');
+    case 'ffi.Float':
+      return ('@ffi.Float()', 'double');
+    case 'ffi.Double':
+      return ('@ffi.Double()', 'double');
+    default:
+      return ('', 'ffi.Pointer<ffi.Void>');
+  }
 }

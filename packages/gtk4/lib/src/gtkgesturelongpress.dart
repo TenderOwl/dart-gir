@@ -17,8 +17,25 @@ part of '../gtk4.dart';
 /// It can be modified by the [property@Gtk.GestureLongPress:delay-factor]
 /// property.
 class GtkGestureLongPress extends GtkGestureSingle {
-  GtkGestureLongPress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkGestureLongPress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkGestureLongPress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkGestureLongPress.rawFromPointer(handle, owned: owned);
+  }
+  GtkGestureLongPress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -32,13 +49,24 @@ class GtkGestureLongPress extends GtkGestureSingle {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_gesture_long_press_get_type',
+  ).asFunction<int Function()>()();
+
   /// Returns a newly created `GtkGesture` that recognizes long presses.
   static final _gtkGestureLongPressNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_long_press_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkGestureLongPress()
-    : this.fromPointer(_gtkGestureLongPressNew(), owned: true);
+    : this.rawFromPointer(_gtkGestureLongPressNew(), owned: true);
 
   /// Returns the delay factor.
   static final _gtkGestureLongPressGetDelayFactor =

@@ -5,8 +5,25 @@ part of '../gtk4.dart';
 ///
 /// This means that [method@Gtk.Widget.mnemonic_activate] is called.
 class GtkMnemonicAction extends GtkShortcutAction {
-  GtkMnemonicAction.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkMnemonicAction.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkMnemonicAction>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkMnemonicAction.rawFromPointer(handle, owned: owned);
+  }
+  GtkMnemonicAction.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -19,6 +36,17 @@ class GtkMnemonicAction extends GtkShortcutAction {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_mnemonic_action_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the mnemonic action.
   ///

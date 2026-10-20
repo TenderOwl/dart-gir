@@ -8,7 +8,24 @@ part of '../gio.dart';
 /// Currently, only metainformation about the emblem's origin is
 /// supported. More may be added in the future.
 class GEmblem extends GObject implements GIcon {
-  GEmblem.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GEmblem.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GEmblem>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GEmblem.rawFromPointer(handle, owned: owned);
+  }
+  GEmblem.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +39,17 @@ class GEmblem extends GObject implements GIcon {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_emblem_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new emblem for @icon.
   static final _gEmblemNew =
       gioLookup<
@@ -30,7 +58,8 @@ class GEmblem extends GObject implements GIcon {
             >
           >('g_emblem_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GEmblem(GIcon icon) : this.fromPointer(_gEmblemNew(icon.handle), owned: true);
+  GEmblem(GIcon icon)
+    : this.rawFromPointer(_gEmblemNew(icon.handle), owned: true);
 
   /// Creates a new emblem for @icon.
   static final _gEmblemNewWithOrigin =
@@ -43,7 +72,7 @@ class GEmblem extends GObject implements GIcon {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GEmblem.withOrigin(GIcon icon, GEmblemOrigin origin)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gEmblemNewWithOrigin(icon.handle, origin.value),
         owned: true,
       );

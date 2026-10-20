@@ -48,7 +48,25 @@ class GtkAssistant extends GtkWindow
         GtkNative,
         GtkRoot,
         GtkShortcutManager {
-  GtkAssistant.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkAssistant.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkAssistant>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkAssistant.rawFromPointer(handle, owned: owned);
+  }
+  GtkAssistant.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -62,12 +80,23 @@ class GtkAssistant extends GtkWindow
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_assistant_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkAssistant`.
   static final _gtkAssistantNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_assistant_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkAssistant() : this.fromPointer(_gtkAssistantNew(), owned: true);
+  GtkAssistant() : this.rawFromPointer(_gtkAssistantNew(), owned: true);
 
   /// Adds a widget to the action area of a `GtkAssistant`.
   static final _gtkAssistantAddActionWidget =

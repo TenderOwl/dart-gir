@@ -9,7 +9,22 @@ part of '../gi_repository3.dart';
 /// See [class@GIRepository.CallableInfo] for information on how to retrieve
 /// arguments and other metadata from the signal.
 class GISignalInfo extends GICallableInfo {
-  GISignalInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GISignalInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GISignalInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GISignalInfo.rawFromPointer(handle, owned: owned);
+  }
+  GISignalInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +37,18 @@ class GISignalInfo extends GICallableInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_signal_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Obtain the class closure for this signal if one is set.
   ///

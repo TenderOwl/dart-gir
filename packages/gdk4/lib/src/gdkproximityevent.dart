@@ -3,8 +3,22 @@ part of '../gdk4.dart';
 
 /// An event related to the proximity of a tool to a device.
 class GdkProximityEvent extends GdkEvent {
-  GdkProximityEvent.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkProximityEvent.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkProximityEvent>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GdkProximityEvent.rawFromPointer(handle, owned: owned);
+  }
+  GdkProximityEvent.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,4 +31,15 @@ class GdkProximityEvent extends GdkEvent {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_proximity_event_get_type',
+  ).asFunction<int Function()>()();
 }

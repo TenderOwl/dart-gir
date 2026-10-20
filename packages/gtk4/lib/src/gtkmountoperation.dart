@@ -15,8 +15,22 @@ part of '../gtk4.dart';
 /// When necessary, `GtkMountOperation` shows dialogs to let the user
 /// enter passwords, ask questions or show processes blocking unmount.
 class GtkMountOperation extends GMountOperation {
-  GtkMountOperation.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkMountOperation.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkMountOperation>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkMountOperation.rawFromPointer(handle, owned: owned);
+  }
+  GtkMountOperation.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,6 +44,17 @@ class GtkMountOperation extends GMountOperation {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_mount_operation_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkMountOperation`.
   static final _gtkMountOperationNew =
       gtk4Lookup<
@@ -39,7 +64,7 @@ class GtkMountOperation extends GMountOperation {
           >('gtk_mount_operation_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMountOperation([GtkWindow? parent])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkMountOperationNew(parent?.handle ?? ffi.nullptr),
         owned: true,
       );

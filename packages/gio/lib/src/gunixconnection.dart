@@ -14,8 +14,25 @@ part of '../gio.dart';
 /// interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file when
 /// using it. This is no longer necessary since GLib 2.72.
 class GUnixConnection extends GSocketConnection {
-  GUnixConnection.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GUnixConnection.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GUnixConnection>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GUnixConnection.rawFromPointer(handle, owned: owned);
+  }
+  GUnixConnection.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -28,6 +45,17 @@ class GUnixConnection extends GSocketConnection {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_unix_connection_get_type',
+  ).asFunction<int Function()>()();
 
   /// Receives credentials from the sending end of the connection.  The
   /// sending end has to call g_unix_connection_send_credentials() (or

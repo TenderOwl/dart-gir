@@ -14,8 +14,25 @@ part of '../gtk4.dart';
 /// It is also possible to make case-insensitive comparisons, with
 /// [method@Gtk.StringFilter.set_ignore_case].
 class GtkStringFilter extends GtkFilter {
-  GtkStringFilter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkStringFilter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkStringFilter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkStringFilter.rawFromPointer(handle, owned: owned);
+  }
+  GtkStringFilter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,6 +46,17 @@ class GtkStringFilter extends GtkFilter {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_string_filter_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new string filter.
   ///
   /// You will want to set up the filter by providing a string to search for
@@ -41,7 +69,7 @@ class GtkStringFilter extends GtkFilter {
           >('gtk_string_filter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkStringFilter([GtkExpression? expression])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkStringFilterNew(expression?.handle ?? ffi.nullptr),
         owned: true,
       );

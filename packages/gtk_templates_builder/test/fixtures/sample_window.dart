@@ -41,4 +41,14 @@ class SampleWindow extends GtkApplicationWindow with _$SampleWindowTemplate {
   void onIncrementClicked() {
     counterLabel.props.label = 'Clicked!';
   }
+
+  // A signal whose GIR name carries a dash (`icon-release`) and whose
+  // signature carries an argument. The bindings name the helper
+  // `onIconRelease`; the generated mixin calls it with the argument
+  // this method takes. The analyzer checks the whole thing, because
+  // the generated part file is resolved against `package:gtk4`.
+  @GtkTemplateCallback()
+  void onIconRelease(GtkEntryIconPosition pos) {
+    counterLabel.props.label = 'Icon released at $pos';
+  }
 }

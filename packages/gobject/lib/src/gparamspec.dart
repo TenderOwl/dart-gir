@@ -14,7 +14,23 @@ part of '../gobject.dart';
 /// used, but they cannot be mixed. Using `-` is considerably more
 /// efficient, and is the ‘canonical form’. Using `_` is discouraged.
 class GParamSpec {
-  GParamSpec.fromPointer(this.handle, {this.owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GParamSpec.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GParamSpec>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GParamSpec.rawFromPointer(handle, owned: owned);
+  }
+  GParamSpec.rawFromPointer(this.handle, {this.owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
   final bool owned;
 
@@ -29,6 +45,17 @@ class GParamSpec {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>('intern')
+          .asFunction<int Function()>()();
 
   /// Get the short description of a #GParamSpec.
   static final _gParamSpecGetBlurb =

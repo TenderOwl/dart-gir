@@ -16,8 +16,25 @@ part of '../gtk4.dart';
 /// and the `GtkCellRendererPixbuf:pixbuf-expander-closed` property is set to a
 /// pixbuf, it renders that one.
 class GtkCellRendererPixbuf extends GtkCellRenderer {
-  GtkCellRendererPixbuf.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRendererPixbuf.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRendererPixbuf>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRendererPixbuf.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRendererPixbuf.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -31,6 +48,17 @@ class GtkCellRendererPixbuf extends GtkCellRenderer {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_pixbuf_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCellRendererPixbuf`. Adjust rendering
   /// parameters using object properties. Object properties can be set
   /// globally (with g_object_set()). Also, with `GtkTreeViewColumn`, you
@@ -43,7 +71,7 @@ class GtkCellRendererPixbuf extends GtkCellRenderer {
         'gtk_cell_renderer_pixbuf_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererPixbuf()
-    : this.fromPointer(_gtkCellRendererPixbufNew(), owned: true);
+    : this.rawFromPointer(_gtkCellRendererPixbufNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

@@ -30,7 +30,23 @@ part of '../gi_repository3.dart';
 /// gi_base_info_unref (button_info);
 /// ```
 class GIBaseInfo {
-  GIBaseInfo.fromPointer(this.handle, {this.owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIBaseInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIBaseInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GIBaseInfo.rawFromPointer(handle, owned: owned);
+  }
+  GIBaseInfo.rawFromPointer(this.handle, {this.owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
   final bool owned;
 
@@ -45,6 +61,18 @@ class GIBaseInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_base_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Clears memory allocated internally by a stack-allocated
   /// [type@GIRepository.BaseInfo].

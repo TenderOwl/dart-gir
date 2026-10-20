@@ -13,8 +13,25 @@ part of '../gtk_source5.dart';
 /// requested. [method@HoverContext.get_iter] will get you the location
 /// of the pointer when the request was made.
 class GtkSourceHoverContext extends GObject {
-  GtkSourceHoverContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceHoverContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceHoverContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceHoverContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceHoverContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -27,6 +44,18 @@ class GtkSourceHoverContext extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_hover_context_get_type',
+      ).asFunction<int Function()>()();
 
   /// Gets the current word bounds of the hover.
   ///
@@ -57,22 +86,26 @@ class GtkSourceHoverContext extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      final _ret = _gtkSourceHoverContextGetBounds(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        (_out0) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _gtkSourceHoverContextGetBounds(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// A convenience function to get the buffer.
@@ -102,13 +135,14 @@ class GtkSourceHoverContext extends GObject {
   (bool, GtkTextIter) getIter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkSourceHoverContextGetIter(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkSourceHoverContextGetIter(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   static final _gtkSourceHoverContextGetView =

@@ -33,8 +33,25 @@ part of '../adw.dart';
 /// If the initial and final values are equal, and the initial velocity is not 0,
 /// the animation value will bounce and return to its resting position.
 class AdwSpringAnimation extends AdwAnimation {
-  AdwSpringAnimation.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwSpringAnimation.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwSpringAnimation>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwSpringAnimation.rawFromPointer(handle, owned: owned);
+  }
+  AdwSpringAnimation.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,6 +64,17 @@ class AdwSpringAnimation extends AdwAnimation {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_spring_animation_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `AdwSpringAnimation` on @widget.
   ///
@@ -79,7 +107,7 @@ class AdwSpringAnimation extends AdwAnimation {
     double to,
     AdwSpringParams springParams,
     AdwAnimationTarget target,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _adwSpringAnimationNew(
           widget.handle,
           from,

@@ -119,6 +119,8 @@ class ClassEmitter {
 
     final rooted = ctx.isGObjectRooted(cls);
     final sink = rooted && ctx.sinksFloatingRefs(cls);
+    // The wrapper cache lives in `package:gir_ffi`.
+    ctx.usesGirFfi = true;
     if (rooted && packageNameFor(ctx.namespace) != 'gobject') {
       ctx.imports.add('gobject');
     }
@@ -154,7 +156,14 @@ class ClassEmitter {
     }
 
     final callables = CallableEmitter(ctx);
-    final memberNames = <String>{'handle', 'owned', 'fromPointer', dartName};
+    final memberNames = <String>{
+      'handle',
+      'owned',
+      'fromPointer',
+      dartName,
+      'GType',
+      '_gType',
+    };
     final ancestorSigs = _ancestorMethodSigs(cls);
     final interfaceSigs = _interfaceMethodSigs(cls);
     final inheritedSigs = _inheritedSigs(cls);
@@ -181,25 +190,50 @@ class ClassEmitter {
     // the post-mirror header reflects what's structurally satisfied).
     b.writeln('__DART_GIR_HEADER_PLACEHOLDER__');
     if (parentName == null) {
+      // `fromPointer` is a *factory* because it consults the wrapper
+      // cache: the same native pointer must always yield the same Dart
+      // object, or a Dart subclass would lose its identity (and its
+      // payload) on the way out of native code. The generative work
+      // moves to `rawFromPointer`, which the subclass chain calls.
+      b.writeln(_fromPointerFactory(dartName, rooted: rooted));
+      b.writeln(
+        '$dartName.rawFromPointer(this.handle, {this.owned = false}) {',
+      );
+      b.writeln('registerDartObject(this, handle.address);');
       if (rooted) {
-        b.writeln('$dartName.fromPointer(this.handle, {this.owned = false}) {');
         b.writeln('if (owned) {');
+        b.writeln(
+          '// A widget comes with a *floating* reference: nobody owns it',
+        );
+        b.writeln(
+          '// until a parent takes it. The wrapper owns the object, so the',
+        );
+        b.writeln(
+          '// reference is sunk — otherwise the parent that parents the',
+        );
+        b.writeln('// widget would own the very reference this wrapper\'s');
+        b.writeln('// finalizer releases, and the widget would be freed while');
+        b.writeln('// the parent still uses it.');
+        b.writeln('if (isFloating()) {');
+        b.writeln('refSink();');
+        b.writeln('}');
         b.writeln('_attachFinalizer();');
         b.writeln('}');
-        b.writeln('}');
-      } else {
-        b.writeln('$dartName.fromPointer(this.handle, {this.owned = false});');
       }
+      b.writeln('}');
       b.writeln('final ffi.Pointer<ffi.Void> handle;');
       b.writeln('final bool owned;');
       if (rooted) {
         b.writeln(
           'void _attachFinalizer() => gobjectFinalizer.attach(this, handle, detach: this);',
         );
+        b.writeln();
+        b.writeln(_gObjectTypeConstructor(dartName));
       }
     } else {
+      b.writeln(_fromPointerFactory(dartName, rooted: rooted));
       b.writeln(
-        '$dartName.fromPointer(super.handle, {super.owned}) : super.fromPointer();',
+        '$dartName.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();',
       );
     }
     // `cast<T>(factory)` lets the user recover the destination class's
@@ -229,6 +263,15 @@ class ClassEmitter {
     b.writeln(') {');
     b.writeln('  return factory(handle);');
     b.writeln('}');
+
+    // The class's native type. `glib:get-type` names the `get_type`
+    // function GLib exports for every registered type; the accessor is
+    // how user code names a native type — `GListStore(TaskObject.GType)`.
+    final gTypeAccessor = ctx.gTypeAccessor(cls.glibGetType);
+    if (gTypeAccessor != null) {
+      b.writeln();
+      b.writeln(gTypeAccessor);
+    }
 
     for (final c in cls.constructors) {
       final name = RecordEmitter.ctorName(c);
@@ -1303,6 +1346,62 @@ class ClassEmitter {
     return ctx.namespace;
   }
 }
+
+/// The `fromPointer` factory every GObject wrapper gets.
+///
+/// The factory consults the wrapper cache first: the same native pointer
+/// always yields the same Dart object. Without it, a Dart subclass of a
+/// GObject class would come back from native code as a bare wrapper and
+/// lose its Dart state.
+///
+/// On a cache hit the reference the C call handed over is surplus — the
+/// cached wrapper already owns one — so it is released.
+String _fromPointerFactory(String dartName, {required bool rooted}) {
+  final release = rooted
+      ? '      if (owned) {\n        gObjectUnref(handle);\n      }'
+      : '';
+  return '''
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory $dartName.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<$dartName>(handle.address);
+    if (cached != null) {
+$release
+      return cached;
+    }
+    return $dartName.rawFromPointer(handle, owned: owned);
+  }''';
+}
+
+/// The `X(int objectType)` constructor of the GObject root class.
+///
+/// It is how a Dart class gets an instance of a native type it
+/// registered itself:
+///
+/// ```dart
+/// class TaskObject extends GObject {
+///   static final int GType = registerDartType('TaskObject', GObject.GType);
+///   TaskObject() : super(GType);
+/// }
+/// ```
+String _gObjectTypeConstructor(String dartName) =>
+    '''
+  /// Creates an instance of the native type [objectType].
+  ///
+  /// Register the type first (`registerDartType`), then hand its
+  /// `GType` to `super(GType)`. The new object is registered in the
+  /// wrapper cache, so a native round trip finds *this* Dart object
+  /// again.
+  $dartName(int objectType)
+      : this.rawFromPointer(
+          _gObjectNewv(objectType, 0, ffi.nullptr),
+          owned: true,
+        );''';
 
 /// One property's worth of metadata, plus the class that *owns* the
 /// backing getter / setter methods. Used by the `props` accessor

@@ -7,8 +7,25 @@ part of '../gio.dart';
 /// a certificate and a private key (which is needed when acting as a
 /// [iface@Gio.TlsServerConnection]).
 class GTlsCertificate extends GObject {
-  GTlsCertificate.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GTlsCertificate.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GTlsCertificate>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GTlsCertificate.rawFromPointer(handle, owned: owned);
+  }
+  GTlsCertificate.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,6 +38,17 @@ class GTlsCertificate extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_tls_certificate_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a #GTlsCertificate from the data in @file.
   ///

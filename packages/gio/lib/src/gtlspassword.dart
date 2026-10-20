@@ -4,7 +4,25 @@ part of '../gio.dart';
 /// An abstract interface representing a password used in TLS. Often used in
 /// user interaction such as unlocking a key storage token.
 class GTlsPassword extends GObject {
-  GTlsPassword.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GTlsPassword.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GTlsPassword>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GTlsPassword.rawFromPointer(handle, owned: owned);
+  }
+  GTlsPassword.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +35,17 @@ class GTlsPassword extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_tls_password_get_type',
+  ).asFunction<int Function()>()();
 
   /// Create a new #GTlsPassword object.
   static final _gTlsPasswordNew =

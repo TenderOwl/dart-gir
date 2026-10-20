@@ -12,7 +12,22 @@ part of '../gio.dart';
 ///
 /// See [method@Gio.ActionMap.add_action_entries] for an example.
 final class GActionEntry {
-  GActionEntry.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GActionEntry.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GActionEntry>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GActionEntry.rawFromPointer(handle, owned: owned);
+  }
+  GActionEntry.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -30,7 +45,22 @@ final class GActionEntry {
 
 /// The virtual function table for [type@Gio.ActionGroup].
 final class GActionGroupInterface {
-  GActionGroupInterface.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GActionGroupInterface.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GActionGroupInterface>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GActionGroupInterface.rawFromPointer(handle, owned: owned);
+  }
+  GActionGroupInterface.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -48,7 +78,22 @@ final class GActionGroupInterface {
 
 /// The virtual function table for [type@Gio.Action].
 final class GActionInterface {
-  GActionInterface.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GActionInterface.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GActionInterface>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GActionInterface.rawFromPointer(handle, owned: owned);
+  }
+  GActionInterface.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -66,7 +111,22 @@ final class GActionInterface {
 
 /// The virtual function table for [iface@Gio.ActionMap].
 final class GActionMapInterface {
-  GActionMapInterface.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GActionMapInterface.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GActionMapInterface>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GActionMapInterface.rawFromPointer(handle, owned: owned);
+  }
+  GActionMapInterface.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -84,7 +144,22 @@ final class GActionMapInterface {
 
 /// Application Information interface, for operating system portability.
 final class GAppInfoIface {
-  GAppInfoIface.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GAppInfoIface.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GAppInfoIface>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GAppInfoIface.rawFromPointer(handle, owned: owned);
+  }
+  GAppInfoIface.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -101,7 +176,22 @@ final class GAppInfoIface {
 }
 
 final class GAppLaunchContextClass {
-  GAppLaunchContextClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GAppLaunchContextClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GAppLaunchContextClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GAppLaunchContextClass.rawFromPointer(handle, owned: owned);
+  }
+  GAppLaunchContextClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -118,7 +208,22 @@ final class GAppLaunchContextClass {
 }
 
 final class GAppLaunchContextPrivate {
-  GAppLaunchContextPrivate.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GAppLaunchContextPrivate.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GAppLaunchContextPrivate>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GAppLaunchContextPrivate.rawFromPointer(handle, owned: owned);
+  }
+  GAppLaunchContextPrivate.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -136,7 +241,22 @@ final class GAppLaunchContextPrivate {
 
 /// Virtual function table for #GApplication.
 final class GApplicationClass {
-  GApplicationClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GApplicationClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GApplicationClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GApplicationClass.rawFromPointer(handle, owned: owned);
+  }
+  GApplicationClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -155,7 +275,25 @@ final class GApplicationClass {
 /// The #GApplicationCommandLineClass-struct
 /// contains private data only.
 final class GApplicationCommandLineClass {
-  GApplicationCommandLineClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GApplicationCommandLineClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GApplicationCommandLineClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GApplicationCommandLineClass.rawFromPointer(handle, owned: owned);
+  }
+  GApplicationCommandLineClass.rawFromPointer(
+    this.handle, {
+    bool owned = false,
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -172,7 +310,25 @@ final class GApplicationCommandLineClass {
 }
 
 final class GApplicationCommandLinePrivate {
-  GApplicationCommandLinePrivate.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GApplicationCommandLinePrivate.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GApplicationCommandLinePrivate>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GApplicationCommandLinePrivate.rawFromPointer(handle, owned: owned);
+  }
+  GApplicationCommandLinePrivate.rawFromPointer(
+    this.handle, {
+    bool owned = false,
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -189,163 +345,22 @@ final class GApplicationCommandLinePrivate {
 }
 
 final class GApplicationPrivate {
-  GApplicationPrivate.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  /// Wraps the native object at [handle].
   ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  /// The same native pointer always yields the same Dart object.
+  factory GApplicationPrivate.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GApplicationPrivate>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GApplicationPrivate.rawFromPointer(handle, owned: owned);
   }
-}
-
-/// Provides an interface for asynchronous initializing object such that
-/// initialization may fail.
-final class GAsyncInitableIface {
-  GAsyncInitableIface.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  GApplicationPrivate.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
   }
-}
-
-/// Interface definition for [iface@Gio.AsyncResult].
-final class GAsyncResultIface {
-  GAsyncResultIface.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GBufferedInputStreamClass {
-  GBufferedInputStreamClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GBufferedInputStreamPrivate {
-  GBufferedInputStreamPrivate.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GBufferedOutputStreamClass {
-  GBufferedOutputStreamClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GBufferedOutputStreamPrivate {
-  GBufferedOutputStreamPrivate.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GCancellableClass {
-  GCancellableClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GCancellablePrivate {
-  GCancellablePrivate.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GCharsetConverterClass {
-  GCharsetConverterClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

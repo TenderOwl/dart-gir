@@ -21,8 +21,25 @@ part of '../gio.dart';
 /// GIO interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file
 /// when using it. This is no longer necessary since GLib 2.72.
 class GUnixCredentialsMessage extends GSocketControlMessage {
-  GUnixCredentialsMessage.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GUnixCredentialsMessage.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GUnixCredentialsMessage>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GUnixCredentialsMessage.rawFromPointer(handle, owned: owned);
+  }
+  GUnixCredentialsMessage.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -36,13 +53,24 @@ class GUnixCredentialsMessage extends GSocketControlMessage {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_unix_credentials_message_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GUnixCredentialsMessage with credentials matching the current processes.
   static final _gUnixCredentialsMessageNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_unix_credentials_message_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GUnixCredentialsMessage()
-    : this.fromPointer(_gUnixCredentialsMessageNew(), owned: true);
+    : this.rawFromPointer(_gUnixCredentialsMessageNew(), owned: true);
 
   /// Creates a new #GUnixCredentialsMessage holding @credentials.
   static final _gUnixCredentialsMessageNewWithCredentials =
@@ -53,7 +81,7 @@ class GUnixCredentialsMessage extends GSocketControlMessage {
           >('g_unix_credentials_message_new_with_credentials')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GUnixCredentialsMessage.withCredentials(GCredentials credentials)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gUnixCredentialsMessageNewWithCredentials(credentials.handle),
         owned: true,
       );

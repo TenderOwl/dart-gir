@@ -39,8 +39,25 @@ part of '../gtk4.dart';
 /// still take precedence over your changes, as it uses the
 /// %GTK_STYLE_PROVIDER_PRIORITY_USER priority.
 class GtkStyleContext extends GObject {
-  GtkStyleContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkStyleContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkStyleContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkStyleContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkStyleContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -53,6 +70,17 @@ class GtkStyleContext extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_style_context_get_type',
+  ).asFunction<int Function()>()();
 
   /// Adds a style class to @context, so later uses of the
   /// style context will make use of this new class for styling.
@@ -124,10 +152,11 @@ class GtkStyleContext extends GObject {
   GtkBorder getBorder() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkStyleContextGetBorder(this.handle, _out0.cast<ffi.Void>());
-      return GtkBorder.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkStyleContextGetBorder(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GtkBorder.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the foreground color for a given state.
@@ -143,10 +172,8 @@ class GtkStyleContext extends GObject {
   GdkRGBA getColor() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkStyleContextGetColor(this.handle, _out0.cast<ffi.Void>());
-      return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkStyleContextGetColor(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(GdkRGBA.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
   }
 
   /// Returns the `GdkDisplay` to which @context is attached.
@@ -174,10 +201,11 @@ class GtkStyleContext extends GObject {
   GtkBorder getMargin() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkStyleContextGetMargin(this.handle, _out0.cast<ffi.Void>());
-      return GtkBorder.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkStyleContextGetMargin(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GtkBorder.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the padding for a given state as a `GtkBorder`.
@@ -193,10 +221,11 @@ class GtkStyleContext extends GObject {
   GtkBorder getPadding() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkStyleContextGetPadding(this.handle, _out0.cast<ffi.Void>());
-      return GtkBorder.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkStyleContextGetPadding(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GtkBorder.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Returns the scale used for assets.
@@ -265,14 +294,15 @@ class GtkStyleContext extends GObject {
     return withNativeString(colorName, (nativeColorName) {
       final _out0Anchor = HeapAnchor.allocate(256);
       final _out0 = _out0Anchor.buffer;
-      try {
-        final _ret = _gtkStyleContextLookupColor(
-          this.handle,
-          nativeColorName.cast<Utf8>(),
-          _out0.cast<ffi.Void>(),
-        );
-        return ((_ret) != 0, GdkRGBA.fromPointer(_out0.cast<ffi.Void>()));
-      } finally {}
+      final _ret = _gtkStyleContextLookupColor(
+        this.handle,
+        nativeColorName.cast<Utf8>(),
+        _out0.cast<ffi.Void>(),
+      );
+      return (
+        (_ret) != 0,
+        keepAlive(GdkRGBA.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+      );
     });
   }
 

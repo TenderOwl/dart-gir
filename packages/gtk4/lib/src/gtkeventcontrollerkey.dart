@@ -3,8 +3,25 @@ part of '../gtk4.dart';
 
 /// Provides access to key events.
 class GtkEventControllerKey extends GtkEventController {
-  GtkEventControllerKey.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkEventControllerKey.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkEventControllerKey>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkEventControllerKey.rawFromPointer(handle, owned: owned);
+  }
+  GtkEventControllerKey.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,13 +35,24 @@ class GtkEventControllerKey extends GtkEventController {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_event_controller_key_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new event controller that will handle key events.
   static final _gtkEventControllerKeyNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_event_controller_key_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkEventControllerKey()
-    : this.fromPointer(_gtkEventControllerKeyNew(), owned: true);
+    : this.rawFromPointer(_gtkEventControllerKeyNew(), owned: true);
 
   /// Forwards the current event of this @controller to a @widget.
   ///

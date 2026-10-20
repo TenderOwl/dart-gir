@@ -56,8 +56,25 @@ part of '../gtk4.dart';
 /// `GtkWindowControls` uses the [enum@Gtk.AccessibleRole.group] role.
 class GtkWindowControls extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkWindowControls.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkWindowControls.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkWindowControls>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkWindowControls.rawFromPointer(handle, owned: owned);
+  }
+  GtkWindowControls.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -71,13 +88,24 @@ class GtkWindowControls extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_window_controls_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkWindowControls`.
   static final _gtkWindowControlsNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_window_controls_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkWindowControls(GtkPackType side)
-    : this.fromPointer(_gtkWindowControlsNew(side.value), owned: true);
+    : this.rawFromPointer(_gtkWindowControlsNew(side.value), owned: true);
 
   /// Gets the decoration layout of this window controls widget
   static final _gtkWindowControlsGetDecorationLayout =

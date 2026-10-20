@@ -114,7 +114,25 @@ part of '../gsk4.dart';
 /// }
 /// ```
 class GskGLShader extends GObject {
-  GskGLShader.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskGLShader.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskGLShader>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GskGLShader.rawFromPointer(handle, owned: owned);
+  }
+  GskGLShader.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -128,6 +146,17 @@ class GskGLShader extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_gl_shader_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GskGLShader` that will render pixels using the specified code.
   static final _gskGlShaderNewFromBytes =
       gsk4Lookup<
@@ -137,7 +166,7 @@ class GskGLShader extends GObject {
           >('gsk_gl_shader_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskGLShader.fromBytes(GBytes sourcecode)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gskGlShaderNewFromBytes(sourcecode.handle),
         owned: true,
       );

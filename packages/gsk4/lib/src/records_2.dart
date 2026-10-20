@@ -40,7 +40,22 @@ part of '../gsk4.dart';
 /// Note that `GskPathBuilder` will reduce the degree of added Bézier
 /// curves as much as possible, to simplify rendering.
 final class GskPathBuilder {
-  GskPathBuilder.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskPathBuilder.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskPathBuilder>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskPathBuilder.rawFromPointer(handle, owned: owned);
+  }
+  GskPathBuilder.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -63,7 +78,7 @@ final class GskPathBuilder {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_path_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GskPathBuilder() : this.fromPointer(_gskPathBuilderNew());
+  GskPathBuilder() : this.rawFromPointer(_gskPathBuilderNew());
 
   /// Adds a Cairo path to the builder.
   ///

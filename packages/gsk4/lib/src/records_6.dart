@@ -11,7 +11,22 @@ part of '../gsk4.dart';
 /// This means code can safely expose them as properties of objects without
 /// having to worry about others changing them.
 final class GskTransform {
-  GskTransform.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskTransform.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskTransform>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskTransform.rawFromPointer(handle, owned: owned);
+  }
+  GskTransform.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -34,7 +49,7 @@ final class GskTransform {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_transform_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GskTransform() : this.fromPointer(_gskTransformNew());
+  GskTransform() : this.rawFromPointer(_gskTransformNew());
 
   /// Checks two transforms for equality.
   static final _gskTransformEqual =
@@ -586,10 +601,11 @@ final class GskTransform {
   GrapheneMatrix toMatrix() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gskTransformToMatrix(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gskTransformToMatrix(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a transform to a translation operation.
@@ -685,14 +701,15 @@ final class GskTransform {
   GrapheneRect transformBounds(GrapheneRect rect) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gskTransformTransformBounds(
-        this.handle,
-        rect.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gskTransformTransformBounds(
+      this.handle,
+      rect.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms a point using the given transform.
@@ -716,14 +733,15 @@ final class GskTransform {
   GraphenePoint transformPoint(GraphenePoint point) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gskTransformTransformPoint(
-        this.handle,
-        point.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gskTransformTransformPoint(
+      this.handle,
+      point.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Translates @next in 2-dimensional space by @point.
@@ -802,38 +820,27 @@ final class GskTransform {
   static final _gskTransformParse =
       gsk4Lookup<
             ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)
+              ffi.Int32 Function(
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
             >
           >('gsk_transform_parse')
-          .asFunction<int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Void>)>();
+          .asFunction<
+            int Function(ffi.Pointer<Utf8>, ffi.Pointer<ffi.Pointer<ffi.Void>>)
+          >();
   static (bool, GskTransform) parse(String string) {
     return withNativeString(string, (nativeString) {
-      final _out0Anchor = HeapAnchor.allocate(256);
-      final _out0 = _out0Anchor.buffer;
+      final _out0 = calloc<ffi.Pointer<ffi.Void>>();
       try {
-        final _ret = _gskTransformParse(
-          nativeString.cast<Utf8>(),
-          _out0.cast<ffi.Void>(),
+        final _ret = _gskTransformParse(nativeString.cast<Utf8>(), _out0);
+        return (
+          (_ret) != 0,
+          GskTransform.fromPointer(_out0.value.cast<ffi.Void>(), owned: true),
         );
-        return ((_ret) != 0, GskTransform.fromPointer(_out0.cast<ffi.Void>()));
-      } finally {}
+      } finally {
+        malloc.free(_out0);
+      }
     });
-  }
-}
-
-final class GskVulkanRendererClass {
-  GskVulkanRendererClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

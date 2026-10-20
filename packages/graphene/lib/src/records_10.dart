@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the #graphene_vec3_t structure are private and should
 /// never be accessed directly.
 final class GrapheneVec3 {
-  GrapheneVec3.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneVec3.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneVec3>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneVec3.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneVec3.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -30,7 +45,7 @@ final class GrapheneVec3 {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_vec3_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneVec3.alloc() : this.fromPointer(_grapheneVec3Alloc());
+  GrapheneVec3.alloc() : this.rawFromPointer(_grapheneVec3Alloc());
 
   /// Adds each component of the two given vectors.
   static final _grapheneVec3Add =
@@ -53,10 +68,11 @@ final class GrapheneVec3 {
   GrapheneVec3 add(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Add(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Add(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the cross product of the two given vectors.
@@ -80,10 +96,11 @@ final class GrapheneVec3 {
   GrapheneVec3 cross(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Cross(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Cross(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Divides each component of the first operand @a by the corresponding
@@ -109,10 +126,11 @@ final class GrapheneVec3 {
   GrapheneVec3 divide(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Divide(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Divide(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the dot product of the two given vectors.
@@ -177,10 +195,11 @@ final class GrapheneVec3 {
   GrapheneVec2 getXy() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3GetXy(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec2.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3GetXy(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Creates a #graphene_vec3_t that contains the first two components of
@@ -197,10 +216,11 @@ final class GrapheneVec3 {
   GrapheneVec3 getXy0() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3GetXy0(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3GetXy0(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a #graphene_vec3_t in a #graphene_vec4_t using 0.0
@@ -217,10 +237,11 @@ final class GrapheneVec3 {
   GrapheneVec4 getXyz0() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3GetXyz0(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3GetXyz0(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a #graphene_vec3_t in a #graphene_vec4_t using 1.0
@@ -237,10 +258,11 @@ final class GrapheneVec3 {
   GrapheneVec4 getXyz1() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3GetXyz1(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3GetXyz1(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a #graphene_vec3_t in a #graphene_vec4_t using @w as
@@ -261,10 +283,11 @@ final class GrapheneVec3 {
   GrapheneVec4 getXyzw(double w) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3GetXyzw(this.handle, w, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3GetXyzw(this.handle, w, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the second component of the given vector @v.
@@ -381,15 +404,16 @@ final class GrapheneVec3 {
   GrapheneVec3 interpolate(GrapheneVec3 v2, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Interpolate(
-        this.handle,
-        v2.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Interpolate(
+      this.handle,
+      v2.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the length of the given vector @v.
@@ -424,10 +448,11 @@ final class GrapheneVec3 {
   GrapheneVec3 max(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Max(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Max(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Compares each component of the two given vectors and creates a
@@ -452,10 +477,11 @@ final class GrapheneVec3 {
   GrapheneVec3 min(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Min(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Min(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Multiplies each component of the two given vectors.
@@ -479,10 +505,11 @@ final class GrapheneVec3 {
   GrapheneVec3 multiply(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Multiply(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Multiply(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Compares the two given #graphene_vec3_t vectors and checks
@@ -517,10 +544,11 @@ final class GrapheneVec3 {
   GrapheneVec3 negate() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Negate(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Negate(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Normalizes the given #graphene_vec3_t.
@@ -536,10 +564,11 @@ final class GrapheneVec3 {
   GrapheneVec3 normalize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Normalize(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Normalize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Multiplies all components of the given vector with the given scalar @factor.
@@ -559,10 +588,11 @@ final class GrapheneVec3 {
   GrapheneVec3 scale(double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Scale(this.handle, factor, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Scale(this.handle, factor, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Subtracts from each component of the first operand @a the
@@ -588,10 +618,11 @@ final class GrapheneVec3 {
   GrapheneVec3 subtract(GrapheneVec3 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec3Subtract(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec3Subtract(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Provides a constant pointer to a vector with three components,

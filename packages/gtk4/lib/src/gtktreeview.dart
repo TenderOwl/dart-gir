@@ -94,7 +94,25 @@ part of '../gtk4.dart';
 /// For the drop target location during DND, a subnode with name `dndtarget` is used.
 class GtkTreeView extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkScrollable {
-  GtkTreeView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTreeView.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTreeView>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTreeView.rawFromPointer(handle, owned: owned);
+  }
+  GtkTreeView.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -108,12 +126,23 @@ class GtkTreeView extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_tree_view_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkTreeView` widget.
   static final _gtkTreeViewNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTreeView() : this.fromPointer(_gtkTreeViewNew(), owned: true);
+  GtkTreeView() : this.rawFromPointer(_gtkTreeViewNew(), owned: true);
 
   /// Creates a new `GtkTreeView` widget with the model initialized to @model.
   static final _gtkTreeViewNewWithModel =
@@ -124,7 +153,7 @@ class GtkTreeView extends GtkWidget
           >('gtk_tree_view_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeView.withModel(GtkTreeModel model)
-    : this.fromPointer(_gtkTreeViewNewWithModel(model.handle), owned: true);
+    : this.rawFromPointer(_gtkTreeViewNewWithModel(model.handle), owned: true);
 
   /// Appends @column to the list of columns. If @tree_view has “fixed_height”
   /// mode enabled, then @column must have its “sizing” property set to be
@@ -572,15 +601,16 @@ class GtkTreeView extends GtkWidget
   ]) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTreeViewGetBackgroundArea(
-        this.handle,
-        path?.handle ?? ffi.nullptr,
-        column?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTreeViewGetBackgroundArea(
+      this.handle,
+      path?.handle ?? ffi.nullptr,
+      column?.handle ?? ffi.nullptr,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Fills the bounding rectangle in bin_window coordinates for the cell at the
@@ -614,15 +644,16 @@ class GtkTreeView extends GtkWidget
   GdkRectangle getCellArea([GtkTreePath? path, GtkTreeViewColumn? column]) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTreeViewGetCellArea(
-        this.handle,
-        path?.handle ?? ffi.nullptr,
-        column?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTreeViewGetCellArea(
+      this.handle,
+      path?.handle ?? ffi.nullptr,
+      column?.handle ?? ffi.nullptr,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the `GtkTreeViewColumn` at the given position in the #tree_view.
@@ -665,38 +696,38 @@ class GtkTreeView extends GtkWidget
             ffi.NativeFunction<
               ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('gtk_tree_view_get_cursor')
           .asFunction<
             void Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GtkTreePath?, GtkTreeViewColumn?) getCursorTreeView() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      _gtkTreeViewGetCursor(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
+      _gtkTreeViewGetCursor(this.handle, _out0, _out1);
       return (
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : GtkTreePath.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GtkTreeViewColumn.fromPointer(_out1.cast<ffi.Void>()),
+            : GtkTreeViewColumn.fromPointer(_out1.value.cast<ffi.Void>()),
       );
-    } finally {}
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Determines the destination row for a given position.  @drag_x and
@@ -710,7 +741,7 @@ class GtkTreeView extends GtkWidget
                 ffi.Pointer<ffi.Void>,
                 ffi.Int32,
                 ffi.Int32,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Int32>,
               )
             >
@@ -720,7 +751,7 @@ class GtkTreeView extends GtkWidget
               ffi.Pointer<ffi.Void>,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Int32>,
             )
           >();
@@ -728,25 +759,28 @@ class GtkTreeView extends GtkWidget
     int dragX,
     int dragY,
   ) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _out1 = malloc<ffi.Int32>();
     try {
       final _ret = _gtkTreeViewGetDestRowAtPos(
         this.handle,
         dragX,
         dragY,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _out1,
       );
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+            : GtkTreePath.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
         GtkTreeViewDropPosition.fromValue(_out1.value),
       );
     } finally {
+      malloc.free(_out0);
       malloc.free(_out1);
     }
   }
@@ -757,7 +791,7 @@ class GtkTreeView extends GtkWidget
             ffi.NativeFunction<
               ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Int32>,
               )
             >
@@ -765,23 +799,26 @@ class GtkTreeView extends GtkWidget
           .asFunction<
             void Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Int32>,
             )
           >();
   (GtkTreePath?, GtkTreeViewDropPosition) getDragDestRow() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _out1 = malloc<ffi.Int32>();
     try {
-      _gtkTreeViewGetDragDestRow(this.handle, _out0.cast<ffi.Void>(), _out1);
+      _gtkTreeViewGetDragDestRow(this.handle, _out0, _out1);
       return (
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
+            : GtkTreePath.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
         GtkTreeViewDropPosition.fromValue(_out1.value),
       );
     } finally {
+      malloc.free(_out0);
       malloc.free(_out1);
     }
   }
@@ -937,8 +974,8 @@ class GtkTreeView extends GtkWidget
                 ffi.Pointer<ffi.Void>,
                 ffi.Int32,
                 ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Int32>,
                 ffi.Pointer<ffi.Int32>,
               )
@@ -949,8 +986,8 @@ class GtkTreeView extends GtkWidget
               ffi.Pointer<ffi.Void>,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<ffi.Int32>,
             )
@@ -959,10 +996,8 @@ class GtkTreeView extends GtkWidget
     int x,
     int y,
   ) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     final _out2 = malloc<ffi.Int32>();
     final _out3 = malloc<ffi.Int32>();
     try {
@@ -970,23 +1005,28 @@ class GtkTreeView extends GtkWidget
         this.handle,
         x,
         y,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
+        _out0,
+        _out1,
         _out2,
         _out3,
       );
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : GtkTreePath.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GtkTreeViewColumn.fromPointer(_out1.cast<ffi.Void>()),
+            : GtkTreeViewColumn.fromPointer(_out1.value.cast<ffi.Void>()),
         _out2.value,
         _out3.value,
       );
     } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
       malloc.free(_out2);
       malloc.free(_out3);
     }
@@ -1088,8 +1128,8 @@ class GtkTreeView extends GtkWidget
                 ffi.Int32,
                 ffi.Int32,
                 ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
               )
             >
@@ -1100,8 +1140,8 @@ class GtkTreeView extends GtkWidget
               int,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
             )
           >();
@@ -1110,10 +1150,8 @@ class GtkTreeView extends GtkWidget
     int y,
     bool keyboardTip,
   ) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     final _out2Anchor = HeapAnchor.allocate(256);
     final _out2 = _out2Anchor.buffer;
     try {
@@ -1122,23 +1160,32 @@ class GtkTreeView extends GtkWidget
         x,
         y,
         keyboardTip ? 1 : 0,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
+        _out0,
+        _out1,
         _out2.cast<ffi.Void>(),
       );
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreeModel.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : GtkTreeModel.fromPointer(_out0.value.cast<ffi.Void>()),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out1.cast<ffi.Void>()),
+            : GtkTreePath.fromPointer(
+                _out1.value.cast<ffi.Void>(),
+                owned: true,
+              ),
         (_out2) == ffi.nullptr
             ? null
-            : GtkTreeIter.fromPointer(_out2.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTreeIter.fromPointer(_out2.cast<ffi.Void>()),
+                _out2Anchor,
+              ),
       );
-    } finally {}
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Sets @start_path and @end_path to be the first and last visible path.
@@ -1150,39 +1197,42 @@ class GtkTreeView extends GtkWidget
             ffi.NativeFunction<
               ffi.Int32 Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('gtk_tree_view_get_visible_range')
           .asFunction<
             int Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (bool, GtkTreePath?, GtkTreePath?) getVisibleRange() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      final _ret = _gtkTreeViewGetVisibleRange(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
+      final _ret = _gtkTreeViewGetVisibleRange(this.handle, _out0, _out1);
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : GtkTreePath.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out1.cast<ffi.Void>()),
+            : GtkTreePath.fromPointer(
+                _out1.value.cast<ffi.Void>(),
+                owned: true,
+              ),
       );
-    } finally {}
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Fills @visible_rect with the currently-visible region of the
@@ -1202,10 +1252,11 @@ class GtkTreeView extends GtkWidget
   GdkRectangle getVisibleRect() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTreeViewGetVisibleRect(this.handle, _out0.cast<ffi.Void>());
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTreeViewGetVisibleRect(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// This inserts the @column into the @tree_view at @position.  If @position is
@@ -1356,8 +1407,8 @@ class GtkTreeView extends GtkWidget
                 ffi.Pointer<ffi.Void>,
                 ffi.Int32,
                 ffi.Int32,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Int32>,
                 ffi.Pointer<ffi.Int32>,
               )
@@ -1368,8 +1419,8 @@ class GtkTreeView extends GtkWidget
               ffi.Pointer<ffi.Void>,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Int32>,
               ffi.Pointer<ffi.Int32>,
             )
@@ -1378,10 +1429,8 @@ class GtkTreeView extends GtkWidget
     int x,
     int y,
   ) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     final _out2 = malloc<ffi.Int32>();
     final _out3 = malloc<ffi.Int32>();
     try {
@@ -1389,23 +1438,28 @@ class GtkTreeView extends GtkWidget
         this.handle,
         x,
         y,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
+        _out0,
+        _out1,
         _out2,
         _out3,
       );
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreePath.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : GtkTreePath.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GtkTreeViewColumn.fromPointer(_out1.cast<ffi.Void>()),
+            : GtkTreeViewColumn.fromPointer(_out1.value.cast<ffi.Void>()),
         _out2.value,
         _out3.value,
       );
     } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
       malloc.free(_out2);
       malloc.free(_out3);
     }
@@ -3155,10 +3209,11 @@ class GtkTreeView extends GtkWidget
   (bool, GtkBorder) getBorder() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GtkBorder.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GtkBorder.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Retrieves the `GtkAdjustment` used for horizontal scrolling.

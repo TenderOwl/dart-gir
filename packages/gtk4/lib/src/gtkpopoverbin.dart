@@ -16,7 +16,25 @@ part of '../gtk4.dart';
 /// `GtkPopoverBin` has a single CSS node with the name `popoverbin`.
 class GtkPopoverBin extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkPopoverBin.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkPopoverBin.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkPopoverBin>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkPopoverBin.rawFromPointer(handle, owned: owned);
+  }
+  GtkPopoverBin.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,12 +48,23 @@ class GtkPopoverBin extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_popover_bin_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new popover bin widget.
   static final _gtkPopoverBinNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_popover_bin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPopoverBin() : this.fromPointer(_gtkPopoverBinNew(), owned: true);
+  GtkPopoverBin() : this.rawFromPointer(_gtkPopoverBinNew(), owned: true);
 
   /// Retrieves the child widget of the popover bin.
   static final _gtkPopoverBinGetChild =

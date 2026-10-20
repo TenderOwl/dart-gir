@@ -4,8 +4,22 @@ part of '../gsk4.dart';
 /// A render node for applying a `GskComponentTransfer` for each color
 /// component of the child node.
 class GskComponentTransferNode extends GskRenderNode {
-  GskComponentTransferNode.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskComponentTransferNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskComponentTransferNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskComponentTransferNode.rawFromPointer(handle, owned: owned);
+  }
+  GskComponentTransferNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +32,17 @@ class GskComponentTransferNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_component_transfer_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a render node that will apply component
   /// transfers to a child node.
@@ -48,7 +73,7 @@ class GskComponentTransferNode extends GskRenderNode {
     GskComponentTransfer g,
     GskComponentTransfer b,
     GskComponentTransfer a,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gskComponentTransferNodeNew(
           child.handle,
           r.handle,

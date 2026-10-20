@@ -98,7 +98,24 @@ class GtkEntry extends GtkWidget
         GtkCellEditable,
         GtkConstraintTarget,
         GtkEditable {
-  GtkEntry.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkEntry.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkEntry>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkEntry.rawFromPointer(handle, owned: owned);
+  }
+  GtkEntry.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -112,12 +129,23 @@ class GtkEntry extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_entry_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new entry.
   static final _gtkEntryNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_entry_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkEntry() : this.fromPointer(_gtkEntryNew(), owned: true);
+  GtkEntry() : this.rawFromPointer(_gtkEntryNew(), owned: true);
 
   /// Creates a new entry with the specified text buffer.
   static final _gtkEntryNewWithBuffer =
@@ -128,7 +156,7 @@ class GtkEntry extends GtkWidget
           >('gtk_entry_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEntry.withBuffer(GtkEntryBuffer buffer)
-    : this.fromPointer(_gtkEntryNewWithBuffer(buffer.handle), owned: true);
+    : this.rawFromPointer(_gtkEntryNewWithBuffer(buffer.handle), owned: true);
 
   /// Retrieves the value set by gtk_entry_set_activates_default().
   static final _gtkEntryGetActivatesDefault =
@@ -264,10 +292,11 @@ class GtkEntry extends GtkWidget
   GdkRectangle getIconArea(GtkEntryIconPosition iconPos) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkEntryGetIconArea(this.handle, iconPos.value, _out0.cast<ffi.Void>());
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkEntryGetIconArea(this.handle, iconPos.value, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Finds the icon at the given position and return its index.

@@ -46,7 +46,25 @@ part of '../gtk4.dart';
 /// `GtkSwitch` uses the [enum@Gtk.AccessibleRole.switch] role.
 class GtkSwitch extends GtkWidget
     implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
-  GtkSwitch.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSwitch.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSwitch>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSwitch.rawFromPointer(handle, owned: owned);
+  }
+  GtkSwitch.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -60,12 +78,23 @@ class GtkSwitch extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_switch_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkSwitch` widget.
   static final _gtkSwitchNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_switch_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSwitch() : this.fromPointer(_gtkSwitchNew(), owned: true);
+  GtkSwitch() : this.rawFromPointer(_gtkSwitchNew(), owned: true);
 
   /// Gets whether the `GtkSwitch` is in its “on” or “off” state.
   static final _gtkSwitchGetActive =

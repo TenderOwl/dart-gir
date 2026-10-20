@@ -33,7 +33,25 @@ part of '../adw.dart';
 /// `AdwSwitchRow` uses the [enum@Gtk.AccessibleRole.switch] role.
 class AdwSwitchRow extends AdwActionRow
     implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
-  AdwSwitchRow.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwSwitchRow.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwSwitchRow>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwSwitchRow.rawFromPointer(handle, owned: owned);
+  }
+  AdwSwitchRow.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,12 +65,23 @@ class AdwSwitchRow extends AdwActionRow
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_switch_row_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwSwitchRow`.
   static final _adwSwitchRowNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_switch_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwSwitchRow() : this.fromPointer(_adwSwitchRowNew(), owned: true);
+  AdwSwitchRow() : this.rawFromPointer(_adwSwitchRowNew(), owned: true);
 
   /// Gets whether @self is in its "on" or "off" position.
   static final _adwSwitchRowGetActive =

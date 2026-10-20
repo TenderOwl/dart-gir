@@ -37,7 +37,25 @@ part of '../gio.dart';
 /// Since GLib 2.72, on Windows, the native credentials may contain the PID of a
 /// process. This corresponds to `G_CREDENTIALS_TYPE_WIN32_PID`.
 class GCredentials extends GObject {
-  GCredentials.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GCredentials.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GCredentials>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GCredentials.rawFromPointer(handle, owned: owned);
+  }
+  GCredentials.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -51,13 +69,24 @@ class GCredentials extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_credentials_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GCredentials object with credentials matching the
   /// the current process.
   static final _gCredentialsNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_credentials_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GCredentials() : this.fromPointer(_gCredentialsNew(), owned: true);
+  GCredentials() : this.rawFromPointer(_gCredentialsNew(), owned: true);
 
   /// Checks if @credentials and @other_credentials is the same user.
   ///

@@ -7,8 +7,25 @@ part of '../gtk4.dart';
 /// it into a single model. Each list model becomes a section in the single model.
 class GtkFlattenListModel extends GObject
     implements GListModel, GtkSectionModel {
-  GtkFlattenListModel.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkFlattenListModel.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkFlattenListModel>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkFlattenListModel.rawFromPointer(handle, owned: owned);
+  }
+  GtkFlattenListModel.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +39,17 @@ class GtkFlattenListModel extends GObject
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_flatten_list_model_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkFlattenListModel` that flattens @list.
   static final _gtkFlattenListModelNew =
       gtk4Lookup<
@@ -31,7 +59,7 @@ class GtkFlattenListModel extends GObject
           >('gtk_flatten_list_model_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFlattenListModel([GListModel? model])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkFlattenListModelNew(model?.handle ?? ffi.nullptr),
         owned: true,
       );

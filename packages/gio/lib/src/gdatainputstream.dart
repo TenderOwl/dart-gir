@@ -4,8 +4,25 @@ part of '../gio.dart';
 /// Data input stream implements [class@Gio.InputStream] and includes functions
 /// for reading structured data directly from a binary input stream.
 class GDataInputStream extends GBufferedInputStream implements GSeekable {
-  GDataInputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDataInputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDataInputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDataInputStream.rawFromPointer(handle, owned: owned);
+  }
+  GDataInputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -19,6 +36,17 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_data_input_stream_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new data input stream for the @base_stream.
   static final _gDataInputStreamNew =
       gioLookup<
@@ -28,7 +56,7 @@ class GDataInputStream extends GBufferedInputStream implements GSeekable {
           >('g_data_input_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDataInputStream(GInputStream baseStream)
-    : this.fromPointer(_gDataInputStreamNew(baseStream.handle), owned: true);
+    : this.rawFromPointer(_gDataInputStreamNew(baseStream.handle), owned: true);
 
   /// Gets the byte order for the data input stream.
   static final _gDataInputStreamGetByteOrder =

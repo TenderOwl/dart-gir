@@ -14,8 +14,25 @@ part of '../gtk4.dart';
 /// `GtkCellRendererCombo`:text-column property. Further properties of the combo box
 /// can be set in a handler for the `GtkCellRenderer::editing-started` signal.
 class GtkCellRendererCombo extends GtkCellRendererText {
-  GtkCellRendererCombo.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRendererCombo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRendererCombo>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRendererCombo.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRendererCombo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,6 +46,17 @@ class GtkCellRendererCombo extends GtkCellRendererText {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_combo_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCellRendererCombo`.
   /// Adjust how text is drawn using object properties.
   /// Object properties can be set globally (with g_object_set()).
@@ -41,7 +69,7 @@ class GtkCellRendererCombo extends GtkCellRendererText {
         'gtk_cell_renderer_combo_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererCombo()
-    : this.fromPointer(_gtkCellRendererComboNew(), owned: true);
+    : this.rawFromPointer(_gtkCellRendererComboNew(), owned: true);
 
   /// This signal is emitted each time after the user selected an item in
   /// the combo box, either by using the mouse or the arrow keys.  Contrary

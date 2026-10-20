@@ -62,8 +62,25 @@ part of '../adw.dart';
 /// `AdwViewSwitcherTitle` has a single CSS node with name `viewswitchertitle`.
 class AdwViewSwitcherTitle extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwViewSwitcherTitle.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwViewSwitcherTitle.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwViewSwitcherTitle>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwViewSwitcherTitle.rawFromPointer(handle, owned: owned);
+  }
+  AdwViewSwitcherTitle.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -77,13 +94,24 @@ class AdwViewSwitcherTitle extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_view_switcher_title_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwViewSwitcherTitle`.
   static final _adwViewSwitcherTitleNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_switcher_title_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwViewSwitcherTitle()
-    : this.fromPointer(_adwViewSwitcherTitleNew(), owned: true);
+    : this.rawFromPointer(_adwViewSwitcherTitleNew(), owned: true);
 
   /// Gets the stack controlled by @self.
   static final _adwViewSwitcherTitleGetStack =

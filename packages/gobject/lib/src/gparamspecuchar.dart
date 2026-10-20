@@ -3,8 +3,22 @@ part of '../gobject.dart';
 
 /// A #GParamSpec derived structure that contains the meta data for unsigned character properties.
 class GParamSpecUChar extends GParamSpec {
-  GParamSpecUChar.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GParamSpecUChar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GParamSpecUChar>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GParamSpecUChar.rawFromPointer(handle, owned: owned);
+  }
+  GParamSpecUChar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,4 +31,15 @@ class GParamSpecUChar extends GParamSpec {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>('intern')
+          .asFunction<int Function()>()();
 }

@@ -31,7 +31,25 @@ part of '../gtk4.dart';
 /// [func@Gtk.Settings.get_for_display], but in many cases, it is more
 /// convenient to use [method@Gtk.Widget.get_settings].
 class GtkSettings extends GObject implements GtkStyleProvider {
-  GtkSettings.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSettings.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSettings>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSettings.rawFromPointer(handle, owned: owned);
+  }
+  GtkSettings.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -44,6 +62,17 @@ class GtkSettings extends GObject implements GtkStyleProvider {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_settings_get_type',
+  ).asFunction<int Function()>()();
 
   /// Undoes the effect of calling g_object_set() to install an
   /// application-specific value for a setting.

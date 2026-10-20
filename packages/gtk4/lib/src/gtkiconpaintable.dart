@@ -7,8 +7,25 @@ part of '../gtk4.dart';
 /// `GtkIconPaintable` implements `GdkPaintable` and `GtkSymbolicPaintable`.
 class GtkIconPaintable extends GObject
     implements GdkPaintable, GtkSymbolicPaintable {
-  GtkIconPaintable.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkIconPaintable.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkIconPaintable>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkIconPaintable.rawFromPointer(handle, owned: owned);
+  }
+  GtkIconPaintable.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,6 +38,17 @@ class GtkIconPaintable extends GObject
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_icon_paintable_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GtkIconPaintable` for a file with a given size and scale.
   ///
@@ -39,7 +67,7 @@ class GtkIconPaintable extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
   GtkIconPaintable.forFile(GFile file, int size, int scale)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkIconPaintableNewForFile(file.handle, size, scale),
         owned: true,
       );

@@ -3,7 +3,22 @@ part of '../graphene.dart';
 
 /// A point with three components: X, Y, and Z.
 final class GraphenePoint3D {
-  GraphenePoint3D.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GraphenePoint3D.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GraphenePoint3D>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GraphenePoint3D.rawFromPointer(handle, owned: owned);
+  }
+  GraphenePoint3D.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -23,7 +38,7 @@ final class GraphenePoint3D {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_point3d_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePoint3D.alloc() : this.fromPointer(_graphenePoint3dAlloc());
+  GraphenePoint3D.alloc() : this.rawFromPointer(_graphenePoint3dAlloc());
 
   /// Computes the cross product of the two given #graphene_point3d_t.
   static final _graphenePoint3dCross =
@@ -46,10 +61,11 @@ final class GraphenePoint3D {
   GraphenePoint3D cross(GraphenePoint3D b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dCross(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePoint3dCross(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the distance between the two given #graphene_point3d_t.
@@ -73,19 +89,20 @@ final class GraphenePoint3D {
   (double, GrapheneVec3?) distance(GraphenePoint3D b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _graphenePoint3dDistance(
-        this.handle,
-        b.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return (
-        _ret,
-        (_out0) == ffi.nullptr
-            ? null
-            : GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _graphenePoint3dDistance(
+      this.handle,
+      b.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      _ret,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+    );
   }
 
   /// Computes the dot product of the two given #graphene_point3d_t.
@@ -222,15 +239,16 @@ final class GraphenePoint3D {
   GraphenePoint3D interpolate(GraphenePoint3D b, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dInterpolate(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePoint3dInterpolate(
+      this.handle,
+      b.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the length of the vector represented by the
@@ -277,10 +295,11 @@ final class GraphenePoint3D {
   GraphenePoint3D normalize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dNormalize(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePoint3dNormalize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Normalizes the coordinates of a #graphene_point3d_t using the
@@ -316,16 +335,17 @@ final class GraphenePoint3D {
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dNormalizeViewport(
-        this.handle,
-        viewport.handle,
-        zNear,
-        zFar,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePoint3dNormalizeViewport(
+      this.handle,
+      viewport.handle,
+      zNear,
+      zFar,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Scales the coordinates of the given #graphene_point3d_t by
@@ -346,10 +366,11 @@ final class GraphenePoint3D {
   GraphenePoint3D scale(double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dScale(this.handle, factor, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePoint3dScale(this.handle, factor, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Stores the coordinates of a #graphene_point3d_t into a
@@ -366,10 +387,11 @@ final class GraphenePoint3D {
   GrapheneVec3 toVec3() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePoint3dToVec3(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePoint3dToVec3(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves a constant point with all three coordinates set to 0.
@@ -387,7 +409,22 @@ final class GraphenePoint3D {
 /// The contents of a #graphene_quad_t are private and should never be
 /// accessed directly.
 final class GrapheneQuad {
-  GrapheneQuad.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneQuad.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneQuad>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneQuad.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneQuad.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -409,7 +446,7 @@ final class GrapheneQuad {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_quad_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneQuad.alloc() : this.fromPointer(_grapheneQuadAlloc());
+  GrapheneQuad.alloc() : this.rawFromPointer(_grapheneQuadAlloc());
 
   /// Computes the bounding rectangle of @q and places it into @r.
   static final _grapheneQuadBounds =
@@ -424,10 +461,11 @@ final class GrapheneQuad {
   GrapheneRect bounds() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuadBounds(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuadBounds(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Checks if the given #graphene_quad_t contains the given #graphene_point_t.

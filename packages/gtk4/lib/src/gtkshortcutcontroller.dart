@@ -43,8 +43,25 @@ part of '../gtk4.dart';
 /// for triggers.
 class GtkShortcutController extends GtkEventController
     implements GListModel, GtkBuildable {
-  GtkShortcutController.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkShortcutController.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkShortcutController>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkShortcutController.rawFromPointer(handle, owned: owned);
+  }
+  GtkShortcutController.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -58,13 +75,24 @@ class GtkShortcutController extends GtkEventController
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_shortcut_controller_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new shortcut controller.
   static final _gtkShortcutControllerNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_shortcut_controller_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkShortcutController()
-    : this.fromPointer(_gtkShortcutControllerNew(), owned: true);
+    : this.rawFromPointer(_gtkShortcutControllerNew(), owned: true);
 
   /// Creates a new shortcut controller that takes its shortcuts from
   /// the given list model.
@@ -80,7 +108,7 @@ class GtkShortcutController extends GtkEventController
           >('gtk_shortcut_controller_new_for_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkShortcutController.forModel(GListModel model)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkShortcutControllerNewForModel(model.handle),
         owned: true,
       );

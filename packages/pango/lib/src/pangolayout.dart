@@ -40,7 +40,25 @@ part of '../pango.dart';
 /// It is possible, as well, to ignore the 2-D setup,
 /// and simply treat the results of a `PangoLayout` as a list of lines.
 class PangoLayout extends GObject {
-  PangoLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory PangoLayout.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoLayout>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return PangoLayout.rawFromPointer(handle, owned: owned);
+  }
+  PangoLayout.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -54,6 +72,18 @@ class PangoLayout extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      pangoLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'pango_layout_get_type',
+      ).asFunction<int Function()>()();
+
   /// Create a new `PangoLayout` object with attributes initialized to
   /// default values for a particular `PangoContext`.
   static final _pangoLayoutNew =
@@ -64,7 +94,7 @@ class PangoLayout extends GObject {
           >('pango_layout_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayout(PangoContext context)
-    : this.fromPointer(_pangoLayoutNew(context.handle), owned: true);
+    : this.rawFromPointer(_pangoLayoutNew(context.handle), owned: true);
 
   /// Forces recomputation of any state in the `PangoLayout` that
   /// might depend on the layout's context.
@@ -177,22 +207,26 @@ class PangoLayout extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutGetCaretPos(
-        this.handle,
-        index,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutGetCaretPos(
+      this.handle,
+      index,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Returns the number of Unicode characters in the
@@ -269,22 +303,26 @@ class PangoLayout extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutGetCursorPos(
-        this.handle,
-        index,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutGetCursorPos(
+      this.handle,
+      index,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the text direction at the given character position in @layout.
@@ -348,21 +386,25 @@ class PangoLayout extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutGetExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutGetExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the font description for the layout, if any.
@@ -597,21 +639,25 @@ class PangoLayout extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _pangoLayoutGetPixelExtents(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _pangoLayoutGetPixelExtents(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Determines the logical width and height of a `PangoLayout` in device
@@ -864,10 +910,11 @@ class PangoLayout extends GObject {
   PangoRectangle indexToPos(int index) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _pangoLayoutIndexToPos(this.handle, index, _out0.cast<ffi.Void>());
-      return PangoRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _pangoLayoutIndexToPos(this.handle, index, _out0.cast<ffi.Void>());
+    return keepAlive(
+      PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Queries whether the layout had to ellipsize any paragraphs.

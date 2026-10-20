@@ -92,8 +92,25 @@ class AdwShortcutsDialog extends AdwDialog
         GtkBuildable,
         GtkConstraintTarget,
         GtkShortcutManager {
-  AdwShortcutsDialog.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwShortcutsDialog.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwShortcutsDialog>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwShortcutsDialog.rawFromPointer(handle, owned: owned);
+  }
+  AdwShortcutsDialog.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -107,13 +124,24 @@ class AdwShortcutsDialog extends AdwDialog
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_shortcuts_dialog_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwShortcutsDialog`.
   static final _adwShortcutsDialogNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_shortcuts_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwShortcutsDialog()
-    : this.fromPointer(_adwShortcutsDialogNew(), owned: true);
+    : this.rawFromPointer(_adwShortcutsDialogNew(), owned: true);
 
   /// Adds @section to @self.
   static final _adwShortcutsDialogAdd =

@@ -45,7 +45,24 @@ part of '../gtk4.dart';
 /// `GtkImage` uses the [enum@Gtk.AccessibleRole.img] role.
 class GtkImage extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkImage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkImage.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkImage>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkImage.rawFromPointer(handle, owned: owned);
+  }
+  GtkImage.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -59,12 +76,23 @@ class GtkImage extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_image_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty `GtkImage` widget.
   static final _gtkImageNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_image_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkImage() : this.fromPointer(_gtkImageNew(), owned: true);
+  GtkImage() : this.rawFromPointer(_gtkImageNew(), owned: true);
 
   /// Creates a new `GtkImage` displaying the file @filename.
   ///
@@ -108,7 +136,7 @@ class GtkImage extends GtkWidget
           >('gtk_image_new_from_gicon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkImage.fromGicon(GIcon icon)
-    : this.fromPointer(_gtkImageNewFromGicon(icon.handle), owned: true);
+    : this.rawFromPointer(_gtkImageNewFromGicon(icon.handle), owned: true);
 
   /// Creates a `GtkImage` displaying an icon from the current icon theme.
   ///
@@ -154,7 +182,7 @@ class GtkImage extends GtkWidget
           >('gtk_image_new_from_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkImage.fromPaintable([GdkPaintable? paintable])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkImageNewFromPaintable(paintable?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -179,7 +207,7 @@ class GtkImage extends GtkWidget
           >('gtk_image_new_from_pixbuf')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkImage.fromPixbuf([GdkPixbuf? pixbuf])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkImageNewFromPixbuf(pixbuf?.handle ?? ffi.nullptr),
         owned: true,
       );

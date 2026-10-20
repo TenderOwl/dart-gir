@@ -8,8 +8,25 @@ part of '../gtk_source5.dart';
 /// an edit point (also called a tab stop) have the
 /// [property@SnippetChunk:focus-position] property set.
 class GtkSourceSnippetChunk extends GInitiallyUnowned {
-  GtkSourceSnippetChunk.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceSnippetChunk.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceSnippetChunk>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceSnippetChunk.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceSnippetChunk.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,6 +40,18 @@ class GtkSourceSnippetChunk extends GInitiallyUnowned {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_snippet_chunk_get_type',
+      ).asFunction<int Function()>()();
+
   /// Create a new `GtkSourceSnippetChunk` that can be added to
   /// a [class@Snippet].
   static final _gtkSourceSnippetChunkNew =
@@ -30,7 +59,7 @@ class GtkSourceSnippetChunk extends GInitiallyUnowned {
         'gtk_source_snippet_chunk_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkSourceSnippetChunk()
-    : this.fromPointer(_gtkSourceSnippetChunkNew(), owned: true);
+    : this.rawFromPointer(_gtkSourceSnippetChunkNew(), owned: true);
 
   /// Copies the source snippet.
   static final _gtkSourceSnippetChunkCopy =

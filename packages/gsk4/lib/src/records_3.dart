@@ -11,7 +11,22 @@ part of '../gsk4.dart';
 /// A `GskPathMeasure` struct is a reference counted struct
 /// and should be treated as opaque.
 final class GskPathMeasure {
-  GskPathMeasure.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskPathMeasure.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskPathMeasure>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskPathMeasure.rawFromPointer(handle, owned: owned);
+  }
+  GskPathMeasure.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -36,7 +51,7 @@ final class GskPathMeasure {
           >('gsk_path_measure_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskPathMeasure(GskPath path)
-    : this.fromPointer(_gskPathMeasureNew(path.handle));
+    : this.rawFromPointer(_gskPathMeasureNew(path.handle));
 
   /// Creates a measure object for the given @path and @tolerance.
   static final _gskPathMeasureNewWithTolerance =
@@ -49,7 +64,9 @@ final class GskPathMeasure {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
   GskPathMeasure.withTolerance(GskPath path, double tolerance)
-    : this.fromPointer(_gskPathMeasureNewWithTolerance(path.handle, tolerance));
+    : this.rawFromPointer(
+        _gskPathMeasureNewWithTolerance(path.handle, tolerance),
+      );
 
   /// Gets the length of the path being measured.
   ///
@@ -93,14 +110,15 @@ final class GskPathMeasure {
   (bool, GskPathPoint) getPoint(double distance) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathMeasureGetPoint(
-        this.handle,
-        distance,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GskPathPoint.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskPathMeasureGetPoint(
+      this.handle,
+      distance,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GskPathPoint.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Returns the tolerance that the measure was created with.
@@ -150,7 +168,22 @@ final class GskPathMeasure {
 /// It is the callers responsibility to keep a reference to the path
 /// as long as the `GskPathPoint` is used.
 final class GskPathPoint {
-  GskPathPoint.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskPathPoint.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskPathPoint>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskPathPoint.rawFromPointer(handle, owned: owned);
+  }
+  GskPathPoint.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -266,20 +299,21 @@ final class GskPathPoint {
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathPointGetCurvature(
-        this.handle,
-        path.handle,
-        direction.value,
-        _out0.cast<ffi.Void>(),
-      );
-      return (
-        _ret,
-        (_out0) == ffi.nullptr
-            ? null
-            : GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _gskPathPointGetCurvature(
+      this.handle,
+      path.handle,
+      direction.value,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      _ret,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+    );
   }
 
   /// Returns the distance from the beginning of the path
@@ -318,14 +352,11 @@ final class GskPathPoint {
   GraphenePoint getPosition(GskPath path) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gskPathPointGetPosition(
-        this.handle,
-        path.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gskPathPointGetPosition(this.handle, path.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the direction of the tangent at a given point.
@@ -387,14 +418,15 @@ final class GskPathPoint {
   GrapheneVec2 getTangent(GskPath path, GskPathDirection direction) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gskPathPointGetTangent(
-        this.handle,
-        path.handle,
-        direction.value,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneVec2.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gskPathPointGetTangent(
+      this.handle,
+      path.handle,
+      direction.value,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 }

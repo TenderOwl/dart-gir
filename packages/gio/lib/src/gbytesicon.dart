@@ -4,7 +4,25 @@ part of '../gio.dart';
 /// `GBytesIcon` specifies an image held in memory in a common format (usually
 /// PNG) to be used as icon.
 class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
-  GBytesIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GBytesIcon.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GBytesIcon>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GBytesIcon.rawFromPointer(handle, owned: owned);
+  }
+  GBytesIcon.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +36,17 @@ class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_bytes_icon_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new icon for a bytes.
   ///
   /// This cannot fail, but loading and interpreting the bytes may fail later on
@@ -30,7 +59,7 @@ class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
           >('g_bytes_icon_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytesIcon(GBytes bytes)
-    : this.fromPointer(_gBytesIconNew(bytes.handle), owned: true);
+    : this.rawFromPointer(_gBytesIconNew(bytes.handle), owned: true);
 
   /// Gets the #GBytes associated with the given @icon.
   static final _gBytesIconGetBytes =

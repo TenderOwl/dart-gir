@@ -1051,39 +1051,36 @@ final _gtkTreeGetRowDragData =
           ffi.NativeFunction<
             ffi.Int32 Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >
         >('gtk_tree_get_row_drag_data')
         .asFunction<
           int Function(
             ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
           )
         >();
 (bool, GtkTreeModel?, GtkTreePath?) treeGetRowDragData(GValue value) {
-  final _out0Anchor = HeapAnchor.allocate(256);
-  final _out0 = _out0Anchor.buffer;
-  final _out1Anchor = HeapAnchor.allocate(256);
-  final _out1 = _out1Anchor.buffer;
+  final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+  final _out1 = calloc<ffi.Pointer<ffi.Void>>();
   try {
-    final _ret = _gtkTreeGetRowDragData(
-      value.handle,
-      _out0.cast<ffi.Void>(),
-      _out1.cast<ffi.Void>(),
-    );
+    final _ret = _gtkTreeGetRowDragData(value.handle, _out0, _out1);
     return (
       (_ret) != 0,
-      (_out0) == ffi.nullptr
+      (_out0.value) == ffi.nullptr
           ? null
-          : GtkTreeModel.fromPointer(_out0.cast<ffi.Void>()),
-      (_out1) == ffi.nullptr
+          : GtkTreeModel.fromPointer(_out0.value.cast<ffi.Void>()),
+      (_out1.value) == ffi.nullptr
           ? null
-          : GtkTreePath.fromPointer(_out1.cast<ffi.Void>()),
+          : GtkTreePath.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),
     );
-  } finally {}
+  } finally {
+    malloc.free(_out0);
+    malloc.free(_out1);
+  }
 }
 
 /// Retrieves the `GtkExpression` stored inside the given `value`, and acquires

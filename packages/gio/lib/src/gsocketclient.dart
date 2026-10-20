@@ -15,7 +15,25 @@ part of '../gio.dart';
 /// As `GSocketClient` is a lightweight object, you don't need to cache it. You
 /// can just create a new one any time you need one.
 class GSocketClient extends GObject {
-  GSocketClient.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSocketClient.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSocketClient>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSocketClient.rawFromPointer(handle, owned: owned);
+  }
+  GSocketClient.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,12 +47,23 @@ class GSocketClient extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_socket_client_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GSocketClient with the default options.
   static final _gSocketClientNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_socket_client_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GSocketClient() : this.fromPointer(_gSocketClientNew(), owned: true);
+  GSocketClient() : this.rawFromPointer(_gSocketClientNew(), owned: true);
 
   /// Enable proxy protocols to be handled by the application. When the
   /// indicated proxy protocol is returned by the #GProxyResolver,

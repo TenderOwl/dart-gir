@@ -75,7 +75,25 @@ part of '../adw.dart';
 /// setting the content child.
 class AdwBottomSheet extends GtkWidget
     implements AdwSwipeable, GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwBottomSheet.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwBottomSheet.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwBottomSheet>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwBottomSheet.rawFromPointer(handle, owned: owned);
+  }
+  AdwBottomSheet.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -89,12 +107,23 @@ class AdwBottomSheet extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_bottom_sheet_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwBottomSheet`.
   static final _adwBottomSheetNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_bottom_sheet_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwBottomSheet() : this.fromPointer(_adwBottomSheetNew(), owned: true);
+  AdwBottomSheet() : this.rawFromPointer(_adwBottomSheetNew(), owned: true);
 
   /// Gets horizontal alignment of the bottom sheet.
   static final _adwBottomSheetGetAlign =
@@ -687,15 +716,16 @@ class AdwBottomSheet extends GtkWidget
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _adwSwipeableGetSwipeArea(
-        this.handle,
-        navigationDirection.value,
-        isDrag ? 1 : 0,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _adwSwipeableGetSwipeArea(
+      this.handle,
+      navigationDirection.value,
+      isDrag ? 1 : 0,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

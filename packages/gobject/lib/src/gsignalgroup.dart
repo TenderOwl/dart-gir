@@ -21,7 +21,25 @@ part of '../gobject.dart';
 /// all the signals you need. When the `GtkTextView:buffer` property changes
 /// all of the signals will be transitioned correctly.
 class GSignalGroup extends GObject {
-  GSignalGroup.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSignalGroup.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSignalGroup>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSignalGroup.rawFromPointer(handle, owned: owned);
+  }
+  GSignalGroup.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -35,6 +53,18 @@ class GSignalGroup extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'g_signal_group_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new #GSignalGroup for target instances of @target_type.
   static final _gSignalGroupNew =
       gobjectLookup<
@@ -42,7 +72,7 @@ class GSignalGroup extends GObject {
           >('g_signal_group_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GSignalGroup(int targetType)
-    : this.fromPointer(_gSignalGroupNew(targetType), owned: true);
+    : this.rawFromPointer(_gSignalGroupNew(targetType), owned: true);
 
   /// Blocks all signal handlers managed by @self so they will not
   /// be called during any signal emissions. Must be unblocked exactly

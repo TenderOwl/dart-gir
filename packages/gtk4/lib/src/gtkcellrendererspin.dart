@@ -15,8 +15,25 @@ part of '../gtk4.dart';
 /// of `GtkCellRendererSpin:digits` to display. Other `GtkSpinButton` properties
 /// can be set in a handler for the `GtkCellRenderer::editing-started` signal.
 class GtkCellRendererSpin extends GtkCellRendererText {
-  GtkCellRendererSpin.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRendererSpin.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRendererSpin>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRendererSpin.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRendererSpin.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,13 +47,24 @@ class GtkCellRendererSpin extends GtkCellRendererText {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_spin_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCellRendererSpin`.
   static final _gtkCellRendererSpinNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_renderer_spin_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererSpin()
-    : this.fromPointer(_gtkCellRendererSpinNew(), owned: true);
+    : this.rawFromPointer(_gtkCellRendererSpinNew(), owned: true);
 
   /// This signal is emitted after @renderer has been edited.
   ///

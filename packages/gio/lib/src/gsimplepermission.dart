@@ -8,8 +8,25 @@ part of '../gio.dart';
 /// Calling [method@Gio.Permission.acquire] or [method@Gio.Permission.release]
 /// on a `GSimplePermission` will result in errors.
 class GSimplePermission extends GPermission {
-  GSimplePermission.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSimplePermission.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSimplePermission>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSimplePermission.rawFromPointer(handle, owned: owned);
+  }
+  GSimplePermission.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,6 +40,17 @@ class GSimplePermission extends GPermission {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_simple_permission_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GPermission instance that represents an action that is
   /// either always or never allowed.
   static final _gSimplePermissionNew =
@@ -30,7 +58,7 @@ class GSimplePermission extends GPermission {
         'g_simple_permission_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GSimplePermission(bool allowed)
-    : this.fromPointer(_gSimplePermissionNew(allowed ? 1 : 0), owned: true);
+    : this.rawFromPointer(_gSimplePermissionNew(allowed ? 1 : 0), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

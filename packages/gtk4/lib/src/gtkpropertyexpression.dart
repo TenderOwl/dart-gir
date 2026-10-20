@@ -3,8 +3,22 @@ part of '../gtk4.dart';
 
 /// A `GObject` property value in a `GtkExpression`.
 class GtkPropertyExpression extends GtkExpression {
-  GtkPropertyExpression.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkPropertyExpression.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkPropertyExpression>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkPropertyExpression.rawFromPointer(handle, owned: owned);
+  }
+  GtkPropertyExpression.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +31,17 @@ class GtkPropertyExpression extends GtkExpression {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_property_expression_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates an expression that looks up a property.
   ///
@@ -86,7 +111,7 @@ class GtkPropertyExpression extends GtkExpression {
             )
           >();
   GtkPropertyExpression.forPspec(GtkExpression? expression, GParamSpec pspec)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkPropertyExpressionNewForPspec(
           expression?.handle ?? ffi.nullptr,
           pspec.handle,

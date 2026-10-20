@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the #graphene_euler_t structure are private
 /// and should never be accessed directly.
 final class GrapheneEuler {
-  GrapheneEuler.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneEuler.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneEuler>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneEuler.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneEuler.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -28,7 +43,7 @@ final class GrapheneEuler {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_euler_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneEuler.alloc() : this.fromPointer(_grapheneEulerAlloc());
+  GrapheneEuler.alloc() : this.rawFromPointer(_grapheneEulerAlloc());
 
   /// Checks if two #graphene_euler_t are equal.
   static final _grapheneEulerEqual =
@@ -376,10 +391,11 @@ final class GrapheneEuler {
   GrapheneEuler reorder(GrapheneEulerOrder order) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneEulerReorder(this.handle, order.value, _out0.cast<ffi.Void>());
-      return GrapheneEuler.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneEulerReorder(this.handle, order.value, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneEuler.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a #graphene_euler_t into a transformation matrix expressing
@@ -410,10 +426,11 @@ final class GrapheneEuler {
   GrapheneMatrix toMatrix() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneEulerToMatrix(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneEulerToMatrix(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a #graphene_euler_t into a #graphene_quaternion_t.
@@ -429,10 +446,11 @@ final class GrapheneEuler {
   GrapheneQuaternion toQuaternion() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneEulerToQuaternion(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneEulerToQuaternion(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the angles of a #graphene_euler_t and initializes a
@@ -449,10 +467,11 @@ final class GrapheneEuler {
   GrapheneVec3 toVec3() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneEulerToVec3(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneEulerToVec3(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 }
 
@@ -461,7 +480,22 @@ final class GrapheneEuler {
 /// The contents of the `graphene_frustum_t` are private, and should not be
 /// modified directly.
 final class GrapheneFrustum {
-  GrapheneFrustum.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneFrustum.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneFrustum>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneFrustum.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneFrustum.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -483,7 +517,7 @@ final class GrapheneFrustum {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_frustum_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneFrustum.alloc() : this.fromPointer(_grapheneFrustumAlloc());
+  GrapheneFrustum.alloc() : this.rawFromPointer(_grapheneFrustumAlloc());
 
   /// Checks whether a point is inside the volume defined by the given
   /// #graphene_frustum_t.

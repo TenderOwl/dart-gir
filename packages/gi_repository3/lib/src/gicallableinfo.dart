@@ -12,7 +12,22 @@ part of '../gi_repository3.dart';
 /// A callable has a list of arguments ([class@GIRepository.ArgInfo]), a return
 /// type, direction and a flag which decides if it returns `NULL`.
 class GICallableInfo extends GIBaseInfo {
-  GICallableInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GICallableInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GICallableInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GICallableInfo.rawFromPointer(handle, owned: owned);
+  }
+  GICallableInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,6 +40,18 @@ class GICallableInfo extends GIBaseInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_callable_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Whether the callable can throw a [type@GLib.Error]
   static final _giCallableInfoCanThrowGerror =
@@ -231,10 +258,11 @@ class GICallableInfo extends GIBaseInfo {
   GIArgInfo loadArg(int n) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _giCallableInfoLoadArg(this.handle, n, _out0.cast<ffi.Void>());
-      return GIArgInfo.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _giCallableInfoLoadArg(this.handle, n, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GIArgInfo.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Obtain information about a return value of callable; this
@@ -257,10 +285,11 @@ class GICallableInfo extends GIBaseInfo {
   GITypeInfo loadReturnType() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _giCallableInfoLoadReturnType(this.handle, _out0.cast<ffi.Void>());
-      return GITypeInfo.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _giCallableInfoLoadReturnType(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GITypeInfo.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// See if a callable could return `NULL`.

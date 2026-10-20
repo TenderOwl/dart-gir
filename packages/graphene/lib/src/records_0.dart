@@ -4,7 +4,22 @@ part of '../graphene.dart';
 /// A 3D box, described as the volume between a minimum and
 /// a maximum vertices.
 final class GrapheneBox {
-  GrapheneBox.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneBox.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneBox>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneBox.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneBox.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -26,7 +41,7 @@ final class GrapheneBox {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_box_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneBox.alloc() : this.fromPointer(_grapheneBoxAlloc());
+  GrapheneBox.alloc() : this.rawFromPointer(_grapheneBoxAlloc());
 
   /// Checks whether the #graphene_box_t @a contains the given
   /// #graphene_box_t @b.
@@ -92,10 +107,11 @@ final class GrapheneBox {
   GrapheneBox expand(GraphenePoint3D point) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxExpand(this.handle, point.handle, _out0.cast<ffi.Void>());
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxExpand(this.handle, point.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Expands the dimensions of @box by the given @scalar value.
@@ -118,10 +134,11 @@ final class GrapheneBox {
   GrapheneBox expandScalar(double scalar) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxExpandScalar(this.handle, scalar, _out0.cast<ffi.Void>());
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxExpandScalar(this.handle, scalar, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Expands the dimensions of @box to include the coordinates of the
@@ -146,10 +163,11 @@ final class GrapheneBox {
   GrapheneBox expandVec3(GrapheneVec3 vec) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxExpandVec3(this.handle, vec.handle, _out0.cast<ffi.Void>());
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxExpandVec3(this.handle, vec.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Frees the resources allocated by graphene_box_alloc().
@@ -176,10 +194,11 @@ final class GrapheneBox {
   GrapheneSphere getBoundingSphere() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxGetBoundingSphere(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneSphere.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxGetBoundingSphere(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneSphere.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of the center of a #graphene_box_t.
@@ -195,10 +214,11 @@ final class GrapheneBox {
   GraphenePoint3D getCenter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxGetCenter(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxGetCenter(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the size of the @box on the Z axis.
@@ -235,10 +255,11 @@ final class GrapheneBox {
   GraphenePoint3D getMax() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxGetMax(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxGetMax(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of the minimum point of the given
@@ -255,10 +276,11 @@ final class GrapheneBox {
   GraphenePoint3D getMin() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxGetMin(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxGetMin(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the size of the box on all three axes, and stores
@@ -275,10 +297,11 @@ final class GrapheneBox {
   GrapheneVec3 getSize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxGetSize(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxGetSize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the size of the @box on the X axis.
@@ -451,19 +474,20 @@ final class GrapheneBox {
   (bool, GrapheneBox?) intersection(GrapheneBox b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _grapheneBoxIntersection(
-        this.handle,
-        b.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        (_out0) == ffi.nullptr
-            ? null
-            : GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _grapheneBoxIntersection(
+      this.handle,
+      b.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+    );
   }
 
   /// Unions the two given #graphene_box_t.
@@ -487,10 +511,11 @@ final class GrapheneBox {
   GrapheneBox union(GrapheneBox b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneBoxUnion(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneBoxUnion(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// A degenerate #graphene_box_t that can only be expanded.

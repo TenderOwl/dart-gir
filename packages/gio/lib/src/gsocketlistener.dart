@@ -17,8 +17,25 @@ part of '../gio.dart';
 /// [class@Gio.SocketService] and [class@Gio.ThreadedSocketService] which are
 /// subclasses of `GSocketListener` that make this even easier.
 class GSocketListener extends GObject {
-  GSocketListener.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSocketListener.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSocketListener>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSocketListener.rawFromPointer(handle, owned: owned);
+  }
+  GSocketListener.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -32,6 +49,17 @@ class GSocketListener extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_socket_listener_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GSocketListener with no sockets to listen for.
   /// New listeners can be added with e.g. g_socket_listener_add_address()
   /// or g_socket_listener_add_inet_port().
@@ -39,7 +67,7 @@ class GSocketListener extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_socket_listener_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GSocketListener() : this.fromPointer(_gSocketListenerNew(), owned: true);
+  GSocketListener() : this.rawFromPointer(_gSocketListenerNew(), owned: true);
 
   /// Blocks waiting for a client to connect to any of the sockets added
   /// to the listener. Returns a #GSocketConnection for the socket that was
@@ -57,7 +85,7 @@ class GSocketListener extends GObject {
             ffi.NativeFunction<
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
@@ -66,19 +94,18 @@ class GSocketListener extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GSocketConnection, GObject?) accept([GCancellable? cancellable]) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gSocketListenerAccept(
         this.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         cancellable?.handle ?? ffi.nullptr,
         _error,
       );
@@ -87,11 +114,12 @@ class GSocketListener extends GObject {
       }
       return (
         GSocketConnection.fromPointer(_ret),
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+            : GObject.fromPointer(_out0.value.cast<ffi.Void>()),
       );
     } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }
@@ -219,7 +247,7 @@ class GSocketListener extends GObject {
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
@@ -228,19 +256,18 @@ class GSocketListener extends GObject {
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GSocketConnection, GObject?) acceptFinish(GAsyncResult result) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gSocketListenerAcceptFinish(
         this.handle,
         result.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _error,
       );
       if (_error.value != ffi.nullptr) {
@@ -248,11 +275,12 @@ class GSocketListener extends GObject {
       }
       return (
         GSocketConnection.fromPointer(_ret),
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+            : GObject.fromPointer(_out0.value.cast<ffi.Void>()),
       );
     } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }
@@ -276,7 +304,7 @@ class GSocketListener extends GObject {
             ffi.NativeFunction<
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
@@ -285,19 +313,18 @@ class GSocketListener extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GSocket, GObject?) acceptSocket([GCancellable? cancellable]) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gSocketListenerAcceptSocket(
         this.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         cancellable?.handle ?? ffi.nullptr,
         _error,
       );
@@ -306,11 +333,12 @@ class GSocketListener extends GObject {
       }
       return (
         GSocket.fromPointer(_ret),
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+            : GObject.fromPointer(_out0.value.cast<ffi.Void>()),
       );
     } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }
@@ -438,7 +466,7 @@ class GSocketListener extends GObject {
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
@@ -447,19 +475,18 @@ class GSocketListener extends GObject {
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GSocket, GObject?) acceptSocketFinish(GAsyncResult result) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gSocketListenerAcceptSocketFinish(
         this.handle,
         result.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _error,
       );
       if (_error.value != ffi.nullptr) {
@@ -467,11 +494,12 @@ class GSocketListener extends GObject {
       }
       return (
         GSocket.fromPointer(_ret),
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GObject.fromPointer(_out0.cast<ffi.Void>()),
+            : GObject.fromPointer(_out0.value.cast<ffi.Void>()),
       );
     } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }
@@ -508,7 +536,7 @@ class GSocketListener extends GObject {
                 ffi.Int32,
                 ffi.Int32,
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
@@ -520,7 +548,7 @@ class GSocketListener extends GObject {
               int,
               int,
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
@@ -530,8 +558,7 @@ class GSocketListener extends GObject {
     GSocketProtocol protocol, [
     GObject? sourceObject,
   ]) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gSocketListenerAddAddress(
@@ -540,7 +567,7 @@ class GSocketListener extends GObject {
         type_.value,
         protocol.value,
         sourceObject?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _error,
       );
       if (_error.value != ffi.nullptr) {
@@ -548,11 +575,15 @@ class GSocketListener extends GObject {
       }
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GSocketAddress.fromPointer(_out0.cast<ffi.Void>()),
+            : GSocketAddress.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
       );
     } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }

@@ -6,7 +6,25 @@ part of '../gio.dart';
 /// API. This is an abstract class; use [class@Gio.InetSocketAddress] for
 /// internet sockets, or [class@Gio.UnixSocketAddress] for UNIX domain sockets.
 class GSocketAddress extends GObject implements GSocketConnectable {
-  GSocketAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSocketAddress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSocketAddress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSocketAddress.rawFromPointer(handle, owned: owned);
+  }
+  GSocketAddress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +38,17 @@ class GSocketAddress extends GObject implements GSocketConnectable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_socket_address_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a #GSocketAddress subclass corresponding to the native
   /// struct sockaddr @native.
   static final _gSocketAddressNewFromNative =
@@ -32,7 +61,10 @@ class GSocketAddress extends GObject implements GSocketConnectable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GSocketAddress.fromNative(ffi.Pointer<ffi.Void> native, int len)
-    : this.fromPointer(_gSocketAddressNewFromNative(native, len), owned: true);
+    : this.rawFromPointer(
+        _gSocketAddressNewFromNative(native, len),
+        owned: true,
+      );
 
   /// Gets the socket family type of @address.
   static final _gSocketAddressGetFamily =

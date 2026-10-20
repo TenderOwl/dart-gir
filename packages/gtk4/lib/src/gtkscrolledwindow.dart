@@ -83,8 +83,25 @@ part of '../gtk4.dart';
 /// role.
 class GtkScrolledWindow extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkScrolledWindow.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkScrolledWindow.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkScrolledWindow>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkScrolledWindow.rawFromPointer(handle, owned: owned);
+  }
+  GtkScrolledWindow.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -98,12 +115,24 @@ class GtkScrolledWindow extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_scrolled_window_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new scrolled window.
   static final _gtkScrolledWindowNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_scrolled_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkScrolledWindow() : this.fromPointer(_gtkScrolledWindowNew(), owned: true);
+  GtkScrolledWindow()
+    : this.rawFromPointer(_gtkScrolledWindowNew(), owned: true);
 
   /// Gets the child widget of @scrolled_window.
   ///

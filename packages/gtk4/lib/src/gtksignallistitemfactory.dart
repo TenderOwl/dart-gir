@@ -41,8 +41,25 @@ part of '../gtk4.dart';
 /// [signal@Gtk.SignalListItemFactory::setup] signal and removed again during
 /// [signal@Gtk.SignalListItemFactory::teardown].
 class GtkSignalListItemFactory extends GtkListItemFactory {
-  GtkSignalListItemFactory.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSignalListItemFactory.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSignalListItemFactory>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSignalListItemFactory.rawFromPointer(handle, owned: owned);
+  }
+  GtkSignalListItemFactory.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -56,6 +73,17 @@ class GtkSignalListItemFactory extends GtkListItemFactory {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_signal_list_item_factory_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkSignalListItemFactory`.
   ///
   /// You need to connect signal handlers before you use it.
@@ -64,7 +92,7 @@ class GtkSignalListItemFactory extends GtkListItemFactory {
         'gtk_signal_list_item_factory_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkSignalListItemFactory()
-    : this.fromPointer(_gtkSignalListItemFactoryNew(), owned: true);
+    : this.rawFromPointer(_gtkSignalListItemFactoryNew(), owned: true);
 
   /// Emitted when an object has been bound to an item.
   ///

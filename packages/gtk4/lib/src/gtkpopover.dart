@@ -104,7 +104,25 @@ class GtkPopover extends GtkWidget
         GtkConstraintTarget,
         GtkNative,
         GtkShortcutManager {
-  GtkPopover.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkPopover.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkPopover>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkPopover.rawFromPointer(handle, owned: owned);
+  }
+  GtkPopover.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -118,12 +136,23 @@ class GtkPopover extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_popover_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkPopover`.
   static final _gtkPopoverNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_popover_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkPopover() : this.fromPointer(_gtkPopoverNew(), owned: true);
+  GtkPopover() : this.rawFromPointer(_gtkPopoverNew(), owned: true);
 
   /// Returns whether the popover is modal.
   ///
@@ -227,13 +256,11 @@ class GtkPopover extends GtkWidget
   (bool, GdkRectangle) getPointingTo() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkPopoverGetPointingTo(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GdkRectangle.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkPopoverGetPointingTo(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GdkRectangle.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Returns the preferred position of @popover.

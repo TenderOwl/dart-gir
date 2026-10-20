@@ -12,6 +12,7 @@ workspace:
   - generator
   - packages/adw
   - packages/cairo
+  - packages/dart_gobject
   - packages/gdk4
   - packages/gdk_pixbuf
   - packages/gi_repository3

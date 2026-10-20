@@ -3,7 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node applying a rectangular clip to its single child node.
 class GskClipNode extends GskRenderNode {
-  GskClipNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskClipNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskClipNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskClipNode.rawFromPointer(handle, owned: owned);
+  }
+  GskClipNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -16,6 +31,17 @@ class GskClipNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_clip_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GskRenderNode` that will clip the @child to the area
   /// given by @clip.
@@ -35,7 +61,10 @@ class GskClipNode extends GskRenderNode {
             )
           >();
   GskClipNode(GskRenderNode child, GrapheneRect clip)
-    : this.fromPointer(_gskClipNodeNew(child.handle, clip.handle), owned: true);
+    : this.rawFromPointer(
+        _gskClipNodeNew(child.handle, clip.handle),
+        owned: true,
+      );
 
   /// Gets the child node that is getting clipped by the given @node.
   static final _gskClipNodeGetChild =

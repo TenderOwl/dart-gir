@@ -6,8 +6,25 @@ part of '../gtk4.dart';
 /// Signals that are used in this way are referred to as keybinding signals,
 /// and they are expected to be defined with the `G_SIGNAL_ACTION` flag.
 class GtkSignalAction extends GtkShortcutAction {
-  GtkSignalAction.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSignalAction.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSignalAction>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSignalAction.rawFromPointer(handle, owned: owned);
+  }
+  GtkSignalAction.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +37,17 @@ class GtkSignalAction extends GtkShortcutAction {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_signal_action_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates an action that when activated, emits the given action signal
   /// on the provided widget.

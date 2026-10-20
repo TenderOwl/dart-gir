@@ -2,8 +2,11 @@
 
 import 'dart:ffi' as ffi;
 
+import 'package:gir_ffi/gir_ffi.dart';
+
 part 'src/lib.dart';
 part 'src/enums_0.dart';
 part 'src/enums_1.dart';
 part 'src/functions.dart';
-part 'src/records.dart';
+part 'src/records_0.dart';
+part 'src/records_1.dart';

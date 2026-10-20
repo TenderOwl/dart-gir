@@ -2,8 +2,25 @@
 part of '../gdk_pixbuf.dart';
 
 class GdkPixbufSimpleAnimIter extends GdkPixbufAnimationIter {
-  GdkPixbufSimpleAnimIter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPixbufSimpleAnimIter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPixbufSimpleAnimIter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkPixbufSimpleAnimIter.rawFromPointer(handle, owned: owned);
+  }
+  GdkPixbufSimpleAnimIter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -16,6 +33,18 @@ class GdkPixbufSimpleAnimIter extends GdkPixbufAnimationIter {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gdkPixbufLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gdk_pixbuf_simple_anim_iter_get_type',
+      ).asFunction<int Function()>()();
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

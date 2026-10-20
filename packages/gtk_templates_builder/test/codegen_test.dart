@@ -273,6 +273,83 @@ void main() {
       expect(src, contains('super.initTemplate();'));
       expect(src, contains('_wireSignals();'));
     });
+
+    test('names the helper the way the bindings generator does', () {
+      // The generator's rule is `on` + UpperCamelCase of the signal
+      // name: `icon-release` → `onIconRelease`. Anything else does
+      // not exist on the widget class, and the generated part file
+      // does not compile.
+      const input = CodegenInput(
+        className: 'Sample',
+        parentType: 'GtkBox',
+        xmlString: '<interface/>',
+        children: [TemplateChildSpec(id: 'entry', typeName: 'GtkEntry')],
+        callbacks: [],
+        signals: [
+          SignalBinding(
+            signalName: 'icon-release',
+            childId: 'entry',
+            childType: 'GtkEntry',
+            methodName: 'onIconRelease',
+          ),
+        ],
+        methodParameters: {
+          'onIconRelease': ['pos'],
+        },
+      );
+      final src = codegenMixin(input);
+      expect(
+        src,
+        contains(
+          'entry.onIconRelease((pos) => (this as dynamic).onIconRelease(pos))',
+        ),
+      );
+      // The old spelling — a capitalized first letter and the rest
+      // of the raw name — is not a Dart identifier at all.
+      expect(src, isNot(contains('onIcon-release')));
+    });
+
+    test('forwards the signal arguments to the user method', () {
+      const input = CodegenInput(
+        className: 'Sample',
+        parentType: 'GtkBox',
+        xmlString: '<interface/>',
+        children: [TemplateChildSpec(id: 'entry', typeName: 'GtkEntry')],
+        callbacks: [],
+        signals: [
+          SignalBinding(
+            signalName: 'icon-press',
+            childId: 'entry',
+            childType: 'GtkEntry',
+            methodName: 'onIconPress',
+          ),
+        ],
+        methodParameters: {
+          'onIconPress': ['pos'],
+        },
+      );
+      final src = codegenMixin(input);
+      expect(
+        src,
+        contains(
+          'entry.onIconPress((pos) => (this as dynamic).onIconPress(pos))',
+        ),
+      );
+    });
+  });
+
+  group('upperCamel', () {
+    test('matches the bindings generator rule', () {
+      // The generator's `toUpperCamel`
+      // (`generator/lib/src/resolve/naming.dart`) splits on `_`, `-`
+      // and whitespace, then on camelCase humps.
+      expect(upperCamel('clicked'), 'Clicked');
+      expect(upperCamel('icon-release'), 'IconRelease');
+      expect(upperCamel('icon_release'), 'IconRelease');
+      expect(upperCamel('activate'), 'Activate');
+      expect(upperCamel('icon-press'), 'IconPress');
+      expect(upperCamel(''), '');
+    });
   });
 
   group('snakeCaseToCamel', () {

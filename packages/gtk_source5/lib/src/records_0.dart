@@ -2,7 +2,22 @@
 part of '../gtk_source5.dart';
 
 final class GtkSourceAnnotationClass {
-  GtkSourceAnnotationClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceAnnotationClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceAnnotationClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceAnnotationClass.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceAnnotationClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -19,10 +34,30 @@ final class GtkSourceAnnotationClass {
 }
 
 final class GtkSourceAnnotationProviderClass {
-  GtkSourceAnnotationProviderClass.fromPointer(
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceAnnotationProviderClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceAnnotationProviderClass>(
+      handle.address,
+    );
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceAnnotationProviderClass.rawFromPointer(
+      handle,
+      owned: owned,
+    );
+  }
+  GtkSourceAnnotationProviderClass.rawFromPointer(
     this.handle, {
     bool owned = false,
-  });
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -39,7 +74,22 @@ final class GtkSourceAnnotationProviderClass {
 }
 
 final class GtkSourceAnnotationsClass {
-  GtkSourceAnnotationsClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceAnnotationsClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceAnnotationsClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceAnnotationsClass.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceAnnotationsClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -56,7 +106,22 @@ final class GtkSourceAnnotationsClass {
 }
 
 final class GtkSourceBufferClass {
-  GtkSourceBufferClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceBufferClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceBufferClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceBufferClass.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceBufferClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -73,7 +138,25 @@ final class GtkSourceBufferClass {
 }
 
 final class GtkSourceCompletionCellClass {
-  GtkSourceCompletionCellClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionCellClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionCellClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionCellClass.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceCompletionCellClass.rawFromPointer(
+    this.handle, {
+    bool owned = false,
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -90,7 +173,22 @@ final class GtkSourceCompletionCellClass {
 }
 
 final class GtkSourceCompletionClass {
-  GtkSourceCompletionClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionClass.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceCompletionClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -107,10 +205,27 @@ final class GtkSourceCompletionClass {
 }
 
 final class GtkSourceCompletionContextClass {
-  GtkSourceCompletionContextClass.fromPointer(
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionContextClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionContextClass>(
+      handle.address,
+    );
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionContextClass.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceCompletionContextClass.rawFromPointer(
     this.handle, {
     bool owned = false,
-  });
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -127,10 +242,30 @@ final class GtkSourceCompletionContextClass {
 }
 
 final class GtkSourceCompletionProposalInterface {
-  GtkSourceCompletionProposalInterface.fromPointer(
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionProposalInterface.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionProposalInterface>(
+      handle.address,
+    );
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionProposalInterface.rawFromPointer(
+      handle,
+      owned: owned,
+    );
+  }
+  GtkSourceCompletionProposalInterface.rawFromPointer(
     this.handle, {
     bool owned = false,
-  });
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -147,10 +282,30 @@ final class GtkSourceCompletionProposalInterface {
 }
 
 final class GtkSourceCompletionProviderInterface {
-  GtkSourceCompletionProviderInterface.fromPointer(
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionProviderInterface.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionProviderInterface>(
+      handle.address,
+    );
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionProviderInterface.rawFromPointer(
+      handle,
+      owned: owned,
+    );
+  }
+  GtkSourceCompletionProviderInterface.rawFromPointer(
     this.handle, {
     bool owned = false,
-  });
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -167,10 +322,30 @@ final class GtkSourceCompletionProviderInterface {
 }
 
 final class GtkSourceCompletionSnippetsClass {
-  GtkSourceCompletionSnippetsClass.fromPointer(
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionSnippetsClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionSnippetsClass>(
+      handle.address,
+    );
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionSnippetsClass.rawFromPointer(
+      handle,
+      owned: owned,
+    );
+  }
+  GtkSourceCompletionSnippetsClass.rawFromPointer(
     this.handle, {
     bool owned = false,
-  });
+  }) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -187,230 +362,25 @@ final class GtkSourceCompletionSnippetsClass {
 }
 
 final class GtkSourceCompletionWordsClass {
-  GtkSourceCompletionWordsClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  /// Wraps the native object at [handle].
   ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  /// The same native pointer always yields the same Dart object.
+  factory GtkSourceCompletionWordsClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionWordsClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSourceCompletionWordsClass.rawFromPointer(handle, owned: owned);
   }
-}
-
-/// Character encoding.
-///
-/// The #GtkSourceEncoding boxed type represents a character encoding. It is used
-/// for example by #GtkSourceFile. Note that the text in GTK widgets is always
-/// encoded in UTF-8.
-final class GtkSourceEncoding {
-  GtkSourceEncoding.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  GtkSourceCompletionWordsClass.rawFromPointer(
+    this.handle, {
+    bool owned = false,
+  }) {
+    registerDartObject(this, handle.address);
   }
-
-  /// Used by language bindings.
-  static final _gtkSourceEncodingCopy =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_encoding_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSourceEncoding copy() {
-    return GtkSourceEncoding.fromPointer(_gtkSourceEncodingCopy(this.handle));
-  }
-
-  /// Used by language bindings.
-  static final _gtkSourceEncodingFree =
-      gtkSource5Lookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_source_encoding_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _gtkSourceEncodingFree(this.handle);
-  }
-
-  /// Gets the character set of the #GtkSourceEncoding, such as "UTF-8" or
-  /// "ISO-8859-1".
-  static final _gtkSourceEncodingGetCharset =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_encoding_get_charset')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getCharset() {
-    return stringFromNative(
-      (_gtkSourceEncodingGetCharset(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Gets the name of the #GtkSourceEncoding such as "Unicode" or "Western".
-  static final _gtkSourceEncodingGetName =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gtk_source_encoding_get_name')
-          .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-  String getName() {
-    return stringFromNative(
-      (_gtkSourceEncodingGetName(this.handle)).cast(),
-      free: false,
-    )!;
-  }
-
-  /// Gets all encodings.
-  static final _gtkSourceEncodingGetAll =
-      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_source_encoding_get_all',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GSList getAll() {
-    return GSList.fromPointer(_gtkSourceEncodingGetAll());
-  }
-
-  /// Gets the #GtkSourceEncoding for the current locale.
-  ///
-  /// See also [func@GLib.get_charset].
-  static final _gtkSourceEncodingGetCurrent =
-      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_source_encoding_get_current',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GtkSourceEncoding getCurrent() {
-    return GtkSourceEncoding.fromPointer(_gtkSourceEncodingGetCurrent());
-  }
-
-  /// Gets the list of default candidate encodings to try when loading a file.
-  ///
-  /// See [method@FileLoader.set_candidate_encodings].
-  ///
-  /// This function returns a different list depending on the current locale (i.e.
-  /// language, country and default encoding). The UTF-8 encoding and the current
-  /// locale encoding are guaranteed to be present in the returned list.
-  static final _gtkSourceEncodingGetDefaultCandidates =
-      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_source_encoding_get_default_candidates',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GSList getDefaultCandidates() {
-    return GSList.fromPointer(_gtkSourceEncodingGetDefaultCandidates());
-  }
-
-  /// Gets a #GtkSourceEncoding from a character set such as "UTF-8" or
-  /// "ISO-8859-1".
-  static final _gtkSourceEncodingGetFromCharset =
-      gtkSource5Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('gtk_source_encoding_get_from_charset')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  static GtkSourceEncoding? getFromCharset(String charset) {
-    return withNativeString(charset, (nativeCharset) {
-      return (_gtkSourceEncodingGetFromCharset(nativeCharset.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GtkSourceEncoding.fromPointer(
-              _gtkSourceEncodingGetFromCharset(nativeCharset.cast<Utf8>()),
-            );
-    });
-  }
-
-  static final _gtkSourceEncodingGetUtf8 =
-      gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gtk_source_encoding_get_utf8',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GtkSourceEncoding getUtf8() {
-    return GtkSourceEncoding.fromPointer(_gtkSourceEncodingGetUtf8());
-  }
-}
-
-final class GtkSourceFileClass {
-  GtkSourceFileClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkSourceFileLoaderClass {
-  GtkSourceFileLoaderClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkSourceFileSaverClass {
-  GtkSourceFileSaverClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkSourceGutterClass {
-  GtkSourceGutterClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkSourceGutterLinesClass {
-  GtkSourceGutterLinesClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

@@ -63,11 +63,14 @@ Future<void> main(List<String> args) async {
 
     final inputs = <CodegenInput>[];
     for (final cls in plan.classes) {
-      final xmlString = _resolveCliXml(cls.templateSource);
+      final xmlString = _resolveCliXml(cls.templateSource, path);
       if (xmlString == null) {
         stderr.writeln(
-          '$path: cannot resolve ${cls.templateSource} for ${cls.className}',
+          '$path: cannot resolve ${cls.templateSource} for ${cls.className}\n'
+          'The path is relative to the package root — the directory '
+          'holding pubspec.yaml.',
         );
+        exitCode = 6;
         continue;
       }
       final children = extractChildrenFromXml(xmlString);
@@ -115,16 +118,23 @@ Future<void> main(List<String> args) async {
   exitCode = any ? 0 : 3;
 }
 
-String? _resolveCliXml(GtkTemplateSource source) {
+/// Resolves the template XML for [source] when the builder runs
+/// standalone.
+///
+/// The path of a `GtkTemplateFile` is relative to the **package
+/// root** — the nearest ancestor directory holding a `pubspec.yaml`,
+/// found from the source file [sourcePath]. That keeps the CLI
+/// independent of the directory it was started in, which is what the
+/// `build_runner` flow does too.
+String? _resolveCliXml(GtkTemplateSource source, String sourcePath) {
   if (source is GtkTemplateXml) return source.content;
   if (source is GtkTemplateFile) {
-    // CLI mode: treat the path as relative to cwd (the
-    // package root the user is standing in). This matches
-    // the build_runner behavior for a single-package
-    // layout.
-    final f = File(source.path);
-    if (!f.existsSync()) return null;
-    return f.readAsStringSync();
+    final packageRoot = findPackageRoot(sourcePath);
+    final file = packageRoot == null
+        ? File(source.path)
+        : File('$packageRoot/${source.path}');
+    if (!file.existsSync()) return null;
+    return file.readAsStringSync();
   }
   return null;
 }

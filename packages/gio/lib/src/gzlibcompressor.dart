@@ -4,8 +4,25 @@ part of '../gio.dart';
 /// `GZlibCompressor` is an implementation of [iface@Gio.Converter] that
 /// compresses data using zlib.
 class GZlibCompressor extends GObject implements GConverter {
-  GZlibCompressor.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GZlibCompressor.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GZlibCompressor>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GZlibCompressor.rawFromPointer(handle, owned: owned);
+  }
+  GZlibCompressor.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -19,6 +36,17 @@ class GZlibCompressor extends GObject implements GConverter {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_zlib_compressor_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a compressor.
   static final _gZlibCompressorNew =
       gioLookup<
@@ -28,7 +56,10 @@ class GZlibCompressor extends GObject implements GConverter {
           >('g_zlib_compressor_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GZlibCompressor(GZlibCompressorFormat format, int level)
-    : this.fromPointer(_gZlibCompressorNew(format.value, level), owned: true);
+    : this.rawFromPointer(
+        _gZlibCompressorNew(format.value, level),
+        owned: true,
+      );
 
   /// Gets the [property@Gio.ZlibCompressor:file-info] property.
   static final _gZlibCompressorGetFileInfo =

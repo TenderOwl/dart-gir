@@ -8,8 +8,25 @@ part of '../gio.dart';
 /// [iface@Gio.PollableOutputStream]: it always polls as ready.
 class GMemoryOutputStream extends GOutputStream
     implements GPollableOutputStream, GSeekable {
-  GMemoryOutputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GMemoryOutputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GMemoryOutputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GMemoryOutputStream.rawFromPointer(handle, owned: owned);
+  }
+  GMemoryOutputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,6 +40,17 @@ class GMemoryOutputStream extends GOutputStream
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_memory_output_stream_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GMemoryOutputStream, using g_realloc() and g_free()
   /// for memory allocation.
   static final _gMemoryOutputStreamNewResizable =
@@ -30,7 +58,7 @@ class GMemoryOutputStream extends GOutputStream
         'g_memory_output_stream_new_resizable',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GMemoryOutputStream.resizable()
-    : this.fromPointer(_gMemoryOutputStreamNewResizable(), owned: true);
+    : this.rawFromPointer(_gMemoryOutputStreamNewResizable(), owned: true);
 
   /// Gets any loaded data from the @ostream.
   ///

@@ -34,8 +34,25 @@ part of '../gtk4.dart';
 /// the menus use the [enum@Gtk.AccessibleRole.menu] role.
 class GtkPopoverMenuBar extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkPopoverMenuBar.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkPopoverMenuBar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkPopoverMenuBar>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkPopoverMenuBar.rawFromPointer(handle, owned: owned);
+  }
+  GtkPopoverMenuBar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -49,6 +66,17 @@ class GtkPopoverMenuBar extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_popover_menu_bar_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GtkPopoverMenuBar` from a `GMenuModel`.
   static final _gtkPopoverMenuBarNewFromModel =
       gtk4Lookup<
@@ -58,7 +86,7 @@ class GtkPopoverMenuBar extends GtkWidget
           >('gtk_popover_menu_bar_new_from_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPopoverMenuBar.fromModel([GMenuModel? model])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkPopoverMenuBarNewFromModel(model?.handle ?? ffi.nullptr),
         owned: true,
       );

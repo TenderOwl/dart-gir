@@ -3,8 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node applying a `GskTransform` to its single child node.
 class GskTransformNode extends GskRenderNode {
-  GskTransformNode.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskTransformNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskTransformNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskTransformNode.rawFromPointer(handle, owned: owned);
+  }
+  GskTransformNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +31,17 @@ class GskTransformNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_transform_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GskRenderNode` that will transform the given @child
   /// with the given @transform.
@@ -36,7 +61,7 @@ class GskTransformNode extends GskRenderNode {
             )
           >();
   GskTransformNode(GskRenderNode child, [GskTransform? transform])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gskTransformNodeNew(child.handle, transform?.handle ?? ffi.nullptr),
         owned: true,
       );

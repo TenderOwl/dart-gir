@@ -4,7 +4,22 @@ part of '../pango.dart';
 /// The `PangoAnalysis` structure stores information about
 /// the properties of a segment of text.
 final class PangoAnalysis {
-  PangoAnalysis.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAnalysis.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAnalysis>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAnalysis.rawFromPointer(handle, owned: owned);
+  }
+  PangoAnalysis.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -26,7 +41,22 @@ final class PangoAnalysis {
 /// The functions in this structure should not be called directly. Instead,
 /// one should use the wrapper functions provided for `PangoAttribute`.
 final class PangoAttrClass {
-  PangoAttrClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrClass.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -45,7 +75,22 @@ final class PangoAttrClass {
 /// The `PangoAttrColor` structure is used to represent attributes that
 /// are colors.
 final class PangoAttrColor {
-  PangoAttrColor.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrColor.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrColor>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrColor.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrColor.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -64,7 +109,22 @@ final class PangoAttrColor {
 /// The `PangoAttrFloat` structure is used to represent attributes with
 /// a float or double value.
 final class PangoAttrFloat {
-  PangoAttrFloat.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrFloat.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrFloat>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrFloat.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrFloat.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -83,7 +143,22 @@ final class PangoAttrFloat {
 /// The `PangoAttrFontDesc` structure is used to store an attribute that
 /// sets all aspects of the font description at once.
 final class PangoAttrFontDesc {
-  PangoAttrFontDesc.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrFontDesc.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrFontDesc>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrFontDesc.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrFontDesc.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -117,7 +192,22 @@ final class PangoAttrFontDesc {
 /// The `PangoAttrFontFeatures` structure is used to represent OpenType
 /// font features as an attribute.
 final class PangoAttrFontFeatures {
-  PangoAttrFontFeatures.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrFontFeatures.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrFontFeatures>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrFontFeatures.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrFontFeatures.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -155,7 +245,22 @@ final class PangoAttrFontFeatures {
 /// The `PangoAttrInt` structure is used to represent attributes with
 /// an integer or enumeration value.
 final class PangoAttrInt {
-  PangoAttrInt.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrInt.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrInt>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrInt.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrInt.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -179,7 +284,22 @@ final class PangoAttrInt {
 /// style change, the range of the current style segment and the attributes
 /// currently in effect can be queried.
 final class PangoAttrIterator {
-  PangoAttrIterator.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoAttrIterator.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoAttrIterator>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoAttrIterator.rawFromPointer(handle, owned: owned);
+  }
+  PangoAttrIterator.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -259,8 +379,8 @@ final class PangoAttrIterator {
               ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('pango_attr_iterator_get_font')
@@ -268,31 +388,30 @@ final class PangoAttrIterator {
             void Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (PangoLanguage?, GSList?) getFont(PangoFontDescription desc) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      _pangoAttrIteratorGetFont(
-        this.handle,
-        desc.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
+      _pangoAttrIteratorGetFont(this.handle, desc.handle, _out0, _out1);
       return (
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : PangoLanguage.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : PangoLanguage.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GSList.fromPointer(_out1.cast<ffi.Void>()),
+            : GSList.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),
       );
-    } finally {}
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Advance the iterator until the next change of style.
@@ -338,36 +457,5 @@ final class PangoAttrIterator {
       malloc.free(_out0);
       malloc.free(_out1);
     }
-  }
-}
-
-/// The `PangoAttrLanguage` structure is used to represent attributes that
-/// are languages.
-final class PangoAttrLanguage {
-  PangoAttrLanguage.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Create a new language tag attribute.
-  static final _pangoAttrLanguageNew =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_language_new')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  static PangoAttribute new_(PangoLanguage language) {
-    return PangoAttribute.fromPointer(_pangoAttrLanguageNew(language.handle));
   }
 }

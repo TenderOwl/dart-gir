@@ -35,8 +35,25 @@ part of '../gtk4.dart';
 /// current drop target, and will receive the %GTK_STATE_FLAG_DROP_ACTIVE
 /// state, which can be used by themes to style the widget as a drop target.
 class GtkDropTargetAsync extends GtkEventController {
-  GtkDropTargetAsync.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkDropTargetAsync.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkDropTargetAsync>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkDropTargetAsync.rawFromPointer(handle, owned: owned);
+  }
+  GtkDropTargetAsync.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -50,6 +67,17 @@ class GtkDropTargetAsync extends GtkEventController {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_drop_target_async_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkDropTargetAsync` object.
   static final _gtkDropTargetAsyncNew =
       gtk4Lookup<
@@ -61,7 +89,7 @@ class GtkDropTargetAsync extends GtkEventController {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkDropTargetAsync(GdkContentFormats? formats, GdkDragAction actions)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkDropTargetAsyncNew(formats?.handle ?? ffi.nullptr, actions.value),
         owned: true,
       );

@@ -93,17 +93,7 @@ class GtkTemplatesBuilder implements Builder {
 
     final inputs = <CodegenInput>[];
     for (final cls in plan.classes) {
-      final xmlString = await _resolveTemplateXml(
-        cls.templateSource,
-        buildStep,
-      );
-      if (xmlString == null) {
-        log.warning(
-          'gtk_templates: skipping ${cls.className} — could not '
-          'resolve template XML (${cls.templateSource})',
-        );
-        continue;
-      }
+      final xmlString = await resolveTemplateXml(cls.templateSource, buildStep);
       final children = extractChildrenFromXml(xmlString);
       final signals = extractSignalsFromXml(xmlString);
       inputs.add(
@@ -179,82 +169,100 @@ class MissingImportException implements Exception {
   String toString() => message;
 }
 
+/// Thrown when the template file named by a `GtkTemplateFile` cannot
+/// be read.
+///
+/// `build_runner` swallows exceptions thrown by a builder and
+/// reports them through the log, so the builder also calls
+/// `log.severe` with the actionable message before throwing.
+class MissingTemplateFileException implements Exception {
+  const MissingTemplateFileException(this.message);
+
+  /// The user-facing diagnostic, naming the package and the path
+  /// that was looked for.
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 /// Returns the basename (final path segment) of [path].
 String _basename(String path) {
   final i = path.lastIndexOf('/');
   return i < 0 ? path : path.substring(i + 1);
 }
 
-/// Resolves the template XML for a class. For inline
-/// `GtkTemplateXml` it returns the inline content; for
-/// `GtkTemplateFile` it reads the file at the package root.
-/// Returns `null` on a missing file (the caller logs and
-/// skips the class).
-Future<String?> _resolveTemplateXml(
+/// Resolves the template XML for [source].
+///
+/// Inline XML (`GtkTemplateXml`) is returned as-is. A
+/// `GtkTemplateFile` is read through the build's **asset reader**,
+/// and that matters for two reasons:
+///
+///  * the file becomes a *tracked build input*, so editing the `.ui`
+///    re-runs the builder. Read off the filesystem it would be
+///    invisible to the build, the part file would keep the old
+///    template, and the edit would silently do nothing;
+///  * the path is resolved through the package's own asset id, so it
+///    does not depend on the directory the build was started from.
+///    In a workspace, `dart run build_runner build` at the root would
+///    otherwise look for the file next to the root package.
+///
+/// Throws [MissingTemplateFileException] when the file cannot be
+/// read. A build that cannot find its template has to fail: writing
+/// nothing would leave the previous part file in place, and the
+/// stale template would keep running as if nothing had changed.
+Future<String> resolveTemplateXml(
   GtkTemplateSource source,
   BuildStep buildStep,
 ) async {
   if (source is GtkTemplateXml) return source.content;
   if (source is GtkTemplateFile) {
-    // The path is relative to the package root. The
-    // `BuildStep.inputId.package` gives us the package
-    // name; combined with the workspace root (the
-    // build's `rootPackage` is harder to reach) we fall
-    // back to the input file's directory + path, which
-    // works for the test fixture and is correct for
-    // monorepo / single-package layouts.
-    final inputPath = buildStep.inputId.path;
-    final packageRoot = _packageRootFor(inputPath);
-    if (packageRoot == null) {
-      log.warning(
-        'gtk_templates: cannot determine package root for '
-        '${buildStep.inputId}',
-      );
-      return null;
+    final assetId = templateAssetId(source.path, buildStep.inputId.package);
+    if (assetId != null && await buildStep.canRead(assetId)) {
+      return buildStep.readAsString(assetId);
     }
-    final file = File('$packageRoot/${source.path}');
-    if (!file.existsSync()) {
-      log.warning(
-        'gtk_templates: ${source.path} not found at '
-        '$packageRoot/${source.path}',
-      );
-      return null;
-    }
-    return file.readAsStringSync();
+    final message =
+        'gtk_templates: ${buildStep.inputId.path} points at a template '
+        'file that could not be read.\n'
+        '  package: ${buildStep.inputId.package}\n'
+        '  path:    ${source.path}\n'
+        'The path is relative to the package root — the directory '
+        'holding pubspec.yaml — and the file has to be inside the '
+        'package.';
+    log.severe(message);
+    throw MissingTemplateFileException(message);
   }
-  return null;
+  throw MissingTemplateFileException(
+    'gtk_templates: ${buildStep.inputId.path} has a template source this '
+    'builder does not understand: $source',
+  );
 }
 
-/// Walks up from [inputPath] until it finds the directory
-/// containing a `pubspec.yaml`. Returns the directory's path
-/// with a trailing slash, or `null` if none is found.
-String? _packageRootFor(String inputPath) {
-  // inputPath is package-relative (e.g. 'lib/foo.dart').
-  // The package root is `..` from `lib/`. For tests in
-  // `test/fixtures/`, the package root is the test package
-  // dir, and the fixture path is the user's responsibility
-  // to express relative to that root.
-  //
-  // For the standalone CLI we need an absolute path; for
-  // the build_runner flow we have a relative path. The
-  // simplest cross-mode shape: assume `inputPath` starts
-  // with `lib/` or `test/`, strip that prefix, and resolve
-  // the rest against the current working directory. The
-  // build's `BuildStep.allowedOutputs` keeps everything
-  // honest.
-  if (Platform.isLinux || Platform.isMacOS) {
-    final cwd = Directory.current.path;
-    if (inputPath.startsWith('lib/') || inputPath.startsWith('test/')) {
-      return cwd;
-    }
-    // Strip a leading package segment if present.
-    final segments = inputPath.split('/');
-    if (segments.length > 1) {
-      return '$cwd/${segments.sublist(0, segments.length - 1).join('/')}';
-    }
-    return cwd;
+/// The asset id of the template file at [path] in [package].
+///
+/// [path] is relative to the package root. Returns `null` when it is
+/// not a usable asset path — absolute, or escaping the package with
+/// `..`.
+AssetId? templateAssetId(String path, String package) {
+  try {
+    return AssetId(package, path);
+  } on ArgumentError {
+    return null;
   }
-  return Directory.current.path;
+}
+
+/// The package root that owns [filePath] — the nearest ancestor
+/// directory holding a `pubspec.yaml`.
+///
+/// Returns `null` when there is none.
+String? findPackageRoot(String filePath) {
+  var dir = File(filePath).absolute.parent;
+  while (true) {
+    if (File('${dir.path}/pubspec.yaml').existsSync()) return dir.path;
+    final parent = dir.parent;
+    if (parent.path == dir.path) return null;
+    dir = parent;
+  }
 }
 
 /// Parses [source] and returns a `BuilderPlan` for every
@@ -281,6 +289,9 @@ ClassTemplatePlan? _scanClass(ClassDeclaration decl) {
 
   final children = <WidgetBinding>[];
   final callbacks = <CallbackBinding>[];
+  // The parameter names of every method, so the codegen can forward
+  // a signal's arguments to the user's method.
+  final methodParameters = <String, List<String>>{};
 
   for (final member in _membersOf(decl)) {
     if (member is FieldDeclaration) {
@@ -297,6 +308,7 @@ ClassTemplatePlan? _scanClass(ClassDeclaration decl) {
         }
       }
     } else if (member is MethodDeclaration) {
+      methodParameters[member.name.lexeme] = _parameterNames(member);
       final ann = _firstAnnotation(member.metadata, 'GtkTemplateCallback');
       if (ann != null) {
         callbacks.add(
@@ -315,7 +327,24 @@ ClassTemplatePlan? _scanClass(ClassDeclaration decl) {
     templateSource: templateSource,
     children: children,
     callbacks: callbacks,
+    methodParameters: methodParameters,
   );
+}
+
+/// The names of [member]'s parameters, in order.
+///
+/// Only the names matter: the codegen forwards a signal's arguments
+/// to the user's method, and Dart infers the closure's parameter
+/// types from the binding's callback type.
+List<String> _parameterNames(MethodDeclaration member) {
+  final parameters = member.parameters?.parameters;
+  if (parameters == null) return const <String>[];
+  final names = <String>[];
+  for (final parameter in parameters) {
+    final name = parameter.name?.lexeme;
+    if (name != null) names.add(name);
+  }
+  return names;
 }
 
 /// Reads the `extends` clause of [decl] and returns the

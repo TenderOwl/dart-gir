@@ -73,7 +73,25 @@ part of '../gtk4.dart';
 /// UI state during a Drag-and-Drop operation (e.g. switching tabs), you can
 /// use [class@Gtk.DropControllerMotion].
 class GtkDropTarget extends GtkEventController {
-  GtkDropTarget.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkDropTarget.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkDropTarget>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkDropTarget.rawFromPointer(handle, owned: owned);
+  }
+  GtkDropTarget.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -86,6 +104,17 @@ class GtkDropTarget extends GtkEventController {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_drop_target_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `GtkDropTarget` object.
   ///
@@ -100,7 +129,7 @@ class GtkDropTarget extends GtkEventController {
           >('gtk_drop_target_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkDropTarget(int type_, GdkDragAction actions)
-    : this.fromPointer(_gtkDropTargetNew(type_, actions.value), owned: true);
+    : this.rawFromPointer(_gtkDropTargetNew(type_, actions.value), owned: true);
 
   /// Gets the actions that this drop target supports.
   static final _gtkDropTargetGetActions =

@@ -3,8 +3,22 @@ part of '../gtk4.dart';
 
 /// A constant value in a `GtkExpression`.
 class GtkConstantExpression extends GtkExpression {
-  GtkConstantExpression.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkConstantExpression.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkConstantExpression>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkConstantExpression.rawFromPointer(handle, owned: owned);
+  }
+  GtkConstantExpression.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +32,17 @@ class GtkConstantExpression extends GtkExpression {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_constant_expression_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates an expression that always evaluates to the given `value`.
   static final _gtkConstantExpressionNewForValue =
       gtk4Lookup<
@@ -27,7 +52,7 @@ class GtkConstantExpression extends GtkExpression {
           >('gtk_constant_expression_new_for_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkConstantExpression.forValue(GValue value)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkConstantExpressionNewForValue(value.handle),
         owned: true,
       );

@@ -66,8 +66,25 @@ class GtkComboBoxText extends GtkComboBox
         GtkCellEditable,
         GtkCellLayout,
         GtkConstraintTarget {
-  GtkComboBoxText.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkComboBoxText.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkComboBoxText>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkComboBoxText.rawFromPointer(handle, owned: owned);
+  }
+  GtkComboBoxText.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -81,12 +98,23 @@ class GtkComboBoxText extends GtkComboBox
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_combo_box_text_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkComboBoxText`.
   static final _gtkComboBoxTextNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkComboBoxText() : this.fromPointer(_gtkComboBoxTextNew(), owned: true);
+  GtkComboBoxText() : this.rawFromPointer(_gtkComboBoxTextNew(), owned: true);
 
   /// Creates a new `GtkComboBoxText` with an entry.
   static final _gtkComboBoxTextNewWithEntry =
@@ -94,7 +122,7 @@ class GtkComboBoxText extends GtkComboBox
         'gtk_combo_box_text_new_with_entry',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkComboBoxText.withEntry()
-    : this.fromPointer(_gtkComboBoxTextNewWithEntry(), owned: true);
+    : this.rawFromPointer(_gtkComboBoxTextNewWithEntry(), owned: true);
 
   /// Appends @text to the list of strings stored in @combo_box.
   ///

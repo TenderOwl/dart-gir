@@ -2,7 +2,22 @@
 part of '../pango.dart';
 
 final class PangoFontFaceClass {
-  PangoFontFaceClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontFaceClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontFaceClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontFaceClass.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontFaceClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -19,7 +34,22 @@ final class PangoFontFaceClass {
 }
 
 final class PangoFontFamilyClass {
-  PangoFontFamilyClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontFamilyClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontFamilyClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontFamilyClass.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontFamilyClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -38,7 +68,22 @@ final class PangoFontFamilyClass {
 /// The `PangoFontMapClass` structure holds the virtual functions for
 /// a particular `PangoFontMap` implementation.
 final class PangoFontMapClass {
-  PangoFontMapClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontMapClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontMapClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontMapClass.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontMapClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -69,7 +114,22 @@ final class PangoFontMapClass {
 /// <img alt="Font metrics" src="fontmetrics-light.png">
 /// </picture>
 final class PangoFontMetrics {
-  PangoFontMetrics.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontMetrics.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontMetrics>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontMetrics.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontMetrics.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -235,7 +295,22 @@ final class PangoFontMetrics {
 /// The `PangoFontsetClass` structure holds the virtual functions for
 /// a particular `PangoFontset` implementation.
 final class PangoFontsetClass {
-  PangoFontsetClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontsetClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontsetClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontsetClass.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontsetClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -252,7 +327,22 @@ final class PangoFontsetClass {
 }
 
 final class PangoFontsetSimpleClass {
-  PangoFontsetSimpleClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontsetSimpleClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontsetSimpleClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontsetSimpleClass.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontsetSimpleClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -284,7 +374,22 @@ final class PangoFontsetSimpleClass {
 /// 3. Advance the current point to (x + width, y)
 /// 4. Render the next glyph
 final class PangoGlyphGeometry {
-  PangoGlyphGeometry.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoGlyphGeometry.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoGlyphGeometry>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoGlyphGeometry.rawFromPointer(handle, owned: owned);
+  }
+  PangoGlyphGeometry.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -303,7 +408,22 @@ final class PangoGlyphGeometry {
 /// A `PangoGlyphInfo` structure represents a single glyph with
 /// positioning information and visual attributes.
 final class PangoGlyphInfo {
-  PangoGlyphInfo.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoGlyphInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoGlyphInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoGlyphInfo.rawFromPointer(handle, owned: owned);
+  }
+  PangoGlyphInfo.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -316,144 +436,5 @@ final class PangoGlyphInfo {
   /// (which produced this object) remains the owner.
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
-  }
-}
-
-/// A `PangoGlyphItem` is a pair of a `PangoItem` and the glyphs
-/// resulting from shaping the items text.
-///
-/// As an example of the usage of `PangoGlyphItem`, the results
-/// of shaping text with `PangoLayout` is a list of `PangoLayoutLine`,
-/// each of which contains a list of `PangoGlyphItem`.
-final class PangoGlyphItem {
-  PangoGlyphItem.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Splits a shaped item (`PangoGlyphItem`) into multiple items based
-  /// on an attribute list.
-  ///
-  /// The idea is that if you have attributes that don't affect shaping,
-  /// such as color or underline, to avoid affecting shaping, you filter
-  /// them out ([method@Pango.AttrList.filter]), apply the shaping process
-  /// and then reapply them to the result using this function.
-  ///
-  /// All attributes that start or end inside a cluster are applied
-  /// to that cluster; for instance, if half of a cluster is underlined
-  /// and the other-half strikethrough, then the cluster will end
-  /// up with both underline and strikethrough attributes. In these
-  /// cases, it may happen that @item->extra_attrs for some of the
-  /// result items can have multiple attributes of the same type.
-  ///
-  /// This function takes ownership of @glyph_item; it will be reused
-  /// as one of the elements in the list.
-  static final _pangoGlyphItemApplyAttrs =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_glyph_item_apply_attrs')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GSList applyAttrs(String text, PangoAttrList list) {
-    return withNativeString(text, (nativeText) {
-      return GSList.fromPointer(
-        _pangoGlyphItemApplyAttrs(
-          this.handle,
-          nativeText.cast<Utf8>(),
-          list.handle,
-        ),
-      );
-    });
-  }
-
-  /// Make a deep copy of an existing `PangoGlyphItem` structure.
-  static final _pangoGlyphItemCopy =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_glyph_item_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoGlyphItem? copy() {
-    return (_pangoGlyphItemCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItem.fromPointer(_pangoGlyphItemCopy(this.handle));
-  }
-
-  /// Frees a `PangoGlyphItem` and resources to which it points.
-  static final _pangoGlyphItemFree =
-      pangoLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'pango_glyph_item_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _pangoGlyphItemFree(this.handle);
-  }
-
-  /// Modifies @orig to cover only the text after @split_index, and
-  /// returns a new item that covers the text before @split_index that
-  /// used to be in @orig.
-  ///
-  /// You can think of @split_index as the length of the returned item.
-  /// @split_index may not be 0, and it may not be greater than or equal
-  /// to the length of @orig (that is, there must be at least one byte
-  /// assigned to each item, you can't create a zero-length item).
-  ///
-  /// This function is similar in function to pango_item_split() (and uses
-  /// it internally.)
-  static final _pangoGlyphItemSplit =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<Utf8>,
-                ffi.Int32,
-              )
-            >
-          >('pango_glyph_item_split')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<Utf8>,
-              int,
-            )
-          >();
-  PangoGlyphItem? split(String text, int splitIndex) {
-    return withNativeString(text, (nativeText) {
-      return (_pangoGlyphItemSplit(
-                this.handle,
-                nativeText.cast<Utf8>(),
-                splitIndex,
-              )) ==
-              ffi.nullptr
-          ? null
-          : PangoGlyphItem.fromPointer(
-              _pangoGlyphItemSplit(
-                this.handle,
-                nativeText.cast<Utf8>(),
-                splitIndex,
-              ),
-            );
-    });
   }
 }

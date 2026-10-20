@@ -70,8 +70,25 @@ part of '../gtk4.dart';
 /// yourself.
 class GtkTreeModelFilter extends GObject
     implements GtkTreeDragSource, GtkTreeModel {
-  GtkTreeModelFilter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTreeModelFilter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTreeModelFilter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTreeModelFilter.rawFromPointer(handle, owned: owned);
+  }
+  GtkTreeModelFilter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -84,6 +101,17 @@ class GtkTreeModelFilter extends GObject
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_tree_model_filter_get_type',
+  ).asFunction<int Function()>()();
 
   /// This function should almost never be called. It clears the @filter
   /// of any cached iterators that haven’t been reffed with
@@ -122,14 +150,15 @@ class GtkTreeModelFilter extends GObject
   (bool, GtkTreeIter) convertChildIterToIter(GtkTreeIter childIter) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTreeModelFilterConvertChildIterToIter(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        childIter.handle,
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTreeModelFilterConvertChildIterToIter(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      childIter.handle,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Converts @child_path to a path relative to @filter. That is, @child_path
@@ -188,14 +217,15 @@ class GtkTreeModelFilter extends GObject
   GtkTreeIter convertIterToChildIter(GtkTreeIter filterIter) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTreeModelFilterConvertIterToChildIter(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        filterIter.handle,
-      );
-      return GtkTreeIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTreeModelFilterConvertIterToChildIter(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      filterIter.handle,
+    );
+    return keepAlive(
+      GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts @filter_path to a path on the child model of @filter. That is,
@@ -769,14 +799,15 @@ class GtkTreeModelFilter extends GObject
   (bool, GtkTreeIter) getIter(GtkTreePath path) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTreeModelGetIter(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        path.handle,
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTreeModelGetIter(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      path.handle,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Initializes @iter with the first iterator in the tree
@@ -795,13 +826,11 @@ class GtkTreeModelFilter extends GObject
   (bool, GtkTreeIter) getIterFirst() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTreeModelGetIterFirst(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTreeModelGetIterFirst(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Sets @iter to a valid iterator pointing to @path_string, if it
@@ -829,14 +858,15 @@ class GtkTreeModelFilter extends GObject
     return withNativeString(pathString, (nativePathString) {
       final _out0Anchor = HeapAnchor.allocate(256);
       final _out0 = _out0Anchor.buffer;
-      try {
-        final _ret = _gtkTreeModelGetIterFromString(
-          this.handle,
-          _out0.cast<ffi.Void>(),
-          nativePathString.cast<Utf8>(),
-        );
-        return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-      } finally {}
+      final _ret = _gtkTreeModelGetIterFromString(
+        this.handle,
+        _out0.cast<ffi.Void>(),
+        nativePathString.cast<Utf8>(),
+      );
+      return (
+        (_ret) != 0,
+        keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+      );
     });
   }
 
@@ -926,15 +956,13 @@ class GtkTreeModelFilter extends GObject
   GValue getValue(GtkTreeIter iter, int column) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTreeModelGetValue(
-        this.handle,
-        iter.handle,
-        column,
-        _out0.cast<ffi.Void>(),
-      );
-      return GValue.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTreeModelGetValue(
+      this.handle,
+      iter.handle,
+      column,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(GValue.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
   }
 
   /// Sets @iter to point to the first child of @parent.
@@ -965,14 +993,15 @@ class GtkTreeModelFilter extends GObject
   (bool, GtkTreeIter) iterChildren([GtkTreeIter? parent]) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTreeModelIterChildren(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        parent?.handle ?? ffi.nullptr,
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTreeModelIterChildren(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      parent?.handle ?? ffi.nullptr,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Returns %TRUE if @iter has children, %FALSE otherwise.
@@ -1052,15 +1081,16 @@ class GtkTreeModelFilter extends GObject
   (bool, GtkTreeIter) iterNthChild(GtkTreeIter? parent, int n) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTreeModelIterNthChild(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        parent?.handle ?? ffi.nullptr,
-        n,
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTreeModelIterNthChild(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      parent?.handle ?? ffi.nullptr,
+      n,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Sets @iter to be the parent of @child.
@@ -1092,14 +1122,15 @@ class GtkTreeModelFilter extends GObject
   (bool, GtkTreeIter) iterParent(GtkTreeIter child) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTreeModelIterParent(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        child.handle,
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTreeModelIterParent(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      child.handle,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Sets @iter to point to the previous node at the current level.

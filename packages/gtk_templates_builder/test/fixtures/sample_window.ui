@@ -16,6 +16,16 @@
             <signal name="clicked" handler="on_increment_clicked"/>
           </object>
         </child>
+        <child>
+          <!-- A kebab-case signal that carries an argument. The
+               bindings call it `onIconRelease` and hand it a
+               `GtkEntryIconPosition` — the generated mixin has to use
+               that exact name and forward the argument, or the part
+               file does not compile. -->
+          <object class="GtkEntry" id="entry">
+            <signal name="icon-release" handler="on_icon_release"/>
+          </object>
+        </child>
       </object>
     </child>
   </template>

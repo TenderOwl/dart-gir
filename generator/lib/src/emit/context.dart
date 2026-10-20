@@ -46,6 +46,8 @@ class TypeBridge {
     this.outAllocSize,
     this.outExtract,
     this.arrayLengthParameter,
+    this.structArgType,
+    this.outIsStruct = false,
   });
 
   /// Public Dart type used in wrapper signatures, e.g. `int`, `GObject?`.
@@ -100,6 +102,16 @@ class TypeBridge {
   /// native and Dart signatures at this position. `null` for unbounded
   /// arrays (the user is responsible for the length).
   final int? arrayLengthParameter;
+
+  /// Set when the argument is an `ffi.Struct` the caller passes by
+  /// value but the C API takes by pointer. The emitter allocates a
+  /// native copy for the call and frees it afterwards; this holds the
+  /// struct's Dart type name.
+  final String? structArgType;
+
+  /// Set when the out parameter is an `ffi.Struct`: the buffer holds
+  /// the struct itself, and the value is read back by value.
+  final bool outIsStruct;
 }
 
 /// Per-package emission state shared by all emitters.
@@ -232,6 +244,34 @@ class EmitContext {
   /// lowerCamel package identifier used for helper names
   /// (`gdkPixbufLibs`, `gdkPixbufLookup`).
   String get pkgIdent => toLowerCamel(pkg);
+
+  /// The `static int get GType` accessor for a class or interface whose
+  /// GIR declaration carries `glib:get-type`.
+  ///
+  /// The accessor calls the type's own `get_type` function — the one
+  /// GLib exports for every registered type — so user code can name a
+  /// native type without string lookups:
+  ///
+  /// ```dart
+  /// GListStore(TaskObject.GType)
+  /// ```
+  ///
+  /// Returns `null` when the declaration has no get-type function, in
+  /// which case no accessor is emitted.
+  String? gTypeAccessor(String? getTypeCId, {String what = 'class'}) {
+    if (getTypeCId == null || getTypeCId.isEmpty) return null;
+    return '''
+  /// The native `GType` of this $what.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this $what.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      ${pkgIdent}Lookup<ffi.NativeFunction<ffi.Size Function()>>('$getTypeCId')
+          .asFunction<int Function()>()();''';
+  }
 
   /// Finds a type declaration by (possibly qualified) GIR name, searching
   /// [relativeTo] (default: current namespace) first, then all others.
@@ -392,6 +432,96 @@ class EmitContext {
       default:
         return m;
     }
+  }
+
+  /// The bridge for an OUT parameter whose value is a wrapper of type
+  /// [dartType].
+  ///
+  /// The C type of the parameter decides the shape of the out slot:
+  ///
+  /// * `GtkTextIter*` — one star. The C function writes the *struct*
+  ///   into the buffer the caller passes, so the buffer **is** the
+  ///   value and the wrapper points into it. The wrapper has to keep
+  ///   the buffer alive — `keepAlive` (in `package:gir_ffi`) ties the
+  ///   buffer's anchor to the wrapper. Without it the anchor is
+  ///   unreachable the moment the call returns, the collector frees the
+  ///   buffer, and the wrapper reads freed memory.
+  /// * `GUnixFDList**` — two stars. The C function writes a *pointer*
+  ///   into the slot, so the value is the object that pointer refers
+  ///   to. The slot is a pointer-sized cell the generator frees as soon
+  ///   as the call returns.
+  TypeBridge outWrapperBridge(
+    String dartType,
+    String? cType, {
+    required bool nullable,
+    required GirTransferOwnership transfer,
+  }) {
+    // `transfer="full"` hands the reference to the caller, so the
+    // wrapper owns it and releases it when it is collected.
+    final ownedArg = transfer == GirTransferOwnership.full
+        ? ', owned: true'
+        : '';
+    if (_pointerDepth(cType) >= 2) {
+      return TypeBridge(
+        wrapperType: nullable ? '$dartType?' : dartType,
+        nativeType: 'ffi.Pointer<ffi.Void>',
+        dartFfiType: 'ffi.Pointer<ffi.Void>',
+        toNative: nullable
+            ? (e) => '$e?.handle ?? ffi.nullptr'
+            : (e) => '$e.handle',
+        fromNative: nullable
+            ? (e) => '($e) == ffi.nullptr ? null : $dartType.fromPointer($e)'
+            : (e) => '$dartType.fromPointer($e)',
+        outPointee: 'ffi.Pointer<ffi.Void>',
+        outExtract: nullable
+            ? (v) =>
+                  '($v.value) == ffi.nullptr ? null : '
+                  '$dartType.fromPointer($v.value.cast<ffi.Void>()$ownedArg)'
+            : (v) =>
+                  '$dartType.fromPointer($v.value.cast<ffi.Void>()$ownedArg)',
+      );
+    }
+    return TypeBridge(
+      wrapperType: nullable ? '$dartType?' : dartType,
+      nativeType: 'ffi.Pointer<ffi.Void>',
+      dartFfiType: 'ffi.Pointer<ffi.Void>',
+      toNative: nullable
+          ? (e) => '$e?.handle ?? ffi.nullptr'
+          : (e) => '$e.handle',
+      fromNative: nullable
+          ? (e) => '($e) == ffi.nullptr ? null : $dartType.fromPointer($e)'
+          : (e) => '$dartType.fromPointer($e)',
+      // The C function writes the whole struct (~24 bytes for
+      // GtkTextIter, ~72 for GtkTreeIter) into the buffer the wrapper
+      // passes. The size is not known statically, so the generator
+      // allocates a fixed-size buffer via `HeapAnchor.allocate`; the
+      // buffer is `Pointer<Uint8>` and is cast at the call and extract
+      // sites. The wrapper keeps the anchor alive through `keepAlive`.
+      outPointee: 'ffi.Void',
+      outAllocSize: 256,
+      outExtract: nullable
+          ? (v) =>
+                '($v) == ffi.nullptr ? null : '
+                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()), '
+                '${v}Anchor)'
+          : (v) =>
+                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()), '
+                '${v}Anchor)',
+    );
+  }
+
+  /// The number of trailing `*` in [cType] — its pointer depth.
+  ///
+  /// `GtkTextIter*` has depth 1, `GUnixFDList**` has depth 2. A null
+  /// [cType] means the type carries no pointer of its own, which the
+  /// out-parameter shape treats as depth 1.
+  static int _pointerDepth(String? cType) {
+    if (cType == null) return 1;
+    var depth = 0;
+    for (var i = cType.length - 1; i >= 0 && cType[i] == '*'; i--) {
+      depth++;
+    }
+    return depth;
   }
 
   /// Builds a [TypeBridge] for [ref]. On failure returns `(null, reason)`.
@@ -569,35 +699,67 @@ class EmitContext {
           ),
           null,
         );
-      case TypeKind.classType:
-      case TypeKind.interface:
       case TypeKind.record:
-      case TypeKind.union:
-        final t = m.dartType;
+        // A record the generator emits as an `ffi.Struct`: the caller
+        // passes the struct by value, the C API takes it by pointer.
+        // Every other record stays an opaque handle wrapper.
+        final found = findDeclaration(ref.name, relativeTo: relativeTo);
+        final decl = found?.$2;
+        final declNs = found?.$1.name ?? namespace.name;
+        final isStruct =
+            decl is GirRecord && TypeResolver.isStructRecord(decl, declNs);
+        if (!isStruct) {
+          return (
+            outWrapperBridge(
+              m.dartType,
+              ref.cType,
+              nullable: nullable,
+              transfer: transfer,
+            ),
+            null,
+          );
+        }
+        final structName = m.dartType;
+        final byValue = !(ref.cType ?? '').endsWith('*');
+        if (byValue) {
+          return (
+            TypeBridge(
+              wrapperType: structName,
+              nativeType: structName,
+              dartFfiType: structName,
+              toNative: _id,
+              fromNative: _id,
+            ),
+            null,
+          );
+        }
         return (
           TypeBridge(
-            wrapperType: nullable ? '$t?' : t,
-            nativeType: 'ffi.Pointer<ffi.Void>',
-            dartFfiType: 'ffi.Pointer<ffi.Void>',
-            toNative: nullable
-                ? (e) => '$e?.handle ?? ffi.nullptr'
-                : (e) => '$e.handle',
-            fromNative: nullable
-                ? (e) => '($e) == ffi.nullptr ? null : $t.fromPointer($e)'
-                : (e) => '$t.fromPointer($e)',
-            // OUT params for record/struct types: the C function writes
-            // the entire struct (~32 bytes for GtkTextIter, etc.) into
-            // the buffer the wrapper passes. We don't know the size
-            // statically, so allocate a fixed-size buffer via
-            // `HeapAnchor.allocate` (lifetime tied to the returned
-            // wrapper). The buffer is `Pointer<Uint8>`; cast at the
-            // call/extract sites.
-            outPointee: 'ffi.Void',
-            outAllocSize: 256,
-            outExtract: nullable
-                ? (v) =>
-                      '($v) == ffi.nullptr ? null : $t.fromPointer($v.cast<ffi.Void>())'
-                : (v) => '$t.fromPointer($v.cast<ffi.Void>())',
+            wrapperType: structName,
+            nativeType: 'ffi.Pointer<$structName>',
+            dartFfiType: 'ffi.Pointer<$structName>',
+            toNative: _id,
+            fromNative: _id,
+            structArgType: structName,
+            outPointee: structName,
+            outIsStruct: true,
+            // The struct is a *view* into the buffer the C function wrote
+            // into. `refWithFinalizer` hands the buffer's ownership to the
+            // returned struct — it is freed when the struct is collected —
+            // so the wrapper must not free the buffer itself.
+            outExtract: (v) => '$v.refWithFinalizer(malloc.nativeFree)',
+          ),
+          null,
+        );
+      case TypeKind.classType:
+      case TypeKind.interface:
+      case TypeKind.union:
+        return (
+          outWrapperBridge(
+            m.dartType,
+            ref.cType,
+            nullable: nullable,
+            transfer: transfer,
           ),
           null,
         );

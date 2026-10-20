@@ -5,8 +5,25 @@ part of '../gtk4.dart';
 ///
 /// The anchor can have multiple widgets anchored, to allow for multiple views.
 class GtkTextChildAnchor extends GObject {
-  GtkTextChildAnchor.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTextChildAnchor.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTextChildAnchor>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTextChildAnchor.rawFromPointer(handle, owned: owned);
+  }
+  GtkTextChildAnchor.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +37,17 @@ class GtkTextChildAnchor extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_text_child_anchor_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkTextChildAnchor`.
   ///
   /// Usually you would then insert it into a `GtkTextBuffer` with
@@ -31,7 +59,7 @@ class GtkTextChildAnchor extends GObject {
         'gtk_text_child_anchor_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkTextChildAnchor()
-    : this.fromPointer(_gtkTextChildAnchorNew(), owned: true);
+    : this.rawFromPointer(_gtkTextChildAnchorNew(), owned: true);
 
   /// Creates a new `GtkTextChildAnchor` with the given replacement character.
   ///

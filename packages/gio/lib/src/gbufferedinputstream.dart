@@ -15,8 +15,25 @@ part of '../gio.dart';
 /// buffered input stream's buffer, use [method@Gio.BufferedInputStream.set_buffer_size].
 /// Note that the buffer's size cannot be reduced below the size of the data within the buffer.
 class GBufferedInputStream extends GFilterInputStream implements GSeekable {
-  GBufferedInputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GBufferedInputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GBufferedInputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GBufferedInputStream.rawFromPointer(handle, owned: owned);
+  }
+  GBufferedInputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,6 +47,17 @@ class GBufferedInputStream extends GFilterInputStream implements GSeekable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_buffered_input_stream_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new [class@Gio.InputStream] from the given @base_stream, with
   /// a buffer set to the default size (4 kilobytes).
   static final _gBufferedInputStreamNew =
@@ -40,7 +68,7 @@ class GBufferedInputStream extends GFilterInputStream implements GSeekable {
           >('g_buffered_input_stream_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBufferedInputStream(GInputStream baseStream)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gBufferedInputStreamNew(baseStream.handle),
         owned: true,
       );
@@ -57,7 +85,7 @@ class GBufferedInputStream extends GFilterInputStream implements GSeekable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GBufferedInputStream.sized(GInputStream baseStream, int size)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gBufferedInputStreamNewSized(baseStream.handle, size),
         owned: true,
       );

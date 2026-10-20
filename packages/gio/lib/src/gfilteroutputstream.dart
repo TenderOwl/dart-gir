@@ -6,8 +6,25 @@ part of '../gio.dart';
 /// of filtering operations are character set conversion, compression
 /// and byte order flipping.
 class GFilterOutputStream extends GOutputStream {
-  GFilterOutputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GFilterOutputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GFilterOutputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GFilterOutputStream.rawFromPointer(handle, owned: owned);
+  }
+  GFilterOutputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +37,17 @@ class GFilterOutputStream extends GOutputStream {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_filter_output_stream_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the base stream for the filter stream.
   static final _gFilterOutputStreamGetBaseStream =

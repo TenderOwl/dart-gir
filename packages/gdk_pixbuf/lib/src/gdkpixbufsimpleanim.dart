@@ -3,8 +3,25 @@ part of '../gdk_pixbuf.dart';
 
 /// An opaque struct representing a simple animation.
 class GdkPixbufSimpleAnim extends GdkPixbufAnimation {
-  GdkPixbufSimpleAnim.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPixbufSimpleAnim.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPixbufSimpleAnim>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkPixbufSimpleAnim.rawFromPointer(handle, owned: owned);
+  }
+  GdkPixbufSimpleAnim.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +35,18 @@ class GdkPixbufSimpleAnim extends GdkPixbufAnimation {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gdkPixbufLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gdk_pixbuf_simple_anim_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new, empty animation.
   static final _gdkPixbufSimpleAnimNew =
       gdkPixbufLookup<
@@ -27,7 +56,7 @@ class GdkPixbufSimpleAnim extends GdkPixbufAnimation {
           >('gdk_pixbuf_simple_anim_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, double)>();
   GdkPixbufSimpleAnim(int width, int height, double rate)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gdkPixbufSimpleAnimNew(width, height, rate),
         owned: true,
       );

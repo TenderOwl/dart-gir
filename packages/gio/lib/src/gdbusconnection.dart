@@ -54,8 +54,25 @@ part of '../gio.dart';
 /// Here is an example for exporting a #GObject:
 /// [gdbus-example-export.c](https://gitlab.gnome.org/GNOME/glib/-/blob/HEAD/gio/tests/gdbus-example-export.c)
 class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
-  GDBusConnection.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDBusConnection.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDBusConnection>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDBusConnection.rawFromPointer(handle, owned: owned);
+  }
+  GDBusConnection.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -68,6 +85,17 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_dbus_connection_get_type',
+  ).asFunction<int Function()>()();
 
   /// Finishes an operation started with g_dbus_connection_new().
   static final _gDbusConnectionNewFinish =
@@ -939,7 +967,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
             ffi.NativeFunction<
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
@@ -948,19 +976,18 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GVariant, GUnixFDList?) callWithUnixFdListFinish(GAsyncResult res) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gDbusConnectionCallWithUnixFdListFinish(
         this.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         res.handle,
         _error,
       );
@@ -969,11 +996,15 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       }
       return (
         GVariant.fromPointer(_ret),
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GUnixFDList.fromPointer(_out0.cast<ffi.Void>()),
+            : GUnixFDList.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
       );
     } finally {
+      malloc.free(_out0);
       calloc.free(_error);
     }
   }
@@ -997,7 +1028,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
                 ffi.Uint32,
                 ffi.Int32,
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
@@ -1015,7 +1046,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
               int,
               int,
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
@@ -1036,8 +1067,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       return withNativeString(objectPath, (nativeObjectPath) {
         return withNativeString(interfaceName, (nativeInterfaceName) {
           return withNativeString(methodName, (nativeMethodName) {
-            final _out0Anchor = HeapAnchor.allocate(256);
-            final _out0 = _out0Anchor.buffer;
+            final _out0 = calloc<ffi.Pointer<ffi.Void>>();
             final _error = calloc<ffi.Pointer<ffi.Void>>();
             try {
               final _ret = _gDbusConnectionCallWithUnixFdListSync(
@@ -1051,7 +1081,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
                 flags.value,
                 timeoutMsec,
                 fdList?.handle ?? ffi.nullptr,
-                _out0.cast<ffi.Void>(),
+                _out0,
                 cancellable?.handle ?? ffi.nullptr,
                 _error,
               );
@@ -1060,11 +1090,15 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
               }
               return (
                 GVariant.fromPointer(_ret),
-                (_out0) == ffi.nullptr
+                (_out0.value) == ffi.nullptr
                     ? null
-                    : GUnixFDList.fromPointer(_out0.cast<ffi.Void>()),
+                    : GUnixFDList.fromPointer(
+                        _out0.value.cast<ffi.Void>(),
+                        owned: true,
+                      ),
               );
             } finally {
+              malloc.free(_out0);
               calloc.free(_error);
             }
           });

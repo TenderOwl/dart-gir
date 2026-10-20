@@ -3,7 +3,22 @@ part of '../gdk4.dart';
 
 /// An event related to a pad-based device.
 class GdkPadEvent extends GdkEvent {
-  GdkPadEvent.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPadEvent.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPadEvent>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GdkPadEvent.rawFromPointer(handle, owned: owned);
+  }
+  GdkPadEvent.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -16,6 +31,17 @@ class GdkPadEvent extends GdkEvent {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_pad_event_get_type',
+  ).asFunction<int Function()>()();
 
   /// Extracts the information from a pad strip or ring event.
   static final _gdkPadEventGetAxisValue =

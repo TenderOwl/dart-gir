@@ -359,7 +359,25 @@ part of '../gtk4.dart';
 /// For more information, see the [`GtkWidget` documentation](class.Widget.html#building-composite-widgets-from-template-xml)
 /// for details.
 class GtkBuilder extends GObject {
-  GtkBuilder.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkBuilder.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkBuilder>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkBuilder.rawFromPointer(handle, owned: owned);
+  }
+  GtkBuilder.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -373,6 +391,17 @@ class GtkBuilder extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_builder_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty builder object.
   ///
   /// This function is only useful if you intend to make multiple calls
@@ -383,7 +412,7 @@ class GtkBuilder extends GObject {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkBuilder() : this.fromPointer(_gtkBuilderNew(), owned: true);
+  GtkBuilder() : this.rawFromPointer(_gtkBuilderNew(), owned: true);
 
   /// Parses the UI definition in the file @filename.
   ///
@@ -1125,7 +1154,10 @@ class GtkBuilder extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+        return (
+          (_ret) != 0,
+          keepAlive(GValue.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+        );
       } finally {
         calloc.free(_error);
       }
@@ -1179,7 +1211,10 @@ class GtkBuilder extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+        return (
+          (_ret) != 0,
+          keepAlive(GValue.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+        );
       } finally {
         calloc.free(_error);
       }

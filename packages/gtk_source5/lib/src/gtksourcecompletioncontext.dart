@@ -18,8 +18,25 @@ part of '../gtk_source5.dart';
 /// displayed using [class@CompletionCell] which allows for some level of
 /// customization.
 class GtkSourceCompletionContext extends GObject implements GListModel {
-  GtkSourceCompletionContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceCompletionContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceCompletionContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceCompletionContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceCompletionContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -32,6 +49,18 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_completion_context_get_type',
+      ).asFunction<int Function()>()();
 
   /// Gets the mode for which the context was activated.
   static final _gtkSourceCompletionContextGetActivation =
@@ -76,22 +105,26 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      final _ret = _gtkSourceCompletionContextGetBounds(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        (_out0) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _gtkSourceCompletionContextGetBounds(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Gets the underlying buffer used by the context.

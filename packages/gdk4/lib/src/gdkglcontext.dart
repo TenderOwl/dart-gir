@@ -50,7 +50,25 @@ part of '../gdk4.dart';
 /// [func@Gdk.GLContext.get_current]; you can also unset any `GdkGLContext`
 /// that is currently set by calling [func@Gdk.GLContext.clear_current].
 class GdkGLContext extends GdkDrawContext {
-  GdkGLContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkGLContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkGLContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkGLContext.rawFromPointer(handle, owned: owned);
+  }
+  GdkGLContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -63,6 +81,17 @@ class GdkGLContext extends GdkDrawContext {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_gl_context_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the allowed APIs set via gdk_gl_context_set_allowed_apis().
   static final _gdkGlContextGetAllowedApis =

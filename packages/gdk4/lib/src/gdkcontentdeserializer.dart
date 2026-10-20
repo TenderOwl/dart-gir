@@ -12,8 +12,25 @@ part of '../gdk4.dart';
 ///
 /// Also see [class@Gdk.ContentSerializer].
 class GdkContentDeserializer extends GObject implements GAsyncResult {
-  GdkContentDeserializer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkContentDeserializer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkContentDeserializer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkContentDeserializer.rawFromPointer(handle, owned: owned);
+  }
+  GdkContentDeserializer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +43,17 @@ class GdkContentDeserializer extends GObject implements GAsyncResult {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_content_deserializer_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the cancellable for the current operation.
   ///

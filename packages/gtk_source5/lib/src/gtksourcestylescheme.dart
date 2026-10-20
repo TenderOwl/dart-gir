@@ -15,8 +15,25 @@ part of '../gtk_source5.dart';
 /// The two style schemes with IDs "classic" and "tango" follow more closely the
 /// GTK theme (for example for the background color).
 class GtkSourceStyleScheme extends GObject {
-  GtkSourceStyleScheme.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceStyleScheme.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceStyleScheme>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceStyleScheme.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceStyleScheme.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,6 +47,17 @@ class GtkSourceStyleScheme extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_style_scheme_get_type',
+      ).asFunction<int Function()>()();
   static final _gtkSourceStyleSchemeGetDescription =
       gtkSource5Lookup<
             ffi.NativeFunction<

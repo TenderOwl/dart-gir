@@ -4,7 +4,22 @@ part of '../gsk4.dart';
 /// A render node that copies the current state of the rendering canvas
 /// so a [class@Gsk.PasteNode] can draw it.
 class GskCopyNode extends GskRenderNode {
-  GskCopyNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskCopyNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskCopyNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskCopyNode.rawFromPointer(handle, owned: owned);
+  }
+  GskCopyNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +33,17 @@ class GskCopyNode extends GskRenderNode {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_copy_node_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GskRenderNode` that copies the current rendering
   /// canvas for playback by paste nodes that are part of the child.
   static final _gskCopyNodeNew =
@@ -28,7 +54,7 @@ class GskCopyNode extends GskRenderNode {
           >('gsk_copy_node_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskCopyNode(GskRenderNode child)
-    : this.fromPointer(_gskCopyNodeNew(child.handle), owned: true);
+    : this.rawFromPointer(_gskCopyNodeNew(child.handle), owned: true);
 
   /// Gets the child node that is getting drawn by the given @node.
   static final _gskCopyNodeGetChild =

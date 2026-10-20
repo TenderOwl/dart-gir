@@ -14,8 +14,25 @@ part of '../gtk4.dart';
 /// gtk_column_view_set_model (view, G_LIST_MODEL (selection));
 /// ```
 class GtkTreeListRowSorter extends GtkSorter {
-  GtkTreeListRowSorter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTreeListRowSorter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTreeListRowSorter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTreeListRowSorter.rawFromPointer(handle, owned: owned);
+  }
+  GtkTreeListRowSorter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -28,6 +45,17 @@ class GtkTreeListRowSorter extends GtkSorter {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_tree_list_row_sorter_get_type',
+  ).asFunction<int Function()>()();
 
   /// Create a special-purpose sorter that applies the sorting
   /// of @sorter to the levels of a `GtkTreeListModel`.
@@ -42,7 +70,7 @@ class GtkTreeListRowSorter extends GtkSorter {
           >('gtk_tree_list_row_sorter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeListRowSorter([GtkSorter? sorter])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkTreeListRowSorterNew(sorter?.handle ?? ffi.nullptr),
         owned: true,
       );

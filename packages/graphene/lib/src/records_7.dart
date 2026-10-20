@@ -14,7 +14,22 @@ part of '../graphene.dart';
 /// will internally operate on a normalized copy; all functions returning a
 /// #graphene_rect_t will always return a normalized rectangle.
 final class GrapheneRect {
-  GrapheneRect.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneRect.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneRect>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneRect.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneRect.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -93,10 +108,11 @@ final class GrapheneRect {
   GrapheneRect expand(GraphenePoint p) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectExpand(this.handle, p.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectExpand(this.handle, p.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Frees the resources allocated by graphene_rect_alloc().
@@ -132,10 +148,11 @@ final class GrapheneRect {
   GraphenePoint getBottomLeft() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectGetBottomLeft(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectGetBottomLeft(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of the bottom-right corner of the given rectangle.
@@ -151,10 +168,11 @@ final class GrapheneRect {
   GraphenePoint getBottomRight() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectGetBottomRight(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectGetBottomRight(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of the center of the given rectangle.
@@ -170,10 +188,11 @@ final class GrapheneRect {
   GraphenePoint getCenter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectGetCenter(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectGetCenter(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the normalized height of the given rectangle.
@@ -199,10 +218,11 @@ final class GrapheneRect {
   GraphenePoint getTopLeft() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectGetTopLeft(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectGetTopLeft(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of the top-right corner of the given rectangle.
@@ -218,10 +238,11 @@ final class GrapheneRect {
   GraphenePoint getTopRight() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectGetTopRight(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectGetTopRight(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the normalized width of the given rectangle.
@@ -383,10 +404,11 @@ final class GrapheneRect {
   GrapheneRect insetR(double dX, double dY) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectInsetR(this.handle, dX, dY, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectInsetR(this.handle, dX, dY, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Linearly interpolates the origin and size of the two given
@@ -413,15 +435,16 @@ final class GrapheneRect {
   GrapheneRect interpolate(GrapheneRect b, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectInterpolate(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectInterpolate(
+      this.handle,
+      b.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the intersection of the two given rectangles.
@@ -452,19 +475,20 @@ final class GrapheneRect {
   (bool, GrapheneRect?) intersection(GrapheneRect b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _grapheneRectIntersection(
-        this.handle,
-        b.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        (_out0) == ffi.nullptr
-            ? null
-            : GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _grapheneRectIntersection(
+      this.handle,
+      b.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+    );
   }
 
   /// Normalizes the passed rectangle.
@@ -500,10 +524,11 @@ final class GrapheneRect {
   GrapheneRect normalizeR() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectNormalizeR(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectNormalizeR(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Offsets the origin by @d_x and @d_y.
@@ -555,10 +580,11 @@ final class GrapheneRect {
   GrapheneRect offsetR(double dX, double dY) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectOffsetR(this.handle, dX, dY, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectOffsetR(this.handle, dX, dY, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Rounds the origin and size of the given rectangle to
@@ -582,10 +608,11 @@ final class GrapheneRect {
   GrapheneRect round() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectRound(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectRound(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Rounds the origin of the given rectangle to its nearest
@@ -621,10 +648,11 @@ final class GrapheneRect {
   GrapheneRect roundExtents() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectRoundExtents(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectRoundExtents(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Rounds the origin and the size of the given rectangle to
@@ -665,10 +693,11 @@ final class GrapheneRect {
   GrapheneRect scale(double sH, double sV) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectScale(this.handle, sH, sV, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectScale(this.handle, sH, sV, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the union of the two given rectangles.
@@ -696,10 +725,11 @@ final class GrapheneRect {
   GrapheneRect union(GrapheneRect b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRectUnion(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRectUnion(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Allocates a new #graphene_rect_t.
@@ -725,7 +755,22 @@ final class GrapheneRect {
 }
 
 final class GrapheneSimd4F {
-  GrapheneSimd4F.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneSimd4F.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneSimd4F>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneSimd4F.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneSimd4F.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

@@ -4,8 +4,25 @@ part of '../gdk_pixbuf.dart';
 /// An opaque object representing an iterator which points to a
 /// certain position in an animation.
 class GdkPixbufAnimationIter extends GObject {
-  GdkPixbufAnimationIter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPixbufAnimationIter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPixbufAnimationIter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkPixbufAnimationIter.rawFromPointer(handle, owned: owned);
+  }
+  GdkPixbufAnimationIter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +35,18 @@ class GdkPixbufAnimationIter extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gdkPixbufLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gdk_pixbuf_animation_iter_get_type',
+      ).asFunction<int Function()>()();
 
   /// Possibly advances an animation to a new frame.
   ///

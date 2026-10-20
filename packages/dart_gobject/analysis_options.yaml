@@ -1,0 +1,9 @@
+include: package:lints/core.yaml
+
+analyzer:
+  errors:
+    # A Dart GObject subclass declares its native type as `GType`, the
+    # name GLib uses and the name the generator emits for every GIR
+    # class (`static int get GType`). The lowerCamelCase convention is
+    # intentionally broken here.
+    non_constant_identifier_names: ignore

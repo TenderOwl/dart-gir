@@ -316,7 +316,25 @@ part of '../gtk4.dart';
 /// [method@Gtk.CellArea.cell_get] or [method@Gtk.CellArea.cell_get_valist].
 class GtkCellArea extends GInitiallyUnowned
     implements GtkBuildable, GtkCellLayout {
-  GtkCellArea.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellArea.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellArea>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellArea.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellArea.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -329,6 +347,17 @@ class GtkCellArea extends GInitiallyUnowned
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_area_get_type',
+  ).asFunction<int Function()>()();
 
   /// Activates @area, usually by activating the currently focused
   /// cell, however some subclasses which embed widgets in the area
@@ -940,17 +969,18 @@ class GtkCellArea extends GInitiallyUnowned
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkCellAreaGetCellAllocation(
-        this.handle,
-        context.handle,
-        widget.handle,
-        renderer.handle,
-        cellArea.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkCellAreaGetCellAllocation(
+      this.handle,
+      context.handle,
+      widget.handle,
+      renderer.handle,
+      cellArea.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the `GtkCellRenderer` at @x and @y coordinates inside @area and optionally
@@ -989,23 +1019,24 @@ class GtkCellArea extends GInitiallyUnowned
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkCellAreaGetCellAtPosition(
-        this.handle,
-        context.handle,
-        widget.handle,
-        cellArea.handle,
-        x,
-        y,
-        _out0.cast<ffi.Void>(),
-      );
-      return (
-        GtkCellRenderer.fromPointer(_ret),
-        (_out0) == ffi.nullptr
-            ? null
-            : GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _gtkCellAreaGetCellAtPosition(
+      this.handle,
+      context.handle,
+      widget.handle,
+      cellArea.handle,
+      x,
+      y,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      GtkCellRenderer.fromPointer(_ret),
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+    );
   }
 
   /// Gets the current `GtkTreePath` string for the currently
@@ -1387,15 +1418,16 @@ class GtkCellArea extends GInitiallyUnowned
   GdkRectangle innerCellArea(GtkWidget widget, GdkRectangle cellArea) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkCellAreaInnerCellArea(
-        this.handle,
-        widget.handle,
-        cellArea.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkCellAreaInnerCellArea(
+      this.handle,
+      widget.handle,
+      cellArea.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Returns whether the area can do anything when activated,

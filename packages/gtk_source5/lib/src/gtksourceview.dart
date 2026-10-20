@@ -70,7 +70,25 @@ class GtkSourceView extends GtkTextView
         GtkBuildable,
         GtkConstraintTarget,
         GtkScrollable {
-  GtkSourceView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceView.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceView>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceView.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceView.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -84,6 +102,18 @@ class GtkSourceView extends GtkTextView
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_view_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new `GtkSourceView`.
   ///
   /// By default, an empty [class@Buffer] will be lazily created and can be
@@ -96,7 +126,7 @@ class GtkSourceView extends GtkTextView
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSourceView() : this.fromPointer(_gtkSourceViewNew(), owned: true);
+  GtkSourceView() : this.rawFromPointer(_gtkSourceViewNew(), owned: true);
 
   /// Creates a new #GtkSourceView widget displaying the buffer @buffer.
   ///
@@ -109,7 +139,10 @@ class GtkSourceView extends GtkTextView
           >('gtk_source_view_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceView.withBuffer(GtkSourceBuffer buffer)
-    : this.fromPointer(_gtkSourceViewNewWithBuffer(buffer.handle), owned: true);
+    : this.rawFromPointer(
+        _gtkSourceViewNewWithBuffer(buffer.handle),
+        owned: true,
+      );
 
   /// Gets the [class@Annotations] associated with @view.
   ///
@@ -1750,10 +1783,11 @@ class GtkSourceView extends GtkTextView
   (bool, GtkBorder) getBorder() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GtkBorder.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GtkBorder.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Retrieves the `GtkAdjustment` used for horizontal scrolling.

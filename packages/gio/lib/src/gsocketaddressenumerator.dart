@@ -17,8 +17,25 @@ part of '../gio.dart';
 /// enumeration with that `GSocketAddressEnumerator` is not possible, and it can
 /// be unreffed.
 class GSocketAddressEnumerator extends GObject {
-  GSocketAddressEnumerator.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GSocketAddressEnumerator.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GSocketAddressEnumerator>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GSocketAddressEnumerator.rawFromPointer(handle, owned: owned);
+  }
+  GSocketAddressEnumerator.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -31,6 +48,17 @@ class GSocketAddressEnumerator extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_socket_address_enumerator_get_type',
+  ).asFunction<int Function()>()();
 
   /// Retrieves the next #GSocketAddress from @enumerator. Note that this
   /// may block for some amount of time. (Eg, a #GNetworkAddress may need

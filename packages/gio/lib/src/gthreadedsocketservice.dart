@@ -18,8 +18,25 @@ part of '../gio.dart';
 /// [signal@Gio.ThreadedSocketService::run], or subclass and override the default
 /// handler.
 class GThreadedSocketService extends GSocketService {
-  GThreadedSocketService.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GThreadedSocketService.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GThreadedSocketService>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GThreadedSocketService.rawFromPointer(handle, owned: owned);
+  }
+  GThreadedSocketService.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -33,6 +50,17 @@ class GThreadedSocketService extends GSocketService {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_threaded_socket_service_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GThreadedSocketService with no listeners. Listeners
   /// must be added with one of the #GSocketListener "add" methods.
   static final _gThreadedSocketServiceNew =
@@ -40,7 +68,7 @@ class GThreadedSocketService extends GSocketService {
         'g_threaded_socket_service_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GThreadedSocketService(int maxThreads)
-    : this.fromPointer(_gThreadedSocketServiceNew(maxThreads), owned: true);
+    : this.rawFromPointer(_gThreadedSocketServiceNew(maxThreads), owned: true);
 
   /// The ::run signal is emitted in a worker thread in response to an
   /// incoming connection. This thread is dedicated to handling

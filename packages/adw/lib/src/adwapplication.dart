@@ -48,7 +48,22 @@ part of '../adw.dart';
 /// contrast preference is enabled.
 class AdwApplication extends GtkApplication
     implements GActionGroup, GActionMap {
-  AdwApplication.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwApplication.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwApplication>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwApplication.rawFromPointer(handle, owned: owned);
+  }
+  AdwApplication.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -61,6 +76,17 @@ class AdwApplication extends GtkApplication
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_application_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `AdwApplication`.
   ///
@@ -736,10 +762,10 @@ class AdwApplication extends GtkApplication
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<Utf8>,
                 ffi.Pointer<ffi.Int32>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('g_action_group_query_action')
@@ -748,10 +774,10 @@ class AdwApplication extends GtkApplication
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<Utf8>,
               ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (bool, bool, GVariantType?, GVariantType?, GVariant?, GVariant?) queryAction(
@@ -759,42 +785,42 @@ class AdwApplication extends GtkApplication
   ) {
     return withNativeString(actionName, (nativeActionName) {
       final _out0 = malloc<ffi.Int32>();
-      final _out1Anchor = HeapAnchor.allocate(256);
-      final _out1 = _out1Anchor.buffer;
-      final _out2Anchor = HeapAnchor.allocate(256);
-      final _out2 = _out2Anchor.buffer;
-      final _out3Anchor = HeapAnchor.allocate(256);
-      final _out3 = _out3Anchor.buffer;
-      final _out4Anchor = HeapAnchor.allocate(256);
-      final _out4 = _out4Anchor.buffer;
+      final _out1 = calloc<ffi.Pointer<ffi.Void>>();
+      final _out2 = calloc<ffi.Pointer<ffi.Void>>();
+      final _out3 = calloc<ffi.Pointer<ffi.Void>>();
+      final _out4 = calloc<ffi.Pointer<ffi.Void>>();
       try {
         final _ret = _gActionGroupQueryAction(
           this.handle,
           nativeActionName.cast<Utf8>(),
           _out0,
-          _out1.cast<ffi.Void>(),
-          _out2.cast<ffi.Void>(),
-          _out3.cast<ffi.Void>(),
-          _out4.cast<ffi.Void>(),
+          _out1,
+          _out2,
+          _out3,
+          _out4,
         );
         return (
           (_ret) != 0,
           _out0.value != 0,
-          (_out1) == ffi.nullptr
+          (_out1.value) == ffi.nullptr
               ? null
-              : GVariantType.fromPointer(_out1.cast<ffi.Void>()),
-          (_out2) == ffi.nullptr
+              : GVariantType.fromPointer(_out1.value.cast<ffi.Void>()),
+          (_out2.value) == ffi.nullptr
               ? null
-              : GVariantType.fromPointer(_out2.cast<ffi.Void>()),
-          (_out3) == ffi.nullptr
+              : GVariantType.fromPointer(_out2.value.cast<ffi.Void>()),
+          (_out3.value) == ffi.nullptr
               ? null
-              : GVariant.fromPointer(_out3.cast<ffi.Void>()),
-          (_out4) == ffi.nullptr
+              : GVariant.fromPointer(_out3.value.cast<ffi.Void>(), owned: true),
+          (_out4.value) == ffi.nullptr
               ? null
-              : GVariant.fromPointer(_out4.cast<ffi.Void>()),
+              : GVariant.fromPointer(_out4.value.cast<ffi.Void>(), owned: true),
         );
       } finally {
         malloc.free(_out0);
+        malloc.free(_out1);
+        malloc.free(_out2);
+        malloc.free(_out3);
+        malloc.free(_out4);
       }
     });
   }

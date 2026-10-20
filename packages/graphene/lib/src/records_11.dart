@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the #graphene_vec4_t structure are private and should
 /// never be accessed directly.
 final class GrapheneVec4 {
-  GrapheneVec4.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneVec4.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneVec4>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneVec4.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneVec4.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -30,7 +45,7 @@ final class GrapheneVec4 {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_vec4_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneVec4.alloc() : this.fromPointer(_grapheneVec4Alloc());
+  GrapheneVec4.alloc() : this.rawFromPointer(_grapheneVec4Alloc());
 
   /// Adds each component of the two given vectors.
   static final _grapheneVec4Add =
@@ -53,10 +68,11 @@ final class GrapheneVec4 {
   GrapheneVec4 add(GrapheneVec4 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Add(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Add(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Divides each component of the first operand @a by the corresponding
@@ -82,10 +98,11 @@ final class GrapheneVec4 {
   GrapheneVec4 divide(GrapheneVec4 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Divide(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Divide(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the dot product of the two given vectors.
@@ -160,10 +177,11 @@ final class GrapheneVec4 {
   GrapheneVec2 getXy() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4GetXy(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec2.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4GetXy(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Creates a #graphene_vec3_t that contains the first three components
@@ -180,10 +198,11 @@ final class GrapheneVec4 {
   GrapheneVec3 getXyz() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4GetXyz(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4GetXyz(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the value of the second component of the given #graphene_vec4_t.
@@ -354,15 +373,16 @@ final class GrapheneVec4 {
   GrapheneVec4 interpolate(GrapheneVec4 v2, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Interpolate(
-        this.handle,
-        v2.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Interpolate(
+      this.handle,
+      v2.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the length of the given #graphene_vec4_t.
@@ -397,10 +417,11 @@ final class GrapheneVec4 {
   GrapheneVec4 max(GrapheneVec4 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Max(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Max(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Compares each component of the two given vectors and creates a
@@ -425,10 +446,11 @@ final class GrapheneVec4 {
   GrapheneVec4 min(GrapheneVec4 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Min(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Min(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Multiplies each component of the two given vectors.
@@ -452,10 +474,11 @@ final class GrapheneVec4 {
   GrapheneVec4 multiply(GrapheneVec4 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Multiply(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Multiply(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Compares the two given #graphene_vec4_t vectors and checks
@@ -490,10 +513,11 @@ final class GrapheneVec4 {
   GrapheneVec4 negate() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Negate(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Negate(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Normalizes the given #graphene_vec4_t.
@@ -509,10 +533,11 @@ final class GrapheneVec4 {
   GrapheneVec4 normalize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Normalize(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Normalize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Multiplies all components of the given vector with the given scalar @factor.
@@ -532,10 +557,11 @@ final class GrapheneVec4 {
   GrapheneVec4 scale(double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Scale(this.handle, factor, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Scale(this.handle, factor, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Subtracts from each component of the first operand @a the
@@ -561,10 +587,11 @@ final class GrapheneVec4 {
   GrapheneVec4 subtract(GrapheneVec4 b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneVec4Subtract(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneVec4Subtract(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves a pointer to a #graphene_vec4_t with all its

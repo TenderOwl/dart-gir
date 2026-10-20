@@ -171,6 +171,9 @@ class CallableEmitter {
     final callbackByParam = <int, _CallbackAlloc>{
       for (final c in callbackAllocs) c.inParam.paramIndex: c,
     };
+    // Struct arguments the C API takes by pointer: each one needs a
+    // native copy for the duration of the call.
+    final structArgs = <({int index, String type, String param})>[];
     for (var i = 0; i < fn.parameters.length; i++) {
       final p = fn.parameters[i];
       final bridge = bridges[i]!;
@@ -209,6 +212,16 @@ class CallableEmitter {
                 ? '${cb.varName}?.nativeFunction ?? ffi.nullptr'
                 : '${cb.varName}.nativeFunction',
           );
+        } else if (bridge.structArgType != null) {
+          // The C API takes the struct by pointer; the caller passes it
+          // by value. The emitter allocates a native copy for the call
+          // and frees it afterwards.
+          argExprs.add('_structArg$i');
+          structArgs.add((
+            index: i,
+            type: bridge.structArgType!,
+            param: inP.name,
+          ));
         } else {
           argExprs.add(bridge.toNative(inP.name));
         }
@@ -267,7 +280,7 @@ class CallableEmitter {
 
     // Body core.
     final core = <String>[];
-    final hasAllocs = outs.isNotEmpty || fn.throws;
+    final hasAllocs = outs.isNotEmpty || fn.throws || structArgs.isNotEmpty;
     final hasCallbacks = callbackAllocs.isNotEmpty;
     final call = '$lookupVar(${argExprs.join(', ')})';
 
@@ -304,11 +317,15 @@ class CallableEmitter {
       (p) => p.bridge.isString || p.bridge.isStringList,
     );
     final hasCallback = callbackAllocs.isNotEmpty;
+    // A struct argument needs a native copy for the call, and a
+    // generative constructor has no body to allocate it in.
+    final hasStructInSet = ins.any((p) => p.bridge.structArgType != null);
     if (factoryClass != null &&
         !fn.throws &&
         outs.isEmpty &&
         !hasStringInSet &&
-        !hasCallback) {
+        !hasCallback &&
+        !hasStructInSet) {
       final ownedArg = factoryOwned ? ', owned: true' : '';
       // `this.fromPointer` is always valid — every generated class
       // (and record) declares a `fromPointer` named constructor that
@@ -323,7 +340,10 @@ class CallableEmitter {
       // `fromPointer` works for both shapes — the call delegates up
       // to the parent automatically because `fromPointer` forwards to
       // its own super when one exists.
-      final receiver = 'this';
+      // `rawFromPointer` is the generative constructor; `fromPointer` is
+      // a factory (it consults the wrapper cache) and a generative
+      // constructor may not redirect to a factory.
+      final receiver = 'this.rawFromPointer';
       final generativeArgExprs = <String>[];
       for (var i = 0; i < fn.parameters.length; i++) {
         final p = fn.parameters[i];
@@ -339,9 +359,9 @@ class CallableEmitter {
       }
       final generativeCall = '$lookupVar(${generativeArgExprs.join(', ')})';
       final generativeHeader = dartName.isEmpty
-          ? '$factoryClass($paramList) : $receiver.fromPointer($generativeCall$ownedArg);'
+          ? '$factoryClass($paramList) : $receiver($generativeCall$ownedArg);'
           : '$factoryClass.$dartName($paramList) : '
-                '$receiver.fromPointer($generativeCall$ownedArg);';
+                '$receiver($generativeCall$ownedArg);';
       final b = StringBuffer();
       for (final line in ctx.docLines(fn.doc)) {
         b.writeln(line);
@@ -402,6 +422,11 @@ class CallableEmitter {
             'final ${o.varName}Anchor = HeapAnchor.allocate(${o.bridge.outAllocSize});',
           );
           core.add('final ${o.varName} = ${o.varName}Anchor.buffer;');
+        } else if (o.bridge.outPointee == 'ffi.Pointer<ffi.Void>') {
+          // A pointer-sized slot is zeroed: the C function is allowed
+          // to leave the out parameter untouched, and an uninitialized
+          // pointer would be a wild read.
+          core.add('final ${o.varName} = calloc<${o.bridge.outPointee}>();');
         } else {
           core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
         }
@@ -409,34 +434,32 @@ class CallableEmitter {
       if (fn.throws) {
         core.add('final _error = calloc<ffi.Pointer<ffi.Void>>();');
       }
-      core.add('try {');
-      if (retBridge.isVoid) {
-        core.add('  $call;');
-      } else {
-        core.add('  final _ret = $call;');
+      for (final s in structArgs) {
+        core.add('final _structArg${s.index} = calloc<${s.type}>();');
+        core.add('_structArg${s.index}.ref = ${s.param};');
       }
-      if (fn.throws) {
-        core.add('  if (_error.value != ffi.nullptr) {');
-        core.add('    throw GlibException.fromError(_error.value);');
-        core.add('  }');
-      }
-      if (retBridge.isVoid) {
-        if (outs.isNotEmpty) core.add('  return ${_outsOnlyExpr(outs)};');
-      } else {
-        core.add('  return ${resultExpr('_ret')};');
-      }
-      core.add('} finally {');
+      // The cleanup runs in a `finally` block, so a throwing call still
+      // releases what it allocated. When there is nothing to release the
+      // block is left out entirely.
+      final cleanup = <String>[];
       for (final o in outs) {
         if (o.bridge.outAllocSize != null) {
           // HeapAnchor's NativeFinalizer frees the buffer when the
           // anchor is GC'd; do not free here (would invalidate the
           // returned wrapper's handle).
+        } else if (o.bridge.outIsStruct) {
+          // The returned struct owns the buffer: `refWithFinalizer`
+          // frees it when the struct is collected. Freeing it here would
+          // leave the struct pointing at released memory.
         } else {
-          core.add('  malloc.free(${o.varName});');
+          cleanup.add('  malloc.free(${o.varName});');
         }
       }
       if (fn.throws) {
-        core.add('  calloc.free(_error);');
+        cleanup.add('  calloc.free(_error);');
+      }
+      for (final s in structArgs) {
+        cleanup.add('  calloc.free(_structArg${s.index});');
       }
       for (final c in callbackAllocs) {
         // Nullable callback locals are `null` when the user passes nothing;
@@ -444,9 +467,35 @@ class CallableEmitter {
         final closeExpr = c.inParam.bridge.isNullableCallback
             ? '${c.varName}?.close()'
             : '${c.varName}.close()';
-        core.add('  $closeExpr;');
+        cleanup.add('  $closeExpr;');
       }
-      core.add('}');
+
+      final body = <String>[];
+      if (retBridge.isVoid) {
+        body.add('  $call;');
+      } else {
+        body.add('  final _ret = $call;');
+      }
+      if (fn.throws) {
+        body.add('  if (_error.value != ffi.nullptr) {');
+        body.add('    throw GlibException.fromError(_error.value);');
+        body.add('  }');
+      }
+      if (retBridge.isVoid) {
+        if (outs.isNotEmpty) body.add('  return ${_outsOnlyExpr(outs)};');
+      } else {
+        body.add('  return ${resultExpr('_ret')};');
+      }
+
+      if (cleanup.isEmpty) {
+        core.addAll(body.map((l) => l.isEmpty ? l : l.substring(2)));
+      } else {
+        core.add('try {');
+        core.addAll(body);
+        core.add('} finally {');
+        core.addAll(cleanup);
+        core.add('}');
+      }
     }
 
     // Wrap string parameters in withNativeString scopes.

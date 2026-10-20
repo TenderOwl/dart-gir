@@ -4,7 +4,25 @@ part of '../gio.dart';
 /// #GMenuLinkIter is an opaque structure type.  You must access it using
 /// the functions below.
 class GMenuLinkIter extends GObject {
-  GMenuLinkIter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GMenuLinkIter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GMenuLinkIter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GMenuLinkIter.rawFromPointer(handle, owned: owned);
+  }
+  GMenuLinkIter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +35,17 @@ class GMenuLinkIter extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_menu_link_iter_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the name of the link at the current iterator position.
   ///
@@ -55,7 +84,7 @@ class GMenuLinkIter extends GObject {
               ffi.Int32 Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<Utf8>>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('g_menu_link_iter_get_next')
@@ -63,28 +92,24 @@ class GMenuLinkIter extends GObject {
             int Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (bool, String?, GMenuModel?) getNext() {
     final _out0 = malloc<ffi.Pointer<Utf8>>();
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      final _ret = _gMenuLinkIterGetNext(
-        this.handle,
-        _out0,
-        _out1.cast<ffi.Void>(),
-      );
+      final _ret = _gMenuLinkIterGetNext(this.handle, _out0, _out1);
       return (
         (_ret) != 0,
         stringFromNative(_out0.value.cast(), free: true)!,
-        (_out1) == ffi.nullptr
+        (_out1.value) == ffi.nullptr
             ? null
-            : GMenuModel.fromPointer(_out1.cast<ffi.Void>()),
+            : GMenuModel.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),
       );
     } finally {
       malloc.free(_out0);
+      malloc.free(_out1);
     }
   }
 

@@ -14,8 +14,25 @@ part of '../gtk4.dart';
 ///
 /// All velocities are reported in pixels/sec units.
 class GtkGestureSwipe extends GtkGestureSingle {
-  GtkGestureSwipe.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkGestureSwipe.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkGestureSwipe>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkGestureSwipe.rawFromPointer(handle, owned: owned);
+  }
+  GtkGestureSwipe.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,12 +46,23 @@ class GtkGestureSwipe extends GtkGestureSingle {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_gesture_swipe_get_type',
+  ).asFunction<int Function()>()();
+
   /// Returns a newly created `GtkGesture` that recognizes swipes.
   static final _gtkGestureSwipeNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_swipe_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGestureSwipe() : this.fromPointer(_gtkGestureSwipeNew(), owned: true);
+  GtkGestureSwipe() : this.rawFromPointer(_gtkGestureSwipeNew(), owned: true);
 
   /// Gets the current velocity.
   ///

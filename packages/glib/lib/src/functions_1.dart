@@ -772,7 +772,7 @@ final _gAtomicPointerCompareAndExchangeFull =
   ffi.Pointer<ffi.Void>? oldval,
   ffi.Pointer<ffi.Void>? newval,
 ]) {
-  final _out0 = malloc<ffi.Pointer<ffi.Void>>();
+  final _out0 = calloc<ffi.Pointer<ffi.Void>>();
   try {
     final _ret = _gAtomicPointerCompareAndExchangeFull(
       atomic,

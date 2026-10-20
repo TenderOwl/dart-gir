@@ -33,7 +33,25 @@ part of '../gobject.dart';
 /// derive from `GTypeModule` and implement the load and unload functions
 /// in `GTypeModuleClass`.
 class GTypeModule extends GObject {
-  GTypeModule.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GTypeModule.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GTypeModule>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GTypeModule.rawFromPointer(handle, owned: owned);
+  }
+  GTypeModule.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -46,6 +64,18 @@ class GTypeModule extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'g_type_module_get_type',
+      ).asFunction<int Function()>()();
 
   /// Registers an additional interface for a type, whose interface lives
   /// in the given type plugin. If the interface was already registered
@@ -63,7 +93,7 @@ class GTypeModule extends GObject {
                 ffi.Pointer<ffi.Void>,
                 ffi.Size,
                 ffi.Size,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<GInterfaceInfo>,
               )
             >
           >('g_type_module_add_interface')
@@ -72,7 +102,7 @@ class GTypeModule extends GObject {
               ffi.Pointer<ffi.Void>,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<GInterfaceInfo>,
             )
           >();
   void addInterface(
@@ -80,12 +110,18 @@ class GTypeModule extends GObject {
     int interfaceType,
     GInterfaceInfo interfaceInfo,
   ) {
-    _gTypeModuleAddInterface(
-      this.handle,
-      instanceType,
-      interfaceType,
-      interfaceInfo.handle,
-    );
+    final _structArg2 = calloc<GInterfaceInfo>();
+    _structArg2.ref = interfaceInfo;
+    try {
+      _gTypeModuleAddInterface(
+        this.handle,
+        instanceType,
+        interfaceType,
+        _structArg2,
+      );
+    } finally {
+      calloc.free(_structArg2);
+    }
   }
 
   /// Looks up or registers a type that is implemented with a particular
@@ -109,7 +145,7 @@ class GTypeModule extends GObject {
                 ffi.Pointer<ffi.Void>,
                 ffi.Size,
                 ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<GTypeInfo>,
                 ffi.Uint32,
               )
             >
@@ -119,7 +155,7 @@ class GTypeModule extends GObject {
               ffi.Pointer<ffi.Void>,
               int,
               ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<GTypeInfo>,
               int,
             )
           >();
@@ -130,13 +166,20 @@ class GTypeModule extends GObject {
     GTypeFlags flags,
   ) {
     return withNativeString(typeName, (nativeTypeName) {
-      return _gTypeModuleRegisterType(
-        this.handle,
-        parentType,
-        nativeTypeName.cast<Utf8>(),
-        typeInfo.handle,
-        flags.value,
-      );
+      final _structArg2 = calloc<GTypeInfo>();
+      _structArg2.ref = typeInfo;
+      try {
+        final _ret = _gTypeModuleRegisterType(
+          this.handle,
+          parentType,
+          nativeTypeName.cast<Utf8>(),
+          _structArg2,
+          flags.value,
+        );
+        return _ret;
+      } finally {
+        calloc.free(_structArg2);
+      }
     });
   }
 
@@ -222,7 +265,7 @@ class GTypeModule extends GObject {
                 ffi.Pointer<ffi.Void>,
                 ffi.Size,
                 ffi.Size,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<GInterfaceInfo>,
               )
             >
           >('g_type_plugin_complete_interface_info')
@@ -231,7 +274,7 @@ class GTypeModule extends GObject {
               ffi.Pointer<ffi.Void>,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<GInterfaceInfo>,
             )
           >();
   void completeInterfaceInfo(
@@ -239,12 +282,18 @@ class GTypeModule extends GObject {
     int interfaceType,
     GInterfaceInfo info,
   ) {
-    _gTypePluginCompleteInterfaceInfo(
-      this.handle,
-      instanceType,
-      interfaceType,
-      info.handle,
-    );
+    final _structArg2 = calloc<GInterfaceInfo>();
+    _structArg2.ref = info;
+    try {
+      _gTypePluginCompleteInterfaceInfo(
+        this.handle,
+        instanceType,
+        interfaceType,
+        _structArg2,
+      );
+    } finally {
+      calloc.free(_structArg2);
+    }
   }
 
   /// Calls the @complete_type_info function from the #GTypePluginClass of @plugin.
@@ -256,7 +305,7 @@ class GTypeModule extends GObject {
               ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Size,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<GTypeInfo>,
                 ffi.Pointer<ffi.Void>,
               )
             >
@@ -265,16 +314,22 @@ class GTypeModule extends GObject {
             void Function(
               ffi.Pointer<ffi.Void>,
               int,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<GTypeInfo>,
               ffi.Pointer<ffi.Void>,
             )
           >();
   void completeTypeInfo(int gType, GTypeInfo info, GTypeValueTable valueTable) {
-    _gTypePluginCompleteTypeInfo(
-      this.handle,
-      gType,
-      info.handle,
-      valueTable.handle,
-    );
+    final _structArg1 = calloc<GTypeInfo>();
+    _structArg1.ref = info;
+    try {
+      _gTypePluginCompleteTypeInfo(
+        this.handle,
+        gType,
+        _structArg1,
+        valueTable.handle,
+      );
+    } finally {
+      calloc.free(_structArg1);
+    }
   }
 }

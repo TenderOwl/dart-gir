@@ -9,8 +9,25 @@ part of '../gtk4.dart';
 /// defaults, [signal@Gtk.GestureClick::stopped] is emitted, and the
 /// click counter is reset.
 class GtkGestureClick extends GtkGestureSingle {
-  GtkGestureClick.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkGestureClick.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkGestureClick>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkGestureClick.rawFromPointer(handle, owned: owned);
+  }
+  GtkGestureClick.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -24,13 +41,24 @@ class GtkGestureClick extends GtkGestureSingle {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_gesture_click_get_type',
+  ).asFunction<int Function()>()();
+
   /// Returns a newly created `GtkGesture` that recognizes
   /// single and multiple presses.
   static final _gtkGestureClickNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_click_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGestureClick() : this.fromPointer(_gtkGestureClickNew(), owned: true);
+  GtkGestureClick() : this.rawFromPointer(_gtkGestureClickNew(), owned: true);
 
   /// Emitted whenever a button or touch press happens.
   int onPressed(void Function(int nPress, double x, double y) callback) {

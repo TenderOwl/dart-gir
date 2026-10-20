@@ -409,6 +409,7 @@ class GirClass extends GirRegisteredType {
     super.cType,
     this.glibTypeName,
     this.glibGetValueFunc,
+    this.glibGetType,
     this.parent,
     this.abstract = false,
     this.final_ = false,
@@ -435,6 +436,14 @@ class GirClass extends GirRegisteredType {
   final String? glibTypeName;
   final String? glibGetValueFunc;
 
+  /// The C identifier of the type's `get_type` function, from the GIR's
+  /// `glib:get-type` attribute — e.g. `g_object_get_type`.
+  ///
+  /// Non-null for every class the GIR knows a native type for. The
+  /// generator turns it into a `static int get GType` accessor, which is
+  /// how user code names a native type (`GListStore(TaskObject.GType)`).
+  final String? glibGetType;
+
   /// Name of the parent type, e.g. `Gtk.Widget` or `Widget`.
   final String? parent;
   final bool abstract;
@@ -454,6 +463,7 @@ class GirInterface extends GirRegisteredType {
     required super.name,
     super.cType,
     this.glibTypeName,
+    this.glibGetType,
     List<GirMethod>? methods,
     List<GirFunction>? functions,
     List<GirMethod>? virtualMethods,
@@ -469,6 +479,11 @@ class GirInterface extends GirRegisteredType {
        signals = List.unmodifiable(signals ?? const []);
 
   final String? glibTypeName;
+
+  /// The C identifier of the interface's `get_type` function, from the
+  /// GIR's `glib:get-type` attribute — e.g. `g_action_get_type`.
+  final String? glibGetType;
+
   final List<GirMethod> methods;
   final List<GirFunction> functions;
   final List<GirMethod> virtualMethods;

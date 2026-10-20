@@ -55,8 +55,25 @@ part of '../gtk_source5.dart';
 /// search and replace API: see the tests/test-search.c file. It is a mini
 /// application for the search and replace, with a basic user interface.
 class GtkSourceSearchContext extends GObject {
-  GtkSourceSearchContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceSearchContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceSearchContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceSearchContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceSearchContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -69,6 +86,18 @@ class GtkSourceSearchContext extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_search_context_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a new search context, associated with @buffer, and customized with
   /// @settings.
@@ -93,7 +122,7 @@ class GtkSourceSearchContext extends GObject {
   GtkSourceSearchContext(
     GtkSourceBuffer buffer, [
     GtkSourceSearchSettings? settings,
-  ]) : this.fromPointer(
+  ]) : this.rawFromPointer(
          _gtkSourceSearchContextNew(
            buffer.handle,
            settings?.handle ?? ffi.nullptr,
@@ -151,10 +180,16 @@ class GtkSourceSearchContext extends GObject {
         (_ret) != 0,
         (_out0) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+                _out0Anchor,
+              ),
         (_out1) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+                _out1Anchor,
+              ),
         _out2.value != 0,
       );
     } finally {
@@ -337,10 +372,16 @@ class GtkSourceSearchContext extends GObject {
         (_ret) != 0,
         (_out0) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+                _out0Anchor,
+              ),
         (_out1) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+                _out1Anchor,
+              ),
         _out2.value != 0,
       );
     } finally {
@@ -399,10 +440,16 @@ class GtkSourceSearchContext extends GObject {
         (_ret) != 0,
         (_out0) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+                _out0Anchor,
+              ),
         (_out1) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+                _out1Anchor,
+              ),
         _out2.value != 0,
       );
     } finally {
@@ -584,10 +631,16 @@ class GtkSourceSearchContext extends GObject {
         (_ret) != 0,
         (_out0) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+                _out0Anchor,
+              ),
         (_out1) == ffi.nullptr
             ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+                _out1Anchor,
+              ),
         _out2.value != 0,
       );
     } finally {

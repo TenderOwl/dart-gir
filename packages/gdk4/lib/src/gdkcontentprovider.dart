@@ -11,8 +11,25 @@ part of '../gdk4.dart';
 /// [class@Gdk.ContentSerializer] and [class@Gdk.ContentDeserializer] if you want
 /// to add support for application-specific data formats.
 class GdkContentProvider extends GObject {
-  GdkContentProvider.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkContentProvider.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkContentProvider>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkContentProvider.rawFromPointer(handle, owned: owned);
+  }
+  GdkContentProvider.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,6 +42,17 @@ class GdkContentProvider extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_content_provider_get_type',
+  ).asFunction<int Function()>()();
 
   /// Create a content provider that provides the given @bytes as data for
   /// the given @mime_type.
@@ -64,7 +92,7 @@ class GdkContentProvider extends GObject {
           >('gdk_content_provider_new_for_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkContentProvider.forValue(GValue value)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gdkContentProviderNewForValue(value.handle),
         owned: true,
       );
@@ -94,7 +122,7 @@ class GdkContentProvider extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GdkContentProvider.union(ffi.Pointer<ffi.Void> providers, int nProviders)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gdkContentProviderNewUnion(providers, nProviders),
         owned: true,
       );
@@ -145,7 +173,10 @@ class GdkContentProvider extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return ((_ret) != 0, GValue.fromPointer(_out0.cast<ffi.Void>()));
+      return (
+        (_ret) != 0,
+        keepAlive(GValue.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+      );
     } finally {
       calloc.free(_error);
     }

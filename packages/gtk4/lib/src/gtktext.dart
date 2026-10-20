@@ -118,7 +118,24 @@ class GtkText extends GtkWidget
         GtkBuildable,
         GtkConstraintTarget,
         GtkEditable {
-  GtkText.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkText.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkText>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkText.rawFromPointer(handle, owned: owned);
+  }
+  GtkText.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -132,12 +149,23 @@ class GtkText extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_text_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkText`.
   static final _gtkTextNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkText() : this.fromPointer(_gtkTextNew(), owned: true);
+  GtkText() : this.rawFromPointer(_gtkTextNew(), owned: true);
 
   /// Creates a new `GtkText` with the specified buffer.
   static final _gtkTextNewWithBuffer =
@@ -148,7 +176,7 @@ class GtkText extends GtkWidget
           >('gtk_text_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkText.withBuffer(GtkEntryBuffer buffer)
-    : this.fromPointer(_gtkTextNewWithBuffer(buffer.handle), owned: true);
+    : this.rawFromPointer(_gtkTextNewWithBuffer(buffer.handle), owned: true);
 
   /// Determines the positions of the strong and weak cursors for a
   /// given character position.
@@ -184,22 +212,26 @@ class GtkText extends GtkWidget
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _gtkTextComputeCursorExtents(
-        this.handle,
-        position,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GrapheneRect.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _gtkTextComputeCursorExtents(
+      this.handle,
+      position,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GrapheneRect.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Returns whether pressing <kbd>Enter</kbd> will activate

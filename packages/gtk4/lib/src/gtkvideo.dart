@@ -20,7 +20,24 @@ part of '../gtk4.dart';
 /// such as Gstreamer directly.
 class GtkVideo extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkVideo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkVideo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkVideo>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkVideo.rawFromPointer(handle, owned: owned);
+  }
+  GtkVideo.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -34,12 +51,23 @@ class GtkVideo extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_video_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty `GtkVideo`.
   static final _gtkVideoNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_video_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkVideo() : this.fromPointer(_gtkVideoNew(), owned: true);
+  GtkVideo() : this.rawFromPointer(_gtkVideoNew(), owned: true);
 
   /// Creates a `GtkVideo` to play back the given @file.
   static final _gtkVideoNewForFile =
@@ -50,7 +78,7 @@ class GtkVideo extends GtkWidget
           >('gtk_video_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkVideo.forFile([GFile? file])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkVideoNewForFile(file?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -84,7 +112,7 @@ class GtkVideo extends GtkWidget
           >('gtk_video_new_for_media_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkVideo.forMediaStream([GtkMediaStream? stream])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkVideoNewForMediaStream(stream?.handle ?? ffi.nullptr),
         owned: true,
       );

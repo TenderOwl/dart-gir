@@ -2,8 +2,25 @@
 part of '../gdk_pixbuf.dart';
 
 class GdkPixbufNonAnim extends GdkPixbufAnimation {
-  GdkPixbufNonAnim.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPixbufNonAnim.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPixbufNonAnim>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkPixbufNonAnim.rawFromPointer(handle, owned: owned);
+  }
+  GdkPixbufNonAnim.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +34,17 @@ class GdkPixbufNonAnim extends GdkPixbufAnimation {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gdkPixbufLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gdk_pixbuf_non_anim_get_type',
+      ).asFunction<int Function()>()();
   static final _gdkPixbufNonAnimNew =
       gdkPixbufLookup<
             ffi.NativeFunction<
@@ -25,7 +53,7 @@ class GdkPixbufNonAnim extends GdkPixbufAnimation {
           >('gdk_pixbuf_non_anim_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbufNonAnim(GdkPixbuf pixbuf)
-    : this.fromPointer(_gdkPixbufNonAnimNew(pixbuf.handle), owned: true);
+    : this.rawFromPointer(_gdkPixbufNonAnimNew(pixbuf.handle), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

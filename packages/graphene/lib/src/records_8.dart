@@ -2,7 +2,22 @@
 part of '../graphene.dart';
 
 final class GrapheneSimd4X4F {
-  GrapheneSimd4X4F.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneSimd4X4F.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneSimd4X4F>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneSimd4X4F.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneSimd4X4F.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -20,7 +35,22 @@ final class GrapheneSimd4X4F {
 
 /// A size.
 final class GrapheneSize {
-  GrapheneSize.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneSize.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneSize>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneSize.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneSize.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -42,7 +72,7 @@ final class GrapheneSize {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_size_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneSize.alloc() : this.fromPointer(_grapheneSizeAlloc());
+  GrapheneSize.alloc() : this.rawFromPointer(_grapheneSizeAlloc());
 
   /// Checks whether the two give #graphene_size_t are equal.
   static final _grapheneSizeEqual =
@@ -139,15 +169,16 @@ final class GrapheneSize {
   GrapheneSize interpolate(GrapheneSize b, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneSizeInterpolate(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneSize.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneSizeInterpolate(
+      this.handle,
+      b.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneSize.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Scales the components of a #graphene_size_t using the given @factor.
@@ -167,10 +198,11 @@ final class GrapheneSize {
   GrapheneSize scale(double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneSizeScale(this.handle, factor, _out0.cast<ffi.Void>());
-      return GrapheneSize.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneSizeScale(this.handle, factor, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneSize.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// A constant pointer to a zero #graphene_size_t, useful for
@@ -186,7 +218,22 @@ final class GrapheneSize {
 
 /// A sphere, represented by its center and radius.
 final class GrapheneSphere {
-  GrapheneSphere.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneSphere.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneSphere>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneSphere.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneSphere.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -208,7 +255,7 @@ final class GrapheneSphere {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_sphere_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneSphere.alloc() : this.fromPointer(_grapheneSphereAlloc());
+  GrapheneSphere.alloc() : this.rawFromPointer(_grapheneSphereAlloc());
 
   /// Checks whether the given @point is contained in the volume
   /// of a #graphene_sphere_t.
@@ -278,10 +325,11 @@ final class GrapheneSphere {
   GrapheneBox getBoundingBox() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneSphereGetBoundingBox(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneSphereGetBoundingBox(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneBox.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of the center of a #graphene_sphere_t.
@@ -297,10 +345,11 @@ final class GrapheneSphere {
   GraphenePoint3D getCenter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneSphereGetCenter(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneSphereGetCenter(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the radius of a #graphene_sphere_t.
@@ -447,468 +496,10 @@ final class GrapheneSphere {
   GrapheneSphere translate(GraphenePoint3D point) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneSphereTranslate(
-        this.handle,
-        point.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneSphere.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-}
-
-/// A triangle.
-final class GrapheneTriangle {
-  GrapheneTriangle.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Allocates a new #graphene_triangle_t.
-  ///
-  /// The contents of the returned structure are undefined.
-  static final _grapheneTriangleAlloc =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_triangle_alloc',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneTriangle.alloc() : this.fromPointer(_grapheneTriangleAlloc());
-
-  /// Checks whether the given triangle @t contains the point @p.
-  static final _grapheneTriangleContainsPoint =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_triangle_contains_point')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool containsPoint(GraphenePoint3D p) {
-    return (_grapheneTriangleContainsPoint(this.handle, p.handle)) != 0;
-  }
-
-  /// Checks whether the two given #graphene_triangle_t are equal.
-  static final _grapheneTriangleEqual =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_triangle_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(GrapheneTriangle b) {
-    return (_grapheneTriangleEqual(this.handle, b.handle)) != 0;
-  }
-
-  /// Frees the resources allocated by graphene_triangle_alloc().
-  static final _grapheneTriangleFree =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_triangle_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _grapheneTriangleFree(this.handle);
-  }
-
-  /// Computes the area of the given #graphene_triangle_t.
-  static final _grapheneTriangleGetArea =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_triangle_get_area')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getArea() {
-    return _grapheneTriangleGetArea(this.handle);
-  }
-
-  /// Computes the [barycentric coordinates](http://en.wikipedia.org/wiki/Barycentric_coordinate_system)
-  /// of the given point @p.
-  ///
-  /// The point @p must lie on the same plane as the triangle @t; if the
-  /// point is not coplanar, the result of this function is undefined.
-  ///
-  /// If we place the origin in the coordinates of the triangle's A point,
-  /// the barycentric coordinates are `u`, which is on the AC vector; and `v`
-  /// which is on the AB vector:
-  ///
-  /// ![](triangle-barycentric.png)
-  ///
-  /// The returned #graphene_vec2_t contains the following values, in order:
-  ///
-  /// - `res.x = u`
-  /// - `res.y = v`
-  static final _grapheneTriangleGetBarycoords =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_triangle_get_barycoords')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (bool, GrapheneVec2) getBarycoords([GraphenePoint3D? p]) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _grapheneTriangleGetBarycoords(
-        this.handle,
-        p?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
-  }
-
-  /// Computes the bounding box of the given #graphene_triangle_t.
-  static final _grapheneTriangleGetBoundingBox =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_triangle_get_bounding_box')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneBox getBoundingBox() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneTriangleGetBoundingBox(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneBox.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Computes the coordinates of the midpoint of the given #graphene_triangle_t.
-  ///
-  /// The midpoint G is the [centroid](https://en.wikipedia.org/wiki/Centroid#Triangle_centroid)
-  /// of the triangle, i.e. the intersection of its medians.
-  static final _grapheneTriangleGetMidpoint =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_triangle_get_midpoint')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GraphenePoint3D getMidpoint() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneTriangleGetMidpoint(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Computes the normal vector of the given #graphene_triangle_t.
-  static final _grapheneTriangleGetNormal =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_triangle_get_normal')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneVec3 getNormal() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneTriangleGetNormal(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Computes the plane based on the vertices of the given #graphene_triangle_t.
-  static final _grapheneTriangleGetPlane =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_triangle_get_plane')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GraphenePlane getPlane() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneTriangleGetPlane(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePlane.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
-  }
-
-  /// Retrieves the three vertices of the given #graphene_triangle_t and returns
-  /// their coordinates as #graphene_point3d_t.
-  static final _grapheneTriangleGetPoints =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_triangle_get_points')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (GraphenePoint3D?, GraphenePoint3D?, GraphenePoint3D?) getPoints() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    final _out2Anchor = HeapAnchor.allocate(256);
-    final _out2 = _out2Anchor.buffer;
-    try {
-      _grapheneTriangleGetPoints(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-        _out2.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GraphenePoint3D.fromPointer(_out1.cast<ffi.Void>()),
-        (_out2) == ffi.nullptr
-            ? null
-            : GraphenePoint3D.fromPointer(_out2.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Computes the UV coordinates of the given point @p.
-  ///
-  /// The point @p must lie on the same plane as the triangle @t; if the point
-  /// is not coplanar, the result of this function is undefined. If @p is %NULL,
-  /// the point will be set in (0, 0, 0).
-  ///
-  /// The UV coordinates will be placed in the @res vector:
-  ///
-  /// - `res.x = u`
-  /// - `res.y = v`
-  ///
-  /// See also: graphene_triangle_get_barycoords()
-  static final _grapheneTriangleGetUv =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_triangle_get_uv')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (bool, GrapheneVec2) getUv(
-    GraphenePoint3D? p,
-    GrapheneVec2 uvA,
-    GrapheneVec2 uvB,
-    GrapheneVec2 uvC,
-  ) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _grapheneTriangleGetUv(
-        this.handle,
-        p?.handle ?? ffi.nullptr,
-        uvA.handle,
-        uvB.handle,
-        uvC.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
-  }
-
-  /// Retrieves the three vertices of the given #graphene_triangle_t.
-  static final _grapheneTriangleGetVertices =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_triangle_get_vertices')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (GrapheneVec3?, GrapheneVec3?, GrapheneVec3?) getVertices() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    final _out2Anchor = HeapAnchor.allocate(256);
-    final _out2 = _out2Anchor.buffer;
-    try {
-      _grapheneTriangleGetVertices(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-        _out2.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GrapheneVec3.fromPointer(_out1.cast<ffi.Void>()),
-        (_out2) == ffi.nullptr
-            ? null
-            : GrapheneVec3.fromPointer(_out2.cast<ffi.Void>()),
-      );
-    } finally {}
-  }
-
-  /// Initializes a #graphene_triangle_t using the three given arrays
-  /// of floating point values, each representing the coordinates of
-  /// a point in 3D space.
-  static final _grapheneTriangleInitFromFloat =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Float>,
-                ffi.Pointer<ffi.Float>,
-                ffi.Pointer<ffi.Float>,
-              )
-            >
-          >('graphene_triangle_init_from_float')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Pointer<ffi.Float>,
-            )
-          >();
-  GrapheneTriangle initFromFloat(
-    ffi.Pointer<ffi.Float> a,
-    ffi.Pointer<ffi.Float> b,
-    ffi.Pointer<ffi.Float> c,
-  ) {
-    return GrapheneTriangle.fromPointer(
-      _grapheneTriangleInitFromFloat(this.handle, a, b, c),
-    );
-  }
-
-  /// Initializes a #graphene_triangle_t using the three given 3D points.
-  static final _grapheneTriangleInitFromPoint3d =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_triangle_init_from_point3d')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneTriangle initFromPoint3d([
-    GraphenePoint3D? a,
-    GraphenePoint3D? b,
-    GraphenePoint3D? c,
-  ]) {
-    return GrapheneTriangle.fromPointer(
-      _grapheneTriangleInitFromPoint3d(
-        this.handle,
-        a?.handle ?? ffi.nullptr,
-        b?.handle ?? ffi.nullptr,
-        c?.handle ?? ffi.nullptr,
-      ),
-    );
-  }
-
-  /// Initializes a #graphene_triangle_t using the three given vectors.
-  static final _grapheneTriangleInitFromVec3 =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_triangle_init_from_vec3')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneTriangle initFromVec3([
-    GrapheneVec3? a,
-    GrapheneVec3? b,
-    GrapheneVec3? c,
-  ]) {
-    return GrapheneTriangle.fromPointer(
-      _grapheneTriangleInitFromVec3(
-        this.handle,
-        a?.handle ?? ffi.nullptr,
-        b?.handle ?? ffi.nullptr,
-        c?.handle ?? ffi.nullptr,
-      ),
+    _grapheneSphereTranslate(this.handle, point.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneSphere.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
     );
   }
 }

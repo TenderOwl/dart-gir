@@ -5,8 +5,25 @@ part of '../gio.dart';
 /// looking in the file system for clues. Can return a list of possible
 /// completion strings for widget implementations.
 class GFilenameCompleter extends GObject {
-  GFilenameCompleter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GFilenameCompleter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GFilenameCompleter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GFilenameCompleter.rawFromPointer(handle, owned: owned);
+  }
+  GFilenameCompleter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,13 +37,24 @@ class GFilenameCompleter extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_filename_completer_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new filename completer.
   static final _gFilenameCompleterNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_filename_completer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GFilenameCompleter()
-    : this.fromPointer(_gFilenameCompleterNew(), owned: true);
+    : this.rawFromPointer(_gFilenameCompleterNew(), owned: true);
 
   /// Obtains a suffix completion for @initial_text from @completer.
   ///

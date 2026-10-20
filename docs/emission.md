@@ -445,10 +445,10 @@ outlives the source, or use `connectSignal` /
 * Varargs (`...`) parameters → skip with `varargs`.
 * Moved/shadowed functions → skip with the destination.
 
-### Caller-allocated OUT parameters (HeapAnchor)
+### OUT parameters
 
-GIR `direction="out"` parameters with `caller-allocates="1"` are emitted
-in two flavors depending on the pointee type:
+GIR `direction="out"` parameters come in three flavors, and the **pointer
+depth of the parameter's `c:type`** decides which one applies.
 
 **Primitive OUT** (`gint*`, `guint32*`, `gboolean*`, …). The size is
 known at compile time, so the wrapper allocates one slot of the pointee
@@ -466,8 +466,8 @@ gint value() {
 }
 ```
 
-**Record / class / union / interface OUT** (`GtkTextIter*`, `GValue*`,
-…). GLib writes the *entire struct* (not a pointer to it) into the
+**Struct OUT** (`GtkTextIter*`, `GdkRGBA*`, `GITypeInfo*` — one star).
+GLib writes the *entire struct* (not a pointer to it) into the
 caller-provided buffer, but the generator has no static `sizeof(T)` to
 allocate the right amount. The previous implementation under-allocated
 (8 bytes for a 32-byte struct), causing heap corruption, and then freed
@@ -480,29 +480,60 @@ The fix uses a `HeapAnchor` from `package:gir_ffi`:
 GtkTextIter getStartIter() {
   final _out0Anchor = HeapAnchor.allocate(256);
   final _out0 = _out0Anchor.buffer;
-  try {
-    _gtkTextBufferGetStartIter(this.handle, _out0.cast<ffi.Void>());
-    return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-  } finally {
-    // No `malloc.free(_out0)` here: the NativeFinalizer attached in
-    // HeapAnchor.allocate() frees the buffer when the anchor becomes
-    // unreachable.
-  }
+  _gtkTextBufferGetStartIter(this.handle, _out0.cast<ffi.Void>());
+  return keepAlive(
+    GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+    _out0Anchor,
+  );
 }
 ```
 
-The anchor's `Finalizable` + `NativeFinalizer` keeps the buffer alive
-as long as the returned wrapper is reachable (`GtkTextIter.handle`
-holds the `Pointer<Uint8>`). Drop the wrapper, GC reclaims the anchor,
-the finalizer calls `malloc.nativeFree`. `usesGirFfi` is set so the
-package barrel adds `import 'package:gir_ffi/gir_ffi.dart';`
-automatically.
+The anchor's `Finalizable` + `NativeFinalizer` frees the buffer, but
+only once nothing holds it any more. The wrapper *is* that holder: the
+wrapper is a view into the caller's buffer, so it has to keep the
+buffer alive for as long as it lives. `keepAlive` (also in
+`package:gir_ffi`) ties the anchor to the wrapper through a weak-keyed
+`Expando`; drop the wrapper and the anchor becomes unreachable, the
+finalizer calls `malloc.nativeFree`.
+
+Without that tie the anchor was unreachable the moment the method
+returned — the collector freed the buffer while the wrapper was still
+reading from it, and `GtkTextBuffer.getBounds` crashed about one run
+in eight.
+
+`usesGirFfi` is set so the package barrel adds
+`import 'package:gir_ffi/gir_ffi.dart';` automatically.
 
 The 256-byte size is a deliberate blanket upper bound — it covers
 every struct currently in the GIR corpus (largest is `PangoLayoutRun`
 at ~176 bytes) and keeps allocation O(1) per call. Per-type sizing
 (using a future GIR `sizeof` annotation or a build-time probe) is a
 known follow-up.
+
+**Pointer OUT** (`GUnixFDList**`, `GFile**` — two stars). The C function
+writes a *pointer* into the caller's slot, so the value is the object
+that pointer refers to, not the slot. The slot is a pointer-sized cell,
+zeroed so an out parameter the C function leaves untouched reads as
+NULL rather than as a wild pointer, and it is freed as soon as the call
+returns:
+
+```dart
+GUnixFDList? fdList() {
+  final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+  try {
+    _someFunction(_out0);
+    return (_out0.value) == ffi.nullptr
+        ? null
+        : GUnixFDList.fromPointer(_out0.value.cast<ffi.Void>(), owned: true);
+  } finally {
+    malloc.free(_out0);
+  }
+}
+```
+
+`owned: true` comes from the GIR's `transfer="full"`: the C function
+hands the reference over, so the wrapper owns it and releases it when
+it is collected.
 
 Caveat documented for users: GTK functions that *copy* an OUT struct
 into GTK-owned memory (e.g. `gtk_text_iter_copy`) keep using the

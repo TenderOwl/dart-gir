@@ -56,7 +56,25 @@ part of '../gtk4.dart';
 /// `GtkSearchBar` uses the [enum@Gtk.AccessibleRole.search] role.
 class GtkSearchBar extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkSearchBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSearchBar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSearchBar>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSearchBar.rawFromPointer(handle, owned: owned);
+  }
+  GtkSearchBar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -70,6 +88,17 @@ class GtkSearchBar extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_search_bar_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GtkSearchBar`.
   ///
   /// You will need to tell it about which widget is going to be your text
@@ -78,7 +107,7 @@ class GtkSearchBar extends GtkWidget
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_search_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSearchBar() : this.fromPointer(_gtkSearchBarNew(), owned: true);
+  GtkSearchBar() : this.rawFromPointer(_gtkSearchBarNew(), owned: true);
 
   /// Connects the `GtkEditable` widget passed as the one to be used in
   /// this search bar.

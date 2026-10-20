@@ -40,8 +40,25 @@ part of '../gtk4.dart';
 /// yields U+00E! LATIN SMALL LETTER_A WITH ACUTE, i.e. á. Note that this
 /// depends on the keyboard layout including dead keys.
 class GtkIMContextSimple extends GtkIMContext {
-  GtkIMContextSimple.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkIMContextSimple.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkIMContextSimple>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkIMContextSimple.rawFromPointer(handle, owned: owned);
+  }
+  GtkIMContextSimple.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -55,13 +72,24 @@ class GtkIMContextSimple extends GtkIMContext {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_im_context_simple_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkIMContextSimple`.
   static final _gtkImContextSimpleNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_im_context_simple_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkIMContextSimple()
-    : this.fromPointer(_gtkImContextSimpleNew(), owned: true);
+    : this.rawFromPointer(_gtkImContextSimpleNew(), owned: true);
 
   /// Adds an additional table from the X11 compose file.
   static final _gtkImContextSimpleAddComposeFile =

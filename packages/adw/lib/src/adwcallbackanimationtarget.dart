@@ -4,8 +4,25 @@ part of '../adw.dart';
 /// An [class@AnimationTarget] that calls a given callback during the
 /// animation.
 class AdwCallbackAnimationTarget extends AdwAnimationTarget {
-  AdwCallbackAnimationTarget.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwCallbackAnimationTarget.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwCallbackAnimationTarget>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwCallbackAnimationTarget.rawFromPointer(handle, owned: owned);
+  }
+  AdwCallbackAnimationTarget.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +35,17 @@ class AdwCallbackAnimationTarget extends AdwAnimationTarget {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_callback_animation_target_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `AdwAnimationTarget` that calls the given @callback during
   /// the animation.

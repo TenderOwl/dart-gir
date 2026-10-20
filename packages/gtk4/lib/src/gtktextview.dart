@@ -84,7 +84,25 @@ class GtkTextView extends GtkWidget
         GtkBuildable,
         GtkConstraintTarget,
         GtkScrollable {
-  GtkTextView.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTextView.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTextView>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTextView.rawFromPointer(handle, owned: owned);
+  }
+  GtkTextView.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -98,6 +116,17 @@ class GtkTextView extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_text_view_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkTextView`.
   ///
   /// If you don’t call [method@Gtk.TextView.set_buffer] before using the
@@ -108,7 +137,7 @@ class GtkTextView extends GtkWidget
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_text_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTextView() : this.fromPointer(_gtkTextViewNew(), owned: true);
+  GtkTextView() : this.rawFromPointer(_gtkTextViewNew(), owned: true);
 
   /// Creates a new `GtkTextView` widget displaying the buffer @buffer.
   ///
@@ -124,7 +153,10 @@ class GtkTextView extends GtkWidget
           >('gtk_text_view_new_with_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextView.withBuffer(GtkTextBuffer buffer)
-    : this.fromPointer(_gtkTextViewNewWithBuffer(buffer.handle), owned: true);
+    : this.rawFromPointer(
+        _gtkTextViewNewWithBuffer(buffer.handle),
+        owned: true,
+      );
 
   /// Adds a child widget in the text buffer, at the given @anchor.
   static final _gtkTextViewAddChildAtAnchor =
@@ -396,22 +428,26 @@ class GtkTextView extends GtkWidget
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _gtkTextViewGetCursorLocations(
-        this.handle,
-        iter?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_out0) == ffi.nullptr
-            ? null
-            : GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GdkRectangle.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _gtkTextViewGetCursorLocations(
+      this.handle,
+      iter?.handle ?? ffi.nullptr,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GdkRectangle.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   /// Find out whether the cursor should be displayed.
@@ -524,15 +560,16 @@ class GtkTextView extends GtkWidget
   (bool, GtkTextIter) getIterAtLocation(int x, int y) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTextViewGetIterAtLocation(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        x,
-        y,
-      );
-      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTextViewGetIterAtLocation(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      x,
+      y,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Retrieves the iterator pointing to the character at buffer
@@ -580,7 +617,7 @@ class GtkTextView extends GtkWidget
       );
       return (
         (_ret) != 0,
-        GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+        keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
         _out1.value,
       );
     } finally {
@@ -613,14 +650,15 @@ class GtkTextView extends GtkWidget
   GdkRectangle getIterLocation(GtkTextIter iter) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextViewGetIterLocation(
-        this.handle,
-        iter.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextViewGetIterLocation(
+      this.handle,
+      iter.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the default justification of paragraphs in @text_view.
@@ -679,7 +717,10 @@ class GtkTextView extends GtkWidget
     final _out1 = malloc<ffi.Int32>();
     try {
       _gtkTextViewGetLineAtY(this.handle, _out0.cast<ffi.Void>(), y, _out1);
-      return (GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out1.value);
+      return (
+        keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+        _out1.value,
+      );
     } finally {
       malloc.free(_out1);
     }
@@ -896,10 +937,11 @@ class GtkTextView extends GtkWidget
   GdkRectangle getVisibleRect() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextViewGetVisibleRect(this.handle, _out0.cast<ffi.Void>());
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextViewGetVisibleRect(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the line wrapping for the view.
@@ -2481,10 +2523,11 @@ class GtkTextView extends GtkWidget
   (bool, GtkBorder) getBorder() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GtkBorder.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GtkBorder.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Retrieves the `GtkAdjustment` used for horizontal scrolling.

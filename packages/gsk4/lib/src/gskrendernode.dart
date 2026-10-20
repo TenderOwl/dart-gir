@@ -14,7 +14,23 @@ part of '../gsk4.dart';
 /// them. All [class@Gsk.RenderNode]s are immutable, you can only specify their
 /// properties during construction.
 class GskRenderNode {
-  GskRenderNode.fromPointer(this.handle, {this.owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskRenderNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskRenderNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskRenderNode.rawFromPointer(handle, owned: owned);
+  }
+  GskRenderNode.rawFromPointer(this.handle, {this.owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
   final bool owned;
 
@@ -29,6 +45,17 @@ class GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_render_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Draws the contents of a render node on a cairo context.
   ///
@@ -66,10 +93,11 @@ class GskRenderNode {
   GrapheneRect getBounds() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gskRenderNodeGetBounds(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneRect.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gskRenderNodeGetBounds(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneRect.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets a list of all children nodes of the rendernode.
@@ -131,13 +159,14 @@ class GskRenderNode {
   (bool, GrapheneRect) getOpaqueRect() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskRenderNodeGetOpaqueRect(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskRenderNodeGetOpaqueRect(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GrapheneRect.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Acquires a reference on the given `GskRenderNode`.

@@ -4,8 +4,22 @@ part of '../gtk4.dart';
 /// An expression using a custom `GClosure` to compute the value from
 /// its parameters.
 class GtkClosureExpression extends GtkExpression {
-  GtkClosureExpression.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkClosureExpression.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkClosureExpression>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkClosureExpression.rawFromPointer(handle, owned: owned);
+  }
+  GtkClosureExpression.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +32,17 @@ class GtkClosureExpression extends GtkExpression {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_closure_expression_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GtkExpression` that calls `closure` when it is evaluated.
   ///
@@ -47,7 +72,7 @@ class GtkClosureExpression extends GtkExpression {
     GClosure closure,
     int nParams,
     ffi.Pointer<ffi.Void> params,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkClosureExpressionNew(valueType, closure.handle, nParams, params),
         owned: true,
       );

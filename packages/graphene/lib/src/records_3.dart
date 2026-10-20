@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the `graphene_plane_t` are private, and should not be
 /// modified directly.
 final class GraphenePlane {
-  GraphenePlane.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GraphenePlane.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GraphenePlane>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GraphenePlane.rawFromPointer(handle, owned: owned);
+  }
+  GraphenePlane.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -28,7 +43,7 @@ final class GraphenePlane {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_plane_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePlane.alloc() : this.fromPointer(_graphenePlaneAlloc());
+  GraphenePlane.alloc() : this.rawFromPointer(_graphenePlaneAlloc());
 
   /// Computes the distance of @point from a #graphene_plane_t.
   static final _graphenePlaneDistance =
@@ -93,10 +108,11 @@ final class GraphenePlane {
   GrapheneVec3 getNormal() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePlaneGetNormal(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePlaneGetNormal(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Initializes the given #graphene_plane_t using the given @normal vector
@@ -243,10 +259,11 @@ final class GraphenePlane {
   GraphenePlane negate() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePlaneNegate(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePlane.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePlaneNegate(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePlane.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Normalizes the vector of the given #graphene_plane_t,
@@ -263,10 +280,11 @@ final class GraphenePlane {
   GraphenePlane normalize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePlaneNormalize(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePlane.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePlaneNormalize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePlane.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Transforms a #graphene_plane_t @p using the given @matrix
@@ -302,21 +320,37 @@ final class GraphenePlane {
   ]) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePlaneTransform(
-        this.handle,
-        matrix.handle,
-        normalMatrix?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePlane.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePlaneTransform(
+      this.handle,
+      matrix.handle,
+      normalMatrix?.handle ?? ffi.nullptr,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePlane.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 }
 
 /// A point with two coordinates.
 final class GraphenePoint {
-  GraphenePoint.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GraphenePoint.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GraphenePoint>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GraphenePoint.rawFromPointer(handle, owned: owned);
+  }
+  GraphenePoint.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -355,7 +389,7 @@ final class GraphenePoint {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_point_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePoint.alloc() : this.fromPointer(_graphenePointAlloc());
+  GraphenePoint.alloc() : this.rawFromPointer(_graphenePointAlloc());
 
   /// Computes the distance between @a and @b.
   static final _graphenePointDistance =
@@ -510,15 +544,16 @@ final class GraphenePoint {
   GraphenePoint interpolate(GraphenePoint b, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePointInterpolate(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePointInterpolate(
+      this.handle,
+      b.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Checks whether the two points @a and @b are within
@@ -554,10 +589,11 @@ final class GraphenePoint {
   GrapheneVec2 toVec2() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _graphenePointToVec2(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec2.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _graphenePointToVec2(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Returns a point fixed at (0, 0).

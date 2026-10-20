@@ -3,8 +3,25 @@ part of '../gtk_source5.dart';
 
 /// Provides access to [class@StyleScheme]s.
 class GtkSourceStyleSchemeManager extends GObject {
-  GtkSourceStyleSchemeManager.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceStyleSchemeManager.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceStyleSchemeManager>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceStyleSchemeManager.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceStyleSchemeManager.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +35,18 @@ class GtkSourceStyleSchemeManager extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_style_scheme_manager_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new style manager.
   ///
   /// If you do not need more than one style manager
@@ -27,7 +56,7 @@ class GtkSourceStyleSchemeManager extends GObject {
         'gtk_source_style_scheme_manager_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkSourceStyleSchemeManager()
-    : this.fromPointer(_gtkSourceStyleSchemeManagerNew(), owned: true);
+    : this.rawFromPointer(_gtkSourceStyleSchemeManagerNew(), owned: true);
 
   /// Appends @path to the list of directories where the @manager looks for
   /// style scheme files.

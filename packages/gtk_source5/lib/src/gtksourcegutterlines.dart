@@ -11,8 +11,25 @@ part of '../gtk_source5.dart';
 /// passes through the text btree allowing GtkSourceView to reach more
 /// frames-per-second while performing kinetic scrolling.
 class GtkSourceGutterLines extends GObject {
-  GtkSourceGutterLines.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceGutterLines.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceGutterLines>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceGutterLines.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceGutterLines.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,6 +42,18 @@ class GtkSourceGutterLines extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_gutter_lines_get_type',
+      ).asFunction<int Function()>()();
 
   /// Adds the class @name to @line.
   ///
@@ -111,14 +140,15 @@ class GtkSourceGutterLines extends GObject {
   GtkTextIter getIterAtLine(int line) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkSourceGutterLinesGetIterAtLine(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        line,
-      );
-      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkSourceGutterLinesGetIterAtLine(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      line,
+    );
+    return keepAlive(
+      GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the line number (starting from 0) for the last line that is

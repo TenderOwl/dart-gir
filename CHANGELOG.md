@@ -11,6 +11,109 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 ## Unreleased
 
 ### Added
+- **Dart classes can have a native type.** A Dart subclass of a
+  generated GObject wrapper had no native identity: as far as GLib was
+  concerned it was a plain `GObject`, so a `GListStore` refused it and
+  a native round trip through a list item produced a *new* wrapper with
+  no Dart state. Four generator features and one runtime package fix
+  that:
+  - every generated class and interface now exposes
+    `static int get GType`, looked up once from the GIR's
+    `glib:get-type`;
+  - `GTypeInfo`, `GTypeQuery`, `GTypeFundamentalInfo` and
+    `GInterfaceInfo` are emitted as `ffi.Struct`, so their layout comes
+    from the GIR and they can be passed *by value*;
+  - `packages/gir_ffi` keeps a **weak** cache from the native address
+    to the Dart object, and `fromPointer` became a **factory** — the
+    same native pointer always yields the same Dart object, so a Dart
+    subclass survives the trip out of native code;
+  - `GObject(int objectType)` instantiates a native type;
+  - the new `packages/dart_gobject` package provides
+    `registerDartType(name, parentType)`, which registers a GType with
+    GLib for a Dart class.
+
+  ```dart
+  class TaskObject extends GObject {
+    static int get GType => registerDartType('TaskObject', GObject.GType);
+
+    TaskObject({this.completed = false, required this.content}) : super(GType);
+
+    bool completed;
+    String content;
+  }
+
+  final store = GListStore(TaskObject.GType);
+  ```
+
+  `example/todo` is the worked example: a task list whose model is a
+  `GListStore` typed with the Dart class's own native type. The design
+  is in [docs/dart-gobjects.md](docs/dart-gobjects.md).
+
+- **The generated constructor sinks a widget's floating reference.** A
+  widget comes with a *floating* reference: nobody owns it until a
+  parent takes it. The wrapper owns the object, so the reference is
+  sunk — otherwise the parent that parents the widget would own the
+  very reference the wrapper's finalizer releases, and the widget
+  would be freed while the parent still uses it.
+
+### Fixed
+- **The template builder names a signal's helper the way the bindings
+  do.** The builder called `on` + the signal name with its first letter
+  capitalized, so `icon-release` became `onIcon-release` — not even a
+  Dart identifier, and not the `onIconRelease` the bindings generate.
+  The builder now uses the generator's own rule (`toUpperCamel`), so a
+  kebab-case signal resolves to the helper that exists.
+
+- **The template builder forwards a signal's arguments.** The generated
+  closure took no arguments and called the user's method with none, so
+  a signal that declares parameters — `GtkEntry::icon-release`, say —
+  was wired to a method that never received them. The closure now
+  forwards them, taking their types from the binding's callback type
+  and their names from the user's method. A user method whose signature
+  does not match the signal's now fails the analyzer when the part file
+  is generated, instead of dropping the arguments at run time.
+
+- **The example's list rows are built again.** `GtkSignalListItemFactory`'s
+  `setup` and `bind` signals are typed `GObject` by the GIR — GTK's C
+  signature passes a `GtkListItem`, but the introspection data does not
+  say so. The example cast the argument to `GtkListItem`, which threw a
+  `TypeError` that GLib swallowed: the model filled up, but the list
+  stayed empty. The example now re-wraps the handle with `cast`, and
+  `docs/signals.md` explains the pattern.
+
+- **A window left for the collector is no longer walked by GTK.** A
+  window that is only freed when the isolate shuts down stays in GTK's
+  global toplevel list, and GTK walks that list on every main-loop
+  iteration — so a suite that drives the default main context in
+  parallel walks a window that is already gone. The example's test now
+  destroys its window while the isolate is alive, after detaching the
+  wrapper's finalizer (`gtk_window_destroy` frees the window, so the
+  finalizer must not release it twice) and after taking it out of the
+  application's window list.
+
+- **An OUT parameter's buffer no longer outlives its wrapper.** The
+  generator allocates the buffer the C function writes into and returns a
+  view of it, but nothing kept the buffer alive: the anchor became
+  unreachable the moment the method returned, the collector freed the
+  buffer, and the wrapper — a `GtkTextIter`, a `GdkRectangle` — kept
+  reading from released memory. `GtkTextBuffer.getBounds` crashed about
+  one run in eight. The wrapper now keeps the buffer alive through
+  `keepAlive`, and the buffer is released when the wrapper is collected.
+
+- **A class OUT parameter reads the pointer, not the slot.** For a
+  two-star C type (`GUnixFDList**`) the C function writes a *pointer* into
+  the caller's slot; the generator wrapped the slot itself, so the
+  wrapper pointed at a pointer-sized cell instead of at the object. The
+  slot is now a zeroed pointer cell and the value is read out of it, with
+  the reference owned when the GIR says `transfer="full"`.
+
+- **A struct OUT parameter is no longer a use-after-free.** The
+  generator allocated the buffer the C function writes into, returned
+  a view of it and freed the buffer — the returned struct pointed at
+  released memory. The buffer's ownership now goes to the struct
+  (`refWithFinalizer`), so it is released when the struct is
+  collected.
+
 - **The project site is generated.** `site/` used to hold six hand-written
   HTML pages whose numbers were typed by hand and had already drifted twice.
   The sources now live in `site_src/`, and a dependency-free generator in
@@ -114,7 +217,42 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   by one. The only item left on it is the deletion of the
   `composite-templates` ref — an administrative step, not a capability.
 
+- **A template can live in its own file.** `@GtkTemplate(source:
+  GtkTemplateFile('data/window.ui'))` names a `.ui` file instead of
+  carrying the XML inline. The builder reads it **through the build's
+  asset reader**, so the file is a *tracked build input*: editing it
+  re-runs the builder and the next build regenerates the part file.
+  Two rules come with that:
+  - The file has to be a **public asset** of the package. A build sees
+    `lib/**` and `bin/**` and nothing else, so a template under `lib/`
+    needs no configuration, and one under `data/` needs
+    `additional_public_assets: [data/**]` in the consumer's
+    `build.yaml`.
+  - A template file that cannot be read **fails the build** with the
+    path it looked for. Writing no part file would leave the previous
+    one in place, and the stale template would keep running as if the
+    edit had never happened.
+
+  The standalone CLI resolves the same path against the *package root*
+  of the source file, so it no longer depends on the directory it was
+  started in.
+
+- **`example/todo` keeps its template in `data/window.ui`** and has a
+  menu: a `GtkMenuButton` in the header bar, with `app.shortcuts` and
+  `app.about` on it. The application provides both actions — a menu
+  item whose action does not exist is dead, and GTK says so on
+  stderr.
+
 ### Fixed
+- **Editing a template file now changes the app.** The builder read a
+  `GtkTemplateFile` off the filesystem, which the build knows nothing
+  about: the file was not a build input, so a change to it did not
+  invalidate anything, the build reported the input as "skipped", and
+  the app came up with the previous template. The file is read through
+  the build's asset reader now, and the build reacts to it. The silent
+  skip is gone as well: a template file that cannot be read fails the
+  build instead of quietly leaving the old part file in place.
+
 - **The composite-template stack renders its template.** `example/todo`
   came up as an empty window: the template was built *lazily*, on the
   first read of a generated field, and nothing read one — so GTK never

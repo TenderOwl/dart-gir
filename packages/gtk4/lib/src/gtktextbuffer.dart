@@ -11,7 +11,25 @@ part of '../gtk4.dart';
 /// GtkTextBuffer can support undoing changes to the buffer
 /// content, see [method@Gtk.TextBuffer.set_enable_undo].
 class GtkTextBuffer extends GObject {
-  GtkTextBuffer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTextBuffer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTextBuffer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTextBuffer.rawFromPointer(handle, owned: owned);
+  }
+  GtkTextBuffer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,6 +43,17 @@ class GtkTextBuffer extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_text_buffer_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new text buffer.
   static final _gtkTextBufferNew =
       gtk4Lookup<
@@ -34,7 +63,7 @@ class GtkTextBuffer extends GObject {
           >('gtk_text_buffer_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextBuffer([GtkTextTagTable? table])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkTextBufferNew(table?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -632,17 +661,15 @@ class GtkTextBuffer extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      _gtkTextBufferGetBounds(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
-        GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    _gtkTextBufferGetBounds(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+      keepAlive(GtkTextIter.fromPointer(_out1.cast<ffi.Void>()), _out1Anchor),
+    );
   }
 
   /// Gets whether there is a redoable action in the history.
@@ -712,10 +739,11 @@ class GtkTextBuffer extends GObject {
   GtkTextIter getEndIter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextBufferGetEndIter(this.handle, _out0.cast<ffi.Void>());
-      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextBufferGetEndIter(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Indicates whether the buffer has some text currently selected.
@@ -764,14 +792,15 @@ class GtkTextBuffer extends GObject {
   GtkTextIter getIterAtChildAnchor(GtkTextChildAnchor anchor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextBufferGetIterAtChildAnchor(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        anchor.handle,
-      );
-      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextBufferGetIterAtChildAnchor(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      anchor.handle,
+    );
+    return keepAlive(
+      GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Initializes @iter to the start of the given line.
@@ -794,14 +823,15 @@ class GtkTextBuffer extends GObject {
   (bool, GtkTextIter) getIterAtLine(int lineNumber) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTextBufferGetIterAtLine(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        lineNumber,
-      );
-      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTextBufferGetIterAtLine(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      lineNumber,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Obtains an iterator pointing to @byte_index within the given line.
@@ -829,15 +859,16 @@ class GtkTextBuffer extends GObject {
   (bool, GtkTextIter) getIterAtLineIndex(int lineNumber, int byteIndex) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTextBufferGetIterAtLineIndex(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        lineNumber,
-        byteIndex,
-      );
-      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTextBufferGetIterAtLineIndex(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      lineNumber,
+      byteIndex,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Obtains an iterator pointing to @char_offset within the given line.
@@ -865,15 +896,16 @@ class GtkTextBuffer extends GObject {
   (bool, GtkTextIter) getIterAtLineOffset(int lineNumber, int charOffset) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkTextBufferGetIterAtLineOffset(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        lineNumber,
-        charOffset,
-      );
-      return ((_ret) != 0, GtkTextIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkTextBufferGetIterAtLineOffset(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      lineNumber,
+      charOffset,
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Initializes @iter with the current position of @mark.
@@ -897,14 +929,15 @@ class GtkTextBuffer extends GObject {
   GtkTextIter getIterAtMark(GtkTextMark mark) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextBufferGetIterAtMark(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        mark.handle,
-      );
-      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextBufferGetIterAtMark(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      mark.handle,
+    );
+    return keepAlive(
+      GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Initializes @iter to a position @char_offset chars from the start
@@ -929,14 +962,15 @@ class GtkTextBuffer extends GObject {
   GtkTextIter getIterAtOffset(int charOffset) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextBufferGetIterAtOffset(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        charOffset,
-      );
-      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextBufferGetIterAtOffset(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      charOffset,
+    );
+    return keepAlive(
+      GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Obtains the number of lines in the buffer.
@@ -1059,18 +1093,16 @@ class GtkTextBuffer extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      final _ret = _gtkTextBufferGetSelectionBounds(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
-        GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _gtkTextBufferGetSelectionBounds(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTextIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+      keepAlive(GtkTextIter.fromPointer(_out1.cast<ffi.Void>()), _out1Anchor),
+    );
   }
 
   /// Get a content provider for this buffer.
@@ -1147,10 +1179,11 @@ class GtkTextBuffer extends GObject {
   GtkTextIter getStartIter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkTextBufferGetStartIter(this.handle, _out0.cast<ffi.Void>());
-      return GtkTextIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkTextBufferGetStartIter(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Get the `GtkTextTagTable` associated with this buffer.

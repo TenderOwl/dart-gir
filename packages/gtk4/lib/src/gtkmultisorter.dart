@@ -6,7 +6,25 @@ part of '../gtk4.dart';
 /// If the first sorter compares two items as equal,
 /// the second is tried next, and so on.
 class GtkMultiSorter extends GtkSorter implements GListModel, GtkBuildable {
-  GtkMultiSorter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkMultiSorter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkMultiSorter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkMultiSorter.rawFromPointer(handle, owned: owned);
+  }
+  GtkMultiSorter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +38,17 @@ class GtkMultiSorter extends GtkSorter implements GListModel, GtkBuildable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_multi_sorter_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new multi sorter.
   ///
   /// This sorter compares items by trying each of the sorters
@@ -30,7 +59,7 @@ class GtkMultiSorter extends GtkSorter implements GListModel, GtkBuildable {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_multi_sorter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkMultiSorter() : this.fromPointer(_gtkMultiSorterNew(), owned: true);
+  GtkMultiSorter() : this.rawFromPointer(_gtkMultiSorterNew(), owned: true);
 
   /// Add @sorter to @self to use for sorting at the end.
   ///

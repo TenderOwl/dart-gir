@@ -3,7 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node drawing one or more shadows behind its single child node.
 class GskShadowNode extends GskRenderNode {
-  GskShadowNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskShadowNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskShadowNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskShadowNode.rawFromPointer(handle, owned: owned);
+  }
+  GskShadowNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -16,6 +31,17 @@ class GskShadowNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_shadow_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GskRenderNode` that will draw a @child with the given
   /// @shadows below it.
@@ -40,7 +66,7 @@ class GskShadowNode extends GskRenderNode {
     GskRenderNode child,
     ffi.Pointer<ffi.Void> shadows,
     int nShadows,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gskShadowNodeNew(child.handle, shadows, nShadows),
         owned: true,
       );

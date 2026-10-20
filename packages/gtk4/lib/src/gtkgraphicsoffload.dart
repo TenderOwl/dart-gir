@@ -38,8 +38,25 @@ part of '../gtk4.dart';
 /// The GTK inspector provides a visual debugging tool for graphics offload.
 class GtkGraphicsOffload extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkGraphicsOffload.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkGraphicsOffload.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkGraphicsOffload>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkGraphicsOffload.rawFromPointer(handle, owned: owned);
+  }
+  GtkGraphicsOffload.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -53,6 +70,17 @@ class GtkGraphicsOffload extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_graphics_offload_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new GtkGraphicsOffload widget.
   static final _gtkGraphicsOffloadNew =
       gtk4Lookup<
@@ -62,7 +90,7 @@ class GtkGraphicsOffload extends GtkWidget
           >('gtk_graphics_offload_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkGraphicsOffload([GtkWidget? child])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkGraphicsOffloadNew(child?.handle ?? ffi.nullptr),
         owned: true,
       );

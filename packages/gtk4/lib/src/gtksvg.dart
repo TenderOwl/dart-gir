@@ -140,7 +140,24 @@ part of '../gtk4.dart';
 /// In contrast to SVG 1.1 and 2.0, we allow the `transform` attribute
 /// to be animated with `<animate>`.
 class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
-  GtkSvg.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSvg.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSvg>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSvg.rawFromPointer(handle, owned: owned);
+  }
+  GtkSvg.rawFromPointer(super.handle, {super.owned}) : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -154,12 +171,23 @@ class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_svg_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new, empty SVG paintable.
   static final _gtkSvgNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_svg_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSvg() : this.fromPointer(_gtkSvgNew(), owned: true);
+  GtkSvg() : this.rawFromPointer(_gtkSvgNew(), owned: true);
 
   /// Parses the SVG data in @bytes and creates a paintable.
   static final _gtkSvgNewFromBytes =
@@ -170,7 +198,7 @@ class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
           >('gtk_svg_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSvg.fromBytes(GBytes bytes)
-    : this.fromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
+    : this.rawFromPointer(_gtkSvgNewFromBytes(bytes.handle), owned: true);
 
   /// Parses the SVG data in the resource and creates a paintable.
   static final _gtkSvgNewFromResource =

@@ -3,8 +3,25 @@ part of '../gtk4.dart';
 
 /// Triggers when a specific keyval and modifiers are pressed.
 class GtkKeyvalTrigger extends GtkShortcutTrigger {
-  GtkKeyvalTrigger.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkKeyvalTrigger.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkKeyvalTrigger>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkKeyvalTrigger.rawFromPointer(handle, owned: owned);
+  }
+  GtkKeyvalTrigger.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +35,17 @@ class GtkKeyvalTrigger extends GtkShortcutTrigger {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_keyval_trigger_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GtkShortcutTrigger` that will trigger whenever
   /// the key with the given @keyval and @modifiers is pressed.
   static final _gtkKeyvalTriggerNew =
@@ -28,7 +56,7 @@ class GtkKeyvalTrigger extends GtkShortcutTrigger {
           >('gtk_keyval_trigger_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkKeyvalTrigger(int keyval, GdkModifierType modifiers)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkKeyvalTriggerNew(keyval, modifiers.value),
         owned: true,
       );

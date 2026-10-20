@@ -46,8 +46,25 @@ part of '../adw.dart';
 /// [class@InlineViewSwitcher].
 class AdwViewSwitcherSidebar extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwViewSwitcherSidebar.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwViewSwitcherSidebar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwViewSwitcherSidebar>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwViewSwitcherSidebar.rawFromPointer(handle, owned: owned);
+  }
+  AdwViewSwitcherSidebar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -61,13 +78,24 @@ class AdwViewSwitcherSidebar extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_view_switcher_sidebar_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwViewSwitcherSidebar`.
   static final _adwViewSwitcherSidebarNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_view_switcher_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwViewSwitcherSidebar()
-    : this.fromPointer(_adwViewSwitcherSidebarNew(), owned: true);
+    : this.rawFromPointer(_adwViewSwitcherSidebarNew(), owned: true);
 
   /// Gets the item filter for @self.
   static final _adwViewSwitcherSidebarGetFilter =

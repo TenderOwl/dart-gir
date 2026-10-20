@@ -23,8 +23,25 @@ part of '../gio.dart';
 /// intended to be used with `GDBusObjectManagerServer` or any D-Bus
 /// object implementing the `org.freedesktop.DBus.ObjectManager` interface.
 class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
-  GDBusObjectManagerServer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDBusObjectManagerServer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDBusObjectManagerServer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDBusObjectManagerServer.rawFromPointer(handle, owned: owned);
+  }
+  GDBusObjectManagerServer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -37,6 +54,17 @@ class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_dbus_object_manager_server_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new #GDBusObjectManagerServer object.
   ///

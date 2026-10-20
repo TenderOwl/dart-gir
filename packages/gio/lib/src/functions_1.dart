@@ -279,10 +279,8 @@ final _gDbusGvariantToGvalue =
 GValue dbusGvariantToGvalue(GVariant value) {
   final _out0Anchor = HeapAnchor.allocate(256);
   final _out0 = _out0Anchor.buffer;
-  try {
-    _gDbusGvariantToGvalue(value.handle, _out0.cast<ffi.Void>());
-    return GValue.fromPointer(_out0.cast<ffi.Void>());
-  } finally {}
+  _gDbusGvariantToGvalue(value.handle, _out0.cast<ffi.Void>());
+  return keepAlive(GValue.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
 }
 
 /// Checks if @string is a

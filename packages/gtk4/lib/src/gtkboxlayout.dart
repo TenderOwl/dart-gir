@@ -15,7 +15,25 @@ part of '../gtk4.dart';
 /// If you want to specify the amount of space placed between each child,
 /// you can use the [property@Gtk.BoxLayout:spacing] property.
 class GtkBoxLayout extends GtkLayoutManager implements GtkOrientable {
-  GtkBoxLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkBoxLayout.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkBoxLayout>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkBoxLayout.rawFromPointer(handle, owned: owned);
+  }
+  GtkBoxLayout.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,13 +47,24 @@ class GtkBoxLayout extends GtkLayoutManager implements GtkOrientable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_box_layout_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkBoxLayout`.
   static final _gtkBoxLayoutNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_box_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkBoxLayout(GtkOrientation orientation)
-    : this.fromPointer(_gtkBoxLayoutNew(orientation.value), owned: true);
+    : this.rawFromPointer(_gtkBoxLayoutNew(orientation.value), owned: true);
 
   /// Gets the value set by gtk_box_layout_set_baseline_child().
   static final _gtkBoxLayoutGetBaselineChild =

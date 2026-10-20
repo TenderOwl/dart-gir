@@ -12,7 +12,25 @@ part of '../gio.dart';
 /// [class@Gio.InetSocketAddress] (which includes a `GInetAddress` as well as a
 /// port number).
 class GInetAddress extends GObject {
-  GInetAddress.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GInetAddress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GInetAddress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GInetAddress.rawFromPointer(handle, owned: owned);
+  }
+  GInetAddress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +44,17 @@ class GInetAddress extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_inet_address_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a #GInetAddress for the "any" address (unassigned/"don't
   /// care") for @family.
   static final _gInetAddressNewAny =
@@ -33,7 +62,7 @@ class GInetAddress extends GObject {
         'g_inet_address_new_any',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GInetAddress.any(GSocketFamily family)
-    : this.fromPointer(_gInetAddressNewAny(family.value), owned: true);
+    : this.rawFromPointer(_gInetAddressNewAny(family.value), owned: true);
 
   /// Creates a new #GInetAddress from the given @family and @bytes.
   /// @bytes should be 4 bytes for %G_SOCKET_FAMILY_IPV4 and 16 bytes for
@@ -48,7 +77,7 @@ class GInetAddress extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
   GInetAddress.fromBytes(ffi.Pointer<ffi.Uint8> bytes, GSocketFamily family)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gInetAddressNewFromBytes(bytes, family.value),
         owned: true,
       );
@@ -82,7 +111,7 @@ class GInetAddress extends GObject {
     GSocketFamily family,
     int flowinfo,
     int scopeId,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gInetAddressNewFromBytesWithIpv6Info(
           bytes,
           family.value,
@@ -119,7 +148,7 @@ class GInetAddress extends GObject {
         'g_inet_address_new_loopback',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GInetAddress.loopback(GSocketFamily family)
-    : this.fromPointer(_gInetAddressNewLoopback(family.value), owned: true);
+    : this.rawFromPointer(_gInetAddressNewLoopback(family.value), owned: true);
 
   /// Checks if two #GInetAddress instances are equal, e.g. the same address.
   static final _gInetAddressEqual =

@@ -80,7 +80,7 @@ final _pangoParseMarkup =
               ffi.Pointer<Utf8>,
               ffi.Int32,
               ffi.Uint32,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<Utf8>>,
               ffi.Pointer<ffi.Uint32>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
@@ -92,7 +92,7 @@ final _pangoParseMarkup =
             ffi.Pointer<Utf8>,
             int,
             int,
-            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
             ffi.Pointer<ffi.Pointer<Utf8>>,
             ffi.Pointer<ffi.Uint32>,
             ffi.Pointer<ffi.Pointer<ffi.Void>>,
@@ -104,8 +104,7 @@ final _pangoParseMarkup =
   int accelMarker,
 ) {
   return withNativeString(markupText, (nativeMarkupText) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _out1 = malloc<ffi.Pointer<Utf8>>();
     final _out2 = malloc<ffi.Uint32>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
@@ -114,7 +113,7 @@ final _pangoParseMarkup =
         nativeMarkupText.cast<Utf8>(),
         length,
         accelMarker,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _out1,
         _out2,
         _error,
@@ -124,13 +123,17 @@ final _pangoParseMarkup =
       }
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : PangoAttrList.fromPointer(_out0.cast<ffi.Void>()),
+            : PangoAttrList.fromPointer(
+                _out0.value.cast<ffi.Void>(),
+                owned: true,
+              ),
         stringFromNative(_out1.value.cast(), free: true)!,
         _out2.value,
       );
     } finally {
+      malloc.free(_out0);
       malloc.free(_out1);
       malloc.free(_out2);
       calloc.free(_error);
@@ -357,15 +360,16 @@ PangoGlyphString shape(String text, int length, PangoAnalysis analysis) {
   return withNativeString(text, (nativeText) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _pangoShape(
-        nativeText.cast<Utf8>(),
-        length,
-        analysis.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _pangoShape(
+      nativeText.cast<Utf8>(),
+      length,
+      analysis.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      PangoGlyphString.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   });
 }
 
@@ -424,17 +428,18 @@ PangoGlyphString shapeFull(
     return withNativeString(paragraphText, (nativeParagraphText) {
       final _out0Anchor = HeapAnchor.allocate(256);
       final _out0 = _out0Anchor.buffer;
-      try {
-        _pangoShapeFull(
-          nativeItemText.cast<Utf8>(),
-          itemLength,
-          nativeParagraphText.cast<Utf8>(),
-          paragraphLength,
-          analysis.handle,
-          _out0.cast<ffi.Void>(),
-        );
-        return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
-      } finally {}
+      _pangoShapeFull(
+        nativeItemText.cast<Utf8>(),
+        itemLength,
+        nativeParagraphText.cast<Utf8>(),
+        paragraphLength,
+        analysis.handle,
+        _out0.cast<ffi.Void>(),
+      );
+      return keepAlive(
+        PangoGlyphString.fromPointer(_out0.cast<ffi.Void>()),
+        _out0Anchor,
+      );
     });
   });
 }
@@ -485,17 +490,18 @@ PangoGlyphString shapeItem(
   return withNativeString(paragraphText, (nativeParagraphText) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _pangoShapeItem(
-        item.handle,
-        nativeParagraphText.cast<Utf8>(),
-        paragraphLength,
-        logAttrs?.handle ?? ffi.nullptr,
-        _out0.cast<ffi.Void>(),
-        flags.value,
-      );
-      return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _pangoShapeItem(
+      item.handle,
+      nativeParagraphText.cast<Utf8>(),
+      paragraphLength,
+      logAttrs?.handle ?? ffi.nullptr,
+      _out0.cast<ffi.Void>(),
+      flags.value,
+    );
+    return keepAlive(
+      PangoGlyphString.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   });
 }
 
@@ -554,18 +560,19 @@ PangoGlyphString shapeWithFlags(
     return withNativeString(paragraphText, (nativeParagraphText) {
       final _out0Anchor = HeapAnchor.allocate(256);
       final _out0 = _out0Anchor.buffer;
-      try {
-        _pangoShapeWithFlags(
-          nativeItemText.cast<Utf8>(),
-          itemLength,
-          nativeParagraphText.cast<Utf8>(),
-          paragraphLength,
-          analysis.handle,
-          _out0.cast<ffi.Void>(),
-          flags.value,
-        );
-        return PangoGlyphString.fromPointer(_out0.cast<ffi.Void>());
-      } finally {}
+      _pangoShapeWithFlags(
+        nativeItemText.cast<Utf8>(),
+        itemLength,
+        nativeParagraphText.cast<Utf8>(),
+        paragraphLength,
+        analysis.handle,
+        _out0.cast<ffi.Void>(),
+        flags.value,
+      );
+      return keepAlive(
+        PangoGlyphString.fromPointer(_out0.cast<ffi.Void>()),
+        _out0Anchor,
+      );
     });
   });
 }

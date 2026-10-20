@@ -7,7 +7,25 @@ part of '../gtk4.dart';
 /// when necessary.
 class GtkListBoxRow extends GtkWidget
     implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
-  GtkListBoxRow.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkListBoxRow.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkListBoxRow>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkListBoxRow.rawFromPointer(handle, owned: owned);
+  }
+  GtkListBoxRow.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,12 +39,23 @@ class GtkListBoxRow extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_list_box_row_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkListBoxRow`.
   static final _gtkListBoxRowNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_list_box_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkListBoxRow() : this.fromPointer(_gtkListBoxRowNew(), owned: true);
+  GtkListBoxRow() : this.rawFromPointer(_gtkListBoxRowNew(), owned: true);
 
   /// Marks @row as changed, causing any state that depends on this
   /// to be updated.

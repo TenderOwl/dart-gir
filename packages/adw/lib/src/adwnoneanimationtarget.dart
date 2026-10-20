@@ -3,8 +3,25 @@ part of '../adw.dart';
 
 /// An [class@AnimationTarget] that doesn't do anything.
 class AdwNoneAnimationTarget extends AdwAnimationTarget {
-  AdwNoneAnimationTarget.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwNoneAnimationTarget.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwNoneAnimationTarget>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwNoneAnimationTarget.rawFromPointer(handle, owned: owned);
+  }
+  AdwNoneAnimationTarget.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,13 +35,24 @@ class AdwNoneAnimationTarget extends AdwAnimationTarget {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_none_animation_target_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwAnimationTarget` that doesn't do anything.
   static final _adwNoneAnimationTargetNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_none_animation_target_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwNoneAnimationTarget()
-    : this.fromPointer(_adwNoneAnimationTargetNew(), owned: true);
+    : this.rawFromPointer(_adwNoneAnimationTargetNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

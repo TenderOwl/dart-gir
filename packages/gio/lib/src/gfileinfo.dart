@@ -38,7 +38,25 @@ part of '../gio.dart';
 /// [struct@Gio.FileAttributeMatcher] allows for searching through a `GFileInfo`
 /// for attributes.
 class GFileInfo extends GObject {
-  GFileInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GFileInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GFileInfo>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GFileInfo.rawFromPointer(handle, owned: owned);
+  }
+  GFileInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -52,12 +70,23 @@ class GFileInfo extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_file_info_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new file info structure.
   static final _gFileInfoNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_file_info_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GFileInfo() : this.fromPointer(_gFileInfoNew(), owned: true);
+  GFileInfo() : this.rawFromPointer(_gFileInfoNew(), owned: true);
 
   /// Clears the status information from @info.
   static final _gFileInfoClearStatus =
@@ -231,7 +260,7 @@ class GFileInfo extends GObject {
   getAttributeData(String attribute) {
     return withNativeString(attribute, (nativeAttribute) {
       final _out0 = malloc<ffi.Int32>();
-      final _out1 = malloc<ffi.Pointer<ffi.Void>>();
+      final _out1 = calloc<ffi.Pointer<ffi.Void>>();
       final _out2 = malloc<ffi.Int32>();
       try {
         final _ret = _gFileInfoGetAttributeData(
@@ -677,10 +706,8 @@ class GFileInfo extends GObject {
   GTimeVal getModificationTime() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gFileInfoGetModificationTime(this.handle, _out0.cast<ffi.Void>());
-      return GTimeVal.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gFileInfoGetModificationTime(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(GTimeVal.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
   }
 
   /// Gets the name for a file. This is guaranteed to always be set.

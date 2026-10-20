@@ -32,8 +32,25 @@ part of '../adw.dart';
 /// ```
 class AdwSpinnerPaintable extends GObject
     implements GdkPaintable, GtkSymbolicPaintable {
-  AdwSpinnerPaintable.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwSpinnerPaintable.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwSpinnerPaintable>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwSpinnerPaintable.rawFromPointer(handle, owned: owned);
+  }
+  AdwSpinnerPaintable.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,6 +64,17 @@ class AdwSpinnerPaintable extends GObject
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_spinner_paintable_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwSpinnerPaintable` for @widget.
   static final _adwSpinnerPaintableNew =
       adwLookup<
@@ -56,7 +84,7 @@ class AdwSpinnerPaintable extends GObject
           >('adw_spinner_paintable_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSpinnerPaintable([GtkWidget? widget])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _adwSpinnerPaintableNew(widget?.handle ?? ffi.nullptr),
         owned: true,
       );

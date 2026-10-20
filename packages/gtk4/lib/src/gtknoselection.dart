@@ -9,7 +9,25 @@ part of '../gtk4.dart';
 /// `GtkNoSelection` passes through sections from the underlying model.
 class GtkNoSelection extends GObject
     implements GListModel, GtkSectionModel, GtkSelectionModel {
-  GtkNoSelection.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkNoSelection.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkNoSelection>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkNoSelection.rawFromPointer(handle, owned: owned);
+  }
+  GtkNoSelection.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,6 +41,17 @@ class GtkNoSelection extends GObject
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_no_selection_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new selection to handle @model.
   static final _gtkNoSelectionNew =
       gtk4Lookup<
@@ -32,7 +61,7 @@ class GtkNoSelection extends GObject
           >('gtk_no_selection_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkNoSelection([GListModel? model])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkNoSelectionNew(model?.handle ?? ffi.nullptr),
         owned: true,
       );

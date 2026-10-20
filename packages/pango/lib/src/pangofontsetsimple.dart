@@ -7,8 +7,25 @@ part of '../pango.dart';
 /// When creating a `PangoFontsetSimple`, you have to provide
 /// the array of fonts that make up the fontset.
 class PangoFontsetSimple extends PangoFontset {
-  PangoFontsetSimple.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory PangoFontsetSimple.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontsetSimple>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return PangoFontsetSimple.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontsetSimple.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +39,18 @@ class PangoFontsetSimple extends PangoFontset {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      pangoLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'pango_fontset_simple_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new `PangoFontsetSimple` for the given language.
   static final _pangoFontsetSimpleNew =
       pangoLookup<
@@ -31,7 +60,7 @@ class PangoFontsetSimple extends PangoFontset {
           >('pango_fontset_simple_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontsetSimple(PangoLanguage language)
-    : this.fromPointer(_pangoFontsetSimpleNew(language.handle), owned: true);
+    : this.rawFromPointer(_pangoFontsetSimpleNew(language.handle), owned: true);
 
   /// Adds a font to the fontset.
   ///

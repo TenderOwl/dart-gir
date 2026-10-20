@@ -23,8 +23,22 @@ class AdwPreferencesWindow extends AdwWindow
         GtkNative,
         GtkRoot,
         GtkShortcutManager {
-  AdwPreferencesWindow.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwPreferencesWindow.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwPreferencesWindow>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwPreferencesWindow.rawFromPointer(handle, owned: owned);
+  }
+  AdwPreferencesWindow.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -38,13 +52,24 @@ class AdwPreferencesWindow extends AdwWindow
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_preferences_window_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwPreferencesWindow`.
   static final _adwPreferencesWindowNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_window_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwPreferencesWindow()
-    : this.fromPointer(_adwPreferencesWindowNew(), owned: true);
+    : this.rawFromPointer(_adwPreferencesWindowNew(), owned: true);
 
   /// Adds a preferences page to @self.
   static final _adwPreferencesWindowAdd =

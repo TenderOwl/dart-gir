@@ -21,8 +21,25 @@ part of '../gtk4.dart';
 /// [property@Gtk.Picture:can-shrink] property is set to %TRUE or you might
 /// end up with an infinitely growing widget.
 class GtkWidgetPaintable extends GObject implements GdkPaintable {
-  GtkWidgetPaintable.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkWidgetPaintable.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkWidgetPaintable>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkWidgetPaintable.rawFromPointer(handle, owned: owned);
+  }
+  GtkWidgetPaintable.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -36,6 +53,17 @@ class GtkWidgetPaintable extends GObject implements GdkPaintable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_widget_paintable_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new widget paintable observing the given widget.
   static final _gtkWidgetPaintableNew =
       gtk4Lookup<
@@ -45,7 +73,7 @@ class GtkWidgetPaintable extends GObject implements GdkPaintable {
           >('gtk_widget_paintable_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidgetPaintable([GtkWidget? widget])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkWidgetPaintableNew(widget?.handle ?? ffi.nullptr),
         owned: true,
       );

@@ -24,8 +24,35 @@ part of '../gobject.dart';
 /// struct, the `GObjectClass` (or derived) struct, and any private data allocated
 /// by `G_ADD_PRIVATE()`.
 class GObject implements ffi.Finalizable {
-  GObject.fromPointer(this.handle, {this.owned = false}) {
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GObject.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GObject>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GObject.rawFromPointer(handle, owned: owned);
+  }
+  GObject.rawFromPointer(this.handle, {this.owned = false}) {
+    registerDartObject(this, handle.address);
     if (owned) {
+      // A widget comes with a *floating* reference: nobody owns it
+      // until a parent takes it. The wrapper owns the object, so the
+      // reference is sunk — otherwise the parent that parents the
+      // widget would own the very reference this wrapper's
+      // finalizer releases, and the widget would be freed while
+      // the parent still uses it.
+      if (isFloating()) {
+        refSink();
+      }
       _attachFinalizer();
     }
   }
@@ -33,6 +60,18 @@ class GObject implements ffi.Finalizable {
   final bool owned;
   void _attachFinalizer() =>
       gobjectFinalizer.attach(this, handle, detach: this);
+
+  /// Creates an instance of the native type [objectType].
+  ///
+  /// Register the type first (`registerDartType`), then hand its
+  /// `GType` to `super(GType)`. The new object is registered in the
+  /// wrapper cache, so a native round trip finds *this* Dart object
+  /// again.
+  GObject(int objectType)
+    : this.rawFromPointer(
+        _gObjectNewv(objectType, 0, ffi.nullptr),
+        owned: true,
+      );
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -45,6 +84,18 @@ class GObject implements ffi.Finalizable {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'g_object_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a new instance of a #GObject subtype and sets its properties.
   ///
@@ -67,7 +118,7 @@ class GObject implements ffi.Finalizable {
     int objectType,
     int nParameters,
     ffi.Pointer<ffi.Void> parameters,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gObjectNewv(objectType, nParameters, parameters),
         owned: true,
       );

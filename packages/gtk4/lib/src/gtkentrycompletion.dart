@@ -41,8 +41,25 @@ part of '../gtk4.dart';
 /// matching iter.
 class GtkEntryCompletion extends GObject
     implements GtkBuildable, GtkCellLayout {
-  GtkEntryCompletion.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkEntryCompletion.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkEntryCompletion>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkEntryCompletion.rawFromPointer(handle, owned: owned);
+  }
+  GtkEntryCompletion.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -56,13 +73,24 @@ class GtkEntryCompletion extends GObject
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_entry_completion_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkEntryCompletion` object.
   static final _gtkEntryCompletionNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_entry_completion_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkEntryCompletion()
-    : this.fromPointer(_gtkEntryCompletionNew(), owned: true);
+    : this.rawFromPointer(_gtkEntryCompletionNew(), owned: true);
 
   /// Creates a new `GtkEntryCompletion` object using the
   /// specified @area.
@@ -77,7 +105,7 @@ class GtkEntryCompletion extends GObject
           >('gtk_entry_completion_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEntryCompletion.withArea(GtkCellArea area)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkEntryCompletionNewWithArea(area.handle),
         owned: true,
       );

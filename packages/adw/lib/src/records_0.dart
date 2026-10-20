@@ -2,7 +2,22 @@
 part of '../adw.dart';
 
 final class AdwAboutDialogClass {
-  AdwAboutDialogClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwAboutDialogClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAboutDialogClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwAboutDialogClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwAboutDialogClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -19,7 +34,22 @@ final class AdwAboutDialogClass {
 }
 
 final class AdwAboutWindowClass {
-  AdwAboutWindowClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwAboutWindowClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAboutWindowClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwAboutWindowClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwAboutWindowClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -36,7 +66,22 @@ final class AdwAboutWindowClass {
 }
 
 final class AdwActionRowClass {
-  AdwActionRowClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwActionRowClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwActionRowClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwActionRowClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwActionRowClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -53,7 +98,22 @@ final class AdwActionRowClass {
 }
 
 final class AdwAlertDialogClass {
-  AdwAlertDialogClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwAlertDialogClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAlertDialogClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwAlertDialogClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwAlertDialogClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -70,7 +130,22 @@ final class AdwAlertDialogClass {
 }
 
 final class AdwAnimationClass {
-  AdwAnimationClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwAnimationClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAnimationClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwAnimationClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwAnimationClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -87,7 +162,22 @@ final class AdwAnimationClass {
 }
 
 final class AdwAnimationTargetClass {
-  AdwAnimationTargetClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwAnimationTargetClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAnimationTargetClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwAnimationTargetClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwAnimationTargetClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -104,7 +194,22 @@ final class AdwAnimationTargetClass {
 }
 
 final class AdwApplicationClass {
-  AdwApplicationClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwApplicationClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwApplicationClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwApplicationClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwApplicationClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -121,7 +226,22 @@ final class AdwApplicationClass {
 }
 
 final class AdwApplicationWindowClass {
-  AdwApplicationWindowClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwApplicationWindowClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwApplicationWindowClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwApplicationWindowClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwApplicationWindowClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -138,7 +258,22 @@ final class AdwApplicationWindowClass {
 }
 
 final class AdwAvatarClass {
-  AdwAvatarClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwAvatarClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAvatarClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwAvatarClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwAvatarClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -155,7 +290,22 @@ final class AdwAvatarClass {
 }
 
 final class AdwBannerClass {
-  AdwBannerClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory AdwBannerClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwBannerClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwBannerClass.rawFromPointer(handle, owned: owned);
+  }
+  AdwBannerClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -172,268 +322,22 @@ final class AdwBannerClass {
 }
 
 final class AdwBinClass {
-  AdwBinClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  /// Wraps the native object at [handle].
   ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  /// The same native pointer always yields the same Dart object.
+  factory AdwBinClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwBinClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return AdwBinClass.rawFromPointer(handle, owned: owned);
   }
-}
-
-final class AdwBottomSheetClass {
-  AdwBottomSheetClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
+  AdwBinClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
   }
-}
-
-final class AdwBreakpointBinClass {
-  AdwBreakpointBinClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class AdwBreakpointClass {
-  AdwBreakpointClass.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// Describes condition for an [class@Breakpoint].
-final class AdwBreakpointCondition {
-  AdwBreakpointCondition.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Creates a condition that triggers when @condition_1 and @condition_2 are both
-  /// true.
-  static final _adwBreakpointConditionNewAnd =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('adw_breakpoint_condition_new_and')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  AdwBreakpointCondition.and(
-    AdwBreakpointCondition condition1,
-    AdwBreakpointCondition condition2,
-  ) : this.fromPointer(
-        _adwBreakpointConditionNewAnd(condition1.handle, condition2.handle),
-      );
-
-  /// Creates a condition that triggers on length changes.
-  static final _adwBreakpointConditionNewLength =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Int32, ffi.Double, ffi.Int32)
-            >
-          >('adw_breakpoint_condition_new_length')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int, double, int)>();
-  AdwBreakpointCondition.length(
-    AdwBreakpointConditionLengthType type_,
-    double value,
-    AdwLengthUnit unit,
-  ) : this.fromPointer(
-        _adwBreakpointConditionNewLength(type_.value, value, unit.value),
-      );
-
-  /// Creates a condition that triggers when either @condition_1 or @condition_2 is
-  /// true.
-  static final _adwBreakpointConditionNewOr =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('adw_breakpoint_condition_new_or')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  AdwBreakpointCondition.or(
-    AdwBreakpointCondition condition1,
-    AdwBreakpointCondition condition2,
-  ) : this.fromPointer(
-        _adwBreakpointConditionNewOr(condition1.handle, condition2.handle),
-      );
-
-  /// Creates a condition that triggers on ratio changes.
-  ///
-  /// The ratio is represented as @width divided by @height.
-  static final _adwBreakpointConditionNewRatio =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Int32, ffi.Int32, ffi.Int32)
-            >
-          >('adw_breakpoint_condition_new_ratio')
-          .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
-  AdwBreakpointCondition.ratio(
-    AdwBreakpointConditionRatioType type_,
-    int width,
-    int height,
-  ) : this.fromPointer(
-        _adwBreakpointConditionNewRatio(type_.value, width, height),
-      );
-
-  /// Copies @self.
-  static final _adwBreakpointConditionCopy =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('adw_breakpoint_condition_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  AdwBreakpointCondition copy() {
-    return AdwBreakpointCondition.fromPointer(
-      _adwBreakpointConditionCopy(this.handle),
-    );
-  }
-
-  /// Frees @self.
-  static final _adwBreakpointConditionFree =
-      adwLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'adw_breakpoint_condition_free',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _adwBreakpointConditionFree(this.handle);
-  }
-
-  /// Parses a condition from a string.
-  ///
-  /// Length conditions are specified as `<type>: <value>[<unit>]`, where:
-  ///
-  /// - `<type>` can be `min-width`, `max-width`, `min-height` or `max-height`
-  /// - `<value>` is a fractional number
-  /// - `<unit>` can be `px`, `pt` or `sp`
-  ///
-  /// If the unit is omitted, `px` is assumed.
-  ///
-  /// See [ctor@BreakpointCondition.new_length].
-  ///
-  /// Examples:
-  ///
-  /// - `min-width: 500px`
-  /// - `min-height: 400pt`
-  /// - `max-width: 100sp`
-  /// - `max-height: 500`
-  ///
-  /// Ratio conditions are specified as `<type>: <width>[/<height>]`, where:
-  ///
-  /// - `<type>` can be `min-aspect-ratio` or `max-aspect-ratio`
-  /// - `<width>` and `<height>` are integer numbers
-  ///
-  /// See [ctor@BreakpointCondition.new_ratio].
-  ///
-  /// The ratio is represented as `<width>` divided by `<height>`.
-  ///
-  /// If `<height>` is omitted, it's assumed to be 1.
-  ///
-  /// Examples:
-  ///
-  /// - `min-aspect-ratio: 4/3`
-  /// - `max-aspect-ratio: 1`
-  ///
-  /// The logical operators `and`, `or` can be used to compose a complex condition
-  /// as follows:
-  ///
-  /// - `<condition> and <condition>`: the condition is true when both
-  /// `<condition>`s are true, same as when using
-  /// [ctor@BreakpointCondition.new_and]
-  /// - `<condition> or <condition>`: the condition is true when either of the
-  /// `<condition>`s is true, same as when using
-  /// [ctor@BreakpointCondition.new_or]
-  ///
-  /// Examples:
-  ///
-  /// - `min-width: 400px and max-aspect-ratio: 4/3`
-  /// - `max-width: 360sp or max-width: 360px`
-  ///
-  /// Conditions can be further nested using parentheses, for example:
-  ///
-  /// - `min-width: 400px and (max-aspect-ratio: 4/3 or max-height: 400px)`
-  ///
-  /// If parentheses are omitted, the first operator takes priority.
-  static final _adwBreakpointConditionParse =
-      adwLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('adw_breakpoint_condition_parse')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  static AdwBreakpointCondition parse(String str) {
-    return withNativeString(str, (nativeStr) {
-      return AdwBreakpointCondition.fromPointer(
-        _adwBreakpointConditionParse(nativeStr.cast<Utf8>()),
-      );
-    });
-  }
-}
-
-final class AdwButtonContentClass {
-  AdwButtonContentClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

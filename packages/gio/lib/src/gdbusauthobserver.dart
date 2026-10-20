@@ -65,8 +65,25 @@ part of '../gio.dart';
 /// }
 /// ```
 class GDBusAuthObserver extends GObject {
-  GDBusAuthObserver.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDBusAuthObserver.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDBusAuthObserver>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDBusAuthObserver.rawFromPointer(handle, owned: owned);
+  }
+  GDBusAuthObserver.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -80,12 +97,24 @@ class GDBusAuthObserver extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_dbus_auth_observer_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GDBusAuthObserver object.
   static final _gDbusAuthObserverNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_dbus_auth_observer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GDBusAuthObserver() : this.fromPointer(_gDbusAuthObserverNew(), owned: true);
+  GDBusAuthObserver()
+    : this.rawFromPointer(_gDbusAuthObserverNew(), owned: true);
 
   /// Emits the #GDBusAuthObserver::allow-mechanism signal on @observer.
   static final _gDbusAuthObserverAllowMechanism =

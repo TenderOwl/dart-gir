@@ -217,7 +217,7 @@ final _gSetErrorLiteral =
     glibLookup<
           ffi.NativeFunction<
             ffi.Void Function(
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Uint32,
               ffi.Int32,
               ffi.Pointer<Utf8>,
@@ -225,23 +225,24 @@ final _gSetErrorLiteral =
           >
         >('g_set_error_literal')
         .asFunction<
-          void Function(ffi.Pointer<ffi.Void>, int, int, ffi.Pointer<Utf8>)
+          void Function(
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            int,
+            int,
+            ffi.Pointer<Utf8>,
+          )
         >();
 GError? setErrorLiteral(int domain, int code, String message) {
   return withNativeString(message, (nativeMessage) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      _gSetErrorLiteral(
-        _out0.cast<ffi.Void>(),
-        domain,
-        code,
-        nativeMessage.cast<Utf8>(),
-      );
-      return (_out0) == ffi.nullptr
+      _gSetErrorLiteral(_out0, domain, code, nativeMessage.cast<Utf8>());
+      return (_out0.value) == ffi.nullptr
           ? null
-          : GError.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+          : GError.fromPointer(_out0.value.cast<ffi.Void>(), owned: true);
+    } finally {
+      malloc.free(_out0);
+    }
   });
 }
 

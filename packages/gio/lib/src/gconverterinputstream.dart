@@ -8,8 +8,25 @@ part of '../gio.dart';
 /// [iface@Gio.PollableInputStream].
 class GConverterInputStream extends GFilterInputStream
     implements GPollableInputStream {
-  GConverterInputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GConverterInputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GConverterInputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GConverterInputStream.rawFromPointer(handle, owned: owned);
+  }
+  GConverterInputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +39,17 @@ class GConverterInputStream extends GFilterInputStream
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_converter_input_stream_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new converter input stream for the @base_stream.
   static final _gConverterInputStreamNew =
@@ -40,7 +68,7 @@ class GConverterInputStream extends GFilterInputStream
             )
           >();
   GConverterInputStream(GInputStream baseStream, GConverter converter)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gConverterInputStreamNew(baseStream.handle, converter.handle),
         owned: true,
       );

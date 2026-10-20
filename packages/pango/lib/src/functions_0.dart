@@ -592,7 +592,7 @@ final _pangoMarkupParserFinish =
           ffi.NativeFunction<
             ffi.Int32 Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Pointer<Utf8>>,
               ffi.Pointer<ffi.Uint32>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
@@ -602,7 +602,7 @@ final _pangoMarkupParserFinish =
         .asFunction<
           int Function(
             ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
             ffi.Pointer<ffi.Pointer<Utf8>>,
             ffi.Pointer<ffi.Uint32>,
             ffi.Pointer<ffi.Pointer<ffi.Void>>,
@@ -611,15 +611,14 @@ final _pangoMarkupParserFinish =
 (bool, PangoAttrList?, String?, int) markupParserFinish(
   GMarkupParseContext context,
 ) {
-  final _out0Anchor = HeapAnchor.allocate(256);
-  final _out0 = _out0Anchor.buffer;
+  final _out0 = calloc<ffi.Pointer<ffi.Void>>();
   final _out1 = malloc<ffi.Pointer<Utf8>>();
   final _out2 = malloc<ffi.Uint32>();
   final _error = calloc<ffi.Pointer<ffi.Void>>();
   try {
     final _ret = _pangoMarkupParserFinish(
       context.handle,
-      _out0.cast<ffi.Void>(),
+      _out0,
       _out1,
       _out2,
       _error,
@@ -629,13 +628,17 @@ final _pangoMarkupParserFinish =
     }
     return (
       (_ret) != 0,
-      (_out0) == ffi.nullptr
+      (_out0.value) == ffi.nullptr
           ? null
-          : PangoAttrList.fromPointer(_out0.cast<ffi.Void>()),
+          : PangoAttrList.fromPointer(
+              _out0.value.cast<ffi.Void>(),
+              owned: true,
+            ),
       stringFromNative(_out1.value.cast(), free: true)!,
       _out2.value,
     );
   } finally {
+    malloc.free(_out0);
     malloc.free(_out1);
     malloc.free(_out2);
     calloc.free(_error);

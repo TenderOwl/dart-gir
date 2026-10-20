@@ -10,8 +10,25 @@ part of '../gtk4.dart';
 /// If the `GtkCellRenderer:mode` is %GTK_CELL_RENDERER_MODE_EDITABLE,
 /// the `GtkCellRendererText` allows to edit its text using an entry.
 class GtkCellRendererText extends GtkCellRenderer {
-  GtkCellRendererText.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRendererText.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRendererText>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRendererText.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRendererText.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,6 +42,17 @@ class GtkCellRendererText extends GtkCellRenderer {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_text_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCellRendererText`. Adjust how text is drawn using
   /// object properties. Object properties can be
   /// set globally (with g_object_set()). Also, with `GtkTreeViewColumn`,
@@ -37,7 +65,7 @@ class GtkCellRendererText extends GtkCellRenderer {
         'gtk_cell_renderer_text_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererText()
-    : this.fromPointer(_gtkCellRendererTextNew(), owned: true);
+    : this.rawFromPointer(_gtkCellRendererTextNew(), owned: true);
 
   /// Sets the height of a renderer to explicitly be determined by the “font” and
   /// “y_pad” property set on it.  Further changes in these properties do not

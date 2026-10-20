@@ -21,8 +21,25 @@ part of '../gio.dart';
 /// GIO interfaces, thus you had to use the `gio-unix-2.0.pc` pkg-config file
 /// when using it. This is no longer necessary since GLib 2.72.
 class GUnixSocketAddress extends GSocketAddress implements GSocketConnectable {
-  GUnixSocketAddress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GUnixSocketAddress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GUnixSocketAddress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GUnixSocketAddress.rawFromPointer(handle, owned: owned);
+  }
+  GUnixSocketAddress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -35,6 +52,17 @@ class GUnixSocketAddress extends GSocketAddress implements GSocketConnectable {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_unix_socket_address_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new #GUnixSocketAddress for @path.
   ///
@@ -68,7 +96,7 @@ class GUnixSocketAddress extends GSocketAddress implements GSocketConnectable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int8>, int)
           >();
   GUnixSocketAddress.abstract_(ffi.Pointer<ffi.Int8> path, int pathLen)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gUnixSocketAddressNewAbstract(path, pathLen),
         owned: true,
       );
@@ -121,7 +149,7 @@ class GUnixSocketAddress extends GSocketAddress implements GSocketConnectable {
     ffi.Pointer<ffi.Int8> path,
     int pathLen,
     GUnixSocketAddressType type_,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gUnixSocketAddressNewWithType(path, pathLen, type_.value),
         owned: true,
       );

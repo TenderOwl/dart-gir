@@ -7,8 +7,25 @@ part of '../gio.dart';
 /// In UNIX terms, `GInetSocketAddress` corresponds to a
 /// [`struct sockaddr_in` or `struct sockaddr_in6`](man:sockaddr(3type)).
 class GInetSocketAddress extends GSocketAddress implements GSocketConnectable {
-  GInetSocketAddress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GInetSocketAddress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GInetSocketAddress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GInetSocketAddress.rawFromPointer(handle, owned: owned);
+  }
+  GInetSocketAddress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +39,17 @@ class GInetSocketAddress extends GSocketAddress implements GSocketConnectable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_inet_socket_address_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GInetSocketAddress for @address and @port.
   static final _gInetSocketAddressNew =
       gioLookup<
@@ -33,7 +61,7 @@ class GInetSocketAddress extends GSocketAddress implements GSocketConnectable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GInetSocketAddress(GInetAddress address, int port)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gInetSocketAddressNew(address.handle, port),
         owned: true,
       );

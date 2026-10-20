@@ -2,7 +2,22 @@
 part of '../gdk4.dart';
 
 final class GdkCicpParamsClass {
-  GdkCicpParamsClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GdkCicpParamsClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkCicpParamsClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GdkCicpParamsClass.rawFromPointer(handle, owned: owned);
+  }
+  GdkCicpParamsClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -28,7 +43,22 @@ final class GdkCicpParamsClass {
 ///
 /// `GdkColorState` objects are immutable and therefore threadsafe.
 final class GdkColorState {
-  GdkColorState.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GdkColorState.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkColorState>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GdkColorState.rawFromPointer(handle, owned: owned);
+  }
+  GdkColorState.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -245,7 +275,22 @@ final class GdkColorState {
 /// The [struct@Gdk.ContentFormatsBuilder] structure is meant to help in this
 /// endeavor.
 final class GdkContentFormats {
-  GdkContentFormats.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GdkContentFormats.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkContentFormats>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GdkContentFormats.rawFromPointer(handle, owned: owned);
+  }
+  GdkContentFormats.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -266,7 +311,7 @@ final class GdkContentFormats {
         'gdk_content_formats_new_for_gtype',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GdkContentFormats.forGtype(int type_)
-    : this.fromPointer(_gdkContentFormatsNewForGtype(type_));
+    : this.rawFromPointer(_gdkContentFormatsNewForGtype(type_));
 
   /// Checks if a given `GType` is part of the given @formats.
   static final _gdkContentFormatsContainGtype =
@@ -539,125 +584,5 @@ final class GdkContentFormats {
               _gdkContentFormatsParse(nativeString.cast<Utf8>()),
             );
     });
-  }
-}
-
-/// Creates `GdkContentFormats` objects.
-final class GdkContentFormatsBuilder {
-  GdkContentFormatsBuilder.fromPointer(this.handle, {bool owned = false});
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Create a new `GdkContentFormatsBuilder` object.
-  ///
-  /// The resulting builder would create an empty `GdkContentFormats`.
-  /// Use addition functions to add types to it.
-  static final _gdkContentFormatsBuilderNew =
-      gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'gdk_content_formats_builder_new',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GdkContentFormatsBuilder() : this.fromPointer(_gdkContentFormatsBuilderNew());
-
-  /// Appends all formats from @formats to @builder, skipping those that
-  /// already exist.
-  static final _gdkContentFormatsBuilderAddFormats =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_builder_add_formats')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void addFormats(GdkContentFormats formats) {
-    _gdkContentFormatsBuilderAddFormats(this.handle, formats.handle);
-  }
-
-  /// Appends @type to @builder if it has not already been added.
-  static final _gdkContentFormatsBuilderAddGtype =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Size)
-            >
-          >('gdk_content_formats_builder_add_gtype')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void addGtype(int type_) {
-    _gdkContentFormatsBuilderAddGtype(this.handle, type_);
-  }
-
-  /// Appends @mime_type to @builder if it has not already been added.
-  static final _gdkContentFormatsBuilderAddMimeType =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-            >
-          >('gdk_content_formats_builder_add_mime_type')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-          >();
-  void addMimeType(String mimeType) {
-    withNativeString(mimeType, (nativeMimeType) {
-      _gdkContentFormatsBuilderAddMimeType(
-        this.handle,
-        nativeMimeType.cast<Utf8>(),
-      );
-    });
-  }
-
-  /// Acquires a reference on the given @builder.
-  ///
-  /// This function is intended primarily for bindings.
-  /// `GdkContentFormatsBuilder` objects should not be kept around.
-  static final _gdkContentFormatsBuilderRef =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_builder_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormatsBuilder ref() {
-    return GdkContentFormatsBuilder.fromPointer(
-      _gdkContentFormatsBuilderRef(this.handle),
-    );
-  }
-
-  /// Creates a new `GdkContentFormats` from the given @builder.
-  ///
-  /// The given `GdkContentFormatsBuilder` is reset once this function returns;
-  /// you cannot call this function multiple times on the same @builder instance.
-  ///
-  /// This function is intended primarily for bindings. C code should use
-  /// [method@Gdk.ContentFormatsBuilder.free_to_formats].
-  static final _gdkContentFormatsBuilderToFormats =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_builder_to_formats')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats toFormats() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentFormatsBuilderToFormats(this.handle),
-    );
-  }
-
-  /// Releases a reference on the given @builder.
-  static final _gdkContentFormatsBuilderUnref =
-      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_formats_builder_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _gdkContentFormatsBuilderUnref(this.handle);
   }
 }

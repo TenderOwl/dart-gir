@@ -12,7 +12,22 @@ part of '../gi_repository3.dart';
 /// A `GIObjectInfo` has methods, fields, properties, signals, interfaces,
 /// constants and virtual functions.
 class GIObjectInfo extends GIRegisteredTypeInfo {
-  GIObjectInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIObjectInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIObjectInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GIObjectInfo.rawFromPointer(handle, owned: owned);
+  }
+  GIObjectInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,6 +40,18 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_object_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Obtain a method of the object type given a @name.
   ///
@@ -68,7 +95,7 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('gi_object_info_find_method_using_interfaces')
@@ -76,26 +103,30 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GIFunctionInfo?, GIBaseInfo?) findMethodUsingInterfaces(String name) {
     return withNativeString(name, (nativeName) {
-      final _out0Anchor = HeapAnchor.allocate(256);
-      final _out0 = _out0Anchor.buffer;
+      final _out0 = calloc<ffi.Pointer<ffi.Void>>();
       try {
         final _ret = _giObjectInfoFindMethodUsingInterfaces(
           this.handle,
           nativeName.cast<Utf8>(),
-          _out0.cast<ffi.Void>(),
+          _out0,
         );
         return (
           (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret),
-          (_out0) == ffi.nullptr
+          (_out0.value) == ffi.nullptr
               ? null
-              : GIBaseInfo.fromPointer(_out0.cast<ffi.Void>()),
+              : GIBaseInfo.fromPointer(
+                  _out0.value.cast<ffi.Void>(),
+                  owned: true,
+                ),
         );
-      } finally {}
+      } finally {
+        malloc.free(_out0);
+      }
     });
   }
 
@@ -181,7 +212,7 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<Utf8>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('gi_object_info_find_vfunc_using_interfaces')
@@ -189,26 +220,30 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GIVFuncInfo?, GIBaseInfo?) findVfuncUsingInterfaces(String name) {
     return withNativeString(name, (nativeName) {
-      final _out0Anchor = HeapAnchor.allocate(256);
-      final _out0 = _out0Anchor.buffer;
+      final _out0 = calloc<ffi.Pointer<ffi.Void>>();
       try {
         final _ret = _giObjectInfoFindVfuncUsingInterfaces(
           this.handle,
           nativeName.cast<Utf8>(),
-          _out0.cast<ffi.Void>(),
+          _out0,
         );
         return (
           (_ret) == ffi.nullptr ? null : GIVFuncInfo.fromPointer(_ret),
-          (_out0) == ffi.nullptr
+          (_out0.value) == ffi.nullptr
               ? null
-              : GIBaseInfo.fromPointer(_out0.cast<ffi.Void>()),
+              : GIBaseInfo.fromPointer(
+                  _out0.value.cast<ffi.Void>(),
+                  owned: true,
+                ),
         );
-      } finally {}
+      } finally {
+        malloc.free(_out0);
+      }
     });
   }
 

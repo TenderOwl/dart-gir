@@ -6,8 +6,25 @@ part of '../gtk4.dart';
 /// It should only be used as a last resort if none of the other event
 /// controllers or gestures do the job.
 class GtkEventControllerLegacy extends GtkEventController {
-  GtkEventControllerLegacy.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkEventControllerLegacy.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkEventControllerLegacy>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkEventControllerLegacy.rawFromPointer(handle, owned: owned);
+  }
+  GtkEventControllerLegacy.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,13 +38,24 @@ class GtkEventControllerLegacy extends GtkEventController {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_event_controller_legacy_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new legacy event controller.
   static final _gtkEventControllerLegacyNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_event_controller_legacy_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkEventControllerLegacy()
-    : this.fromPointer(_gtkEventControllerLegacyNew(), owned: true);
+    : this.rawFromPointer(_gtkEventControllerLegacyNew(), owned: true);
 
   /// Emitted for each GDK event delivered to @controller.
   int onEvent(bool Function(GdkEvent event) callback) {

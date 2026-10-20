@@ -31,7 +31,25 @@ class GtkSourceMap extends GtkSourceView
         GtkBuildable,
         GtkConstraintTarget,
         GtkScrollable {
-  GtkSourceMap.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceMap.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceMap>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceMap.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceMap.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -45,12 +63,24 @@ class GtkSourceMap extends GtkSourceView
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_map_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new `GtkSourceMap`.
   static final _gtkSourceMapNew =
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_map_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSourceMap() : this.fromPointer(_gtkSourceMapNew(), owned: true);
+  GtkSourceMap() : this.rawFromPointer(_gtkSourceMapNew(), owned: true);
 
   /// Gets the [property@Map:view] property, which is the view this widget is mapping.
   static final _gtkSourceMapGetView =
@@ -1078,10 +1108,11 @@ class GtkSourceMap extends GtkSourceView
   (bool, GtkBorder) getBorder() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GtkBorder.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkScrollableGetBorder(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GtkBorder.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Retrieves the `GtkAdjustment` used for horizontal scrolling.

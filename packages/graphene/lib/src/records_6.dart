@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the `graphene_ray_t` structure are private, and should not
 /// be modified directly.
 final class GrapheneRay {
-  GrapheneRay.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneRay.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneRay>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneRay.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneRay.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -28,7 +43,7 @@ final class GrapheneRay {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_ray_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneRay.alloc() : this.fromPointer(_grapheneRayAlloc());
+  GrapheneRay.alloc() : this.rawFromPointer(_grapheneRayAlloc());
 
   /// Checks whether the two given #graphene_ray_t are equal.
   static final _grapheneRayEqual =
@@ -76,14 +91,15 @@ final class GrapheneRay {
   GraphenePoint3D getClosestPointToPoint(GraphenePoint3D p) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetClosestPointToPoint(
-        this.handle,
-        p.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRayGetClosestPointToPoint(
+      this.handle,
+      p.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the direction of the given #graphene_ray_t.
@@ -99,10 +115,11 @@ final class GrapheneRay {
   GrapheneVec3 getDirection() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetDirection(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec3.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRayGetDirection(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec3.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the distance of the origin of the given #graphene_ray_t from the
@@ -154,10 +171,11 @@ final class GrapheneRay {
   GraphenePoint3D getOrigin() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetOrigin(this.handle, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRayGetOrigin(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Retrieves the coordinates of a point at the distance @t along the
@@ -178,10 +196,11 @@ final class GrapheneRay {
   GraphenePoint3D getPositionAt(double t) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneRayGetPositionAt(this.handle, t, _out0.cast<ffi.Void>());
-      return GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneRayGetPositionAt(this.handle, t, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GraphenePoint3D.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Initializes the given #graphene_ray_t using the given @origin

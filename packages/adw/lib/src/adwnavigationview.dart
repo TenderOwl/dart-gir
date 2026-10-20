@@ -160,8 +160,25 @@ part of '../adw.dart';
 /// `AdwNavigationView` uses the [enum@Gtk.AccessibleRole.group] role.
 class AdwNavigationView extends GtkWidget
     implements AdwSwipeable, GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwNavigationView.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwNavigationView.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwNavigationView>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwNavigationView.rawFromPointer(handle, owned: owned);
+  }
+  AdwNavigationView.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -175,12 +192,24 @@ class AdwNavigationView extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_navigation_view_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwNavigationView`.
   static final _adwNavigationViewNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_navigation_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwNavigationView() : this.fromPointer(_adwNavigationViewNew(), owned: true);
+  AdwNavigationView()
+    : this.rawFromPointer(_adwNavigationViewNew(), owned: true);
 
   /// Permanently adds @page to @self.
   ///
@@ -875,15 +904,16 @@ class AdwNavigationView extends GtkWidget
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _adwSwipeableGetSwipeArea(
-        this.handle,
-        navigationDirection.value,
-        isDrag ? 1 : 0,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _adwSwipeableGetSwipeArea(
+      this.handle,
+      navigationDirection.value,
+      isDrag ? 1 : 0,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

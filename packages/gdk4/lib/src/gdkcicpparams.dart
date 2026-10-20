@@ -21,7 +21,25 @@ part of '../gdk4.dart';
 /// create a variant of a color state, by changing just one of the cicp
 /// parameters, or just to obtain information about the color state.
 class GdkCicpParams extends GObject {
-  GdkCicpParams.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkCicpParams.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkCicpParams>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkCicpParams.rawFromPointer(handle, owned: owned);
+  }
+  GdkCicpParams.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -35,6 +53,17 @@ class GdkCicpParams extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_cicp_params_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GdkCicpParams` object.
   ///
   /// The initial values of the properties are the values for "undefined"
@@ -43,7 +72,7 @@ class GdkCicpParams extends GObject {
       gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gdk_cicp_params_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GdkCicpParams() : this.fromPointer(_gdkCicpParamsNew(), owned: true);
+  GdkCicpParams() : this.rawFromPointer(_gdkCicpParamsNew(), owned: true);
 
   /// Creates a new `GdkColorState` object for the cicp parameters in @self.
   ///

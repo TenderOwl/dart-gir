@@ -6,8 +6,25 @@ part of '../gtk4.dart';
 /// `GtkCellRendererProgress` renders a numeric value as a progress par in a cell.
 /// Additionally, it can display a text on top of the progress bar.
 class GtkCellRendererProgress extends GtkCellRenderer implements GtkOrientable {
-  GtkCellRendererProgress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkCellRendererProgress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkCellRendererProgress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkCellRendererProgress.rawFromPointer(handle, owned: owned);
+  }
+  GtkCellRendererProgress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,13 +38,24 @@ class GtkCellRendererProgress extends GtkCellRenderer implements GtkOrientable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_cell_renderer_progress_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkCellRendererProgress`.
   static final _gtkCellRendererProgressNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_cell_renderer_progress_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkCellRendererProgress()
-    : this.fromPointer(_gtkCellRendererProgressNew(), owned: true);
+    : this.rawFromPointer(_gtkCellRendererProgressNew(), owned: true);
 
   /// This signal gets emitted when the user cancels the process of editing a
   /// cell.  For example, an editable cell renderer could be written to cancel

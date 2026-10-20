@@ -7,7 +7,22 @@ part of '../gi_repository3.dart';
 /// discriminator, which is a field deciding what type of real union
 /// fields is valid for specified instance.
 class GIUnionInfo extends GIRegisteredTypeInfo {
-  GIUnionInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIUnionInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIUnionInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GIUnionInfo.rawFromPointer(handle, owned: owned);
+  }
+  GIUnionInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +35,18 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_union_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Obtain the type information for the method named @name.
   static final _giUnionInfoFindMethod =

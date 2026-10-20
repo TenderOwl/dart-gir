@@ -20,7 +20,22 @@ part of '../gsk4.dart';
 /// <img alt="A Path" src="path-light.png">
 /// </picture>
 final class GskPath {
-  GskPath.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskPath.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskPath>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskPath.rawFromPointer(handle, owned: owned);
+  }
+  GskPath.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -172,10 +187,11 @@ final class GskPath {
   (bool, GrapheneRect) getBounds() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathGetBounds(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskPathGetBounds(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GrapheneRect.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Computes the closest point on the path to the given point.
@@ -220,7 +236,10 @@ final class GskPath {
       );
       return (
         (_ret) != 0,
-        GskPathPoint.fromPointer(_out0.cast<ffi.Void>()),
+        keepAlive(
+          GskPathPoint.fromPointer(_out0.cast<ffi.Void>()),
+          _out0Anchor,
+        ),
         _out1.value,
       );
     } finally {
@@ -244,10 +263,11 @@ final class GskPath {
   (bool, GskPathPoint) getEndPoint() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathGetEndPoint(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GskPathPoint.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskPathGetEndPoint(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GskPathPoint.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Gets the start point of the path.
@@ -266,10 +286,11 @@ final class GskPath {
   (bool, GskPathPoint) getStartPoint() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathGetStartPoint(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GskPathPoint.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskPathGetStartPoint(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GskPathPoint.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Computes the bounds for stroking the given path with the
@@ -299,14 +320,15 @@ final class GskPath {
   (bool, GrapheneRect) getStrokeBounds(GskStroke stroke) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathGetStrokeBounds(
-        this.handle,
-        stroke.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskPathGetStrokeBounds(
+      this.handle,
+      stroke.handle,
+      _out0.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      keepAlive(GrapheneRect.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Computes the tight bounds of the given path.
@@ -325,10 +347,11 @@ final class GskPath {
   (bool, GrapheneRect) getTightBounds() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gskPathGetTightBounds(this.handle, _out0.cast<ffi.Void>());
-      return ((_ret) != 0, GrapheneRect.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gskPathGetTightBounds(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GrapheneRect.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Returns whether a point is inside the fill area of a path.

@@ -120,6 +120,7 @@ class CodegenInput {
     required this.children,
     required this.callbacks,
     required this.signals,
+    this.methodParameters = const <String, List<String>>{},
     this.partOfPath = 'app.dart',
   });
 
@@ -159,6 +160,7 @@ class CodegenInput {
           )
           .toList(),
       signals: xmlSignals,
+      methodParameters: plan.methodParameters,
       partOfPath: partOfPath,
     );
   }
@@ -169,6 +171,14 @@ class CodegenInput {
   final List<TemplateChildSpec> children;
   final List<TemplateCallbackSpec> callbacks;
   final List<SignalBinding> signals;
+
+  /// The parameter names of every method the user's class declares,
+  /// keyed by method name.
+  ///
+  /// The codegen needs them to forward a signal's arguments to the
+  /// user's method: the *types* come from the binding's callback
+  /// type (Dart infers them), the *names* from the user's method.
+  final Map<String, List<String>> methodParameters;
 
   /// Basename (no directory) of the user file the generated
   /// mixin is a `part of`. Required.
@@ -402,17 +412,30 @@ void _emitMixin(StringBuffer buffer, CodegenInput input) {
   // inside `<object class="T" id="Z">` parents. After
   // `initTemplate()`, the per-instance closure captures
   // `this` and dispatches to the user's `<methodName>()`.
-  // The user-facing method signature must match the
-  // GIR-declared signal arity (e.g. `clicked` on `GtkButton`
-  // is `void Function()`; the user's method is also
-  // `void Function()`). One `connectSignal` call per signal.
+  // One `connectSignal` call per signal.
+  //
+  // The helper the builder calls is the one the *bindings* generate:
+  // `on` + the signal name in UpperCamelCase. The generator's rule
+  // (`generator/lib/src/resolve/naming.dart`, `toUpperCamel`) splits
+  // on `_`, `-` and whitespace and then on camelCase humps, so
+  // `icon-release` becomes `IconRelease` and the helper is
+  // `onIconRelease`. A different spelling would not compile — the
+  // generated part file is resolved with the real analyzer against
+  // `package:gtk4`.
+  //
+  // The closure forwards the signal's arguments to the user's method.
+  // Their *types* come from the binding's callback type (Dart infers
+  // them); their *names* come from the user's method, which the
+  // scanner recorded. A user method whose signature does not match
+  // the signal's therefore fails the analyzer instead of silently
+  // dropping the arguments at runtime.
   if (input.signals.isNotEmpty) {
     buffer.writeln('  void _wireSignals() {');
     for (final s in input.signals) {
-      final signalCap = s.signalName.isEmpty
-          ? s.signalName
-          : '${s.signalName[0].toUpperCase()}${s.signalName.substring(1)}';
-      // Dispatch through `(this as dynamic).<methodName>()`
+      final helper = 'on${upperCamel(s.signalName)}';
+      final params = input.methodParameters[s.methodName] ?? const <String>[];
+      final paramList = params.join(', ');
+      // Dispatch through `(this as dynamic).<methodName>(…)`
       // so the user's instance method resolves correctly
       // when the mixin is applied. A bare name would not
       // resolve in the mixin's analyzer context (the parent
@@ -423,8 +446,8 @@ void _emitMixin(StringBuffer buffer, CodegenInput input) {
       // class's method table without giving up the static
       // type analysis on the rest of the mixin.
       buffer.writeln(
-        '    ${s.childId}.on$signalCap('
-        '() => (this as dynamic).${s.methodName}());',
+        '    ${s.childId}.$helper(($paramList) => '
+        '(this as dynamic).${s.methodName}($paramList));',
       );
     }
     buffer.writeln('  }');
@@ -669,4 +692,45 @@ String snakeCaseToCamel(String s) {
       .skip(1)
       .map((p) => p.isEmpty ? '' : '${p[0].toUpperCase()}${p.substring(1)}');
   return '$head${tail.join()}';
+}
+
+/// Splits [input] into words on `_`, `-`, and whitespace, then further
+/// splits on camelCase humps and acronym boundaries.
+///
+/// Mirrors the bindings generator's `_words`
+/// (`generator/lib/src/resolve/naming.dart`).
+List<String> _words(String input) {
+  final raw = input.split(RegExp(r'[_\-\s]+')).where((w) => w.isNotEmpty);
+  final words = <String>[];
+  final hump = RegExp(r'[A-Z]+(?![a-z])|[A-Z][a-z0-9]*|[a-z0-9]+|\d+');
+  for (final part in raw) {
+    final matches = hump.allMatches(part).map((m) => m.group(0)!).toList();
+    if (matches.isEmpty) {
+      words.add(part);
+    } else {
+      words.addAll(matches);
+    }
+  }
+  return words;
+}
+
+/// Converts a GIR signal name to the `UpperCamelCase` form the
+/// bindings generator uses for its `on<Signal>` helpers.
+///
+/// The generator's rule (`generator/lib/src/resolve/naming.dart`,
+/// `toUpperCamel`) splits on `_`, `-` and whitespace, then on
+/// camelCase humps, and capitalizes each word: `icon-release` →
+/// `IconRelease`, `clicked` → `Clicked`, `notify::x` → `NotifyX`.
+///
+/// The template builder has to agree with the generator *exactly*:
+/// the helper it calls has to be the one that exists on the widget
+/// class, or the generated part file does not compile. The builder's
+/// own fixture proves it — the generated part file is resolved with
+/// the real analyzer against `package:gtk4`.
+String upperCamel(String input) {
+  final words = _words(input);
+  if (words.isEmpty) return input;
+  return words
+      .map((w) => w[0].toUpperCase() + w.substring(1).toLowerCase())
+      .join();
 }

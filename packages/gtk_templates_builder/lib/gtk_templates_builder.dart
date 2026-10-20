@@ -21,7 +21,8 @@
 ///     — the data structures the codegen consumes.
 library;
 
-export 'builder.dart' show GtkTemplatesBuilder, scanSource;
+export 'builder.dart'
+    show GtkTemplatesBuilder, scanSource, findPackageRoot, templateAssetId;
 export 'builder_plan.dart'
     show BuilderPlan, ClassTemplatePlan, WidgetBinding, CallbackBinding;
 export 'codegen.dart'
@@ -32,6 +33,7 @@ export 'codegen.dart'
         extractChildrenFromXml,
         extractSignalsFromXml,
         snakeCaseToCamel,
+        upperCamel,
         partFileBasename,
         checkPartDirective,
         checkRequiredImports,

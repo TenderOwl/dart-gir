@@ -71,7 +71,25 @@ class GtkComboBox extends GtkWidget
         GtkCellEditable,
         GtkCellLayout,
         GtkConstraintTarget {
-  GtkComboBox.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkComboBox.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkComboBox>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkComboBox.rawFromPointer(handle, owned: owned);
+  }
+  GtkComboBox.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -85,12 +103,23 @@ class GtkComboBox extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_combo_box_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty `GtkComboBox`.
   static final _gtkComboBoxNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_combo_box_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkComboBox() : this.fromPointer(_gtkComboBoxNew(), owned: true);
+  GtkComboBox() : this.rawFromPointer(_gtkComboBoxNew(), owned: true);
 
   /// Creates a new empty `GtkComboBox` with an entry.
   ///
@@ -102,7 +131,7 @@ class GtkComboBox extends GtkWidget
         'gtk_combo_box_new_with_entry',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkComboBox.withEntry()
-    : this.fromPointer(_gtkComboBoxNewWithEntry(), owned: true);
+    : this.rawFromPointer(_gtkComboBoxNewWithEntry(), owned: true);
 
   /// Creates a new `GtkComboBox` with a model.
   static final _gtkComboBoxNewWithModel =
@@ -113,7 +142,7 @@ class GtkComboBox extends GtkWidget
           >('gtk_combo_box_new_with_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkComboBox.withModel(GtkTreeModel model)
-    : this.fromPointer(_gtkComboBoxNewWithModel(model.handle), owned: true);
+    : this.rawFromPointer(_gtkComboBoxNewWithModel(model.handle), owned: true);
 
   /// Creates a new empty `GtkComboBox` with an entry and a model.
   ///
@@ -126,7 +155,7 @@ class GtkComboBox extends GtkWidget
           >('gtk_combo_box_new_with_model_and_entry')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkComboBox.withModelAndEntry(GtkTreeModel model)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkComboBoxNewWithModelAndEntry(model.handle),
         owned: true,
       );
@@ -187,13 +216,11 @@ class GtkComboBox extends GtkWidget
   (bool, GtkTreeIter) getActiveIter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkComboBoxGetActiveIter(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkComboBoxGetActiveIter(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GtkTreeIter.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// Returns whether the combo box sets the dropdown button

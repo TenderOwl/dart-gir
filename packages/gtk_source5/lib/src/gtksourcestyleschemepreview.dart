@@ -9,8 +9,25 @@ part of '../gtk_source5.dart';
 /// the selection state of a single preview widget.
 class GtkSourceStyleSchemePreview extends GtkWidget
     implements GtkAccessible, GtkActionable, GtkBuildable, GtkConstraintTarget {
-  GtkSourceStyleSchemePreview.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceStyleSchemePreview.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceStyleSchemePreview>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceStyleSchemePreview.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceStyleSchemePreview.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -24,6 +41,18 @@ class GtkSourceStyleSchemePreview extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_style_scheme_preview_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new #GtkSourceStyleSchemePreview to preview the style scheme
   /// provided in @scheme.
   static final _gtkSourceStyleSchemePreviewNew =
@@ -34,7 +63,7 @@ class GtkSourceStyleSchemePreview extends GtkWidget
           >('gtk_source_style_scheme_preview_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceStyleSchemePreview(GtkSourceStyleScheme scheme)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSourceStyleSchemePreviewNew(scheme.handle),
         owned: true,
       );

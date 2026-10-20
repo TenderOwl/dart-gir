@@ -91,7 +91,25 @@ part of '../gtk4.dart';
 /// - If the gesture has %GTK_PHASE_NONE, ensuring events of type
 /// %GDK_TOUCHPAD_SWIPE and %GDK_TOUCHPAD_PINCH are handled by the `GtkGesture`
 class GtkGesture extends GtkEventController {
-  GtkGesture.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkGesture.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkGesture>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkGesture.rawFromPointer(handle, owned: owned);
+  }
+  GtkGesture.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -104,6 +122,17 @@ class GtkGesture extends GtkEventController {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_gesture_get_type',
+  ).asFunction<int Function()>()();
 
   /// If there are touch sequences being currently handled by @gesture,
   /// returns %TRUE and fills in @rect with the bounding box containing
@@ -128,13 +157,11 @@ class GtkGesture extends GtkEventController {
   (bool, GdkRectangle) getBoundingBox() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      final _ret = _gtkGestureGetBoundingBox(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return ((_ret) != 0, GdkRectangle.fromPointer(_out0.cast<ffi.Void>()));
-    } finally {}
+    final _ret = _gtkGestureGetBoundingBox(this.handle, _out0.cast<ffi.Void>());
+    return (
+      (_ret) != 0,
+      keepAlive(GdkRectangle.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
+    );
   }
 
   /// If there are touch sequences being currently handled by @gesture,

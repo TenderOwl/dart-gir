@@ -8,8 +8,25 @@ part of '../gio.dart';
 /// [iface@Gio.PollableInputStream].
 class GMemoryInputStream extends GInputStream
     implements GPollableInputStream, GSeekable {
-  GMemoryInputStream.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GMemoryInputStream.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GMemoryInputStream>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GMemoryInputStream.rawFromPointer(handle, owned: owned);
+  }
+  GMemoryInputStream.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,13 +40,24 @@ class GMemoryInputStream extends GInputStream
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_memory_input_stream_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty #GMemoryInputStream.
   static final _gMemoryInputStreamNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_memory_input_stream_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GMemoryInputStream()
-    : this.fromPointer(_gMemoryInputStreamNew(), owned: true);
+    : this.rawFromPointer(_gMemoryInputStreamNew(), owned: true);
 
   /// Creates a new #GMemoryInputStream with data from the given @bytes.
   static final _gMemoryInputStreamNewFromBytes =
@@ -40,7 +68,7 @@ class GMemoryInputStream extends GInputStream
           >('g_memory_input_stream_new_from_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMemoryInputStream.fromBytes(GBytes bytes)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gMemoryInputStreamNewFromBytes(bytes.handle),
         owned: true,
       );

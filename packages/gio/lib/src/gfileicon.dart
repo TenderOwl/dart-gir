@@ -6,7 +6,25 @@ part of '../gio.dart';
 ///
 /// It implements [iface@Gio.LoadableIcon].
 class GFileIcon extends GObject implements GIcon, GLoadableIcon {
-  GFileIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GFileIcon.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GFileIcon>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GFileIcon.rawFromPointer(handle, owned: owned);
+  }
+  GFileIcon.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +38,17 @@ class GFileIcon extends GObject implements GIcon, GLoadableIcon {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_file_icon_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new icon for a file.
   static final _gFileIconNew =
       gioLookup<
@@ -29,7 +58,7 @@ class GFileIcon extends GObject implements GIcon, GLoadableIcon {
           >('g_file_icon_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFileIcon(GFile file)
-    : this.fromPointer(_gFileIconNew(file.handle), owned: true);
+    : this.rawFromPointer(_gFileIconNew(file.handle), owned: true);
 
   /// Gets the #GFile associated with the given @icon.
   static final _gFileIconGetFile =

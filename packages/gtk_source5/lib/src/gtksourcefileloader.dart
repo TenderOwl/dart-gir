@@ -20,8 +20,25 @@ part of '../gtk_source5.dart';
 /// probably call [method@Gtk.TextBuffer.set_modified] with %TRUE after calling
 /// [method@FileLoader.load_finish].
 class GtkSourceFileLoader extends GObject {
-  GtkSourceFileLoader.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceFileLoader.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceFileLoader>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceFileLoader.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceFileLoader.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -34,6 +51,18 @@ class GtkSourceFileLoader extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_file_loader_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a new `GtkSourceFileLoader` object. The contents is read from the
   /// [class@File]'s location.
@@ -57,7 +86,7 @@ class GtkSourceFileLoader extends GObject {
             )
           >();
   GtkSourceFileLoader(GtkSourceBuffer buffer, GtkSourceFile file)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSourceFileLoaderNew(buffer.handle, file.handle),
         owned: true,
       );
@@ -84,7 +113,7 @@ class GtkSourceFileLoader extends GObject {
     GtkSourceBuffer buffer,
     GtkSourceFile file,
     GInputStream stream,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gtkSourceFileLoaderNewFromStream(
           buffer.handle,
           file.handle,

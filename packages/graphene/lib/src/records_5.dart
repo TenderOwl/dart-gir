@@ -6,7 +6,22 @@ part of '../graphene.dart';
 /// The contents of the #graphene_quaternion_t structure are private
 /// and should never be accessed directly.
 final class GrapheneQuaternion {
-  GrapheneQuaternion.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GrapheneQuaternion.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GrapheneQuaternion>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GrapheneQuaternion.rawFromPointer(handle, owned: owned);
+  }
+  GrapheneQuaternion.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -28,7 +43,7 @@ final class GrapheneQuaternion {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_quaternion_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneQuaternion.alloc() : this.fromPointer(_grapheneQuaternionAlloc());
+  GrapheneQuaternion.alloc() : this.rawFromPointer(_grapheneQuaternionAlloc());
 
   /// Adds two #graphene_quaternion_t @a and @b.
   static final _grapheneQuaternionAdd =
@@ -51,10 +66,11 @@ final class GrapheneQuaternion {
   GrapheneQuaternion add(GrapheneQuaternion b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionAdd(this.handle, b.handle, _out0.cast<ffi.Void>());
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionAdd(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Computes the dot product of two #graphene_quaternion_t.
@@ -326,10 +342,11 @@ final class GrapheneQuaternion {
   GrapheneQuaternion invert() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionInvert(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionInvert(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Multiplies two #graphene_quaternion_t @a and @b.
@@ -353,14 +370,11 @@ final class GrapheneQuaternion {
   GrapheneQuaternion multiply(GrapheneQuaternion b) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionMultiply(
-        this.handle,
-        b.handle,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionMultiply(this.handle, b.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Normalizes a #graphene_quaternion_t.
@@ -376,10 +390,11 @@ final class GrapheneQuaternion {
   GrapheneQuaternion normalize() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionNormalize(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionNormalize(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Scales all the elements of a #graphene_quaternion_t @q using
@@ -400,10 +415,11 @@ final class GrapheneQuaternion {
   GrapheneQuaternion scale(double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionScale(this.handle, factor, _out0.cast<ffi.Void>());
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionScale(this.handle, factor, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Interpolates between the two given quaternions using a spherical
@@ -431,15 +447,16 @@ final class GrapheneQuaternion {
   GrapheneQuaternion slerp(GrapheneQuaternion b, double factor) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionSlerp(
-        this.handle,
-        b.handle,
-        factor,
-        _out0.cast<ffi.Void>(),
-      );
-      return GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionSlerp(
+      this.handle,
+      b.handle,
+      factor,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GrapheneQuaternion.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a quaternion into an @angle, @axis pair.
@@ -470,7 +487,13 @@ final class GrapheneQuaternion {
         _out0,
         _out1.cast<ffi.Void>(),
       );
-      return (_out0.value, GrapheneVec3.fromPointer(_out1.cast<ffi.Void>()));
+      return (
+        _out0.value,
+        keepAlive(
+          GrapheneVec3.fromPointer(_out1.cast<ffi.Void>()),
+          _out1Anchor,
+        ),
+      );
     } finally {
       malloc.free(_out0);
     }
@@ -526,10 +549,11 @@ final class GrapheneQuaternion {
   GrapheneMatrix toMatrix() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionToMatrix(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionToMatrix(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneMatrix.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Converts a #graphene_quaternion_t to its corresponding rotations
@@ -582,9 +606,10 @@ final class GrapheneQuaternion {
   GrapheneVec4 toVec4() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _grapheneQuaternionToVec4(this.handle, _out0.cast<ffi.Void>());
-      return GrapheneVec4.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _grapheneQuaternionToVec4(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GrapheneVec4.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 }

@@ -28,8 +28,25 @@ part of '../gio.dart';
 /// a `GFileEnumerator` is closed, no further actions may be performed
 /// on it, and it should be freed with [method@GObject.Object.unref].
 class GFileEnumerator extends GObject {
-  GFileEnumerator.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GFileEnumerator.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GFileEnumerator>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GFileEnumerator.rawFromPointer(handle, owned: owned);
+  }
+  GFileEnumerator.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -42,6 +59,17 @@ class GFileEnumerator extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_file_enumerator_get_type',
+  ).asFunction<int Function()>()();
 
   /// Releases all resources used by this enumerator, making the
   /// enumerator return %G_IO_ERROR_CLOSED on all calls.
@@ -357,8 +385,8 @@ class GFileEnumerator extends GObject {
             ffi.NativeFunction<
               ffi.Int32 Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
@@ -367,23 +395,21 @@ class GFileEnumerator extends GObject {
           .asFunction<
             int Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (bool, GFileInfo?, GFile?) iterate([GCancellable? cancellable]) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _gFileEnumeratorIterate(
         this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
+        _out0,
+        _out1,
         cancellable?.handle ?? ffi.nullptr,
         _error,
       );
@@ -392,14 +418,16 @@ class GFileEnumerator extends GObject {
       }
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GFileInfo.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
+            : GFileInfo.fromPointer(_out0.value.cast<ffi.Void>()),
+        (_out1.value) == ffi.nullptr
             ? null
-            : GFile.fromPointer(_out1.cast<ffi.Void>()),
+            : GFile.fromPointer(_out1.value.cast<ffi.Void>()),
       );
     } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
       calloc.free(_error);
     }
   }

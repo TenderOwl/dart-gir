@@ -9,7 +9,25 @@ part of '../gtk_source5.dart';
 /// If, for a certain tag, [class@Gtk.TextTag] is sufficient, it's better that you create
 /// a [class@Gtk.TextTag], not a [class@Tag].
 class GtkSourceTag extends GtkTextTag {
-  GtkSourceTag.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceTag.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceTag>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceTag.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceTag.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +40,18 @@ class GtkSourceTag extends GtkTextTag {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_tag_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a `GtkSourceTag`.
   ///

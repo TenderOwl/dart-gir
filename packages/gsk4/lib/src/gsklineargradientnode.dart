@@ -3,8 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node for a linear gradient.
 class GskLinearGradientNode extends GskRenderNode {
-  GskLinearGradientNode.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskLinearGradientNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskLinearGradientNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskLinearGradientNode.rawFromPointer(handle, owned: owned);
+  }
+  GskLinearGradientNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +31,17 @@ class GskLinearGradientNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_linear_gradient_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GskRenderNode` that will create a linear gradient from the given
   /// points and color stops, and render that into the area given by @bounds.
@@ -47,7 +72,7 @@ class GskLinearGradientNode extends GskRenderNode {
     GraphenePoint end,
     ffi.Pointer<ffi.Void> colorStops,
     int nColorStops,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gskLinearGradientNodeNew(
           bounds.handle,
           start.handle,

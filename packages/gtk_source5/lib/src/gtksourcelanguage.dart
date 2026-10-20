@@ -9,8 +9,25 @@ part of '../gtk_source5.dart';
 /// Use [class@LanguageManager] to obtain a `GtkSourceLanguage` instance, and
 /// [method@Buffer.set_language] to apply it to a [class@Buffer].
 class GtkSourceLanguage extends GObject {
-  GtkSourceLanguage.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceLanguage.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceLanguage>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceLanguage.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceLanguage.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,6 +40,18 @@ class GtkSourceLanguage extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_language_get_type',
+      ).asFunction<int Function()>()();
 
   /// Returns whether the language should be hidden from the user.
   static final _gtkSourceLanguageGetHidden =

@@ -58,8 +58,25 @@ part of '../gtk_source5.dart';
 /// region_iter.next()
 /// ```
 class GtkSourceRegion extends GObject {
-  GtkSourceRegion.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceRegion.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceRegion>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceRegion.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceRegion.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -73,6 +90,17 @@ class GtkSourceRegion extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_region_get_type',
+      ).asFunction<int Function()>()();
   static final _gtkSourceRegionNew =
       gtkSource5Lookup<
             ffi.NativeFunction<
@@ -81,7 +109,7 @@ class GtkSourceRegion extends GObject {
           >('gtk_source_region_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceRegion(GtkTextBuffer buffer)
-    : this.fromPointer(_gtkSourceRegionNew(buffer.handle), owned: true);
+    : this.rawFromPointer(_gtkSourceRegionNew(buffer.handle), owned: true);
 
   /// Adds @region_to_add to @region.
   ///
@@ -144,22 +172,26 @@ class GtkSourceRegion extends GObject {
     final _out0 = _out0Anchor.buffer;
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
-    try {
-      final _ret = _gtkSourceRegionGetBounds(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-        _out1.cast<ffi.Void>(),
-      );
-      return (
-        (_ret) != 0,
-        (_out0) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
-        (_out1) == ffi.nullptr
-            ? null
-            : GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
-      );
-    } finally {}
+    final _ret = _gtkSourceRegionGetBounds(
+      this.handle,
+      _out0.cast<ffi.Void>(),
+      _out1.cast<ffi.Void>(),
+    );
+    return (
+      (_ret) != 0,
+      (_out0) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkTextIter.fromPointer(_out0.cast<ffi.Void>()),
+              _out0Anchor,
+            ),
+      (_out1) == ffi.nullptr
+          ? null
+          : keepAlive(
+              GtkTextIter.fromPointer(_out1.cast<ffi.Void>()),
+              _out1Anchor,
+            ),
+    );
   }
 
   static final _gtkSourceRegionGetBuffer =
@@ -190,10 +222,11 @@ class GtkSourceRegion extends GObject {
   GtkSourceRegionIter getStartRegionIter() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gtkSourceRegionGetStartRegionIter(this.handle, _out0.cast<ffi.Void>());
-      return GtkSourceRegionIter.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gtkSourceRegionGetStartRegionIter(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GtkSourceRegionIter.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Returns the intersection between @region1 and @region2.

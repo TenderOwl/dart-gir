@@ -165,6 +165,7 @@ class GirParser {
     cType: _cAttr(e, 'type'),
     glibTypeName: _glibAttr(e, 'type-name'),
     glibGetValueFunc: _glibAttr(e, 'get-value-func'),
+    glibGetType: _glibAttr(e, 'get-type'),
     parent: e.getAttribute('parent'),
     abstract: _bool(e, 'abstract'),
     final_: _bool(e, 'final'),
@@ -198,6 +199,7 @@ class GirParser {
     name: _name(e),
     cType: _cAttr(e, 'type'),
     glibTypeName: _glibAttr(e, 'type-name'),
+    glibGetType: _glibAttr(e, 'get-type'),
     methods: _coreChildren(e, 'method').map(_parseMethod).toList(),
     functions: _coreChildren(e, 'function').map(_parseFunction).toList(),
     virtualMethods: _coreChildren(

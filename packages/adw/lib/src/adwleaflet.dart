@@ -39,7 +39,25 @@ class AdwLeaflet extends GtkWidget
         GtkBuildable,
         GtkConstraintTarget,
         GtkOrientable {
-  AdwLeaflet.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwLeaflet.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwLeaflet>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwLeaflet.rawFromPointer(handle, owned: owned);
+  }
+  AdwLeaflet.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -53,12 +71,23 @@ class AdwLeaflet extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_leaflet_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwLeaflet`.
   static final _adwLeafletNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_leaflet_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwLeaflet() : this.fromPointer(_adwLeafletNew(), owned: true);
+  AdwLeaflet() : this.rawFromPointer(_adwLeafletNew(), owned: true);
 
   /// Adds a child to @self.
   static final _adwLeafletAppend =
@@ -874,15 +903,16 @@ class AdwLeaflet extends GtkWidget
   ) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _adwSwipeableGetSwipeArea(
-        this.handle,
-        navigationDirection.value,
-        isDrag ? 1 : 0,
-        _out0.cast<ffi.Void>(),
-      );
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _adwSwipeableGetSwipeArea(
+      this.handle,
+      navigationDirection.value,
+      isDrag ? 1 : 0,
+      _out0.cast<ffi.Void>(),
+    );
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Requests the user's screen reader to announce the given message.

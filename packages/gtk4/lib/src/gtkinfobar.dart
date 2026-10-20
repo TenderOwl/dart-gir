@@ -79,7 +79,25 @@ part of '../gtk4.dart';
 /// style class applied.
 class GtkInfoBar extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkInfoBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkInfoBar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkInfoBar>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkInfoBar.rawFromPointer(handle, owned: owned);
+  }
+  GtkInfoBar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -93,12 +111,23 @@ class GtkInfoBar extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_info_bar_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkInfoBar` object.
   static final _gtkInfoBarNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_info_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkInfoBar() : this.fromPointer(_gtkInfoBarNew(), owned: true);
+  GtkInfoBar() : this.rawFromPointer(_gtkInfoBarNew(), owned: true);
 
   /// Add an activatable widget to the action area of a `GtkInfoBar`.
   ///

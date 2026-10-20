@@ -3,7 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node for a Cairo surface.
 class GskCairoNode extends GskRenderNode {
-  GskCairoNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskCairoNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskCairoNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskCairoNode.rawFromPointer(handle, owned: owned);
+  }
+  GskCairoNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +32,17 @@ class GskCairoNode extends GskRenderNode {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_cairo_node_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a `GskRenderNode` that will render a cairo surface
   /// into the area given by @bounds.
   ///
@@ -29,7 +55,7 @@ class GskCairoNode extends GskRenderNode {
           >('gsk_cairo_node_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskCairoNode(GrapheneRect bounds)
-    : this.fromPointer(_gskCairoNodeNew(bounds.handle), owned: true);
+    : this.rawFromPointer(_gskCairoNodeNew(bounds.handle), owned: true);
 
   /// Creates a Cairo context for drawing using the surface associated
   /// to the render node.

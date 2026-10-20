@@ -135,8 +135,25 @@ part of '../adw.dart';
 /// `AdwNavigationSplitView` uses the [enum@Gtk.AccessibleRole.group] role.
 class AdwNavigationSplitView extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwNavigationSplitView.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwNavigationSplitView.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwNavigationSplitView>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwNavigationSplitView.rawFromPointer(handle, owned: owned);
+  }
+  AdwNavigationSplitView.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -150,13 +167,24 @@ class AdwNavigationSplitView extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_navigation_split_view_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwNavigationSplitView`.
   static final _adwNavigationSplitViewNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_navigation_split_view_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwNavigationSplitView()
-    : this.fromPointer(_adwNavigationSplitViewNew(), owned: true);
+    : this.rawFromPointer(_adwNavigationSplitViewNew(), owned: true);
 
   /// Gets whether @self is collapsed.
   static final _adwNavigationSplitViewGetCollapsed =

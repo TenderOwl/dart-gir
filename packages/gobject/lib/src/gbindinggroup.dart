@@ -9,7 +9,25 @@ part of '../gobject.dart';
 /// bidirectionally and are connected when the source object is set
 /// with [method@GObject.BindingGroup.set_source].
 class GBindingGroup extends GObject {
-  GBindingGroup.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GBindingGroup.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GBindingGroup>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GBindingGroup.rawFromPointer(handle, owned: owned);
+  }
+  GBindingGroup.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,12 +41,24 @@ class GBindingGroup extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'g_binding_group_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new #GBindingGroup.
   static final _gBindingGroupNew =
       gobjectLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_binding_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GBindingGroup() : this.fromPointer(_gBindingGroupNew(), owned: true);
+  GBindingGroup() : this.rawFromPointer(_gBindingGroupNew(), owned: true);
 
   /// Creates a binding between @source_property on the source object
   /// and @target_property on @target. Whenever the @source_property

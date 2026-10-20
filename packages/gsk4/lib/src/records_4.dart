@@ -84,7 +84,22 @@ part of '../gsk4.dart';
 /// }
 /// ```
 final class GskRenderReplay {
-  GskRenderReplay.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskRenderReplay.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskRenderReplay>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskRenderReplay.rawFromPointer(handle, owned: owned);
+  }
+  GskRenderReplay.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -104,7 +119,7 @@ final class GskRenderReplay {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_render_replay_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GskRenderReplay() : this.fromPointer(_gskRenderReplayNew());
+  GskRenderReplay() : this.rawFromPointer(_gskRenderReplayNew());
 
   /// Replays the node using the default method.
   ///
@@ -473,7 +488,22 @@ final class GskRenderReplay {
 }
 
 final class GskRendererClass {
-  GskRendererClass.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskRendererClass.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskRendererClass>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskRendererClass.rawFromPointer(handle, owned: owned);
+  }
+  GskRendererClass.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -503,7 +533,22 @@ final class GskRendererClass {
 /// The algorithm used for normalizing corner sizes is described in
 /// [the CSS specification](https://drafts.csswg.org/css-backgrounds-3/#border-radius).
 final class GskRoundedRect {
-  GskRoundedRect.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskRoundedRect.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskRoundedRect>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskRoundedRect.rawFromPointer(handle, owned: owned);
+  }
+  GskRoundedRect.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].

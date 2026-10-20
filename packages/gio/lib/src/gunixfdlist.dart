@@ -16,7 +16,25 @@ part of '../gio.dart';
 ///
 /// Since 2.74, the API is available for Windows.
 class GUnixFDList extends GObject {
-  GUnixFDList.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GUnixFDList.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GUnixFDList>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GUnixFDList.rawFromPointer(handle, owned: owned);
+  }
+  GUnixFDList.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,12 +48,23 @@ class GUnixFDList extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_unix_fd_list_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GUnixFDList containing no file descriptors.
   static final _gUnixFdListNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_unix_fd_list_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GUnixFDList() : this.fromPointer(_gUnixFdListNew(), owned: true);
+  GUnixFDList() : this.rawFromPointer(_gUnixFdListNew(), owned: true);
 
   /// Creates a new #GUnixFDList containing the file descriptors given in
   /// @fds.  The file descriptors become the property of the new list and
@@ -55,7 +84,7 @@ class GUnixFDList extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Int32>, int)
           >();
   GUnixFDList.fromArray(ffi.Pointer<ffi.Int32> fds, int nFds)
-    : this.fromPointer(_gUnixFdListNewFromArray(fds, nFds), owned: true);
+    : this.rawFromPointer(_gUnixFdListNewFromArray(fds, nFds), owned: true);
 
   /// Adds a file descriptor to @list.
   ///

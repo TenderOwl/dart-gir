@@ -110,10 +110,11 @@ final _gSignalQuery =
 GSignalQuery signalQuery(int signalId) {
   final _out0Anchor = HeapAnchor.allocate(256);
   final _out0 = _out0Anchor.buffer;
-  try {
-    _gSignalQuery(signalId, _out0.cast<ffi.Void>());
-    return GSignalQuery.fromPointer(_out0.cast<ffi.Void>());
-  } finally {}
+  _gSignalQuery(signalId, _out0.cast<ffi.Void>());
+  return keepAlive(
+    GSignalQuery.fromPointer(_out0.cast<ffi.Void>()),
+    _out0Anchor,
+  );
 }
 
 /// Deletes an emission hook.
@@ -244,16 +245,22 @@ void typeAddInterfaceDynamic(
 final _gTypeAddInterfaceStatic =
     gobjectLookup<
           ffi.NativeFunction<
-            ffi.Void Function(ffi.Size, ffi.Size, ffi.Pointer<ffi.Void>)
+            ffi.Void Function(ffi.Size, ffi.Size, ffi.Pointer<GInterfaceInfo>)
           >
         >('g_type_add_interface_static')
-        .asFunction<void Function(int, int, ffi.Pointer<ffi.Void>)>();
+        .asFunction<void Function(int, int, ffi.Pointer<GInterfaceInfo>)>();
 void typeAddInterfaceStatic(
   int instanceType,
   int interfaceType,
   GInterfaceInfo info,
 ) {
-  _gTypeAddInterfaceStatic(instanceType, interfaceType, info.handle);
+  final _structArg2 = calloc<GInterfaceInfo>();
+  _structArg2.ref = info;
+  try {
+    _gTypeAddInterfaceStatic(instanceType, interfaceType, _structArg2);
+  } finally {
+    calloc.free(_structArg2);
+  }
 }
 
 final _gTypeCheckClassIsA =
@@ -632,18 +639,6 @@ final _gTypeNameFromClass =
 String typeNameFromClass(GTypeClass gClass) {
   return stringFromNative(
     (_gTypeNameFromClass(gClass.handle)).cast(),
-    free: false,
-  )!;
-}
-
-final _gTypeNameFromInstance =
-    gobjectLookup<
-          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>
-        >('g_type_name_from_instance')
-        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Void>)>();
-String typeNameFromInstance(GTypeInstance instance) {
-  return stringFromNative(
-    (_gTypeNameFromInstance(instance.handle)).cast(),
     free: false,
   )!;
 }

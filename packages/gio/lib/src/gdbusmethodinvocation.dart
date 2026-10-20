@@ -10,8 +10,25 @@ part of '../gio.dart';
 /// [type@Gio.DBusInterfaceVTable] that was passed to
 /// [method@Gio.DBusConnection.register_object].
 class GDBusMethodInvocation extends GObject {
-  GDBusMethodInvocation.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDBusMethodInvocation.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDBusMethodInvocation>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDBusMethodInvocation.rawFromPointer(handle, owned: owned);
+  }
+  GDBusMethodInvocation.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -24,6 +41,17 @@ class GDBusMethodInvocation extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_dbus_method_invocation_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the #GDBusConnection the method was invoked on.
   static final _gDbusMethodInvocationGetConnection =

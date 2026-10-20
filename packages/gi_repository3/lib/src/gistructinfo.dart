@@ -5,7 +5,22 @@ part of '../gi_repository3.dart';
 ///
 /// A structure has methods and fields.
 class GIStructInfo extends GIRegisteredTypeInfo {
-  GIStructInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIStructInfo.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIStructInfo>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GIStructInfo.rawFromPointer(handle, owned: owned);
+  }
+  GIStructInfo.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +33,18 @@ class GIStructInfo extends GIRegisteredTypeInfo {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      giRepository3Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gi_struct_info_get_type',
+      ).asFunction<int Function()>()();
 
   /// Obtain the type information for field named @name.
   static final _giStructInfoFindField =

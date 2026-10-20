@@ -24,8 +24,25 @@ part of '../gio.dart';
 /// [VeraCrypt](https://www.veracrypt.fr/) is a maintained fork of TrueCrypt with various
 /// improvements and auditing fixes.
 class GMountOperation extends GObject {
-  GMountOperation.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GMountOperation.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GMountOperation>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GMountOperation.rawFromPointer(handle, owned: owned);
+  }
+  GMountOperation.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -39,12 +56,23 @@ class GMountOperation extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_mount_operation_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new mount operation.
   static final _gMountOperationNew =
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_mount_operation_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GMountOperation() : this.fromPointer(_gMountOperationNew(), owned: true);
+  GMountOperation() : this.rawFromPointer(_gMountOperationNew(), owned: true);
 
   /// Check to see whether the mount operation is being used
   /// for an anonymous user.

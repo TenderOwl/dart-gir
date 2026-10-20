@@ -10,7 +10,25 @@ part of '../pango.dart';
 ///
 /// To obtain a `PangoContext`, use [method@Pango.FontMap.create_context].
 class PangoContext extends GObject {
-  PangoContext.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory PangoContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return PangoContext.rawFromPointer(handle, owned: owned);
+  }
+  PangoContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -23,6 +41,18 @@ class PangoContext extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      pangoLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'pango_context_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a new `PangoContext` initialized to default values.
   ///
@@ -39,7 +69,7 @@ class PangoContext extends GObject {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  PangoContext() : this.fromPointer(_pangoContextNew(), owned: true);
+  PangoContext() : this.rawFromPointer(_pangoContextNew(), owned: true);
 
   /// Forces a change in the context, which will cause any `PangoLayout`
   /// using this context to re-layout.

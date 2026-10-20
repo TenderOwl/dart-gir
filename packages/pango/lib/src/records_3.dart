@@ -8,7 +8,22 @@ part of '../pango.dart';
 /// available on the system and also for specifying the characteristics of
 /// a font to load.
 final class PangoFontDescription {
-  PangoFontDescription.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory PangoFontDescription.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<PangoFontDescription>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return PangoFontDescription.rawFromPointer(handle, owned: owned);
+  }
+  PangoFontDescription.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -28,7 +43,7 @@ final class PangoFontDescription {
       pangoLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'pango_font_description_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  PangoFontDescription() : this.fromPointer(_pangoFontDescriptionNew());
+  PangoFontDescription() : this.rawFromPointer(_pangoFontDescriptionNew());
 
   /// Determines if the style attributes of @new_match are a closer match
   /// for @desc than those of @old_match are, or if @old_match is %NULL,

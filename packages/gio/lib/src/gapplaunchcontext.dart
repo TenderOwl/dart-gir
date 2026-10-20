@@ -5,8 +5,25 @@ part of '../gio.dart';
 /// handle for instance startup notification and launching the new application
 /// on the same screen as the launching window.
 class GAppLaunchContext extends GObject {
-  GAppLaunchContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GAppLaunchContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GAppLaunchContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GAppLaunchContext.rawFromPointer(handle, owned: owned);
+  }
+  GAppLaunchContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +37,17 @@ class GAppLaunchContext extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_app_launch_context_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new application launch context. This is not normally used,
   /// instead you instantiate a subclass of this, such as
   /// [`GdkAppLaunchContext`](https://docs.gtk.org/gdk4/class.AppLaunchContext.html).
@@ -27,7 +55,8 @@ class GAppLaunchContext extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_app_launch_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GAppLaunchContext() : this.fromPointer(_gAppLaunchContextNew(), owned: true);
+  GAppLaunchContext()
+    : this.rawFromPointer(_gAppLaunchContextNew(), owned: true);
 
   /// Gets the display string for the @context. This is used to ensure new
   /// applications are started on the same display as the launching

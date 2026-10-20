@@ -24,7 +24,25 @@ part of '../gtk4.dart';
 /// tree, regardless of the state of the revealer widget.
 class GtkRevealer extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkRevealer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkRevealer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkRevealer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkRevealer.rawFromPointer(handle, owned: owned);
+  }
+  GtkRevealer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -38,12 +56,23 @@ class GtkRevealer extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_revealer_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkRevealer`.
   static final _gtkRevealerNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_revealer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkRevealer() : this.fromPointer(_gtkRevealerNew(), owned: true);
+  GtkRevealer() : this.rawFromPointer(_gtkRevealerNew(), owned: true);
 
   /// Gets the child widget of @revealer.
   static final _gtkRevealerGetChild =

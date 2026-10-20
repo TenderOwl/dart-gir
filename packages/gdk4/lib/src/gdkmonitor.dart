@@ -8,7 +8,25 @@ part of '../gdk4.dart';
 /// [method@Gdk.Display.get_monitor_at_surface] to find a particular
 /// monitor.
 class GdkMonitor extends GObject {
-  GdkMonitor.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkMonitor.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkMonitor>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkMonitor.rawFromPointer(handle, owned: owned);
+  }
+  GdkMonitor.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,6 +39,17 @@ class GdkMonitor extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gdk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gdk_monitor_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the name of the monitor's connector, if available.
   ///
@@ -87,10 +116,11 @@ class GdkMonitor extends GObject {
   GdkRectangle getGeometry() {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
-    try {
-      _gdkMonitorGetGeometry(this.handle, _out0.cast<ffi.Void>());
-      return GdkRectangle.fromPointer(_out0.cast<ffi.Void>());
-    } finally {}
+    _gdkMonitorGetGeometry(this.handle, _out0.cast<ffi.Void>());
+    return keepAlive(
+      GdkRectangle.fromPointer(_out0.cast<ffi.Void>()),
+      _out0Anchor,
+    );
   }
 
   /// Gets the height in millimeters of the monitor.

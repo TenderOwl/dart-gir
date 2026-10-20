@@ -15,8 +15,25 @@ part of '../gdk_pixbuf.dart';
 /// representation, however; you just ask `GdkPixbuf` what should
 /// be displayed at a given point in time.
 class GdkPixbufAnimation extends GObject {
-  GdkPixbufAnimation.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GdkPixbufAnimation.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GdkPixbufAnimation>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GdkPixbufAnimation.rawFromPointer(handle, owned: owned);
+  }
+  GdkPixbufAnimation.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -29,6 +46,18 @@ class GdkPixbufAnimation extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gdkPixbufLookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gdk_pixbuf_animation_get_type',
+      ).asFunction<int Function()>()();
 
   /// Creates a new animation by loading it from a file.
   ///

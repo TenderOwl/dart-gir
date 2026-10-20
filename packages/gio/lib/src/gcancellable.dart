@@ -7,7 +7,25 @@ part of '../gio.dart';
 /// throughout GIO to allow for cancellation of synchronous and
 /// asynchronous operations.
 class GCancellable extends GObject {
-  GCancellable.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GCancellable.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GCancellable>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GCancellable.rawFromPointer(handle, owned: owned);
+  }
+  GCancellable.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -21,6 +39,17 @@ class GCancellable extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_cancellable_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new #GCancellable object.
   ///
   /// Applications that want to start one or more operations
@@ -33,7 +62,7 @@ class GCancellable extends GObject {
       gioLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_cancellable_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GCancellable() : this.fromPointer(_gCancellableNew(), owned: true);
+  GCancellable() : this.rawFromPointer(_gCancellableNew(), owned: true);
 
   /// Will set @cancellable to cancelled, and will emit the
   /// #GCancellable::cancelled signal. (However, see the warning about

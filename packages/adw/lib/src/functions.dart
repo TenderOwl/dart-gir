@@ -119,8 +119,6 @@ final _adwRgbaToStandalone =
 GdkRGBA rgbaToStandalone(GdkRGBA rgba, bool dark) {
   final _out0Anchor = HeapAnchor.allocate(256);
   final _out0 = _out0Anchor.buffer;
-  try {
-    _adwRgbaToStandalone(rgba.handle, dark ? 1 : 0, _out0.cast<ffi.Void>());
-    return GdkRGBA.fromPointer(_out0.cast<ffi.Void>());
-  } finally {}
+  _adwRgbaToStandalone(rgba.handle, dark ? 1 : 0, _out0.cast<ffi.Void>());
+  return keepAlive(GdkRGBA.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor);
 }

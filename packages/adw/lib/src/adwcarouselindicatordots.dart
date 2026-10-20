@@ -21,8 +21,25 @@ part of '../adw.dart';
 /// `carouselindicatordots`.
 class AdwCarouselIndicatorDots extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
-  AdwCarouselIndicatorDots.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwCarouselIndicatorDots.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwCarouselIndicatorDots>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwCarouselIndicatorDots.rawFromPointer(handle, owned: owned);
+  }
+  AdwCarouselIndicatorDots.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -36,13 +53,24 @@ class AdwCarouselIndicatorDots extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_carousel_indicator_dots_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwCarouselIndicatorDots`.
   static final _adwCarouselIndicatorDotsNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_carousel_indicator_dots_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwCarouselIndicatorDots()
-    : this.fromPointer(_adwCarouselIndicatorDotsNew(), owned: true);
+    : this.rawFromPointer(_adwCarouselIndicatorDotsNew(), owned: true);
 
   /// Gets the displayed carousel.
   static final _adwCarouselIndicatorDotsGetCarousel =

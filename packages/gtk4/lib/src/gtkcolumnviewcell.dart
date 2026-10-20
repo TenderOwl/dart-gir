@@ -17,8 +17,25 @@ part of '../gtk4.dart';
 /// 2. The bound stage where the listitem references an item from the list.
 /// The [property@Gtk.ColumnViewCell:item] property is not %NULL.
 class GtkColumnViewCell extends GtkListItem {
-  GtkColumnViewCell.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkColumnViewCell.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkColumnViewCell>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkColumnViewCell.rawFromPointer(handle, owned: owned);
+  }
+  GtkColumnViewCell.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -31,6 +48,17 @@ class GtkColumnViewCell extends GtkListItem {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_column_view_cell_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the child previously set via gtk_column_view_cell_set_child() or
   /// %NULL if none was set.

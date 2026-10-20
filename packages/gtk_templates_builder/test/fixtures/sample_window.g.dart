@@ -31,6 +31,16 @@ const String _$SampleWindowTemplate_xml = '''
             <signal name="clicked" handler="on_increment_clicked"/>
           </object>
         </child>
+        <child>
+          <!-- A kebab-case signal that carries an argument. The
+               bindings call it `onIconRelease` and hand it a
+               `GtkEntryIconPosition` — the generated mixin has to use
+               that exact name and forward the argument, or the part
+               file does not compile. -->
+          <object class="GtkEntry" id="entry">
+            <signal name="icon-release" handler="on_icon_release"/>
+          </object>
+        </child>
       </object>
     </child>
   </template>
@@ -40,6 +50,7 @@ const String _$SampleWindowTemplate_xml = '''
 const List<_TemplateChildSpec> _$SampleWindowTemplate_children = [
   _TemplateChildSpec('counterLabel', 'GtkLabel'),
   _TemplateChildSpec('increment', 'GtkButton'),
+  _TemplateChildSpec('entry', 'GtkEntry'),
 ];
 
 mixin _$SampleWindowTemplate on GtkApplicationWindow {
@@ -132,7 +143,17 @@ mixin _$SampleWindowTemplate on GtkApplicationWindow {
     return raw.cast<GtkButton>(GtkButton.fromPointer);
   }();
 
+  late final GtkEntry entry = () {
+    _ensureInstanceInit();
+    final raw = (this as GtkWidget).getTemplateChild(
+      widgetTypeOf(this as GtkWidget),
+      'entry',
+    );
+    return raw.cast<GtkEntry>(GtkEntry.fromPointer);
+  }();
+
   void _wireSignals() {
     increment.onClicked(() => (this as dynamic).onIncrementClicked());
+    entry.onIconRelease((pos) => (this as dynamic).onIconRelease(pos));
   }
 }

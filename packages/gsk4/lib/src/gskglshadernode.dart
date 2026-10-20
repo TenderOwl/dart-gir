@@ -3,8 +3,22 @@ part of '../gsk4.dart';
 
 /// A render node using a GL shader when drawing its children nodes.
 class GskGLShaderNode extends GskRenderNode {
-  GskGLShaderNode.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskGLShaderNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskGLShaderNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskGLShaderNode.rawFromPointer(handle, owned: owned);
+  }
+  GskGLShaderNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +31,17 @@ class GskGLShaderNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_gl_shader_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GskRenderNode` that will render the given @shader into the
   /// area given by @bounds.
@@ -62,7 +87,7 @@ class GskGLShaderNode extends GskRenderNode {
     GBytes args,
     ffi.Pointer<ffi.Void> children,
     int nChildren,
-  ) : this.fromPointer(
+  ) : this.rawFromPointer(
         _gskGlShaderNodeNew(
           shader.handle,
           bounds.handle,

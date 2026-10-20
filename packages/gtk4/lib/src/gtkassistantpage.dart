@@ -3,8 +3,25 @@ part of '../gtk4.dart';
 
 /// `GtkAssistantPage` is an auxiliary object used by `GtkAssistant`.
 class GtkAssistantPage extends GObject {
-  GtkAssistantPage.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkAssistantPage.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkAssistantPage>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkAssistantPage.rawFromPointer(handle, owned: owned);
+  }
+  GtkAssistantPage.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +34,17 @@ class GtkAssistantPage extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_assistant_page_get_type',
+  ).asFunction<int Function()>()();
 
   /// Returns the child to which @page belongs.
   static final _gtkAssistantPageGetChild =

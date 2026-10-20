@@ -121,7 +121,25 @@ part of '../gio.dart';
 /// be rendered as ‘selected’ when the state of the action is equal to the
 /// target value of the menu item.
 class GMenuModel extends GObject {
-  GMenuModel.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GMenuModel.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GMenuModel>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GMenuModel.rawFromPointer(handle, owned: owned);
+  }
+  GMenuModel.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -134,6 +152,17 @@ class GMenuModel extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_menu_model_get_type',
+  ).asFunction<int Function()>()();
 
   /// Queries the item at position @item_index in @model for the attribute
   /// specified by @attribute.

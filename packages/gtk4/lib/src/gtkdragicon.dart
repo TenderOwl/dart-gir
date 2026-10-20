@@ -19,7 +19,25 @@ class GtkDragIcon extends GtkWidget
         GtkConstraintTarget,
         GtkNative,
         GtkRoot {
-  GtkDragIcon.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkDragIcon.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkDragIcon>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkDragIcon.rawFromPointer(handle, owned: owned);
+  }
+  GtkDragIcon.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -33,6 +51,17 @@ class GtkDragIcon extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_drag_icon_get_type',
+  ).asFunction<int Function()>()();
+
   /// Gets the `GtkDragIcon` in use with @drag.
   ///
   /// If no drag icon exists yet, a new one will be created
@@ -45,7 +74,7 @@ class GtkDragIcon extends GtkWidget
           >('gtk_drag_icon_get_for_drag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkDragIcon.getForDrag(GdkDrag drag)
-    : this.fromPointer(_gtkDragIconGetForDrag(drag.handle), owned: true);
+    : this.rawFromPointer(_gtkDragIconGetForDrag(drag.handle), owned: true);
 
   /// Gets the widget currently used as drag icon.
   static final _gtkDragIconGetChild =

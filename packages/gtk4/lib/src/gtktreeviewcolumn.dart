@@ -12,8 +12,25 @@ part of '../gtk4.dart';
 /// how they work together, and to the [class@Gtk.TreeView] documentation for specifics
 /// about the CSS node structure for treeviews and their headers.
 class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
-  GtkTreeViewColumn.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTreeViewColumn.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTreeViewColumn>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTreeViewColumn.rawFromPointer(handle, owned: owned);
+  }
+  GtkTreeViewColumn.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -27,12 +44,24 @@ class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_tree_view_column_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkTreeViewColumn`.
   static final _gtkTreeViewColumnNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_tree_view_column_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkTreeViewColumn() : this.fromPointer(_gtkTreeViewColumnNew(), owned: true);
+  GtkTreeViewColumn()
+    : this.rawFromPointer(_gtkTreeViewColumnNew(), owned: true);
 
   /// Creates a new `GtkTreeViewColumn` using @area to render its cells.
   static final _gtkTreeViewColumnNewWithArea =
@@ -43,7 +72,10 @@ class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
           >('gtk_tree_view_column_new_with_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeViewColumn.withArea(GtkCellArea area)
-    : this.fromPointer(_gtkTreeViewColumnNewWithArea(area.handle), owned: true);
+    : this.rawFromPointer(
+        _gtkTreeViewColumnNewWithArea(area.handle),
+        owned: true,
+      );
 
   /// Adds an attribute mapping to the list in @tree_column.
   ///

@@ -5,7 +5,25 @@ part of '../gio.dart';
 /// used as a proxy for a menu model that is exported over D-Bus with
 /// [method@Gio.DBusConnection.export_menu_model].
 class GDBusMenuModel extends GMenuModel {
-  GDBusMenuModel.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GDBusMenuModel.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GDBusMenuModel>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GDBusMenuModel.rawFromPointer(handle, owned: owned);
+  }
+  GDBusMenuModel.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +36,17 @@ class GDBusMenuModel extends GMenuModel {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_dbus_menu_model_get_type',
+  ).asFunction<int Function()>()();
 
   /// Obtains a #GDBusMenuModel for the menu model which is exported
   /// at the given @bus_name and @object_path.

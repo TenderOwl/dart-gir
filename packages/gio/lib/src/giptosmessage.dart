@@ -16,7 +16,25 @@ part of '../gio.dart';
 /// g_socket_set_option (socket, IPPROTO_IP, IP_TOS, <ToS value>, &error);
 /// ```
 class GIPTosMessage extends GSocketControlMessage {
-  GIPTosMessage.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIPTosMessage.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIPTosMessage>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GIPTosMessage.rawFromPointer(handle, owned: owned);
+  }
+  GIPTosMessage.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -30,6 +48,17 @@ class GIPTosMessage extends GSocketControlMessage {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_ip_tos_message_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new type-of-service message with given DSCP and ECN values.
   static final _gIpTosMessageNew =
       gioLookup<
@@ -39,7 +68,7 @@ class GIPTosMessage extends GSocketControlMessage {
           >('g_ip_tos_message_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GIPTosMessage(int dscp, GEcnCodePoint ecn)
-    : this.fromPointer(_gIpTosMessageNew(dscp, ecn.value), owned: true);
+    : this.rawFromPointer(_gIpTosMessageNew(dscp, ecn.value), owned: true);
 
   /// Gets the differentiated services code point stored in @message.
   static final _gIpTosMessageGetDscp =

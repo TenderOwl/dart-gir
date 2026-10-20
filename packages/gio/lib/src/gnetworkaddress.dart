@@ -12,8 +12,25 @@ part of '../gio.dart';
 /// See [iface@Gio.SocketConnectable] for an example of using the connectable
 /// interface.
 class GNetworkAddress extends GObject implements GSocketConnectable {
-  GNetworkAddress.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GNetworkAddress.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GNetworkAddress>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GNetworkAddress.rawFromPointer(handle, owned: owned);
+  }
+  GNetworkAddress.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +43,17 @@ class GNetworkAddress extends GObject implements GSocketConnectable {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_network_address_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new #GSocketConnectable for connecting to the given
   /// @hostname and @port.
@@ -68,7 +96,7 @@ class GNetworkAddress extends GObject implements GSocketConnectable {
         'g_network_address_new_loopback',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GNetworkAddress.loopback(int port)
-    : this.fromPointer(_gNetworkAddressNewLoopback(port), owned: true);
+    : this.rawFromPointer(_gNetworkAddressNewLoopback(port), owned: true);
 
   /// Gets @addr's hostname. This might be either UTF-8 or ASCII-encoded,
   /// depending on what @addr was created with.

@@ -3,7 +3,22 @@ part of '../gsk4.dart';
 
 /// Builds the uniforms data for a `GskGLShader`.
 final class GskShaderArgsBuilder {
-  GskShaderArgsBuilder.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskShaderArgsBuilder.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskShaderArgsBuilder>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskShaderArgsBuilder.rawFromPointer(handle, owned: owned);
+  }
+  GskShaderArgsBuilder.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -36,7 +51,7 @@ final class GskShaderArgsBuilder {
             )
           >();
   GskShaderArgsBuilder(GskGLShader shader, [GBytes? initialValues])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gskShaderArgsBuilderNew(
           shader.handle,
           initialValues?.handle ?? ffi.nullptr,
@@ -209,7 +224,22 @@ final class GskShaderArgsBuilder {
 
 /// The shadow parameters in a shadow node.
 final class GskShadow {
-  GskShadow.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskShadow.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskShadow>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskShadow.rawFromPointer(handle, owned: owned);
+  }
+  GskShadow.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -227,7 +257,22 @@ final class GskShadow {
 
 /// Collects the parameters that are needed when stroking a path.
 final class GskStroke {
-  GskStroke.fromPointer(this.handle, {bool owned = false});
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object.
+  factory GskStroke.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskStroke>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskStroke.rawFromPointer(handle, owned: owned);
+  }
+  GskStroke.rawFromPointer(this.handle, {bool owned = false}) {
+    registerDartObject(this, handle.address);
+  }
   final ffi.Pointer<ffi.Void> handle;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
@@ -247,7 +292,7 @@ final class GskStroke {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Float)>>(
         'gsk_stroke_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(double)>();
-  GskStroke(double lineWidth) : this.fromPointer(_gskStrokeNew(lineWidth));
+  GskStroke(double lineWidth) : this.rawFromPointer(_gskStrokeNew(lineWidth));
 
   /// Creates a copy of a `GskStroke`.
   static final _gskStrokeCopy =

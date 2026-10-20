@@ -19,7 +19,22 @@ part of '../gtk4.dart';
 /// omit clip nodes if the child node is entirely contained within the
 /// clip rectangle.
 class GtkSnapshot extends GdkSnapshot {
-  GtkSnapshot.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSnapshot.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSnapshot>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkSnapshot.rawFromPointer(handle, owned: owned);
+  }
+  GtkSnapshot.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -33,12 +48,23 @@ class GtkSnapshot extends GdkSnapshot {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_snapshot_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkSnapshot`.
   static final _gtkSnapshotNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_snapshot_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSnapshot() : this.fromPointer(_gtkSnapshotNew(), owned: true);
+  GtkSnapshot() : this.rawFromPointer(_gtkSnapshotNew(), owned: true);
 
   /// Creates a new [class@Gsk.CairoNode] and appends it to the current
   /// render node of @snapshot, without changing the current node.

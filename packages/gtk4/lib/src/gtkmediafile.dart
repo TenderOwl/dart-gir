@@ -10,7 +10,25 @@ part of '../gtk4.dart';
 ///
 /// GTK itself includes an implementation using GStreamer.
 class GtkMediaFile extends GtkMediaStream implements GdkPaintable {
-  GtkMediaFile.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkMediaFile.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkMediaFile>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkMediaFile.rawFromPointer(handle, owned: owned);
+  }
+  GtkMediaFile.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -24,12 +42,23 @@ class GtkMediaFile extends GtkMediaStream implements GdkPaintable {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_media_file_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty media file.
   static final _gtkMediaFileNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_media_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkMediaFile() : this.fromPointer(_gtkMediaFileNew(), owned: true);
+  GtkMediaFile() : this.rawFromPointer(_gtkMediaFileNew(), owned: true);
 
   /// Creates a new media file to play @file.
   static final _gtkMediaFileNewForFile =
@@ -40,7 +69,7 @@ class GtkMediaFile extends GtkMediaStream implements GdkPaintable {
           >('gtk_media_file_new_for_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMediaFile.forFile(GFile file)
-    : this.fromPointer(_gtkMediaFileNewForFile(file.handle), owned: true);
+    : this.rawFromPointer(_gtkMediaFileNewForFile(file.handle), owned: true);
 
   /// Creates a new media file for the given filename.
   ///
@@ -74,7 +103,7 @@ class GtkMediaFile extends GtkMediaStream implements GdkPaintable {
           >('gtk_media_file_new_for_input_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMediaFile.forInputStream(GInputStream stream)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkMediaFileNewForInputStream(stream.handle),
         owned: true,
       );

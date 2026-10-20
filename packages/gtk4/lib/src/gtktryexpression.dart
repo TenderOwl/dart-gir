@@ -5,8 +5,22 @@ part of '../gtk4.dart';
 ///
 /// If all expressions fail to evaluate, the `GtkTryExpression`'s evaluation fails as well.
 class GtkTryExpression extends GtkExpression {
-  GtkTryExpression.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTryExpression.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTryExpression>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GtkTryExpression.rawFromPointer(handle, owned: owned);
+  }
+  GtkTryExpression.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -19,6 +33,17 @@ class GtkTryExpression extends GtkExpression {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_try_expression_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GtkExpression` with an array of expressions.
   ///
@@ -36,7 +61,7 @@ class GtkTryExpression extends GtkExpression {
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
           >();
   GtkTryExpression(int nExpressions, ffi.Pointer<ffi.Void> expressions)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkTryExpressionNew(nExpressions, expressions),
         owned: true,
       );

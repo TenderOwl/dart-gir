@@ -59,7 +59,7 @@ variants:
   **relative to the package root** (the directory holding
   `pubspec.yaml`). The builder reads the file at build time and
   embeds the contents as a string, so the runtime path is identical
-  to `GtkTemplateXml`.
+  to `GtkTemplateXml`. See §1.1 for the rules the file has to follow.
 
 The scanner only accepts a *string literal* argument. A
 concatenation, an interpolation, or a `const` variable is rejected
@@ -68,6 +68,55 @@ with a warning and the class is skipped.
 The old 0.1.x form `@GtkTemplate(resourcePath: '/com/myapp/foo.ui')`
 is gone. `GtkWidgetClass.setTemplateFromResource` is not part of the
 codegen dispatch; call it yourself if you need GResource loading.
+
+### 1.1 A template that lives in a file
+
+`GtkTemplateFile` is the form to use for anything that is not a toy.
+The file is read **through the build's asset reader**, not off the
+filesystem, and that has two consequences worth knowing.
+
+**Editing the template re-runs the builder.** An asset the builder
+reads is a *tracked input* of the build step: change it, and the next
+`dart run build_runner build` regenerates the part file. Read off the
+filesystem the file would be invisible to the build, the part file
+would keep the old template, and the edit would silently do nothing —
+the build would report "skipped" and the app would come up with the
+previous template.
+
+**The file has to be a public asset of the package.** A build only
+sees a package's public directories — `lib/**` and `bin/**`, plus a
+few named files. A template under `lib/` therefore needs no
+configuration at all:
+
+```dart
+@GtkTemplate(source: GtkTemplateFile('lib/window.ui'))
+class MyWindow extends AdwApplicationWindow with _$MyWindowTemplate { … }
+```
+
+Anything else — `data/window.ui`, say — has to be declared in the
+consumer's `build.yaml`:
+
+```yaml
+additional_public_assets:
+  - data/**
+```
+
+Without that, the builder cannot read the file and **fails the
+build** with the path it looked for:
+
+```
+gtk_templates: lib/my_window.dart points at a template file that could not be read.
+  package: my_app
+  path:    data/window.ui
+The path is relative to the package root — the directory holding pubspec.yaml — and the file has to be inside the package.
+```
+
+The build failing is deliberate. The alternative — writing no part
+file — would leave the previous one in place, and the stale template
+would keep running as if the edit had never happened.
+
+The `example/todo` package uses the `data/` layout and declares it
+that way; see `example/todo/build.yaml`.
 
 ### `@GtkTemplateChild`
 
@@ -437,6 +486,25 @@ rather than a compile error. The generated file is covered by the
 analyzer-resolution tests, but the *dispatch target* cannot be
 statically checked from inside the mixin.
 
+### The helper name
+
+The builder calls the *typed* signal helper the bindings generate:
+`on` + the signal name in UpperCamelCase. The generator's rule
+(`generator/lib/src/resolve/naming.dart`, `toUpperCamel`) splits on
+`_`, `-` and whitespace and then on camelCase humps:
+
+| XML `name` | helper |
+|---|---|
+| `clicked` | `onClicked` |
+| `icon-release` | `onIconRelease` |
+| `icon_press` | `onIconPress` |
+
+The builder has to agree with the generator *exactly* — a different
+spelling names a method that does not exist on the widget class, and
+the generated part file does not compile. The builder's own fixture
+proves it: the generated part file is resolved with the real analyzer
+against `package:gtk4`.
+
 ### Arity rules
 
 The user's method signature must match the GIR-declared arity of the
@@ -445,12 +513,24 @@ FFI binding's `on<SignalName>(…)` overload:
 | Signal | GIR arity | User method |
 |---|---|---|
 | `GtkButton::clicked` | `void()` | `void onClicked()` |
-| `GtkEntry::activate` | `void(GtkEntry*)` | `void onActivate(GtkEntry sender)` |
+| `GtkEntry::icon-release` | `void(GtkEntryIconPosition)` | `void onIconRelease(GtkEntryIconPosition pos)` |
 
-The generated closure passes **no arguments** to the user's method.
-A signal whose GIR signature carries parameters is therefore *not*
-wired correctly by the current codegen — it calls a zero-argument
-closure. This is a known limitation (see §8).
+The generated closure forwards the signal's arguments to the user's
+method:
+
+```dart
+void _wireSignals() {
+  increment.onClicked(() => (this as dynamic).onIncrementClicked());
+  entry.onIconRelease((pos) => (this as dynamic).onIconRelease(pos));
+}
+```
+
+The closure's parameter *types* come from the binding's callback type
+— Dart infers them from the expected type — and their *names* come
+from the user's method, which the scanner records. A user method whose
+signature does not match the signal's therefore fails the analyzer
+when the part file is generated, instead of silently dropping the
+arguments at runtime.
 
 ### Lifetime
 
@@ -511,6 +591,29 @@ and — via `packageForType` — the package that declares the parent type
 and every child type. `Adw*` maps to `package:adw/adw.dart`;
 everything else maps to `package:gtk4/gtk4.dart`.
 
+### Missing template file
+
+```
+gtk_templates: lib/todo_window.dart points at a template file that could not be read.
+  package: todo
+  path:    data/window.ui
+The path is relative to the package root — the directory holding pubspec.yaml — and the file has to be inside the package.
+```
+
+A `GtkTemplateFile` that names a file the build cannot read is a hard
+failure, not a warning: the alternative — writing no part file — would
+leave the previous one in place, and the stale template would keep
+running as if the edit had never happened (see §1.1).
+
+The usual cause is that the file is not a *public asset* of the
+package: a build sees `lib/**` and `bin/**`, and nothing else unless
+the package says so in its `build.yaml`.
+
+```yaml
+additional_public_assets:
+  - data/**
+```
+
 ### CLI
 
 `packages/gtk_templates_builder/bin/gtk_templates_builder.dart` runs
@@ -528,9 +631,10 @@ byte-identical output to the `build_runner` path. Exit codes:
 | 0 | Success |
 | 1 | Generic failure |
 | 2 | Bad usage |
-| 3 | The `.ui` file could not be read |
+| 3 | Nothing was written — no `@GtkTemplate` class was found |
 | 4 | The `part` directive is missing |
 | 5 | A required import is missing |
+| 6 | The `.ui` file could not be read |
 
 ---
 
@@ -552,9 +656,6 @@ byte-identical output to the `build_runner` path. Exit codes:
 - **`dynamic` dispatch.** The trampoline resolves the user's method
   at run time. A rename that breaks the connection is not a compile
   error (see §6).
-- **Signals with parameters are not wired correctly.** The generated
-  closure takes no arguments, so a GIR signal that declares
-  parameters calls a zero-argument closure (see §6).
 - **`@GtkTemplateChild` does not drive the codegen.** The XML does.
   The annotation is documentation today (see §1).
 - **Only top-level classes are scanned.** A `@GtkTemplate` class
@@ -563,11 +664,11 @@ byte-identical output to the `build_runner` path. Exit codes:
   `foo_u_r_l`, where PyGObject would produce `foo_url`. GTK template
   symbols rarely hit this, but it is a difference from the reference
   implementation.
-- **`GtkTemplateFile` resolution is build-time and best-effort.** The
-  package root is inferred from the input path and the current
-  working directory. A missing file logs a warning and **skips the
-  class** — the build succeeds with that class absent from the
-  output.
+- **`GtkTemplateFile` resolution is build-time, and strict.** The file is
+  read through the build's asset reader, so it has to be a public asset
+  of the package (§1.1) and a missing or unreadable file **fails the
+  build**. The path is relative to the package root, not to the source
+  file and not to the current working directory.
 - **One `GBytes` per class, shared across instances.** The template
   bytes are cached in a `static late final`. This is correct — GTK
   copies the template — but it does mean the XML string is retained
@@ -596,9 +697,10 @@ byte-identical output to the `build_runner` path. Exit codes:
 | `packages/gtk_templates_builder/test/builder_test.dart` | The scanner's plan output |
 | `packages/gtk_templates_builder/test/e2e_test.dart` | Scanner → codegen → expected source; XML extractors |
 | `packages/gtk_templates_builder/test/generated_code_test.dart` | The on-disk fixture resolves with **zero** analyzer diagnostics, plus four mutation regressions |
-| `packages/gtk_templates_builder/test/builder_output_test.dart` | The `build_runner` output resolves with zero diagnostics and satisfies the part-file contract |
+| `packages/gtk_templates_builder/test/builder_output_test.dart` | The `build_runner` output resolves with zero diagnostics, satisfies the part-file contract, reads a template **file** through the build, and fails when that file is missing |
 | `packages/gtk_templates/test/runtime_test.dart` | `snakeCase`, `getWidgetClass`, `gbytesFromString`, the XML rewrites, the template claim |
 | `example/todo/test/todo_widget_test.dart` | The window really is built from the template (native; needs a display) |
+| `example/todo/test/todo_test.dart` | The file contract: the part directive, the generated file next to its source, the template coming from the `.ui` file |
 
 **The rule: generated code must type-check.** A parse-only check is
 not enough — the builder's output is resolved with the real analyzer

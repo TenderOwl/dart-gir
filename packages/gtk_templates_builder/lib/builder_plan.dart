@@ -59,12 +59,23 @@ class ClassTemplatePlan {
   /// is the `snake_case` form the user-facing API expects.
   final List<CallbackBinding> callbacks;
 
+  /// The parameter names of every method the class declares, keyed by
+  /// method name.
+  ///
+  /// The codegen needs them to forward a signal's arguments to the
+  /// user's method: the *types* come from the binding's callback type
+  /// (Dart infers them), the *names* from the user's method. A user
+  /// method whose signature does not match the signal's therefore
+  /// fails the analyzer instead of silently dropping the arguments.
+  final Map<String, List<String>> methodParameters;
+
   const ClassTemplatePlan({
     required this.className,
     required this.parentType,
     required this.templateSource,
     required this.children,
     required this.callbacks,
+    this.methodParameters = const <String, List<String>>{},
   });
 }
 

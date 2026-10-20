@@ -16,8 +16,25 @@ part of '../gtk_source5.dart';
 /// ones are used as a fallback by the `GtkSourcePrintCompositor` object, so that
 /// the printed area is not clipped.
 class GtkSourcePrintCompositor extends GObject {
-  GtkSourcePrintCompositor.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourcePrintCompositor.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourcePrintCompositor>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourcePrintCompositor.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourcePrintCompositor.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -31,6 +48,18 @@ class GtkSourcePrintCompositor extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_print_compositor_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new print compositor that can be used to print @buffer.
   static final _gtkSourcePrintCompositorNew =
       gtkSource5Lookup<
@@ -40,7 +69,7 @@ class GtkSourcePrintCompositor extends GObject {
           >('gtk_source_print_compositor_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourcePrintCompositor(GtkSourceBuffer buffer)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSourcePrintCompositorNew(buffer.handle),
         owned: true,
       );
@@ -61,7 +90,7 @@ class GtkSourcePrintCompositor extends GObject {
           >('gtk_source_print_compositor_new_from_view')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourcePrintCompositor.fromView(GtkSourceView view)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSourcePrintCompositorNewFromView(view.handle),
         owned: true,
       );

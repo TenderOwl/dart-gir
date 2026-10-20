@@ -5,7 +5,25 @@ part of '../gio.dart';
 /// modules. This is used internally to make GIO extensible, but can also
 /// be used by others to implement module loading.
 class GIOModule extends GTypeModule {
-  GIOModule.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GIOModule.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GIOModule>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GIOModule.rawFromPointer(handle, owned: owned);
+  }
+  GIOModule.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +36,17 @@ class GIOModule extends GTypeModule {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_io_module_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new GIOModule that will load the specific
   /// shared library when in use.
@@ -76,7 +105,7 @@ class GIOModule extends GTypeModule {
                 ffi.Pointer<ffi.Void>,
                 ffi.Size,
                 ffi.Size,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<GInterfaceInfo>,
               )
             >
           >('g_type_plugin_complete_interface_info')
@@ -85,7 +114,7 @@ class GIOModule extends GTypeModule {
               ffi.Pointer<ffi.Void>,
               int,
               int,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<GInterfaceInfo>,
             )
           >();
   void completeInterfaceInfo(
@@ -93,12 +122,18 @@ class GIOModule extends GTypeModule {
     int interfaceType,
     GInterfaceInfo info,
   ) {
-    _gTypePluginCompleteInterfaceInfo(
-      this.handle,
-      instanceType,
-      interfaceType,
-      info.handle,
-    );
+    final _structArg2 = calloc<GInterfaceInfo>();
+    _structArg2.ref = info;
+    try {
+      _gTypePluginCompleteInterfaceInfo(
+        this.handle,
+        instanceType,
+        interfaceType,
+        _structArg2,
+      );
+    } finally {
+      calloc.free(_structArg2);
+    }
   }
 
   /// Calls the @complete_type_info function from the #GTypePluginClass of @plugin.
@@ -110,7 +145,7 @@ class GIOModule extends GTypeModule {
               ffi.Void Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Size,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<GTypeInfo>,
                 ffi.Pointer<ffi.Void>,
               )
             >
@@ -119,17 +154,23 @@ class GIOModule extends GTypeModule {
             void Function(
               ffi.Pointer<ffi.Void>,
               int,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<GTypeInfo>,
               ffi.Pointer<ffi.Void>,
             )
           >();
   void completeTypeInfo(int gType, GTypeInfo info, GTypeValueTable valueTable) {
-    _gTypePluginCompleteTypeInfo(
-      this.handle,
-      gType,
-      info.handle,
-      valueTable.handle,
-    );
+    final _structArg1 = calloc<GTypeInfo>();
+    _structArg1.ref = info;
+    try {
+      _gTypePluginCompleteTypeInfo(
+        this.handle,
+        gType,
+        _structArg1,
+        valueTable.handle,
+      );
+    } finally {
+      calloc.free(_structArg1);
+    }
   }
 
   /// Calls the @unuse_plugin function from the #GTypePluginClass of

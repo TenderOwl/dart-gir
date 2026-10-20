@@ -47,7 +47,25 @@ part of '../adw.dart';
 /// finished, the previous animation should be stopped first, or the existing
 /// `AdwAnimation` object can be reused.
 class AdwAnimation extends GObject {
-  AdwAnimation.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwAnimation.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwAnimation>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwAnimation.rawFromPointer(handle, owned: owned);
+  }
+  AdwAnimation.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -60,6 +78,17 @@ class AdwAnimation extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_animation_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets whether @self should be skipped when animations are globally disabled.
   static final _adwAnimationGetFollowEnableAnimationsSetting =

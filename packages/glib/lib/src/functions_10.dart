@@ -279,21 +279,28 @@ int poll(GPollFD fds, int nfds, int timeout) {
 final _gPropagateError =
     glibLookup<
           ffi.NativeFunction<
-            ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            ffi.Void Function(
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Void>,
+            )
           >
         >('g_propagate_error')
         .asFunction<
-          void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          void Function(
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            ffi.Pointer<ffi.Void>,
+          )
         >();
 GError? propagateError(GError src) {
-  final _out0Anchor = HeapAnchor.allocate(256);
-  final _out0 = _out0Anchor.buffer;
+  final _out0 = calloc<ffi.Pointer<ffi.Void>>();
   try {
-    _gPropagateError(_out0.cast<ffi.Void>(), src.handle);
-    return (_out0) == ffi.nullptr
+    _gPropagateError(_out0, src.handle);
+    return (_out0.value) == ffi.nullptr
         ? null
-        : GError.fromPointer(_out0.cast<ffi.Void>());
-  } finally {}
+        : GError.fromPointer(_out0.value.cast<ffi.Void>(), owned: true);
+  } finally {
+    malloc.free(_out0);
+  }
 }
 
 /// This is just like the standard C [`qsort()`](man:qsort(3)) function, but

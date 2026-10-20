@@ -11,7 +11,25 @@ part of '../gtk_source5.dart';
 /// properties are updated. If an operation fails, the `GtkSourceFile` properties
 /// have still the previous valid values.
 class GtkSourceFile extends GObject {
-  GtkSourceFile.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceFile.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceFile>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceFile.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceFile.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,11 +43,22 @@ class GtkSourceFile extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_file_get_type',
+      ).asFunction<int Function()>()();
   static final _gtkSourceFileNew =
       gtkSource5Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_source_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkSourceFile() : this.fromPointer(_gtkSourceFileNew(), owned: true);
+  GtkSourceFile() : this.rawFromPointer(_gtkSourceFileNew(), owned: true);
 
   /// Checks synchronously the file on disk, to know whether the file is externally
   /// modified, or has been deleted, and whether the file is read-only.

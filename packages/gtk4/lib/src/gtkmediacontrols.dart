@@ -11,8 +11,25 @@ part of '../gtk4.dart';
 /// Usually, `GtkMediaControls` is used as part of [class@Gtk.Video].
 class GtkMediaControls extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  GtkMediaControls.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkMediaControls.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkMediaControls>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkMediaControls.rawFromPointer(handle, owned: owned);
+  }
+  GtkMediaControls.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +43,17 @@ class GtkMediaControls extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_media_controls_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkMediaControls` managing the @stream passed to it.
   static final _gtkMediaControlsNew =
       gtk4Lookup<
@@ -35,7 +63,7 @@ class GtkMediaControls extends GtkWidget
           >('gtk_media_controls_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkMediaControls([GtkMediaStream? stream])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkMediaControlsNew(stream?.handle ?? ffi.nullptr),
         owned: true,
       );

@@ -127,7 +127,25 @@ class GtkPopoverMenu extends GtkPopover
         GtkConstraintTarget,
         GtkNative,
         GtkShortcutManager {
-  GtkPopoverMenu.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkPopoverMenu.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkPopoverMenu>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkPopoverMenu.rawFromPointer(handle, owned: owned);
+  }
+  GtkPopoverMenu.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -140,6 +158,17 @@ class GtkPopoverMenu extends GtkPopover
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_popover_menu_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GtkPopoverMenu` and populates it according to @model.
   ///
@@ -162,7 +191,7 @@ class GtkPopoverMenu extends GtkPopover
           >('gtk_popover_menu_new_from_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPopoverMenu.fromModel([GMenuModel? model])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkPopoverMenuNewFromModel(model?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -184,7 +213,7 @@ class GtkPopoverMenu extends GtkPopover
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkPopoverMenu.fromModelFull(GMenuModel model, GtkPopoverMenuFlags flags)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkPopoverMenuNewFromModelFull(model.handle, flags.value),
         owned: true,
       );

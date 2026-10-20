@@ -27,8 +27,25 @@ part of '../gtk4.dart';
 /// when nothing has happened (mostly as a result of programmers calling
 /// select_row on an already selected row).
 class GtkTreeSelection extends GObject {
-  GtkTreeSelection.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkTreeSelection.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkTreeSelection>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkTreeSelection.rawFromPointer(handle, owned: owned);
+  }
+  GtkTreeSelection.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -41,6 +58,17 @@ class GtkTreeSelection extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_tree_selection_get_type',
+  ).asFunction<int Function()>()();
 
   /// Returns the number of rows that have been selected in @tree.
   static final _gtkTreeSelectionCountSelectedRows =
@@ -71,7 +99,7 @@ class GtkTreeSelection extends GObject {
             ffi.NativeFunction<
               ffi.Int32 Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
                 ffi.Pointer<ffi.Void>,
               )
             >
@@ -79,31 +107,35 @@ class GtkTreeSelection extends GObject {
           .asFunction<
             int Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
               ffi.Pointer<ffi.Void>,
             )
           >();
   (bool, GtkTreeModel?, GtkTreeIter?) getSelected() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     final _out1Anchor = HeapAnchor.allocate(256);
     final _out1 = _out1Anchor.buffer;
     try {
       final _ret = _gtkTreeSelectionGetSelected(
         this.handle,
-        _out0.cast<ffi.Void>(),
+        _out0,
         _out1.cast<ffi.Void>(),
       );
       return (
         (_ret) != 0,
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreeModel.fromPointer(_out0.cast<ffi.Void>()),
+            : GtkTreeModel.fromPointer(_out0.value.cast<ffi.Void>()),
         (_out1) == ffi.nullptr
             ? null
-            : GtkTreeIter.fromPointer(_out1.cast<ffi.Void>()),
+            : keepAlive(
+                GtkTreeIter.fromPointer(_out1.cast<ffi.Void>()),
+                _out1Anchor,
+              ),
       );
-    } finally {}
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Creates a list of path of all selected rows. Additionally, if you are
@@ -121,31 +153,29 @@ class GtkTreeSelection extends GObject {
             ffi.NativeFunction<
               ffi.Pointer<ffi.Void> Function(
                 ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('gtk_tree_selection_get_selected_rows')
           .asFunction<
             ffi.Pointer<ffi.Void> Function(
               ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (GList, GtkTreeModel?) getSelectedRows() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
+    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      final _ret = _gtkTreeSelectionGetSelectedRows(
-        this.handle,
-        _out0.cast<ffi.Void>(),
-      );
+      final _ret = _gtkTreeSelectionGetSelectedRows(this.handle, _out0);
       return (
         GList.fromPointer(_ret),
-        (_out0) == ffi.nullptr
+        (_out0.value) == ffi.nullptr
             ? null
-            : GtkTreeModel.fromPointer(_out0.cast<ffi.Void>()),
+            : GtkTreeModel.fromPointer(_out0.value.cast<ffi.Void>()),
       );
-    } finally {}
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Returns the tree view associated with @selection.

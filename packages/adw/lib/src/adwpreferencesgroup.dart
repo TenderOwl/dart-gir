@@ -39,8 +39,25 @@ part of '../adw.dart';
 /// `AdwPreferencesGroup` uses the [enum@Gtk.AccessibleRole.group] role.
 class AdwPreferencesGroup extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwPreferencesGroup.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwPreferencesGroup.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwPreferencesGroup>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwPreferencesGroup.rawFromPointer(handle, owned: owned);
+  }
+  AdwPreferencesGroup.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -54,13 +71,24 @@ class AdwPreferencesGroup extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_preferences_group_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwPreferencesGroup`.
   static final _adwPreferencesGroupNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_preferences_group_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   AdwPreferencesGroup()
-    : this.fromPointer(_adwPreferencesGroupNew(), owned: true);
+    : this.rawFromPointer(_adwPreferencesGroupNew(), owned: true);
 
   /// Adds a child to @self.
   static final _adwPreferencesGroupAdd =

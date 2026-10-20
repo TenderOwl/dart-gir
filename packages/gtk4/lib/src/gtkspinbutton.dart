@@ -130,7 +130,25 @@ class GtkSpinButton extends GtkWidget
         GtkConstraintTarget,
         GtkEditable,
         GtkOrientable {
-  GtkSpinButton.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSpinButton.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSpinButton>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSpinButton.rawFromPointer(handle, owned: owned);
+  }
+  GtkSpinButton.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -143,6 +161,17 @@ class GtkSpinButton extends GtkWidget
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_spin_button_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a new `GtkSpinButton`.
   static final _gtkSpinButtonNew =
@@ -159,7 +188,7 @@ class GtkSpinButton extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double, int)
           >();
   GtkSpinButton(GtkAdjustment? adjustment, double climbRate, int digits)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSpinButtonNew(adjustment?.handle ?? ffi.nullptr, climbRate, digits),
         owned: true,
       );
@@ -185,7 +214,10 @@ class GtkSpinButton extends GtkWidget
           >('gtk_spin_button_new_with_range')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double, double)>();
   GtkSpinButton.withRange(double min, double max, double step)
-    : this.fromPointer(_gtkSpinButtonNewWithRange(min, max, step), owned: true);
+    : this.rawFromPointer(
+        _gtkSpinButtonNewWithRange(min, max, step),
+        owned: true,
+      );
 
   /// Changes the properties of an existing spin button.
   ///

@@ -22,7 +22,25 @@ part of '../gtk4.dart';
 /// `GtkSeparator` uses the [enum@Gtk.AccessibleRole.separator] role.
 class GtkSeparator extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget, GtkOrientable {
-  GtkSeparator.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSeparator.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSeparator>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSeparator.rawFromPointer(handle, owned: owned);
+  }
+  GtkSeparator.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -36,13 +54,24 @@ class GtkSeparator extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_separator_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkSeparator` with the given orientation.
   static final _gtkSeparatorNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'gtk_separator_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GtkSeparator(GtkOrientation orientation)
-    : this.fromPointer(_gtkSeparatorNew(orientation.value), owned: true);
+    : this.rawFromPointer(_gtkSeparatorNew(orientation.value), owned: true);
 
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.

@@ -5,7 +5,25 @@ part of '../gsk4.dart';
 ///
 /// See [class@Gsk.Renderer].
 class GskGLRenderer extends GskRenderer {
-  GskGLRenderer.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskGLRenderer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskGLRenderer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GskGLRenderer.rawFromPointer(handle, owned: owned);
+  }
+  GskGLRenderer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -19,12 +37,23 @@ class GskGLRenderer extends GskRenderer {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_gl_renderer_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates an instance of the GL renderer.
   static final _gskGlRendererNew =
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_gl_renderer_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GskGLRenderer() : this.fromPointer(_gskGlRendererNew(), owned: true);
+  GskGLRenderer() : this.rawFromPointer(_gskGlRendererNew(), owned: true);
 
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.

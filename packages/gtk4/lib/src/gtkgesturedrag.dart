@@ -11,7 +11,25 @@ part of '../gtk4.dart';
 /// [method@Gtk.GestureDrag.get_offset] and
 /// [method@Gtk.GestureDrag.get_start_point].
 class GtkGestureDrag extends GtkGestureSingle {
-  GtkGestureDrag.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkGestureDrag.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkGestureDrag>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkGestureDrag.rawFromPointer(handle, owned: owned);
+  }
+  GtkGestureDrag.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -25,12 +43,23 @@ class GtkGestureDrag extends GtkGestureSingle {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_gesture_drag_get_type',
+  ).asFunction<int Function()>()();
+
   /// Returns a newly created `GtkGesture` that recognizes drags.
   static final _gtkGestureDragNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_gesture_drag_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkGestureDrag() : this.fromPointer(_gtkGestureDragNew(), owned: true);
+  GtkGestureDrag() : this.rawFromPointer(_gtkGestureDragNew(), owned: true);
 
   /// Gets the offset from the start point.
   ///

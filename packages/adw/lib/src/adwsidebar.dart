@@ -219,7 +219,25 @@ part of '../adw.dart';
 /// `AdwSidebar` uses the [enum@Gtk.AccessibleRole.generic] role.
 class AdwSidebar extends GtkWidget
     implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
-  AdwSidebar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory AdwSidebar.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<AdwSidebar>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return AdwSidebar.rawFromPointer(handle, owned: owned);
+  }
+  AdwSidebar.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -233,12 +251,23 @@ class AdwSidebar extends GtkWidget
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = adwLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'adw_sidebar_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `AdwSidebar`.
   static final _adwSidebarNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwSidebar() : this.fromPointer(_adwSidebarNew(), owned: true);
+  AdwSidebar() : this.rawFromPointer(_adwSidebarNew(), owned: true);
 
   /// Appends @section to @self.
   static final _adwSidebarAppend =

@@ -51,8 +51,25 @@ class GtkEmojiChooser extends GtkPopover
         GtkConstraintTarget,
         GtkNative,
         GtkShortcutManager {
-  GtkEmojiChooser.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkEmojiChooser.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkEmojiChooser>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkEmojiChooser.rawFromPointer(handle, owned: owned);
+  }
+  GtkEmojiChooser.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -66,12 +83,23 @@ class GtkEmojiChooser extends GtkPopover
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_emoji_chooser_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new `GtkEmojiChooser`.
   static final _gtkEmojiChooserNew =
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_emoji_chooser_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkEmojiChooser() : this.fromPointer(_gtkEmojiChooserNew(), owned: true);
+  GtkEmojiChooser() : this.rawFromPointer(_gtkEmojiChooserNew(), owned: true);
 
   /// Emitted when the user selects an Emoji.
   int onEmojiPicked(void Function(String text) callback) {

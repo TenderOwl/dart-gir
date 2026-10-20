@@ -72,8 +72,25 @@ part of '../gtk_source5.dart';
 /// GtkSourceView library (for example for a spell-checking library that wants to
 /// read the no-spell-check region).
 class GtkSourceBuffer extends GtkTextBuffer {
-  GtkSourceBuffer.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceBuffer.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceBuffer>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceBuffer.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceBuffer.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -87,6 +104,18 @@ class GtkSourceBuffer extends GtkTextBuffer {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_buffer_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new source buffer.
   static final _gtkSourceBufferNew =
       gtkSource5Lookup<
@@ -96,7 +125,7 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >('gtk_source_buffer_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceBuffer([GtkTextTagTable? table])
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSourceBufferNew(table?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -113,7 +142,7 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >('gtk_source_buffer_new_with_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceBuffer.withLanguage(GtkSourceLanguage language)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gtkSourceBufferNewWithLanguage(language.handle),
         owned: true,
       );

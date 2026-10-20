@@ -6,7 +6,25 @@ part of '../gtk4.dart';
 /// To add filters to a `GtkEveryFilter`, use [method@Gtk.MultiFilter.append].
 class GtkEveryFilter extends GtkMultiFilter
     implements GListModel, GtkBuildable {
-  GtkEveryFilter.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkEveryFilter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkEveryFilter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkEveryFilter.rawFromPointer(handle, owned: owned);
+  }
+  GtkEveryFilter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -20,6 +38,17 @@ class GtkEveryFilter extends GtkMultiFilter
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gtk_every_filter_get_type',
+  ).asFunction<int Function()>()();
+
   /// Creates a new empty "every" filter.
   ///
   /// Use [method@Gtk.MultiFilter.append] to add filters to it.
@@ -31,7 +60,7 @@ class GtkEveryFilter extends GtkMultiFilter
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_every_filter_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkEveryFilter() : this.fromPointer(_gtkEveryFilterNew(), owned: true);
+  GtkEveryFilter() : this.rawFromPointer(_gtkEveryFilterNew(), owned: true);
 
   /// This signal is emitted whenever items were added to or removed
   /// from @list. At @position, @removed items were removed and @added

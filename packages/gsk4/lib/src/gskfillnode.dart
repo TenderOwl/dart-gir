@@ -4,7 +4,22 @@ part of '../gsk4.dart';
 /// A render node filling the area given by [struct@Gsk.Path]
 /// and [enum@Gsk.FillRule] with the child node.
 class GskFillNode extends GskRenderNode {
-  GskFillNode.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GskFillNode.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GskFillNode>(handle.address);
+    if (cached != null) {
+      return cached;
+    }
+    return GskFillNode.rawFromPointer(handle, owned: owned);
+  }
+  GskFillNode.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -17,6 +32,17 @@ class GskFillNode extends GskRenderNode {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gsk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'gsk_fill_node_get_type',
+  ).asFunction<int Function()>()();
 
   /// Creates a `GskRenderNode` that will fill the @child in the area
   /// given by @path and @fill_rule.
@@ -38,7 +64,7 @@ class GskFillNode extends GskRenderNode {
             )
           >();
   GskFillNode(GskRenderNode child, GskPath path, GskFillRule fillRule)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gskFillNodeNew(child.handle, path.handle, fillRule.value),
         owned: true,
       );

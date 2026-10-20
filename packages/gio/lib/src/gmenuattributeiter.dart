@@ -4,8 +4,25 @@ part of '../gio.dart';
 /// #GMenuAttributeIter is an opaque structure type.  You must access it
 /// using the functions below.
 class GMenuAttributeIter extends GObject {
-  GMenuAttributeIter.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GMenuAttributeIter.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GMenuAttributeIter>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GMenuAttributeIter.rawFromPointer(handle, owned: owned);
+  }
+  GMenuAttributeIter.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -18,6 +35,17 @@ class GMenuAttributeIter extends GObject {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_menu_attribute_iter_get_type',
+  ).asFunction<int Function()>()();
 
   /// Gets the name of the attribute at the current iterator position, as
   /// a string.
@@ -58,7 +86,7 @@ class GMenuAttributeIter extends GObject {
               ffi.Int32 Function(
                 ffi.Pointer<ffi.Void>,
                 ffi.Pointer<ffi.Pointer<Utf8>>,
-                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
               )
             >
           >('g_menu_attribute_iter_get_next')
@@ -66,28 +94,24 @@ class GMenuAttributeIter extends GObject {
             int Function(
               ffi.Pointer<ffi.Void>,
               ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
   (bool, String?, GVariant?) getNext() {
     final _out0 = malloc<ffi.Pointer<Utf8>>();
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
+    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
     try {
-      final _ret = _gMenuAttributeIterGetNext(
-        this.handle,
-        _out0,
-        _out1.cast<ffi.Void>(),
-      );
+      final _ret = _gMenuAttributeIterGetNext(this.handle, _out0, _out1);
       return (
         (_ret) != 0,
         stringFromNative(_out0.value.cast(), free: true)!,
-        (_out1) == ffi.nullptr
+        (_out1.value) == ffi.nullptr
             ? null
-            : GVariant.fromPointer(_out1.cast<ffi.Void>()),
+            : GVariant.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),
       );
     } finally {
       malloc.free(_out0);
+      malloc.free(_out1);
     }
   }
 

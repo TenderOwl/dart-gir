@@ -8,8 +8,25 @@ part of '../gio.dart';
 /// connection it has actually created is not directly a
 /// [class@Gio.SocketConnection].
 class GTcpWrapperConnection extends GTcpConnection {
-  GTcpWrapperConnection.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GTcpWrapperConnection.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GTcpWrapperConnection>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GTcpWrapperConnection.rawFromPointer(handle, owned: owned);
+  }
+  GTcpWrapperConnection.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -22,6 +39,17 @@ class GTcpWrapperConnection extends GTcpConnection {
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
   }
+
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType = gioLookup<ffi.NativeFunction<ffi.Size Function()>>(
+    'g_tcp_wrapper_connection_get_type',
+  ).asFunction<int Function()>()();
 
   /// Wraps @base_io_stream and @socket together as a #GSocketConnection.
   static final _gTcpWrapperConnectionNew =
@@ -40,7 +68,7 @@ class GTcpWrapperConnection extends GTcpConnection {
             )
           >();
   GTcpWrapperConnection(GIOStream baseIoStream, GSocket socket)
-    : this.fromPointer(
+    : this.rawFromPointer(
         _gTcpWrapperConnectionNew(baseIoStream.handle, socket.handle),
         owned: true,
       );

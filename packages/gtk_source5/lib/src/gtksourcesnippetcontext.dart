@@ -11,8 +11,25 @@ part of '../gtk_source5.dart';
 /// The [class@Snippet] will build the context and then expand each of the
 /// chunks during the insertion/edit phase.
 class GtkSourceSnippetContext extends GObject {
-  GtkSourceSnippetContext.fromPointer(super.handle, {super.owned})
-    : super.fromPointer();
+  /// Wraps the native object at [handle].
+  ///
+  /// The same native pointer always yields the same Dart object, so a
+  /// Dart subclass survives a round trip through native code.
+  factory GtkSourceSnippetContext.fromPointer(
+    ffi.Pointer<ffi.Void> handle, {
+    bool owned = false,
+  }) {
+    final cached = cachedObject<GtkSourceSnippetContext>(handle.address);
+    if (cached != null) {
+      if (owned) {
+        gObjectUnref(handle);
+      }
+      return cached;
+    }
+    return GtkSourceSnippetContext.rawFromPointer(handle, owned: owned);
+  }
+  GtkSourceSnippetContext.rawFromPointer(super.handle, {super.owned})
+    : super.rawFromPointer();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -26,6 +43,18 @@ class GtkSourceSnippetContext extends GObject {
     return factory(handle);
   }
 
+  /// The native `GType` of this class.
+  static int get GType => _gType;
+
+  /// The cached native `GType` of this class.
+  ///
+  /// The `get_type` function GLib exports for every registered type is
+  /// looked up once and the result is kept.
+  static final int _gType =
+      gtkSource5Lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'gtk_source_snippet_context_get_type',
+      ).asFunction<int Function()>()();
+
   /// Creates a new #GtkSourceSnippetContext.
   ///
   /// Generally, this isn't needed unless you are controlling the
@@ -35,7 +64,7 @@ class GtkSourceSnippetContext extends GObject {
         'gtk_source_snippet_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GtkSourceSnippetContext()
-    : this.fromPointer(_gtkSourceSnippetContextNew(), owned: true);
+    : this.rawFromPointer(_gtkSourceSnippetContextNew(), owned: true);
 
   /// Removes all variables from the context.
   static final _gtkSourceSnippetContextClearVariables =
