@@ -114,6 +114,15 @@
       "generated": false
     },
     {
+      "name": "dart_gobject",
+      "namespace": "",
+      "native": "",
+      "role": "Dart classes with a native type",
+      "description": "Hand-written runtime \u2014 registerDartType, the GType registry",
+      "blurb": "Registers a native GType for a Dart class, so a Dart subclass of `GObject` has a native identity (see also `docs/dart-gobjects.md`).",
+      "generated": false
+    },
+    {
       "name": "gtk_templates",
       "namespace": "",
       "native": "",
