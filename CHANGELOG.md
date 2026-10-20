@@ -10,6 +10,75 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 
 ## Unreleased
 
+### Added
+- **The project site is generated.** `site/` used to hold six hand-written
+  HTML pages whose numbers were typed by hand and had already drifted twice.
+  The sources now live in `site_src/`, and a dependency-free generator in
+  `tool/` renders them:
+  - `site_src/pages/*.md` — one Markdown file per page, with a small
+    front-matter block (`title`, `doc_title`, `description`, `nav_order`,
+    `nav_label`, `section_label`) and a deliberately small Markdown subset:
+    headings, paragraphs, lists, GFM tables, fenced code blocks, quotes,
+    rules, raw HTML, and a set of block directives (`:::{note}`,
+    `:::{figure}`, `:::{kv}`, `:::{checklist}`, `:::{phase}`, `:::{cols}`,
+    `:::{meta}`, `:::{packages}`).
+  - `tool/build_site.dart` renders `site_src/` → `site/`. `--check` fails
+    when the committed output is stale; `--serve` builds and serves the
+    result locally. `tool/build_site.dart` owns `site/*.html` and
+    `site/assets/` and never touches `site/docs/`.
+  - `tool/collect_facts.dart` derives `site_src/data/facts.json` from the
+    repository: the per-package skip counts, the aggregated coverage
+    groups, the SDK constraint, the licence, the size of the generated
+    tree and the number of generated accessors, signal helpers and async
+    overloads.
+  - `site_src/data/packages.json` is the curated package list. It replaces
+    both the hand-written coverage table on the home page and the
+    `_packageBlurbs` map that used to live in `tool/build_api_docs.dart`.
+  - `site_src/assets/style.css` is the new design system.
+
+  The generator uses only `dart:` — no `package:markdown`, no
+  `package:yaml`. `package:markdown` is not in the local pub cache, and
+  `package:yaml` would force a workspace re-resolution that breaks
+  `dart test`; CI must be able to build the site with nothing but the
+  Dart SDK.
+
+- **A numbers layer that cannot drift.** A page source carries no
+  package, skip-count or test-count number. They come from
+  `facts.json` through `{{facts.…}}` placeholders, or from a generated
+  table. A placeholder naming a fact that does not exist **fails the
+  build**, with the file and the line.
+
+- **The site generator has its own test suite**, in `test/site/`: the
+  Markdown subset element by element, the highlighter, the page shell,
+  the facts derivation, and a drift check that renders every page from
+  `site_src/` in memory and compares it with the committed `site/`. The
+  internal-link check that CI used to carry as an ad-hoc Python snippet
+  is now a Dart test.
+
+### Changed
+- **The site was redesigned.** The old pages were the recognisable
+  "default AI landing page": a blurred sticky header, an eyebrow chip,
+  pill badges, big-number stat cards and boxed two-column cells. The
+  visual direction is now a **technical dossier, set like an editorial
+  print document** — the page is the surface, and structure comes from
+  hairline rules, a 70-character measure and a strict typographic scale
+  rather than from boxes. Serif headings, sans body, mono labels; one
+  rust accent on paper; no cards, no pills, no shadows, no gradients, no
+  rounded panels, no animation. Every page gained a sticky table of
+  contents, and light and dark are peers rather than an afterthought.
+  The navigation, the footer and the API reference's landing page were
+  duplicated in every page; they are written once now.
+
+- **The API reference's landing page** (`site/docs/index.html`) is
+  rendered through the same layout as the rest of the site instead of a
+  bespoke string, and the navigation injected into the dartdoc pages was
+  restyled to the same palette. The dartdoc pages themselves are not
+  restyled — dartdoc owns that markup.
+
+- **CI checks the site.** The workflow now re-derives the facts and
+  re-renders the site, and fails if either differs from the committed
+  copy — the same rule the repository applies to the generated bindings.
+
 ### Fixed
 - **The composite-template stack renders its template.** `example/todo`
   came up as an empty window: the template was built *lazily*, on the

@@ -10,5 +10,6 @@ pubspec.lock
 # Deployed as a Pages artifact by .github/workflows/ci.yml.
 site/docs/
 
-# Node toolchain (empty today; kept for future site tooling).
+# Node toolchain (empty today; the site tooling is pure Dart — see
+# tool/build_site.dart — but kept for future tooling).
 node_modules/

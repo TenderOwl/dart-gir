@@ -1,0 +1,135 @@
+{
+  "packages": [
+    {
+      "name": "glib",
+      "namespace": "GLib 2.0",
+      "native": "libglib-2.0",
+      "role": "Foundation: types, strings, main loop, sources",
+      "blurb": "GLib 2.0 — fundamental types, main loop, file I/O, strings, hash tables, byte arrays.",
+      "generated": true
+    },
+    {
+      "name": "gobject",
+      "namespace": "GObject 2.0",
+      "native": "libgobject-2.0",
+      "role": "The object system everything else builds on",
+      "blurb": "GObject 2.0 — type system, signals, properties, closures, the GValue / GParam machinery.",
+      "generated": true
+    },
+    {
+      "name": "gio",
+      "namespace": "Gio 2.0",
+      "native": "libgio-2.0",
+      "role": "Files, async, D-Bus, networking, applications",
+      "blurb": "Gio 2.0 — file, network, settings, app, dbus — the I/O and application platform on top of GLib.",
+      "generated": true
+    },
+    {
+      "name": "gdk_pixbuf",
+      "namespace": "GdkPixbuf 2.0",
+      "native": "libgdk_pixbuf-2.0",
+      "role": "Image loading and pixel formats",
+      "blurb": "GdkPixbuf 2.0 — image loading, pixel-buffer manipulation, PNG / JPEG / ICO / animated-GIF I/O.",
+      "generated": true
+    },
+    {
+      "name": "cairo",
+      "namespace": "cairo 1.0",
+      "native": "libcairo",
+      "role": "2D vector drawing",
+      "blurb": "cairo 1.0 — 2D vector graphics: paths, surfaces, gradients, transforms, the rendering engine GTK4 paints with.",
+      "generated": true
+    },
+    {
+      "name": "pango",
+      "namespace": "Pango 1.0",
+      "native": "libpango-1.0",
+      "role": "Text shaping, fonts, layout",
+      "blurb": "Pango 1.0 — text layout, fonts, shaping, and rendering. Bridges to Freetype / Fontconfig on the C side.",
+      "generated": true
+    },
+    {
+      "name": "gdk4",
+      "namespace": "Gdk 4.0",
+      "native": "libgtk-4",
+      "role": "Display, input, GL/Vulkan contexts",
+      "blurb": "Gdk 4 — display server abstraction, surfaces, input events, clipboard, drag-and-drop, cursors.",
+      "generated": true
+    },
+    {
+      "name": "graphene",
+      "namespace": "Graphene 1.0",
+      "native": "libgraphene-1.0",
+      "role": "Vec2/Vec3/Matrix primitives",
+      "blurb": "Graphene 1.0 — SIMD-friendly vector, matrix, and quaternion primitives for graphics math.",
+      "generated": true
+    },
+    {
+      "name": "gsk4",
+      "namespace": "Gsk 4.0",
+      "native": "libgtk-4",
+      "role": "Render nodes and effects",
+      "blurb": "Gsk 4 — the scene graph kit: render nodes, renderers, shaders, transforms, the layer between GTK4 and the GPU.",
+      "generated": true
+    },
+    {
+      "name": "gtk4",
+      "namespace": "Gtk 4.0",
+      "native": "libgtk-4",
+      "role": "Widgets, dialogs, actions, settings",
+      "blurb": "Gtk 4 — the widget toolkit. Widgets, layout containers, dialogs, accessibility (GtkAccessible), templates (GtkBuildable).",
+      "generated": true
+    },
+    {
+      "name": "adw",
+      "namespace": "Adw 1",
+      "native": "libadwaita-1",
+      "role": "Application framework: header bars, toasts, styles",
+      "blurb": "Adw 1 — Libadwaita: adaptive widgets for GNOME applications (AdwApplicationWindow, AdwActionRow, AdwNavigationView, …).",
+      "generated": true
+    },
+    {
+      "name": "gtk_source5",
+      "namespace": "GtkSource 5",
+      "native": "libgtksourceview-5",
+      "role": "The code editor component",
+      "blurb": "GtkSource 5 — source-code-aware text view: language specs, syntax highlighting, code folding, gutter renderers.",
+      "generated": true
+    },
+    {
+      "name": "gi_repository3",
+      "namespace": "GIRepository 3.0",
+      "native": "libgirepository-3.0",
+      "role": "Runtime introspection metadata",
+      "blurb": "GIR typelib loader — at-runtime GIR parsing for libraries that aren't statically bound.",
+      "generated": true
+    },
+    {
+      "name": "gir_ffi",
+      "namespace": "",
+      "native": "",
+      "role": "Shared by every package above",
+      "description": "Hand-written runtime helpers — string marshalling, withNativeStringList, HeapAnchor",
+      "blurb": "Hand-written runtime helpers shared by every binding (withNativeString, withNativeStringList, HeapAnchor, g_free).",
+      "generated": false
+    },
+    {
+      "name": "gtk_templates",
+      "namespace": "",
+      "native": "",
+      "role": "Composite-template host classes",
+      "description": "Hand-written runtime — @GtkTemplate annotations, widget-class lookup, GBytes helpers",
+      "blurb": "Hand-written runtime for the composite-template stack: the @GtkTemplate annotations, widget-class lookup and template preparation.",
+      "generated": false
+    },
+    {
+      "name": "gtk_templates_builder",
+      "namespace": "",
+      "native": "",
+      "role": "Generates the template mixins",
+      "description": "Hand-written build_runner builder — scanner, codegen, CLI",
+      "blurb": "`build_runner` builder for the `@GtkTemplate` annotation pipeline (see also `gtk_templates`).",
+      "generated": false
+    }
+  ]
+}

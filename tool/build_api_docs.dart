@@ -2,10 +2,10 @@
 //
 // Runs `dart doc` once per workspace package, drops the output under
 // `site/docs/<package>/` so each package has its own docs subdirectory
-// that mirrors pub.dev's per-package URL layout. Then writes a hand-
-// crafted landing page at `site/docs/index.html` that lists every
-// package with a one-line description and links into each docs
-// subdirectory.
+// that mirrors pub.dev's per-package URL layout. Then renders a landing
+// page at `site/docs/index.html` through the site's own layout, so the
+// API reference looks like the rest of the site instead of carrying a
+// second, bespoke design.
 //
 // Usage:
 //   dart run tool/build_api_docs.dart [--verbose]
@@ -16,57 +16,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'build_site.dart';
+import 'site/facts.dart';
+import 'site/layout.dart';
+import 'site/markdown.dart';
+
 const String _pubspecFile = 'pubspec.yaml';
 const String _outputDir = 'site/docs';
-
-/// One-line descriptions for the API landing page's package index.
-const Map<String, String> _packageBlurbs = {
-  'gir_ffi':
-      'Hand-written runtime helpers shared by every binding '
-      '(withNativeString, withNativeStringList, HeapAnchor, g_free).',
-  'glib':
-      'GLib 2.0 — fundamental types, main loop, file I/O, strings, '
-      'hash tables, byte arrays.',
-  'gobject':
-      'GObject 2.0 — type system, signals, properties, closures, '
-      'the GValue / GParam machinery.',
-  'gio':
-      'Gio 2.0 — file, network, settings, app, dbus — the I/O and '
-      'application platform on top of GLib.',
-  'gdk_pixbuf':
-      'GdkPixbuf 2.0 — image loading, pixel-buffer manipulation, '
-      'PNG / JPEG / ICO / animated-GIF I/O.',
-  'cairo':
-      'cairo 1.0 — 2D vector graphics: paths, surfaces, gradients, '
-      'transforms, the rendering engine GTK4 paints with.',
-  'pango':
-      'Pango 1.0 — text layout, fonts, shaping, and rendering. '
-      'Bridges to Freetype / Fontconfig on the C side.',
-  'gdk4':
-      'Gdk 4 — display server abstraction, surfaces, input events, '
-      'clipboard, drag-and-drop, cursors.',
-  'graphene':
-      'Graphene 1.0 — SIMD-friendly vector, matrix, and quaternion '
-      'primitives for graphics math.',
-  'gsk4':
-      'Gsk 4 — the scene graph kit: render nodes, renderers, '
-      'shaders, transforms, the layer between GTK4 and the GPU.',
-  'gtk4':
-      'Gtk 4 — the widget toolkit. Widgets, layout containers, '
-      'dialogs, accessibility (GtkAccessible), templates (GtkBuildable).',
-  'adw':
-      'Adw 1 — Libadwaita: adaptive widgets for GNOME applications '
-      '(AdwApplicationWindow, AdwActionRow, AdwNavigationView, …).',
-  'gtk_source5':
-      'GtkSource 5 — source-code-aware text view: language '
-      'specs, syntax highlighting, code folding, gutter renderers.',
-  'gi_repository3':
-      'GIR typelib loader — at-runtime GIR parsing for '
-      'libraries that aren\'t statically bound.',
-  'gtk_templates_builder':
-      '`build_runner` builder for the `@Template` '
-      'annotation pipeline (see also `gtk_templates`).',
-};
 
 Future<void> main(List<String> args) async {
   final verbose = args.contains('--verbose') || args.contains('-v');
@@ -141,46 +97,7 @@ Set<String> _readWorkspacePackages() {
     stderr.writeln('build_api_docs: $_pubspecFile not found');
     exit(2);
   }
-  return _parseWorkspaceList(pubspec.readAsStringSync());
-}
-
-/// Hand-rolled mini-parser for the `workspace:` section of
-/// `pubspec.yaml`. Avoids pulling `package:yaml` (which would force
-/// a re-resolution of the workspace's `analyzer` constraint and
-/// break `dart test`).
-Set<String> _parseWorkspaceList(String content) {
-  final lines = content.split('\n');
-  var inWorkspace = false;
-  final packages = <String>{};
-  for (final raw in lines) {
-    final line = raw.trimRight();
-    if (line.startsWith('workspace:')) {
-      inWorkspace = line.endsWith(':') || line == 'workspace:';
-      continue;
-    }
-    if (!inWorkspace) continue;
-    if (line.isEmpty || line.startsWith('#')) continue;
-    if (!line.startsWith(' ') && !line.startsWith('\t')) {
-      // Out of the workspace section (top-level key).
-      inWorkspace = false;
-      continue;
-    }
-    // Match `  - packages/<name>` and `  - example` / `  - generator`.
-    final dash = line.indexOf('-');
-    if (dash < 0) continue;
-    final entry = line.substring(dash + 1).trim();
-    if (entry.startsWith('packages/')) {
-      packages.add(entry.substring('packages/'.length));
-    }
-  }
-  if (packages.isEmpty) {
-    stderr.writeln(
-      'build_api_docs: $_pubspecFile has no `workspace:` list — '
-      'expected the 14 binding package directories.',
-    );
-    exit(2);
-  }
-  return packages;
+  return parseWorkspaceList(pubspec.readAsStringSync());
 }
 
 class _Counts {
@@ -221,71 +138,113 @@ _Counts _countOutput(String pkg) {
   return _Counts(classes, members);
 }
 
+/// Renders the API reference landing page through the site's own layout.
+///
+/// The page lives one directory down, so every link and the stylesheet
+/// reference are prefixed with `../`.
 void _writeLandingPage(
   List<String> packages, {
   required void Function(String) log,
 }) {
-  final cards = <String>[];
+  final root = Directory.current.path;
+  final curated = readPackages('$root/$sourceDirectory/data/packages.json');
+  final factsFile = File('$root/$sourceDirectory/data/facts.json');
+  final facts = factsFile.existsSync()
+      ? Facts.decode(factsFile.readAsStringSync())
+      : const Facts(<String, Object?>{});
+
+  final byName = <String, PackageEntry>{
+    for (final package in curated) package.name: package,
+  };
+
+  final rows = StringBuffer();
+  var missing = <String>[];
   for (final pkg in packages) {
-    final blurb =
-        _packageBlurbs[pkg] ??
-        // Fallback blurb for any package we don't have a hard-coded
-        // entry for. The drift check below warns about missing entries.
-        'GIR-derived Dart FFI bindings for $pkg.';
-    cards.add(
-      '<li><a href="$pkg/">$pkg</a> '
-      '<span class="docs-pkg-blurb">— ${_escapeHtml(blurb)}</span></li>',
+    final entry = byName[pkg];
+    if (entry == null) {
+      missing.add(pkg);
+      rows.write(
+        '<div class="kv-row"><dt>${_escapeHtml(pkg)}</dt>'
+        '<dd>GIR-derived Dart FFI bindings for ${_escapeHtml(pkg)}.</dd></div>',
+      );
+      continue;
+    }
+    rows.write(
+      '<div class="kv-row"><dt><code>${_escapeHtml(entry.name)}</code></dt>'
+      '<dd>${_escapeHtml(entry.blurb)}</dd></div>',
     );
   }
 
-  final html =
-      '''<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>dart-gir API reference</title>
-<meta name="description" content="Generated API reference for the dart-gir workspace: ${packages.length} Dart FFI packages for GLib, GObject, Gio, Cairo, Pango, GTK4, libadwaita, and the rest of the GObject stack.">
-<link rel="stylesheet" href="../assets/style.css">
-<style>
-body { max-width: 880px; margin: 0 auto; padding: 32px 24px 64px; color: var(--text); background: var(--bg); font-family: system-ui, -apple-system, sans-serif; }
-.docs-list { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 12px; }
-.docs-list li { padding: 14px 18px; border: 1px solid var(--hairline, #d8d8d8); border-radius: 8px; background: var(--panel, #fafafa); }
-.docs-list a { color: var(--link, #0175C2); font-weight: 600; font-size: 16px; text-decoration: none; font-family: ui-monospace, SFMono-Regular, monospace; }
-.docs-list a:hover { text-decoration: underline; }
-.docs-pkg-blurb { color: var(--text-2, #555); font-size: 14px; margin-left: 4px; }
-.docs-back { display: inline-block; margin-bottom: 24px; color: var(--link, #0175C2); text-decoration: none; font-size: 14px; }
-.docs-back:hover { text-decoration: underline; }
-h1 { font-size: 28px; margin: 0 0 8px 0; }
-.lead { color: var(--text-2, #555); margin: 0 0 24px 0; font-size: 16px; line-height: 1.55; }
-</style>
-</head>
-<body>
-<a class="docs-back" href="../">\u2190 dart-gir home</a>
-<h1>API reference</h1>
-<p class="lead">
-Generated documentation for the <strong>${packages.length}</strong> packages
-in the dart-gir workspace. Each link opens that package's API landing page.
-Type names and method signatures link to the live docs; cross-package
-references resolve through the public <code>docs/&lt;pkg&gt;/</code> URL space.
-</p>
-<ul class="docs-list">
-${cards.join('\n')}
-</ul>
-</body>
-</html>
-''';
+  final nav = siteNav(readPageSources(root, facts));
+  final sections = const <Section>[
+    Section(
+      number: '01',
+      id: 'packages',
+      title: 'The packages',
+      blocks: <MarkdownBlock>[],
+    ),
+    Section(
+      number: '02',
+      id: 'about',
+      title: 'About this reference',
+      blocks: <MarkdownBlock>[],
+    ),
+  ];
+  final content = StringBuffer()
+    ..write(
+      '<p class="lede">Generated documentation for the '
+      '<strong>${packages.length}</strong> packages in the dart-gir '
+      'workspace. Each entry opens that package\'s API landing page; type '
+      'names and method signatures link to the live docs, and '
+      'cross-package references resolve through the public '
+      '<code>docs/&lt;pkg&gt;/</code> URL space.</p>',
+    )
+    ..write(
+      '<section class="section" id="packages">'
+      '<h2 class="section-title">'
+      '<span class="section-num">01</span>The packages</h2>'
+      '<dl class="kv">$rows</dl></section>',
+    )
+    ..write(
+      '<section class="section" id="about">'
+      '<h2 class="section-title">'
+      '<span class="section-num">02</span>About this reference</h2>'
+      '<p>These pages are produced by <code>dart doc</code> from the '
+      'committed <code>packages/&lt;lib&gt;/lib/src/*.dart</code> — the '
+      'generated source itself, not a copy. Every doc comment in the '
+      'reference therefore comes from the upstream GIR file the generator '
+      'read, or from the generator\'s own emission.</p>'
+      '<p>The <a href="../index.html">home page</a> carries the prose; this '
+      'reference carries the signatures.</p></section>',
+    );
+
+  final html = renderSitePage(
+    SitePage(
+      title: 'API reference',
+      docTitle: 'dart-gir API reference',
+      description:
+          'Generated API reference for the dart-gir workspace: '
+          '${packages.length} Dart FFI packages for GLib, GObject, Gio, '
+          'Cairo, Pango, GTK4, libadwaita, and the rest of the GObject '
+          'stack.',
+      kicker: 'Generated reference',
+      ogType: 'website',
+      basePath: '../',
+      activePath: 'docs/',
+      nav: nav,
+      sections: sections,
+      railFacts: siteRailFacts(facts, curated),
+      content: content.toString(),
+      footerColumns: footerColumns,
+    ),
+  );
 
   File('$_outputDir/index.html').writeAsStringSync(html);
 
-  // Drift check: warn if any package lacks a curated blurb. Easy to add
-  // new entries; we'd rather see the warning than silently ship the
-  // generic fallback.
-  final missing = packages.where((p) => !_packageBlurbs.containsKey(p));
   if (missing.isNotEmpty) {
     log(
-      'warning: ${missing.length} package(s) have no blurb in '
-      '_packageBlurbs: ${missing.join(', ')}',
+      'warning: ${missing.length} package(s) have no entry in '
+      '$sourceDirectory/data/packages.json: ${missing.join(', ')}',
     );
   }
 }
@@ -337,28 +296,36 @@ void _patchPage(File file, String currentPkg, List<String> allPackages) {
   // so the user always sees where they are.
   final header =
       '<div class="docs-site-nav">'
-      '<a class="docs-site-nav-home" href="$mainSite">\u2190 dart-gir home</a>'
-      '<span class="docs-site-nav-sep">\u00b7</span>'
+      '<a class="docs-site-nav-home" href="$mainSite">← dart-gir home</a>'
+      '<span class="docs-site-nav-sep">·</span>'
       '<a class="docs-site-nav-api" href="$apiHome">API reference</a>'
-      '<span class="docs-site-nav-sep">\u00b7</span>'
+      '<span class="docs-site-nav-sep">·</span>'
       '<span class="docs-site-nav-current">$currentPkg</span>'
       '</div>';
 
   // CSS shim that styles the header without overriding dartdoc's own
   // styling. Inlined into the first <style> block we find, falling
-  // back to a fresh <style> in <head>.
+  // back to a fresh <style> in <head>. The palette is the site's own —
+  // paper, ink, hairline, rust — so the reference does not look like a
+  // different website pasted into the same page.
   final css =
       '<style>'
-      '.docs-site-nav{display:flex;align-items:center;gap:12px;'
-      'padding:10px 24px;background:#f5f5f7;'
-      'border-bottom:1px solid #dadce0;font-family:system-ui,-apple-system,sans-serif;'
-      'font-size:14px;line-height:1.4;}'
-      '.docs-site-nav a{color:#0175C2;text-decoration:none;font-weight:600;}'
+      '.docs-site-nav{display:flex;align-items:baseline;gap:0.9rem;'
+      'flex-wrap:wrap;padding:0.7rem 1.6rem;background:#fbfaf7;'
+      'border-bottom:1px solid #e3e0d9;'
+      'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;'
+      'font-size:12.5px;letter-spacing:0.04em;color:#5b6068;}'
+      '.docs-site-nav a{color:#9c3d12;text-decoration:none;}'
       '.docs-site-nav a:hover{text-decoration:underline;}'
-      '.docs-site-nav-sep{color:#999;}'
-      '.docs-site-nav-current{color:#111;font-weight:600;'
-      'font-family:ui-monospace,SFMono-Regular,monospace;}'
+      '.docs-site-nav-sep{color:#c9c5bb;}'
+      '.docs-site-nav-current{color:#17181c;font-weight:600;}'
       '.docs-other-pkgs{margin:0;padding:0;}'
+      '@media (prefers-color-scheme: dark){'
+      '.docs-site-nav{background:#121316;border-bottom-color:#2a2d31;'
+      'color:#9aa0a8;}'
+      '.docs-site-nav a{color:#e08a5f;}'
+      '.docs-site-nav-sep{color:#3b4046;}'
+      '.docs-site-nav-current{color:#e9e7e2;}}'
       '</style>';
 
   // Skip the patch if we've already done it (idempotent).

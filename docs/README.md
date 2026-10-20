@@ -13,6 +13,7 @@ discoverable from `git ls-files` and easy to link from PRs.
 | [templates.md](./templates.md) | The composite-template stack: annotation surface, scanner plan, the one-part-file-per-source convention, codegen output contract, runtime init order, the callback trampoline, known limits |
 | [subclassing.md](./subclassing.md) | Dart-level subclassing of the generated wrappers: the extendable contract, ownership and lifetime rules, what a covariant override promises, and what a Dart subclass is not |
 | [skip-categories.md](./skip-categories.md) | Every category and reason that shows up in `packages/<lib>/skip_report.txt`, alphabetised |
+| [site.md](./site.md) | The site pipeline: the Markdown subset, the block directives, the facts layer, the design system and the drift checks |
 
 ## Where to start
 
@@ -27,3 +28,6 @@ discoverable from `git ls-files` and easy to link from PRs.
   [subclassing.md](./subclassing.md).
 * **Modifying the generator** — read [emission.md](./emission.md) and
   [type-system.md](./type-system.md) end to end.
+* **Changing the project site** — read [site.md](./site.md). The site's
+  sources live in `site_src/`; the output in `site/` is generated and
+  must not be edited by hand.
