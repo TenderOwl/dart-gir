@@ -13,6 +13,7 @@ class _TemplateChildSpec {
 }
 
 const String _$TodoWindowTemplate_xml = '''
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="TodoWindow" parent="AdwApplicationWindow">
     <property name="default-width">800</property>
@@ -49,6 +50,7 @@ const String _$TodoWindowTemplate_xml = '''
                 <object class="GtkButton" id="button">
                   <property name="label">Click me</property>
                   <property name="halign">center</property>
+                  <property name="css-classes">suggested-action</property>
                   <signal name="clicked" handler="on_clicked"/>
                 </object>
               </child>
