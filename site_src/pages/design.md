@@ -22,6 +22,9 @@ One command reads GIR files and writes one package per namespace. Nothing in bet
     <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
       <path d="M0 0 L8 4 L0 8 z" fill="currentColor"/>
     </marker>
+    <marker id="ahd" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="currentColor"/>
+    </marker>
   </defs>
 
   <!-- stage 1: CLI -->
@@ -78,18 +81,21 @@ One command reads GIR files and writes one package per namespace. Nothing in bet
   <rect class="d-node-accent" x="464" y="268" width="504" height="26" rx="2"/>
   <text class="d-label" x="480" y="285">skip_report.txt — every unemitted symbol, with its reason</text>
 
-  <!-- connectors row 1 -->
-  <g color="var(--text-3)">
+  <!-- connectors row 1 — the arrowhead takes currentColor from the
+       path, so the group sets it to the stroke colour -->
+  <g color="var(--muted)">
     <path class="d-arrow" d="M214 60 H250" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M462 60 H498" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M710 60 H746" marker-end="url(#ah)"/>
   </g>
 
   <!-- resolver down to emitter row, then fan to outputs -->
-  <g color="var(--text-3)">
-    <path class="d-dash" d="M860 98 V128 H108 V150" marker-end="url(#ah)"/>
-    <path class="d-dash" d="M860 98 V128 H356 V150" marker-end="url(#ah)"/>
-    <path class="d-dash" d="M860 98 V128 H604 V150" marker-end="url(#ah)"/>
+  <g color="var(--rule-strong)">
+    <path class="d-dash" d="M860 98 V128 H108 V150" marker-end="url(#ahd)"/>
+    <path class="d-dash" d="M860 98 V128 H356 V150" marker-end="url(#ahd)"/>
+    <path class="d-dash" d="M860 98 V128 H604 V150" marker-end="url(#ahd)"/>
+  </g>
+  <g color="var(--muted)">
     <path class="d-arrow" d="M108 222 V262" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M356 222 V262" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M604 222 V262" marker-end="url(#ah)"/>
@@ -185,11 +191,13 @@ Almost every memory bug in a hand-written FFI binding comes from one question: h
   <text class="d-label" x="24" y="68">after the call returns?</text>
 
   <!-- branch labels -->
-  <path class="d-arrow" d="M158 88 V120" marker-end="url(#ah2)"/>
-  <text class="d-sub" x="168" y="110">no</text>
-  <path class="d-arrow" d="M310 57 H392"/>
-  <path class="d-arrow" d="M386 52 L392 57 L386 62" marker-end="url(#ah2)"/>
-  <text class="d-sub" x="326" y="48">yes</text>
+  <g color="var(--muted)">
+    <path class="d-arrow" d="M158 88 V120" marker-end="url(#ah2)"/>
+    <text class="d-sub" x="168" y="110">no</text>
+    <path class="d-arrow" d="M310 57 H392"/>
+    <path class="d-arrow" d="M386 52 L392 57 L386 62" marker-end="url(#ah2)"/>
+    <text class="d-sub" x="326" y="48">yes</text>
+  </g>
 
   <!-- left: sync -->
   <text class="d-sub" x="90" y="160">synchronous</text>
@@ -280,6 +288,7 @@ Other conventions worth knowing before opening a pull request:
 | [async.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/async.md) | The `*Callback` overloads and when the temporary-trampoline model is unsafe |
 | [templates.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/templates.md) | The composite-template stack: the annotation surface, the codegen contract and the runtime init order |
 | [subclassing.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/subclassing.md) | What a Dart-level subclass of a generated wrapper is, and what it is not |
+| [branch-state.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/branch-state.md) | What is committed on `main` and what is not: the verified branch comparison and how to reproduce it |
 | [skip-categories.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/skip-categories.md) | Every category and reason that appears in a skip report, alphabetised |
 
 - [See what the design still needs](roadmap.html) →

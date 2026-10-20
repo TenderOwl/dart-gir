@@ -21,7 +21,7 @@ Phases are ordered by what unblocks the most users, not by what is most fun. Eve
 | 2 | Prove it at runtime | in progress | CI that makes real native GTK calls; a loading failure says why |
 | 3 | Arrays and collections | next | Array-typed parameters, properties and returns are emitted |
 | 4 | Cross-platform | planned | Linux, macOS and Windows loaders; a macOS CI job |
-| 5 | Subclassing & composite templates | half landed | Templates on `main`; subclassing documented, tested and covered by CI |
+| 5 | Subclassing & composite templates | landed | Both halves on `main`; the prototype branch is ready to be retired |
 | 6 | Distribute | planned | Semver policy, pub.dev packages, documented stability level |
 | 7 | More namespaces | exploratory | Only after phases 2–5; driven by real demand |
 
@@ -112,30 +112,30 @@ Linux is the only platform that has ever run this. macOS is the next target beca
 :::
 
 :::{phase status=wip} Phase 5 — Subclassing and composite templates
-The capability that most clearly decides whether this project is a set of bindings or a toolkit for building real GTK applications. It splits in two, and the two halves are in different places.
+The capability that most clearly decides whether this project is a set of bindings or a toolkit for building real GTK applications. It splits in two — and both halves have now been checked against the committed trees, not against a working copy.
 
-**The composite-template half is on `main` now.** Two packages ship it: `packages/gtk_templates` (the annotations and runtime helpers) and `packages/gtk_templates_builder` (the AST scanner, the codegen, the `build_runner` builder and a standalone CLI). The builder writes one part file per source file beside the source, and the design is written down in `docs/templates.md`. A worked example lives in `example/todo/`, and CI builds it and analyzes the result on every push.
+**The composite-template half is on `main`.** Two packages ship it: `packages/gtk_templates` (the annotations and runtime helpers) and `packages/gtk_templates_builder` (the AST scanner, the codegen, the `build_runner` builder and a standalone CLI). The builder writes one part file per source file beside the source, and the design is written down in `docs/templates.md`. A worked example lives in `example/todo/`, and CI builds it and analyzes the result on every push.
 
-**The subclassing half turned out to be mostly already on `main`.** The generated classes are emitted as `class`, not `final class`, and the props companions are public and extendable — so a user-side subclass, a covariant return-type override and a subclassed props companion all compile. What was missing was the rest of the story: the contract was not pinned by a test, and the ownership and lifetime rules were nowhere written down. Both are now in place — the generator asserts the extendable contract, and `docs/subclassing.md` states what a Dart subclass is and is not.
+**The subclassing half is on `main` too.** The generated classes are emitted as `class`, not `final class`, and the props companions are public and extendable — so a user-side subclass, a covariant return-type override and a subclassed props companion all compile. The contract is pinned by the *Dart-level subclassing contract* group in the generator's tests, exercised against real GTK types in `packages/gtk4/test/gtk4_subclass_test.dart`, and its ownership and lifetime rules are written down in `docs/subclassing.md`.
 
-The `composite-templates` branch itself is **not being merged**. It holds two commits, based on `ed5ce0f`, now behind `main`, and its design has diverged from what landed: it emits a `<class>.gtk_templates.dart` per class, uses program-lifetime `NativeCallable` trampolines, and carries Blueprint, GResource, Meson and gettext scaffolding. The landed design uses one `<source>.g.dart` part file per source file and per-instance closures. Merging the branch would mean merging both designs at once; re-implementing the one genuinely new capability on top of the landed half is less work and produces a smaller diff.
+**The `composite-templates` branch has nothing left to merge.** Its merge-base with `main` is `ed5ce0f7` — *"feat: add subclasssing"* — which is the subclassing commit itself, so that capability was already on `main` before the branch started and was never the branch's to deliver. The branch adds two commits on top of that point, and everything they contain is packaging or an older internal layout: Blueprint and GResource templates, Meson and gettext scaffolding, one part file per class instead of one per source file, program-lifetime `NativeCallable` trampolines. The landed design uses one `<source>.g.dart` part file per source file and per-instance closures. `docs/branch-state.md` has the item-by-item comparison and the four commands that reproduce it.
 
-- **Dart-level subclassing of generated wrappers.** Generated classes are emitted as `class` rather than `final class` and props classes as public extendable companions, precisely so that a Dart subclass can override a method for a covariant return type across a package boundary. *Already on `main` — the contract is now pinned by a generator test and documented in `docs/subclassing.md`.*
-- **The composite-template stack** — `@GtkTemplate`, `@GtkTemplateChild` and `@GtkTemplateCallback` annotations, a scanner, a codegen, a `build_runner` builder, a standalone CLI, and the runtime helpers they need. *Landed on `main`.*
+- **Dart-level subclassing of generated wrappers.** Generated classes are emitted as `class` rather than `final class` and props classes as public extendable companions, precisely so that a Dart subclass can override a method for a covariant return type across a package boundary. *On `main` — the contract is pinned by a generator test and documented in `docs/subclassing.md`.*
+- **The composite-template stack** — `@GtkTemplate`, `@GtkTemplateChild` and `@GtkTemplateCallback` annotations, a scanner, a codegen, a `build_runner` builder, a standalone CLI, and the runtime helpers they need. *On `main`.*
 - **Signal trampolines.** The landed design connects each `<signal>` to the user's instance method with a per-instance closure that lives as long as the widget. The branch instead used program-lifetime `NativeCallable`s. The per-instance closure is the smaller surface and the one that is documented.
 - **A real consumer app**: `example/todo/`, a libadwaita counter built on a `@GtkTemplate` host class with an inline XML template. The branch's version was larger — Blueprint (`.blp`) and XML (`.ui`) templates, a `GResource` bundle, Meson integration, gettext catalogues and an icon — but none of that packaging is in scope for a binding generator.
 
 #### What "done" means
 
 :::{checklist}
-[ ] Dart-level subclassing lands on `main` as a re-implementation, with `dart analyze` clean and the regenerated packages included in the same change.
-[ ] The regenerated packages are covered by CI, not just by a maintainer's machine.
-[ ] Subclass registration is documented as supported, with its own lifetime rules written down, rather than left as a pattern the reader has to infer from an example.
-[ ] The `composite-templates` branch is retired once its one remaining capability is on `main`.
+[x] Dart-level subclassing is on `main`, with `dart analyze` clean and the regenerated packages included in the same change.
+[x] The regenerated packages are covered by CI: `dart analyze` runs over the whole workspace and the generator tests assert the emitted shape. The *native* runtime tests still wait for phase 2's GTK-enabled job.
+[x] Subclass registration is documented as supported, with its own lifetime rules written down, rather than left as a pattern the reader has to infer from an example.
+[ ] The `composite-templates` ref is deleted. Its condition — the last remaining capability being on `main` — is met; deleting the ref is the last mechanical step, and it is the only thing this phase is still waiting for.
 :::
 
 :::{note}
-**Sequencing note:** this is listed after the runtime phase on purpose. Phase 2's GTK-enabled CI job remains the precondition: shipping generated output that no CI job has ever executed would trade a visible gap for an invisible one. The template half does not wait for it — it is pure Dart, so CI can build and analyze it today. The subclassing half changes the generated packages, so it should not land until CI can make real native GTK calls.
+**Sequencing note:** this phase was listed after the runtime phase on purpose — shipping generated output that no CI job has ever executed would trade a visible gap for an invisible one. The template half did not wait for it, because it is pure Dart: CI builds and analyzes `example/todo` today. The subclassing half changed the generated packages, and it landed before phase 2's GTK-enabled job existed; that gap is tracked by phase 2, not here.
 :::
 :::
 

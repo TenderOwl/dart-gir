@@ -9,6 +9,12 @@ The worked example lives in
 [`packages/gtk4/test/gtk4_subclass_test.dart`](../packages/gtk4/test/gtk4_subclass_test.dart);
 every claim below is exercised there.
 
+> **Status: on `main`.** The contract described here is committed — the
+> generator test that pins it is in `main`, and the `composite-templates`
+> branch, the last place it could have been waiting, is a superseded
+> prototype. See [branch-state.md](./branch-state.md) for the comparison
+> and for how to re-check it.
+
 ---
 
 ## 1. What is supported

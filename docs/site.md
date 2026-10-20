@@ -215,8 +215,13 @@ The rules the stylesheet holds itself to:
 
 - No border-radius above 2px, no shadows, no gradients, no background
   panels, no emoji, no animated reveals.
-- One accent (rust), used for links, the active navigation item, the
-  section numbers and the SVG diagrams.
+- One accent — **Dart's blue**: `#0175C2` in light mode and its lighter
+  sibling `#13B9FD` in dark — used for links, the active navigation item,
+  the section numbers and the SVG diagrams. The neutrals are not grey:
+  paper, ink and every rule between them carry a little blue, so the
+  accent belongs to the sheet instead of sitting on top of it.
+  `--accent-strong` is the same hue one step deeper, used where the
+  accent carries small type (code keywords) and on hover.
 - Every interactive element keeps a visible `:focus-visible` ring.
 - The current page is exposed with `aria-current="page"`.
 

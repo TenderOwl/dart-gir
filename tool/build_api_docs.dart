@@ -306,26 +306,28 @@ void _patchPage(File file, String currentPkg, List<String> allPackages) {
   // CSS shim that styles the header without overriding dartdoc's own
   // styling. Inlined into the first <style> block we find, falling
   // back to a fresh <style> in <head>. The palette is the site's own —
-  // paper, ink, hairline, rust — so the reference does not look like a
-  // different website pasted into the same page.
+  // paper, ink, hairline, Dart blue — so the reference does not look
+  // like a different website pasted into the same page. The values
+  // mirror `site_src/assets/style.css`; keep the two in step.
   final css =
       '<style>'
       '.docs-site-nav{display:flex;align-items:baseline;gap:0.9rem;'
-      'flex-wrap:wrap;padding:0.7rem 1.6rem;background:#fbfaf7;'
-      'border-bottom:1px solid #e3e0d9;'
+      'flex-wrap:wrap;padding:0.7rem 1.6rem;background:#fafbfd;'
+      'border-bottom:1px solid #dde4ee;'
       'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;'
-      'font-size:12.5px;letter-spacing:0.04em;color:#5b6068;}'
-      '.docs-site-nav a{color:#9c3d12;text-decoration:none;}'
-      '.docs-site-nav a:hover{text-decoration:underline;}'
-      '.docs-site-nav-sep{color:#c9c5bb;}'
-      '.docs-site-nav-current{color:#17181c;font-weight:600;}'
+      'font-size:12.5px;letter-spacing:0.04em;color:#566274;}'
+      '.docs-site-nav a{color:#0175c2;text-decoration:none;}'
+      '.docs-site-nav a:hover{color:#01589b;text-decoration:underline;}'
+      '.docs-site-nav-sep{color:#c2ccdb;}'
+      '.docs-site-nav-current{color:#10151d;font-weight:600;}'
       '.docs-other-pkgs{margin:0;padding:0;}'
       '@media (prefers-color-scheme: dark){'
-      '.docs-site-nav{background:#121316;border-bottom-color:#2a2d31;'
-      'color:#9aa0a8;}'
-      '.docs-site-nav a{color:#e08a5f;}'
-      '.docs-site-nav-sep{color:#3b4046;}'
-      '.docs-site-nav-current{color:#e9e7e2;}}'
+      '.docs-site-nav{background:#0d1117;border-bottom-color:#212936;'
+      'color:#96a1b2;}'
+      '.docs-site-nav a{color:#13b9fd;}'
+      '.docs-site-nav a:hover{color:#5ec9fb;}'
+      '.docs-site-nav-sep{color:#333d4d;}'
+      '.docs-site-nav-current{color:#e7ecf3;}}'
       '</style>';
 
   // Skip the patch if we've already done it (idempotent).

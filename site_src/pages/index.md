@@ -150,7 +150,7 @@ The generated output is disposable: change the generator, rerun one command, and
   <!-- emitter fan-out from resolver down to both outputs -->
   <path class="d-dash" d="M760 86 V112 H210 V132"/>
   <path class="d-dash" d="M760 86 V112 H633 V132"/>
-  <circle cx="760" cy="86" r="2.5" fill="currentColor" opacity="0.4"/>
+  <circle cx="760" cy="86" r="2.5" fill="var(--muted)" opacity="0.4"/>
 </svg>
 :::
 

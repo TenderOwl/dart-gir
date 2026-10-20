@@ -62,6 +62,9 @@
     <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
       <path d="M0 0 L8 4 L0 8 z" fill="currentColor"/>
     </marker>
+    <marker id="ahd" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="currentColor"/>
+    </marker>
   </defs>
 
   <!-- stage 1: CLI -->
@@ -118,18 +121,21 @@
   <rect class="d-node-accent" x="464" y="268" width="504" height="26" rx="2"/>
   <text class="d-label" x="480" y="285">skip_report.txt — every unemitted symbol, with its reason</text>
 
-  <!-- connectors row 1 -->
-  <g color="var(--text-3)">
+  <!-- connectors row 1 — the arrowhead takes currentColor from the
+       path, so the group sets it to the stroke colour -->
+  <g color="var(--muted)">
     <path class="d-arrow" d="M214 60 H250" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M462 60 H498" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M710 60 H746" marker-end="url(#ah)"/>
   </g>
 
   <!-- resolver down to emitter row, then fan to outputs -->
-  <g color="var(--text-3)">
-    <path class="d-dash" d="M860 98 V128 H108 V150" marker-end="url(#ah)"/>
-    <path class="d-dash" d="M860 98 V128 H356 V150" marker-end="url(#ah)"/>
-    <path class="d-dash" d="M860 98 V128 H604 V150" marker-end="url(#ah)"/>
+  <g color="var(--rule-strong)">
+    <path class="d-dash" d="M860 98 V128 H108 V150" marker-end="url(#ahd)"/>
+    <path class="d-dash" d="M860 98 V128 H356 V150" marker-end="url(#ahd)"/>
+    <path class="d-dash" d="M860 98 V128 H604 V150" marker-end="url(#ahd)"/>
+  </g>
+  <g color="var(--muted)">
     <path class="d-arrow" d="M108 222 V262" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M356 222 V262" marker-end="url(#ah)"/>
     <path class="d-arrow" d="M604 222 V262" marker-end="url(#ah)"/>
@@ -163,11 +169,13 @@ _connectSignal_v_0                          <span class="tok-c">// void (*)(void
   <text class="d-label" x="24" y="68">after the call returns?</text>
 
   <!-- branch labels -->
-  <path class="d-arrow" d="M158 88 V120" marker-end="url(#ah2)"/>
-  <text class="d-sub" x="168" y="110">no</text>
-  <path class="d-arrow" d="M310 57 H392"/>
-  <path class="d-arrow" d="M386 52 L392 57 L386 62" marker-end="url(#ah2)"/>
-  <text class="d-sub" x="326" y="48">yes</text>
+  <g color="var(--muted)">
+    <path class="d-arrow" d="M158 88 V120" marker-end="url(#ah2)"/>
+    <text class="d-sub" x="168" y="110">no</text>
+    <path class="d-arrow" d="M310 57 H392"/>
+    <path class="d-arrow" d="M386 52 L392 57 L386 62" marker-end="url(#ah2)"/>
+    <text class="d-sub" x="326" y="48">yes</text>
+  </g>
 
   <!-- left: sync -->
   <text class="d-sub" x="90" y="160">synchronous</text>
@@ -209,7 +217,7 @@ src/
   enums_0.dart …              // enumerations, bitfields
   functions_0.dart …          // namespace functions, constants
   callbacks_0.dart …          // callback typedefs
-skip_report.txt</code></pre></div><p>All per-class files are <code>part of</code> the same library, so forward references resolve naturally and the public surface is unchanged — <code>import 'package:gtk4/gtk4.dart'</code> exposes the same names as before. The practical benefit is navigational: <code>Ctrl+Click</code> on <code>GtkButton</code> lands in <code>gtkbutton.dart</code> instead of <code>classes_27.dart</code>.</p></section><section class="section" id="contributing-conventions"><h2 class="section-title"><span class="section-num">07</span>Contributing conventions</h2><p>The repository carries an <code>AGENTS.md</code> that defines the workflow and conventions for both humans and AI agents, including a rule that matters more than the rest:</p><aside class="note"><p><strong>Never hand-edit generated code.</strong> Changes belong in the generator, and a pull request that modifies <code>packages/&lt;lib&gt;/lib/</code> by hand is wrong by definition — because the next regeneration will silently revert it. A generator change must land together with its regenerated output, so reviewers can see the actual effect.</p></aside><p>Other conventions worth knowing before opening a pull request:</p><ul class="list"><li>Commit prefixes: <code>feat(generator):</code> / <code>fix(generator):</code> for generator work, <code>chore(gen):</code> or <code>feat(gen &lt;lib&gt;):</code> for regenerated output.</li><li>One pull request per logical change, including the regenerated packages and updated <code>skip_report.txt</code> files.</li><li><code>dart analyze</code> clean and all tests passing across the workspace before merge.</li><li>CI deliberately does <em>not</em> re-run the generator, so a committed package that no longer matches the generator cannot merge silently.</li><li>Pointer lifetimes and <code>transfer-full</code> vs <code>transfer-none</code> are treated as correctness concerns. Leaks and use-after-free are bugs, not style issues.</li></ul></section><section class="section" id="the-documents"><h2 class="section-title"><span class="section-num">08</span>The documents</h2><div class="table-scroll"><table><thead><tr><th>Document</th><th>Covers</th></tr></thead><tbody><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/architecture.md">architecture.md</a></td><td>The pipeline end to end, top-level layout, and how to add a new binding package</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/emission.md">emission.md</a></td><td>What each emitter produces and how — the props accessor rules, interface mirroring, callback parameters</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/type-system.md">type-system.md</a></td><td>GIR-to-Dart type mapping, transfer ownership, nullability, cross-namespace resolution</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/signals.md">signals.md</a></td><td>Bucket partitioning, the inheritance walk, destroy-notify, the <code>connectSignal</code> escape hatch</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/async.md">async.md</a></td><td>The <code>*Callback</code> overloads and when the temporary-trampoline model is unsafe</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/templates.md">templates.md</a></td><td>The composite-template stack: the annotation surface, the codegen contract and the runtime init order</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/subclassing.md">subclassing.md</a></td><td>What a Dart-level subclass of a generated wrapper is, and what it is not</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/skip-categories.md">skip-categories.md</a></td><td>Every category and reason that appears in a skip report, alphabetised</td></tr></tbody></table></div><ul class="list"><li><a href="roadmap.html">See what the design still needs</a> →</li></ul></section></article>
+skip_report.txt</code></pre></div><p>All per-class files are <code>part of</code> the same library, so forward references resolve naturally and the public surface is unchanged — <code>import 'package:gtk4/gtk4.dart'</code> exposes the same names as before. The practical benefit is navigational: <code>Ctrl+Click</code> on <code>GtkButton</code> lands in <code>gtkbutton.dart</code> instead of <code>classes_27.dart</code>.</p></section><section class="section" id="contributing-conventions"><h2 class="section-title"><span class="section-num">07</span>Contributing conventions</h2><p>The repository carries an <code>AGENTS.md</code> that defines the workflow and conventions for both humans and AI agents, including a rule that matters more than the rest:</p><aside class="note"><p><strong>Never hand-edit generated code.</strong> Changes belong in the generator, and a pull request that modifies <code>packages/&lt;lib&gt;/lib/</code> by hand is wrong by definition — because the next regeneration will silently revert it. A generator change must land together with its regenerated output, so reviewers can see the actual effect.</p></aside><p>Other conventions worth knowing before opening a pull request:</p><ul class="list"><li>Commit prefixes: <code>feat(generator):</code> / <code>fix(generator):</code> for generator work, <code>chore(gen):</code> or <code>feat(gen &lt;lib&gt;):</code> for regenerated output.</li><li>One pull request per logical change, including the regenerated packages and updated <code>skip_report.txt</code> files.</li><li><code>dart analyze</code> clean and all tests passing across the workspace before merge.</li><li>CI deliberately does <em>not</em> re-run the generator, so a committed package that no longer matches the generator cannot merge silently.</li><li>Pointer lifetimes and <code>transfer-full</code> vs <code>transfer-none</code> are treated as correctness concerns. Leaks and use-after-free are bugs, not style issues.</li></ul></section><section class="section" id="the-documents"><h2 class="section-title"><span class="section-num">08</span>The documents</h2><div class="table-scroll"><table><thead><tr><th>Document</th><th>Covers</th></tr></thead><tbody><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/architecture.md">architecture.md</a></td><td>The pipeline end to end, top-level layout, and how to add a new binding package</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/emission.md">emission.md</a></td><td>What each emitter produces and how — the props accessor rules, interface mirroring, callback parameters</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/type-system.md">type-system.md</a></td><td>GIR-to-Dart type mapping, transfer ownership, nullability, cross-namespace resolution</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/signals.md">signals.md</a></td><td>Bucket partitioning, the inheritance walk, destroy-notify, the <code>connectSignal</code> escape hatch</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/async.md">async.md</a></td><td>The <code>*Callback</code> overloads and when the temporary-trampoline model is unsafe</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/templates.md">templates.md</a></td><td>The composite-template stack: the annotation surface, the codegen contract and the runtime init order</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/subclassing.md">subclassing.md</a></td><td>What a Dart-level subclass of a generated wrapper is, and what it is not</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/branch-state.md">branch-state.md</a></td><td>What is committed on <code>main</code> and what is not: the verified branch comparison and how to reproduce it</td></tr><tr><td><a href="https://github.com/TenderOwl/dart-gir/blob/main/docs/skip-categories.md">skip-categories.md</a></td><td>Every category and reason that appears in a skip report, alphabetised</td></tr></tbody></table></div><ul class="list"><li><a href="roadmap.html">See what the design still needs</a> →</li></ul></section></article>
 </main>
 </div>
 <footer class="colophon">

@@ -13,6 +13,12 @@
    a mono for labels, numbers and code. The serif/sans pairing is the
    single strongest signal that this is not a generated landing page.
 
+   The palette is Dart's own. The accent is the brand blue — #0175C2 in
+   light mode, its lighter sibling #13B9FD in dark — and the neutrals
+   are not grey: paper, ink and every rule between them carry a little
+   blue, so the accent belongs to the sheet instead of sitting on top
+   of it.
+
    Dark mode is a first-class peer, not an afterthought — it ships via
    prefers-color-scheme. Every colour below is a variable for exactly
    that reason, including the ones the inline <svg> diagrams consume.
@@ -21,20 +27,26 @@
 :root {
   color-scheme: light;
 
-  --paper: #fbfaf7;
-  --paper-2: #f4f2ec;
-  --ink: #17181c;
-  --ink-2: #3c4149;
-  --muted: #5b6068;
-  --faint: #8b9099;
+  /* Paper and ink: cool neutrals with a blue cast. */
+  --paper: #fafbfd;
+  --paper-2: #f0f4fa;
+  --ink: #10151d;
+  --ink-2: #333d4c;
+  --muted: #566274;
+  --faint: #838fa0;
 
-  --rule: #e3e0d9;
-  --rule-strong: #c9c5bb;
+  --rule: #dde4ee;
+  --rule-strong: #c2ccdb;
 
-  --accent: #9c3d12;
-  --accent-soft: #f0e3db;
-  --ok: #1f6f4a;
-  --warn: #8a5a00;
+  /* Dart blue. #0175C2 is the brand colour; --accent-strong is the
+     same hue one step deeper, for the places the accent carries small
+     type (code keywords) and for hover, where the brand colour only
+     just clears 4.5:1 against the panel colour. */
+  --accent: #0175c2;
+  --accent-strong: #01589b;
+  --accent-soft: #e3eefb;
+  --ok: #146c4c;
+  --warn: #855700;
 
   --measure: 70ch;
   --maxw: 1140px;
@@ -53,19 +65,21 @@
   :root {
     color-scheme: dark;
 
-    --paper: #121316;
-    --paper-2: #17191d;
-    --ink: #e9e7e2;
-    --ink-2: #c8c6c1;
-    --muted: #9aa0a8;
-    --faint: #737a84;
+    --paper: #0d1117;
+    --paper-2: #131a23;
+    --ink: #e7ecf3;
+    --ink-2: #c2cad6;
+    --muted: #96a1b2;
+    --faint: #6d7889;
 
-    --rule: #2a2d31;
-    --rule-strong: #3b4046;
+    --rule: #212936;
+    --rule-strong: #333d4d;
 
-    --accent: #e08a5f;
-    --accent-soft: #2a1c15;
-    --ok: #63b98c;
+    /* The same brand hue, lifted for a dark ground. */
+    --accent: #13b9fd;
+    --accent-strong: #5ec9fb;
+    --accent-soft: #10222f;
+    --ok: #56c197;
     --warn: #d3a44e;
   }
 }
@@ -93,7 +107,13 @@ a {
 }
 
 a:hover {
+  color: var(--accent-strong);
   text-decoration-color: var(--accent);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
 :focus-visible {
@@ -490,7 +510,7 @@ th:last-child, td:last-child { padding-right: 0; }
 
 .code code { font-size: inherit; }
 
-.tok-k { color: var(--accent); }
+.tok-k { color: var(--accent-strong); }
 .tok-t { color: var(--ink); }
 .tok-s { color: var(--ok); }
 .tok-c { color: var(--faint); font-style: italic; }

@@ -180,8 +180,8 @@ Stated up front so nobody has to discover it by hitting it:
 
 :::{checklist}
 [ ] Array and collection returns / parameters are the biggest remaining hole ({{facts.skips.array_types}} recorded skips, down from 946 before the `array-types` work landed).
-[ ] Dart-level subclassing of generated wrappers is on `main`, but it is a Dart-side contract only: a subclass does not register a `GType` of its own, so it cannot be used as a template parent. See the [roadmap](roadmap.html) and `docs/subclassing.md`.
-[ ] Composite templates *are* on `main`: `packages/gtk_templates` and `packages/gtk_templates_builder`, with a worked example in `example/todo/` and the design written up in `docs/templates.md`.
+[ ] Dart-level subclassing of generated wrappers is on `main` — but it is a Dart-side contract only: a subclass does not register a `GType` of its own, so it cannot be used as a template parent. See the [roadmap](roadmap.html) and `docs/subclassing.md`.
+[ ] Composite templates are on `main`: `packages/gtk_templates` and `packages/gtk_templates_builder`, with a worked example in `example/todo/` and the design written up in `docs/templates.md`. Blueprint and GResource templates, and Meson/gettext packaging, belong to the application rather than to the bindings, and stay out of scope.
 [ ] Unions and bitfields are parsed but not emitted as first-class Dart types.
 [ ] No pub.dev publication; packages are `publish_to: none`.
 [ ] Linux is the only platform the runtime is exercised on. Windows and macOS library resolution is unhandled and produces poor error messages.

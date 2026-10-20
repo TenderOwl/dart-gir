@@ -55,6 +55,17 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   internal-link check that CI used to carry as an ad-hoc Python snippet
   is now a Dart test.
 
+- **A verified record of what is on `main`.** `docs/branch-state.md`
+  answers the question that had been open: are the composite-template stack
+  and the Dart-level subclassing contract committed on the trunk? Both are.
+  The `composite-templates` branch's merge-base with `main` is `ed5ce0f7` —
+  *"feat: add subclasssing"* — so the subclassing capability was already on
+  `main` before the branch existed, and was never the branch's to deliver.
+  Its two remaining commits carry only packaging (Blueprint, GResource,
+  Meson, gettext) and a pre-refactor internal layout, so the branch is
+  ready to be retired. The document lists the four commands that reproduce
+  the comparison.
+
 ### Changed
 - **The site was redesigned.** The old pages were the recognisable
   "default AI landing page": a blurred sticky header, an eyebrow chip,
@@ -63,11 +74,29 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   print document** — the page is the surface, and structure comes from
   hairline rules, a 70-character measure and a strict typographic scale
   rather than from boxes. Serif headings, sans body, mono labels; one
-  rust accent on paper; no cards, no pills, no shadows, no gradients, no
+  Dart-blue accent on paper; no cards, no pills, no shadows, no gradients, no
   rounded panels, no animation. Every page gained a sticky table of
   contents, and light and dark are peers rather than an afterthought.
   The navigation, the footer and the API reference's landing page were
   duplicated in every page; they are written once now.
+
+- **The palette is Dart's own.** The accent is the brand blue —
+  `#0175C2` in light mode, `#13B9FD` in dark — and the neutrals are no
+  longer grey: paper, ink and every rule between them carry a little
+  blue, so the accent belongs to the sheet instead of sitting on top of
+  it. `--accent-strong` is the same hue one step deeper, used where the
+  accent carries small type (code keywords) and on hover; the brand
+  colour only just clears 4.5:1 against the panel colour, so the deeper
+  shade does that job. The API reference's injected navigation carries
+  the same values, and `::selection` is now themed instead of falling
+  back to the browser default.
+
+- **The pipeline diagram's arrowheads now match their connectors.** The
+  SVG marker resolves `currentColor` against the referencing path, and
+  the group that held it referenced a token that did not exist
+  (`--text-3`), so the arrowheads silently inherited the body colour
+  while the strokes were muted. The token is gone, the dashes and the
+  arrows carry their own, and the second diagram got the same treatment.
 
 - **The API reference's landing page** (`site/docs/index.html`) is
   rendered through the same layout as the rest of the site instead of a
@@ -78,6 +107,12 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 - **CI checks the site.** The workflow now re-derives the facts and
   re-renders the site, and fails if either differs from the committed
   copy — the same rule the repository applies to the generated bindings.
+
+- **The roadmap states what the repository actually contains.** Phase 5 was
+  "half landed" on the strength of a working copy; it has now been verified
+  against the committed trees, and its exit conditions are checked off one
+  by one. The only item left on it is the deletion of the
+  `composite-templates` ref — an administrative step, not a capability.
 
 ### Fixed
 - **The composite-template stack renders its template.** `example/todo`

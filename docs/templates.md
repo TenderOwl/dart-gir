@@ -15,6 +15,14 @@ package READMEs.
 | AST scanner, codegen, `build_runner` builder, CLI | `packages/gtk_templates_builder/lib/`, `bin/` |
 | Worked example | `example/todo/` |
 
+> **Status: on `main`.** This is the landed design. The
+> `composite-templates` branch holds a superseded prototype of the same
+> capability — Blueprint and GResource templates, Meson and gettext
+> packaging, one part file per class instead of one per source file, and
+> program-lifetime `NativeCallable` trampolines. It is not to be merged;
+> [branch-state.md](./branch-state.md) records the comparison item by
+> item.
+
 ---
 
 ## 1. Annotation surface
@@ -460,7 +468,8 @@ it is a Dart closure, not a `NativeCallable`.
 
 > The `composite-templates` branch explored a program-lifetime
 > `NativeCallable` trampoline for this. That design is **not** in
-> `main`; the per-instance closure above is what ships.
+> `main`; the per-instance closure above is what ships. See
+> [branch-state.md](./branch-state.md).
 
 ---
 

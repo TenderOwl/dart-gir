@@ -12,6 +12,7 @@ discoverable from `git ls-files` and easy to link from PRs.
 | [async.md](./async.md) | The GLib `*_async` + `*_finish` pattern: the two wrapper shapes, the callback signature, and how to pair them |
 | [templates.md](./templates.md) | The composite-template stack: annotation surface, scanner plan, the one-part-file-per-source convention, codegen output contract, runtime init order, the callback trampoline, known limits |
 | [subclassing.md](./subclassing.md) | Dart-level subclassing of the generated wrappers: the extendable contract, ownership and lifetime rules, what a covariant override promises, and what a Dart subclass is not |
+| [branch-state.md](./branch-state.md) | What is committed on `main` and what is not: the verified branch comparison, the composite-template and subclassing inventories, and how to re-check them |
 | [skip-categories.md](./skip-categories.md) | Every category and reason that shows up in `packages/<lib>/skip_report.txt`, alphabetised |
 | [site.md](./site.md) | The site pipeline: the Markdown subset, the block directives, the facts layer, the design system and the drift checks |
 
@@ -26,6 +27,8 @@ discoverable from `git ls-files` and easy to link from PRs.
   [templates.md](./templates.md).
 * **Extending a generated wrapper** — read
   [subclassing.md](./subclassing.md).
+* **Checking what is on `main` and what is still on a branch** — read
+  [branch-state.md](./branch-state.md).
 * **Modifying the generator** — read [emission.md](./emission.md) and
   [type-system.md](./type-system.md) end to end.
 * **Changing the project site** — read [site.md](./site.md). The site's

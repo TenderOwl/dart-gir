@@ -78,7 +78,10 @@ in the consumer's — Dart requires a part file to sit in the
 same directory as its library. Consumers only configure
 `generate_for`.
 
-The full design is in [docs/templates.md](docs/templates.md).
+The full design is in [docs/templates.md](docs/templates.md). The stack
+is committed on `main`; the `composite-templates` branch's variant of it
+is a superseded prototype — see
+[docs/branch-state.md](docs/branch-state.md).
 
 **Rule: generated code must type-check.** The builder's output
 is resolved with the real analyzer in
@@ -101,7 +104,10 @@ covariantly, and subclass the props companion. The contract is
 pinned by the *Dart-level subclassing contract* group in
 `generator/test/emitter_test.dart` — do not reintroduce `final class`
 or a private props companion. The ownership and lifetime rules are in
-[docs/subclassing.md](docs/subclassing.md).
+[docs/subclassing.md](docs/subclassing.md), and the verified statement
+that this contract is committed on `main` — not pending on the
+`composite-templates` branch — is in
+[docs/branch-state.md](docs/branch-state.md).
 
 ## The site
 
@@ -167,7 +173,7 @@ The full design is in [docs/site.md](docs/site.md).
 
 ## PR & commit conventions
 
-- The workspace is a git repository. `main` is the trunk; `array-types`, `notepad` and `props` are already merged. `gasync` is superseded — do not build on it. `composite-templates` holds an unmerged prototype: it is **not** to be merged, and it will be retired once its one remaining capability is confirmed present on `main` (see [Generated classes are extendable](#generated-classes-are-extendable)). Its Blueprint/GResource support, Meson/gettext packaging and program-lifetime `NativeCallable` trampoline are out of scope.
+- The workspace is a git repository. `main` is the trunk; `array-types`, `notepad` and `props` are already merged. `gasync` is superseded — do not build on it. `composite-templates` holds an unmerged prototype: it is **not** to be merged, and its retirement condition is now met — both the composite-template stack and the Dart-level subclassing contract are on `main` (see [The composite-template stack](#the-composite-template-stack) and [Generated classes are extendable](#generated-classes-are-extendable)); the verified record is [docs/branch-state.md](docs/branch-state.md). Its Blueprint/GResource support, Meson/gettext packaging and program-lifetime `NativeCallable` trampoline are out of scope.
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:` — generator changes get a `feat(generator):` or `fix(generator):` prefix; regenerated packages go under `chore(gen):` or `feat(gen <lib>):`
 - One PR per logical change. Generator changes must include the regenerated `packages/<lib>/` output and the matching `skip_report.txt` updates in the same PR — reviewers must see the effect on a generated package
 - CI is checked in at `.github/workflows/ci.yml`: analyze, the generator tests, the template packages' pure-Dart tests, and a build + analyze gate over `example/todo`. Native GTK runtime tests are deliberately out of CI (they need a display and the native GTK 4 stack); keep them out until a CI image provides one. When you add a CI step, add it to that workflow in the same PR

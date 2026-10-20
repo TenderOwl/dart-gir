@@ -1668,7 +1668,7 @@
   "docs": [
     {
       "name": "README.md",
-      "lines": 33
+      "lines": 36
     },
     {
       "name": "architecture.md",
@@ -1677,6 +1677,10 @@
     {
       "name": "async.md",
       "lines": 117
+    },
+    {
+      "name": "branch-state.md",
+      "lines": 128
     },
     {
       "name": "emission.md",
@@ -1688,7 +1692,7 @@
     },
     {
       "name": "site.md",
-      "lines": 262
+      "lines": 267
     },
     {
       "name": "skip-categories.md",
@@ -1696,11 +1700,11 @@
     },
     {
       "name": "subclassing.md",
-      "lines": 269
+      "lines": 275
     },
     {
       "name": "templates.md",
-      "lines": 627
+      "lines": 636
     },
     {
       "name": "type-system.md",

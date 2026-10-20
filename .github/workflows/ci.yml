@@ -35,6 +35,23 @@ jobs:
       - name: dart analyze
         run: dart analyze
 
+      # The site's sources live in `site_src/`; the rendered output in
+      # `site/` is committed so the site stays browsable without a
+      # build. The two steps below prove the committed copy is what the
+      # generator produces — first the derived facts, then the pages.
+      #
+      # `site/docs/` is gitignored, so the diff below never sees the
+      # dartdoc output the API build produces later in this job.
+      - name: Collect site facts
+        run: |
+          dart run tool/collect_facts.dart
+          git diff --exit-code site_src/data/facts.json
+
+      - name: Build site
+        run: |
+          dart run tool/build_site.dart
+          git diff --exit-code site/
+
       # The generated-code-compiles gate, end to end. The example is
       # a real consumer: it declares `@GtkTemplate`, pulls the
       # generated part file in with a `part` directive, and the
@@ -62,8 +79,8 @@ jobs:
       # The test suites CI runs.
       #
       # `dart test` with no argument runs only the *root* package's own
-      # `test/` directory, which is empty. The suites live in their own
-      # packages, so they have to be named. These are the ones that do
+      # `test/` directory. The suites live in their own packages, so
+      # they have to be named. These are the ones that do
       # not need a native GTK stack:
       #   - `generator`                    — the generator's own unit tests
       #   - `packages/gir_ffi`             — the runtime helpers (pure Dart)
@@ -73,6 +90,10 @@ jobs:
       #                                     the native widget test (which
       #                                     skips itself without a
       #                                     display)
+      #   - `test`                         — the site generator's tests,
+      #                                     including the drift check
+      #                                     that the committed `site/`
+      #                                     matches `site_src/`
       #
       # `packages/gtk_templates_builder/test/generated_code_test.dart`
       # and `test/builder_output_test.dart` are the gate that was
@@ -80,8 +101,14 @@ jobs:
       # generated part file with the real analyzer and assert zero
       # diagnostics, and they re-introduce each historical bug to
       # prove the check has teeth.
+      #
+      # `test/site/site_output_test.dart` is the site equivalent: it
+      # renders every page from `site_src/` and compares the result
+      # with the committed `site/`, and it walks the generated HTML
+      # checking that every internal link resolves. It replaces the
+      # ad-hoc Python link check this workflow used to carry.
       - name: dart test
-        run: dart test generator example/todo packages/gir_ffi packages/gtk_templates packages/gtk_templates_builder
+        run: dart test generator example/todo packages/gir_ffi packages/gtk_templates packages/gtk_templates_builder test
 
       # NB: we deliberately do NOT re-run the generator against the
       # system's `/usr/share/gir-1.0/` here. The GIR files shipped
@@ -118,28 +145,10 @@ jobs:
       # invoke `tool/build_api_docs.dart` to render the per-package
       # docs into `site/docs/` so the Pages artifact (deploy job,
       # below) carries the live reference. `tool/build_api_docs.dart`
-      # also writes the hand-crafted `site/docs/index.html` landing
-      # page that lists all 14 packages.
+      # also writes the `site/docs/index.html` landing page, rendered
+      # through the same layout as the rest of the site.
       - name: Build API docs
         run: dart run tool/build_api_docs.dart --verbose
-
-      # Sanity check: the six marketing pages must link to the docs
-      # landing page (the nav) and reference it from the footer
-      # "Source" block. Cheap Python smoke test that catches the
-      # common drift where a new page is added but the API link is
-      # forgotten.
-      - name: Verify site/ links
-        run: |
-          python3 - <<'PY'
-          import pathlib
-          root = pathlib.Path('site')
-          html = sorted(root.glob('*.html'))
-          for f in html:
-              t = f.read_text()
-              assert 'href="docs/">API</a>' in t, f'{f} missing API nav link'
-              assert 'href="docs/">API reference</a>' in t, f'{f} missing footer API reference link'
-          print(f'verified API + API reference links on {len(html)} page(s)')
-          PY
 
       # Upload the hand-written site/ folder (with the dartdoc
       # `site/docs/` subdirectory baked in by the previous step) as a
