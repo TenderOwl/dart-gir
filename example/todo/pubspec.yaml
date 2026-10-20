@@ -24,6 +24,8 @@ dependencies:
 
   adw:
     path: ../../packages/adw
+  dart_gobject:
+    path: ../../packages/dart_gobject
   gio:
     path: ../../packages/gio
   gobject:

@@ -13,63 +13,99 @@ class _TemplateChildSpec {
 }
 
 const String _$TodoWindowTemplate_xml = '''
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <interface>
-  <template class="TodoWindow" parent="AdwApplicationWindow">
-    <property name="default-width">800</property>
-    <property name="default-height">600</property>
-    <property name="content">
-      <object class="AdwToolbarView">
-        <child type="top">
-          <object class="AdwHeaderBar">
-            <property name="title-widget">
-              <object class="AdwWindowTitle">
-                <property name="title">Todo</property>
-              </object>
-            </property>
+  <template class="TodoWindow" parent="GtkApplicationWindow">
+    <property name="width-request">360</property>
+    <property name="title" translatable="yes">To-Do</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <child type="end">
+          <object class="GtkMenuButton" id="menu_button">
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="menu-model">main-menu</property>
           </object>
         </child>
-        <property name="content">
-          <object class="AdwStatusPage">
-            <property name="margin-top">24</property>
-            <property name="margin-bottom">24</property>
-            <property name="margin-start">24</property>
-            <property name="margin-end">24</property>
-            <property name="title">Todo</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkEntry" id="entry">
+            <property
+                            name="placeholder-text"
+                            translatable="yes"
+                        >Enter a Task…</property>
+            <property name="secondary-icon-name">list-add-symbolic</property>
+            <signal
+                            name="icon-release"
+                            handler="on_icon_release"
+                            swapped="no"
+                        />
+            <signal name="activate" handler="on_activate" swapped="no" />
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="hscrollbar-policy">never</property>
+            <property name="min-content-height">360</property>
+            <property name="vexpand">true</property>
             <child>
-              <object class="GtkBox">
-              <property name="orientation">vertical</property>
-              <property name="spacing">12</property>
-              <child>
-                <object class="GtkLabel" id="counterLabel">
-                  <property name="label">Clicked 0 times</property>
-                  <property name="css-classes">title-1</property>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="button">
-                  <property name="label">Click me</property>
-                  <property name="halign">center</property>
-                  <property name="css-classes">suggested-action</property>
-                  <signal name="clicked" handler="on_clicked"/>
-                </object>
-              </child>
+              <object class="GtkListView" id="tasks_list">
+                <property name="valign">start</property>
               </object>
             </child>
           </object>
-        </property>
+        </child>
       </object>
-    </property>
+    </child>
   </template>
+
+  <menu id="main-menu">
+    <submenu>
+      <attribute name="label" translatable="yes">_Filter</attribute>
+      <item>
+        <attribute name="label" translatable="yes">_All</attribute>
+        <attribute name="action">win.filter</attribute>
+        <attribute name="target">All</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Open</attribute>
+        <attribute name="action">win.filter</attribute>
+        <attribute name="target">Open</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Done</attribute>
+        <attribute name="action">win.filter</attribute>
+        <attribute name="target">Done</attribute>
+      </item>
+    </submenu>
+    <item>
+      <attribute name="label" translatable="yes">_Remove Done Tasks</attribute>
+      <attribute name="action">win.remove-done-tasks</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+      <attribute name="action">win.show-help-overlay</attribute>
+    </item>
+  </menu>
+
 </interface>
 ''';
 
 const List<_TemplateChildSpec> _$TodoWindowTemplate_children = [
-  _TemplateChildSpec('counterLabel', 'GtkLabel'),
-  _TemplateChildSpec('button', 'GtkButton'),
+  _TemplateChildSpec('menu_button', 'GtkMenuButton'),
+  _TemplateChildSpec('entry', 'GtkEntry'),
+  _TemplateChildSpec('tasks_list', 'GtkListView'),
 ];
 
-mixin _$TodoWindowTemplate on AdwApplicationWindow {
+mixin _$TodoWindowTemplate on GtkApplicationWindow {
   // Class-level state, computed once on first instance.
   static bool _classInitialized = false;
   static late final GBytes _templateBytes;
@@ -141,25 +177,35 @@ mixin _$TodoWindowTemplate on AdwApplicationWindow {
     initTemplate();
   }
 
-  late final GtkLabel counterLabel = () {
+  late final GtkMenuButton menu_button = () {
     _ensureInstanceInit();
     final raw = (this as GtkWidget).getTemplateChild(
       widgetTypeOf(this as GtkWidget),
-      'counterLabel',
+      'menu_button',
     );
-    return raw.cast<GtkLabel>(GtkLabel.fromPointer);
+    return raw.cast<GtkMenuButton>(GtkMenuButton.fromPointer);
   }();
 
-  late final GtkButton button = () {
+  late final GtkEntry entry = () {
     _ensureInstanceInit();
     final raw = (this as GtkWidget).getTemplateChild(
       widgetTypeOf(this as GtkWidget),
-      'button',
+      'entry',
     );
-    return raw.cast<GtkButton>(GtkButton.fromPointer);
+    return raw.cast<GtkEntry>(GtkEntry.fromPointer);
+  }();
+
+  late final GtkListView tasks_list = () {
+    _ensureInstanceInit();
+    final raw = (this as GtkWidget).getTemplateChild(
+      widgetTypeOf(this as GtkWidget),
+      'tasks_list',
+    );
+    return raw.cast<GtkListView>(GtkListView.fromPointer);
   }();
 
   void _wireSignals() {
-    button.onClicked(() => (this as dynamic).onClicked());
+    entry.onIconRelease((pos) => (this as dynamic).onIconRelease(pos));
+    entry.onActivate(() => (this as dynamic).onActivate());
   }
 }

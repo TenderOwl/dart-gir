@@ -14,6 +14,18 @@
 # in `.dart_tool/build/generated/`. Dart requires a part file to
 # sit in the same directory as its library, so this is what
 # makes the `part` directive resolve.
+#
+# The template lives in `data/window.ui`, and the builder reads it
+# through the build's asset reader — which is what makes it a tracked
+# input: editing the `.ui` re-runs the builder.
+#
+# A file is only visible to a build when it is *public*, and the
+# default public assets are `lib/**`, `bin/**` and a few named files.
+# `data/**` is not one of them, so it is declared here. A template
+# under `lib/` needs no configuration at all.
+additional_public_assets:
+  - data/**
+
 targets:
   $default:
     builders:

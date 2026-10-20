@@ -82,7 +82,25 @@ void main() {
       final text = generated.readAsStringSync();
       expect(
         text,
-        contains('mixin _\$TodoWindowTemplate on AdwApplicationWindow'),
+        contains('mixin _\$TodoWindowTemplate on GtkApplicationWindow'),
+      );
+    });
+
+    test('the template comes from the .ui file, not from the source', () {
+      // The template lives in `data/window.ui`. The builder reads it
+      // and embeds it in the part file — so the widgets the `.ui`
+      // file declares are in the generated mixin, and the source only
+      // names the file.
+      expect(
+        source.readAsStringSync(),
+        contains("GtkTemplateFile('data/window.ui')"),
+      );
+      final text = generated.readAsStringSync();
+      expect(text, contains('entry'), reason: 'the entry from the .ui file');
+      expect(
+        text,
+        contains('tasks_list'),
+        reason: 'the list from the .ui file',
       );
     });
   });

@@ -19,11 +19,13 @@ class TabPage extends AdwBin {
   // Forward `fromPointer` to `AdwBin` so callers can re-wrap a handle
   // they got back from another widget (e.g. `AdwTabPage.getChild()`,
   // which returns `GtkWidget.fromPointer(...)` and can't be cast to
-  // `TabPage` because the runtime class is just `GtkWidget`). The
-  // parent `AdwBin.fromPointer(handle, {bool owned = false})` accepts
-  // a named `owned` parameter; we don't need to pass it — the borrowed
-  // world of `cast<T>(factory)` never transfers ownership.
-  TabPage.fromPointer(super.handle) : super.fromPointer();
+  // `TabPage` because the runtime class is just `GtkWidget`).
+  //
+  // `fromPointer` is a *factory* in the generated code — it consults
+  // the wrapper cache, so the same native pointer always yields the
+  // same Dart object — and a super constructor cannot call a factory.
+  // The generative constructor is `rawFromPointer`.
+  TabPage.fromPointer(super.handle) : super.rawFromPointer();
 
   TabPage() {
     buffer = GtkSourceBuffer();
