@@ -84,6 +84,8 @@ jobs:
       # not need a native GTK stack:
       #   - `generator`                    — the generator's own unit tests
       #   - `packages/gir_ffi`             — the runtime helpers (pure Dart)
+      #   - `packages/dart_gobject`        — the Dart-type registry (GLib
+      #                                     only — no GTK, no display)
       #   - `packages/gtk_templates`       — the template runtime
       #   - `packages/gtk_templates_builder` — the scanner, the codegen
       #   - `example/todo`                 — the part-file contract, plus
@@ -108,7 +110,7 @@ jobs:
       # checking that every internal link resolves. It replaces the
       # ad-hoc Python link check this workflow used to carry.
       - name: dart test
-        run: dart test generator example/todo packages/gir_ffi packages/gtk_templates packages/gtk_templates_builder test
+        run: dart test generator example/todo packages/dart_gobject packages/gir_ffi packages/gtk_templates packages/gtk_templates_builder test
 
       # NB: we deliberately do NOT re-run the generator against the
       # system's `/usr/share/gir-1.0/` here. The GIR files shipped
