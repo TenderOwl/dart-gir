@@ -21,35 +21,50 @@ const String _outputDir = 'site/docs';
 
 /// One-line descriptions for the API landing page's package index.
 const Map<String, String> _packageBlurbs = {
-  'gir_ffi': 'Hand-written runtime helpers shared by every binding '
+  'gir_ffi':
+      'Hand-written runtime helpers shared by every binding '
       '(withNativeString, withNativeStringList, HeapAnchor, g_free).',
-  'glib': 'GLib 2.0 — fundamental types, main loop, file I/O, strings, '
+  'glib':
+      'GLib 2.0 — fundamental types, main loop, file I/O, strings, '
       'hash tables, byte arrays.',
-  'gobject': 'GObject 2.0 — type system, signals, properties, closures, '
+  'gobject':
+      'GObject 2.0 — type system, signals, properties, closures, '
       'the GValue / GParam machinery.',
-  'gio': 'Gio 2.0 — file, network, settings, app, dbus — the I/O and '
+  'gio':
+      'Gio 2.0 — file, network, settings, app, dbus — the I/O and '
       'application platform on top of GLib.',
-  'gdk_pixbuf': 'GdkPixbuf 2.0 — image loading, pixel-buffer manipulation, '
+  'gdk_pixbuf':
+      'GdkPixbuf 2.0 — image loading, pixel-buffer manipulation, '
       'PNG / JPEG / ICO / animated-GIF I/O.',
-  'cairo': 'cairo 1.0 — 2D vector graphics: paths, surfaces, gradients, '
+  'cairo':
+      'cairo 1.0 — 2D vector graphics: paths, surfaces, gradients, '
       'transforms, the rendering engine GTK4 paints with.',
-  'pango': 'Pango 1.0 — text layout, fonts, shaping, and rendering. '
+  'pango':
+      'Pango 1.0 — text layout, fonts, shaping, and rendering. '
       'Bridges to Freetype / Fontconfig on the C side.',
-  'gdk4': 'Gdk 4 — display server abstraction, surfaces, input events, '
+  'gdk4':
+      'Gdk 4 — display server abstraction, surfaces, input events, '
       'clipboard, drag-and-drop, cursors.',
-  'graphene': 'Graphene 1.0 — SIMD-friendly vector, matrix, and quaternion '
+  'graphene':
+      'Graphene 1.0 — SIMD-friendly vector, matrix, and quaternion '
       'primitives for graphics math.',
-  'gsk4': 'Gsk 4 — the scene graph kit: render nodes, renderers, '
+  'gsk4':
+      'Gsk 4 — the scene graph kit: render nodes, renderers, '
       'shaders, transforms, the layer between GTK4 and the GPU.',
-  'gtk4': 'Gtk 4 — the widget toolkit. Widgets, layout containers, '
+  'gtk4':
+      'Gtk 4 — the widget toolkit. Widgets, layout containers, '
       'dialogs, accessibility (GtkAccessible), templates (GtkBuildable).',
-  'adw': 'Adw 1 — Libadwaita: adaptive widgets for GNOME applications '
+  'adw':
+      'Adw 1 — Libadwaita: adaptive widgets for GNOME applications '
       '(AdwApplicationWindow, AdwActionRow, AdwNavigationView, …).',
-  'gtk_source5': 'GtkSource 5 — source-code-aware text view: language '
+  'gtk_source5':
+      'GtkSource 5 — source-code-aware text view: language '
       'specs, syntax highlighting, code folding, gutter renderers.',
-  'gi_repository3': 'GIR typelib loader — at-runtime GIR parsing for '
+  'gi_repository3':
+      'GIR typelib loader — at-runtime GIR parsing for '
       'libraries that aren\'t statically bound.',
-  'gtk_templates_builder': '`build_runner` builder for the `@Template` '
+  'gtk_templates_builder':
+      '`build_runner` builder for the `@Template` '
       'annotation pipeline (see also `gtk_templates`).',
 };
 
@@ -62,8 +77,10 @@ Future<void> main(List<String> args) async {
   log('resolving package list from $_pubspecFile');
   final packages = _readWorkspacePackages().toList()..sort();
   if (verbose) {
-    log('workspace lists ${packages.length} package(s): '
-        '${packages.join(', ')}');
+    log(
+      'workspace lists ${packages.length} package(s): '
+      '${packages.join(', ')}',
+    );
   }
 
   log('preparing output directory $_outputDir');
@@ -78,11 +95,11 @@ Future<void> main(List<String> args) async {
   final outputRoot = Directory(_outputDir).absolute.path;
   for (final pkg in packages) {
     log('documenting $pkg (dart doc in packages/$pkg)');
-    final result = await Process.run(
-      'dart',
-      <String>['doc', '--output', '$outputRoot/$pkg'],
-      workingDirectory: 'packages/$pkg',
-    );
+    final result = await Process.run('dart', <String>[
+      'doc',
+      '--output',
+      '$outputRoot/$pkg',
+    ], workingDirectory: 'packages/$pkg');
     if (result.exitCode != 0) {
       stderr.writeln('build_api_docs: `dart doc` failed for $pkg:');
       stderr.writeln(result.stdout);
@@ -111,8 +128,10 @@ Future<void> main(List<String> args) async {
   log('writing $_outputDir/index.html landing page');
   _writeLandingPage(packages, log: log);
 
-  log('docs: ${packages.length} packages, $totalClasses classes, '
-      '$totalMembers members → $_outputDir/');
+  log(
+    'docs: ${packages.length} packages, $totalClasses classes, '
+    '$totalMembers members → $_outputDir/',
+  );
   log('open $_outputDir/index.html in a browser to inspect');
 }
 
@@ -156,8 +175,9 @@ Set<String> _parseWorkspaceList(String content) {
   }
   if (packages.isEmpty) {
     stderr.writeln(
-        'build_api_docs: $_pubspecFile has no `workspace:` list — '
-        'expected the 14 binding package directories.');
+      'build_api_docs: $_pubspecFile has no `workspace:` list — '
+      'expected the 14 binding package directories.',
+    );
     exit(2);
   }
   return packages;
@@ -207,15 +227,19 @@ void _writeLandingPage(
 }) {
   final cards = <String>[];
   for (final pkg in packages) {
-    final blurb = _packageBlurbs[pkg] ??
+    final blurb =
+        _packageBlurbs[pkg] ??
         // Fallback blurb for any package we don't have a hard-coded
         // entry for. The drift check below warns about missing entries.
         'GIR-derived Dart FFI bindings for $pkg.';
-    cards.add('<li><a href="$pkg/">$pkg</a> '
-        '<span class="docs-pkg-blurb">— ${_escapeHtml(blurb)}</span></li>');
+    cards.add(
+      '<li><a href="$pkg/">$pkg</a> '
+      '<span class="docs-pkg-blurb">— ${_escapeHtml(blurb)}</span></li>',
+    );
   }
 
-  final html = '''<!DOCTYPE html>
+  final html =
+      '''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -259,8 +283,10 @@ ${cards.join('\n')}
   // generic fallback.
   final missing = packages.where((p) => !_packageBlurbs.containsKey(p));
   if (missing.isNotEmpty) {
-    log('warning: ${missing.length} package(s) have no blurb in '
-        '_packageBlurbs: ${missing.join(', ')}');
+    log(
+      'warning: ${missing.length} package(s) have no blurb in '
+      '_packageBlurbs: ${missing.join(', ')}',
+    );
   }
 }
 
@@ -302,14 +328,15 @@ void _patchPage(File file, String currentPkg, List<String> allPackages) {
   final relative = file.path.substring(pkgRoot.length + 1);
   final depth = relative.split('/').length - 1;
   final up = '../' * depth;
-  final mainSite = '$up../';             // workspace root → site/index.html
-  final apiHome = '$up../index.html';   // API landing page
-  final otherPkgPrefix = '$up../';        // relative to peer package
+  final mainSite = '$up../'; // workspace root → site/index.html
+  final apiHome = '$up../index.html'; // API landing page
+  final otherPkgPrefix = '$up../'; // relative to peer package
 
   // Top-of-page header. Single line of compact links so it doesn't
   // dominate the page. `currentPkg` is rendered as a non-link badge
   // so the user always sees where they are.
-  final header = '<div class="docs-site-nav">'
+  final header =
+      '<div class="docs-site-nav">'
       '<a class="docs-site-nav-home" href="$mainSite">\u2190 dart-gir home</a>'
       '<span class="docs-site-nav-sep">\u00b7</span>'
       '<a class="docs-site-nav-api" href="$apiHome">API reference</a>'
@@ -320,7 +347,8 @@ void _patchPage(File file, String currentPkg, List<String> allPackages) {
   // CSS shim that styles the header without overriding dartdoc's own
   // styling. Inlined into the first <style> block we find, falling
   // back to a fresh <style> in <head>.
-  final css = '<style>'
+  final css =
+      '<style>'
       '.docs-site-nav{display:flex;align-items:center;gap:12px;'
       'padding:10px 24px;background:#f5f5f7;'
       'border-bottom:1px solid #dadce0;font-family:system-ui,-apple-system,sans-serif;'
@@ -342,8 +370,7 @@ void _patchPage(File file, String currentPkg, List<String> allPackages) {
 
   // Inject CSS once per page.
   if (patched.contains('<style>')) {
-    patched = patched.replaceFirst(
-        '<style>', '$css<style>');
+    patched = patched.replaceFirst('<style>', '$css<style>');
   } else {
     patched = patched.replaceFirst('</head>', '$css</head>');
   }
@@ -366,7 +393,8 @@ void _patchPage(File file, String currentPkg, List<String> allPackages) {
       otherLinks.add('<li><a href="$otherPkgPrefix$pkg/">$pkg</a></li>');
     }
     if (otherLinks.isNotEmpty) {
-      final block = '<ol class="docs-other-pkgs">'
+      final block =
+          '<ol class="docs-other-pkgs">'
           '<li class="section-title">Other packages</li>'
           '${otherLinks.join('')}'
           '</ol>';

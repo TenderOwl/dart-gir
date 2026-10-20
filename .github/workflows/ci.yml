@@ -35,8 +35,53 @@ jobs:
       - name: dart analyze
         run: dart analyze
 
-      - name: dart test (generator)
-        run: dart test generator/
+      # The generated-code-compiles gate, end to end. The example is
+      # a real consumer: it declares `@GtkTemplate`, pulls the
+      # generated part file in with a `part` directive, and the
+      # builder writes the mixin next to its source (`build_to:
+      # source` in the provider package's `build.yaml`).
+      #
+      # This catches the whole class of "the codegen emitted
+      # something that does not compile" regressions — including the
+      # ones that only the analyzer can see, like a missing import
+      # in the user's library.
+      #
+      # `example/todo` is a workspace member, so the root `dart pub
+      # get` above already resolved it; there is no second resolution
+      # step here.
+      #
+      # This runs *before* the test step: `example/todo`'s own test
+      # asserts the part-file contract, and it needs the generated
+      # file to be there.
+      - name: build + analyze example/todo
+        working-directory: example/todo
+        run: |
+          dart run build_runner build
+          dart analyze
+
+      # The test suites CI runs.
+      #
+      # `dart test` with no argument runs only the *root* package's own
+      # `test/` directory, which is empty. The suites live in their own
+      # packages, so they have to be named. These are the ones that do
+      # not need a native GTK stack:
+      #   - `generator`                    — the generator's own unit tests
+      #   - `packages/gir_ffi`             — the runtime helpers (pure Dart)
+      #   - `packages/gtk_templates`       — the template runtime
+      #   - `packages/gtk_templates_builder` — the scanner, the codegen
+      #   - `example/todo`                 — the part-file contract, plus
+      #                                     the native widget test (which
+      #                                     skips itself without a
+      #                                     display)
+      #
+      # `packages/gtk_templates_builder/test/generated_code_test.dart`
+      # and `test/builder_output_test.dart` are the gate that was
+      # missing when four codegen bugs shipped: they resolve the
+      # generated part file with the real analyzer and assert zero
+      # diagnostics, and they re-introduce each historical bug to
+      # prove the check has teeth.
+      - name: dart test
+        run: dart test generator example/todo packages/gir_ffi packages/gtk_templates packages/gtk_templates_builder
 
       # NB: we deliberately do NOT re-run the generator against the
       # system's `/usr/share/gir-1.0/` here. The GIR files shipped
@@ -52,17 +97,21 @@ jobs:
       # the source of truth; the generator unit tests above use
       # bundled GIR fixtures to validate the generator itself.
       #
-      # NB: runtime tests are NOT run in CI. They exercise native GLib
-      # / GTK code through Dart FFI, and the GObject finalizer
-      # lifecycle has known issues on certain libgtk-4-1.0 versions
-      # (e.g. Ubuntu 24.04's `libgtk-4-1.0-4.12.5+ds-3ubuntu2`) where
+      # NB: the *native* runtime tests (packages/gtk4, packages/glib,
+      # packages/gobject, packages/gio, packages/gdk4,
+      # packages/gtk_source5, and the `example` / `example/notepad`
+      # suites, which drive GObject and GTK directly) are NOT run in
+      # CI. They exercise native GLib / GTK code through Dart FFI, and
+      # the GObject finalizer lifecycle has known issues on certain
+      # libgtk-4-1.0 versions (e.g. Ubuntu
+      # 24.04's `libgtk-4-1.0-4.12.5+ds-3ubuntu2`) where
       # `g_object_unref` from the finalizer hits a use-after-free in
       # GLib's internal `GParamSpec` cleanup during isolate shutdown.
       # The bindings work fine on Fedora 44 and the user's local
       # machine; CI just doesn't have the same GLib version. Run
       # `cd packages/gtk4 && dart test` locally before pushing if
-      # you need that validation step. The generator tests + analyzer
-      # catch every other regression.
+      # you need that validation step. The generator tests, the
+      # template tests and the analyzer catch every other regression.
 
       # The published API reference is generated from the committed
       # `packages/<lib>/lib/src/*.dart` (see the comment above). We

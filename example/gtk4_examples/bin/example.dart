@@ -140,7 +140,9 @@ class MyApp {
     app.onNotify((pspec) {
       print('onNotify: ${pspec.getName()}');
       if (pspec.getName() == 'active-window') {
-        print('  active-window changed ${app.getActiveWindow()?.getTitle() ?? ''}');
+        print(
+          '  active-window changed ${app.getActiveWindow()?.getTitle() ?? ''}',
+        );
       }
     });
     print('before onShutdown');

@@ -1,5 +1,10 @@
 name: todo
-description: A simple GTK4 apps built with the gir_bindings workspace.
+description: >-
+  GTK4 todo window built with `@GtkTemplate`. Demonstrates
+  the auto-wired callback trampoline: the XML's
+  `<signal name="clicked" handler="on_clicked"/>` is wired
+  to the user's `onClicked()` instance method by the
+  generated `_$TodoWindowTemplate` mixin.
 publish_to: none
 resolution: workspace
 
@@ -7,7 +12,11 @@ environment:
   sdk: ^3.13.4
 
 dev_dependencies:
-  test: ^1.25.6
+  lints: ^6.0.0
+  test: ^1.32.0
+  build_runner: ^2.16.2
+  gtk_templates_builder:
+    path: ../../packages/gtk_templates_builder
 
 dependencies:
   path: ^1.9.0
@@ -23,3 +32,5 @@ dependencies:
     path: ../../packages/glib
   gtk4:
     path: ../../packages/gtk4
+  gtk_templates:
+    path: ../../packages/gtk_templates

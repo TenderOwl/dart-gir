@@ -6,8 +6,9 @@ GIR-based Dart FFI bindings for GObject libraries (GLib, GTK4, Libadwaita, Cairo
 
 - Install deps (workspace root): `dart pub get`
 - Regenerate bindings: `dart run generator/bin/generate.dart` (run from the workspace root)
-- Build everything:    `dart pub get` then `dart analyze` — there is no separate `build` step; code is generated, not compiled to a binary
-- Run all tests:       `dart test` (run from the workspace root; uses `test: ^1.25.6`)
+- Build everything:    `dart pub get` then `dart analyze` — there is no separate `build` step for the FFI bindings; code is generated, not compiled to a binary
+- Build the template stack: `cd example/todo && dart run build_runner build` — this is the one package whose Dart source is generated at build time (see [The composite-template stack](#the-composite-template-stack))
+- Run all tests:       `dart test generator example/gtk4_examples example/notepad example/todo packages/gdk4 packages/gio packages/gir_ffi packages/glib packages/gobject packages/gtk4 packages/gtk_source5 packages/gtk_templates packages/gtk_templates_builder` (from the workspace root)
 - Per-package test:    `cd packages/<name> && dart test`
 - Lint / analyze:      `dart analyze` (root enforces `package:lints/recommended.yaml`; sub-packages use `core.yaml` with project-specific overrides — see [Code style](#code-style))
 - Format:              `dart format .`
@@ -19,11 +20,82 @@ Dart SDK: ^3.13.4 (resolves to the Flutter-bundled Dart at `/home/meamka/Project
 - `lib/` — workspace-level library code (currently just `lib/src/`, empty)
 - `generator/` — `gir_generator` package. `bin/generate.dart` is the CLI; `lib/src/` is split into `emit/` (Dart code emission), `gir/` (XML loading & parsing), `resolve/` (type/symbol resolution)
 - `generator/test/` — generator unit tests (`emitter_test`, `loader_test`, `naming_test`, `parser_test`, `types_test`)
-- `packages/gir_ffi/` — handwritten runtime helpers shared by every generated package (the only non-generated package besides the generator)
-- `packages/<lib>/` — generated FFI binding packages: `adw`, `cairo`, `gdk4`, `gdk_pixbuf`, `gio`, `glib`, `gobject`, `graphene`, `gsk4`, `gtk4`, `pango`. Each declares path-deps on its lower-level dependencies
+- `packages/gir_ffi/` — handwritten runtime helpers shared by every generated package (the only non-generated package besides the generator and the template stack)
+- `packages/<lib>/` — generated FFI binding packages: `adw`, `cairo`, `gdk4`, `gdk_pixbuf`, `gio`, `gi_repository3`, `glib`, `gobject`, `graphene`, `gsk4`, `gtk4`, `gtk_source5`, `pango`. Each declares path-deps on its lower-level dependencies
 - `packages/<lib>/skip_report.txt` — per-package record of symbols the generator could not emit; regenerate after fixing the generator
-- `example/` — consumer example (empty placeholder)
-- `test/` — workspace-level tests (empty placeholder)
+- `packages/gtk_templates/` — handwritten runtime for the composite-template stack: the `@GtkTemplate` / `@GtkTemplateChild` / `@GtkTemplateCallback` annotations, `getWidgetClass`, `widgetTypeOf`, `prepareTemplateXml`, `claimTemplateType`, `snakeCase`, and the `GBytes` re-export
+- `packages/gtk_templates_builder/` — the `build_runner` builder for that stack: AST scanner, pure codegen, the `Builder`, and a standalone CLI
+- `example/` — consumer examples, each a workspace member: `gtk4_examples/` (small GTK4 demos), `notepad/` (imperative UI), `todo/` (uses `@GtkTemplate` and the generated part file). They resolve against the root lock file and are covered by the root `dart analyze`. **No package may live inside another package's directory** — Dart's workspace refuses a member nested inside another member, so `example/` itself holds no `pubspec.yaml`
+- `test/` — workspace-level tests (empty placeholder — `dart test` with no argument finds nothing here; see [Testing instructions](#testing-instructions))
+- `docs/` — design documents for the generator pipeline, the template stack and Dart-level subclassing; see [docs/README.md](docs/README.md)
+
+## The composite-template stack
+
+`packages/gtk_templates_builder` scans a Dart source file for
+`@GtkTemplate` classes and writes **one part file per source
+file** — `<source-basename>.g.dart` — next to it, holding a
+`_$<className>Template` mixin per annotated class.
+
+The generated file is a `part of` the user's library, so:
+
+- The user writes `part '<source-basename>.g.dart';` in their
+  own file. The name is derived from the source file's name
+  alone — the same convention `json_serializable` uses.
+- The mixin inherits the user's library's imports and cannot
+  declare its own. The library must import
+  `package:gtk4/gtk4.dart`, `package:gtk_templates/gtk_templates.dart`
+  and the package that declares the parent widget type. The builder
+  checks this and fails with the exact import lines to add.
+- The trampoline dispatches through `(this as dynamic)`: the
+  mixin is declared `on <ParentType>` and the analyzer rejects a
+  call to a member the parent type does not declare.
+- **The host class calls `initTemplate()` from its constructor.**
+  The mixin overrides `GtkWidget.initTemplate()`: it installs the
+  template on the native class (once per native class — GTK allows
+  one), binds the children, builds the template and wires the
+  signals. GTK builds a widget's template in the instance
+  initializer and Dart has no equivalent, so the call has to come
+  from the constructor body. Without it the template is built
+  lazily, on the first read of a generated field, and a widget
+  nobody touches comes up **empty**.
+- A Dart subclass has no `GType` of its own, so the runtime
+  rewrites the XML's `<template class=… parent=…>` attributes
+  against the instance's real native type (GTK checks both), and
+  strips the `<signal>` elements before GTK sees them (GtkBuilder
+  would resolve the handler as a C symbol). The children are
+  resolved with `getTemplateChild(<widget's own type>, id)` — the
+  type that *declared* the child, not the child's type.
+
+`build_to: source` is set in the **provider** package's
+`build.yaml` (`packages/gtk_templates_builder/build.yaml`), not
+in the consumer's — Dart requires a part file to sit in the
+same directory as its library. Consumers only configure
+`generate_for`.
+
+The full design is in [docs/templates.md](docs/templates.md).
+
+**Rule: generated code must type-check.** The builder's output
+is resolved with the real analyzer in
+`packages/gtk_templates_builder/test/generated_code_test.dart`
+and `test/builder_output_test.dart`, and the fixture under
+`test/fixtures/` is part of the package's own analysis so
+`dart analyze` covers it too. Four codegen bugs shipped to
+`main` before those tests existed (an uncalled `_wireSignals()`,
+a `cast<T>()` without its factory argument, a missing
+`package:gobject` import, and a missing parent-type import).
+Do not add codegen that a parse-only check would accept.
+
+## Generated classes are extendable
+
+Generated GObject classes are emitted as `class`, **not**
+`final class`, and their `<ClassName>Props` companions are public and
+extendable. That is what lets user code write
+`class MyButton extends GtkButton`, narrow a return type
+covariantly, and subclass the props companion. The contract is
+pinned by the *Dart-level subclassing contract* group in
+`generator/test/emitter_test.dart` — do not reintroduce `final class`
+or a private props companion. The ownership and lifetime rules are in
+[docs/subclassing.md](docs/subclassing.md).
 
 ## Code style
 
@@ -36,18 +108,24 @@ Dart SDK: ^3.13.4 (resolves to the Flutter-bundled Dart at `/home/meamka/Project
 
 ## Testing instructions
 
-- Workspace tests: `dart test` (resolves to `test/` at the root and any package-level `test/`)
-- Generator tests live in `generator/test/` and run as part of `dart test` from the root, or directly via `cd generator && dart test`
-- Generated packages carry a smoke test (e.g. `packages/glib/test/glib_smoke_test.dart`) — run per-package with `cd packages/<lib> && dart test`
+- **All tests, one command** (from the workspace root):
+  `dart test generator example/gtk4_examples example/notepad example/todo packages/gdk4 packages/gio packages/gir_ffi packages/glib packages/gobject packages/gtk4 packages/gtk_source5 packages/gtk_templates packages/gtk_templates_builder`
+  — 330 passed, 7 skipped (the skips are the native GTK tests — see below).
+- **Why the explicit list?** `dart test` with no argument runs only the *root* package's own `test/` directory, which is empty. The generator tests, the template-package tests and the per-package smoke tests live in their own packages' `test/` directories, so they have to be named. `dart pub workspace run` does not exist in this Dart SDK — `dart pub workspace` only offers `list`.
+- **Per package:** `cd <package> && dart test` works for any workspace member.
+- **Generator tests** live in `generator/test/` and also run as part of the all-tests command.
+- **Generated packages** carry a smoke test (e.g. `packages/glib/test/glib_smoke_test.dart`) — run per-package with `cd packages/<lib> && dart test`
+- **Generated code must type-check.** `packages/gtk_templates_builder/test/generated_code_test.dart` resolves the generated part file with the real analyzer and asserts zero diagnostics; `builder_output_test.dart` does the same for the `build_runner` output. A parse-only check is not enough.
+- **Native GTK tests skip themselves without a display.** `example/todo/test/todo_widget_test.dart` builds the real window and asserts that the template is on screen. GTK needs a display, so the suite skips when there is none (CI is headless). Run it locally with `xvfb-run -a dart test example/todo`. Its teardown disconnects the Dart signal handlers **and destroys the windows**: a `GObject` finalized *while the isolate shuts down* destroys its signal handlers, and the destroy-notify GObject calls is a Dart callback — the VM refuses to run a callback while it is shutting down and aborts; and a window only freed at shutdown is still in GTK's global toplevel list, which GTK walks on every main-loop iteration (a use-after-free, and `dart test` runs the GTK-using suites concurrently in one process). Both are pre-existing properties of the bindings' object lifecycle, not of the template stack.
 - Skip report: when the generator emits fewer bindings, `packages/<lib>/skip_report.txt` lists them by category (`callable`, `class`, `record`, etc.). Use it to triage missing functionality
 - All tests must pass and `dart analyze` must be clean for the whole workspace before opening a PR
 
 ## PR & commit conventions
 
-- No git repository exists in this workspace yet — initialize with `git init` before the first commit, and commit `AGENTS.md` with the initial source drop
+- The workspace is a git repository. `main` is the trunk; `array-types`, `notepad` and `props` are already merged. `gasync` is superseded — do not build on it. `composite-templates` holds an unmerged prototype: it is **not** to be merged, and it will be retired once its one remaining capability is confirmed present on `main` (see [Generated classes are extendable](#generated-classes-are-extendable)). Its Blueprint/GResource support, Meson/gettext packaging and program-lifetime `NativeCallable` trampoline are out of scope.
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:` — generator changes get a `feat(generator):` or `fix(generator):` prefix; regenerated packages go under `chore(gen):` or `feat(gen <lib>):`
 - One PR per logical change. Generator changes must include the regenerated `packages/<lib>/` output and the matching `skip_report.txt` updates in the same PR — reviewers must see the effect on a generated package
-- No CI configuration is checked in yet; add `.github/workflows/` under the same PR that introduces CI
+- CI is checked in at `.github/workflows/ci.yml`: analyze, the generator tests, the template packages' pure-Dart tests, and a build + analyze gate over `example/todo`. Native GTK runtime tests are deliberately out of CI (they need a display and the native GTK 4 stack); keep them out until a CI image provides one. When you add a CI step, add it to that workflow in the same PR
 - **Callback typedefs** follow the GIR `c:type` (e.g. `GCompareDataFunc`). User-supplied callbacks must be **top-level or static Dart functions** with parameter and return types matching the typedef's signature; closures and instance methods are accepted at runtime only through the wrapping `NativeCallable.isolateLocal` that the generator emits at every call site. The wrapper allocates the NativeCallable before the call and `.close()`-s it in a `finally` block — long-lived callbacks must therefore be passed as top-level functions so the temporary `NativeCallable` doesn't outlive the wrapper
 
 ## Security

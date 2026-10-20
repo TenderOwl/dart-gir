@@ -1,0 +1,22 @@
+# Wires `gtk_templates_builder` into `build_runner` so the
+# `_$TodoWindowTemplate` mixin is regenerated on every
+# `dart run build_runner build`. The builder scans every
+# `.dart` file under `lib/`, finds `@GtkTemplate`-annotated
+# classes, and writes one `<input>.g.dart` part file next to
+# each source file. The user `with`s the generated mixin in
+# their class and pulls the part file in with a
+# `part '<input>.g.dart';` directive.
+#
+# `build_to: source` is **not** set here: it belongs to the
+# provider package's `build.yaml`
+# (`packages/gtk_templates_builder/build.yaml`), where it
+# makes the generated file land next to the source instead of
+# in `.dart_tool/build/generated/`. Dart requires a part file to
+# sit in the same directory as its library, so this is what
+# makes the `part` directive resolve.
+targets:
+  $default:
+    builders:
+      gtk_templates_builder:
+        generate_for:
+          - lib/**.dart

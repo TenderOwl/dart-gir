@@ -13,13 +13,13 @@ dependencies:
   path: ^1.9.0
 
   adw:
-    path: ../packages/adw
+    path: ../../packages/adw
   ffi: ^2.1.3
   gio:
-    path: ../packages/gio
+    path: ../../packages/gio
   gobject:
-    path: ../packages/gobject
+    path: ../../packages/gobject
   glib:
-    path: ../packages/glib
+    path: ../../packages/glib
   gtk4:
-    path: ../packages/gtk4
+    path: ../../packages/gtk4
