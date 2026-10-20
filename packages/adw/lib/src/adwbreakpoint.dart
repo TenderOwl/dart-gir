@@ -47,8 +47,20 @@ part of '../adw.dart';
 /// <setter object="page" property="title" translatable="yes">Example</setter>
 /// </object>
 /// ```
-class AdwBreakpoint extends GObject {
+class AdwBreakpoint extends GObject implements GtkBuildable {
   AdwBreakpoint.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwBreakpoint` with @condition.
   static final _adwBreakpointNew =
@@ -59,7 +71,7 @@ class AdwBreakpoint extends GObject {
           >('adw_breakpoint_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBreakpoint(AdwBreakpointCondition condition)
-    : super.fromPointer(_adwBreakpointNew(condition.handle), owned: true);
+    : this.fromPointer(_adwBreakpointNew(condition.handle), owned: true);
 
   /// Adds a setter to @self.
   ///
@@ -123,6 +135,51 @@ class AdwBreakpoint extends GObject {
         object.handle,
         nativeProperty.cast<Utf8>(),
         value?.handle ?? ffi.nullptr,
+      );
+    });
+  }
+
+  /// Adds @n_setters setters to @self.
+  ///
+  /// This is a convenience function for adding multiple setters at once.
+  ///
+  /// See [method@Breakpoint.add_setter].
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _adwBreakpointAddSettersv =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('adw_breakpoint_add_settersv')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void addSettersv(
+    int nSetters,
+    ffi.Pointer<ffi.Void> objects,
+    List<String?>? names,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    withNativeStringList(names, (nativeNames) {
+      _adwBreakpointAddSettersv(
+        this.handle,
+        nSetters,
+        objects,
+        nativeNames,
+        values,
       );
     });
   }

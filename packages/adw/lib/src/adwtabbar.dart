@@ -52,15 +52,28 @@ part of '../adw.dart';
 /// <source srcset="tab-bar-inline-dark.png" media="(prefers-color-scheme: dark)">
 /// <img src="tab-bar-inline.png" alt="tab-bar-inline">
 /// </picture>
-class AdwTabBar extends GtkWidget {
+class AdwTabBar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   AdwTabBar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwTabBar`.
   static final _adwTabBarNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_tab_bar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwTabBar() : super.fromPointer(_adwTabBarNew(), owned: true);
+  AdwTabBar() : this.fromPointer(_adwTabBarNew(), owned: true);
 
   /// Gets whether the tabs automatically hide.
   static final _adwTabBarGetAutohide =
@@ -278,6 +291,42 @@ class AdwTabBar extends GtkWidget {
           >();
   void setView([AdwTabView? view]) {
     _adwTabBarSetView(this.handle, view?.handle ?? ffi.nullptr);
+  }
+
+  /// Sets up an extra drop target on tabs.
+  ///
+  /// This allows to drag arbitrary content onto tabs, for example URLs in a web
+  /// browser.
+  ///
+  /// If a tab is hovered for a certain period of time while dragging the content,
+  /// it will be automatically selected.
+  ///
+  /// The [signal@TabBar::extra-drag-drop] signal can be used to handle the drop.
+  static final _adwTabBarSetupExtraDropTarget =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Size>,
+                ffi.Size,
+              )
+            >
+          >('adw_tab_bar_setup_extra_drop_target')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              int,
+            )
+          >();
+  void setupExtraDropTarget(
+    GdkDragAction actions,
+    ffi.Pointer<ffi.Size> types,
+    int nTypes,
+  ) {
+    _adwTabBarSetupExtraDropTarget(this.handle, actions.value, types, nTypes);
   }
 
   /// Emitted when content is dropped onto a tab.
@@ -762,6 +811,115 @@ class AdwTabBar extends GtkWidget {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Gets the ID of the @buildable object.

@@ -57,8 +57,10 @@ void main() {
       FakeWrapper Function(ffi.Pointer<ffi.Void>) factory =
           FakeWrapper.fromPointer;
       final handle = ffi.Pointer<ffi.Void>.fromAddress(0x1);
-      expect(castTo<FakeWrapper>(handle, factory).handle.address,
-          equals(handle.address));
+      expect(
+        castTo<FakeWrapper>(handle, factory).handle.address,
+        equals(handle.address),
+      );
     });
   });
 }

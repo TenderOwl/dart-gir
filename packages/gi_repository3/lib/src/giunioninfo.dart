@@ -9,6 +9,18 @@ part of '../gi_repository3.dart';
 class GIUnionInfo extends GIRegisteredTypeInfo {
   GIUnionInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Obtain the type information for the method named @name.
   static final _giUnionInfoFindMethod =
       giRepository3Lookup<
@@ -81,6 +93,28 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
         : GIConstantInfo.fromPointer(
             _giUnionInfoGetDiscriminator(this.handle, n),
           );
+  }
+
+  /// Obtain the offset of the discriminator field within the structure.
+  ///
+  /// The union must be discriminated, or `FALSE` will be returned.
+  static final _giUnionInfoGetDiscriminatorOffset =
+      giRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Size>)
+            >
+          >('gi_union_info_get_discriminator_offset')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Size>)
+          >();
+  (bool, int) getDiscriminatorOffset() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _giUnionInfoGetDiscriminatorOffset(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Obtain the type information of the union discriminator.

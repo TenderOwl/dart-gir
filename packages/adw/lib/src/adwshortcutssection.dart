@@ -12,9 +12,21 @@ part of '../adw.dart';
 /// ## `AdwShortcutsSection` as `GtkBuildable`
 ///
 /// `AdwShortcutsSection` allows adding `AdwShortcutsItem` objects as children.
-class AdwShortcutsSection extends GObject {
+class AdwShortcutsSection extends GObject implements GListModel, GtkBuildable {
   AdwShortcutsSection.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwShortcutsSection` with @title as its title if provided.
   static final _adwShortcutsSectionNew =
@@ -105,6 +117,22 @@ class AdwShortcutsSection extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// This signal is emitted whenever items were added to or removed
+  /// from @list. At @position, @removed items were removed and @added
+  /// items were added in their place.
+  ///
+  /// Note: If `removed != added`, the positions of all later items
+  /// in the model change.
+  int onItemsChanged(
+    void Function(int position, int removed, int added) callback,
+  ) {
+    return _connectSignal_v_3_i_i_i_int_int_int(
+      this.handle,
+      'items-changed',
+      callback,
+    );
   }
 
   /// Gets the type of the items in @list.

@@ -217,15 +217,28 @@ part of '../adw.dart';
 /// ## Accessibility
 ///
 /// `AdwSidebar` uses the [enum@Gtk.AccessibleRole.generic] role.
-class AdwSidebar extends GtkWidget {
+class AdwSidebar extends GtkWidget
+    implements GtkAccessible, GtkBuildable, GtkConstraintTarget {
   AdwSidebar.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwSidebar`.
   static final _adwSidebarNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_sidebar_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwSidebar() : super.fromPointer(_adwSidebarNew(), owned: true);
+  AdwSidebar() : this.fromPointer(_adwSidebarNew(), owned: true);
 
   /// Appends @section to @self.
   static final _adwSidebarAppend =
@@ -585,6 +598,38 @@ class AdwSidebar extends GtkWidget {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setSelected(int selected) {
     _adwSidebarSetSelected(this.handle, selected);
+  }
+
+  /// Sets up a drop target on the items.
+  ///
+  /// This allows to drag arbitrary content onto items.
+  ///
+  /// The [signal@Sidebar::drop] signal can be used to handle the drop.
+  static final _adwSidebarSetupDropTarget =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Size>,
+                ffi.Size,
+              )
+            >
+          >('adw_sidebar_setup_drop_target')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              int,
+            )
+          >();
+  void setupDropTarget(
+    GdkDragAction actions,
+    ffi.Pointer<ffi.Size> types,
+    int nTypes,
+  ) {
+    _adwSidebarSetupDropTarget(this.handle, actions.value, types, nTypes);
   }
 
   /// Emitted when an item at @index has been activated.
@@ -1091,6 +1136,115 @@ class AdwSidebar extends GtkWidget {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Gets the ID of the @buildable object.

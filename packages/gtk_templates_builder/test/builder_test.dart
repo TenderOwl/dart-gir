@@ -2,26 +2,25 @@ import 'dart:io';
 
 import 'package:gtk_templates/gtk_templates.dart';
 import 'package:gtk_templates_builder/gtk_templates_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
+
+import 'support/probe.dart';
 
 void main() {
   group('scanSource', () {
     test('returns empty plan for source with no annotated classes', () {
-      final plan = scanSource(
-        '''
+      final plan = scanSource('''
         class PlainBox extends GtkBox {
           late final GtkLabel label;
         }
-        ''',
-      );
+        ''');
       expect(plan.isEmpty, isTrue);
       expect(plan.classes, isEmpty);
     });
 
-    test(
-      'extracts GtkTemplateXml, children, and callbacks from one class',
-      () {
-        const source = r'''
+    test('extracts GtkTemplateXml, children, and callbacks from one class', () {
+      const source = r'''
         import 'package:gtk4/gtk4.dart';
         import 'package:gtk_templates/gtk_templates.dart';
 
@@ -42,31 +41,30 @@ void main() {
           void helloButtonClicked() {}
         }
       ''';
-        final plan = scanSource(source);
+      final plan = scanSource(source);
 
-        expect(plan.classes, hasLength(1));
-        final cls = plan.classes.single;
-        expect(cls.className, 'FooBar');
+      expect(plan.classes, hasLength(1));
+      final cls = plan.classes.single;
+      expect(cls.className, 'FooBar');
 
-        final src = cls.templateSource;
-        expect(src, isA<GtkTemplateXml>());
-        final xml = src as GtkTemplateXml;
-        expect(xml.content, contains('<interface>'));
-        expect(xml.content, contains('id="my_label"'));
+      final src = cls.templateSource;
+      expect(src, isA<GtkTemplateXml>());
+      final xml = src as GtkTemplateXml;
+      expect(xml.content, contains('<interface>'));
+      expect(xml.content, contains('id="my_label"'));
 
-        expect(cls.children, hasLength(2));
-        expect(cls.children[0].fieldName, 'label');
-        expect(cls.children[0].childName, 'my_label');
-        expect(cls.children[1].fieldName, 'button');
-        expect(cls.children[1].childName, 'button');
+      expect(cls.children, hasLength(2));
+      expect(cls.children[0].fieldName, 'label');
+      expect(cls.children[0].childName, 'my_label');
+      expect(cls.children[1].fieldName, 'button');
+      expect(cls.children[1].childName, 'button');
 
-        expect(cls.callbacks, hasLength(2));
-        expect(cls.callbacks[0].methodName, 'onClicked');
-        expect(cls.callbacks[0].callbackName, 'on_clicked');
-        expect(cls.callbacks[1].methodName, 'helloButtonClicked');
-        expect(cls.callbacks[1].callbackName, 'hello_button_clicked');
-      },
-    );
+      expect(cls.callbacks, hasLength(2));
+      expect(cls.callbacks[0].methodName, 'onClicked');
+      expect(cls.callbacks[0].callbackName, 'on_clicked');
+      expect(cls.callbacks[1].methodName, 'helloButtonClicked');
+      expect(cls.callbacks[1].callbackName, 'hello_button_clicked');
+    });
 
     test('extracts GtkTemplateFile path verbatim', () {
       const source = '''
@@ -159,9 +157,13 @@ void main() {
       expect(plan.classes, isEmpty);
     });
 
-    test('reads source and child name from the on-disk fixture', () {
+    test('reads source and child name from the on-disk fixture', () async {
+      // The fixture path is resolved against the package root, not
+      // the current directory — `dart test` may run from the
+      // workspace root.
+      final root = await packageRoot();
       final source = File(
-        'test/fixtures/sample_window.dart',
+        p.join(root.path, 'test', 'fixtures', 'sample_window.dart'),
       ).readAsStringSync();
       final plan = scanSource(
         source,

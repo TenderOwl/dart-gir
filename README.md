@@ -112,7 +112,12 @@ packages/
   cairo  pango         text + 2D rendering
   gdk4  graphene  gsk4
   gtk4  adw  gtk_source5
-example/               consumer app (Gtk4 editor)
+  gtk_templates/       composite-template runtime (annotations + helpers)
+  gtk_templates_builder/  the build_runner builder that generates the mixins
+example/
+  gtk4_examples/       small GTK4 demos
+  notepad/             consumer app (Gtk4 editor)
+  todo/                consumer app built on @GtkTemplate
 docs/                  design reference
 ```
 

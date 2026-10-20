@@ -1,10 +1,11 @@
 name: gtk_templates_builder
-version: 0.3.0
+version: 0.5.0
 description: >-
   build_runner Builder that scans Dart source for `@GtkTemplate`
   annotations and emits the per-class `_$<className>Template`
-  mixin that wires the template, the children, and (in a
-  follow-up) the callbacks. Pure codegen lives in
+  mixin that wires the template, the children, and the
+  `<signal>` handlers from the template XML (callback
+  trampoline). Pure codegen lives in
   `package:gtk_templates_builder/codegen.dart` and is exported
   for tests.
 publish_to: none
@@ -14,9 +15,10 @@ environment:
   sdk: ^3.13.4
 
 dependencies:
-  analyzer: ^10.0.0
+  analyzer: ^14.5.0
   build: ^4.0.7
   build_runner: ^2.15.1
+  dart_style: ^3.1.14
   gtk_templates:
     path: ../gtk_templates
   path: ^1.9.0
@@ -25,3 +27,11 @@ dev_dependencies:
   build_test: ^3.5.16
   lints: ^6.0.0
   test: ^1.25.6
+  # The fixture under `test/fixtures/` is part of this package's
+  # analysis: it is the proof that the *generated* part file
+  # type-checks. These are the packages its imports (and the
+  # generated file's inherited imports) resolve against.
+  adw:
+    path: ../adw
+  gtk4:
+    path: ../gtk4

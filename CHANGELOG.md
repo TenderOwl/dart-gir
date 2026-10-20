@@ -11,6 +11,55 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 ## Unreleased
 
 ### Fixed
+- **The composite-template stack renders its template.** `example/todo`
+  came up as an empty window: the template was built *lazily*, on the
+  first read of a generated field, and nothing read one — so GTK never
+  instantiated the template's widget tree. Three separate defects were
+  behind it:
+  - **The template was never built.** GTK builds a widget's template in
+    the instance initializer; Dart has no instance initializer (a field
+    initializer cannot touch `this`). The generated mixin now **overrides
+    `GtkWidget.initTemplate()`** and the host widget calls it from its
+    constructor:
+
+    ```diff
+     class TodoWindow extends AdwApplicationWindow with _$TodoWindowTemplate {
+    -  TodoWindow(super.app);
+    +  TodoWindow(super.app) {
+    +    initTemplate();
+    +  }
+     }
+    ```
+
+    `initTemplate()` is idempotent; the lazy path survives as a safety
+    net, so a host that forgets the call still gets a working — if late
+    — widget.
+  - **The children were resolved against the wrong type.**
+    `gtk_widget_get_template_child()` wants the type that *declared* the
+    child — the widget's own native type — not the child's type. Passing
+    the child's type returns `NULL`, so every generated field came back
+    empty. The mixin now resolves the instance's native `GType`
+    (`widgetTypeOf`).
+  - **GTK rejected the XML.** GTK checks the `<template>` element's
+    `class` against the widget's type name and `parent` against the
+    widget's direct parent type. A Dart subclass has no `GType` of its
+    own, so the name the user writes can never match: the runtime now
+    rewrites both attributes against the instance's real type. The
+    `<signal>` elements are removed before GTK sees them, because
+    GtkBuilder resolves a handler as a **C symbol** — the signal is wired
+    by the generated mixin's Dart closure instead.
+
+  `example/todo`'s template XML was also malformed (a stray `</object>`
+  and a missing `</template>`); it is fixed.
+
+- **The template is installed once per native class.** GTK stores the
+  template on the native class and allows exactly one there
+  (`gtk_widget_class_set_template()` asserts
+  `widget_class->priv->template == NULL`). A Dart subclass does not
+  register a `GType` of its own, so two Dart template classes cannot
+  share one native widget type — the second one is now rejected with a
+  `StateError` instead of tripping a GTK assertion.
+
 - **Nullable scalar OUT parameters are now emitted.** The resolver's
   `bridgeFor` rejected any nullable scalar (primitive, boolean,
   enumeration, bitfield) on a non-return path, so methods whose only
@@ -107,7 +156,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `NativeCallable.isolateLocal` for proper C-buffer and
   `NativeCallable` lifetime management, and a generative initializer
   list has no body to host the corresponding `finally` block. Smoke
-  test: `example/bin/subclass_smoke.dart`.
+  test: `example/gtk4_examples/bin/subclass_smoke.dart`.
 - **`g_free` binding in `package:gir_ffi`** via
   `DynamicLibrary.process().lookup('g_free')` for transferring
   ownership of `transfer-none` strings out of the trampoline.
@@ -443,7 +492,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   field, which the returned wrapper captures as its `handle`); drop
   the wrapper and GC frees the buffer. End-to-end covered by
   [`packages/gtk4/test/gtk4_text_iter_test.dart`](./packages/gtk4/test/gtk4_text_iter_test.dart)
-  and [`example/test/editor_savefile_test.dart`](./example/test/editor_savefile_test.dart).
+  and [`example/test/editor_savefile_test.dart`](./example/gtk4_examples/test/editor_savefile_test.dart).
 - **Inheritance walker stop-at-local-name**: `Adw.Application` →
   `Gtk.Application` previously stopped at `Adw.Application` because both
   classes have local name `Application`. Now keyed by qualified name
@@ -492,6 +541,119 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   Surfaced during the array-type resolution pass because
   `gtk_cclosure_expression_new`'s `params` array used to be skipped,
   masking the latent bug.
+
+### Added
+- **The composite-template stack** — two new packages make GTK
+  composite templates usable from Dart:
+  - `packages/gtk_templates` — the `@GtkTemplate`, `@GtkTemplateChild`
+    and `@GtkTemplateCallback` annotations, the `GtkTemplateXml` /
+    `GtkTemplateFile` source variants, `getWidgetClass`, `widgetTypeOf`,
+    `prepareTemplateXml`, `claimTemplateType`, `snakeCase` and
+    `gbytesFromString`.
+  - `packages/gtk_templates_builder` — an AST scanner, a pure codegen,
+    a `build_runner` builder and a standalone CLI.
+
+  The builder emits **one part file per source file** —
+  `<source-basename>.g.dart`, the `json_serializable` convention —
+  holding a `_$<ClassName>Template` mixin per annotated class. The name
+  is derivable from the source file's name alone, so the user never has
+  to predict a generated filename.
+
+  `build_to: source` lives in the **provider** package's `build.yaml`
+  (`packages/gtk_templates_builder/build.yaml`); a consumer's
+  `build.yaml` only sets `generate_for`. The builder fails with an
+  actionable message — naming the exact `part` line, or the exact
+  `import` lines, to add — when the user's library is missing either.
+
+  The design is written up in [docs/templates.md](./docs/templates.md).
+
+- **A callback trampoline for template signals.** Each
+  `<signal name="…" handler="…"/>` in the template XML is wired to the
+  user's instance method through the child's typed signal API
+  (`button.onClicked(() => onClicked())`), with a per-instance closure
+  that lives as long as the widget. The user's method must match the
+  GIR-declared arity of the signal.
+
+- **`GBytes` in `package:glib`, re-exported from
+  `package:gtk_templates`.** `GBytes` is a `<glib:boxed>` opaque
+  record, declared only in `GLib-2.0.gir`, so the generator emits it
+  once — in the namespace that owns it. `package:gtk_templates`
+  re-exports it, so the template codegen and the user's code need a
+  single import and a single unambiguous `GBytes`.
+
+- **`example/todo` rebuilt around the template stack.** A libadwaita
+  counter whose window is a `@GtkTemplate` host class with an inline
+  XML template. The package moved from `src/` to `lib/` — the standard
+  Dart layout, matching `example/notepad` — and the generated part file
+  is written next to its source.
+
+### Changed
+- **The template packages moved to a one-part-file-per-source contract**
+  (`0.3.1` → `0.4.0`). The builder used to derive the generated file's
+  name from the annotated *class*, so the user had to predict a
+  filename to write the `part` directive. It is now derived from the
+  *source file* name: one source file with several `@GtkTemplate`
+  classes produces one part file holding every mixin. The migration
+  diff is in
+  [`packages/gtk_templates_builder/CHANGELOG.md`](./packages/gtk_templates_builder/CHANGELOG.md).
+
+- **Dart-level subclassing of the generated wrappers is now a documented,
+  tested contract.** Generated GObject classes are emitted as `class`
+  (not `final class`) and their `<ClassName>Props` companions are
+  public and extendable, so user code can write
+  `class MyButton extends GtkButton` and narrow a return type
+  covariantly. The contract is now pinned by the generator tests
+  (group *Dart-level subclassing contract*) and the ownership and
+  lifetime rules are written down in
+  [docs/subclassing.md](./docs/subclassing.md), with a worked example
+  in
+  [`packages/gtk4/test/gtk4_subclass_test.dart`](./packages/gtk4/test/gtk4_subclass_test.dart).
+  The capability itself was already present; what was missing was the
+  documentation, the regression test and the example.
+
+- **A distinct skip reason for duplicate constants.** Two GIR
+  constants that map to the same Dart name — overwhelmingly GDK's
+  keyvals, which the GIR declares twice under two capitalisations
+  (`KEY_Armenian_at` and `KEY_armenian_at`) — were reported as
+  `name collision: <name>`, which said nothing about what happened.
+  They now read
+  `duplicate constant: <A> and <B> both map to <name>` and name both
+  GIR symbols. 335 entries across `gdk4` and `glib` change their
+  reason. See
+  [skip-categories.md](./docs/skip-categories.md#duplicate-constant-a-and-b-both-map-to-name).
+
+- **The generated packages are regenerated.** `packages/adw`,
+  `packages/gi_repository3`, `packages/gdk_pixbuf`, `packages/cairo`
+  and parts of `packages/glib` had been committed from an older
+  generator and did not match the current one — `adw` was missing
+  225 array-typed methods that the generator now emits. They are
+  regenerated here, and the corpus-wide skip count drops from 3,472
+  to 3,242.
+
+- **The example apps are workspace members.** `example/notepad` and
+  `example/todo` now carry `resolution: workspace` and are listed in
+  the root pubspec, so they resolve against the root lock file and are
+  covered by the root `dart analyze`. Dart's workspace refuses a
+  member nested inside another member's directory, so the small demos
+  package moved down one level: `example/` now holds
+  `example/gtk4_examples/`, `example/notepad/` and `example/todo/`
+  side by side, and `example/` itself is no longer a package.
+
+  The generator's `syncRootPubspec` — which rewrites the root
+  `workspace:` list on every run — now *discovers* the members
+  instead of hard-coding `generator`, `packages/*` and `example`. It
+  skips hidden directories (pub's own `.dart_tool/pub/packages/…`
+  cache) and skips a package nested inside another package's
+  directory.
+
+- **`dart format .` is a no-op again.** The repository had drifted
+  from the formatter, and the generated part files were not
+  format-clean — so a consumer running `dart format .` would see a
+  diff against the checked-in generated file, and the next rebuild
+  would revert it. The builder now runs its output through the same
+  formatter `dart format` uses (`package:dart_style`), so the two
+  cannot disagree, and a test asserts the output is a fixed point of
+  the formatter.
 
 ## 1.0.0 — 2026-09-28
 

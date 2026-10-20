@@ -1,12 +1,21 @@
 /// `build_runner` `Builder` for `@GtkTemplate` annotation scanning.
 ///
-/// This first cut scans every `.dart` input the builder is asked
-/// about and emits a `_$<className>Template` mixin next to each
-/// annotated class. The mixin registers the template with the
+/// The builder scans every `.dart` input it is asked about and
+/// emits **one part file per source file** — `<input>.g.dart`,
+/// next to the source — holding a `_$<className>Template` mixin
+/// per annotated class. The mixin registers the template with the
 /// widget class, binds the per-instance children via
-/// `getTemplateChild`, and populates `late final` fields on
-/// demand. Callbacks are not yet auto-wired — see
-/// `lib/codegen.dart` for the limitation.
+/// `getTemplateChild`, populates `late final` fields on demand,
+/// and wires the XML's `<signal>` handlers to the user's instance
+/// methods.
+///
+/// The user's source must declare `part '<input>.g.dart';`. The
+/// builder checks for it and fails the build with an actionable
+/// message when it is missing.
+///
+/// Because the generated file must sit in the same directory as
+/// its library, consumers need `build_to: source` in their
+/// `build.yaml`.
 ///
 /// The scanner is exposed as a top-level `scanSource` so tests
 /// can run it without going through `build_runner`.
@@ -22,6 +31,16 @@ import 'package:gtk_templates/gtk_templates.dart';
 import 'builder_plan.dart';
 import 'codegen.dart';
 
+/// The `build_runner` entry point for [GtkTemplatesBuilder].
+///
+/// `build_config` resolves this by name from the package's
+/// `build.yaml`, which is also where `build_to: source` lives —
+/// the generated part file has to land next to its library,
+/// because Dart requires a part file to sit in the same
+/// directory as the source it belongs to.
+Builder gtkTemplatesBuilder(BuilderOptions options) =>
+    const GtkTemplatesBuilder();
+
 /// `build_runner` `Builder` entry point.
 ///
 /// Registered by `bin/gtk_templates_builder.dart` when the user
@@ -35,19 +54,44 @@ class GtkTemplatesBuilder implements Builder {
 
   @override
   final Map<String, List<String>> buildExtensions = const {
-    // Per-class generated file: <input>.<className>.g.dart.
-    // `build_runner` requires every output extension to be
-    // declared; we use a single `.g.dart` extension and put
-    // the class name into the package's part-of name below.
-    r'$lib$': ['.g.dart'],
+    // One part file per source file: `<input>.g.dart`. The name
+    // is derivable from the source file name alone, so the user
+    // writes `part '<input>.g.dart';` and never has to predict a
+    // class-derived name.
+    //
+    // The output must land **next to** the source file, because
+    // Dart requires a part file to sit in the same directory as
+    // its library. The provider package's `build.yaml` therefore
+    // sets `build_to: source` — see that file.
+    '.dart': ['.g.dart'],
   };
 
   @override
   Future<void> build(BuildStep buildStep) async {
+    // The `.dart` input extension also matches this builder's
+    // own output. Skip the generated part files — they hold a
+    // `part of` directive, not a `part` one, and are not
+    // sources.
+    if (buildStep.inputId.path.endsWith('.g.dart')) return;
+
     final source = await buildStep.readAsString(buildStep.inputId);
     final plan = scanSource(source, filePath: buildStep.inputId.path);
     if (plan.isEmpty) return;
 
+    final partOfPath = _basename(buildStep.inputId.path);
+    final partBasename = partFileBasename(partOfPath);
+
+    // Fail loudly when the user's file does not pull the
+    // generated file in. A silent failure here would surface as
+    // "undefined mixin" at the use site, far from the cause.
+    final diagnostic = checkPartDirective(source, partBasename);
+    if (diagnostic != null) {
+      final message = 'gtk_templates: ${buildStep.inputId.path}\n$diagnostic';
+      log.severe(message);
+      throw MissingPartDirectiveException(message);
+    }
+
+    final inputs = <CodegenInput>[];
     for (final cls in plan.classes) {
       final xmlString = await _resolveTemplateXml(
         cls.templateSource,
@@ -61,18 +105,84 @@ class GtkTemplatesBuilder implements Builder {
         continue;
       }
       final children = extractChildrenFromXml(xmlString);
-      final input = CodegenInput.fromPlan(
-        cls,
-        xmlString: xmlString,
-        xmlChildren: children,
+      final signals = extractSignalsFromXml(xmlString);
+      inputs.add(
+        CodegenInput.fromPlan(
+          cls,
+          xmlString: xmlString,
+          xmlChildren: children,
+          xmlSignals: signals,
+          partOfPath: partOfPath,
+        ),
       );
-      final generated = codegenMixin(input);
-      final outputId = buildStep.inputId.addExtension(
-        '.${cls.className.toLowerCase()}.g.dart',
-      );
-      await buildStep.writeAsString(outputId, generated);
     }
+    if (inputs.isEmpty) return;
+
+    // The generated file is a `part of` this library, so it
+    // inherits this library's imports and cannot declare its
+    // own. A missing import would surface as an "undefined
+    // name" error inside the *generated* file — far from the
+    // cause — so check up front.
+    final typeNames = <String>[
+      for (final input in inputs) input.parentType,
+      for (final input in inputs) ...input.children.map((c) => c.typeName),
+    ];
+    final missingImports = checkRequiredImports(source, typeNames);
+    if (missingImports.isNotEmpty) {
+      final message =
+          'gtk_templates: ${buildStep.inputId.path} is missing the '
+          'imports the generated mixin needs:\n'
+          '${missingImports.map((p) => "  import '$p';").join('\n')}\n'
+          'The generated file is a `part of` this library and inherits its '
+          'imports, so add the lines above to this file.';
+      log.severe(message);
+      throw MissingImportException(message);
+    }
+
+    final generated = formatGeneratedSource(codegenLibrary(inputs));
+    final outputId = buildStep.inputId.changeExtension('.g.dart');
+    await buildStep.writeAsString(outputId, generated);
   }
+}
+
+/// Thrown when the user's source file does not pull the generated
+/// mixin in via a `part` directive.
+///
+/// `build_runner` swallows exceptions thrown by a builder and
+/// reports them through the log, so the builder also calls
+/// `log.severe` with the actionable message before throwing.
+class MissingPartDirectiveException implements Exception {
+  const MissingPartDirectiveException(this.message);
+
+  /// The user-facing diagnostic, naming the exact `part` line to
+  /// add.
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
+/// Thrown when the user's source file does not import the packages
+/// the generated mixin needs.
+///
+/// `build_runner` swallows exceptions thrown by a builder and
+/// reports them through the log, so the builder also calls
+/// `log.severe` with the actionable message before throwing.
+class MissingImportException implements Exception {
+  const MissingImportException(this.message);
+
+  /// The user-facing diagnostic, naming the exact import lines to
+  /// add.
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
+/// Returns the basename (final path segment) of [path].
+String _basename(String path) {
+  final i = path.lastIndexOf('/');
+  return i < 0 ? path : path.substring(i + 1);
 }
 
 /// Resolves the template XML for a class. For inline
@@ -241,9 +351,16 @@ GtkTemplateSource? _findGtkTemplateSource(NodeList<Annotation> annotations) {
   }
 
   for (final arg in argList.arguments) {
-    if (arg is! NamedExpression) continue;
-    if (arg.name.label.name != 'source') continue;
-    final expr = arg.expression;
+    if (arg is! NamedArgument) continue;
+    if (arg.name.lexeme != 'source') continue;
+    // `argumentExpression` is the v1 projection. The v2 one
+    // (`argumentExpression2`) returns a `ParsedValueArguments`
+    // wrapper, while the rest of the scanner walks the v1 AST
+    // (`InstanceCreationExpression`, `MethodInvocation`,
+    // `SimpleStringLiteral`), so the v1 projection is the one
+    // that fits.
+    // ignore: deprecated_member_use
+    final expr = arg.argumentExpression;
 
     // In Dart 2.12+ a constructor invocation can be written
     // without the `new` keyword, in which case the analyzer
@@ -261,10 +378,9 @@ GtkTemplateSource? _findGtkTemplateSource(NodeList<Annotation> annotations) {
     }
 
     final args = _argumentListOf(expr);
-    final argValue =
-        args != null && args.arguments.isNotEmpty
-            ? args.arguments.first
-            : null;
+    final argValue = args != null && args.arguments.isNotEmpty
+        ? args.arguments.first
+        : null;
     final literal = argValue is SimpleStringLiteral ? argValue.value : null;
     switch (ctorName) {
       case 'GtkTemplateXml':
@@ -311,10 +427,11 @@ String? _findNamedStringArg(Annotation ann, String name) {
   final args = ann.arguments;
   if (args == null) return null;
   for (final arg in args.arguments) {
-    if (arg is NamedExpression) {
-      final label = arg.name.label;
-      final expr = arg.expression;
-      if (label.name == name && expr is SimpleStringLiteral) {
+    if (arg is NamedArgument) {
+      final label = arg.name.lexeme;
+      // ignore: deprecated_member_use
+      final expr = arg.argumentExpression;
+      if (label == name && expr is SimpleStringLiteral) {
         return expr.value;
       }
     }

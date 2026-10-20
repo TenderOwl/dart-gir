@@ -94,10 +94,7 @@ class CallbackBinding {
   final String methodName;
   final String callbackName;
 
-  const CallbackBinding({
-    required this.methodName,
-    required this.callbackName,
-  });
+  const CallbackBinding({required this.methodName, required this.callbackName});
 
   @override
   String toString() => '$methodName ($callbackName)';

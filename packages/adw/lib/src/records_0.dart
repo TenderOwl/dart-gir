@@ -2,79 +2,259 @@
 part of '../adw.dart';
 
 final class AdwAboutDialogClass {
-  AdwAboutDialogClass.fromPointer(this.handle);
+  AdwAboutDialogClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwAboutWindowClass {
-  AdwAboutWindowClass.fromPointer(this.handle);
+  AdwAboutWindowClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwActionRowClass {
-  AdwActionRowClass.fromPointer(this.handle);
+  AdwActionRowClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwAlertDialogClass {
-  AdwAlertDialogClass.fromPointer(this.handle);
+  AdwAlertDialogClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwAnimationClass {
-  AdwAnimationClass.fromPointer(this.handle);
+  AdwAnimationClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwAnimationTargetClass {
-  AdwAnimationTargetClass.fromPointer(this.handle);
+  AdwAnimationTargetClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwApplicationClass {
-  AdwApplicationClass.fromPointer(this.handle);
+  AdwApplicationClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwApplicationWindowClass {
-  AdwApplicationWindowClass.fromPointer(this.handle);
+  AdwApplicationWindowClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwAvatarClass {
-  AdwAvatarClass.fromPointer(this.handle);
+  AdwAvatarClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwBannerClass {
-  AdwBannerClass.fromPointer(this.handle);
+  AdwBannerClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwBinClass {
-  AdwBinClass.fromPointer(this.handle);
+  AdwBinClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwBottomSheetClass {
-  AdwBottomSheetClass.fromPointer(this.handle);
+  AdwBottomSheetClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwBreakpointBinClass {
-  AdwBreakpointBinClass.fromPointer(this.handle);
+  AdwBreakpointBinClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 final class AdwBreakpointClass {
-  AdwBreakpointClass.fromPointer(this.handle);
+  AdwBreakpointClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }
 
 /// Describes condition for an [class@Breakpoint].
 final class AdwBreakpointCondition {
-  AdwBreakpointCondition.fromPointer(this.handle);
+  AdwBreakpointCondition.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a condition that triggers when @condition_1 and @condition_2 are both
   /// true.
@@ -253,231 +433,18 @@ final class AdwBreakpointCondition {
 }
 
 final class AdwButtonContentClass {
-  AdwButtonContentClass.fromPointer(this.handle);
+  AdwButtonContentClass.fromPointer(this.handle, {bool owned = false});
   final ffi.Pointer<ffi.Void> handle;
-}
 
-final class AdwButtonRowClass {
-  AdwButtonRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwCallbackAnimationTargetClass {
-  AdwCallbackAnimationTargetClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwCarouselClass {
-  AdwCarouselClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwCarouselIndicatorDotsClass {
-  AdwCarouselIndicatorDotsClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwCarouselIndicatorLinesClass {
-  AdwCarouselIndicatorLinesClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwClampClass {
-  AdwClampClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwClampLayoutClass {
-  AdwClampLayoutClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwClampScrollableClass {
-  AdwClampScrollableClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwComboRowClass {
-  AdwComboRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwDialogClass {
-  AdwDialogClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwEntryRowClass {
-  AdwEntryRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwEnumListItemClass {
-  AdwEnumListItemClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwEnumListModelClass {
-  AdwEnumListModelClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwExpanderRowClass {
-  AdwExpanderRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwFlapClass {
-  AdwFlapClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwHeaderBarClass {
-  AdwHeaderBarClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwInlineViewSwitcherClass {
-  AdwInlineViewSwitcherClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwLayoutClass {
-  AdwLayoutClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwLayoutSlotClass {
-  AdwLayoutSlotClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwLeafletClass {
-  AdwLeafletClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwLeafletPageClass {
-  AdwLeafletPageClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwMessageDialogClass {
-  AdwMessageDialogClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwMultiLayoutViewClass {
-  AdwMultiLayoutViewClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwNavigationPageClass {
-  AdwNavigationPageClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwNavigationSplitViewClass {
-  AdwNavigationSplitViewClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwNavigationViewClass {
-  AdwNavigationViewClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwNoneAnimationTargetClass {
-  AdwNoneAnimationTargetClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwOverlaySplitViewClass {
-  AdwOverlaySplitViewClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPasswordEntryRowClass {
-  AdwPasswordEntryRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPreferencesDialogClass {
-  AdwPreferencesDialogClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPreferencesGroupClass {
-  AdwPreferencesGroupClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPreferencesPageClass {
-  AdwPreferencesPageClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPreferencesRowClass {
-  AdwPreferencesRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPreferencesWindowClass {
-  AdwPreferencesWindowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwPropertyAnimationTargetClass {
-  AdwPropertyAnimationTargetClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwShortcutLabelClass {
-  AdwShortcutLabelClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwShortcutsDialogClass {
-  AdwShortcutsDialogClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwShortcutsItemClass {
-  AdwShortcutsItemClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwShortcutsSectionClass {
-  AdwShortcutsSectionClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwSidebarClass {
-  AdwSidebarClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwSidebarItemClass {
-  AdwSidebarItemClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwSidebarSectionClass {
-  AdwSidebarSectionClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwSpinRowClass {
-  AdwSpinRowClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwSpinnerClass {
-  AdwSpinnerClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
-}
-
-final class AdwSpinnerPaintableClass {
-  AdwSpinnerPaintableClass.fromPointer(this.handle);
-  final ffi.Pointer<ffi.Void> handle;
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 }

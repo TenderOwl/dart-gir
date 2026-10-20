@@ -22,9 +22,8 @@ DynamicLibrary openLibrary(List<String> names) {
 
 /// Looks up [symbol] in the running process — used for GLib-internal
 /// helpers (`g_free`) that are loaded globally when libglib is present.
-DynamicLibrary _glibProcessLib() => Platform.isLinux
-    ? DynamicLibrary.process()
-    : DynamicLibrary.executable();
+DynamicLibrary _glibProcessLib() =>
+    Platform.isLinux ? DynamicLibrary.process() : DynamicLibrary.executable();
 
 final _gFreeNative = _glibProcessLib()
     .lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');

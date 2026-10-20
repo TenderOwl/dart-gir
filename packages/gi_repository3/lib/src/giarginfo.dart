@@ -7,6 +7,60 @@ part of '../gi_repository3.dart';
 class GIArgInfo extends GIBaseInfo {
   GIArgInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
+  /// Obtain the index of the user data argument. This is only valid
+  /// for arguments which are callbacks.
+  static final _giArgInfoGetClosureIndex =
+      giRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+            >
+          >('gi_arg_info_get_closure_index')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+          >();
+  (bool, int) getClosureIndex() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _giArgInfoGetClosureIndex(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
+  /// Obtains the index of the [type@GLib.DestroyNotify] argument. This is only
+  /// valid for arguments which are callbacks.
+  static final _giArgInfoGetDestroyIndex =
+      giRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+            >
+          >('gi_arg_info_get_destroy_index')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+          >();
+  (bool, int) getDestroyIndex() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _giArgInfoGetDestroyIndex(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Obtain the direction of the argument. Check [type@GIRepository.Direction]
   /// for possible direction values.
   static final _giArgInfoGetDirection =

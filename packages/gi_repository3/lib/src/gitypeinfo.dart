@@ -19,6 +19,18 @@ part of '../gi_repository3.dart';
 class GITypeInfo extends GIBaseInfo {
   GITypeInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Convert a data pointer from a GLib data structure to a
   /// [type@GIRepository.Argument].
   ///
@@ -51,17 +63,63 @@ class GITypeInfo extends GIBaseInfo {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GIArgument argumentFromHashPointer(ffi.Pointer<ffi.Void> hashPointer) {
+  GIArgument argumentFromHashPointer([ffi.Pointer<ffi.Void>? hashPointer]) {
     final _out0Anchor = HeapAnchor.allocate(256);
     final _out0 = _out0Anchor.buffer;
     try {
       _giTypeInfoArgumentFromHashPointer(
         this.handle,
-        hashPointer,
+        hashPointer ?? ffi.nullptr,
         _out0.cast<ffi.Void>(),
       );
       return GIArgument.fromPointer(_out0.cast<ffi.Void>());
     } finally {}
+  }
+
+  /// Obtain the fixed array size of the type, in number of elements (not bytes).
+  ///
+  /// The type tag must be a `GI_TYPE_TAG_ARRAY` with a fixed size, or `FALSE` will
+  /// be returned.
+  static final _giTypeInfoGetArrayFixedSize =
+      giRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Size>)
+            >
+          >('gi_type_info_get_array_fixed_size')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Size>)
+          >();
+  (bool, int) getArrayFixedSize() {
+    final _out0 = malloc<ffi.Size>();
+    try {
+      final _ret = _giTypeInfoGetArrayFixedSize(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
+  /// Obtain the position of the argument which gives the array length of the type.
+  ///
+  /// The type tag must be a `GI_TYPE_TAG_ARRAY` with a length argument, or `FALSE`
+  /// will be returned.
+  static final _giTypeInfoGetArrayLengthIndex =
+      giRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+            >
+          >('gi_type_info_get_array_length_index')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
+          >();
+  (bool, int) getArrayLengthIndex() {
+    final _out0 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _giTypeInfoGetArrayLengthIndex(this.handle, _out0);
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
   }
 
   /// Obtain the array type for this type.
@@ -172,8 +230,11 @@ class GITypeInfo extends GIBaseInfo {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  ffi.Pointer<ffi.Void> hashPointerFromArgument(GIArgument arg) {
-    return _giTypeInfoHashPointerFromArgument(this.handle, arg.handle);
+  ffi.Pointer<ffi.Void>? hashPointerFromArgument(GIArgument arg) {
+    return (_giTypeInfoHashPointerFromArgument(this.handle, arg.handle)) ==
+            ffi.nullptr
+        ? null
+        : (_giTypeInfoHashPointerFromArgument(this.handle, arg.handle));
   }
 
   /// Obtain if the type is passed as a reference.

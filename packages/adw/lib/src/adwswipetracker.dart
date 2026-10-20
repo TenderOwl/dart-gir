@@ -12,9 +12,21 @@ part of '../adw.dart';
 /// property. If they expect to use horizontal orientation,
 /// [property@SwipeTracker:reversed] can be used for supporting RTL text
 /// direction.
-class AdwSwipeTracker extends GObject {
+class AdwSwipeTracker extends GObject implements GtkOrientable {
   AdwSwipeTracker.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwSwipeTracker` for @widget.
   static final _adwSwipeTrackerNew =
@@ -25,7 +37,7 @@ class AdwSwipeTracker extends GObject {
           >('adw_swipe_tracker_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSwipeTracker(AdwSwipeable swipeable)
-    : super.fromPointer(_adwSwipeTrackerNew(swipeable.handle), owned: true);
+    : this.fromPointer(_adwSwipeTrackerNew(swipeable.handle), owned: true);
 
   /// Gets whether to allow swiping for more than one snap point at a time.
   static final _adwSwipeTrackerGetAllowLongSwipes =

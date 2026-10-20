@@ -39,15 +39,15 @@ final _giTypeTagArgumentFromHashPointer =
           void Function(int, ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
         >();
 GIArgument typeTagArgumentFromHashPointer(
-  GITypeTag storageType,
-  ffi.Pointer<ffi.Void> hashPointer,
-) {
+  GITypeTag storageType, [
+  ffi.Pointer<ffi.Void>? hashPointer,
+]) {
   final _out0Anchor = HeapAnchor.allocate(256);
   final _out0 = _out0Anchor.buffer;
   try {
     _giTypeTagArgumentFromHashPointer(
       storageType.value,
-      hashPointer,
+      hashPointer ?? ffi.nullptr,
       _out0.cast<ffi.Void>(),
     );
     return GIArgument.fromPointer(_out0.cast<ffi.Void>());
@@ -78,11 +78,14 @@ final _giTypeTagHashPointerFromArgument =
         .asFunction<
           ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Void>)
         >();
-ffi.Pointer<ffi.Void> typeTagHashPointerFromArgument(
+ffi.Pointer<ffi.Void>? typeTagHashPointerFromArgument(
   GITypeTag storageType,
   GIArgument arg,
 ) {
-  return _giTypeTagHashPointerFromArgument(storageType.value, arg.handle);
+  return (_giTypeTagHashPointerFromArgument(storageType.value, arg.handle)) ==
+          ffi.nullptr
+      ? null
+      : (_giTypeTagHashPointerFromArgument(storageType.value, arg.handle));
 }
 
 /// Obtain a string representation of @type

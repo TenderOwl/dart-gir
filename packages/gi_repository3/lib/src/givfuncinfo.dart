@@ -8,6 +8,18 @@ part of '../gi_repository3.dart';
 class GIVFuncInfo extends GICallableInfo {
   GIVFuncInfo.fromPointer(super.handle, {super.owned}) : super.fromPointer();
 
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
+
   /// Looks up where the implementation for @info is inside the type struct of
   /// @implementor_gtype.
   static final _giVfuncInfoGetAddress =
@@ -27,7 +39,7 @@ class GIVFuncInfo extends GICallableInfo {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  ffi.Pointer<ffi.Void> getAddress(int implementorGtype) {
+  ffi.Pointer<ffi.Void>? getAddress(int implementorGtype) {
     final _error = calloc<ffi.Pointer<ffi.Void>>();
     try {
       final _ret = _giVfuncInfoGetAddress(
@@ -38,7 +50,7 @@ class GIVFuncInfo extends GICallableInfo {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return _ret;
+      return (_ret) == ffi.nullptr ? null : (_ret);
     } finally {
       calloc.free(_error);
     }

@@ -30,9 +30,22 @@ part of '../adw.dart';
 /// <!-- ... -->
 /// </object>
 /// ```
-class AdwSpinnerPaintable extends GObject {
+class AdwSpinnerPaintable extends GObject
+    implements GdkPaintable, GtkSymbolicPaintable {
   AdwSpinnerPaintable.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwSpinnerPaintable` for @widget.
   static final _adwSpinnerPaintableNew =
@@ -43,7 +56,7 @@ class AdwSpinnerPaintable extends GObject {
           >('adw_spinner_paintable_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSpinnerPaintable([GtkWidget? widget])
-    : super.fromPointer(
+    : this.fromPointer(
         _adwSpinnerPaintableNew(widget?.handle ?? ffi.nullptr),
         owned: true,
       );
@@ -103,6 +116,28 @@ class AdwSpinnerPaintable extends GObject {
   /// detail strings for the notify signal.
   int onNotify(void Function(GParamSpec pspec) callback) {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
+  }
+
+  /// Emitted when the contents of the @paintable change.
+  ///
+  /// Examples for such an event would be videos changing to the next frame or
+  /// the icon theme for an icon changing.
+  int onInvalidateContents(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-contents', callback);
+  }
+
+  /// Emitted when the intrinsic size of the @paintable changes.
+  ///
+  /// This means the values reported by at least one of
+  /// [method@Gdk.Paintable.get_intrinsic_width],
+  /// [method@Gdk.Paintable.get_intrinsic_height] or
+  /// [method@Gdk.Paintable.get_intrinsic_aspect_ratio]
+  /// has changed.
+  ///
+  /// Examples for such an event would be a paintable displaying
+  /// the contents of a toplevel surface being resized.
+  int onInvalidateSize(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'invalidate-size', callback);
   }
 
   /// Compute a concrete size for the `GdkPaintable`.
@@ -318,6 +353,98 @@ class AdwSpinnerPaintable extends GObject {
           >();
   void snapshot(GdkSnapshot snapshot, double width, double height) {
     _gdkPaintableSnapshot(this.handle, snapshot.handle, width, height);
+  }
+
+  /// Snapshots the paintable with the given colors.
+  ///
+  /// If less than 5 colors are provided, GTK will pad the array with default
+  /// colors.
+  static final _gtkSymbolicPaintableSnapshotSymbolic =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+              )
+            >
+          >('gtk_symbolic_paintable_snapshot_symbolic')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+            )
+          >();
+  void snapshotSymbolic(
+    GdkSnapshot snapshot,
+    double width,
+    double height,
+    ffi.Pointer<ffi.Void> colors,
+    int nColors,
+  ) {
+    _gtkSymbolicPaintableSnapshotSymbolic(
+      this.handle,
+      snapshot.handle,
+      width,
+      height,
+      colors,
+      nColors,
+    );
+  }
+
+  /// Snapshots the paintable with the given colors and weight.
+  ///
+  /// If less than 5 colors are provided, GTK will pad the array with default
+  /// colors.
+  static final _gtkSymbolicPaintableSnapshotWithWeight =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Double,
+                ffi.Double,
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Double,
+              )
+            >
+          >('gtk_symbolic_paintable_snapshot_with_weight')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              double,
+              double,
+              ffi.Pointer<ffi.Void>,
+              int,
+              double,
+            )
+          >();
+  void snapshotWithWeight(
+    GdkSnapshot snapshot,
+    double width,
+    double height,
+    ffi.Pointer<ffi.Void> colors,
+    int nColors,
+    double weight,
+  ) {
+    _gtkSymbolicPaintableSnapshotWithWeight(
+      this.handle,
+      snapshot.handle,
+      width,
+      height,
+      colors,
+      nColors,
+      weight,
+    );
   }
 
   /// PyGObject-style typed property accessor. Reads and

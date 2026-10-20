@@ -171,15 +171,32 @@ part of '../adw.dart';
 ///
 /// `AdwAboutDialog` has a main CSS node with the name `dialog` and the
 /// style class `.about`.
-class AdwAboutDialog extends AdwDialog {
+class AdwAboutDialog extends AdwDialog
+    implements
+        GtkAccessible,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkShortcutManager {
   AdwAboutDialog.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwAboutDialog`.
   static final _adwAboutDialogNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_about_dialog_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwAboutDialog() : super.fromPointer(_adwAboutDialogNew(), owned: true);
+  AdwAboutDialog() : this.fromPointer(_adwAboutDialogNew(), owned: true);
 
   /// Creates a new `AdwAboutDialog` using AppStream metadata.
   ///
@@ -228,6 +245,96 @@ class AdwAboutDialog extends AdwDialog {
             ),
           ),
           owned: true,
+        );
+      });
+    });
+  }
+
+  /// Adds a section to the Acknowledgements page.
+  ///
+  /// This can be used to acknowledge additional people and organizations for their
+  /// non-development contributions - for example, backers in a crowdfunded
+  /// project.
+  ///
+  /// Each name may contain email addresses and URLs, see the introduction for more
+  /// details.
+  ///
+  /// See also:
+  ///
+  /// * [property@AboutDialog:developers]
+  /// * [property@AboutDialog:designers]
+  /// * [property@AboutDialog:artists]
+  /// * [property@AboutDialog:documenters]
+  /// * [property@AboutDialog:translator-credits]
+  /// * [method@AboutDialog.add_credit_section]
+  static final _adwAboutDialogAddAcknowledgementSection =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('adw_about_dialog_add_acknowledgement_section')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void addAcknowledgementSection([String? name, List<String?>? people]) {
+    withNativeStringList(people, (nativePeople) {
+      withNativeString(name, (nativeName) {
+        _adwAboutDialogAddAcknowledgementSection(
+          this.handle,
+          nativeName.cast<Utf8>(),
+          nativePeople,
+        );
+      });
+    });
+  }
+
+  /// Adds an extra section to the Credits page.
+  ///
+  /// Extra sections are displayed below the standard categories.
+  ///
+  /// Each name may contain email addresses and URLs, see the introduction for more
+  /// details.
+  ///
+  /// See also:
+  ///
+  /// * [property@AboutDialog:developers]
+  /// * [property@AboutDialog:designers]
+  /// * [property@AboutDialog:artists]
+  /// * [property@AboutDialog:documenters]
+  /// * [property@AboutDialog:translator-credits]
+  /// * [method@AboutDialog.add_acknowledgement_section]
+  static final _adwAboutDialogAddCreditSection =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('adw_about_dialog_add_credit_section')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  void addCreditSection([String? name, List<String?>? people]) {
+    withNativeStringList(people, (nativePeople) {
+      withNativeString(name, (nativeName) {
+        _adwAboutDialogAddCreditSection(
+          this.handle,
+          nativeName.cast<Utf8>(),
+          nativePeople,
         );
       });
     });
@@ -693,6 +800,39 @@ class AdwAboutDialog extends AdwDialog {
     });
   }
 
+  /// Sets the list of artists of the application.
+  ///
+  /// It will be displayed on the Credits page.
+  ///
+  /// Each name may contain email addresses and URLs, see the introduction for more
+  /// details.
+  ///
+  /// See also:
+  ///
+  /// * [property@AboutDialog:developers]
+  /// * [property@AboutDialog:designers]
+  /// * [property@AboutDialog:documenters]
+  /// * [property@AboutDialog:translator-credits]
+  /// * [method@AboutDialog.add_credit_section]
+  /// * [method@AboutDialog.add_acknowledgement_section]
+  static final _adwAboutDialogSetArtists =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('adw_about_dialog_set_artists')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setArtists([List<String?>? artists]) {
+    withNativeStringList(artists, (nativeArtists) {
+      _adwAboutDialogSetArtists(this.handle, nativeArtists);
+    });
+  }
+
   /// Sets the comments about the application.
   ///
   /// Comments will be shown on the Details page, above links.
@@ -789,6 +929,39 @@ class AdwAboutDialog extends AdwDialog {
     });
   }
 
+  /// Sets the list of designers of the application.
+  ///
+  /// It will be displayed on the Credits page.
+  ///
+  /// Each name may contain email addresses and URLs, see the introduction for more
+  /// details.
+  ///
+  /// See also:
+  ///
+  /// * [property@AboutDialog:developers]
+  /// * [property@AboutDialog:artists]
+  /// * [property@AboutDialog:documenters]
+  /// * [property@AboutDialog:translator-credits]
+  /// * [method@AboutDialog.add_credit_section]
+  /// * [method@AboutDialog.add_acknowledgement_section]
+  static final _adwAboutDialogSetDesigners =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('adw_about_dialog_set_designers')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setDesigners([List<String?>? designers]) {
+    withNativeStringList(designers, (nativeDesigners) {
+      _adwAboutDialogSetDesigners(this.handle, nativeDesigners);
+    });
+  }
+
   /// Sets the developer name for @self.
   ///
   /// The developer name is displayed on the main page, under the application name.
@@ -812,6 +985,72 @@ class AdwAboutDialog extends AdwDialog {
         this.handle,
         nativeDeveloperName.cast<Utf8>(),
       );
+    });
+  }
+
+  /// Sets the list of developers of the application.
+  ///
+  /// It will be displayed on the Credits page.
+  ///
+  /// Each name may contain email addresses and URLs, see the introduction for more
+  /// details.
+  ///
+  /// See also:
+  ///
+  /// * [property@AboutDialog:designers]
+  /// * [property@AboutDialog:artists]
+  /// * [property@AboutDialog:documenters]
+  /// * [property@AboutDialog:translator-credits]
+  /// * [method@AboutDialog.add_credit_section]
+  /// * [method@AboutDialog.add_acknowledgement_section]
+  static final _adwAboutDialogSetDevelopers =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('adw_about_dialog_set_developers')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setDevelopers([List<String?>? developers]) {
+    withNativeStringList(developers, (nativeDevelopers) {
+      _adwAboutDialogSetDevelopers(this.handle, nativeDevelopers);
+    });
+  }
+
+  /// Sets the list of documenters of the application.
+  ///
+  /// It will be displayed on the Credits page.
+  ///
+  /// Each name may contain email addresses and URLs, see the introduction for more
+  /// details.
+  ///
+  /// See also:
+  ///
+  /// * [property@AboutDialog:developers]
+  /// * [property@AboutDialog:designers]
+  /// * [property@AboutDialog:artists]
+  /// * [property@AboutDialog:translator-credits]
+  /// * [method@AboutDialog.add_credit_section]
+  /// * [method@AboutDialog.add_acknowledgement_section]
+  static final _adwAboutDialogSetDocumenters =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('adw_about_dialog_set_documenters')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
+          >();
+  void setDocumenters([List<String?>? documenters]) {
+    withNativeStringList(documenters, (nativeDocumenters) {
+      _adwAboutDialogSetDocumenters(this.handle, nativeDocumenters);
     });
   }
 
@@ -1548,6 +1787,115 @@ class AdwAboutDialog extends AdwDialog {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Gets the ID of the @buildable object.

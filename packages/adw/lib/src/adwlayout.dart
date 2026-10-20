@@ -2,8 +2,20 @@
 part of '../adw.dart';
 
 /// An individual layout in [class@MultiLayoutView].
-class AdwLayout extends GObject {
+class AdwLayout extends GObject implements GtkBuildable {
   AdwLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwLayout` that contains @content.
   static final _adwLayoutNew =
@@ -14,7 +26,7 @@ class AdwLayout extends GObject {
           >('adw_layout_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwLayout(GtkWidget content)
-    : super.fromPointer(_adwLayoutNew(content.handle), owned: true);
+    : this.fromPointer(_adwLayoutNew(content.handle), owned: true);
 
   /// Gets the content widget.
   static final _adwLayoutGetContent =

@@ -46,8 +46,21 @@ part of '../adw.dart';
 /// - `prefers-color-scheme: dark` for styles used only for dark appearance.
 /// - `prefers-contrast: more` for styles used only when the system high
 /// contrast preference is enabled.
-class AdwApplication extends GtkApplication {
+class AdwApplication extends GtkApplication
+    implements GActionGroup, GActionMap {
   AdwApplication.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwApplication`.
   ///
@@ -117,6 +130,44 @@ class AdwApplication extends GtkApplication {
     return _connectSignal_v_1_o_gtkwindow(
       this.handle,
       'window-removed',
+      callback,
+    );
+  }
+
+  /// Signals that a new action was just added to the group.
+  ///
+  /// This signal is emitted after the action has been added
+  /// and is now visible.
+  int onActionAdded(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-added', callback);
+  }
+
+  /// Signals that the enabled status of the named action has changed.
+  int onActionEnabledChanged(
+    void Function(String actionName, bool enabled) callback,
+  ) {
+    return _connectSignal_v_2_s_b_string_bool(
+      this.handle,
+      'action-enabled-changed',
+      callback,
+    );
+  }
+
+  /// Signals that an action is just about to be removed from the group.
+  ///
+  /// This signal is emitted before the action is removed, so the action
+  /// is still visible and can be queried from the signal handler.
+  int onActionRemoved(void Function(String actionName) callback) {
+    return _connectSignal_v_1_s_string(this.handle, 'action-removed', callback);
+  }
+
+  /// Signals that the state of the named action has changed.
+  int onActionStateChanged(
+    void Function(String actionName, GVariant value) callback,
+  ) {
+    return _connectSignal_v_2_s_o_string_gvariant(
+      this.handle,
+      'action-state-changed',
       callback,
     );
   }
@@ -767,6 +818,75 @@ class AdwApplication extends GtkApplication {
     _gActionMapAddAction(this.handle, action.handle);
   }
 
+  /// A convenience function for creating multiple [class@Gio.SimpleAction]
+  /// instances and adding them to a [iface@Gio.ActionMap].
+  ///
+  /// Each action is constructed as per one [struct@Gio.ActionEntry].
+  ///
+  /// ```c
+  /// static void
+  /// activate_quit (GSimpleAction *simple,
+  /// GVariant      *parameter,
+  /// gpointer       user_data)
+  /// {
+  /// exit (0);
+  /// }
+  ///
+  /// static void
+  /// activate_print_string (GSimpleAction *simple,
+  /// GVariant      *parameter,
+  /// gpointer       user_data)
+  /// {
+  /// g_print ("%s\n", g_variant_get_string (parameter, NULL));
+  /// }
+  ///
+  /// static GActionGroup *
+  /// create_action_group (void)
+  /// {
+  /// const GActionEntry entries[] = {
+  /// { "quit",         activate_quit              },
+  /// { "print-string", activate_print_string, "s" }
+  /// };
+  /// GSimpleActionGroup *group;
+  ///
+  /// group = g_simple_action_group_new ();
+  /// g_action_map_add_action_entries (G_ACTION_MAP (group), entries, G_N_ELEMENTS (entries), NULL);
+  ///
+  /// return G_ACTION_GROUP (group);
+  /// }
+  /// ```
+  static final _gActionMapAddActionEntries =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('g_action_map_add_action_entries')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void addActionEntries(
+    ffi.Pointer<ffi.Void> entries,
+    int nEntries, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
+    _gActionMapAddActionEntries(
+      this.handle,
+      entries,
+      nEntries,
+      userData ?? ffi.nullptr,
+    );
+  }
+
   /// Looks up the action with the name @action_name in @action_map.
   ///
   /// If no such action exists, returns `NULL`.
@@ -818,5 +938,44 @@ class AdwApplication extends GtkApplication {
     withNativeString(actionName, (nativeActionName) {
       _gActionMapRemoveAction(this.handle, nativeActionName.cast<Utf8>());
     });
+  }
+
+  /// Remove actions from a [iface@Gio.ActionMap]. This is meant as the reverse of
+  /// [method@Gio.ActionMap.add_action_entries].
+  ///
+  ///
+  /// ```c
+  /// static const GActionEntry entries[] = {
+  /// { "quit",         activate_quit              },
+  /// { "print-string", activate_print_string, "s" }
+  /// };
+  ///
+  /// void
+  /// add_actions (GActionMap *map)
+  /// {
+  /// g_action_map_add_action_entries (map, entries, G_N_ELEMENTS (entries), NULL);
+  /// }
+  ///
+  /// void
+  /// remove_actions (GActionMap *map)
+  /// {
+  /// g_action_map_remove_action_entries (map, entries, G_N_ELEMENTS (entries));
+  /// }
+  /// ```
+  static final _gActionMapRemoveActionEntries =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+              )
+            >
+          >('g_action_map_remove_action_entries')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
+          >();
+  void removeActionEntries(ffi.Pointer<ffi.Void> entries, int nEntries) {
+    _gActionMapRemoveActionEntries(this.handle, entries, nEntries);
   }
 }

@@ -24,15 +24,27 @@ part of '../adw.dart';
 /// [property@ClampLayout:unit] property to enable that behavior.
 ///
 /// See also: [class@Clamp], [class@ClampScrollable].
-class AdwClampLayout extends GtkLayoutManager {
+class AdwClampLayout extends GtkLayoutManager implements GtkOrientable {
   AdwClampLayout.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwClampLayout`.
   static final _adwClampLayoutNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_clamp_layout_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwClampLayout() : super.fromPointer(_adwClampLayoutNew(), owned: true);
+  AdwClampLayout() : this.fromPointer(_adwClampLayoutNew(), owned: true);
 
   /// Gets the maximum size allocated to the children.
   static final _adwClampLayoutGetMaximumSize =

@@ -1011,6 +1011,9 @@ final class GVariant {
   /// The semantics of this function are exactly the same as
   /// g_variant_get_data(), except that the returned #GBytes holds
   /// a reference to the variant data.
+  ///
+  /// This function cannot fail, even for corrupted variants. In that case
+  /// it will return a #GBytes filled with nul bytes.
   static final _gVariantGetDataAsBytes =
       glibLookup<
             ffi.NativeFunction<

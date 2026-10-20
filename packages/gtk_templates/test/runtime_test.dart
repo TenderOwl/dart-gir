@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:gobject/gobject.dart';
 import 'package:gtk_templates/gtk_templates.dart';
 import 'package:test/test.dart';
 
@@ -149,16 +150,14 @@ void main() {
       expect(g.handle, isNotNull);
     });
 
-    test('two calls produce distinct handles (no caching in the helper)',
-        () {
+    test('two calls produce distinct handles (no caching in the helper)', () {
       final a = gbytesFromString('hello');
       final b = gbytesFromString('world');
       expect(identical(a, b), isFalse);
       expect(identical(a.handle, b.handle), isFalse);
     });
 
-    test('two calls with the same string still produce distinct handles',
-        () {
+    test('two calls with the same string still produce distinct handles', () {
       final a = gbytesFromString('hello');
       final b = gbytesFromString('hello');
       expect(identical(a.handle, b.handle), isFalse);
@@ -177,6 +176,149 @@ void main() {
       // length matches utf8.encode of the input.
       expect(g.handle, isNotNull);
       expect(utf8.encode(input).length, greaterThan(input.length));
+    });
+  });
+
+  group('rewriteTemplateTypes', () {
+    test('replaces the class attribute', () {
+      const xml = '<interface><template class="TodoWindow"/></interface>';
+      final out = rewriteTemplateTypes(xml, 'AdwApplicationWindow');
+      expect(out, contains('class="AdwApplicationWindow"'));
+      expect(out, isNot(contains('class="TodoWindow"')));
+    });
+
+    test('replaces the parent attribute', () {
+      const xml =
+          '<interface><template class="TodoWindow" parent="AdwWindow"/>'
+          '</interface>';
+      final out = rewriteTemplateTypes(
+        xml,
+        'AdwApplicationWindow',
+        'AdwWindow',
+      );
+      expect(out, contains('parent="AdwWindow"'));
+      expect(out, contains('class="AdwApplicationWindow"'));
+    });
+
+    test('removes the parent attribute when the parent is unknown', () {
+      const xml =
+          '<interface><template class="TodoWindow" parent="AdwWindow"/>'
+          '</interface>';
+      final out = rewriteTemplateTypes(xml, 'AdwApplicationWindow');
+      expect(out, isNot(contains('parent=')));
+      expect(out, contains('class="AdwApplicationWindow"'));
+    });
+
+    test('adds a class attribute when the XML has none', () {
+      const xml = '<interface><template/></interface>';
+      final out = rewriteTemplateTypes(xml, 'AdwApplicationWindow');
+      expect(out, contains('class="AdwApplicationWindow"'));
+    });
+
+    test('leaves XML without a <template> element alone', () {
+      const xml = '<interface><object class="GtkLabel"/></interface>';
+      expect(rewriteTemplateTypes(xml, 'AdwApplicationWindow'), xml);
+    });
+
+    test('leaves the rest of the document alone', () {
+      const xml = '''
+        <interface>
+          <template class="TodoWindow">
+            <object class="GtkLabel" id="counterLabel"/>
+          </template>
+        </interface>
+      ''';
+      final out = rewriteTemplateTypes(xml, 'AdwApplicationWindow');
+      expect(out, contains('<object class="GtkLabel" id="counterLabel"/>'));
+      expect(out, contains('</template>'));
+    });
+
+    test('does not mistake another attribute for the class attribute', () {
+      const xml =
+          '<interface><template parentclass="X" class="Y"/></interface>';
+      final out = rewriteTemplateTypes(xml, 'AdwApplicationWindow');
+      expect(out, contains('parentclass="X"'));
+      expect(out, contains('class="AdwApplicationWindow"'));
+    });
+  });
+
+  group('stripTemplateSignals', () {
+    test('removes a self-closing <signal/>', () {
+      const xml = '''
+        <interface>
+          <template class="Foo">
+            <object class="GtkButton" id="button">
+              <signal name="clicked" handler="on_clicked"/>
+            </object>
+          </template>
+        </interface>
+      ''';
+      final out = stripTemplateSignals(xml);
+      expect(out, isNot(contains('<signal')));
+      expect(out, contains('<object class="GtkButton" id="button">'));
+    });
+
+    test('removes a <signal>…</signal> pair', () {
+      const xml = '''
+        <interface>
+          <template class="Foo">
+            <signal name="clicked" handler="on_clicked"></signal>
+          </template>
+        </interface>
+      ''';
+      expect(stripTemplateSignals(xml), isNot(contains('<signal')));
+    });
+
+    test('leaves everything else alone', () {
+      const xml = '<interface><object class="GtkLabel" id="a"/></interface>';
+      expect(stripTemplateSignals(xml), xml);
+    });
+  });
+
+  group('prepareTemplateXml', () {
+    test('rewrites the types and drops the signals', () {
+      const xml = '''
+        <interface>
+          <template class="TodoWindow" parent="AdwApplicationWindow">
+            <object class="GtkButton" id="button">
+              <signal name="clicked" handler="on_clicked"/>
+            </object>
+          </template>
+        </interface>
+      ''';
+      // `GObject` is the one GType that is registered as soon as
+      // libgobject is loaded, so it is the one the test can rely on
+      // without pulling in GTK.
+      final out = prepareTemplateXml(xml, typeFromName('GObject'));
+      expect(out, contains('class="GObject"'));
+      expect(out, isNot(contains('class="TodoWindow"')));
+      expect(out, isNot(contains('<signal')));
+      expect(out, contains('<object class="GtkButton" id="button">'));
+    });
+  });
+
+  group('claimTemplateType', () {
+    test('the first owner claims the type', () {
+      expect(claimTemplateType(1001, 'First'), isTrue);
+    });
+
+    test('the same owner claiming it again is a no-op', () {
+      expect(claimTemplateType(1002, 'Same'), isTrue);
+      expect(claimTemplateType(1002, 'Same'), isFalse);
+    });
+
+    test('a second owner is rejected', () {
+      expect(claimTemplateType(1003, 'Owner'), isTrue);
+      expect(
+        () => claimTemplateType(1003, 'Other'),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains('already carries a template'),
+          ),
+        ),
+      );
     });
   });
 }

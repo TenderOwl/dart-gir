@@ -12,333 +12,337 @@ renamed: 1
 construct-only or no public setter; emitting getter only: 54
 name collision: 8
 unsupported out parameter keys (ffi.Pointer<ffi.Void>): 2
-name collision: keyCH: 2
-name collision: keyCh: 2
-name collision: keyEth: 2
-name collision: keyThorn: 2
 introspectable=0: 2
 return: string list return type (null): 2
-name collision: keyMacedoniaKje: 1
-name collision: keyArmenianHi: 1
-name collision: keyArmenianHo: 1
-name collision: keyArmenianIni: 1
-name collision: keyArmenianJe: 1
-name collision: keyArmenianKe: 1
-name collision: keyArmenianKen: 1
-name collision: keyArmenianKhe: 1
-name collision: keyArmenianLyun: 1
-name collision: keyArmenianMen: 1
-name collision: keyArmenianNu: 1
-name collision: keyArmenianO: 1
-name collision: keyArmenianPe: 1
-name collision: keyArmenianPyur: 1
-name collision: keyArmenianRa: 1
-name collision: keyArmenianRe: 1
-name collision: keyArmenianSe: 1
-name collision: keyArmenianSha: 1
-name collision: keyArmenianTche: 1
-name collision: keyArmenianTo: 1
-name collision: keyArmenianTsa: 1
-name collision: keyArmenianTso: 1
-name collision: keyArmenianTyun: 1
-name collision: keyArmenianVev: 1
-name collision: keyArmenianVo: 1
-name collision: keyArmenianVyun: 1
-name collision: keyArmenianYech: 1
-name collision: keyArmenianZa: 1
-name collision: keyArmenianZhe: 1
-name collision: keyByelorussianShortu: 1
-name collision: keyArmenianAyb: 1
-name collision: keyArmenianBen: 1
-name collision: keyCyrillicA: 1
-name collision: keyCyrillicBe: 1
-name collision: keyCyrillicChe: 1
-name collision: keyCyrillicCheDescender: 1
-name collision: keyCyrillicCheVertstroke: 1
-name collision: keyCyrillicDe: 1
-name collision: keyCyrillicDzhe: 1
-name collision: keyCyrillicE: 1
-name collision: keyCyrillicEf: 1
-name collision: keyCyrillicEl: 1
-name collision: keyCyrillicEm: 1
-name collision: keyCyrillicEn: 1
-name collision: keyCyrillicEnDescender: 1
-name collision: keyCyrillicEr: 1
-name collision: keyCyrillicEs: 1
-name collision: keyCyrillicGhe: 1
-name collision: keyCyrillicGheBar: 1
-name collision: keyCyrillicHa: 1
-name collision: keyCyrillicHaDescender: 1
-name collision: keyCyrillicHardsign: 1
-name collision: keyCyrillicI: 1
-name collision: keyCyrillicIMacron: 1
-name collision: keyCyrillicIe: 1
-name collision: keyCyrillicIo: 1
-name collision: keyCyrillicJe: 1
-name collision: keyCyrillicKa: 1
-name collision: keyCyrillicKaDescender: 1
-name collision: keyCyrillicKaVertstroke: 1
-name collision: keyCyrillicLje: 1
-name collision: keyCyrillicNje: 1
-name collision: keyCyrillicO: 1
-name collision: keyCyrillicOBar: 1
-name collision: keyCyrillicPe: 1
-name collision: keyCyrillicSchwa: 1
-name collision: keyCyrillicSha: 1
-name collision: keyCyrillicShcha: 1
-name collision: keyCyrillicShha: 1
-name collision: keyCyrillicShorti: 1
-name collision: keyCyrillicSoftsign: 1
-name collision: keyCyrillicTe: 1
-name collision: keyCyrillicTse: 1
-name collision: keyCyrillicU: 1
-name collision: keyCyrillicUMacron: 1
-name collision: keyCyrillicUStraight: 1
-name collision: keyCyrillicUStraightBar: 1
-name collision: keyCyrillicVe: 1
-name collision: keyCyrillicYa: 1
-name collision: keyCyrillicYeru: 1
-name collision: keyCyrillicYu: 1
-name collision: keyCyrillicZe: 1
-name collision: keyCyrillicZhe: 1
-name collision: keyCyrillicZheDescender: 1
-name collision: keyArmenianCha: 1
-name collision: keyGreekAlpha: 1
-name collision: keyGreekBeta: 1
-name collision: keyGreekChi: 1
-name collision: keyGreekDelta: 1
-name collision: keyGreekEpsilon: 1
-name collision: keyGreekEta: 1
-name collision: keyGreekGamma: 1
-name collision: keyGreekIota: 1
-name collision: keyGreekKappa: 1
-name collision: keyGreekLambda: 1
-name collision: keyGreekLamda: 1
-name collision: keyGreekMu: 1
-name collision: keyGreekNu: 1
-name collision: keyGreekOmega: 1
-name collision: keyGreekOmicron: 1
-name collision: keyGreekPhi: 1
-name collision: keyGreekPi: 1
-name collision: keyGreekPsi: 1
-name collision: keyGreekRho: 1
-name collision: keyGreekSigma: 1
-name collision: keyGreekTau: 1
-name collision: keyGreekTheta: 1
-name collision: keyGreekUpsilon: 1
-name collision: keyGreekXi: 1
-name collision: keyGreekZeta: 1
-name collision: keyMacedoniaDse: 1
-name collision: keyMacedoniaGje: 1
-name collision: keyArmenianAt: 1
-name collision: keySerbianDje: 1
-name collision: keySerbianDze: 1
-name collision: keySerbianJe: 1
-name collision: keySerbianLje: 1
-name collision: keySerbianNje: 1
-name collision: keySerbianTshe: 1
-name collision: keyArmenianDa: 1
-name collision: keyUkrainianGheWithUpturn: 1
-name collision: keyUkrainianI: 1
-name collision: keyUkrainianIe: 1
-name collision: keyUkrainianYi: 1
-name collision: keyUkranianI: 1
-name collision: keyUkranianJe: 1
-name collision: keyUkranianYi: 1
-name collision: keyA: 1
-name collision: keyAacute: 1
-name collision: keyAbelowdot: 1
-name collision: keyAbreve: 1
-name collision: keyAbreveacute: 1
-name collision: keyAbrevebelowdot: 1
-name collision: keyAbrevegrave: 1
-name collision: keyAbrevehook: 1
-name collision: keyAbrevetilde: 1
-name collision: keyAcircumflex: 1
-name collision: keyAcircumflexacute: 1
-name collision: keyAcircumflexbelowdot: 1
-name collision: keyAcircumflexgrave: 1
-name collision: keyAcircumflexhook: 1
-name collision: keyAcircumflextilde: 1
-name collision: keyAdiaeresis: 1
-name collision: keyAe: 1
-name collision: keyAgrave: 1
-name collision: keyAhook: 1
-name collision: keyAmacron: 1
-name collision: keyAogonek: 1
-name collision: keyAring: 1
-name collision: keyAtilde: 1
-name collision: keyB: 1
-name collision: keyBabovedot: 1
-name collision: keyC: 1
-name collision: keyCabovedot: 1
-name collision: keyCacute: 1
-name collision: keyCcaron: 1
-name collision: keyCcedilla: 1
-name collision: keyCcircumflex: 1
-name collision: keyD: 1
-name collision: keyDabovedot: 1
-name collision: keyDcaron: 1
-name collision: keyDeadA: 1
-name collision: keyDeadE: 1
-name collision: keyDeadI: 1
-name collision: keyDeadO: 1
-name collision: keyDeadSchwa: 1
-name collision: keyDeadU: 1
-name collision: keyDstroke: 1
-name collision: keyE: 1
-name collision: keyEabovedot: 1
-name collision: keyEacute: 1
-name collision: keyEbelowdot: 1
-name collision: keyEcaron: 1
-name collision: keyEcircumflex: 1
-name collision: keyEcircumflexacute: 1
-name collision: keyEcircumflexbelowdot: 1
-name collision: keyEcircumflexgrave: 1
-name collision: keyEcircumflexhook: 1
-name collision: keyEcircumflextilde: 1
-name collision: keyEdiaeresis: 1
-name collision: keyEgrave: 1
-name collision: keyEhook: 1
-name collision: keyEmacron: 1
-name collision: keyEng: 1
-name collision: keyEogonek: 1
-name collision: keyEtilde: 1
-name collision: keyEzh: 1
-name collision: keyF: 1
-name collision: keyFabovedot: 1
-name collision: keyG: 1
-name collision: keyGabovedot: 1
-name collision: keyGbreve: 1
-name collision: keyGcaron: 1
-name collision: keyGcedilla: 1
-name collision: keyGcircumflex: 1
-name collision: keyH: 1
-name collision: keyHcircumflex: 1
-name collision: keyHstroke: 1
-name collision: keyI: 1
-name collision: keyIacute: 1
-name collision: keyIbelowdot: 1
-name collision: keyIbreve: 1
-name collision: keyIcircumflex: 1
-name collision: keyIdiaeresis: 1
-name collision: keyIgrave: 1
-name collision: keyIhook: 1
-name collision: keyImacron: 1
-name collision: keyIogonek: 1
-name collision: keyItilde: 1
-name collision: keyJ: 1
-name collision: keyJcircumflex: 1
-name collision: keyK: 1
-name collision: keyKanaA: 1
-name collision: keyKanaE: 1
-name collision: keyKanaI: 1
-name collision: keyKanaO: 1
-name collision: keyKanaTsu: 1
-name collision: keyKanaTu: 1
-name collision: keyKanaU: 1
-name collision: keyKanaYa: 1
-name collision: keyKanaYo: 1
-name collision: keyKanaYu: 1
-name collision: keyKcedilla: 1
-name collision: keyL: 1
-name collision: keyLacute: 1
-name collision: keyLbelowdot: 1
-name collision: keyLcaron: 1
-name collision: keyLcedilla: 1
-name collision: keyLstroke: 1
-name collision: keyM: 1
-name collision: keyMabovedot: 1
-name collision: keyN: 1
+duplicate constant: Gdk.KEY_Serbian_dje and Gdk.KEY_Serbian_DJE both map to keySerbianDje: 1
+duplicate constant: Gdk.KEY_Armenian_e and Gdk.KEY_Armenian_E both map to keyArmenianE: 1
+duplicate constant: Gdk.KEY_Armenian_fe and Gdk.KEY_Armenian_FE both map to keyArmenianFe: 1
+duplicate constant: Gdk.KEY_Armenian_ghat and Gdk.KEY_Armenian_GHAT both map to keyArmenianGhat: 1
+duplicate constant: Gdk.KEY_Armenian_gim and Gdk.KEY_Armenian_GIM both map to keyArmenianGim: 1
+duplicate constant: Gdk.KEY_Armenian_hi and Gdk.KEY_Armenian_HI both map to keyArmenianHi: 1
+duplicate constant: Gdk.KEY_Armenian_ho and Gdk.KEY_Armenian_HO both map to keyArmenianHo: 1
+duplicate constant: Gdk.KEY_Armenian_ini and Gdk.KEY_Armenian_INI both map to keyArmenianIni: 1
+duplicate constant: Gdk.KEY_Armenian_je and Gdk.KEY_Armenian_JE both map to keyArmenianJe: 1
+duplicate constant: Gdk.KEY_Armenian_ke and Gdk.KEY_Armenian_KE both map to keyArmenianKe: 1
+duplicate constant: Gdk.KEY_Armenian_ken and Gdk.KEY_Armenian_KEN both map to keyArmenianKen: 1
+duplicate constant: Gdk.KEY_Armenian_khe and Gdk.KEY_Armenian_KHE both map to keyArmenianKhe: 1
+duplicate constant: Gdk.KEY_Armenian_lyun and Gdk.KEY_Armenian_LYUN both map to keyArmenianLyun: 1
+duplicate constant: Gdk.KEY_Armenian_men and Gdk.KEY_Armenian_MEN both map to keyArmenianMen: 1
+duplicate constant: Gdk.KEY_Armenian_nu and Gdk.KEY_Armenian_NU both map to keyArmenianNu: 1
+duplicate constant: Gdk.KEY_Armenian_o and Gdk.KEY_Armenian_O both map to keyArmenianO: 1
+duplicate constant: Gdk.KEY_Armenian_pe and Gdk.KEY_Armenian_PE both map to keyArmenianPe: 1
+duplicate constant: Gdk.KEY_Armenian_pyur and Gdk.KEY_Armenian_PYUR both map to keyArmenianPyur: 1
+duplicate constant: Gdk.KEY_Armenian_ra and Gdk.KEY_Armenian_RA both map to keyArmenianRa: 1
+duplicate constant: Gdk.KEY_Armenian_re and Gdk.KEY_Armenian_RE both map to keyArmenianRe: 1
+duplicate constant: Gdk.KEY_Armenian_se and Gdk.KEY_Armenian_SE both map to keyArmenianSe: 1
+duplicate constant: Gdk.KEY_Armenian_sha and Gdk.KEY_Armenian_SHA both map to keyArmenianSha: 1
+duplicate constant: Gdk.KEY_Armenian_tche and Gdk.KEY_Armenian_TCHE both map to keyArmenianTche: 1
+duplicate constant: Gdk.KEY_Armenian_to and Gdk.KEY_Armenian_TO both map to keyArmenianTo: 1
+duplicate constant: Gdk.KEY_Armenian_tsa and Gdk.KEY_Armenian_TSA both map to keyArmenianTsa: 1
+duplicate constant: Gdk.KEY_Armenian_tso and Gdk.KEY_Armenian_TSO both map to keyArmenianTso: 1
+duplicate constant: Gdk.KEY_Armenian_tyun and Gdk.KEY_Armenian_TYUN both map to keyArmenianTyun: 1
+duplicate constant: Gdk.KEY_Armenian_vev and Gdk.KEY_Armenian_VEV both map to keyArmenianVev: 1
+duplicate constant: Gdk.KEY_Armenian_vo and Gdk.KEY_Armenian_VO both map to keyArmenianVo: 1
+duplicate constant: Gdk.KEY_Armenian_vyun and Gdk.KEY_Armenian_VYUN both map to keyArmenianVyun: 1
+duplicate constant: Gdk.KEY_Armenian_yech and Gdk.KEY_Armenian_YECH both map to keyArmenianYech: 1
+duplicate constant: Gdk.KEY_Armenian_za and Gdk.KEY_Armenian_ZA both map to keyArmenianZa: 1
+duplicate constant: Gdk.KEY_Armenian_zhe and Gdk.KEY_Armenian_ZHE both map to keyArmenianZhe: 1
+duplicate constant: Gdk.KEY_Byelorussian_shortu and Gdk.KEY_Byelorussian_SHORTU both map to keyByelorussianShortu: 1
+duplicate constant: Gdk.KEY_C_h and Gdk.KEY_C_H both map to keyCH: 1
+duplicate constant: Gdk.KEY_Ch and Gdk.KEY_CH both map to keyCh: 1
+duplicate constant: Gdk.KEY_Cyrillic_a and Gdk.KEY_Cyrillic_A both map to keyCyrillicA: 1
+duplicate constant: Gdk.KEY_Cyrillic_be and Gdk.KEY_Cyrillic_BE both map to keyCyrillicBe: 1
+duplicate constant: Gdk.KEY_Cyrillic_che and Gdk.KEY_Cyrillic_CHE both map to keyCyrillicChe: 1
+duplicate constant: Gdk.KEY_Cyrillic_che_descender and Gdk.KEY_Cyrillic_CHE_descender both map to keyCyrillicCheDescender: 1
+duplicate constant: Gdk.KEY_Cyrillic_che_vertstroke and Gdk.KEY_Cyrillic_CHE_vertstroke both map to keyCyrillicCheVertstroke: 1
+duplicate constant: Gdk.KEY_Cyrillic_de and Gdk.KEY_Cyrillic_DE both map to keyCyrillicDe: 1
+duplicate constant: Gdk.KEY_Cyrillic_dzhe and Gdk.KEY_Cyrillic_DZHE both map to keyCyrillicDzhe: 1
+duplicate constant: Gdk.KEY_Cyrillic_e and Gdk.KEY_Cyrillic_E both map to keyCyrillicE: 1
+duplicate constant: Gdk.KEY_Cyrillic_ef and Gdk.KEY_Cyrillic_EF both map to keyCyrillicEf: 1
+duplicate constant: Gdk.KEY_Cyrillic_el and Gdk.KEY_Cyrillic_EL both map to keyCyrillicEl: 1
+duplicate constant: Gdk.KEY_Cyrillic_em and Gdk.KEY_Cyrillic_EM both map to keyCyrillicEm: 1
+duplicate constant: Gdk.KEY_Cyrillic_en and Gdk.KEY_Cyrillic_EN both map to keyCyrillicEn: 1
+duplicate constant: Gdk.KEY_Cyrillic_en_descender and Gdk.KEY_Cyrillic_EN_descender both map to keyCyrillicEnDescender: 1
+duplicate constant: Gdk.KEY_Cyrillic_er and Gdk.KEY_Cyrillic_ER both map to keyCyrillicEr: 1
+duplicate constant: Gdk.KEY_Cyrillic_es and Gdk.KEY_Cyrillic_ES both map to keyCyrillicEs: 1
+duplicate constant: Gdk.KEY_Cyrillic_ghe and Gdk.KEY_Cyrillic_GHE both map to keyCyrillicGhe: 1
+duplicate constant: Gdk.KEY_Cyrillic_ghe_bar and Gdk.KEY_Cyrillic_GHE_bar both map to keyCyrillicGheBar: 1
+duplicate constant: Gdk.KEY_Cyrillic_ha and Gdk.KEY_Cyrillic_HA both map to keyCyrillicHa: 1
+duplicate constant: Gdk.KEY_Cyrillic_ha_descender and Gdk.KEY_Cyrillic_HA_descender both map to keyCyrillicHaDescender: 1
+duplicate constant: Gdk.KEY_Cyrillic_hardsign and Gdk.KEY_Cyrillic_HARDSIGN both map to keyCyrillicHardsign: 1
+duplicate constant: Gdk.KEY_Cyrillic_i and Gdk.KEY_Cyrillic_I both map to keyCyrillicI: 1
+duplicate constant: Gdk.KEY_Cyrillic_i_macron and Gdk.KEY_Cyrillic_I_macron both map to keyCyrillicIMacron: 1
+duplicate constant: Gdk.KEY_Cyrillic_ie and Gdk.KEY_Cyrillic_IE both map to keyCyrillicIe: 1
+duplicate constant: Gdk.KEY_Cyrillic_io and Gdk.KEY_Cyrillic_IO both map to keyCyrillicIo: 1
+duplicate constant: Gdk.KEY_Cyrillic_je and Gdk.KEY_Cyrillic_JE both map to keyCyrillicJe: 1
+duplicate constant: Gdk.KEY_Cyrillic_ka and Gdk.KEY_Cyrillic_KA both map to keyCyrillicKa: 1
+duplicate constant: Gdk.KEY_Cyrillic_ka_descender and Gdk.KEY_Cyrillic_KA_descender both map to keyCyrillicKaDescender: 1
+duplicate constant: Gdk.KEY_Cyrillic_ka_vertstroke and Gdk.KEY_Cyrillic_KA_vertstroke both map to keyCyrillicKaVertstroke: 1
+duplicate constant: Gdk.KEY_Cyrillic_lje and Gdk.KEY_Cyrillic_LJE both map to keyCyrillicLje: 1
+duplicate constant: Gdk.KEY_Cyrillic_nje and Gdk.KEY_Cyrillic_NJE both map to keyCyrillicNje: 1
+duplicate constant: Gdk.KEY_Cyrillic_o and Gdk.KEY_Cyrillic_O both map to keyCyrillicO: 1
+duplicate constant: Gdk.KEY_Cyrillic_o_bar and Gdk.KEY_Cyrillic_O_bar both map to keyCyrillicOBar: 1
+duplicate constant: Gdk.KEY_Cyrillic_pe and Gdk.KEY_Cyrillic_PE both map to keyCyrillicPe: 1
+duplicate constant: Gdk.KEY_Cyrillic_schwa and Gdk.KEY_Cyrillic_SCHWA both map to keyCyrillicSchwa: 1
+duplicate constant: Gdk.KEY_Cyrillic_sha and Gdk.KEY_Cyrillic_SHA both map to keyCyrillicSha: 1
+duplicate constant: Gdk.KEY_Cyrillic_shcha and Gdk.KEY_Cyrillic_SHCHA both map to keyCyrillicShcha: 1
+duplicate constant: Gdk.KEY_Cyrillic_shha and Gdk.KEY_Cyrillic_SHHA both map to keyCyrillicShha: 1
+duplicate constant: Gdk.KEY_Cyrillic_shorti and Gdk.KEY_Cyrillic_SHORTI both map to keyCyrillicShorti: 1
+duplicate constant: Gdk.KEY_Cyrillic_softsign and Gdk.KEY_Cyrillic_SOFTSIGN both map to keyCyrillicSoftsign: 1
+duplicate constant: Gdk.KEY_Cyrillic_te and Gdk.KEY_Cyrillic_TE both map to keyCyrillicTe: 1
+duplicate constant: Gdk.KEY_Cyrillic_tse and Gdk.KEY_Cyrillic_TSE both map to keyCyrillicTse: 1
+duplicate constant: Gdk.KEY_Cyrillic_u and Gdk.KEY_Cyrillic_U both map to keyCyrillicU: 1
+duplicate constant: Gdk.KEY_Cyrillic_u_macron and Gdk.KEY_Cyrillic_U_macron both map to keyCyrillicUMacron: 1
+duplicate constant: Gdk.KEY_Cyrillic_u_straight and Gdk.KEY_Cyrillic_U_straight both map to keyCyrillicUStraight: 1
+duplicate constant: Gdk.KEY_Cyrillic_u_straight_bar and Gdk.KEY_Cyrillic_U_straight_bar both map to keyCyrillicUStraightBar: 1
+duplicate constant: Gdk.KEY_Cyrillic_ve and Gdk.KEY_Cyrillic_VE both map to keyCyrillicVe: 1
+duplicate constant: Gdk.KEY_Cyrillic_ya and Gdk.KEY_Cyrillic_YA both map to keyCyrillicYa: 1
+duplicate constant: Gdk.KEY_Cyrillic_yeru and Gdk.KEY_Cyrillic_YERU both map to keyCyrillicYeru: 1
+duplicate constant: Gdk.KEY_Cyrillic_yu and Gdk.KEY_Cyrillic_YU both map to keyCyrillicYu: 1
+duplicate constant: Gdk.KEY_Cyrillic_ze and Gdk.KEY_Cyrillic_ZE both map to keyCyrillicZe: 1
+duplicate constant: Gdk.KEY_Cyrillic_zhe and Gdk.KEY_Cyrillic_ZHE both map to keyCyrillicZhe: 1
+duplicate constant: Gdk.KEY_Cyrillic_zhe_descender and Gdk.KEY_Cyrillic_ZHE_descender both map to keyCyrillicZheDescender: 1
+duplicate constant: Gdk.KEY_Eth and Gdk.KEY_ETH both map to keyEth: 1
+duplicate constant: Gdk.KEY_Greek_alpha and Gdk.KEY_Greek_ALPHA both map to keyGreekAlpha: 1
+duplicate constant: Gdk.KEY_Greek_beta and Gdk.KEY_Greek_BETA both map to keyGreekBeta: 1
+duplicate constant: Gdk.KEY_Greek_chi and Gdk.KEY_Greek_CHI both map to keyGreekChi: 1
+duplicate constant: Gdk.KEY_Greek_delta and Gdk.KEY_Greek_DELTA both map to keyGreekDelta: 1
+duplicate constant: Gdk.KEY_Greek_epsilon and Gdk.KEY_Greek_EPSILON both map to keyGreekEpsilon: 1
+duplicate constant: Gdk.KEY_Greek_eta and Gdk.KEY_Greek_ETA both map to keyGreekEta: 1
+duplicate constant: Gdk.KEY_Greek_gamma and Gdk.KEY_Greek_GAMMA both map to keyGreekGamma: 1
+duplicate constant: Gdk.KEY_Greek_iota and Gdk.KEY_Greek_IOTA both map to keyGreekIota: 1
+duplicate constant: Gdk.KEY_Greek_kappa and Gdk.KEY_Greek_KAPPA both map to keyGreekKappa: 1
+duplicate constant: Gdk.KEY_Greek_lambda and Gdk.KEY_Greek_LAMBDA both map to keyGreekLambda: 1
+duplicate constant: Gdk.KEY_Greek_lamda and Gdk.KEY_Greek_LAMDA both map to keyGreekLamda: 1
+duplicate constant: Gdk.KEY_Greek_mu and Gdk.KEY_Greek_MU both map to keyGreekMu: 1
+duplicate constant: Gdk.KEY_Greek_nu and Gdk.KEY_Greek_NU both map to keyGreekNu: 1
+duplicate constant: Gdk.KEY_Greek_omega and Gdk.KEY_Greek_OMEGA both map to keyGreekOmega: 1
+duplicate constant: Gdk.KEY_Greek_omicron and Gdk.KEY_Greek_OMICRON both map to keyGreekOmicron: 1
+duplicate constant: Gdk.KEY_Greek_phi and Gdk.KEY_Greek_PHI both map to keyGreekPhi: 1
+duplicate constant: Gdk.KEY_Greek_pi and Gdk.KEY_Greek_PI both map to keyGreekPi: 1
+duplicate constant: Gdk.KEY_Greek_psi and Gdk.KEY_Greek_PSI both map to keyGreekPsi: 1
+duplicate constant: Gdk.KEY_Greek_rho and Gdk.KEY_Greek_RHO both map to keyGreekRho: 1
+duplicate constant: Gdk.KEY_Greek_sigma and Gdk.KEY_Greek_SIGMA both map to keyGreekSigma: 1
+duplicate constant: Gdk.KEY_Greek_tau and Gdk.KEY_Greek_TAU both map to keyGreekTau: 1
+duplicate constant: Gdk.KEY_Greek_theta and Gdk.KEY_Greek_THETA both map to keyGreekTheta: 1
+duplicate constant: Gdk.KEY_Greek_upsilon and Gdk.KEY_Greek_UPSILON both map to keyGreekUpsilon: 1
+duplicate constant: Gdk.KEY_Greek_xi and Gdk.KEY_Greek_XI both map to keyGreekXi: 1
+duplicate constant: Gdk.KEY_Greek_zeta and Gdk.KEY_Greek_ZETA both map to keyGreekZeta: 1
+duplicate constant: Gdk.KEY_Macedonia_dse and Gdk.KEY_Macedonia_DSE both map to keyMacedoniaDse: 1
+duplicate constant: Gdk.KEY_Macedonia_gje and Gdk.KEY_Macedonia_GJE both map to keyMacedoniaGje: 1
+duplicate constant: Gdk.KEY_Macedonia_kje and Gdk.KEY_Macedonia_KJE both map to keyMacedoniaKje: 1
+duplicate constant: Gdk.KEY_Armenian_at and Gdk.KEY_Armenian_AT both map to keyArmenianAt: 1
+duplicate constant: Gdk.KEY_Serbian_dze and Gdk.KEY_Serbian_DZE both map to keySerbianDze: 1
+duplicate constant: Gdk.KEY_Serbian_je and Gdk.KEY_Serbian_JE both map to keySerbianJe: 1
+duplicate constant: Gdk.KEY_Serbian_lje and Gdk.KEY_Serbian_LJE both map to keySerbianLje: 1
+duplicate constant: Gdk.KEY_Serbian_nje and Gdk.KEY_Serbian_NJE both map to keySerbianNje: 1
+duplicate constant: Gdk.KEY_Serbian_tshe and Gdk.KEY_Serbian_TSHE both map to keySerbianTshe: 1
+duplicate constant: Gdk.KEY_Thorn and Gdk.KEY_THORN both map to keyThorn: 1
+duplicate constant: Gdk.KEY_Ukrainian_ghe_with_upturn and Gdk.KEY_Ukrainian_GHE_WITH_UPTURN both map to keyUkrainianGheWithUpturn: 1
+duplicate constant: Gdk.KEY_Ukrainian_i and Gdk.KEY_Ukrainian_I both map to keyUkrainianI: 1
+duplicate constant: Gdk.KEY_Ukrainian_ie and Gdk.KEY_Ukrainian_IE both map to keyUkrainianIe: 1
+duplicate constant: Gdk.KEY_Ukrainian_yi and Gdk.KEY_Ukrainian_YI both map to keyUkrainianYi: 1
+duplicate constant: Gdk.KEY_Ukranian_i and Gdk.KEY_Ukranian_I both map to keyUkranianI: 1
+duplicate constant: Gdk.KEY_Ukranian_je and Gdk.KEY_Ukranian_JE both map to keyUkranianJe: 1
+duplicate constant: Gdk.KEY_Ukranian_yi and Gdk.KEY_Ukranian_YI both map to keyUkranianYi: 1
+duplicate constant: Gdk.KEY_a and Gdk.KEY_A both map to keyA: 1
+duplicate constant: Gdk.KEY_aacute and Gdk.KEY_Aacute both map to keyAacute: 1
+duplicate constant: Gdk.KEY_abelowdot and Gdk.KEY_Abelowdot both map to keyAbelowdot: 1
+duplicate constant: Gdk.KEY_abreve and Gdk.KEY_Abreve both map to keyAbreve: 1
+duplicate constant: Gdk.KEY_abreveacute and Gdk.KEY_Abreveacute both map to keyAbreveacute: 1
+duplicate constant: Gdk.KEY_abrevebelowdot and Gdk.KEY_Abrevebelowdot both map to keyAbrevebelowdot: 1
+duplicate constant: Gdk.KEY_abrevegrave and Gdk.KEY_Abrevegrave both map to keyAbrevegrave: 1
+duplicate constant: Gdk.KEY_abrevehook and Gdk.KEY_Abrevehook both map to keyAbrevehook: 1
+duplicate constant: Gdk.KEY_abrevetilde and Gdk.KEY_Abrevetilde both map to keyAbrevetilde: 1
+duplicate constant: Gdk.KEY_acircumflex and Gdk.KEY_Acircumflex both map to keyAcircumflex: 1
+duplicate constant: Gdk.KEY_acircumflexacute and Gdk.KEY_Acircumflexacute both map to keyAcircumflexacute: 1
+duplicate constant: Gdk.KEY_acircumflexbelowdot and Gdk.KEY_Acircumflexbelowdot both map to keyAcircumflexbelowdot: 1
+duplicate constant: Gdk.KEY_acircumflexgrave and Gdk.KEY_Acircumflexgrave both map to keyAcircumflexgrave: 1
+duplicate constant: Gdk.KEY_acircumflexhook and Gdk.KEY_Acircumflexhook both map to keyAcircumflexhook: 1
+duplicate constant: Gdk.KEY_acircumflextilde and Gdk.KEY_Acircumflextilde both map to keyAcircumflextilde: 1
+duplicate constant: Gdk.KEY_adiaeresis and Gdk.KEY_Adiaeresis both map to keyAdiaeresis: 1
+duplicate constant: Gdk.KEY_ae and Gdk.KEY_AE both map to keyAe: 1
+duplicate constant: Gdk.KEY_agrave and Gdk.KEY_Agrave both map to keyAgrave: 1
+duplicate constant: Gdk.KEY_ahook and Gdk.KEY_Ahook both map to keyAhook: 1
+duplicate constant: Gdk.KEY_amacron and Gdk.KEY_Amacron both map to keyAmacron: 1
+duplicate constant: Gdk.KEY_aogonek and Gdk.KEY_Aogonek both map to keyAogonek: 1
+duplicate constant: Gdk.KEY_aring and Gdk.KEY_Aring both map to keyAring: 1
+duplicate constant: Gdk.KEY_atilde and Gdk.KEY_Atilde both map to keyAtilde: 1
+duplicate constant: Gdk.KEY_b and Gdk.KEY_B both map to keyB: 1
+duplicate constant: Gdk.KEY_babovedot and Gdk.KEY_Babovedot both map to keyBabovedot: 1
+duplicate constant: Gdk.KEY_c and Gdk.KEY_C both map to keyC: 1
+duplicate constant: Gdk.KEY_c_h and Gdk.KEY_C_H both map to keyCH: 1
+duplicate constant: Gdk.KEY_cabovedot and Gdk.KEY_Cabovedot both map to keyCabovedot: 1
+duplicate constant: Gdk.KEY_cacute and Gdk.KEY_Cacute both map to keyCacute: 1
+duplicate constant: Gdk.KEY_ccaron and Gdk.KEY_Ccaron both map to keyCcaron: 1
+duplicate constant: Gdk.KEY_ccedilla and Gdk.KEY_Ccedilla both map to keyCcedilla: 1
+duplicate constant: Gdk.KEY_ccircumflex and Gdk.KEY_Ccircumflex both map to keyCcircumflex: 1
+duplicate constant: Gdk.KEY_ch and Gdk.KEY_CH both map to keyCh: 1
+duplicate constant: Gdk.KEY_d and Gdk.KEY_D both map to keyD: 1
+duplicate constant: Gdk.KEY_dabovedot and Gdk.KEY_Dabovedot both map to keyDabovedot: 1
+duplicate constant: Gdk.KEY_dcaron and Gdk.KEY_Dcaron both map to keyDcaron: 1
+duplicate constant: Gdk.KEY_dead_a and Gdk.KEY_dead_A both map to keyDeadA: 1
+duplicate constant: Gdk.KEY_dead_e and Gdk.KEY_dead_E both map to keyDeadE: 1
+duplicate constant: Gdk.KEY_dead_i and Gdk.KEY_dead_I both map to keyDeadI: 1
+duplicate constant: Gdk.KEY_dead_o and Gdk.KEY_dead_O both map to keyDeadO: 1
+duplicate constant: Gdk.KEY_dead_schwa and Gdk.KEY_dead_SCHWA both map to keyDeadSchwa: 1
+duplicate constant: Gdk.KEY_dead_u and Gdk.KEY_dead_U both map to keyDeadU: 1
+duplicate constant: Gdk.KEY_dstroke and Gdk.KEY_Dstroke both map to keyDstroke: 1
+duplicate constant: Gdk.KEY_e and Gdk.KEY_E both map to keyE: 1
+duplicate constant: Gdk.KEY_eabovedot and Gdk.KEY_Eabovedot both map to keyEabovedot: 1
+duplicate constant: Gdk.KEY_eacute and Gdk.KEY_Eacute both map to keyEacute: 1
+duplicate constant: Gdk.KEY_ebelowdot and Gdk.KEY_Ebelowdot both map to keyEbelowdot: 1
+duplicate constant: Gdk.KEY_ecaron and Gdk.KEY_Ecaron both map to keyEcaron: 1
+duplicate constant: Gdk.KEY_ecircumflex and Gdk.KEY_Ecircumflex both map to keyEcircumflex: 1
+duplicate constant: Gdk.KEY_ecircumflexacute and Gdk.KEY_Ecircumflexacute both map to keyEcircumflexacute: 1
+duplicate constant: Gdk.KEY_ecircumflexbelowdot and Gdk.KEY_Ecircumflexbelowdot both map to keyEcircumflexbelowdot: 1
+duplicate constant: Gdk.KEY_ecircumflexgrave and Gdk.KEY_Ecircumflexgrave both map to keyEcircumflexgrave: 1
+duplicate constant: Gdk.KEY_ecircumflexhook and Gdk.KEY_Ecircumflexhook both map to keyEcircumflexhook: 1
+duplicate constant: Gdk.KEY_ecircumflextilde and Gdk.KEY_Ecircumflextilde both map to keyEcircumflextilde: 1
+duplicate constant: Gdk.KEY_ediaeresis and Gdk.KEY_Ediaeresis both map to keyEdiaeresis: 1
+duplicate constant: Gdk.KEY_egrave and Gdk.KEY_Egrave both map to keyEgrave: 1
+duplicate constant: Gdk.KEY_ehook and Gdk.KEY_Ehook both map to keyEhook: 1
+duplicate constant: Gdk.KEY_emacron and Gdk.KEY_Emacron both map to keyEmacron: 1
+duplicate constant: Gdk.KEY_eng and Gdk.KEY_ENG both map to keyEng: 1
+duplicate constant: Gdk.KEY_eogonek and Gdk.KEY_Eogonek both map to keyEogonek: 1
+duplicate constant: Gdk.KEY_eth and Gdk.KEY_ETH both map to keyEth: 1
+duplicate constant: Gdk.KEY_etilde and Gdk.KEY_Etilde both map to keyEtilde: 1
+duplicate constant: Gdk.KEY_ezh and Gdk.KEY_EZH both map to keyEzh: 1
+duplicate constant: Gdk.KEY_f and Gdk.KEY_F both map to keyF: 1
+duplicate constant: Gdk.KEY_fabovedot and Gdk.KEY_Fabovedot both map to keyFabovedot: 1
+duplicate constant: Gdk.KEY_g and Gdk.KEY_G both map to keyG: 1
+duplicate constant: Gdk.KEY_gabovedot and Gdk.KEY_Gabovedot both map to keyGabovedot: 1
+duplicate constant: Gdk.KEY_gbreve and Gdk.KEY_Gbreve both map to keyGbreve: 1
+duplicate constant: Gdk.KEY_gcaron and Gdk.KEY_Gcaron both map to keyGcaron: 1
+duplicate constant: Gdk.KEY_gcedilla and Gdk.KEY_Gcedilla both map to keyGcedilla: 1
+duplicate constant: Gdk.KEY_gcircumflex and Gdk.KEY_Gcircumflex both map to keyGcircumflex: 1
+duplicate constant: Gdk.KEY_h and Gdk.KEY_H both map to keyH: 1
+duplicate constant: Gdk.KEY_hcircumflex and Gdk.KEY_Hcircumflex both map to keyHcircumflex: 1
+duplicate constant: Gdk.KEY_hstroke and Gdk.KEY_Hstroke both map to keyHstroke: 1
+duplicate constant: Gdk.KEY_i and Gdk.KEY_I both map to keyI: 1
+duplicate constant: Gdk.KEY_iacute and Gdk.KEY_Iacute both map to keyIacute: 1
+duplicate constant: Gdk.KEY_ibelowdot and Gdk.KEY_Ibelowdot both map to keyIbelowdot: 1
+duplicate constant: Gdk.KEY_ibreve and Gdk.KEY_Ibreve both map to keyIbreve: 1
+duplicate constant: Gdk.KEY_icircumflex and Gdk.KEY_Icircumflex both map to keyIcircumflex: 1
+duplicate constant: Gdk.KEY_idiaeresis and Gdk.KEY_Idiaeresis both map to keyIdiaeresis: 1
+duplicate constant: Gdk.KEY_igrave and Gdk.KEY_Igrave both map to keyIgrave: 1
+duplicate constant: Gdk.KEY_ihook and Gdk.KEY_Ihook both map to keyIhook: 1
+duplicate constant: Gdk.KEY_imacron and Gdk.KEY_Imacron both map to keyImacron: 1
+duplicate constant: Gdk.KEY_iogonek and Gdk.KEY_Iogonek both map to keyIogonek: 1
+duplicate constant: Gdk.KEY_itilde and Gdk.KEY_Itilde both map to keyItilde: 1
+duplicate constant: Gdk.KEY_j and Gdk.KEY_J both map to keyJ: 1
+duplicate constant: Gdk.KEY_jcircumflex and Gdk.KEY_Jcircumflex both map to keyJcircumflex: 1
+duplicate constant: Gdk.KEY_k and Gdk.KEY_K both map to keyK: 1
+duplicate constant: Gdk.KEY_kana_a and Gdk.KEY_kana_A both map to keyKanaA: 1
+duplicate constant: Gdk.KEY_kana_e and Gdk.KEY_kana_E both map to keyKanaE: 1
+duplicate constant: Gdk.KEY_kana_i and Gdk.KEY_kana_I both map to keyKanaI: 1
+duplicate constant: Gdk.KEY_kana_o and Gdk.KEY_kana_O both map to keyKanaO: 1
+duplicate constant: Gdk.KEY_kana_tsu and Gdk.KEY_kana_TSU both map to keyKanaTsu: 1
+duplicate constant: Gdk.KEY_kana_tu and Gdk.KEY_kana_TU both map to keyKanaTu: 1
+duplicate constant: Gdk.KEY_kana_u and Gdk.KEY_kana_U both map to keyKanaU: 1
+duplicate constant: Gdk.KEY_kana_ya and Gdk.KEY_kana_YA both map to keyKanaYa: 1
+duplicate constant: Gdk.KEY_kana_yo and Gdk.KEY_kana_YO both map to keyKanaYo: 1
+duplicate constant: Gdk.KEY_kana_yu and Gdk.KEY_kana_YU both map to keyKanaYu: 1
+duplicate constant: Gdk.KEY_kcedilla and Gdk.KEY_Kcedilla both map to keyKcedilla: 1
+duplicate constant: Gdk.KEY_l and Gdk.KEY_L both map to keyL: 1
+duplicate constant: Gdk.KEY_lacute and Gdk.KEY_Lacute both map to keyLacute: 1
+duplicate constant: Gdk.KEY_lbelowdot and Gdk.KEY_Lbelowdot both map to keyLbelowdot: 1
+duplicate constant: Gdk.KEY_lcaron and Gdk.KEY_Lcaron both map to keyLcaron: 1
+duplicate constant: Gdk.KEY_lcedilla and Gdk.KEY_Lcedilla both map to keyLcedilla: 1
+duplicate constant: Gdk.KEY_lstroke and Gdk.KEY_Lstroke both map to keyLstroke: 1
+duplicate constant: Gdk.KEY_m and Gdk.KEY_M both map to keyM: 1
+duplicate constant: Gdk.KEY_mabovedot and Gdk.KEY_Mabovedot both map to keyMabovedot: 1
+duplicate constant: Gdk.KEY_n and Gdk.KEY_N both map to keyN: 1
 inout parameter x: 1
-name collision: keyNcaron: 1
-name collision: keyNcedilla: 1
-name collision: keyNtilde: 1
-name collision: keyO: 1
-name collision: keyOacute: 1
-name collision: keyObarred: 1
-name collision: keyObelowdot: 1
-name collision: keyOcaron: 1
-name collision: keyOcircumflex: 1
-name collision: keyOcircumflexacute: 1
-name collision: keyOcircumflexbelowdot: 1
-name collision: keyOcircumflexgrave: 1
-name collision: keyOcircumflexhook: 1
-name collision: keyOcircumflextilde: 1
-name collision: keyOdiaeresis: 1
-name collision: keyOdoubleacute: 1
-name collision: keyOe: 1
-name collision: keyOgrave: 1
-name collision: keyOhook: 1
-name collision: keyOhorn: 1
-name collision: keyOhornacute: 1
-name collision: keyOhornbelowdot: 1
-name collision: keyOhorngrave: 1
-name collision: keyOhornhook: 1
-name collision: keyOhorntilde: 1
-name collision: keyOmacron: 1
-name collision: keyOoblique: 1
-name collision: keyOslash: 1
-name collision: keyOtilde: 1
-name collision: keyP: 1
-name collision: keyPabovedot: 1
-name collision: keyQ: 1
-name collision: keyR: 1
-name collision: keyRacute: 1
-name collision: keyRcaron: 1
-name collision: keyRcedilla: 1
-name collision: keyS: 1
-name collision: keySabovedot: 1
-name collision: keySacute: 1
-name collision: keyScaron: 1
-name collision: keyScedilla: 1
-name collision: keySchwa: 1
-name collision: keyScircumflex: 1
-name collision: keyT: 1
-name collision: keyTabovedot: 1
-name collision: keyTcaron: 1
-name collision: keyTcedilla: 1
-name collision: keyTslash: 1
-name collision: keyU: 1
-name collision: keyUacute: 1
-name collision: keyUbelowdot: 1
-name collision: keyUbreve: 1
-name collision: keyUcircumflex: 1
-name collision: keyUdiaeresis: 1
-name collision: keyUdoubleacute: 1
-name collision: keyUgrave: 1
-name collision: keyUhook: 1
-name collision: keyUhorn: 1
-name collision: keyUhornacute: 1
-name collision: keyUhornbelowdot: 1
-name collision: keyUhorngrave: 1
-name collision: keyUhornhook: 1
-name collision: keyUhorntilde: 1
-name collision: keyUmacron: 1
-name collision: keyUogonek: 1
-name collision: keyUring: 1
-name collision: keyUtilde: 1
-name collision: keyV: 1
-name collision: keyW: 1
-name collision: keyWacute: 1
-name collision: keyWcircumflex: 1
-name collision: keyWdiaeresis: 1
-name collision: keyWgrave: 1
-name collision: keyX: 1
-name collision: keyXabovedot: 1
-name collision: keyY: 1
-name collision: keyYacute: 1
-name collision: keyYbelowdot: 1
-name collision: keyYcircumflex: 1
-name collision: keyYdiaeresis: 1
-name collision: keyYgrave: 1
-name collision: keyYhook: 1
-name collision: keyYtilde: 1
-name collision: keyZ: 1
-name collision: keyZabovedot: 1
-name collision: keyZacute: 1
-name collision: keyZcaron: 1
-name collision: keyZstroke: 1
+duplicate constant: Gdk.KEY_ncaron and Gdk.KEY_Ncaron both map to keyNcaron: 1
+duplicate constant: Gdk.KEY_ncedilla and Gdk.KEY_Ncedilla both map to keyNcedilla: 1
+duplicate constant: Gdk.KEY_ntilde and Gdk.KEY_Ntilde both map to keyNtilde: 1
+duplicate constant: Gdk.KEY_o and Gdk.KEY_O both map to keyO: 1
+duplicate constant: Gdk.KEY_oacute and Gdk.KEY_Oacute both map to keyOacute: 1
+duplicate constant: Gdk.KEY_obarred and Gdk.KEY_Obarred both map to keyObarred: 1
+duplicate constant: Gdk.KEY_obelowdot and Gdk.KEY_Obelowdot both map to keyObelowdot: 1
+duplicate constant: Gdk.KEY_ocaron and Gdk.KEY_Ocaron both map to keyOcaron: 1
+duplicate constant: Gdk.KEY_ocircumflex and Gdk.KEY_Ocircumflex both map to keyOcircumflex: 1
+duplicate constant: Gdk.KEY_ocircumflexacute and Gdk.KEY_Ocircumflexacute both map to keyOcircumflexacute: 1
+duplicate constant: Gdk.KEY_ocircumflexbelowdot and Gdk.KEY_Ocircumflexbelowdot both map to keyOcircumflexbelowdot: 1
+duplicate constant: Gdk.KEY_ocircumflexgrave and Gdk.KEY_Ocircumflexgrave both map to keyOcircumflexgrave: 1
+duplicate constant: Gdk.KEY_ocircumflexhook and Gdk.KEY_Ocircumflexhook both map to keyOcircumflexhook: 1
+duplicate constant: Gdk.KEY_ocircumflextilde and Gdk.KEY_Ocircumflextilde both map to keyOcircumflextilde: 1
+duplicate constant: Gdk.KEY_odiaeresis and Gdk.KEY_Odiaeresis both map to keyOdiaeresis: 1
+duplicate constant: Gdk.KEY_odoubleacute and Gdk.KEY_Odoubleacute both map to keyOdoubleacute: 1
+duplicate constant: Gdk.KEY_oe and Gdk.KEY_OE both map to keyOe: 1
+duplicate constant: Gdk.KEY_ograve and Gdk.KEY_Ograve both map to keyOgrave: 1
+duplicate constant: Gdk.KEY_ohook and Gdk.KEY_Ohook both map to keyOhook: 1
+duplicate constant: Gdk.KEY_ohorn and Gdk.KEY_Ohorn both map to keyOhorn: 1
+duplicate constant: Gdk.KEY_ohornacute and Gdk.KEY_Ohornacute both map to keyOhornacute: 1
+duplicate constant: Gdk.KEY_ohornbelowdot and Gdk.KEY_Ohornbelowdot both map to keyOhornbelowdot: 1
+duplicate constant: Gdk.KEY_ohorngrave and Gdk.KEY_Ohorngrave both map to keyOhorngrave: 1
+duplicate constant: Gdk.KEY_ohornhook and Gdk.KEY_Ohornhook both map to keyOhornhook: 1
+duplicate constant: Gdk.KEY_ohorntilde and Gdk.KEY_Ohorntilde both map to keyOhorntilde: 1
+duplicate constant: Gdk.KEY_omacron and Gdk.KEY_Omacron both map to keyOmacron: 1
+duplicate constant: Gdk.KEY_ooblique and Gdk.KEY_Ooblique both map to keyOoblique: 1
+duplicate constant: Gdk.KEY_oslash and Gdk.KEY_Oslash both map to keyOslash: 1
+duplicate constant: Gdk.KEY_otilde and Gdk.KEY_Otilde both map to keyOtilde: 1
+duplicate constant: Gdk.KEY_p and Gdk.KEY_P both map to keyP: 1
+duplicate constant: Gdk.KEY_pabovedot and Gdk.KEY_Pabovedot both map to keyPabovedot: 1
+duplicate constant: Gdk.KEY_q and Gdk.KEY_Q both map to keyQ: 1
+duplicate constant: Gdk.KEY_r and Gdk.KEY_R both map to keyR: 1
+duplicate constant: Gdk.KEY_racute and Gdk.KEY_Racute both map to keyRacute: 1
+duplicate constant: Gdk.KEY_rcaron and Gdk.KEY_Rcaron both map to keyRcaron: 1
+duplicate constant: Gdk.KEY_rcedilla and Gdk.KEY_Rcedilla both map to keyRcedilla: 1
+duplicate constant: Gdk.KEY_s and Gdk.KEY_S both map to keyS: 1
+duplicate constant: Gdk.KEY_sabovedot and Gdk.KEY_Sabovedot both map to keySabovedot: 1
+duplicate constant: Gdk.KEY_sacute and Gdk.KEY_Sacute both map to keySacute: 1
+duplicate constant: Gdk.KEY_scaron and Gdk.KEY_Scaron both map to keyScaron: 1
+duplicate constant: Gdk.KEY_scedilla and Gdk.KEY_Scedilla both map to keyScedilla: 1
+duplicate constant: Gdk.KEY_schwa and Gdk.KEY_SCHWA both map to keySchwa: 1
+duplicate constant: Gdk.KEY_scircumflex and Gdk.KEY_Scircumflex both map to keyScircumflex: 1
+duplicate constant: Gdk.KEY_t and Gdk.KEY_T both map to keyT: 1
+duplicate constant: Gdk.KEY_tabovedot and Gdk.KEY_Tabovedot both map to keyTabovedot: 1
+duplicate constant: Gdk.KEY_tcaron and Gdk.KEY_Tcaron both map to keyTcaron: 1
+duplicate constant: Gdk.KEY_tcedilla and Gdk.KEY_Tcedilla both map to keyTcedilla: 1
+duplicate constant: Gdk.KEY_thorn and Gdk.KEY_THORN both map to keyThorn: 1
+duplicate constant: Gdk.KEY_tslash and Gdk.KEY_Tslash both map to keyTslash: 1
+duplicate constant: Gdk.KEY_u and Gdk.KEY_U both map to keyU: 1
+duplicate constant: Gdk.KEY_uacute and Gdk.KEY_Uacute both map to keyUacute: 1
+duplicate constant: Gdk.KEY_ubelowdot and Gdk.KEY_Ubelowdot both map to keyUbelowdot: 1
+duplicate constant: Gdk.KEY_ubreve and Gdk.KEY_Ubreve both map to keyUbreve: 1
+duplicate constant: Gdk.KEY_ucircumflex and Gdk.KEY_Ucircumflex both map to keyUcircumflex: 1
+duplicate constant: Gdk.KEY_udiaeresis and Gdk.KEY_Udiaeresis both map to keyUdiaeresis: 1
+duplicate constant: Gdk.KEY_udoubleacute and Gdk.KEY_Udoubleacute both map to keyUdoubleacute: 1
+duplicate constant: Gdk.KEY_ugrave and Gdk.KEY_Ugrave both map to keyUgrave: 1
+duplicate constant: Gdk.KEY_uhook and Gdk.KEY_Uhook both map to keyUhook: 1
+duplicate constant: Gdk.KEY_uhorn and Gdk.KEY_Uhorn both map to keyUhorn: 1
+duplicate constant: Gdk.KEY_uhornacute and Gdk.KEY_Uhornacute both map to keyUhornacute: 1
+duplicate constant: Gdk.KEY_uhornbelowdot and Gdk.KEY_Uhornbelowdot both map to keyUhornbelowdot: 1
+duplicate constant: Gdk.KEY_uhorngrave and Gdk.KEY_Uhorngrave both map to keyUhorngrave: 1
+duplicate constant: Gdk.KEY_uhornhook and Gdk.KEY_Uhornhook both map to keyUhornhook: 1
+duplicate constant: Gdk.KEY_uhorntilde and Gdk.KEY_Uhorntilde both map to keyUhorntilde: 1
+duplicate constant: Gdk.KEY_umacron and Gdk.KEY_Umacron both map to keyUmacron: 1
+duplicate constant: Gdk.KEY_uogonek and Gdk.KEY_Uogonek both map to keyUogonek: 1
+duplicate constant: Gdk.KEY_uring and Gdk.KEY_Uring both map to keyUring: 1
+duplicate constant: Gdk.KEY_utilde and Gdk.KEY_Utilde both map to keyUtilde: 1
+duplicate constant: Gdk.KEY_v and Gdk.KEY_V both map to keyV: 1
+duplicate constant: Gdk.KEY_w and Gdk.KEY_W both map to keyW: 1
+duplicate constant: Gdk.KEY_wacute and Gdk.KEY_Wacute both map to keyWacute: 1
+duplicate constant: Gdk.KEY_wcircumflex and Gdk.KEY_Wcircumflex both map to keyWcircumflex: 1
+duplicate constant: Gdk.KEY_wdiaeresis and Gdk.KEY_Wdiaeresis both map to keyWdiaeresis: 1
+duplicate constant: Gdk.KEY_wgrave and Gdk.KEY_Wgrave both map to keyWgrave: 1
+duplicate constant: Gdk.KEY_x and Gdk.KEY_X both map to keyX: 1
+duplicate constant: Gdk.KEY_xabovedot and Gdk.KEY_Xabovedot both map to keyXabovedot: 1
+duplicate constant: Gdk.KEY_y and Gdk.KEY_Y both map to keyY: 1
+duplicate constant: Gdk.KEY_yacute and Gdk.KEY_Yacute both map to keyYacute: 1
+duplicate constant: Gdk.KEY_ybelowdot and Gdk.KEY_Ybelowdot both map to keyYbelowdot: 1
+duplicate constant: Gdk.KEY_ycircumflex and Gdk.KEY_Ycircumflex both map to keyYcircumflex: 1
+duplicate constant: Gdk.KEY_ydiaeresis and Gdk.KEY_Ydiaeresis both map to keyYdiaeresis: 1
+duplicate constant: Gdk.KEY_ygrave and Gdk.KEY_Ygrave both map to keyYgrave: 1
+duplicate constant: Gdk.KEY_yhook and Gdk.KEY_Yhook both map to keyYhook: 1
+duplicate constant: Gdk.KEY_ytilde and Gdk.KEY_Ytilde both map to keyYtilde: 1
+duplicate constant: Gdk.KEY_z and Gdk.KEY_Z both map to keyZ: 1
+duplicate constant: Gdk.KEY_zabovedot and Gdk.KEY_Zabovedot both map to keyZabovedot: 1
+duplicate constant: Gdk.KEY_zacute and Gdk.KEY_Zacute both map to keyZacute: 1
+duplicate constant: Gdk.KEY_zcaron and Gdk.KEY_Zcaron both map to keyZcaron: 1
+duplicate constant: Gdk.KEY_zstroke and Gdk.KEY_Zstroke both map to keyZstroke: 1
 moved to ColorState.get_oklab: 1
 moved to ColorState.get_oklch: 1
 moved to ColorState.get_rec2100_linear: 1
@@ -353,74 +357,74 @@ brought to GdkEvent as eventsGetCenter: 1
 brought to GdkEvent as eventsGetDistance: 1
 moved to GLError.quark: 1
 moved to Paintable.new_empty: 1
-name collision: keyArmenianDza: 1
+duplicate constant: Gdk.KEY_Armenian_ayb and Gdk.KEY_Armenian_AYB both map to keyArmenianAyb: 1
 moved to TextureError.quark: 1
 moved to VulkanError.quark: 1
 parameter mime_types: array of TypeKind.string (later phase): 1
-name collision: keyArmenianE: 1
-name collision: keyArmenianFe: 1
+duplicate constant: Gdk.KEY_Armenian_ben and Gdk.KEY_Armenian_BEN both map to keyArmenianBen: 1
+duplicate constant: Gdk.KEY_Armenian_cha and Gdk.KEY_Armenian_CHA both map to keyArmenianCha: 1
 unsupported out parameter out_offsets (ffi.Pointer<ffi.Size>): 1
 override-incompatible with ancestor; renamed to getDisplayAppLaunchContext: 1
-name collision: keyArmenianGhat: 1
+duplicate constant: Gdk.KEY_Armenian_da and Gdk.KEY_Armenian_DA both map to keyArmenianDa: 1
 unsupported type null: 1
 missing getter get_n-axes: 1
-name collision: keyArmenianGim: 1
+duplicate constant: Gdk.KEY_Armenian_dza and Gdk.KEY_Armenian_DZA both map to keyArmenianDza: 1
 moved to events_get_angle: 1
 moved to events_get_center: 1
 moved to events_get_distance: 1
 unsupported out parameter axes (ffi.Pointer<ffi.Double>): 1
 unsupported type gpointer: 1
 getter get_geometry takes 1 args; props layer only supports 0: 1
-name collision: keyNacute: 1
+duplicate constant: Gdk.KEY_nacute and Gdk.KEY_Nacute both map to keyNacute: 1
 
 ## First 50 entries
-[constant] Gdk.KEY_Armenian_at — name collision: keyArmenianAt
-[constant] Gdk.KEY_Armenian_ayb — name collision: keyArmenianAyb
-[constant] Gdk.KEY_Armenian_ben — name collision: keyArmenianBen
-[constant] Gdk.KEY_Armenian_cha — name collision: keyArmenianCha
-[constant] Gdk.KEY_Armenian_da — name collision: keyArmenianDa
-[constant] Gdk.KEY_Armenian_dza — name collision: keyArmenianDza
-[constant] Gdk.KEY_Armenian_e — name collision: keyArmenianE
-[constant] Gdk.KEY_Armenian_fe — name collision: keyArmenianFe
-[constant] Gdk.KEY_Armenian_ghat — name collision: keyArmenianGhat
-[constant] Gdk.KEY_Armenian_gim — name collision: keyArmenianGim
-[constant] Gdk.KEY_Armenian_hi — name collision: keyArmenianHi
-[constant] Gdk.KEY_Armenian_ho — name collision: keyArmenianHo
-[constant] Gdk.KEY_Armenian_ini — name collision: keyArmenianIni
-[constant] Gdk.KEY_Armenian_je — name collision: keyArmenianJe
-[constant] Gdk.KEY_Armenian_ke — name collision: keyArmenianKe
-[constant] Gdk.KEY_Armenian_ken — name collision: keyArmenianKen
-[constant] Gdk.KEY_Armenian_khe — name collision: keyArmenianKhe
-[constant] Gdk.KEY_Armenian_lyun — name collision: keyArmenianLyun
-[constant] Gdk.KEY_Armenian_men — name collision: keyArmenianMen
-[constant] Gdk.KEY_Armenian_nu — name collision: keyArmenianNu
-[constant] Gdk.KEY_Armenian_o — name collision: keyArmenianO
-[constant] Gdk.KEY_Armenian_pe — name collision: keyArmenianPe
-[constant] Gdk.KEY_Armenian_pyur — name collision: keyArmenianPyur
-[constant] Gdk.KEY_Armenian_ra — name collision: keyArmenianRa
-[constant] Gdk.KEY_Armenian_re — name collision: keyArmenianRe
-[constant] Gdk.KEY_Armenian_se — name collision: keyArmenianSe
-[constant] Gdk.KEY_Armenian_sha — name collision: keyArmenianSha
-[constant] Gdk.KEY_Armenian_tche — name collision: keyArmenianTche
-[constant] Gdk.KEY_Armenian_to — name collision: keyArmenianTo
-[constant] Gdk.KEY_Armenian_tsa — name collision: keyArmenianTsa
-[constant] Gdk.KEY_Armenian_tso — name collision: keyArmenianTso
-[constant] Gdk.KEY_Armenian_tyun — name collision: keyArmenianTyun
-[constant] Gdk.KEY_Armenian_vev — name collision: keyArmenianVev
-[constant] Gdk.KEY_Armenian_vo — name collision: keyArmenianVo
-[constant] Gdk.KEY_Armenian_vyun — name collision: keyArmenianVyun
-[constant] Gdk.KEY_Armenian_yech — name collision: keyArmenianYech
-[constant] Gdk.KEY_Armenian_za — name collision: keyArmenianZa
-[constant] Gdk.KEY_Armenian_zhe — name collision: keyArmenianZhe
-[constant] Gdk.KEY_Byelorussian_shortu — name collision: keyByelorussianShortu
-[constant] Gdk.KEY_C_h — name collision: keyCH
-[constant] Gdk.KEY_Ch — name collision: keyCh
-[constant] Gdk.KEY_Cyrillic_a — name collision: keyCyrillicA
-[constant] Gdk.KEY_Cyrillic_be — name collision: keyCyrillicBe
-[constant] Gdk.KEY_Cyrillic_che — name collision: keyCyrillicChe
-[constant] Gdk.KEY_Cyrillic_che_descender — name collision: keyCyrillicCheDescender
-[constant] Gdk.KEY_Cyrillic_che_vertstroke — name collision: keyCyrillicCheVertstroke
-[constant] Gdk.KEY_Cyrillic_de — name collision: keyCyrillicDe
-[constant] Gdk.KEY_Cyrillic_dzhe — name collision: keyCyrillicDzhe
-[constant] Gdk.KEY_Cyrillic_e — name collision: keyCyrillicE
-[constant] Gdk.KEY_Cyrillic_ef — name collision: keyCyrillicEf
+[constant] Gdk.KEY_Armenian_at — duplicate constant: Gdk.KEY_Armenian_at and Gdk.KEY_Armenian_AT both map to keyArmenianAt
+[constant] Gdk.KEY_Armenian_ayb — duplicate constant: Gdk.KEY_Armenian_ayb and Gdk.KEY_Armenian_AYB both map to keyArmenianAyb
+[constant] Gdk.KEY_Armenian_ben — duplicate constant: Gdk.KEY_Armenian_ben and Gdk.KEY_Armenian_BEN both map to keyArmenianBen
+[constant] Gdk.KEY_Armenian_cha — duplicate constant: Gdk.KEY_Armenian_cha and Gdk.KEY_Armenian_CHA both map to keyArmenianCha
+[constant] Gdk.KEY_Armenian_da — duplicate constant: Gdk.KEY_Armenian_da and Gdk.KEY_Armenian_DA both map to keyArmenianDa
+[constant] Gdk.KEY_Armenian_dza — duplicate constant: Gdk.KEY_Armenian_dza and Gdk.KEY_Armenian_DZA both map to keyArmenianDza
+[constant] Gdk.KEY_Armenian_e — duplicate constant: Gdk.KEY_Armenian_e and Gdk.KEY_Armenian_E both map to keyArmenianE
+[constant] Gdk.KEY_Armenian_fe — duplicate constant: Gdk.KEY_Armenian_fe and Gdk.KEY_Armenian_FE both map to keyArmenianFe
+[constant] Gdk.KEY_Armenian_ghat — duplicate constant: Gdk.KEY_Armenian_ghat and Gdk.KEY_Armenian_GHAT both map to keyArmenianGhat
+[constant] Gdk.KEY_Armenian_gim — duplicate constant: Gdk.KEY_Armenian_gim and Gdk.KEY_Armenian_GIM both map to keyArmenianGim
+[constant] Gdk.KEY_Armenian_hi — duplicate constant: Gdk.KEY_Armenian_hi and Gdk.KEY_Armenian_HI both map to keyArmenianHi
+[constant] Gdk.KEY_Armenian_ho — duplicate constant: Gdk.KEY_Armenian_ho and Gdk.KEY_Armenian_HO both map to keyArmenianHo
+[constant] Gdk.KEY_Armenian_ini — duplicate constant: Gdk.KEY_Armenian_ini and Gdk.KEY_Armenian_INI both map to keyArmenianIni
+[constant] Gdk.KEY_Armenian_je — duplicate constant: Gdk.KEY_Armenian_je and Gdk.KEY_Armenian_JE both map to keyArmenianJe
+[constant] Gdk.KEY_Armenian_ke — duplicate constant: Gdk.KEY_Armenian_ke and Gdk.KEY_Armenian_KE both map to keyArmenianKe
+[constant] Gdk.KEY_Armenian_ken — duplicate constant: Gdk.KEY_Armenian_ken and Gdk.KEY_Armenian_KEN both map to keyArmenianKen
+[constant] Gdk.KEY_Armenian_khe — duplicate constant: Gdk.KEY_Armenian_khe and Gdk.KEY_Armenian_KHE both map to keyArmenianKhe
+[constant] Gdk.KEY_Armenian_lyun — duplicate constant: Gdk.KEY_Armenian_lyun and Gdk.KEY_Armenian_LYUN both map to keyArmenianLyun
+[constant] Gdk.KEY_Armenian_men — duplicate constant: Gdk.KEY_Armenian_men and Gdk.KEY_Armenian_MEN both map to keyArmenianMen
+[constant] Gdk.KEY_Armenian_nu — duplicate constant: Gdk.KEY_Armenian_nu and Gdk.KEY_Armenian_NU both map to keyArmenianNu
+[constant] Gdk.KEY_Armenian_o — duplicate constant: Gdk.KEY_Armenian_o and Gdk.KEY_Armenian_O both map to keyArmenianO
+[constant] Gdk.KEY_Armenian_pe — duplicate constant: Gdk.KEY_Armenian_pe and Gdk.KEY_Armenian_PE both map to keyArmenianPe
+[constant] Gdk.KEY_Armenian_pyur — duplicate constant: Gdk.KEY_Armenian_pyur and Gdk.KEY_Armenian_PYUR both map to keyArmenianPyur
+[constant] Gdk.KEY_Armenian_ra — duplicate constant: Gdk.KEY_Armenian_ra and Gdk.KEY_Armenian_RA both map to keyArmenianRa
+[constant] Gdk.KEY_Armenian_re — duplicate constant: Gdk.KEY_Armenian_re and Gdk.KEY_Armenian_RE both map to keyArmenianRe
+[constant] Gdk.KEY_Armenian_se — duplicate constant: Gdk.KEY_Armenian_se and Gdk.KEY_Armenian_SE both map to keyArmenianSe
+[constant] Gdk.KEY_Armenian_sha — duplicate constant: Gdk.KEY_Armenian_sha and Gdk.KEY_Armenian_SHA both map to keyArmenianSha
+[constant] Gdk.KEY_Armenian_tche — duplicate constant: Gdk.KEY_Armenian_tche and Gdk.KEY_Armenian_TCHE both map to keyArmenianTche
+[constant] Gdk.KEY_Armenian_to — duplicate constant: Gdk.KEY_Armenian_to and Gdk.KEY_Armenian_TO both map to keyArmenianTo
+[constant] Gdk.KEY_Armenian_tsa — duplicate constant: Gdk.KEY_Armenian_tsa and Gdk.KEY_Armenian_TSA both map to keyArmenianTsa
+[constant] Gdk.KEY_Armenian_tso — duplicate constant: Gdk.KEY_Armenian_tso and Gdk.KEY_Armenian_TSO both map to keyArmenianTso
+[constant] Gdk.KEY_Armenian_tyun — duplicate constant: Gdk.KEY_Armenian_tyun and Gdk.KEY_Armenian_TYUN both map to keyArmenianTyun
+[constant] Gdk.KEY_Armenian_vev — duplicate constant: Gdk.KEY_Armenian_vev and Gdk.KEY_Armenian_VEV both map to keyArmenianVev
+[constant] Gdk.KEY_Armenian_vo — duplicate constant: Gdk.KEY_Armenian_vo and Gdk.KEY_Armenian_VO both map to keyArmenianVo
+[constant] Gdk.KEY_Armenian_vyun — duplicate constant: Gdk.KEY_Armenian_vyun and Gdk.KEY_Armenian_VYUN both map to keyArmenianVyun
+[constant] Gdk.KEY_Armenian_yech — duplicate constant: Gdk.KEY_Armenian_yech and Gdk.KEY_Armenian_YECH both map to keyArmenianYech
+[constant] Gdk.KEY_Armenian_za — duplicate constant: Gdk.KEY_Armenian_za and Gdk.KEY_Armenian_ZA both map to keyArmenianZa
+[constant] Gdk.KEY_Armenian_zhe — duplicate constant: Gdk.KEY_Armenian_zhe and Gdk.KEY_Armenian_ZHE both map to keyArmenianZhe
+[constant] Gdk.KEY_Byelorussian_shortu — duplicate constant: Gdk.KEY_Byelorussian_shortu and Gdk.KEY_Byelorussian_SHORTU both map to keyByelorussianShortu
+[constant] Gdk.KEY_C_h — duplicate constant: Gdk.KEY_C_h and Gdk.KEY_C_H both map to keyCH
+[constant] Gdk.KEY_Ch — duplicate constant: Gdk.KEY_Ch and Gdk.KEY_CH both map to keyCh
+[constant] Gdk.KEY_Cyrillic_a — duplicate constant: Gdk.KEY_Cyrillic_a and Gdk.KEY_Cyrillic_A both map to keyCyrillicA
+[constant] Gdk.KEY_Cyrillic_be — duplicate constant: Gdk.KEY_Cyrillic_be and Gdk.KEY_Cyrillic_BE both map to keyCyrillicBe
+[constant] Gdk.KEY_Cyrillic_che — duplicate constant: Gdk.KEY_Cyrillic_che and Gdk.KEY_Cyrillic_CHE both map to keyCyrillicChe
+[constant] Gdk.KEY_Cyrillic_che_descender — duplicate constant: Gdk.KEY_Cyrillic_che_descender and Gdk.KEY_Cyrillic_CHE_descender both map to keyCyrillicCheDescender
+[constant] Gdk.KEY_Cyrillic_che_vertstroke — duplicate constant: Gdk.KEY_Cyrillic_che_vertstroke and Gdk.KEY_Cyrillic_CHE_vertstroke both map to keyCyrillicCheVertstroke
+[constant] Gdk.KEY_Cyrillic_de — duplicate constant: Gdk.KEY_Cyrillic_de and Gdk.KEY_Cyrillic_DE both map to keyCyrillicDe
+[constant] Gdk.KEY_Cyrillic_dzhe — duplicate constant: Gdk.KEY_Cyrillic_dzhe and Gdk.KEY_Cyrillic_DZHE both map to keyCyrillicDzhe
+[constant] Gdk.KEY_Cyrillic_e — duplicate constant: Gdk.KEY_Cyrillic_e and Gdk.KEY_Cyrillic_E both map to keyCyrillicE
+[constant] Gdk.KEY_Cyrillic_ef — duplicate constant: Gdk.KEY_Cyrillic_ef and Gdk.KEY_Cyrillic_EF both map to keyCyrillicEf

@@ -74,7 +74,7 @@ moved to HashTable.steal: 1
 moved to HashTable.steal_all: 1
 moved to HashTable.steal_extended: 1
 moved to HashTable.unref: 1
-name collision: csetA2Z: 1
+duplicate constant: GLib.CSET_a_2_z and GLib.CSET_A_2_Z both map to csetA2Z: 1
 moved to Hook.destroy_link: 1
 moved to Hook.free: 1
 moved to Hook.insert_before: 1
@@ -206,7 +206,7 @@ moved to ByteArray.remove_range: 1
 moved to Date.valid_day: 1
 
 ## First 50 entries
-[constant] GLib.CSET_a_2_z — name collision: csetA2Z
+[constant] GLib.CSET_a_2_z — duplicate constant: GLib.CSET_a_2_z and GLib.CSET_A_2_Z both map to csetA2Z
 [constant] GLib.MAXUINT64 — unparseable int value: 18446744073709551615
 [callable] GLib.arrayNewTake — introspectable=0
 [callable] GLib.arrayNewTakeZeroTerminated — introspectable=0

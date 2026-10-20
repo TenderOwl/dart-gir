@@ -67,16 +67,28 @@ part of '../adw.dart';
 /// <source srcset="sidebar-section-dark.png" media="(prefers-color-scheme: dark)">
 /// <img src="sidebar-section.png" alt="sidebar-section">
 /// </picture>
-class AdwSidebarSection extends GObject {
+class AdwSidebarSection extends GObject implements GtkBuildable {
   AdwSidebarSection.fromPointer(super.handle, {super.owned})
     : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwSidebarSection`.
   static final _adwSidebarSectionNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_sidebar_section_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwSidebarSection() : super.fromPointer(_adwSidebarSectionNew(), owned: true);
+  AdwSidebarSection() : this.fromPointer(_adwSidebarSectionNew(), owned: true);
 
   /// Appends @item to @self.
   ///
@@ -156,7 +168,7 @@ class AdwSidebarSection extends GObject {
       ffi.Pointer<ffi.Void>,
     )?
     createItemFunc,
-    ffi.Pointer<ffi.Void> userData,
+    ffi.Pointer<ffi.Void>? userData,
     void Function(ffi.Pointer<ffi.Void>) userDataFreeFunc,
   ) {
     final _nc2 = createItemFunc == null
@@ -176,7 +188,7 @@ class AdwSidebarSection extends GObject {
         this.handle,
         model?.handle ?? ffi.nullptr,
         _nc2?.nativeFunction ?? ffi.nullptr,
-        userData,
+        userData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
     } finally {

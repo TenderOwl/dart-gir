@@ -51,7 +51,7 @@ class AdwComboRowProps extends AdwActionRowProps {
     _self.setSelected(value);
   }
 
-  ffi.Pointer<ffi.Void> get selectedItem => _self.getSelectedItem();
+  GObject? get selectedItem => _self.getSelectedItem();
 
   bool get useSubtitle => _self.getUseSubtitle();
   set useSubtitle(bool value) {

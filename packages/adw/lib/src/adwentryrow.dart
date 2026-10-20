@@ -35,15 +35,33 @@ part of '../adw.dart';
 ///
 /// `AdwEntryRow` has a single CSS node with name `row` and the `.entry` style
 /// class.
-class AdwEntryRow extends AdwPreferencesRow {
+class AdwEntryRow extends AdwPreferencesRow
+    implements
+        GtkAccessible,
+        GtkActionable,
+        GtkBuildable,
+        GtkConstraintTarget,
+        GtkEditable {
   AdwEntryRow.fromPointer(super.handle, {super.owned}) : super.fromPointer();
+
+  /// Re-wraps this wrapper's [handle] as [T] via [factory].
+  ///
+  /// Use this when another wrapper returns this class's
+  /// instance but the caller needs the destination class's
+  /// methods. Pass the destination class's `fromPointer` as
+  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
+  /// The handle is forwarded as-is; the original wrapper
+  /// (which produced this object) remains the owner.
+  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
+    return factory(handle);
+  }
 
   /// Creates a new `AdwEntryRow`.
   static final _adwEntryRowNew =
       adwLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'adw_entry_row_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  AdwEntryRow() : super.fromPointer(_adwEntryRowNew(), owned: true);
+  AdwEntryRow() : this.fromPointer(_adwEntryRowNew(), owned: true);
 
   /// Adds a prefix widget to @self.
   static final _adwEntryRowAddPrefix =
@@ -475,6 +493,47 @@ class AdwEntryRow extends AdwPreferencesRow {
     return _connectSignal_v_1_o_gparamspec(this.handle, 'notify', callback);
   }
 
+  /// Emitted at the end of a single user-visible operation on the
+  /// contents.
+  ///
+  /// E.g., a paste operation that replaces the contents of the
+  /// selection will cause only one signal emission (even though it
+  /// is implemented by first deleting the selection, then inserting
+  /// the new content, and may cause multiple ::notify::text signals
+  /// to be emitted).
+  int onChanged(void Function() callback) {
+    return _connectSignal_v_0(this.handle, 'changed', callback);
+  }
+
+  /// Emitted when text is deleted from the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible for
+  /// deleting the text, so by connecting to this signal and then stopping
+  /// the signal with g_signal_stop_emission(), it is possible to modify the
+  /// range of deleted text, or prevent it from being deleted entirely.
+  ///
+  /// The @start_pos and @end_pos parameters are interpreted as for
+  /// [method@Gtk.Editable.delete_text].
+  int onDeleteText(void Function(int startPos, int endPos) callback) {
+    return _connectSignal_v_2_i_i_int_int(this.handle, 'delete-text', callback);
+  }
+
+  /// Emitted when text is inserted into the widget by the user.
+  ///
+  /// The default handler for this signal will normally be responsible
+  /// for inserting the text, so by connecting to this signal and then
+  /// stopping the signal with g_signal_stop_emission(), it is possible
+  /// to modify the inserted text, or prevent it from being inserted entirely.
+  int onInsertText(
+    void Function(String text, int length, int position) callback,
+  ) {
+    return _connectSignal_v_3_s_i_i_string_int_int(
+      this.handle,
+      'insert-text',
+      callback,
+    );
+  }
+
   /// Requests the user's screen reader to announce the given message.
   ///
   /// This kind of notification is useful for messages that
@@ -772,6 +831,115 @@ class AdwEntryRow extends AdwPreferencesRow {
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void updatePlatformState(GtkAccessiblePlatformState state) {
     _gtkAccessibleUpdatePlatformState(this.handle, state.value);
+  }
+
+  /// Updates an array of accessible properties.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// property change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdatePropertyValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_property_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updatePropertyValue(
+    int nProperties,
+    ffi.Pointer<ffi.Int32> properties,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdatePropertyValue(
+      this.handle,
+      nProperties,
+      properties,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible relations.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// relation change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateRelationValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_relation_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateRelationValue(
+    int nRelations,
+    ffi.Pointer<ffi.Int32> relations,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateRelationValue(
+      this.handle,
+      nRelations,
+      relations,
+      values,
+    );
+  }
+
+  /// Updates an array of accessible states.
+  ///
+  /// This function should be called by `GtkWidget` types whenever an accessible
+  /// state change must be communicated to assistive technologies.
+  ///
+  /// This function is meant to be used by language bindings.
+  static final _gtkAccessibleUpdateStateValue =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_accessible_update_state_value')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void updateStateValue(
+    int nStates,
+    ffi.Pointer<ffi.Int32> states,
+    ffi.Pointer<ffi.Void> values,
+  ) {
+    _gtkAccessibleUpdateStateValue(this.handle, nStates, states, values);
   }
 
   /// Gets the action name for @actionable.
@@ -1086,6 +1254,42 @@ class AdwEntryRow extends AdwPreferencesRow {
       ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   int getPosition() {
     return _gtkEditableGetPosition(this.handle);
+  }
+
+  /// Retrieves the selection bound of the editable.
+  ///
+  /// @start_pos will be filled with the start of the selection and
+  /// @end_pos with end. If no text was selected both will be identical
+  /// and %FALSE will be returned.
+  ///
+  /// Note that positions are specified in characters, not bytes.
+  static final _gtkEditableGetSelectionBounds =
+      adwLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Int32>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_editable_get_selection_bounds')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Int32>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  (bool, int, int) getSelectionBounds() {
+    final _out0 = malloc<ffi.Int32>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      final _ret = _gtkEditableGetSelectionBounds(this.handle, _out0, _out1);
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
   }
 
   /// Retrieves the contents of @editable.

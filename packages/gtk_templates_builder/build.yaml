@@ -1,0 +1,27 @@
+# The `build_runner` builder definition for `package:gtk_templates_builder`.
+#
+# `build_to: source` is **required** and must live here — in the
+# provider package's `build.yaml`, not in the consumer's. The
+# generated file is a `part of` the user's library, and Dart
+# requires a part file to sit in the same directory as its
+# library. With the default (`build_to: cache`) the output would
+# land in `.dart_tool/build/generated/` and the user's
+# `part '<input>.g.dart';` directive would not resolve.
+#
+# Consumers configure the builder in their own `build.yaml`:
+#
+#     targets:
+#       $default:
+#         builders:
+#           gtk_templates_builder:
+#             generate_for:
+#               - lib/**.dart
+#
+# Read about `build.yaml` at https://pub.dev/packages/build_config
+builders:
+  gtk_templates_builder:
+    import: "package:gtk_templates_builder/builder.dart"
+    builder_factories: ["gtkTemplatesBuilder"]
+    build_extensions: {".dart": [".g.dart"]}
+    auto_apply: dependents
+    build_to: source
