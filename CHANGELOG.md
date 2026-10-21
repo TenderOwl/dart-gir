@@ -125,6 +125,28 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   workspace.
 
 ### Fixed
+- **The notepad example's dark-mode menu entry is no longer dead.** A
+  `GSimpleAction` that is stateful carries the type of its value in the
+  *state* — it must not have a parameter type as well. With one, the
+  action is *parameterised*: a menu item needs a target to activate it,
+  and without one GTK4 greys the entry out, even though the action sits
+  in the application, enabled, and ready.
+
+  ```dart
+  final darkModeAction = GSimpleAction.stateful(
+    'dark-mode',
+    null, // the state carries the type
+    GVariant.boolean(false),
+  );
+  // Only "change-state" is connected: connecting "activate" as well
+  // would replace GLib's default toggle.
+  darkModeAction.onChangeState((param) => changeColorScheme(darkModeAction, param));
+  ```
+
+  A connected "change-state" handler also replaces GLib's default, so
+  the handler has to accept the state itself (`setState`). The rules
+  are pinned by `example/notepad/test/dark_mode_action_test.dart`.
+
 - **A failing GLib call no longer crashes the process.** `GError` is
   `{ GQuark domain; gint code; gchar *message; }` and a `GQuark` is a
   `guint32` — four bytes. The generated struct declared `domain` as

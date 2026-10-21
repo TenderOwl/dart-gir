@@ -86,6 +86,10 @@ const String _$NotepadWindowTemplate_xml = '''
         <attribute name="action">win.show-help-overlay</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">_Dark mode</attribute>
+        <attribute name="action">app.dark-mode</attribute>
+        </item>
+      <item>
         <attribute name="label" translatable="yes">_About {{name}}</attribute>
         <attribute name="action">app.about</attribute>
       </item>

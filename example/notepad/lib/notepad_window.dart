@@ -14,12 +14,10 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
   NotepadWindow(super.app) {
     initTemplate();
 
-    final openAction = GSimpleAction('open');
-    openAction.onActivate(openFileDialog);
+    final openAction = GSimpleAction('open')..onActivate(openFileDialog);
     addAction(openAction);
 
-    final saveAction = GSimpleAction('save-as');
-    saveAction.onActivate(saveFileDialog);
+    final saveAction = GSimpleAction('save-as')..onActivate(saveFileDialog);
     addAction(saveAction);
 
     final buffer = mainTextView.getBuffer();

@@ -12,17 +12,35 @@ class NotepadApp {
   NotepadApp() {
     app = AdwApplication("com.tenderowl.notepad", .handlesOpen);
 
-    app.onActivate(onActivate);
-
-    // app.onShutdown(() => quit());
-
     createAction("quit", (_) => quit(), "<Primary>Q");
     createAction("preferences", (_) => onPreferencesAction(), "<Primary>comma");
     createAction("about", (_) => onAboutAction());
     createAction("show-toast", onShowToast, null, GVariantType('s'));
 
+    // A stateful action carries its type in the *state*, not in a
+    // parameter type. A parameter type makes the action *parameterised*:
+    // a menu item would then need a target to activate it, and without
+    // one GTK4 greys the item out — the action sits in the app, enabled,
+    // and the menu entry is still dead.
+    //
+    // With no parameter type GLib's default takes over: activating the
+    // action toggles the boolean state and emits "change-state".
+    final darkModeAction = GSimpleAction.stateful(
+      'dark-mode',
+      null,
+      GVariant.boolean(false),
+    );
+
+    darkModeAction.onChangeState(
+      (param) => changeColorScheme(darkModeAction, param),
+    );
+    app.addAction(darkModeAction);
+
     app.setAccelsForAction('win.open', ['<Ctrl>o']);
     app.setAccelsForAction('win.save-as', ['<Ctrl><Shift>s']);
+
+    app.onActivate(onActivate);
+    // app.onShutdown(() => quit());
   }
 
   void onActivate() {
@@ -84,5 +102,17 @@ class NotepadApp {
     if (result == null) return;
     final (text, _) = result;
     print('Toast: $text');
+  }
+
+  void changeColorScheme(GSimpleAction action, GVariant? param) {
+    final darkMode = param?.getBoolean() ?? false;
+    final styleManager = AdwStyleManager.getDefault();
+    if (darkMode) {
+      styleManager.setColorScheme(.forceDark);
+    } else {
+      styleManager.setColorScheme(.forceLight);
+    }
+
+    action.setState(GVariant.boolean(darkMode));
   }
 }

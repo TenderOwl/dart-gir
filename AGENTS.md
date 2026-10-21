@@ -228,7 +228,7 @@ The full design is in [docs/site.md](docs/site.md).
 
 - **All tests, one command** (from the workspace root):
   `dart test generator example/gtk4_examples example/notepad example/todo packages/dart_gobject packages/gdk4 packages/gio packages/gir_ffi packages/glib packages/gobject packages/gtk4 packages/gtk_source5 packages/gtk_templates packages/gtk_templates_builder test`
-  — 484 passed, 1 skipped (the skip is the native GTK suite without a display — see below).
+  — 488 passed, 1 skipped (the skip is the native GTK suite without a display — see below).
 - **Why the explicit list?** `dart test` with no argument runs only the *root* package's own `test/` directory, which now holds the site generator's suite. The generator tests, the template-package tests and the per-package smoke tests live in their own packages' `test/` directories, so they have to be named. `dart pub workspace run` does not exist in this Dart SDK — `dart pub workspace` only offers `list`.
 - **Per package:** `cd <package> && dart test` works for any workspace member.
 - **Generator tests** live in `generator/test/` and also run as part of the all-tests command.
