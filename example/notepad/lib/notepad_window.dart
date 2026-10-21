@@ -42,6 +42,10 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
   void openFileComplete(GObject? source, GAsyncResult result) {
     if (source == null) return;
     final file = source.cast<GFile>(GFile.fromPointer);
+
+    final info = file.queryInfo("standard::display-name", .none);
+    final displayName = info.getAttributeString("standard::display-name");
+
     final path = file.peekPath();
     final (ok, contents, etag) = file.loadContentsFinish(result);
     if (!ok) {
@@ -63,5 +67,7 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     buffer.setText(text, -1);
     final start = buffer.getStartIter();
     buffer.placeCursor(start);
+
+    setTitle(displayName);
   }
 }
