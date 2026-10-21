@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+  <template class="NotepadWindow" parent="AdwApplicationWindow">
+    <property name="width-request">800</property>
+    <property name="height-request">600</property>
+    <property name="title" translatable="yes">Text Viewer</property>
+    <style>
+        <class name="devel" />
+      </style>
+    <property name="content">
+        <object class="AdwToastOverlay">
+            <child>
+      <object class="AdwToolbarView">
+        <child type="top">
+            <object class="AdwHeaderBar">
+              <child type="start">
+                <object class="GtkButton" id="open_button">
+                    <property name="label">Open</property>
+                    <property name="action-name">win.open</property>
+                </object>
+              </child>
+              <child type="end">
+                <object class="GtkMenuButton" id="menu_button">
+                  <property name="icon-name">open-menu-symbolic</property>
+                  <property name="menu-model">main-menu</property>
+                </object>
+              </child>
+            </object>
+        </child>
+        <property name="content">
+          <object class="GtkScrolledWindow">
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="child">
+              <object class="GtkTextView" id="mainTextView">
+                <property name="monospace">true</property>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+            </child>
+        </object>
+    </property>
+  </template>
+
+  <menu id="main-menu">
+    <submenu>
+      <attribute name="label" translatable="yes">_Filter</attribute>
+      <item>
+        <attribute name="label" translatable="yes">_All</attribute>
+        <attribute name="action">win.filter</attribute>
+        <attribute name="target">All</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Open</attribute>
+        <attribute name="action">win.filter</attribute>
+        <attribute name="target">Open</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Done</attribute>
+        <attribute name="action">win.filter</attribute>
+        <attribute name="target">Done</attribute>
+      </item>
+    </submenu>
+    <item>
+      <attribute name="label" translatable="yes">_Remove Done Tasks</attribute>
+      <attribute name="action">win.remove-done-tasks</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+      <attribute name="action">win.show-help-overlay</attribute>
+    </item>
+  </menu>
+
+</interface>

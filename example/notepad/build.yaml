@@ -1,0 +1,9 @@
+additional_public_assets:
+  - data/**
+
+targets:
+  $default:
+    builders:
+      gtk_templates_builder:
+        generate_for:
+          - lib/**.dart

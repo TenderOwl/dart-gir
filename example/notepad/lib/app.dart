@@ -20,6 +20,8 @@ class NotepadApp {
     createAction("preferences", (_) => onPreferencesAction(), "<Primary>comma");
     createAction("about", (_) => onAboutAction());
     createAction("show-toast", onShowToast, null, GVariantType('s'));
+
+    app.setAccelsForAction('win.open', ['<Ctrl>o']);
   }
 
   void onActivate() {
@@ -80,6 +82,6 @@ class NotepadApp {
     final (String, int)? result = params?.getString();
     if (result == null) return;
     final (text, _) = result;
-    window?.showToast(text);
+    print('Toast: $text');
   }
 }

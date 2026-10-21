@@ -1,148 +1,67 @@
+import 'dart:convert';
+
 import 'package:adw/adw.dart';
 import 'package:gio/gio.dart';
 import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
 import 'package:gtk4/gtk4.dart';
-import 'package:notepad/tabs_view.dart';
+import 'package:gtk_templates/gtk_templates.dart';
+import 'package:notepad/file_loader.dart';
 
-class NotepadWindow extends AdwApplicationWindow {
-  late final AdwToastOverlay toastOverlay;
-  late TabsView tabsView;
-  // Hold strong references to widgets the user wires into the live widget
-  // tree. Local variables would go out of scope when `_buildUI()` returns,
-  // and the Dart GC would fire the wrapper's finalizer (`g_object_unref`)
-  // while the widget is still parented — GTK raises
-  // "GtkButton has a parent … during dispose" and segfaults inside
-  // `gtk_accessible_update_state` from the unrealize path. Every widget
-  // that lives as long as the window must be held in a field so the
-  // wrapper stays alive until the parent unrefs it during shutdown.
-  late final AdwTabBar tabsBar;
-  late final GtkButton newButton;
-  late final GtkButton openButton;
-  late final GtkMenuButton menuButton;
-  late final AdwHeaderBar headerBar;
-  late final AdwToolbarView toolbarView;
-  late final GMenu menuModel;
+part 'notepad_window.g.dart';
 
-  GtkFileDialog? openDialog;
-
+@GtkTemplate(source: GtkTemplateFile('data/notepad_window.ui'))
+class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
   NotepadWindow(super.app) {
-    setDefaultSize(800, 600);
-    setTitle("Notepad");
+    initTemplate();
 
-    _buildUI();
-    _setupActions();
-
-    if (tabsView.isEmpty) {
-      tabsView.createTab();
-    }
+    final openAction = GSimpleAction('open');
+    openAction.onActivate(openFileDialog);
+    addAction(openAction);
   }
 
-  void _buildUI() {
-    tabsView = TabsView();
-    tabsBar = AdwTabBar()
-      ..setView(tabsView)
-      ..setAutohide(false)
-      ..setExpandTabs(false);
-
-    newButton = GtkButton()
-      ..setIconName("list-add-symbolic")
-      ..setTooltipText("Add new tab")
-      ..setValign(.center)
-      ..onClicked(() => tabsView.createTab());
-
-    openButton = GtkButton()
-      ..setIconName("document-open-symbolic")
-      ..setTooltipText("Open file")
-      ..setValign(.center)
-      ..onClicked(onOpenFile);
-
-    menuModel = _buildMenu();
-    menuButton = GtkMenuButton()
-      ..setTooltipText("Main Menu")
-      ..setIconName("open-menu-symbolic")
-      ..setValign(.center)
-      ..setMenuModel(menuModel);
-
-    headerBar = AdwHeaderBar()
-      ..packStart(newButton)
-      ..packStart(openButton)
-      ..setTitleWidget(tabsBar)
-      ..packEnd(menuButton);
-
-    toolbarView = AdwToolbarView()
-      ..addTopBar(headerBar)
-      // ..addTopBar(tabsBar)
-      ..setContent(tabsView);
-
-    toastOverlay = AdwToastOverlay()..setChild(toolbarView);
-    setContent(toastOverlay);
+  void openFileDialog(GVariant? params) {
+    final native = GtkFileDialog();
+    native.openCallback(this, null, onOpenResponse);
   }
 
-  GMenu _buildMenu() {
-    final GMenu menuModel = GMenu();
-    menuModel.appendItem(GMenuItem("Preferences", "app.preferences"));
-    menuModel.appendItem(GMenuItem("About", "app.about"));
+  void onOpenResponse(GObject? source, GAsyncResult result) {
+    final dialog = source?.cast<GtkFileDialog>(GtkFileDialog.fromPointer);
 
-    final quitSubmenu = GMenu();
-    quitSubmenu.appendItem(GMenuItem("Quit", "app.quit"));
-    menuModel.appendSection(null, quitSubmenu);
+    final file = dialog?.openFinish(result);
+    if (file == null) return;
 
-    return menuModel;
+    openFile(file);
   }
 
-  void _setupActions() {
-    final createTab = GSimpleAction("tab.create")
-      ..onActivate((_) => tabsView.createTab());
-    addAction(createTab);
-
-    final closeTab = GSimpleAction("tab.close")
-      ..onActivate((_) {
-        tabsView.closeTab();
-      });
-    addAction(closeTab);
-
-    final app = super.getApplication();
-    if (app != null) {
-      app.setAccelsForAction("win.tab.create", ["<Primary>n"]);
-      app.setAccelsForAction("win.tab.close", ["<Primary>w"]);
-    }
+  /// Loads [file] and shows its text.
+  void openFile(GFile file) {
+    file.loadContentsAsyncCallback(null, openFileComplete);
   }
 
-  void onOpenFile() {
-    openDialog = GtkFileDialog()
-      ..setDefaultFilter(
-        GtkFileFilter()
-          ..addMimeTypes(["text/plain", "text/markdown", "text/css"]),
-      )
-      ..setTitle("Open File")
-      ..setInitialFolder(GFile.newForPath(getHomeDir()))
-      ..setAcceptLabel("Open");
-
-    openDialog!.openMultipleCallback(this, null, onOpenMultiple);
-  }
-
-  void onOpenMultiple(GObject? source, GAsyncResult result) {
-    final dialog = openDialog;
-    if (dialog == null) return;
-    final files = dialog.openMultipleFinish(result);
-
-    for (int i = 0; i < files.getNItems(); i++) {
-      final item = files.getObject(i);
-      if (item == null) continue;
-
-      final file = item.cast<GFile>(GFile.fromPointer);
-      final path = file.getPath();
-      // TODO: Send inapp notification if path is null
-      if (path == null) continue;
-
-      tabsView.loadFile(path);
+  void openFileComplete(GObject? source, GAsyncResult result) {
+    if (source == null) return;
+    final file = source.cast<GFile>(GFile.fromPointer);
+    final path = file.peekPath();
+    final (ok, contents, etag) = file.loadContentsFinish(result);
+    if (!ok) {
+      print("Unable to open $path: ${contents[1]}");
     }
 
-    openDialog = null;
-  }
+    String text;
 
-  void showToast(String title) {
-    toastOverlay.addToast(AdwToast(title));
+    try {
+      text = utf8.decode(contents);
+    } catch (error) {
+      print(
+        'Unable to load the contents of $path: the file is not encoded with UTF-8',
+      );
+      return;
+    }
+
+    final buffer = mainTextView.getBuffer();
+    buffer.setText(text, -1);
+    final start = buffer.getStartIter();
+    buffer.placeCursor(start);
   }
 }
