@@ -6,7 +6,6 @@ import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
 import 'package:gtk4/gtk4.dart';
 import 'package:gtk_templates/gtk_templates.dart';
-import 'package:notepad/file_loader.dart';
 
 part 'notepad_window.g.dart';
 
@@ -18,6 +17,13 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     final openAction = GSimpleAction('open');
     openAction.onActivate(openFileDialog);
     addAction(openAction);
+
+    final buffer = mainTextView.getBuffer();
+    buffer.onNotify((params) {
+      if (params.getName() == "cursor-position") {
+        updateCursorPosition(buffer);
+      }
+    });
   }
 
   void openFileDialog(GVariant? params) {
@@ -69,5 +75,13 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     buffer.placeCursor(start);
 
     setTitle(displayName);
+  }
+
+  void updateCursorPosition(GtkTextBuffer buffer) {
+    final insertMark = buffer.getInsert();
+    final iter = buffer.getIterAtMark(insertMark);
+    final line = iter.getLine() + 1;
+    final column = iter.getLineOffset() + 1;
+    cursorPos.setLabel('Ln $line, Col $column');
   }
 }

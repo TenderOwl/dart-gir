@@ -40,6 +40,15 @@ const String _$NotepadWindowTemplate_xml = '''
                   <property name="menu-model">main-menu</property>
                 </object>
               </child>
+              <child type="end">
+                  <object class="GtkLabel" id="cursorPos">
+                    <property name="label">Ln 0, Col 0</property>
+                    <style>
+                      <class name="dim-label" />
+                      <class name="numeric" />
+                    </style>
+                  </object>
+                </child>
             </object>
         </child>
         <property name="content">
@@ -98,6 +107,7 @@ const String _$NotepadWindowTemplate_xml = '''
 const List<_TemplateChildSpec> _$NotepadWindowTemplate_children = [
   _TemplateChildSpec('open_button', 'GtkButton'),
   _TemplateChildSpec('menu_button', 'GtkMenuButton'),
+  _TemplateChildSpec('cursorPos', 'GtkLabel'),
   _TemplateChildSpec('mainTextView', 'GtkTextView'),
 ];
 
@@ -188,6 +198,15 @@ mixin _$NotepadWindowTemplate on AdwApplicationWindow {
       'menu_button',
     );
     return raw.cast<GtkMenuButton>(GtkMenuButton.fromPointer);
+  }();
+
+  late final GtkLabel cursorPos = () {
+    _ensureInstanceInit();
+    final raw = (this as GtkWidget).getTemplateChild(
+      widgetTypeOf(this as GtkWidget),
+      'cursorPos',
+    );
+    return raw.cast<GtkLabel>(GtkLabel.fromPointer);
   }();
 
   late final GtkTextView mainTextView = () {
