@@ -142,7 +142,7 @@ workspace:
       expect(facts.lookup('license'), 'BSD-3-Clause');
       expect(facts.lookup('sdk_constraint'), '^3.13.4');
       expect(facts.lookup('features.typed_signals'), isNotNull);
-      expect(facts.lookup('package_skips.glib'), '351');
+      expect(facts.lookup('package_skips.glib'), '349');
     });
   });
 
