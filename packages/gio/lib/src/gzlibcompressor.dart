@@ -258,36 +258,38 @@ class GZlibCompressor extends GObject implements GConverter {
             )
           >();
   (GConverterResult, int, int) convert(
-    ffi.Pointer<ffi.Uint8> inbuf,
-    int inbufSize,
-    ffi.Pointer<ffi.Uint8> outbuf,
-    int outbufSize,
+    Uint8List inbuf,
+    Uint8List outbuf,
     GConverterFlags flags,
   ) {
-    final _out0 = malloc<ffi.Size>();
-    final _out1 = malloc<ffi.Size>();
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gConverterConvert(
-        this.handle,
-        inbuf,
-        inbufSize,
-        outbuf,
-        outbufSize,
-        flags.value,
-        _out0,
-        _out1,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (GConverterResult.fromValue(_ret), _out0.value, _out1.value);
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-      calloc.free(_error);
-    }
+    return withNativeBytes(inbuf, (_bytesBuf0, _bytesLen0) {
+      return withNativeBytes(outbuf, (_bytesBuf2, _bytesLen2) {
+        final _out0 = malloc<ffi.Size>();
+        final _out1 = malloc<ffi.Size>();
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gConverterConvert(
+            this.handle,
+            _bytesBuf0,
+            _bytesLen0,
+            _bytesBuf2,
+            _bytesLen2,
+            flags.value,
+            _out0,
+            _out1,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (GConverterResult.fromValue(_ret), _out0.value, _out1.value);
+        } finally {
+          malloc.free(_out0);
+          malloc.free(_out1);
+          calloc.free(_error);
+        }
+      });
+    });
   }
 
   /// Applies @converter to the data in @bytes.

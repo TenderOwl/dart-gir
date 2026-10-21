@@ -5995,36 +5995,40 @@ class GFile {
             )
           >();
   (bool, String?) replaceContents(
-    ffi.Pointer<ffi.Uint8> contents,
-    int length,
+    Uint8List contents,
     String? etag,
     bool makeBackup,
     GFileCreateFlags flags, [
     GCancellable? cancellable,
   ]) {
-    return withNativeString(etag, (nativeEtag) {
-      final _out0 = malloc<ffi.Pointer<Utf8>>();
-      final _error = calloc<ffi.Pointer<ffi.Void>>();
-      try {
-        final _ret = _gFileReplaceContents(
-          this.handle,
-          contents,
-          length,
-          nativeEtag.cast<Utf8>(),
-          makeBackup ? 1 : 0,
-          flags.value,
-          _out0,
-          cancellable?.handle ?? ffi.nullptr,
-          _error,
-        );
-        if (_error.value != ffi.nullptr) {
-          throw GlibException.fromError(_error.value);
+    return withNativeBytes(contents, (_bytesBuf0, _bytesLen0) {
+      return withNativeString(etag, (nativeEtag) {
+        final _out0 = malloc<ffi.Pointer<Utf8>>();
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gFileReplaceContents(
+            this.handle,
+            _bytesBuf0,
+            _bytesLen0,
+            nativeEtag.cast<Utf8>(),
+            makeBackup ? 1 : 0,
+            flags.value,
+            _out0,
+            cancellable?.handle ?? ffi.nullptr,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (
+            (_ret) != 0,
+            stringFromNative(_out0.value.cast(), free: true),
+          );
+        } finally {
+          malloc.free(_out0);
+          calloc.free(_error);
         }
-        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true));
-      } finally {
-        malloc.free(_out0);
-        calloc.free(_error);
-      }
+      });
     });
   }
 

@@ -177,9 +177,11 @@ class PangoCoverage extends GObject {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
-  static PangoCoverage? fromBytes(ffi.Pointer<ffi.Uint8> bytes, int nBytes) {
-    final _ret = _pangoCoverageFromBytes(bytes, nBytes);
-    return (_ret) == ffi.nullptr ? null : PangoCoverage.fromPointer(_ret);
+  static PangoCoverage? fromBytes(Uint8List bytes) {
+    return withNativeBytes(bytes, (_bytesBuf0, _bytesLen0) {
+      final _ret = _pangoCoverageFromBytes(_bytesBuf0, _bytesLen0);
+      return (_ret) == ffi.nullptr ? null : PangoCoverage.fromPointer(_ret);
+    });
   }
 
   /// The notify signal is emitted on an object when one of its properties has

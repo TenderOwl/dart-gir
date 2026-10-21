@@ -7,7 +7,9 @@
 // `Uint8List` and releases the native buffer.
 
 import 'dart:async';
+import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:gio/gio.dart';
 import 'package:glib/glib.dart';
@@ -85,6 +87,71 @@ void main() {
 
       expect(ok, isTrue);
       expect(contents, orderedEquals(bytes));
+    });
+  });
+
+  group('caller-provided byte arrays', () {
+    test('GFile.replaceContents writes a Dart byte list', () {
+      final gfile = GFile.newForPath(file.path);
+      final contents = Uint8List.fromList('written by gio'.codeUnits);
+
+      final (ok, etag) = gfile.replaceContents(contents, null, false, .none);
+
+      expect(ok, isTrue);
+      expect(etag, isNotNull);
+      // The file now holds exactly the bytes that were handed over.
+      expect(file.readAsBytesSync(), orderedEquals(contents));
+    });
+
+    test('GFile.replaceContents writes binary content', () {
+      final bytes = List<int>.generate(256, (i) => i);
+      final gfile = GFile.newForPath(file.path);
+
+      final (ok, _) = gfile.replaceContents(
+        Uint8List.fromList(bytes),
+        null,
+        false,
+        .none,
+      );
+
+      expect(ok, isTrue);
+      expect(file.readAsBytesSync(), orderedEquals(bytes));
+    });
+
+    test('GOutputStream.write takes a Dart byte list', () {
+      final stream = GMemoryOutputStream.resizable();
+      final contents = Uint8List.fromList('streamed'.codeUnits);
+
+      final written = stream.write(contents);
+
+      expect(written, contents.length);
+      final pointer = stream.getDataMemoryOutputStream()!;
+      expect(
+        pointer.cast<ffi.Uint8>().asTypedList(stream.getDataSize()),
+        orderedEquals(contents),
+      );
+    });
+
+    test('a converter fills the caller-provided output buffer', () {
+      // `g_converter_convert` writes into the buffer the caller passes.
+      // The wrapper mirrors the Dart list into native memory and copies
+      // the result back, so the converted bytes land in `outbuf`.
+      final converter = GCharsetConverter('UTF-8', 'UTF-8');
+      final inbuf = Uint8List.fromList('converted'.codeUnits);
+      final outbuf = Uint8List(inbuf.length);
+
+      final (result, read, written) = converter.convert(
+        inbuf,
+        outbuf,
+        GConverterFlags.noFlags,
+      );
+
+      // Without the flush flag the converter reports "converted", not
+      // "finished" — all the input was consumed either way.
+      expect(result, GConverterResult.converted);
+      expect(read, inbuf.length);
+      expect(written, inbuf.length);
+      expect(outbuf, orderedEquals('converted'.codeUnits));
     });
   });
 }

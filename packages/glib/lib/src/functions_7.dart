@@ -593,91 +593,25 @@ final _gLocaleToUtf8 =
             ffi.Pointer<ffi.Pointer<ffi.Void>>,
           )
         >();
-(String, int, int) localeToUtf8(ffi.Pointer<ffi.Uint8> opsysstring, int len) {
-  final _out0 = malloc<ffi.Size>();
-  final _out1 = malloc<ffi.Size>();
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gLocaleToUtf8(opsysstring, len, _out0, _out1, _error);
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
-    }
-    return (
-      stringFromNative((_ret).cast(), free: true)!,
-      _out0.value,
-      _out1.value,
-    );
-  } finally {
-    malloc.free(_out0);
-    malloc.free(_out1);
-    calloc.free(_error);
-  }
-}
-
-/// The default log handler set up by GLib; [func@GLib.log_set_default_handler]
-/// allows to install an alternate default log handler.
-///
-/// This is used if no log handler has been set for the particular log
-/// domain and log level combination. It outputs the message to `stderr`
-/// or `stdout` and if the log level is fatal it calls [func@GLib.BREAKPOINT]. It automatically
-/// prints a new-line character after the message, so one does not need to be
-/// manually included in @message.
-///
-/// The behavior of this log handler can be influenced by a number of
-/// environment variables:
-///
-/// - `G_MESSAGES_PREFIXED`: A `:`-separated list of log levels for which
-/// messages should be prefixed by the program name and PID of the
-/// application.
-/// - `G_MESSAGES_DEBUG`: A space-separated list of log domains for
-/// which debug and informational messages are printed. By default
-/// these messages are not printed. If you need to set the allowed
-/// domains at runtime, use [func@GLib.log_writer_default_set_debug_domains].
-/// - `DEBUG_INVOCATION`: If set to `1`, this is equivalent to
-/// `G_MESSAGES_DEBUG=all`. `DEBUG_INVOCATION` is a standard environment
-/// variable set by systemd to prompt debug output. (Since: 2.84)
-///
-/// `stderr` is used for levels [flags@GLib.LogLevelFlags.LEVEL_ERROR],
-/// [flags@GLib.LogLevelFlags.LEVEL_CRITICAL], [flags@GLib.LogLevelFlags.LEVEL_WARNING] and
-/// [flags@GLib.LogLevelFlags.LEVEL_MESSAGE]. `stdout` is used for
-/// the rest, unless `stderr` was requested by
-/// [func@GLib.log_writer_default_set_use_stderr].
-///
-/// This has no effect if structured logging is enabled; see
-/// [Using Structured Logging](logging.html#using-structured-logging).
-final _gLogDefaultHandler =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(
-              ffi.Pointer<Utf8>,
-              ffi.Uint32,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >
-        >('g_log_default_handler')
-        .asFunction<
-          void Function(
-            ffi.Pointer<Utf8>,
-            int,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<ffi.Void>,
-          )
-        >();
-void logDefaultHandler(
-  String? logDomain,
-  GLogLevelFlags logLevel, [
-  String? message,
-  ffi.Pointer<ffi.Void>? unusedData,
-]) {
-  withNativeString(logDomain, (nativeLogDomain) {
-    withNativeString(message, (nativeMessage) {
-      _gLogDefaultHandler(
-        nativeLogDomain.cast<Utf8>(),
-        logLevel.value,
-        nativeMessage.cast<Utf8>(),
-        unusedData ?? ffi.nullptr,
+(String, int, int) localeToUtf8(Uint8List opsysstring) {
+  return withNativeBytes(opsysstring, (_bytesBuf0, _bytesLen0) {
+    final _out0 = malloc<ffi.Size>();
+    final _out1 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gLocaleToUtf8(_bytesBuf0, _bytesLen0, _out0, _out1, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        stringFromNative((_ret).cast(), free: true)!,
+        _out0.value,
+        _out1.value,
       );
-    });
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      calloc.free(_error);
+    }
   });
 }

@@ -355,8 +355,15 @@ class GBufferedInputStream extends GFilterInputStream implements GSeekable {
               int,
             )
           >();
-  int peek(ffi.Pointer<ffi.Uint8> buffer, int offset, int count) {
-    return _gBufferedInputStreamPeek(this.handle, buffer, offset, count);
+  int peek(Uint8List buffer, int offset) {
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      return _gBufferedInputStreamPeek(
+        this.handle,
+        _bytesBuf0,
+        offset,
+        _bytesLen0,
+      );
+    });
   }
 
   /// Returns the buffer with the currently available bytes. The returned

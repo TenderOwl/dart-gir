@@ -1,5 +1,6 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:gir_ffi/gir_ffi.dart';
@@ -153,5 +154,53 @@ void main() {
             .having((e) => e.message, 'message', isNotEmpty),
       ),
     );
+  });
+
+  group('caller-provided byte arrays', () {
+    test('a GBytes is built from a Dart byte list', () {
+      // `g_bytes_new` copies the data, so the Dart list stays the
+      // caller's own memory.
+      final data = Uint8List.fromList('hello glib'.codeUnits);
+      final bytes = GBytes(data);
+
+      expect(bytes.getSize(), data.length);
+      final (pointer, size) = bytes.getData();
+      expect(pointer.asTypedList(size), orderedEquals(data));
+      // The list is untouched by the call.
+      expect(data, orderedEquals('hello glib'.codeUnits));
+    });
+
+    test('a GBytes built by `take` owns its buffer', () {
+      // `g_bytes_new_take` takes ownership of the buffer and frees it
+      // with `g_free` — the binding allocates it with `g_malloc` so the
+      // pair matches.
+      final data = Uint8List.fromList([1, 2, 3]);
+      final bytes = GBytes.take(data);
+
+      expect(bytes.getSize(), 3);
+      final (pointer, size) = bytes.getData();
+      expect(pointer.asTypedList(size), orderedEquals([1, 2, 3]));
+    });
+
+    test('an empty list yields an empty GBytes', () {
+      final bytes = GBytes(Uint8List(0));
+      expect(bytes.getSize(), 0);
+    });
+
+    test('base64 encoding takes a Dart byte list', () {
+      expect(base64Encode(Uint8List.fromList('hello'.codeUnits)), 'aGVsbG8=');
+    });
+
+    test('a checksum takes a Dart byte list', () {
+      final data = Uint8List.fromList('hello glib'.codeUnits);
+
+      final checksum = GChecksum(GChecksumType.sha256)..update(data);
+      final digest = checksum.getString();
+
+      // The incremental and the one-shot API must agree.
+      expect(digest, computeChecksumForData(GChecksumType.sha256, data));
+      // A SHA-256 digest is 64 hex characters.
+      expect(digest, hasLength(64));
+    });
   });
 }

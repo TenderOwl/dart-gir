@@ -26,19 +26,25 @@ DynamicLibrary openLibrary(List<String> names) {
 DynamicLibrary _glibProcessLib() =>
     Platform.isLinux ? DynamicLibrary.process() : DynamicLibrary.executable();
 
-/// The `g_free` implementation.
+/// The GLib library handle the allocator helpers use.
 ///
-/// `g_free` lives in libglib. The generated packages load libglib with
-/// `dlopen`, and a `dlopen`ed library is *not* part of the process-global
-/// symbol namespace, so `DynamicLibrary.process()` cannot see it in every
-/// process. The global namespace is tried first (it works when libglib
-/// was loaded globally), and an explicitly opened GLib is the fallback.
-final _gFreeNative = _lookupGFree();
+/// `g_free` and `g_malloc` live in libglib. The generated packages load
+/// libglib with `dlopen`, and a `dlopen`ed library is *not* part of the
+/// process-global symbol namespace, so `DynamicLibrary.process()` cannot
+/// see it in every process. The global namespace is tried first (it works
+/// when libglib was loaded globally), and an explicitly opened GLib is the
+/// fallback.
+///
+/// Both symbols come from the *same* handle: a buffer handed to a callee
+/// that takes ownership has to be allocated by the allocator that callee
+/// releases it with.
+final DynamicLibrary _glibLib = _lookupGlib();
 
-Pointer<NativeFunction<Void Function(Pointer<Void>)>> _lookupGFree() {
+DynamicLibrary _lookupGlib() {
   try {
-    return _glibProcessLib()
-        .lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+    final lib = _glibProcessLib();
+    lib.lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+    return lib;
   } on ArgumentError {
     // Not globally visible — open GLib explicitly.
   }
@@ -48,7 +54,8 @@ Pointer<NativeFunction<Void Function(Pointer<Void>)>> _lookupGFree() {
     'libglib-2.0.0.dylib',
   ]);
   try {
-    return lib.lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+    lib.lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+    return lib;
   } on ArgumentError {
     throw StateError(
       'g_free not found: libglib could not be opened, so GLib-allocated '
@@ -57,12 +64,77 @@ Pointer<NativeFunction<Void Function(Pointer<Void>)>> _lookupGFree() {
   }
 }
 
+/// The `g_free` implementation.
+final _gFreeNative = _glibLib
+    .lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+
+/// The `g_malloc` implementation.
+///
+/// `g_malloc(gsize)` — `gsize` is `unsigned long`, i.e. `ffi.Size` on the
+/// native side and a plain Dart `int` on this side.
+final _gMallocNative = _glibLib
+    .lookup<NativeFunction<Pointer<Void> Function(Size)>>('g_malloc');
+
 /// Releases memory GLib allocated (`g_malloc`, `g_strdup`, …).
 ///
 /// GLib documents `g_free` as the deallocator for its own allocations.
 void gFree(Pointer<Void> ptr) {
   if (ptr == nullptr) return;
   _gFreeNative.asFunction<void Function(Pointer<Void>)>().call(ptr);
+}
+
+/// Allocates [size] bytes with GLib's allocator (`g_malloc`).
+///
+/// A buffer that a callee takes ownership of (`transfer-ownership="full"`)
+/// is released by that callee with `g_free`, so it has to come from
+/// `g_malloc` — `malloc` from `package:ffi` is a different heap.
+///
+/// GLib's `g_malloc(0)` returns `NULL`, so callers that need a valid
+/// pointer for an empty buffer should ask for at least one byte.
+Pointer<Uint8> gMalloc(int size) {
+  if (size <= 0) {
+    throw ArgumentError.value(size, 'size', 'must be positive');
+  }
+  return _gMallocNative
+      .asFunction<Pointer<Void> Function(int)>()
+      .call(size)
+      .cast<Uint8>();
+}
+
+/// Runs [body] with [data] mirrored into a GLib-allocated native buffer.
+///
+/// The buffer comes from `g_malloc` — the allocator GLib frees its own
+/// memory with — so a callee that takes ownership ([owned]) can release it
+/// with `g_free`.
+///
+/// The bytes are copied into the buffer before [body] runs and copied back
+/// afterwards, so a callee that *fills* the buffer (a caller-provided
+/// output buffer) writes through to [data].
+///
+/// When [owned] is true the callee takes ownership of the buffer: it is
+/// neither released nor copied back. A callee that owns the buffer may
+/// also keep it past the call, so the copy-back would read freed memory.
+R withNativeBytes<R>(
+  Uint8List data,
+  R Function(Pointer<Uint8> buffer, int length) body, {
+  bool owned = false,
+}) {
+  final length = data.length;
+  // `g_malloc(0)` returns NULL; a zero-length buffer still needs a valid
+  // pointer for the callee to read from.
+  final buffer = gMalloc(length == 0 ? 1 : length);
+  try {
+    if (length > 0) {
+      buffer.asTypedList(length).setRange(0, length, data);
+    }
+    final result = body(buffer, length);
+    if (!owned && length > 0) {
+      data.setRange(0, length, buffer.asTypedList(length));
+    }
+    return result;
+  } finally {
+    if (!owned) gFree(buffer.cast());
+  }
 }
 
 /// Copies [length] bytes from the GLib-allocated buffer at [buffer] into a

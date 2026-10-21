@@ -183,8 +183,10 @@ class GTlsPassword extends GObject {
           .asFunction<
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint8>, int)
           >();
-  void setValue(ffi.Pointer<ffi.Uint8> value, int length) {
-    _gTlsPasswordSetValue(this.handle, value, length);
+  void setValue(Uint8List value) {
+    withNativeBytes(value, (_bytesBuf0, _bytesLen0) {
+      _gTlsPasswordSetValue(this.handle, _bytesBuf0, _bytesLen0);
+    });
   }
 
   /// Provide the value for this password.

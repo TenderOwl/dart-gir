@@ -304,8 +304,13 @@ final _gBase64Encode =
           >
         >('g_base64_encode')
         .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Uint8>, int)>();
-String base64Encode(ffi.Pointer<ffi.Uint8> data, int len) {
-  return stringFromNative((_gBase64Encode(data, len)).cast(), free: true)!;
+String base64Encode(Uint8List data) {
+  return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+    return stringFromNative(
+      (_gBase64Encode(_bytesBuf0, _bytesLen0)).cast(),
+      free: true,
+    )!;
+  });
 }
 
 /// Gets the name of the file without any leading directory
@@ -597,33 +602,4 @@ int chdir(String path) {
   return withNativeString(path, (nativePath) {
     return _gChdir(nativePath.cast<Utf8>());
   });
-}
-
-/// Checks that the GLib library in use is compatible with the
-/// given version.
-///
-/// Generally you would pass in the constants %GLIB_MAJOR_VERSION,
-/// %GLIB_MINOR_VERSION, %GLIB_MICRO_VERSION as the three arguments
-/// to this function; that produces a check that the library in use
-/// is compatible with the version of GLib the application or module
-/// was compiled against.
-///
-/// Compatibility is defined by two things: first the version
-/// of the running library is newer than the version
-/// `@required_major.required_minor.@required_micro`. Second
-/// the running library must be binary compatible with the
-/// version `@required_major.@required_minor.@required_micro`
-/// (same major version.)
-final _glibCheckVersion =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<Utf8> Function(ffi.Uint32, ffi.Uint32, ffi.Uint32)
-          >
-        >('glib_check_version')
-        .asFunction<ffi.Pointer<Utf8> Function(int, int, int)>();
-String? checkVersion(int requiredMajor, int requiredMinor, int requiredMicro) {
-  return stringFromNative(
-    (_glibCheckVersion(requiredMajor, requiredMinor, requiredMicro)).cast(),
-    free: false,
-  );
 }

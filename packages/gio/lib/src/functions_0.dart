@@ -558,24 +558,22 @@ final _gContentTypeGuess =
             ffi.Pointer<ffi.Int32>,
           )
         >();
-(String, bool) contentTypeGuess(
-  String? filename,
-  ffi.Pointer<ffi.Uint8> data,
-  int dataSize,
-) {
-  return withNativeString(filename, (nativeFilename) {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      final _ret = _gContentTypeGuess(
-        nativeFilename.cast<Utf8>(),
-        data,
-        dataSize,
-        _out0,
-      );
-      return (stringFromNative((_ret).cast(), free: true)!, _out0.value != 0);
-    } finally {
-      malloc.free(_out0);
-    }
+(String, bool) contentTypeGuess(String? filename, Uint8List data) {
+  return withNativeBytes(data, (_bytesBuf1, _bytesLen1) {
+    return withNativeString(filename, (nativeFilename) {
+      final _out0 = malloc<ffi.Int32>();
+      try {
+        final _ret = _gContentTypeGuess(
+          nativeFilename.cast<Utf8>(),
+          _bytesBuf1,
+          _bytesLen1,
+          _out0,
+        );
+        return (stringFromNative((_ret).cast(), free: true)!, _out0.value != 0);
+      } finally {
+        malloc.free(_out0);
+      }
+    });
   });
 }
 

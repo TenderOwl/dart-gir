@@ -1000,6 +1000,186 @@ void main() {
     });
   });
 
+  group('FunctionEmitter — caller-provided byte arrays', () {
+    // A byte buffer the *caller* provides: `g_bytes_new`'s `data`. GIR:
+    //   <parameter name="data" transfer-ownership="none" nullable="1" allow-none="1">
+    //     <array length="1" zero-terminated="0" c:type="gconstpointer">
+    //       <type name="guint8"/>
+    //     </array>
+    //   </parameter>
+    //   <parameter name="size" transfer-ownership="none"><type name="gsize"/></parameter>
+    GirFunction byteArrayInFn({
+      int? lengthIndex = 1,
+      GirTransferOwnership transfer = GirTransferOwnership.none,
+      String elementName = 'guint8',
+      List<GirParameter> extra = const [],
+    }) => GirFunction(
+      name: 'bytes_new',
+      cIdentifier: 'g_bytes_new',
+      returnType: const GirTypeRef(name: 'none'),
+      parameters: [
+        GirParameter(
+          name: 'data',
+          direction: GirParameterDirection.in_,
+          transferOwnership: transfer,
+          type: GirTypeRef(
+            name: 'guint8',
+            cType: 'gconstpointer',
+            array: GirArrayInfo(
+              lengthParameterIndex: lengthIndex,
+              elementType: GirTypeRef(name: elementName),
+            ),
+          ),
+        ),
+        GirParameter(
+          name: 'size',
+          direction: GirParameterDirection.in_,
+          type: const GirTypeRef(name: 'gsize', cType: 'gsize'),
+        ),
+        ...extra,
+      ],
+    );
+
+    test('a caller-provided byte array becomes a Uint8List', () {
+      final report = GenerationReport();
+      final fn = byteArrayInFn();
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The public shape is a Dart list of bytes, not a raw pointer.
+      expect(code, contains('Uint8List data'));
+      // The buffer is mirrored into native memory for the call.
+      expect(code, contains('withNativeBytes(data, (_bytesBuf0, _bytesLen0)'));
+      // The native call gets the buffer and its length.
+      expect(code, contains('_gBytesNew(_bytesBuf0, _bytesLen0)'));
+    });
+
+    test('the byte count is absorbed from the Dart signature', () {
+      final report = GenerationReport();
+      final fn = byteArrayInFn();
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      // The count is the length of the list — it is not a parameter.
+      expect(code, isNot(contains('int size')));
+      // The native signature still carries it: the C ABI needs it.
+      expect(code, contains('ffi.Size'));
+    });
+
+    test('a callee-owned buffer is handed over rather than released', () {
+      // `transfer-ownership="full"`: the callee owns the buffer and
+      // releases it with `g_free`, so the wrapper must not free it.
+      final report = GenerationReport();
+      final fn = byteArrayInFn(transfer: GirTransferOwnership.full);
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, contains('withNativeBytes(data, (_bytesBuf0, _bytesLen0)'));
+      expect(code, contains('owned: true'));
+    });
+
+    test('a destroy-notify sibling keeps the raw pointer', () {
+      // `g_variant_new_from_data` hands the buffer to a destroy
+      // notify: the callee keeps it past the call, so it cannot be a
+      // temporary that dies with the call.
+      final report = GenerationReport();
+      final fn = byteArrayInFn(
+        extra: const [
+          GirParameter(
+            name: 'notify',
+            direction: GirParameterDirection.in_,
+            type: GirTypeRef(name: 'GDestroyNotify', cType: 'GDestroyNotify'),
+          ),
+        ],
+      );
+      final ns = _glibNs(
+        functions: [fn],
+        callbacks: [
+          GirCallback(
+            name: 'GDestroyNotify',
+            cType: 'GDestroyNotify',
+            parameters: const [
+              GirParameter(
+                name: 'data',
+                type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(code, isNot(contains('withNativeBytes')));
+      expect(code, contains('ffi.Pointer<ffi.Uint8> data'));
+    });
+
+    test('an async callable keeps the raw pointer', () {
+      // "no copy of `@contents` will be made, so it must stay valid
+      // until `@callback` is called" — GIO.
+      final report = GenerationReport();
+      final fn = byteArrayInFn(
+        extra: const [
+          GirParameter(
+            name: 'callback',
+            direction: GirParameterDirection.in_,
+            scope: 'async',
+            type: GirTypeRef(
+              name: 'GAsyncReadyCallback',
+              cType: 'GAsyncReadyCallback',
+            ),
+          ),
+        ],
+      );
+      final ns = _glibNs(
+        functions: [fn],
+        callbacks: [
+          GirCallback(
+            name: 'GAsyncReadyCallback',
+            cType: 'GAsyncReadyCallback',
+            parameters: const [
+              GirParameter(
+                name: 'source',
+                type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(code, isNot(contains('withNativeBytes')));
+      expect(code, contains('ffi.Pointer<ffi.Uint8> data'));
+    });
+
+    test('an array without a length binding keeps the raw pointer', () {
+      // Without `<array length="N">` the byte count is not the list's
+      // length, so the buffer cannot be a `Uint8List`.
+      final report = GenerationReport();
+      final fn = byteArrayInFn(lengthIndex: null);
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(code, isNot(contains('withNativeBytes')));
+      expect(code, contains('ffi.Pointer<ffi.Uint8> data'));
+    });
+
+    test('a non-byte element keeps the raw pointer', () {
+      // `gchar` arrays are text, not bytes.
+      final report = GenerationReport();
+      final fn = byteArrayInFn(elementName: 'gint32');
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(code, isNot(contains('withNativeBytes')));
+    });
+  });
+
   group('FunctionEmitter.emitConstant', () {
     GirConstant mkConst(String name, String value, GirTypeRef type) =>
         GirConstant(name: name, value: value, type: type);

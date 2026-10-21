@@ -1453,27 +1453,25 @@ class GSocket extends GObject implements GInitable {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  int send(
-    ffi.Pointer<ffi.Uint8> buffer,
-    int size, [
-    GCancellable? cancellable,
-  ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gSocketSend(
-        this.handle,
-        buffer,
-        size,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  int send(Uint8List buffer, [GCancellable? cancellable]) {
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gSocketSend(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
       }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Send data to @address on @socket.  For sending multiple messages see
@@ -1766,27 +1764,28 @@ class GSocket extends GObject implements GInitable {
           >();
   int sendTo(
     GSocketAddress? address,
-    ffi.Pointer<ffi.Uint8> buffer,
-    int size, [
+    Uint8List buffer, [
     GCancellable? cancellable,
   ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gSocketSendTo(
-        this.handle,
-        address?.handle ?? ffi.nullptr,
-        buffer,
-        size,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+    return withNativeBytes(buffer, (_bytesBuf1, _bytesLen1) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gSocketSendTo(
+          this.handle,
+          address?.handle ?? ffi.nullptr,
+          _bytesBuf1,
+          _bytesLen1,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
       }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// This behaves exactly the same as g_socket_send(), except that
@@ -1816,28 +1815,29 @@ class GSocket extends GObject implements GInitable {
             )
           >();
   int sendWithBlocking(
-    ffi.Pointer<ffi.Uint8> buffer,
-    int size,
+    Uint8List buffer,
     bool blocking, [
     GCancellable? cancellable,
   ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gSocketSendWithBlocking(
-        this.handle,
-        buffer,
-        size,
-        blocking ? 1 : 0,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gSocketSendWithBlocking(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          blocking ? 1 : 0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
       }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Sets the blocking mode of the socket. In blocking mode

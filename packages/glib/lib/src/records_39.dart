@@ -601,19 +601,22 @@ final class GUri {
             )
           >();
   static String escapeBytes(
-    ffi.Pointer<ffi.Uint8> unescaped,
-    int length, [
+    Uint8List unescaped, [
     String? reservedCharsAllowed,
   ]) {
-    return withNativeString(reservedCharsAllowed, (nativeReservedCharsAllowed) {
-      return stringFromNative(
-        (_gUriEscapeBytes(
-          unescaped,
-          length,
-          nativeReservedCharsAllowed.cast<Utf8>(),
-        )).cast(),
-        free: true,
-      )!;
+    return withNativeBytes(unescaped, (_bytesBuf0, _bytesLen0) {
+      return withNativeString(reservedCharsAllowed, (
+        nativeReservedCharsAllowed,
+      ) {
+        return stringFromNative(
+          (_gUriEscapeBytes(
+            _bytesBuf0,
+            _bytesLen0,
+            nativeReservedCharsAllowed.cast<Utf8>(),
+          )).cast(),
+          free: true,
+        )!;
+      });
     });
   }
 

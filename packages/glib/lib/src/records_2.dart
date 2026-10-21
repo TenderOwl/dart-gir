@@ -743,22 +743,24 @@ final class GBookmarkFile {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  bool loadFromData(ffi.Pointer<ffi.Uint8> data, int length) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gBookmarkFileLoadFromData(
-        this.handle,
-        data,
-        length,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  bool loadFromData(Uint8List data) {
+    return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gBookmarkFileLoadFromData(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (_ret) != 0;
+      } finally {
+        calloc.free(_error);
       }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// This function looks for a desktop bookmark file named @file in the

@@ -296,28 +296,29 @@ final _gPollableStreamRead =
         >();
 int pollableStreamRead(
   GInputStream stream,
-  ffi.Pointer<ffi.Uint8> buffer,
-  int count,
+  Uint8List buffer,
   bool blocking, [
   GCancellable? cancellable,
 ]) {
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gPollableStreamRead(
-      stream.handle,
-      buffer,
-      count,
-      blocking ? 1 : 0,
-      cancellable?.handle ?? ffi.nullptr,
-      _error,
-    );
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
+  return withNativeBytes(buffer, (_bytesBuf1, _bytesLen1) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gPollableStreamRead(
+        stream.handle,
+        _bytesBuf1,
+        _bytesLen1,
+        blocking ? 1 : 0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
     }
-    return _ret;
-  } finally {
-    calloc.free(_error);
-  }
+  });
 }
 
 /// Tries to write to @stream, as with g_output_stream_write() (if
@@ -355,28 +356,29 @@ final _gPollableStreamWrite =
         >();
 int pollableStreamWrite(
   GOutputStream stream,
-  ffi.Pointer<ffi.Uint8> buffer,
-  int count,
+  Uint8List buffer,
   bool blocking, [
   GCancellable? cancellable,
 ]) {
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gPollableStreamWrite(
-      stream.handle,
-      buffer,
-      count,
-      blocking ? 1 : 0,
-      cancellable?.handle ?? ffi.nullptr,
-      _error,
-    );
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
+  return withNativeBytes(buffer, (_bytesBuf1, _bytesLen1) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gPollableStreamWrite(
+        stream.handle,
+        _bytesBuf1,
+        _bytesLen1,
+        blocking ? 1 : 0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
     }
-    return _ret;
-  } finally {
-    calloc.free(_error);
-  }
+  });
 }
 
 /// Tries to write @count bytes to @stream, as with
@@ -424,31 +426,32 @@ final _gPollableStreamWriteAll =
         >();
 (bool, int) pollableStreamWriteAll(
   GOutputStream stream,
-  ffi.Pointer<ffi.Uint8> buffer,
-  int count,
+  Uint8List buffer,
   bool blocking, [
   GCancellable? cancellable,
 ]) {
-  final _out0 = malloc<ffi.Size>();
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _gPollableStreamWriteAll(
-      stream.handle,
-      buffer,
-      count,
-      blocking ? 1 : 0,
-      _out0,
-      cancellable?.handle ?? ffi.nullptr,
-      _error,
-    );
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
+  return withNativeBytes(buffer, (_bytesBuf1, _bytesLen1) {
+    final _out0 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gPollableStreamWriteAll(
+        stream.handle,
+        _bytesBuf1,
+        _bytesLen1,
+        blocking ? 1 : 0,
+        _out0,
+        cancellable?.handle ?? ffi.nullptr,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return ((_ret) != 0, _out0.value);
+    } finally {
+      malloc.free(_out0);
+      calloc.free(_error);
     }
-    return ((_ret) != 0, _out0.value);
-  } finally {
-    malloc.free(_out0);
-    calloc.free(_error);
-  }
+  });
 }
 
 /// Looks for a file at the specified @path in the set of

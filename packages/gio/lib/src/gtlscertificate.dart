@@ -341,27 +341,25 @@ class GTlsCertificate extends GObject {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  factory GTlsCertificate.fromPkcs12(
-    ffi.Pointer<ffi.Uint8> data,
-    int length, [
-    String? password,
-  ]) {
-    return withNativeString(password, (nativePassword) {
-      final _error = calloc<ffi.Pointer<ffi.Void>>();
-      try {
-        final _ret = _gTlsCertificateNewFromPkcs12(
-          data,
-          length,
-          nativePassword.cast<Utf8>(),
-          _error,
-        );
-        if (_error.value != ffi.nullptr) {
-          throw GlibException.fromError(_error.value);
+  factory GTlsCertificate.fromPkcs12(Uint8List data, [String? password]) {
+    return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+      return withNativeString(password, (nativePassword) {
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gTlsCertificateNewFromPkcs12(
+            _bytesBuf0,
+            _bytesLen0,
+            nativePassword.cast<Utf8>(),
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return GTlsCertificate.fromPointer(_ret, owned: true);
+        } finally {
+          calloc.free(_error);
         }
-        return GTlsCertificate.fromPointer(_ret, owned: true);
-      } finally {
-        calloc.free(_error);
-      }
+      });
     });
   }
 

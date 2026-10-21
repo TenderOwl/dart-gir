@@ -80,25 +80,26 @@ class GDBusMessage extends GObject {
             )
           >();
   factory GDBusMessage.fromBlob(
-    ffi.Pointer<ffi.Uint8> blob,
-    int blobLen,
+    Uint8List blob,
     GDBusCapabilityFlags capabilities,
   ) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDbusMessageNewFromBlob(
-        blob,
-        blobLen,
-        capabilities.value,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+    return withNativeBytes(blob, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDbusMessageNewFromBlob(
+          _bytesBuf0,
+          _bytesLen0,
+          capabilities.value,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return GDBusMessage.fromPointer(_ret, owned: true);
+      } finally {
+        calloc.free(_error);
       }
-      return GDBusMessage.fromPointer(_ret, owned: true);
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Creates a new #GDBusMessage for a method call.
@@ -935,17 +936,19 @@ class GDBusMessage extends GObject {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  static int bytesNeeded(ffi.Pointer<ffi.Uint8> blob, int blobLen) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gDbusMessageBytesNeeded(blob, blobLen, _error);
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  static int bytesNeeded(Uint8List blob) {
+    return withNativeBytes(blob, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gDbusMessageBytesNeeded(_bytesBuf0, _bytesLen0, _error);
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
       }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// The notify signal is emitted on an object when one of its properties has

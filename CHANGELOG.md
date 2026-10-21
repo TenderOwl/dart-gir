@@ -42,6 +42,32 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   does — `loadContentsAsyncCallback` → `loadContentsFinish` → the text
   in the window's text view.
 
+- **A caller-provided byte buffer is now a `Uint8List`.** The mirror of
+  the byte-buffer OUT: a GIR parameter like `g_bytes_new`'s `data` is an
+  array of bytes the *caller* owns, with the byte count in a sibling
+  parameter (`<array length="N">`). The generator emitted a raw
+  `ffi.Pointer<ffi.Uint8>` plus a separate `int`, so there was no way
+  to build a `GBytes` — or to hand a buffer to
+  `g_file_replace_contents`, `g_base64_encode`, `g_checksum_update`,
+  `g_output_stream_write`, `g_socket_send` — from Dart.
+
+  The wrapper now takes a `Uint8List` and mirrors it into a
+  `g_malloc`ed buffer for the call (`withNativeBytes` in
+  `package:gir_ffi`); the byte count is the list's length and is
+  absorbed from the Dart signature. `transfer="full"` hands the buffer
+  to the callee, which frees it with `g_free`.
+
+  ```dart
+  final bytes = GBytes(utf8.encode(text));
+  file.replaceContentsBytesAsyncCallback(bytes, null, false, .none, null, onSaved);
+  ```
+
+  The shape is deliberately narrow: a callable whose callee takes over
+  the buffer's lifetime (a `GDestroyNotify` sibling) or that is
+  **async** keeps a raw pointer — GIO keeps an async buffer alive
+  until the callback fires, so the `GBytes` variant is the one to use
+  there.
+
 - **Dart classes can have a native type.** A Dart subclass of a
   generated GObject wrapper had no native identity: as far as GLib was
   concerned it was a plain `GObject`, so a `GListStore` refused it and
@@ -86,6 +112,17 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   sunk — otherwise the parent that parents the widget would own the
   very reference the wrapper's finalizer releases, and the widget
   would be freed while the parent still uses it.
+
+### Changed
+- **The wrappers that take a caller-provided byte buffer now take a
+  `Uint8List`.** `GBytes(Uint8List)`, `GBytes.take(Uint8List)`,
+  `GFile.replaceContents(Uint8List, …)`,
+  `GOutputStream.write(Uint8List, …)`, `GSocket.send(Uint8List, …)`,
+  `base64Encode(Uint8List)`, `GChecksum.update(Uint8List)` and about
+  thirty more take a Dart list instead of a raw pointer plus a separate
+  length. The packages are generated and unpublished (`publish_to:
+  none`), so this is a source-level change for the consumers in this
+  workspace.
 
 ### Fixed
 - **A failing GLib call no longer crashes the process.** `GError` is

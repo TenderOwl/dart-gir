@@ -80,29 +80,30 @@ final _gFileSetContentsFull =
         >();
 bool fileSetContentsFull(
   String filename,
-  ffi.Pointer<ffi.Uint8> contents,
-  int length,
+  Uint8List contents,
   GFileSetContentsFlags flags,
   int mode,
 ) {
-  return withNativeString(filename, (nativeFilename) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gFileSetContentsFull(
-        nativeFilename.cast<Utf8>(),
-        contents,
-        length,
-        flags.value,
-        mode,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  return withNativeBytes(contents, (_bytesBuf1, _bytesLen1) {
+    return withNativeString(filename, (nativeFilename) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gFileSetContentsFull(
+          nativeFilename.cast<Utf8>(),
+          _bytesBuf1,
+          _bytesLen1,
+          flags.value,
+          mode,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (_ret) != 0;
+      } finally {
+        calloc.free(_error);
       }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   });
 }
 

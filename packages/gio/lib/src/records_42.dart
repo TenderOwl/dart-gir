@@ -160,27 +160,25 @@ class GPollableOutputStream {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  int writeNonblocking(
-    ffi.Pointer<ffi.Uint8> buffer,
-    int count, [
-    GCancellable? cancellable,
-  ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gPollableOutputStreamWriteNonblocking(
-        this.handle,
-        buffer,
-        count,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  int writeNonblocking(Uint8List buffer, [GCancellable? cancellable]) {
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gPollableOutputStreamWriteNonblocking(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
       }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Attempts to write the bytes contained in the @n_vectors @vectors to @stream,

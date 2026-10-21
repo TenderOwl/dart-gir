@@ -51,6 +51,9 @@ class TypeBridge {
     this.outByteBufferLengthIndex,
     this.outExtractBytes,
     this.evaluatesArgTwice = false,
+    this.isByteArrayIn = false,
+    this.byteArrayLengthIndex,
+    this.byteArrayOwnedByCallee = false,
   });
 
   /// Public Dart type used in wrapper signatures, e.g. `int`, `GObject?`.
@@ -142,6 +145,35 @@ class TypeBridge {
   /// `($expr) == ffi.nullptr ? null : $expr`; inlining a call there
   /// would call the native function twice.
   final bool evaluatesArgTwice;
+
+  /// `true` when the argument is a **caller-provided byte array**: the
+  /// caller owns the buffer, hands it to the callee, and a sibling
+  /// parameter carries the byte count.
+  ///
+  /// The wrapper takes a Dart `Uint8List`, mirrors it into a
+  /// GLib-allocated native buffer for the call (`withNativeBytes`), and
+  /// the byte count is the list's length — so the length parameter
+  /// disappears from the Dart signature while staying in the native one.
+  ///
+  /// This is the shape of `g_bytes_new`'s `data` and of
+  /// `g_file_replace_contents`' `contents`.
+  final bool isByteArrayIn;
+
+  /// For a caller-provided byte array, the 0-based index of the sibling
+  /// parameter that carries the byte count.
+  ///
+  /// The GIR binds the two together with `<array length="N">`, where `N`
+  /// is that index. The emitter absorbs the sibling: it stays in the
+  /// native call and is fed from the list's length.
+  final int? byteArrayLengthIndex;
+
+  /// `true` when the callee takes ownership of the buffer
+  /// (`transfer-ownership="full"`).
+  ///
+  /// The buffer is then allocated with `g_malloc` and handed over: the
+  /// callee releases it with `g_free`, so the wrapper must not free it
+  /// and must not copy the bytes back out of it.
+  final bool byteArrayOwnedByCallee;
 }
 
 /// Per-package emission state shared by all emitters.
@@ -569,6 +601,11 @@ class EmitContext {
   /// [callerAllocates] mirrors the GIR's `caller-allocates` attribute: it
   /// is `false` only for a parameter whose buffer the *callee* allocates
   /// (`g_file_load_contents`' `contents`).
+  ///
+  /// [byteArrayIn] marks the parameter as a caller-provided byte array
+  /// (the caller owns the buffer, a sibling carries the byte count). The
+  /// caller decides — the rule lives in [TypeResolver.isByteArrayIn],
+  /// because it needs the callable's parameter list.
   (TypeBridge?, String?) bridgeFor(
     GirTypeRef? ref, {
     bool nullable = false,
@@ -576,6 +613,7 @@ class EmitContext {
     bool forReturn = false,
     GirParameterDirection direction = GirParameterDirection.in_,
     bool callerAllocates = true,
+    bool byteArrayIn = false,
     GirNamespace? relativeTo,
   }) {
     if (ref == null) {
@@ -814,6 +852,37 @@ class EmitContext {
         );
       case TypeKind.primitiveArray:
       case TypeKind.recordArray:
+        // A byte buffer the *caller* provides: the caller owns the
+        // buffer, hands it to the callee, and a sibling parameter carries
+        // the byte count. This is the shape of `g_bytes_new`'s `data` and
+        // of `g_file_replace_contents`' `contents`.
+        //
+        // The wrapper takes a Dart `Uint8List` and mirrors it into a
+        // GLib-allocated native buffer for the call (`withNativeBytes`),
+        // so the user never handles a raw pointer. The byte count is the
+        // list's length — the length parameter is absorbed from the Dart
+        // signature and stays in the native one.
+        if (direction == GirParameterDirection.in_ &&
+            byteArrayIn &&
+            TypeResolver.isByteArrayElement(ref)) {
+          usesGirFfi = true;
+          usesTypedData = true;
+          return (
+            TypeBridge(
+              wrapperType: 'Uint8List',
+              nativeType: 'ffi.Pointer<ffi.Uint8>',
+              dartFfiType: 'ffi.Pointer<ffi.Uint8>',
+              toNative: _id, // handled via withNativeBytes
+              fromNative: (e) => e,
+              isByteArrayIn: true,
+              byteArrayLengthIndex: ref.array!.lengthParameterIndex!,
+              // `transfer-ownership="full"`: the callee owns the buffer
+              // and releases it with `g_free`.
+              byteArrayOwnedByCallee: transfer == GirTransferOwnership.full,
+            ),
+            null,
+          );
+        }
         // A byte buffer the *callee* allocates: the C function allocates
         // the buffer, fills it, and writes the pointer into the caller's
         // slot; a sibling parameter carries the byte count. This is the

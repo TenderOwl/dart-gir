@@ -385,6 +385,7 @@ Each `<parameter>` is classified:
 | bound-length array of primitive/enum/bitfield/bool | `ffi.Pointer<ffi.Int32>` (or `Uint32` for bitfields) | same | Direct (user `calloc<Int32>(n)`); the GIR's `<array length="N">` resolves to a sibling `int` parameter at index `N` that the natural parameter iteration adds to the signature |
 | bound-length array of class/interface/record | `ffi.Pointer<ffi.Void>` | same | Direct (user passes `Pointer<ffi.Void>`); `<array length="N">` binds to a sibling `int` parameter. Typed `asTypedList(n)` iteration is deferred until generated records become real `StructBase` subclasses. |
 | unbound primitive/enum/bitfield array (`<array c:type="…">` with no `<array length>`) | `ffi.Pointer<ffi.Int32>` (or `Uint32`) | same | Direct; the user provides length via a sibling `get_n_items` accessor. |
+| caller-provided byte array (`<array length="N">` of `guint8`/`guchar`, `direction="in"`) | `Uint8List` | `Pointer<Uint8>` | `withNativeBytes` outer wrap — the list is mirrored into a `g_malloc`ed buffer, the count is absorbed from the signature, and `owned: true` hands the buffer to the callee (`transfer="full"`). |
 
 The wrapper type for a class/record/union/interface carries the package
 name when the declaring namespace differs from the current namespace
@@ -595,6 +596,64 @@ the input, and `transfer-ownership="none"`), `g_base64_encode_step`'s
 `bytesFromNative` (in `package:gir_ffi`) does the copy and the release;
 `gFree` resolves `g_free` through an explicitly opened GLib, because a
 `dlopen`ed library is not part of the process-global symbol namespace.
+
+**Byte-array IN** (`<array length="N">` of `guint8` / `guchar`, direction
+`in`). This is the mirror of the byte-buffer OUT: the *caller* owns the
+buffer, hands it to the callee, and a sibling parameter carries the
+byte count. It is the shape of `g_bytes_new`'s `data` and of
+`g_file_replace_contents`' `contents`.
+
+The wrapper takes a Dart `Uint8List` and mirrors it into a
+GLib-allocated native buffer for the call. The byte count is **absorbed**
+the same way it is on the OUT side: it is the length of the list, so it
+disappears from the Dart signature while the native signature keeps it
+(the C ABI needs it).
+
+```dart
+factory GBytes(Uint8List data) {
+  return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+    return GBytes.fromPointer(_gBytesNew(_bytesBuf0, _bytesLen0));
+  });
+}
+```
+
+`withNativeBytes` (in `package:gir_ffi`) allocates the buffer with
+`g_malloc` — the allocator GLib frees its own memory with — copies the
+bytes in, and copies them back out afterwards. The copy-back is what
+makes a caller-provided *output* buffer work: `g_converter_convert`'s
+`outbuf` and `g_buffered_input_stream_peek`'s `buffer` are filled by the
+callee, and the bytes land in the caller's list. For a pure input the
+copy-back is a no-op.
+
+`transfer-ownership="full"` flips the ownership: the callee owns the
+buffer and releases it with `g_free`, so the wrapper neither releases
+nor copies back — it hands the buffer over (`withNativeBytes(..., owned:
+true)`). `g_bytes_new_take` and `g_byte_array_new_take` are that shape.
+
+The rule is narrow on purpose. A parameter qualifies when it is
+`direction="in"`, an array of **unsigned** bytes (`gchar` arrays are
+text, not bytes), it has a length binding (`<array length="N">` with
+`N > 0` — `length="0"` is the GIR's way of saying "not length-bound"),
+the count sibling is an IN integer, the callable has **no**
+`GDestroyNotify` sibling, and the callable is **not async**.
+
+The last two exclusions are the interesting ones:
+
+* A `GDestroyNotify` sibling means the callee takes over the buffer's
+  *lifetime* — `g_variant_new_from_data`,
+  `g_memory_input_stream_new_from_data`,
+  `g_tls_password_set_value_full`. The buffer cannot be a temporary
+  that dies with the call, so those keep a raw pointer.
+* An async callable keeps its buffer past the call. GIO says it
+  outright for `g_file_replace_contents_async`: *"no copy of `@contents`
+  will be made, so it must stay valid until `@callback` is called"*. The
+  `GBytes` variant (`g_file_replace_contents_bytes_async`) is the one
+  that works asynchronously — GIO holds a reference to the bytes "for
+  the duration of the call" without copying them.
+
+A byte-array parameter also rules out the generative-constructor form of
+a constructor: the mirroring needs a body, and a generative initializer
+list has none. `GBytes(Uint8List)` is therefore a factory constructor.
 
 Caveat documented for users: GTK functions that *copy* an OUT struct
 into GTK-owned memory (e.g. `gtk_text_iter_copy`) keep using the

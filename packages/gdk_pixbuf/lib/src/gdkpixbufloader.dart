@@ -336,17 +336,24 @@ class GdkPixbufLoader extends GObject {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  bool write(ffi.Pointer<ffi.Uint8> buf, int count) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gdkPixbufLoaderWrite(this.handle, buf, count, _error);
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  bool write(Uint8List buf) {
+    return withNativeBytes(buf, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gdkPixbufLoaderWrite(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (_ret) != 0;
+      } finally {
+        calloc.free(_error);
       }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Parses the next contents of the given image buffer.

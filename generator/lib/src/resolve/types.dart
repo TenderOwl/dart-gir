@@ -513,6 +513,91 @@ class TypeResolver {
     return isCalleeAllocatedByteBuffer(p.type);
   }
 
+  /// The GIR names of the *unsigned* byte element types a caller-provided
+  /// byte array can carry.
+  ///
+  /// `gchar` is deliberately absent: a `gchar` array is text, and its
+  /// signedness makes it a different shape (`g_unix_socket_address_new_abstract`
+  /// takes a NUL-terminated path, `g_convert` takes a locale-encoded
+  /// string).
+  static const Set<String> _unsignedByteNames = {'guint8', 'guchar'};
+
+  /// The GIR names accepted for the length sibling of a byte array.
+  static const Set<String> _byteLengthNames = {
+    'gsize',
+    'gssize',
+    'guint',
+    'gint',
+    'guint8',
+    'guchar',
+    'gint8',
+    'guint16',
+    'gint16',
+    'guint32',
+    'gint32',
+    'guint64',
+    'gint64',
+    'glong',
+    'gulong',
+    'gshort',
+    'gushort',
+    'gintptr',
+    'guintptr',
+  };
+
+  /// Whether [ref] is an array of unsigned bytes.
+  static bool isByteArrayElement(GirTypeRef? ref) {
+    final array = ref?.array;
+    if (array == null) return false;
+    return _unsignedByteNames.contains(array.elementType.name);
+  }
+
+  /// Whether [p] is a `GDestroyNotify`-style callback parameter.
+  ///
+  /// The GIR spells the type `DestroyNotify` (GLib), `GLib.DestroyNotify`
+  /// (the other namespaces) or `PixbufDestroyNotify` (GdkPixbuf) — all of
+  /// them end with `DestroyNotify`.
+  static bool isDestroyNotify(GirParameter p) {
+    final name = p.type?.name;
+    if (name == null) return false;
+    return name.endsWith('DestroyNotify');
+  }
+
+  /// Whether [p] hands a buffer of bytes to the callee.
+  ///
+  /// The shape is an IN parameter whose type is an array of unsigned bytes
+  /// with a length binding (`<array length="N">`): the caller owns the
+  /// buffer and the sibling parameter at index N carries the byte count.
+  /// This is the shape of `g_bytes_new`'s `data` and of
+  /// `g_file_replace_contents`' `contents`.
+  ///
+  /// [siblings] is the callable's full parameter list. The rule needs it
+  /// twice:
+  ///
+  /// * the length sibling must be an IN integer — the byte count;
+  /// * a `GDestroyNotify` sibling means the callee takes over the buffer's
+  ///   *lifetime* (`g_variant_new_from_data`,
+  ///   `g_memory_input_stream_new_from_data`,
+  ///   `g_tls_password_set_value_full`), so the buffer cannot be a
+  ///   temporary that dies with the call.
+  static bool isByteArrayIn(GirParameter p, List<GirParameter> siblings) {
+    if (p.direction != GirParameterDirection.in_) return false;
+    if (!isByteArrayElement(p.type)) return false;
+    final array = p.type!.array!;
+    // `length="0"` marks an array that is not length-bound — the GIR
+    // convention for NUL-terminated arrays.
+    final lengthIdx = array.lengthParameterIndex;
+    if (lengthIdx == null || lengthIdx <= 0) return false;
+    if (lengthIdx >= siblings.length) return false;
+    final length = siblings[lengthIdx];
+    if (length.direction != GirParameterDirection.in_) return false;
+    if (!_byteLengthNames.contains(length.type?.name)) return false;
+    for (final sibling in siblings) {
+      if (isDestroyNotify(sibling)) return false;
+    }
+    return true;
+  }
+
   /// The GIR records the generator emits as real `ffi.Struct`s.
   ///
   /// A record qualifies when the GIR declares no methods and no

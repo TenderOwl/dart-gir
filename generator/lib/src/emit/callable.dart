@@ -17,6 +17,14 @@ class _InParam {
   /// outer parameter index used to look up callback allocations.
   final int paramIndex;
 
+  /// `true` when the parameter is consumed by a caller-provided byte
+  /// array — it carries the buffer's byte count.
+  ///
+  /// The slot stays in the native call (the C ABI needs it) but it
+  /// disappears from the Dart signature: the count is the length of the
+  /// `Uint8List` the caller passed.
+  bool absorbed = false;
+
   String get nativeVar => 'native${name[0].toUpperCase()}${name.substring(1)}';
 }
 
@@ -120,6 +128,32 @@ class CallableEmitter {
       absorbedOutIndices.add(p.type!.array!.lengthParameterIndex!);
     }
 
+    // Caller-provided byte arrays: the caller owns the buffer and a
+    // sibling parameter carries the byte count. The count is absorbed —
+    // it is the length of the `Uint8List` — and the buffer is mirrored
+    // into native memory for the call (`withNativeBytes`).
+    //
+    // An async callable keeps its buffer past the call ("no copy of
+    // `@contents` will be made, so it must stay valid until `@callback`
+    // is called" — GIO), so its buffers stay raw pointers.
+    final hasAsyncScope = fn.parameters.any((p) => p.scope == 'async');
+    // Parameter index of the byte array -> parameter index of the
+    // sibling that carries its byte count.
+    final byteArrayByLengthIndex = <int, int>{};
+    if (!hasAsyncScope) {
+      for (var i = 0; i < fn.parameters.length; i++) {
+        final p = fn.parameters[i];
+        if (!TypeResolver.isByteArrayIn(p, fn.parameters)) continue;
+        final lengthIdx = p.type!.array!.lengthParameterIndex!;
+        // Two byte arrays sharing one length sibling would have to agree
+        // on a count — leave the second one a raw pointer rather than
+        // pass a wrong length.
+        if (byteArrayByLengthIndex.containsKey(lengthIdx)) continue;
+        byteArrayByLengthIndex[lengthIdx] = i;
+      }
+    }
+    final absorbedInIndices = byteArrayByLengthIndex.keys.toSet();
+
     for (var i = 0; i < fn.parameters.length; i++) {
       final p = fn.parameters[i];
       final (bridge, reason) = ctx.bridgeFor(
@@ -128,6 +162,7 @@ class CallableEmitter {
         transfer: p.transferOwnership,
         direction: p.direction,
         callerAllocates: p.callerAllocates,
+        byteArrayIn: byteArrayByLengthIndex.containsValue(i),
         relativeTo: relativeTo,
       );
       if (bridge == null) {
@@ -138,7 +173,8 @@ class CallableEmitter {
       switch (p.direction) {
         case GirParameterDirection.in_:
           final paramName = escapeKeyword(toLowerCamel(p.name));
-          final inParam = _InParam(paramName, bridge, paramIndex: i);
+          final inParam = _InParam(paramName, bridge, paramIndex: i)
+            ..absorbed = absorbedInIndices.contains(i);
           ins.add(inParam);
           if (_isCallbackBridge(bridge)) {
             callbackAllocs.add(_CallbackAlloc('_nc${ins.length}', inParam));
@@ -229,6 +265,16 @@ class CallableEmitter {
           // wrapped pointer we get out of `withNativeStringList` is typed
           // as `Pointer<Pointer<Utf8>>` already — no cast needed here.
           argExprs.add(inP.nativeVar);
+        } else if (bridge.isByteArrayIn) {
+          // The native buffer the `withNativeBytes` helper allocated for
+          // this byte array.
+          argExprs.add(_bytesBufferVar(i));
+        } else if (inP.absorbed) {
+          // The byte count of a caller-provided byte array: the length
+          // the helper computed from the `Uint8List`.
+          argExprs.add(
+            _bytesLengthVar(byteArrayByLengthIndex[inP.paramIndex]!),
+          );
         } else if (callbackByParam.containsKey(i)) {
           // We allocated `_ncN` above; the native call uses its pointer.
           // Nullable callbacks store either a `NativeCallable` or `null`;
@@ -274,14 +320,19 @@ class CallableEmitter {
         "${staticMember || classMember ? 'static ' : ''}final $lookupVar = "
         "${ctx.pkgIdent}Lookup<$nativeSig>('$cId').asFunction<$dartSig>();";
 
-    // Wrapper signature.
+    // Wrapper signature. The absorbed parameters — the byte count of a
+    // caller-provided byte array — do not appear: the count is the
+    // length of the `Uint8List` the caller passed.
+    final visibleIns = ins.where((p) => !p.absorbed).toList();
     final requiredParams = <String>[];
     final optionalParams = <String>[];
-    for (var i = 0; i < ins.length; i++) {
-      final p = ins[i];
+    for (var i = 0; i < visibleIns.length; i++) {
+      final p = visibleIns[i];
       final isOptional =
           p.bridge.wrapperType.endsWith('?') &&
-          ins.sublist(i).every((q) => q.bridge.wrapperType.endsWith('?'));
+          visibleIns
+              .sublist(i)
+              .every((q) => q.bridge.wrapperType.endsWith('?'));
       final decl = '${p.bridge.wrapperType} ${p.name}';
       if (isOptional) {
         optionalParams.add(decl);
@@ -347,12 +398,17 @@ class CallableEmitter {
     // A struct argument needs a native copy for the call, and a
     // generative constructor has no body to allocate it in.
     final hasStructInSet = ins.any((p) => p.bridge.structArgType != null);
+    // A caller-provided byte array needs the `withNativeBytes` helper to
+    // mirror the list into native memory — and a generative constructor
+    // has no body to host that call.
+    final hasByteArrayInSet = ins.any((p) => p.bridge.isByteArrayIn);
     if (factoryClass != null &&
         !fn.throws &&
         outs.isEmpty &&
         !hasStringInSet &&
         !hasCallback &&
-        !hasStructInSet) {
+        !hasStructInSet &&
+        !hasByteArrayInSet) {
       final ownedArg = factoryOwned ? ', owned: true' : '';
       // `this.fromPointer` is always valid — every generated class
       // (and record) declares a `fromPointer` named constructor that
@@ -565,6 +621,27 @@ class CallableEmitter {
       ];
     }
 
+    // Wrap caller-provided byte arrays in withNativeBytes scopes. The
+    // helper mirrors the `Uint8List` into a GLib-allocated buffer, hands
+    // the buffer and its length to the call, and releases the buffer
+    // afterwards — unless the callee took ownership of it
+    // (`transfer-ownership="full"`), in which case the helper leaves the
+    // buffer alone. Same nesting rule as the strings: the first byte
+    // array ends up outermost.
+    final byteArrayIns = ins.where((p) => p.bridge.isByteArrayIn).toList();
+    for (var i = byteArrayIns.length - 1; i >= 0; i--) {
+      final p = byteArrayIns[i];
+      final inner = bodyLines.map((l) => l.isEmpty ? l : '  $l').join('\n');
+      final ret = returnsValue ? 'return ' : '';
+      final owned = p.bridge.byteArrayOwnedByCallee ? ', owned: true' : '';
+      bodyLines = [
+        '$ret withNativeBytes(${p.name}, '
+            '(${_bytesBufferVar(p.paramIndex)}, ${_bytesLengthVar(p.paramIndex)}) {',
+        inner,
+        '}$owned);',
+      ];
+    }
+
     final b = StringBuffer();
     for (final line in ctx.docLines(fn.doc)) {
       b.writeln(line);
@@ -609,6 +686,14 @@ class CallableEmitter {
     if (visible.isEmpty) return ret.wrapperType;
     return '(${[ret.wrapperType, ...visible.map((o) => o.bridge.wrapperType)].join(', ')})';
   }
+
+  /// The local name of the native buffer the `withNativeBytes` helper
+  /// hands to the call for the byte array at parameter index [index].
+  static String _bytesBufferVar(int index) => '_bytesBuf$index';
+
+  /// The local name of the byte count the `withNativeBytes` helper hands
+  /// to the call for the byte array at parameter index [index].
+  static String _bytesLengthVar(int index) => '_bytesLen$index';
 
   /// `dart:core` type names that a class member must not shadow (a member
   /// named `int` makes the type `int` unusable inside the class body).

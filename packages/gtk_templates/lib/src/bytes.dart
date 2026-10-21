@@ -14,11 +14,9 @@
 library;
 
 import 'dart:convert';
-import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart';
-import 'package:glib/glib.dart' show GBytes, glibLookup;
+import 'package:glib/glib.dart' show GBytes;
 
 /// Encodes [s] as UTF-8 and wraps it in a `GBytes*`.
 ///
@@ -33,24 +31,4 @@ GBytes gbytesFromString(String s) => gbytesFromUint8List(utf8.encode(s));
 ///
 /// The bytes are copied into GLib-managed storage; the caller
 /// may free or mutate the input immediately.
-GBytes gbytesFromUint8List(Uint8List data) {
-  final ptr = malloc<ffi.Uint8>(data.isEmpty ? 1 : data.length);
-  try {
-    if (data.isNotEmpty) {
-      ptr.asTypedList(data.length).setAll(0, data);
-    }
-    return GBytes.fromPointer(_gBytesNew(ptr.cast(), data.length));
-  } finally {
-    malloc.free(ptr);
-  }
-}
-
-final _gBytesNew =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Size)
-          >
-        >('g_bytes_new')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
-        >();
+GBytes gbytesFromUint8List(Uint8List data) => GBytes(data);

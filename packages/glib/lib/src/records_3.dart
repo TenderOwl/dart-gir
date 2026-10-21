@@ -54,10 +54,11 @@ final class GByteArray {
           >();
   static ffi.Pointer<ffi.Uint8> append(
     ffi.Pointer<ffi.Uint8> array,
-    ffi.Pointer<ffi.Uint8> data,
-    int len,
+    Uint8List data,
   ) {
-    return _gByteArrayAppend(array, data, len);
+    return withNativeBytes(data, (_bytesBuf1, _bytesLen1) {
+      return _gByteArrayAppend(array, _bytesBuf1, _bytesLen1);
+    });
   }
 
   /// Frees the memory allocated by the `GByteArray`. If @free_segment is
@@ -126,8 +127,10 @@ final class GByteArray {
           .asFunction<
             ffi.Pointer<ffi.Uint8> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
-  static ffi.Pointer<ffi.Uint8> newTake(ffi.Pointer<ffi.Uint8> data, int len) {
-    return _gByteArrayNewTake(data, len);
+  static ffi.Pointer<ffi.Uint8> newTake(Uint8List data) {
+    return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+      return _gByteArrayNewTake(_bytesBuf0, _bytesLen0);
+    }, owned: true);
   }
 
   /// Adds the given data to the start of the `GByteArray`.
@@ -151,10 +154,11 @@ final class GByteArray {
           >();
   static ffi.Pointer<ffi.Uint8> prepend(
     ffi.Pointer<ffi.Uint8> array,
-    ffi.Pointer<ffi.Uint8> data,
-    int len,
+    Uint8List data,
   ) {
-    return _gByteArrayPrepend(array, data, len);
+    return withNativeBytes(data, (_bytesBuf1, _bytesLen1) {
+      return _gByteArrayPrepend(array, _bytesBuf1, _bytesLen1);
+    });
   }
 
   /// Atomically increments the reference count of @array by one.

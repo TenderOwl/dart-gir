@@ -75,8 +75,11 @@ final class GBytes {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
-  GBytes(ffi.Pointer<ffi.Uint8> data, int size)
-    : this.rawFromPointer(_gBytesNew(data, size));
+  factory GBytes(Uint8List data) {
+    return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+      return GBytes.fromPointer(_gBytesNew(_bytesBuf0, _bytesLen0));
+    });
+  }
 
   /// Creates a [struct@GLib.Bytes] which is a subsection of another `GBytes`.
   ///
@@ -125,8 +128,11 @@ final class GBytes {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
-  GBytes.take(ffi.Pointer<ffi.Uint8> data, int size)
-    : this.rawFromPointer(_gBytesNewTake(data, size));
+  factory GBytes.take(Uint8List data) {
+    return withNativeBytes(data, (_bytesBuf0, _bytesLen0) {
+      return GBytes.fromPointer(_gBytesNewTake(_bytesBuf0, _bytesLen0));
+    }, owned: true);
+  }
 
   /// Compares the two [struct@GLib.Bytes] values.
   ///

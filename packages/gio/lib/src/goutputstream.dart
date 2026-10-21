@@ -816,27 +816,25 @@ class GOutputStream extends GObject {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  int write(
-    ffi.Pointer<ffi.Uint8> buffer,
-    int count, [
-    GCancellable? cancellable,
-  ]) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gOutputStreamWrite(
-        this.handle,
-        buffer,
-        count,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  int write(Uint8List buffer, [GCancellable? cancellable]) {
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gOutputStreamWrite(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
       }
-      return _ret;
-    } finally {
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Tries to write @count bytes from @buffer into the stream. Will block
@@ -881,30 +879,28 @@ class GOutputStream extends GObject {
               ffi.Pointer<ffi.Pointer<ffi.Void>>,
             )
           >();
-  (bool, int) writeAll(
-    ffi.Pointer<ffi.Uint8> buffer,
-    int count, [
-    GCancellable? cancellable,
-  ]) {
-    final _out0 = malloc<ffi.Size>();
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gOutputStreamWriteAll(
-        this.handle,
-        buffer,
-        count,
-        _out0,
-        cancellable?.handle ?? ffi.nullptr,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
+  (bool, int) writeAll(Uint8List buffer, [GCancellable? cancellable]) {
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      final _out0 = malloc<ffi.Size>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gOutputStreamWriteAll(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          _out0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return ((_ret) != 0, _out0.value);
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
       }
-      return ((_ret) != 0, _out0.value);
-    } finally {
-      malloc.free(_out0);
-      calloc.free(_error);
-    }
+    });
   }
 
   /// Request an asynchronous write of @count bytes from @buffer into
