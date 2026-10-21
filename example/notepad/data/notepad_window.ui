@@ -8,7 +8,7 @@
         <class name="devel" />
       </style>
     <property name="content">
-        <object class="AdwToastOverlay">
+        <object class="AdwToastOverlay" id="toastOverlay">
             <child>
       <object class="AdwToolbarView">
         <child type="top">

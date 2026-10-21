@@ -56,10 +56,9 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     final info = file.queryInfo("standard::display-name", .none);
     final displayName = info.getAttributeString("standard::display-name");
 
-    final path = file.peekPath();
     final (ok, contents, etag) = file.loadContentsFinish(result);
     if (!ok) {
-      print("Unable to open $path: ${contents[1]}");
+      toastOverlay.addToast(AdwToast("Unable to open “$displayName”"));
     }
 
     String text;
@@ -67,8 +66,8 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     try {
       text = utf8.decode(contents);
     } catch (error) {
-      print(
-        'Unable to load the contents of $path: the file is not encoded with UTF-8',
+      toastOverlay.addToast(
+        AdwToast('Invalid text encoding for “$displayName”'),
       );
       return;
     }
@@ -79,6 +78,7 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     buffer.placeCursor(start);
 
     setTitle(displayName);
+    toastOverlay.addToast(AdwToast('Opened “$displayName”'));
   }
 
   void updateCursorPosition(GtkTextBuffer buffer) {
@@ -138,8 +138,12 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
       displayName = file?.getBasename();
     }
 
+    String msg;
     if (res == null) {
-      print('Unable to save $displayName');
+      msg = 'Unable to save as $displayName';
+    } else {
+      msg = 'Saved as “$displayName”';
     }
+    toastOverlay.addToast(AdwToast(msg));
   }
 }

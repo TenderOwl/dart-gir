@@ -23,7 +23,7 @@ const String _$NotepadWindowTemplate_xml = '''
         <class name="devel" />
       </style>
     <property name="content">
-        <object class="AdwToastOverlay">
+        <object class="AdwToastOverlay" id="toastOverlay">
             <child>
       <object class="AdwToolbarView">
         <child type="top">
@@ -96,6 +96,7 @@ const String _$NotepadWindowTemplate_xml = '''
 ''';
 
 const List<_TemplateChildSpec> _$NotepadWindowTemplate_children = [
+  _TemplateChildSpec('toastOverlay', 'AdwToastOverlay'),
   _TemplateChildSpec('open_button', 'GtkButton'),
   _TemplateChildSpec('menu_button', 'GtkMenuButton'),
   _TemplateChildSpec('cursorPos', 'GtkLabel'),
@@ -172,6 +173,15 @@ mixin _$NotepadWindowTemplate on AdwApplicationWindow {
     if (_instanceInitialized) return;
     initTemplate();
   }
+
+  late final AdwToastOverlay toastOverlay = () {
+    _ensureInstanceInit();
+    final raw = (this as GtkWidget).getTemplateChild(
+      widgetTypeOf(this as GtkWidget),
+      'toastOverlay',
+    );
+    return raw.cast<AdwToastOverlay>(AdwToastOverlay.fromPointer);
+  }();
 
   late final GtkButton open_button = () {
     _ensureInstanceInit();
