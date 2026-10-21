@@ -123,9 +123,8 @@ class AdwFlap extends GtkWidget
           >('adw_flap_get_content')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getContent() {
-    return (_adwFlapGetContent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwFlapGetContent(this.handle));
+    final _ret = _adwFlapGetContent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the flap widget for @self.
@@ -137,9 +136,8 @@ class AdwFlap extends GtkWidget
           >('adw_flap_get_flap')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFlap() {
-    return (_adwFlapGetFlap(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwFlapGetFlap(this.handle));
+    final _ret = _adwFlapGetFlap(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the flap position for @self.
@@ -252,9 +250,8 @@ class AdwFlap extends GtkWidget
           >('adw_flap_get_separator')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getSeparator() {
-    return (_adwFlapGetSeparator(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwFlapGetSeparator(this.handle));
+    final _ret = _adwFlapGetSeparator(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets whether @self can be closed with a swipe gesture.
@@ -844,11 +841,8 @@ class AdwFlap extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -931,11 +925,8 @@ class AdwFlap extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -947,11 +938,8 @@ class AdwFlap extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

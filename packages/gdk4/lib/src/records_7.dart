@@ -414,9 +414,8 @@ class GdkPopup {
           >('gdk_popup_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getParent() {
-    return (_gdkPopupGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gdkPopupGetParent(this.handle));
+    final _ret = _gdkPopupGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Obtains the position of the popup relative to its parent.

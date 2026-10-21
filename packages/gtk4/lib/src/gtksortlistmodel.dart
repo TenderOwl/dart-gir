@@ -118,9 +118,8 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
           >('gtk_sort_list_model_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkSortListModelGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkSortListModelGetModel(this.handle));
+    final _ret = _gtkSortListModelGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Estimates progress of an ongoing sorting operation.
@@ -159,9 +158,8 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
           >('gtk_sort_list_model_get_section_sorter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSorter? getSectionSorter() {
-    return (_gtkSortListModelGetSectionSorter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSorter.fromPointer(_gtkSortListModelGetSectionSorter(this.handle));
+    final _ret = _gtkSortListModelGetSectionSorter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSorter.fromPointer(_ret);
   }
 
   /// Gets the sorter that is used to sort @self.
@@ -173,9 +171,8 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
           >('gtk_sort_list_model_get_sorter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSorter? getSorter() {
-    return (_gtkSortListModelGetSorter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSorter.fromPointer(_gtkSortListModelGetSorter(this.handle));
+    final _ret = _gtkSortListModelGetSorter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSorter.fromPointer(_ret);
   }
 
   /// Sets the sort model to do an incremental sort.
@@ -367,9 +364,8 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

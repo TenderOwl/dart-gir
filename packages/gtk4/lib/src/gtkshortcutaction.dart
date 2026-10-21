@@ -92,10 +92,8 @@ class GtkShortcutAction extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   factory GtkShortcutAction.parseString(String string) {
     return withNativeString(string, (nativeString) {
-      return GtkShortcutAction.fromPointer(
-        _gtkShortcutActionParseString(nativeString.cast<Utf8>()),
-        owned: true,
-      );
+      final _ret = _gtkShortcutActionParseString(nativeString.cast<Utf8>());
+      return GtkShortcutAction.fromPointer(_ret, owned: true);
     });
   }
 

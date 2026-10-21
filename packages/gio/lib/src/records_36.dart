@@ -2243,9 +2243,8 @@ class GFile {
           >('g_file_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getParent() {
-    return (_gFileGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gFileGetParent(this.handle));
+    final _ret = _gFileGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the parse name of the @file.
@@ -2492,7 +2491,7 @@ class GFile {
       }
       return (
         GBytes.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);
@@ -2664,10 +2663,71 @@ class GFile {
       }
       return (
         GBytes.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);
+      calloc.free(_error);
+    }
+  }
+
+  /// Loads the content of the file into memory. The data is always
+  /// zero-terminated, but this is not included in the resultant @length.
+  /// The returned @contents should be freed with g_free() when no longer
+  /// needed.
+  ///
+  /// If @cancellable is not %NULL, then the operation can be cancelled by
+  /// triggering the cancellable object from another thread. If the operation
+  /// was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+  static final _gFileLoadContents =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_load_contents')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, Uint8List, String?) loadContents([GCancellable? cancellable]) {
+    final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+    final _out1 = malloc<ffi.Size>();
+    final _out2 = malloc<ffi.Pointer<Utf8>>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileLoadContents(
+        this.handle,
+        cancellable?.handle ?? ffi.nullptr,
+        _out0,
+        _out1,
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value),
+        stringFromNative(_out2.value.cast(), free: true),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
       calloc.free(_error);
     }
   }
@@ -2794,6 +2854,122 @@ class GFile {
       _loadContentsAsyncCallbackPtr,
       _data.cast<ffi.Void>(),
     );
+  }
+
+  /// Finishes an asynchronous load of the @file's contents.
+  /// The contents are placed in @contents, and @length is set to the
+  /// size of the @contents string. The @contents should be freed with
+  /// g_free() when no longer needed. If @etag_out is present, it will be
+  /// set to the new entity tag for the @file.
+  static final _gFileLoadContentsFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_load_contents_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, Uint8List, String?) loadContentsFinish(GAsyncResult res) {
+    final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+    final _out1 = malloc<ffi.Size>();
+    final _out2 = malloc<ffi.Pointer<Utf8>>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileLoadContentsFinish(
+        this.handle,
+        res.handle,
+        _out0,
+        _out1,
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value),
+        stringFromNative(_out2.value.cast(), free: true),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      calloc.free(_error);
+    }
+  }
+
+  /// Finishes an asynchronous partial load operation that was started
+  /// with g_file_load_partial_contents_async(). The data is always
+  /// zero-terminated, but this is not included in the resultant @length.
+  /// The returned @contents should be freed with g_free() when no longer
+  /// needed.
+  static final _gFileLoadPartialContentsFinish =
+      gioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_file_load_partial_contents_finish')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, Uint8List, String?) loadPartialContentsFinish(GAsyncResult res) {
+    final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+    final _out1 = malloc<ffi.Size>();
+    final _out2 = malloc<ffi.Pointer<Utf8>>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileLoadPartialContentsFinish(
+        this.handle,
+        res.handle,
+        _out0,
+        _out1,
+        _out2,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value),
+        stringFromNative(_out2.value.cast(), free: true),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      malloc.free(_out2);
+      calloc.free(_error);
+    }
   }
 
   /// Creates a directory.
@@ -5844,7 +6020,7 @@ class GFile {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true)!);
+        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true));
       } finally {
         malloc.free(_out0);
         calloc.free(_error);
@@ -6198,7 +6374,7 @@ class GFile {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true)!);
+      return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true));
     } finally {
       malloc.free(_out0);
       calloc.free(_error);

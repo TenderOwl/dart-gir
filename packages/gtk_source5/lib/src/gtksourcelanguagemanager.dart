@@ -108,18 +108,11 @@ class GtkSourceLanguageManager extends GObject {
           >();
   GtkSourceLanguage? getLanguage(String id) {
     return withNativeString(id, (nativeId) {
-      return (_gtkSourceLanguageManagerGetLanguage(
-                this.handle,
-                nativeId.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GtkSourceLanguage.fromPointer(
-              _gtkSourceLanguageManagerGetLanguage(
-                this.handle,
-                nativeId.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gtkSourceLanguageManagerGetLanguage(
+        this.handle,
+        nativeId.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GtkSourceLanguage.fromPointer(_ret);
     });
   }
 
@@ -194,20 +187,14 @@ class GtkSourceLanguageManager extends GObject {
   GtkSourceLanguage? guessLanguage([String? filename, String? contentType]) {
     return withNativeString(filename, (nativeFilename) {
       return withNativeString(contentType, (nativeContentType) {
-        return (_gtkSourceLanguageManagerGuessLanguage(
-                  this.handle,
-                  nativeFilename.cast<Utf8>(),
-                  nativeContentType.cast<Utf8>(),
-                )) ==
-                ffi.nullptr
+        final _ret = _gtkSourceLanguageManagerGuessLanguage(
+          this.handle,
+          nativeFilename.cast<Utf8>(),
+          nativeContentType.cast<Utf8>(),
+        );
+        return (_ret) == ffi.nullptr
             ? null
-            : GtkSourceLanguage.fromPointer(
-                _gtkSourceLanguageManagerGuessLanguage(
-                  this.handle,
-                  nativeFilename.cast<Utf8>(),
-                  nativeContentType.cast<Utf8>(),
-                ),
-              );
+            : GtkSourceLanguage.fromPointer(_ret);
       });
     });
   }

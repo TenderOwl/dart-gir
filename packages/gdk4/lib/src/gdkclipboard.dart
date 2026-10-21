@@ -73,9 +73,8 @@ class GdkClipboard extends GObject {
           >('gdk_clipboard_get_content')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkContentProvider? getContent() {
-    return (_gdkClipboardGetContent(this.handle)) == ffi.nullptr
-        ? null
-        : GdkContentProvider.fromPointer(_gdkClipboardGetContent(this.handle));
+    final _ret = _gdkClipboardGetContent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkContentProvider.fromPointer(_ret);
   }
 
   /// Gets the `GdkDisplay` that the clipboard was created for.
@@ -286,7 +285,7 @@ class GdkClipboard extends GObject {
       }
       return (
         (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);

@@ -182,12 +182,11 @@ final class GDateTime {
           >();
   factory GDateTime.fromIso8601(String text, [GTimeZone? defaultTz]) {
     return withNativeString(text, (nativeText) {
-      return GDateTime.fromPointer(
-        _gDateTimeNewFromIso8601(
-          nativeText.cast<Utf8>(),
-          defaultTz?.handle ?? ffi.nullptr,
-        ),
+      final _ret = _gDateTimeNewFromIso8601(
+        nativeText.cast<Utf8>(),
+        defaultTz?.handle ?? ffi.nullptr,
       );
+      return GDateTime.fromPointer(_ret);
     });
   }
 
@@ -418,9 +417,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? add(int timespan) {
-    return (_gDateTimeAdd(this.handle, timespan)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAdd(this.handle, timespan));
+    final _ret = _gDateTimeAdd(this.handle, timespan);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime and adds the specified number of days to the
@@ -435,9 +433,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? addDays(int days) {
-    return (_gDateTimeAddDays(this.handle, days)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddDays(this.handle, days));
+    final _ret = _gDateTimeAddDays(this.handle, days);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a new #GDateTime adding the specified values to the current date and
@@ -475,28 +472,16 @@ final class GDateTime {
     int minutes,
     double seconds,
   ) {
-    return (_gDateTimeAddFull(
-              this.handle,
-              years,
-              months,
-              days,
-              hours,
-              minutes,
-              seconds,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(
-            _gDateTimeAddFull(
-              this.handle,
-              years,
-              months,
-              days,
-              hours,
-              minutes,
-              seconds,
-            ),
-          );
+    final _ret = _gDateTimeAddFull(
+      this.handle,
+      years,
+      months,
+      days,
+      hours,
+      minutes,
+      seconds,
+    );
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime and adds the specified number of hours.
@@ -511,9 +496,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? addHours(int hours) {
-    return (_gDateTimeAddHours(this.handle, hours)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddHours(this.handle, hours));
+    final _ret = _gDateTimeAddHours(this.handle, hours);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime adding the specified number of minutes.
@@ -528,9 +512,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? addMinutes(int minutes) {
-    return (_gDateTimeAddMinutes(this.handle, minutes)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddMinutes(this.handle, minutes));
+    final _ret = _gDateTimeAddMinutes(this.handle, minutes);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime and adds the specified number of months to the
@@ -550,9 +533,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? addMonths(int months) {
-    return (_gDateTimeAddMonths(this.handle, months)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddMonths(this.handle, months));
+    final _ret = _gDateTimeAddMonths(this.handle, months);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime and adds the specified number of seconds.
@@ -567,9 +549,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
   GDateTime? addSeconds(double seconds) {
-    return (_gDateTimeAddSeconds(this.handle, seconds)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddSeconds(this.handle, seconds));
+    final _ret = _gDateTimeAddSeconds(this.handle, seconds);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime and adds the specified number of weeks to the
@@ -584,9 +565,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? addWeeks(int weeks) {
-    return (_gDateTimeAddWeeks(this.handle, weeks)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddWeeks(this.handle, weeks));
+    final _ret = _gDateTimeAddWeeks(this.handle, weeks);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Creates a copy of @datetime and adds the specified number of years to the
@@ -604,9 +584,8 @@ final class GDateTime {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GDateTime? addYears(int years) {
-    return (_gDateTimeAddYears(this.handle, years)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeAddYears(this.handle, years));
+    final _ret = _gDateTimeAddYears(this.handle, years);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// A comparison function for #GDateTimes that is suitable
@@ -1106,9 +1085,8 @@ final class GDateTime {
           >('g_date_time_to_local')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? toLocal() {
-    return (_gDateTimeToLocal(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeToLocal(this.handle));
+    final _ret = _gDateTimeToLocal(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Stores the instant in time that @datetime represents into @tv.
@@ -1159,9 +1137,8 @@ final class GDateTime {
             )
           >();
   GDateTime? toTimezone(GTimeZone tz) {
-    return (_gDateTimeToTimezone(this.handle, tz.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeToTimezone(this.handle, tz.handle));
+    final _ret = _gDateTimeToTimezone(this.handle, tz.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Gives the Unix time corresponding to @datetime, rounding down to the
@@ -1202,9 +1179,8 @@ final class GDateTime {
           >('g_date_time_to_utc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? toUtc() {
-    return (_gDateTimeToUtc(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gDateTimeToUtc(this.handle));
+    final _ret = _gDateTimeToUtc(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Atomically decrements the reference count of @datetime by one.

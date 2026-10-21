@@ -328,18 +328,11 @@ class GActionGroup {
           >();
   GVariantType? getActionParameterType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionParameterType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -368,18 +361,11 @@ class GActionGroup {
           >();
   GVariant? getActionState(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionState(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -418,18 +404,11 @@ class GActionGroup {
           >();
   GVariant? getActionStateHint(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateHint(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -466,18 +445,11 @@ class GActionGroup {
           >();
   GVariantType? getActionStateType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 

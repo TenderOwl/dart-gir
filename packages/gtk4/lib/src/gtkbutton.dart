@@ -173,9 +173,8 @@ class GtkButton extends GtkWidget
           >('gtk_button_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkButtonGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkButtonGetChild(this.handle));
+    final _ret = _gtkButtonGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns whether the button has a frame.
@@ -590,11 +589,8 @@ class GtkButton extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -677,11 +673,8 @@ class GtkButton extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -693,11 +686,8 @@ class GtkButton extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -958,9 +948,8 @@ class GtkButton extends GtkWidget
           >('gtk_actionable_get_action_target_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getActionTargetValue() {
-    return (_gtkActionableGetActionTargetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gtkActionableGetActionTargetValue(this.handle));
+    final _ret = _gtkActionableGetActionTargetValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Specifies the name of the action with which this widget should be

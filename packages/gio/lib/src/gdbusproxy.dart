@@ -896,18 +896,11 @@ class GDBusProxy extends GObject
           >();
   GVariant? getCachedProperty(String propertyName) {
     return withNativeString(propertyName, (nativePropertyName) {
-      return (_gDbusProxyGetCachedProperty(
-                this.handle,
-                nativePropertyName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gDbusProxyGetCachedProperty(
-                this.handle,
-                nativePropertyName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusProxyGetCachedProperty(
+        this.handle,
+        nativePropertyName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -956,11 +949,8 @@ class GDBusProxy extends GObject
           >('g_dbus_proxy_get_interface_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusInterfaceInfo? getInterfaceInfo() {
-    return (_gDbusProxyGetInterfaceInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusInterfaceInfo.fromPointer(
-            _gDbusProxyGetInterfaceInfo(this.handle),
-          );
+    final _ret = _gDbusProxyGetInterfaceInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusInterfaceInfo.fromPointer(_ret);
   }
 
   /// Gets the D-Bus interface name @proxy is for.
@@ -1609,9 +1599,8 @@ class GDBusProxy extends GObject
           >('g_dbus_interface_dup_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusObject? dupObject() {
-    return (_gDbusInterfaceDupObject(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusObject.fromPointer(_gDbusInterfaceDupObject(this.handle));
+    final _ret = _gDbusInterfaceDupObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
   }
 
   /// Gets D-Bus introspection information for the D-Bus interface
@@ -1629,9 +1618,8 @@ class GDBusProxy extends GObject
           >('g_dbus_interface_get_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusInterfaceInfo? getInfo() {
-    return (_gDbusInterfaceGetInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusInterfaceInfo.fromPointer(_gDbusInterfaceGetInfo(this.handle));
+    final _ret = _gDbusInterfaceGetInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusInterfaceInfo.fromPointer(_ret);
   }
 
   /// Sets the #GDBusObject for @interface_ to @object.

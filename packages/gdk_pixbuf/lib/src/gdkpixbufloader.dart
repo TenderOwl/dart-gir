@@ -252,11 +252,8 @@ class GdkPixbufLoader extends GObject {
           >('gdk_pixbuf_loader_get_animation')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbufAnimation? getAnimation() {
-    return (_gdkPixbufLoaderGetAnimation(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPixbufAnimation.fromPointer(
-            _gdkPixbufLoaderGetAnimation(this.handle),
-          );
+    final _ret = _gdkPixbufLoaderGetAnimation(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPixbufAnimation.fromPointer(_ret);
   }
 
   /// Obtains the available information about the format of the
@@ -269,9 +266,8 @@ class GdkPixbufLoader extends GObject {
           >('gdk_pixbuf_loader_get_format')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbufFormat? getFormat() {
-    return (_gdkPixbufLoaderGetFormat(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPixbufFormat.fromPointer(_gdkPixbufLoaderGetFormat(this.handle));
+    final _ret = _gdkPixbufLoaderGetFormat(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPixbufFormat.fromPointer(_ret);
   }
 
   /// Queries the #GdkPixbuf that a pixbuf loader is currently creating.
@@ -297,9 +293,8 @@ class GdkPixbufLoader extends GObject {
           >('gdk_pixbuf_loader_get_pixbuf')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbuf? getPixbuf() {
-    return (_gdkPixbufLoaderGetPixbuf(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPixbuf.fromPointer(_gdkPixbufLoaderGetPixbuf(this.handle));
+    final _ret = _gdkPixbufLoaderGetPixbuf(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
   }
 
   /// Causes the image to be scaled while it is loaded.

@@ -129,11 +129,8 @@ class GtkPropertyExpression extends GtkExpression {
           >('gtk_property_expression_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_gtkPropertyExpressionGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(
-            _gtkPropertyExpressionGetExpression(this.handle),
-          );
+    final _ret = _gtkPropertyExpressionGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Gets the `GParamSpec` specifying the property of

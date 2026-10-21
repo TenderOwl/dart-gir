@@ -301,9 +301,8 @@ class AdwSidebar extends GtkWidget
           >('adw_sidebar_get_filter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFilter? getFilter() {
-    return (_adwSidebarGetFilter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkFilter.fromPointer(_adwSidebarGetFilter(this.handle));
+    final _ret = _adwSidebarGetFilter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkFilter.fromPointer(_ret);
   }
 
   /// Gets the item at @index within @self.
@@ -322,9 +321,8 @@ class AdwSidebar extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   AdwSidebarItem? getItem(int index) {
-    return (_adwSidebarGetItem(this.handle, index)) == ffi.nullptr
-        ? null
-        : AdwSidebarItem.fromPointer(_adwSidebarGetItem(this.handle, index));
+    final _ret = _adwSidebarGetItem(this.handle, index);
+    return (_ret) == ffi.nullptr ? null : AdwSidebarItem.fromPointer(_ret);
   }
 
   /// Gets a list model with @self's items.
@@ -358,9 +356,8 @@ class AdwSidebar extends GtkWidget
           >('adw_sidebar_get_menu_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getMenuModel() {
-    return (_adwSidebarGetMenuModel(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_adwSidebarGetMenuModel(this.handle));
+    final _ret = _adwSidebarGetMenuModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Gets @self's look and behavior.
@@ -381,9 +378,8 @@ class AdwSidebar extends GtkWidget
           >('adw_sidebar_get_placeholder')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getPlaceholder() {
-    return (_adwSidebarGetPlaceholder(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwSidebarGetPlaceholder(this.handle));
+    final _ret = _adwSidebarGetPlaceholder(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the section at @index within @self.
@@ -399,11 +395,8 @@ class AdwSidebar extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   AdwSidebarSection? getSection(int index) {
-    return (_adwSidebarGetSection(this.handle, index)) == ffi.nullptr
-        ? null
-        : AdwSidebarSection.fromPointer(
-            _adwSidebarGetSection(this.handle, index),
-          );
+    final _ret = _adwSidebarGetSection(this.handle, index);
+    return (_ret) == ffi.nullptr ? null : AdwSidebarSection.fromPointer(_ret);
   }
 
   /// Gets a list model with @self's sections.
@@ -447,9 +440,8 @@ class AdwSidebar extends GtkWidget
           >('adw_sidebar_get_selected_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSidebarItem? getSelectedItem() {
-    return (_adwSidebarGetSelectedItem(this.handle)) == ffi.nullptr
-        ? null
-        : AdwSidebarItem.fromPointer(_adwSidebarGetSelectedItem(this.handle));
+    final _ret = _adwSidebarGetSelectedItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwSidebarItem.fromPointer(_ret);
   }
 
   /// Inserts @section at @position to @self.
@@ -932,11 +924,8 @@ class AdwSidebar extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1019,11 +1008,8 @@ class AdwSidebar extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1035,11 +1021,8 @@ class AdwSidebar extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

@@ -681,6 +681,16 @@ byte-identical output to the `build_runner` path. Exit codes:
   `widget_class->priv->template == NULL` assertion. Sharing a native
   type between two template classes needs a real `GType` — which means
   a C extension, not a Dart mixin.
+
+  The ownership registry behind that check is a Dart static, so it is
+  per **isolate**, while GTK's slot is per **native class** and
+  therefore per **process**. Two template classes in two isolates of
+  one process are *not* caught by the registry: the second
+  `setTemplate` trips GTK's own assertion, which tears the heap down.
+  The test runner keeps every suite of a `dart test` invocation in one
+  process, so two suites that template the same native widget type
+  (an `AdwApplicationWindow`, say) collide. Give the two classes
+  different native types, or keep them in one isolate.
 - **The template must be built from the constructor.** Dart has no
   instance initializer, so the host widget has to call
   `initTemplate()` itself (see §5). Forgetting it does not fail

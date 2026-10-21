@@ -69,8 +69,7 @@ class GtkObjectExpression extends GtkExpression {
           >('gtk_object_expression_get_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getObject() {
-    return (_gtkObjectExpressionGetObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkObjectExpressionGetObject(this.handle));
+    final _ret = _gtkObjectExpressionGetObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 }

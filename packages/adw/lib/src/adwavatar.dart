@@ -125,9 +125,8 @@ class AdwAvatar extends GtkWidget
           >('adw_avatar_get_custom_image')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable? getCustomImage() {
-    return (_adwAvatarGetCustomImage(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(_adwAvatarGetCustomImage(this.handle));
+    final _ret = _adwAvatarGetCustomImage(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Gets the name of an icon to use as a fallback.
@@ -492,11 +491,8 @@ class AdwAvatar extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -579,11 +575,8 @@ class AdwAvatar extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -595,11 +588,8 @@ class AdwAvatar extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

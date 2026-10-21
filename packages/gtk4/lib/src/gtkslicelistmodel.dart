@@ -84,9 +84,8 @@ class GtkSliceListModel extends GObject implements GListModel, GtkSectionModel {
           >('gtk_slice_list_model_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkSliceListModelGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkSliceListModelGetModel(this.handle));
+    final _ret = _gtkSliceListModelGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Gets the offset set via gtk_slice_list_model_set_offset().
@@ -271,9 +270,8 @@ class GtkSliceListModel extends GObject implements GListModel, GtkSectionModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

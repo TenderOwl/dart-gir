@@ -71,9 +71,8 @@ class GIPropertyInfo extends GIBaseInfo {
           >('gi_property_info_get_getter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIFunctionInfo? getGetter() {
-    return (_giPropertyInfoGetGetter(this.handle)) == ffi.nullptr
-        ? null
-        : GIFunctionInfo.fromPointer(_giPropertyInfoGetGetter(this.handle));
+    final _ret = _giPropertyInfoGetGetter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
   }
 
   /// Obtain the ownership transfer for this property.
@@ -102,9 +101,8 @@ class GIPropertyInfo extends GIBaseInfo {
           >('gi_property_info_get_setter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIFunctionInfo? getSetter() {
-    return (_giPropertyInfoGetSetter(this.handle)) == ffi.nullptr
-        ? null
-        : GIFunctionInfo.fromPointer(_giPropertyInfoGetSetter(this.handle));
+    final _ret = _giPropertyInfoGetSetter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
   }
 
   /// Obtain the type information for the property @info.

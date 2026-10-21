@@ -70,9 +70,8 @@ class GtkBoolFilter extends GtkFilter {
           >('gtk_bool_filter_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_gtkBoolFilterGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(_gtkBoolFilterGetExpression(this.handle));
+    final _ret = _gtkBoolFilterGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Returns whether the filter inverts the expression.

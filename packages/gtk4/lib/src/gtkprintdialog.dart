@@ -99,9 +99,8 @@ class GtkPrintDialog extends GObject {
           >('gtk_print_dialog_get_page_setup')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPageSetup? getPageSetup() {
-    return (_gtkPrintDialogGetPageSetup(this.handle)) == ffi.nullptr
-        ? null
-        : GtkPageSetup.fromPointer(_gtkPrintDialogGetPageSetup(this.handle));
+    final _ret = _gtkPrintDialogGetPageSetup(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkPageSetup.fromPointer(_ret);
   }
 
   /// Returns the print settings for the print dialog.
@@ -113,11 +112,8 @@ class GtkPrintDialog extends GObject {
           >('gtk_print_dialog_get_print_settings')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPrintSettings? getPrintSettings() {
-    return (_gtkPrintDialogGetPrintSettings(this.handle)) == ffi.nullptr
-        ? null
-        : GtkPrintSettings.fromPointer(
-            _gtkPrintDialogGetPrintSettings(this.handle),
-          );
+    final _ret = _gtkPrintDialogGetPrintSettings(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkPrintSettings.fromPointer(_ret);
   }
 
   /// Returns the title that will be shown on the

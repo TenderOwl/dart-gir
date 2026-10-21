@@ -68,11 +68,8 @@ class GtkTreeListRow extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkTreeListRow? getChildRow(int position) {
-    return (_gtkTreeListRowGetChildRow(this.handle, position)) == ffi.nullptr
-        ? null
-        : GtkTreeListRow.fromPointer(
-            _gtkTreeListRowGetChildRow(this.handle, position),
-          );
+    final _ret = _gtkTreeListRowGetChildRow(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
   }
 
   /// If the row is expanded, gets the model holding the children of @self.
@@ -89,9 +86,8 @@ class GtkTreeListRow extends GObject {
           >('gtk_tree_list_row_get_children')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getChildren() {
-    return (_gtkTreeListRowGetChildren(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkTreeListRowGetChildren(this.handle));
+    final _ret = _gtkTreeListRowGetChildren(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Gets the depth of this row.
@@ -129,9 +125,8 @@ class GtkTreeListRow extends GObject {
           >('gtk_tree_list_row_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
-    return (_gtkTreeListRowGetItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkTreeListRowGetItem(this.handle));
+    final _ret = _gtkTreeListRowGetItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the row representing the parent for @self.
@@ -153,9 +148,8 @@ class GtkTreeListRow extends GObject {
           >('gtk_tree_list_row_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeListRow? getParent() {
-    return (_gtkTreeListRowGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeListRow.fromPointer(_gtkTreeListRowGetParent(this.handle));
+    final _ret = _gtkTreeListRowGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
   }
 
   /// Returns the position in the `GtkTreeListModel` that @self occupies

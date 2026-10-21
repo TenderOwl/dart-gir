@@ -70,9 +70,8 @@ class GZlibCompressor extends GObject implements GConverter {
           >('g_zlib_compressor_get_file_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFileInfo? getFileInfo() {
-    return (_gZlibCompressorGetFileInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GFileInfo.fromPointer(_gZlibCompressorGetFileInfo(this.handle));
+    final _ret = _gZlibCompressorGetFileInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFileInfo.fromPointer(_ret);
   }
 
   /// Gets the [property@Gio.ZlibCompressor:os] property.

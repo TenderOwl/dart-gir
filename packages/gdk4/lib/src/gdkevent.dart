@@ -89,9 +89,8 @@ class GdkEvent {
           >('gdk_event_get_device')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDevice? getDevice() {
-    return (_gdkEventGetDevice(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDevice.fromPointer(_gdkEventGetDevice(this.handle));
+    final _ret = _gdkEventGetDevice(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDevice.fromPointer(_ret);
   }
 
   /// Returns a `GdkDeviceTool` representing the tool that
@@ -112,9 +111,8 @@ class GdkEvent {
           >('gdk_event_get_device_tool')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDeviceTool? getDeviceTool() {
-    return (_gdkEventGetDeviceTool(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDeviceTool.fromPointer(_gdkEventGetDeviceTool(this.handle));
+    final _ret = _gdkEventGetDeviceTool(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDeviceTool.fromPointer(_ret);
   }
 
   /// Retrieves the display associated to the @event.
@@ -126,9 +124,8 @@ class GdkEvent {
           >('gdk_event_get_display')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay? getDisplay() {
-    return (_gdkEventGetDisplay(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(_gdkEventGetDisplay(this.handle));
+    final _ret = _gdkEventGetDisplay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// Returns the event sequence to which the event belongs.
@@ -251,9 +248,8 @@ class GdkEvent {
           >('gdk_event_get_seat')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSeat? getSeat() {
-    return (_gdkEventGetSeat(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSeat.fromPointer(_gdkEventGetSeat(this.handle));
+    final _ret = _gdkEventGetSeat(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSeat.fromPointer(_ret);
   }
 
   /// Extracts the surface associated with an event.
@@ -265,9 +261,8 @@ class GdkEvent {
           >('gdk_event_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gdkEventGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gdkEventGetSurface(this.handle));
+    final _ret = _gdkEventGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Returns the timestamp of @event.

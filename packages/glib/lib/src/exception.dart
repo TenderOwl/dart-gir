@@ -2,7 +2,12 @@
 part of '../glib.dart';
 
 final class _GErrorStruct extends ffi.Struct {
-  @ffi.Size()
+  // `GQuark` is a `guint32` (glib/gquark.h). The C layout is
+  //   struct _GError { GQuark domain; gint code; gchar *message; };
+  // so `domain` and `code` are 4 bytes each and `message` sits at
+  // offset 8. A wider `domain` would shift the message pointer and
+  // read it from the wrong offset.
+  @ffi.Uint32()
   external int domain;
   @ffi.Int32()
   external int code;

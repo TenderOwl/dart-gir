@@ -168,9 +168,8 @@ class GtkCellView extends GtkWidget
           >('gtk_cell_view_get_displayed_row')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreePath? getDisplayedRow() {
-    return (_gtkCellViewGetDisplayedRow(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreePath.fromPointer(_gtkCellViewGetDisplayedRow(this.handle));
+    final _ret = _gtkCellViewGetDisplayedRow(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreePath.fromPointer(_ret);
   }
 
   /// Gets whether @cell_view is configured to draw all of its
@@ -203,9 +202,8 @@ class GtkCellView extends GtkWidget
           >('gtk_cell_view_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeModel? getModel() {
-    return (_gtkCellViewGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeModel.fromPointer(_gtkCellViewGetModel(this.handle));
+    final _ret = _gtkCellViewGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeModel.fromPointer(_ret);
   }
 
   /// Sets the row of the model that is currently displayed
@@ -509,11 +507,8 @@ class GtkCellView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -596,11 +591,8 @@ class GtkCellView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -612,11 +604,8 @@ class GtkCellView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -944,9 +933,8 @@ class GtkCellView extends GtkWidget
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.

@@ -1068,9 +1068,8 @@ class GtkCellArea extends GInitiallyUnowned
           >('gtk_cell_area_get_edit_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellEditable? getEditWidget() {
-    return (_gtkCellAreaGetEditWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellEditable.fromPointer(_gtkCellAreaGetEditWidget(this.handle));
+    final _ret = _gtkCellAreaGetEditWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellEditable.fromPointer(_ret);
   }
 
   /// Gets the `GtkCellRenderer` in @area that is currently
@@ -1083,9 +1082,8 @@ class GtkCellArea extends GInitiallyUnowned
           >('gtk_cell_area_get_edited_cell')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellRenderer? getEditedCell() {
-    return (_gtkCellAreaGetEditedCell(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellRenderer.fromPointer(_gtkCellAreaGetEditedCell(this.handle));
+    final _ret = _gtkCellAreaGetEditedCell(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellRenderer.fromPointer(_ret);
   }
 
   /// Retrieves the currently focused cell for @area
@@ -1097,9 +1095,8 @@ class GtkCellArea extends GInitiallyUnowned
           >('gtk_cell_area_get_focus_cell')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellRenderer? getFocusCell() {
-    return (_gtkCellAreaGetFocusCell(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellRenderer.fromPointer(_gtkCellAreaGetFocusCell(this.handle));
+    final _ret = _gtkCellAreaGetFocusCell(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellRenderer.fromPointer(_ret);
   }
 
   /// Gets the `GtkCellRenderer` which is expected to be focusable
@@ -1125,12 +1122,8 @@ class GtkCellArea extends GInitiallyUnowned
             )
           >();
   GtkCellRenderer? getFocusFromSibling(GtkCellRenderer renderer) {
-    return (_gtkCellAreaGetFocusFromSibling(this.handle, renderer.handle)) ==
-            ffi.nullptr
-        ? null
-        : GtkCellRenderer.fromPointer(
-            _gtkCellAreaGetFocusFromSibling(this.handle, renderer.handle),
-          );
+    final _ret = _gtkCellAreaGetFocusFromSibling(this.handle, renderer.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellRenderer.fromPointer(_ret);
   }
 
   /// Gets the focus sibling cell renderers for @renderer.
@@ -1837,9 +1830,8 @@ class GtkCellArea extends GInitiallyUnowned
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.

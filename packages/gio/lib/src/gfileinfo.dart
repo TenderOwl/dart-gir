@@ -142,9 +142,8 @@ class GFileInfo extends GObject {
           >('g_file_info_get_access_date_time')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getAccessDateTime() {
-    return (_gFileInfoGetAccessDateTime(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetAccessDateTime(this.handle));
+    final _ret = _gFileInfoGetAccessDateTime(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Gets the value of an attribute, formatted as a human readable string.
@@ -371,18 +370,11 @@ class GFileInfo extends GObject {
           >();
   GObject? getAttributeObject(String attribute) {
     return withNativeString(attribute, (nativeAttribute) {
-      return (_gFileInfoGetAttributeObject(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GObject.fromPointer(
-              _gFileInfoGetAttributeObject(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gFileInfoGetAttributeObject(
+        this.handle,
+        nativeAttribute.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
     });
   }
 
@@ -518,9 +510,8 @@ class GFileInfo extends GObject {
           >('g_file_info_get_creation_date_time')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getCreationDateTime() {
-    return (_gFileInfoGetCreationDateTime(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetCreationDateTime(this.handle));
+    final _ret = _gFileInfoGetCreationDateTime(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Returns the #GDateTime representing the deletion date of the file, as
@@ -534,9 +525,8 @@ class GFileInfo extends GObject {
           >('g_file_info_get_deletion_date')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getDeletionDate() {
-    return (_gFileInfoGetDeletionDate(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetDeletionDate(this.handle));
+    final _ret = _gFileInfoGetDeletionDate(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Gets a display name for a file. This is guaranteed to always be set.
@@ -619,9 +609,8 @@ class GFileInfo extends GObject {
           >('g_file_info_get_icon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getIcon() {
-    return (_gFileInfoGetIcon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gFileInfoGetIcon(this.handle));
+    final _ret = _gFileInfoGetIcon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Checks if a file is a backup file.
@@ -683,9 +672,8 @@ class GFileInfo extends GObject {
           >('g_file_info_get_modification_date_time')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getModificationDateTime() {
-    return (_gFileInfoGetModificationDateTime(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gFileInfoGetModificationDateTime(this.handle));
+    final _ret = _gFileInfoGetModificationDateTime(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Gets the modification time of the current @info and sets it
@@ -767,9 +755,8 @@ class GFileInfo extends GObject {
           >('g_file_info_get_symbolic_icon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getSymbolicIcon() {
-    return (_gFileInfoGetSymbolicIcon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gFileInfoGetSymbolicIcon(this.handle));
+    final _ret = _gFileInfoGetSymbolicIcon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Gets the symlink target for a given #GFileInfo.

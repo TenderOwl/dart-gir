@@ -224,9 +224,8 @@ class GtkCellLayout {
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.

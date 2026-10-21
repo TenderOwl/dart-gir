@@ -86,11 +86,8 @@ class GICallableInfo extends GIBaseInfo {
           >('gi_callable_info_get_async_function')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GICallableInfo? getAsyncFunction() {
-    return (_giCallableInfoGetAsyncFunction(this.handle)) == ffi.nullptr
-        ? null
-        : GICallableInfo.fromPointer(
-            _giCallableInfoGetAsyncFunction(this.handle),
-          );
+    final _ret = _giCallableInfoGetAsyncFunction(this.handle);
+    return (_ret) == ffi.nullptr ? null : GICallableInfo.fromPointer(_ret);
   }
 
   /// See whether the caller owns the return value of this callable.
@@ -114,11 +111,8 @@ class GICallableInfo extends GIBaseInfo {
           >('gi_callable_info_get_finish_function')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GICallableInfo? getFinishFunction() {
-    return (_giCallableInfoGetFinishFunction(this.handle)) == ffi.nullptr
-        ? null
-        : GICallableInfo.fromPointer(
-            _giCallableInfoGetFinishFunction(this.handle),
-          );
+    final _ret = _giCallableInfoGetFinishFunction(this.handle);
+    return (_ret) == ffi.nullptr ? null : GICallableInfo.fromPointer(_ret);
   }
 
   /// Obtains the ownership transfer for the instance argument.
@@ -194,11 +188,8 @@ class GICallableInfo extends GIBaseInfo {
           >('gi_callable_info_get_sync_function')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GICallableInfo? getSyncFunction() {
-    return (_giCallableInfoGetSyncFunction(this.handle)) == ffi.nullptr
-        ? null
-        : GICallableInfo.fromPointer(
-            _giCallableInfoGetSyncFunction(this.handle),
-          );
+    final _ret = _giCallableInfoGetSyncFunction(this.handle);
+    return (_ret) == ffi.nullptr ? null : GICallableInfo.fromPointer(_ret);
   }
 
   /// Gets whether a callable is ‘async’. Async callables have a

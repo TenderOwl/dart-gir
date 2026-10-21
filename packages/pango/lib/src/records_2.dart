@@ -51,9 +51,8 @@ final class PangoAttribute {
           >('pango_attribute_as_color')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrColor? asColor() {
-    return (_pangoAttributeAsColor(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrColor.fromPointer(_pangoAttributeAsColor(this.handle));
+    final _ret = _pangoAttributeAsColor(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrColor.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrFloat`.
@@ -67,9 +66,8 @@ final class PangoAttribute {
           >('pango_attribute_as_float')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrFloat? asFloat() {
-    return (_pangoAttributeAsFloat(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrFloat.fromPointer(_pangoAttributeAsFloat(this.handle));
+    final _ret = _pangoAttributeAsFloat(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrFloat.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrFontDesc`.
@@ -83,9 +81,8 @@ final class PangoAttribute {
           >('pango_attribute_as_font_desc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrFontDesc? asFontDesc() {
-    return (_pangoAttributeAsFontDesc(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrFontDesc.fromPointer(_pangoAttributeAsFontDesc(this.handle));
+    final _ret = _pangoAttributeAsFontDesc(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrFontDesc.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrFontFeatures`.
@@ -99,11 +96,10 @@ final class PangoAttribute {
           >('pango_attribute_as_font_features')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrFontFeatures? asFontFeatures() {
-    return (_pangoAttributeAsFontFeatures(this.handle)) == ffi.nullptr
+    final _ret = _pangoAttributeAsFontFeatures(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoAttrFontFeatures.fromPointer(
-            _pangoAttributeAsFontFeatures(this.handle),
-          );
+        : PangoAttrFontFeatures.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrInt`.
@@ -117,9 +113,8 @@ final class PangoAttribute {
           >('pango_attribute_as_int')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrInt? asInt() {
-    return (_pangoAttributeAsInt(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrInt.fromPointer(_pangoAttributeAsInt(this.handle));
+    final _ret = _pangoAttributeAsInt(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrInt.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrLanguage`.
@@ -133,9 +128,8 @@ final class PangoAttribute {
           >('pango_attribute_as_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrLanguage? asLanguage() {
-    return (_pangoAttributeAsLanguage(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrLanguage.fromPointer(_pangoAttributeAsLanguage(this.handle));
+    final _ret = _pangoAttributeAsLanguage(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrLanguage.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrShape`.
@@ -149,9 +143,8 @@ final class PangoAttribute {
           >('pango_attribute_as_shape')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrShape? asShape() {
-    return (_pangoAttributeAsShape(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrShape.fromPointer(_pangoAttributeAsShape(this.handle));
+    final _ret = _pangoAttributeAsShape(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrShape.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrSize`.
@@ -165,9 +158,8 @@ final class PangoAttribute {
           >('pango_attribute_as_size')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrSize? asSize() {
-    return (_pangoAttributeAsSize(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrSize.fromPointer(_pangoAttributeAsSize(this.handle));
+    final _ret = _pangoAttributeAsSize(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrSize.fromPointer(_ret);
   }
 
   /// Returns the attribute cast to `PangoAttrString`.
@@ -181,9 +173,8 @@ final class PangoAttribute {
           >('pango_attribute_as_string')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrString? asString() {
-    return (_pangoAttributeAsString(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrString.fromPointer(_pangoAttributeAsString(this.handle));
+    final _ret = _pangoAttributeAsString(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrString.fromPointer(_ret);
   }
 
   /// Make a copy of an attribute.
@@ -290,9 +281,8 @@ final class PangoColor {
           >('pango_color_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoColor? copy() {
-    return (_pangoColorCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoColor.fromPointer(_pangoColorCopy(this.handle));
+    final _ret = _pangoColorCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoColor.fromPointer(_ret);
   }
 
   /// Frees a color allocated by [method@Pango.Color.copy].

@@ -130,12 +130,8 @@ class GtkSourceMark extends GtkTextMark {
           >();
   GtkSourceMark? next([String? category]) {
     return withNativeString(category, (nativeCategory) {
-      return (_gtkSourceMarkNext(this.handle, nativeCategory.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GtkSourceMark.fromPointer(
-              _gtkSourceMarkNext(this.handle, nativeCategory.cast<Utf8>()),
-            );
+      final _ret = _gtkSourceMarkNext(this.handle, nativeCategory.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GtkSourceMark.fromPointer(_ret);
     });
   }
 
@@ -162,12 +158,8 @@ class GtkSourceMark extends GtkTextMark {
           >();
   GtkSourceMark? prev([String? category]) {
     return withNativeString(category, (nativeCategory) {
-      return (_gtkSourceMarkPrev(this.handle, nativeCategory.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GtkSourceMark.fromPointer(
-              _gtkSourceMarkPrev(this.handle, nativeCategory.cast<Utf8>()),
-            );
+      final _ret = _gtkSourceMarkPrev(this.handle, nativeCategory.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GtkSourceMark.fromPointer(_ret);
     });
   }
 

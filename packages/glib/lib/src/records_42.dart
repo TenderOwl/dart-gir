@@ -457,20 +457,12 @@ final class GVariantDict {
           >();
   GVariant? lookupValue(String key, [GVariantType? expectedType]) {
     return withNativeString(key, (nativeKey) {
-      return (_gVariantDictLookupValue(
-                this.handle,
-                nativeKey.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gVariantDictLookupValue(
-                this.handle,
-                nativeKey.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              ),
-            );
+      final _ret = _gVariantDictLookupValue(
+        this.handle,
+        nativeKey.cast<Utf8>(),
+        expectedType?.handle ?? ffi.nullptr,
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 

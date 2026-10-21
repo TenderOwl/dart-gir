@@ -2,6 +2,7 @@ import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
+import 'package:gir_ffi/gir_ffi.dart';
 import 'package:glib/glib.dart';
 import 'package:test/test.dart';
 
@@ -106,5 +107,51 @@ void main() {
       malloc.free(p);
     }
     expect(popped, [1, 1, 2, 3, 4, 5, 6, 9]);
+  });
+
+  test('g_free releases memory GLib allocated', () {
+    // `g_free` lives in libglib, which the bindings load with `dlopen` —
+    // and a `dlopen`ed library is not part of the process-global symbol
+    // namespace. `gir_ffi`'s `gFree` resolves the symbol through an
+    // explicitly opened GLib when the global namespace does not have it.
+    // This test fails loudly if the lookup ever stops working.
+    final buffer = mallocFn(64);
+    expect(buffer, isNotNull);
+    expect(buffer!.address, isNot(0));
+    gFree(buffer.cast());
+  });
+
+  test('g_file_get_contents reads a file into a Dart byte list', () {
+    // `g_file_get_contents` hands the buffer over with
+    // `transfer-ownership="full"`: the wrapper copies the bytes into a
+    // `Uint8List` and releases the native buffer.
+    final dir = Directory.systemTemp.createTempSync('gir_glib_contents');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final path = '${dir.path}/sample.txt';
+    File(path).writeAsStringSync('hello glib');
+
+    final (ok, contents) = fileGetContents(path);
+
+    expect(ok, isTrue);
+    expect(contents, orderedEquals('hello glib'.codeUnits));
+  });
+
+  test('a failed GLib call reports the GError message', () {
+    // `GError` is `{ GQuark domain; gint code; gchar *message; }` and
+    // `GQuark` is a `guint32`. Reading the struct with a wider `domain`
+    // would shift the message pointer and read it from the wrong
+    // offset — a wild pointer, not a wrong string.
+    //
+    // The message itself is localized, so the test pins the part that
+    // is not: the path GLib reports.
+    final path = '${Directory.systemTemp.path}/gir-no-such-file';
+    expect(
+      () => fileGetContents(path),
+      throwsA(
+        isA<GlibException>()
+            .having((e) => e.message, 'message', contains('gir-no-such-file'))
+            .having((e) => e.message, 'message', isNotEmpty),
+      ),
+    );
   });
 }

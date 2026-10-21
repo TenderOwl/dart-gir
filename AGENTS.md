@@ -221,12 +221,13 @@ The full design is in [docs/site.md](docs/site.md).
 - `pubspec.lock` is git-ignored (`.gitignore`); do not commit it
 - Hand-written code goes under `lib/src/` (or `generator/lib/src/{emit,gir,resolve}`, or `tool/site/` for the site generator); generated code lives in `packages/<lib>/lib/src/` and must not be edited by hand — change the generator instead. The site's generated HTML lives in `site/` and must not be edited by hand either — change `site_src/` and re-run `tool/build_site.dart`
 - **Callbacks**: each `<callback>` becomes a Dart function typedef whose name matches the GIR `c:type` (e.g. `GCompareDataFunc`). The typedef uses Dart convenience types (`int`, `double`, `bool` is exposed as `int` per the convention `0` = false / non-zero = true) for primitives and `ffi.Pointer<ffi.Void>` for opaque pointers. Wrapper parameters carry the inline signature rather than the typedef name so Dart FFI's `NativeCallable` accepts the user's function through the wrapper. Callbacks are not currently emitted as nullable parameters (none of the GIR files in scope declare one); a callback as a return type is also rejected
+- **OUT parameters**: one OUT parameter becomes the wrapper's return value, several become a Dart record `(T1, T2)`, and a return value plus OUTs become `(ret, T1, T2)`. A **callee-allocated byte buffer** (`char**` / `guchar**` with a sibling length parameter) becomes a `Uint8List` — the bytes are copied out of the native buffer and the buffer is released with `g_free`; its byte count is absorbed into the list and is not a separate element. A nullable OUT string stays nullable (`String?`) — GLib leaves the slot `NULL` when there is nothing to report, and the old `!` turned that into a `TypeError`. See [docs/emission.md](docs/emission.md#out-parameters)
 
 ## Testing instructions
 
 - **All tests, one command** (from the workspace root):
   `dart test generator example/gtk4_examples example/notepad example/todo packages/dart_gobject packages/gdk4 packages/gio packages/gir_ffi packages/glib packages/gobject packages/gtk4 packages/gtk_source5 packages/gtk_templates packages/gtk_templates_builder test`
-  — 433 passed, 1 skipped (the skip is the native GTK suite without a display — see below).
+  — 459 passed, 1 skipped (the skip is the native GTK suite without a display — see below).
 - **Why the explicit list?** `dart test` with no argument runs only the *root* package's own `test/` directory, which now holds the site generator's suite. The generator tests, the template-package tests and the per-package smoke tests live in their own packages' `test/` directories, so they have to be named. `dart pub workspace run` does not exist in this Dart SDK — `dart pub workspace` only offers `list`.
 - **Per package:** `cd <package> && dart test` works for any workspace member.
 - **Generator tests** live in `generator/test/` and also run as part of the all-tests command.

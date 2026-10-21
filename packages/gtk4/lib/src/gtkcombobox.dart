@@ -244,9 +244,8 @@ class GtkComboBox extends GtkWidget
           >('gtk_combo_box_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkComboBoxGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkComboBoxGetChild(this.handle));
+    final _ret = _gtkComboBoxGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the column which @combo_box is using to get the strings
@@ -287,9 +286,8 @@ class GtkComboBox extends GtkWidget
           >('gtk_combo_box_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeModel? getModel() {
-    return (_gtkComboBoxGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeModel.fromPointer(_gtkComboBoxGetModel(this.handle));
+    final _ret = _gtkComboBoxGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeModel.fromPointer(_ret);
   }
 
   /// Gets whether the popup uses a fixed width.
@@ -894,11 +892,8 @@ class GtkComboBox extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -981,11 +976,8 @@ class GtkComboBox extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -997,11 +989,8 @@ class GtkComboBox extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -1370,9 +1359,8 @@ class GtkComboBox extends GtkWidget
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.

@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -25,11 +26,60 @@ DynamicLibrary openLibrary(List<String> names) {
 DynamicLibrary _glibProcessLib() =>
     Platform.isLinux ? DynamicLibrary.process() : DynamicLibrary.executable();
 
-final _gFreeNative = _glibProcessLib()
-    .lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+/// The `g_free` implementation.
+///
+/// `g_free` lives in libglib. The generated packages load libglib with
+/// `dlopen`, and a `dlopen`ed library is *not* part of the process-global
+/// symbol namespace, so `DynamicLibrary.process()` cannot see it in every
+/// process. The global namespace is tried first (it works when libglib
+/// was loaded globally), and an explicitly opened GLib is the fallback.
+final _gFreeNative = _lookupGFree();
+
+Pointer<NativeFunction<Void Function(Pointer<Void>)>> _lookupGFree() {
+  try {
+    return _glibProcessLib()
+        .lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+  } on ArgumentError {
+    // Not globally visible — open GLib explicitly.
+  }
+  final lib = openLibrary(const [
+    'libglib-2.0.so.0',
+    'libglib-2.0.so',
+    'libglib-2.0.0.dylib',
+  ]);
+  try {
+    return lib.lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+  } on ArgumentError {
+    throw StateError(
+      'g_free not found: libglib could not be opened, so GLib-allocated '
+      'memory cannot be released.',
+    );
+  }
+}
+
+/// Releases memory GLib allocated (`g_malloc`, `g_strdup`, …).
+///
+/// GLib documents `g_free` as the deallocator for its own allocations.
 void gFree(Pointer<Void> ptr) {
   if (ptr == nullptr) return;
   _gFreeNative.asFunction<void Function(Pointer<Void>)>().call(ptr);
+}
+
+/// Copies [length] bytes from the GLib-allocated buffer at [buffer] into a
+/// Dart [Uint8List] and releases the native buffer.
+///
+/// A callee-allocated byte buffer — `g_file_load_contents`' `contents`, for
+/// instance — is native memory the garbage collector cannot see. The GIR
+/// hands the buffer over with `transfer-ownership="full"`, so the caller
+/// owns it and has to release it; copying it into a Dart list and freeing
+/// the original leaves the user with plain Dart memory and no lifetime
+/// rules.
+Uint8List bytesFromNative(Pointer<Uint8> buffer, int length) {
+  if (buffer == nullptr) return Uint8List(0);
+  final out = Uint8List(length);
+  if (length > 0) out.setRange(0, length, buffer.asTypedList(length));
+  gFree(buffer.cast());
+  return out;
 }
 
 /// Converts a native NUL-terminated UTF-8 string to a Dart [String].

@@ -11,9 +11,8 @@ final _gskValueDupRenderNode =
         >('gsk_value_dup_render_node')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GskRenderNode? valueDupRenderNode(GValue value) {
-  return (_gskValueDupRenderNode(value.handle)) == ffi.nullptr
-      ? null
-      : GskRenderNode.fromPointer(_gskValueDupRenderNode(value.handle));
+  final _ret = _gskValueDupRenderNode(value.handle);
+  return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
 }
 
 /// Retrieves the render node stored inside a `GValue`.
@@ -25,9 +24,8 @@ final _gskValueGetRenderNode =
         >('gsk_value_get_render_node')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GskRenderNode? valueGetRenderNode(GValue value) {
-  return (_gskValueGetRenderNode(value.handle)) == ffi.nullptr
-      ? null
-      : GskRenderNode.fromPointer(_gskValueGetRenderNode(value.handle));
+  final _ret = _gskValueGetRenderNode(value.handle);
+  return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
 }
 
 /// Stores the given render node inside a `GValue`.

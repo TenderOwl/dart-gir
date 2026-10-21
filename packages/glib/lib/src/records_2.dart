@@ -290,7 +290,7 @@ final class GBookmarkFile {
           }
           return (
             (_ret) != 0,
-            stringFromNative(_out0.value.cast(), free: true)!,
+            stringFromNative(_out0.value.cast(), free: true),
             _out1.value,
             (_out2.value) == ffi.nullptr
                 ? null
@@ -389,8 +389,8 @@ final class GBookmarkFile {
         }
         return (
           (_ret) != 0,
-          stringFromNative(_out0.value.cast(), free: true)!,
-          stringFromNative(_out1.value.cast(), free: true)!,
+          stringFromNative(_out0.value.cast(), free: true),
+          stringFromNative(_out1.value.cast(), free: true),
         );
       } finally {
         malloc.free(_out0);
@@ -799,7 +799,7 @@ final class GBookmarkFile {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true)!);
+        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true));
       } finally {
         malloc.free(_out0);
         calloc.free(_error);

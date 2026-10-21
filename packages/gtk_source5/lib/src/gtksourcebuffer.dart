@@ -307,11 +307,8 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >('gtk_source_buffer_get_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceLanguage? getLanguage() {
-    return (_gtkSourceBufferGetLanguage(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceLanguage.fromPointer(
-            _gtkSourceBufferGetLanguage(this.handle),
-          );
+    final _ret = _gtkSourceBufferGetLanguage(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSourceLanguage.fromPointer(_ret);
   }
 
   static final _gtkSourceBufferGetLoading =
@@ -430,11 +427,10 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >('gtk_source_buffer_get_style_scheme')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceStyleScheme? getStyleScheme() {
-    return (_gtkSourceBufferGetStyleScheme(this.handle)) == ffi.nullptr
+    final _ret = _gtkSourceBufferGetStyleScheme(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : GtkSourceStyleScheme.fromPointer(
-            _gtkSourceBufferGetStyleScheme(this.handle),
-          );
+        : GtkSourceStyleScheme.fromPointer(_ret);
   }
 
   /// Check if the class @context_class is set on @iter.

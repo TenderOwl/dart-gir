@@ -84,9 +84,8 @@ class GtkTreeListRowSorter extends GtkSorter {
           >('gtk_tree_list_row_sorter_get_sorter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSorter? getSorter() {
-    return (_gtkTreeListRowSorterGetSorter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSorter.fromPointer(_gtkTreeListRowSorterGetSorter(this.handle));
+    final _ret = _gtkTreeListRowSorterGetSorter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSorter.fromPointer(_ret);
   }
 
   /// Sets the sorter to use for items with the same parent.

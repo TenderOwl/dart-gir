@@ -182,18 +182,13 @@ final class GFileAttributeMatcher {
             )
           >();
   GFileAttributeMatcher? subtract([GFileAttributeMatcher? subtract]) {
-    return (_gFileAttributeMatcherSubtract(
-              this.handle,
-              subtract?.handle ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
+    final _ret = _gFileAttributeMatcherSubtract(
+      this.handle,
+      subtract?.handle ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr
         ? null
-        : GFileAttributeMatcher.fromPointer(
-            _gFileAttributeMatcherSubtract(
-              this.handle,
-              subtract?.handle ?? ffi.nullptr,
-            ),
-          );
+        : GFileAttributeMatcher.fromPointer(_ret);
   }
 
   /// Unreferences @matcher. If the reference count falls below 1,

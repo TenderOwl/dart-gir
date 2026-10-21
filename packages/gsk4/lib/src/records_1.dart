@@ -487,9 +487,8 @@ final class GskPath {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static GskPath? parse(String string) {
     return withNativeString(string, (nativeString) {
-      return (_gskPathParse(nativeString.cast<Utf8>())) == ffi.nullptr
-          ? null
-          : GskPath.fromPointer(_gskPathParse(nativeString.cast<Utf8>()));
+      final _ret = _gskPathParse(nativeString.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GskPath.fromPointer(_ret);
     });
   }
 }

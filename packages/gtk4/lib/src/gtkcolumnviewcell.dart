@@ -70,9 +70,8 @@ class GtkColumnViewCell extends GtkListItem {
           >('gtk_column_view_cell_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkColumnViewCellGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkColumnViewCellGetChild(this.handle));
+    final _ret = _gtkColumnViewCellGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Checks if a list item has been set to be focusable via
@@ -96,9 +95,8 @@ class GtkColumnViewCell extends GtkListItem {
           >('gtk_column_view_cell_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
-    return (_gtkColumnViewCellGetItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkColumnViewCellGetItem(this.handle));
+    final _ret = _gtkColumnViewCellGetItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the position in the model that @self currently displays.

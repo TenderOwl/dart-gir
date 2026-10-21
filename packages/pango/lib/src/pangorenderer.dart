@@ -370,11 +370,8 @@ class PangoRenderer extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   PangoColor? getColor(PangoRenderPart part_) {
-    return (_pangoRendererGetColor(this.handle, part_.value)) == ffi.nullptr
-        ? null
-        : PangoColor.fromPointer(
-            _pangoRendererGetColor(this.handle, part_.value),
-          );
+    final _ret = _pangoRendererGetColor(this.handle, part_.value);
+    return (_ret) == ffi.nullptr ? null : PangoColor.fromPointer(_ret);
   }
 
   /// Gets the layout currently being rendered using @renderer.
@@ -392,9 +389,8 @@ class PangoRenderer extends GObject {
           >('pango_renderer_get_layout')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayout? getLayout() {
-    return (_pangoRendererGetLayout(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayout.fromPointer(_pangoRendererGetLayout(this.handle));
+    final _ret = _pangoRendererGetLayout(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLayout.fromPointer(_ret);
   }
 
   /// Gets the layout line currently being rendered using @renderer.
@@ -412,9 +408,8 @@ class PangoRenderer extends GObject {
           >('pango_renderer_get_layout_line')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayoutLine? getLayoutLine() {
-    return (_pangoRendererGetLayoutLine(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(_pangoRendererGetLayoutLine(this.handle));
+    final _ret = _pangoRendererGetLayoutLine(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLayoutLine.fromPointer(_ret);
   }
 
   /// Gets the transformation matrix that will be applied when
@@ -429,9 +424,8 @@ class PangoRenderer extends GObject {
           >('pango_renderer_get_matrix')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoMatrix? getMatrix() {
-    return (_pangoRendererGetMatrix(this.handle)) == ffi.nullptr
-        ? null
-        : PangoMatrix.fromPointer(_pangoRendererGetMatrix(this.handle));
+    final _ret = _pangoRendererGetMatrix(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoMatrix.fromPointer(_ret);
   }
 
   /// Informs Pango that the way that the rendering is done

@@ -85,11 +85,8 @@ class GtkFileDialog extends GObject {
           >('gtk_file_dialog_get_default_filter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFileFilter? getDefaultFilter() {
-    return (_gtkFileDialogGetDefaultFilter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkFileFilter.fromPointer(
-            _gtkFileDialogGetDefaultFilter(this.handle),
-          );
+    final _ret = _gtkFileDialogGetDefaultFilter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkFileFilter.fromPointer(_ret);
   }
 
   /// Gets the filters that will be offered to the user
@@ -102,9 +99,8 @@ class GtkFileDialog extends GObject {
           >('gtk_file_dialog_get_filters')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getFilters() {
-    return (_gtkFileDialogGetFilters(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkFileDialogGetFilters(this.handle));
+    final _ret = _gtkFileDialogGetFilters(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Gets the file that will be initially selected in
@@ -117,9 +113,8 @@ class GtkFileDialog extends GObject {
           >('gtk_file_dialog_get_initial_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getInitialFile() {
-    return (_gtkFileDialogGetInitialFile(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkFileDialogGetInitialFile(this.handle));
+    final _ret = _gtkFileDialogGetInitialFile(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the folder that will be set as the
@@ -132,9 +127,8 @@ class GtkFileDialog extends GObject {
           >('gtk_file_dialog_get_initial_folder')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getInitialFolder() {
-    return (_gtkFileDialogGetInitialFolder(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkFileDialogGetInitialFolder(this.handle));
+    final _ret = _gtkFileDialogGetInitialFolder(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the filename that will be initially selected.

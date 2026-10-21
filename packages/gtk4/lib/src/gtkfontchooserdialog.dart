@@ -413,11 +413,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -500,11 +497,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -516,11 +510,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -817,11 +808,10 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_font_chooser_get_font_desc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? getFontDesc() {
-    return (_gtkFontChooserGetFontDesc(this.handle)) == ffi.nullptr
+    final _ret = _gtkFontChooserGetFontDesc(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _gtkFontChooserGetFontDesc(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Gets the `PangoFontFace` representing the selected font group
@@ -836,9 +826,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_font_chooser_get_font_face')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontFace? getFontFace() {
-    return (_gtkFontChooserGetFontFace(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontFace.fromPointer(_gtkFontChooserGetFontFace(this.handle));
+    final _ret = _gtkFontChooserGetFontFace(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontFace.fromPointer(_ret);
   }
 
   /// Gets the `PangoFontFamily` representing the selected font family.
@@ -854,11 +843,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_font_chooser_get_font_family')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontFamily? getFontFamily() {
-    return (_gtkFontChooserGetFontFamily(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontFamily.fromPointer(
-            _gtkFontChooserGetFontFamily(this.handle),
-          );
+    final _ret = _gtkFontChooserGetFontFamily(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontFamily.fromPointer(_ret);
   }
 
   /// Gets the currently-selected font features.
@@ -890,9 +876,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_font_chooser_get_font_map')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMap? getFontMap() {
-    return (_gtkFontChooserGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_gtkFontChooserGetFontMap(this.handle));
+    final _ret = _gtkFontChooserGetFontMap(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMap.fromPointer(_ret);
   }
 
   /// The selected font size.
@@ -1165,9 +1150,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_native_get_renderer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderer? getRenderer() {
-    return (_gtkNativeGetRenderer(this.handle)) == ffi.nullptr
-        ? null
-        : GskRenderer.fromPointer(_gtkNativeGetRenderer(this.handle));
+    final _ret = _gtkNativeGetRenderer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderer.fromPointer(_ret);
   }
 
   /// Returns the surface of this `GtkNative`.
@@ -1179,9 +1163,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_native_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gtkNativeGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gtkNativeGetSurface(this.handle));
+    final _ret = _gtkNativeGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Retrieves the surface transform of @self.
@@ -1265,9 +1248,8 @@ class GtkFontChooserDialog extends GtkDialog
           >('gtk_root_get_focus')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFocus() {
-    return (_gtkRootGetFocus(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkRootGetFocus(this.handle));
+    final _ret = _gtkRootGetFocus(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// If @focus is not the current focus widget, and is focusable, sets

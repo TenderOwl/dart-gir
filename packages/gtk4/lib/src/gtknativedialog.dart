@@ -114,9 +114,8 @@ class GtkNativeDialog extends GObject {
           >('gtk_native_dialog_get_transient_for')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWindow? getTransientFor() {
-    return (_gtkNativeDialogGetTransientFor(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWindow.fromPointer(_gtkNativeDialogGetTransientFor(this.handle));
+    final _ret = _gtkNativeDialogGetTransientFor(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWindow.fromPointer(_ret);
   }
 
   /// Determines whether the dialog is visible.

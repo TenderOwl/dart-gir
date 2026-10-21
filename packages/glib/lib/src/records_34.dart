@@ -292,9 +292,8 @@ final class GThread {
           >('g_thread_join')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? join() {
-    return (_gThreadJoin(this.handle)) == ffi.nullptr
-        ? null
-        : (_gThreadJoin(this.handle));
+    final _ret = _gThreadJoin(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Increase the reference count on @thread.

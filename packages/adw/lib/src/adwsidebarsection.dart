@@ -242,11 +242,8 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   AdwSidebarItem? getItem(int index) {
-    return (_adwSidebarSectionGetItem(this.handle, index)) == ffi.nullptr
-        ? null
-        : AdwSidebarItem.fromPointer(
-            _adwSidebarSectionGetItem(this.handle, index),
-          );
+    final _ret = _adwSidebarSectionGetItem(this.handle, index);
+    return (_ret) == ffi.nullptr ? null : AdwSidebarItem.fromPointer(_ret);
   }
 
   /// Gets a list model with @self's items.
@@ -272,9 +269,8 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
           >('adw_sidebar_section_get_menu_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getMenuModel() {
-    return (_adwSidebarSectionGetMenuModel(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_adwSidebarSectionGetMenuModel(this.handle));
+    final _ret = _adwSidebarSectionGetMenuModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Gets the sidebar @self is in.
@@ -286,9 +282,8 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
           >('adw_sidebar_section_get_sidebar')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSidebar? getSidebar() {
-    return (_adwSidebarSectionGetSidebar(this.handle)) == ffi.nullptr
-        ? null
-        : AdwSidebar.fromPointer(_adwSidebarSectionGetSidebar(this.handle));
+    final _ret = _adwSidebarSectionGetSidebar(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwSidebar.fromPointer(_ret);
   }
 
   /// Gets the title of @self.

@@ -106,18 +106,11 @@ final class GDBusInterfaceInfo {
           >();
   GDBusMethodInfo? lookupMethod(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gDbusInterfaceInfoLookupMethod(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusMethodInfo.fromPointer(
-              _gDbusInterfaceInfoLookupMethod(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusInterfaceInfoLookupMethod(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GDBusMethodInfo.fromPointer(_ret);
     });
   }
 
@@ -142,18 +135,11 @@ final class GDBusInterfaceInfo {
           >();
   GDBusPropertyInfo? lookupProperty(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gDbusInterfaceInfoLookupProperty(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusPropertyInfo.fromPointer(
-              _gDbusInterfaceInfoLookupProperty(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusInterfaceInfoLookupProperty(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GDBusPropertyInfo.fromPointer(_ret);
     });
   }
 
@@ -178,18 +164,11 @@ final class GDBusInterfaceInfo {
           >();
   GDBusSignalInfo? lookupSignal(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gDbusInterfaceInfoLookupSignal(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusSignalInfo.fromPointer(
-              _gDbusInterfaceInfoLookupSignal(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusInterfaceInfoLookupSignal(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GDBusSignalInfo.fromPointer(_ret);
     });
   }
 
@@ -533,18 +512,13 @@ final class GDBusNodeInfo {
           >();
   GDBusInterfaceInfo? lookupInterface(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gDbusNodeInfoLookupInterface(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
+      final _ret = _gDbusNodeInfoLookupInterface(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr
           ? null
-          : GDBusInterfaceInfo.fromPointer(
-              _gDbusNodeInfoLookupInterface(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+          : GDBusInterfaceInfo.fromPointer(_ret);
     });
   }
 

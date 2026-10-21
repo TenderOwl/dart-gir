@@ -99,11 +99,8 @@ class GtkGestureStylus extends GtkGestureSingle {
           >('gtk_gesture_stylus_get_device_tool')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDeviceTool? getDeviceTool() {
-    return (_gtkGestureStylusGetDeviceTool(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDeviceTool.fromPointer(
-            _gtkGestureStylusGetDeviceTool(this.handle),
-          );
+    final _ret = _gtkGestureStylusGetDeviceTool(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDeviceTool.fromPointer(_ret);
   }
 
   /// Checks whether the gesture is for styluses only.

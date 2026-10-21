@@ -259,9 +259,8 @@ final class GTypeClass {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? getPrivate(int privateType) {
-    return (_gTypeClassGetPrivate(this.handle, privateType)) == ffi.nullptr
-        ? null
-        : (_gTypeClassGetPrivate(this.handle, privateType));
+    final _ret = _gTypeClassGetPrivate(this.handle, privateType);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Retrieves the class structure of the immediate parent type of the
@@ -342,9 +341,8 @@ final class GTypeClass {
           >('g_type_class_peek')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   static GTypeClass? peek(int type_) {
-    return (_gTypeClassPeek(type_)) == ffi.nullptr
-        ? null
-        : GTypeClass.fromPointer(_gTypeClassPeek(type_));
+    final _ret = _gTypeClassPeek(type_);
+    return (_ret) == ffi.nullptr ? null : GTypeClass.fromPointer(_ret);
   }
 
   /// A more efficient version of g_type_class_peek() which works only for
@@ -355,9 +353,8 @@ final class GTypeClass {
           >('g_type_class_peek_static')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   static GTypeClass? peekStatic(int type_) {
-    return (_gTypeClassPeekStatic(type_)) == ffi.nullptr
-        ? null
-        : GTypeClass.fromPointer(_gTypeClassPeekStatic(type_));
+    final _ret = _gTypeClassPeekStatic(type_);
+    return (_ret) == ffi.nullptr ? null : GTypeClass.fromPointer(_ret);
   }
 
   /// Increments the reference count of the class structure belonging to
@@ -448,8 +445,7 @@ final class GTypeInstance {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? getPrivate(int privateType) {
-    return (_gTypeInstanceGetPrivate(this.handle, privateType)) == ffi.nullptr
-        ? null
-        : (_gTypeInstanceGetPrivate(this.handle, privateType));
+    final _ret = _gTypeInstanceGetPrivate(this.handle, privateType);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 }

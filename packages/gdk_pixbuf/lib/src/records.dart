@@ -119,9 +119,8 @@ final class GdkPixbufFormat {
           >('gdk_pixbuf_format_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbufFormat? copy() {
-    return (_gdkPixbufFormatCopy(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPixbufFormat.fromPointer(_gdkPixbufFormatCopy(this.handle));
+    final _ret = _gdkPixbufFormatCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPixbufFormat.fromPointer(_ret);
   }
 
   /// Frees the resources allocated when copying a `GdkPixbufFormat`

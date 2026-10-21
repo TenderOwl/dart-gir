@@ -73,12 +73,11 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
           >();
   GIFunctionInfo? findMethod(String name) {
     return withNativeString(name, (nativeName) {
-      return (_giObjectInfoFindMethod(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GIFunctionInfo.fromPointer(
-              _giObjectInfoFindMethod(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _giObjectInfoFindMethod(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
     });
   }
 
@@ -150,12 +149,11 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
           >();
   GISignalInfo? findSignal(String name) {
     return withNativeString(name, (nativeName) {
-      return (_giObjectInfoFindSignal(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GISignalInfo.fromPointer(
-              _giObjectInfoFindSignal(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _giObjectInfoFindSignal(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GISignalInfo.fromPointer(_ret);
     });
   }
 
@@ -185,12 +183,8 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
           >();
   GIVFuncInfo? findVfunc(String name) {
     return withNativeString(name, (nativeName) {
-      return (_giObjectInfoFindVfunc(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GIVFuncInfo.fromPointer(
-              _giObjectInfoFindVfunc(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _giObjectInfoFindVfunc(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GIVFuncInfo.fromPointer(_ret);
     });
   }
 
@@ -268,9 +262,8 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
           >('gi_object_info_get_class_struct')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIStructInfo? getClassStruct() {
-    return (_giObjectInfoGetClassStruct(this.handle)) == ffi.nullptr
-        ? null
-        : GIStructInfo.fromPointer(_giObjectInfoGetClassStruct(this.handle));
+    final _ret = _giObjectInfoGetClassStruct(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIStructInfo.fromPointer(_ret);
   }
 
   /// Obtain an object type constant at index @n.
@@ -454,9 +447,8 @@ class GIObjectInfo extends GIRegisteredTypeInfo {
           >('gi_object_info_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIObjectInfo? getParent() {
-    return (_giObjectInfoGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GIObjectInfo.fromPointer(_giObjectInfoGetParent(this.handle));
+    final _ret = _giObjectInfoGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIObjectInfo.fromPointer(_ret);
   }
 
   /// Obtain an object type property at index @n.

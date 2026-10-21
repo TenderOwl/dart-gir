@@ -207,9 +207,8 @@ final class GtkCssSection {
           >('gtk_css_section_get_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes? getBytes() {
-    return (_gtkCssSectionGetBytes(this.handle)) == ffi.nullptr
-        ? null
-        : GBytes.fromPointer(_gtkCssSectionGetBytes(this.handle));
+    final _ret = _gtkCssSectionGetBytes(this.handle);
+    return (_ret) == ffi.nullptr ? null : GBytes.fromPointer(_ret);
   }
 
   /// Returns the location in the CSS document where this section ends.
@@ -238,9 +237,8 @@ final class GtkCssSection {
           >('gtk_css_section_get_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
-    return (_gtkCssSectionGetFile(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkCssSectionGetFile(this.handle));
+    final _ret = _gtkCssSectionGetFile(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the parent section for the given `section`.
@@ -259,9 +257,8 @@ final class GtkCssSection {
           >('gtk_css_section_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCssSection? getParent() {
-    return (_gtkCssSectionGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCssSection.fromPointer(_gtkCssSectionGetParent(this.handle));
+    final _ret = _gtkCssSectionGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCssSection.fromPointer(_ret);
   }
 
   /// Returns the location in the CSS document where this section starts.

@@ -1018,9 +1018,8 @@ final class GVariant {
           >('g_variant_get_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getData() {
-    return (_gVariantGetData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gVariantGetData(this.handle));
+    final _ret = _gVariantGetData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Returns a pointer to the serialized form of a #GVariant instance.
@@ -1116,9 +1115,8 @@ final class GVariant {
           >('g_variant_get_maybe')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getMaybe() {
-    return (_gVariantGetMaybe(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gVariantGetMaybe(this.handle));
+    final _ret = _gVariantGetMaybe(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Gets a #GVariant instance that has the same value as @value and is

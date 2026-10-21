@@ -259,9 +259,8 @@ class GDBusMessage extends GObject {
           >('g_dbus_message_get_body')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getBody() {
-    return (_gDbusMessageGetBody(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gDbusMessageGetBody(this.handle));
+    final _ret = _gDbusMessageGetBody(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Gets the byte order of @message.
@@ -328,12 +327,8 @@ class GDBusMessage extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GVariant? getHeader(GDBusMessageHeaderField headerField) {
-    return (_gDbusMessageGetHeader(this.handle, headerField.value)) ==
-            ffi.nullptr
-        ? null
-        : GVariant.fromPointer(
-            _gDbusMessageGetHeader(this.handle, headerField.value),
-          );
+    final _ret = _gDbusMessageGetHeader(this.handle, headerField.value);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Gets an array of all header fields on @message that are set.
@@ -489,9 +484,8 @@ class GDBusMessage extends GObject {
           >('g_dbus_message_get_unix_fd_list')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GUnixFDList? getUnixFdList() {
-    return (_gDbusMessageGetUnixFdList(this.handle)) == ffi.nullptr
-        ? null
-        : GUnixFDList.fromPointer(_gDbusMessageGetUnixFdList(this.handle));
+    final _ret = _gDbusMessageGetUnixFdList(this.handle);
+    return (_ret) == ffi.nullptr ? null : GUnixFDList.fromPointer(_ret);
   }
 
   /// If @message is locked, does nothing. Otherwise locks the message.

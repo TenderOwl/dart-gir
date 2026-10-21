@@ -543,9 +543,8 @@ final _gTypeGetQdata =
         >('g_type_get_qdata')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
 ffi.Pointer<ffi.Void>? typeGetQdata(int type_, int quark) {
-  return (_gTypeGetQdata(type_, quark)) == ffi.nullptr
-      ? null
-      : (_gTypeGetQdata(type_, quark));
+  final _ret = _gTypeGetQdata(type_, quark);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Returns an opaque serial number that represents the state of the set

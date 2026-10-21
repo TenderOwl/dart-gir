@@ -239,10 +239,8 @@ final class GBytes {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int, int)
           >();
   ffi.Pointer<ffi.Void>? getRegion(int elementSize, int offset, int nElements) {
-    return (_gBytesGetRegion(this.handle, elementSize, offset, nElements)) ==
-            ffi.nullptr
-        ? null
-        : (_gBytesGetRegion(this.handle, elementSize, offset, nElements));
+    final _ret = _gBytesGetRegion(this.handle, elementSize, offset, nElements);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Get the size of the byte data in the [struct@GLib.Bytes].
@@ -428,9 +426,8 @@ final class GCache {
             )
           >();
   ffi.Pointer<ffi.Void>? insert([ffi.Pointer<ffi.Void>? key]) {
-    return (_gCacheInsert(this.handle, key ?? ffi.nullptr)) == ffi.nullptr
-        ? null
-        : (_gCacheInsert(this.handle, key ?? ffi.nullptr));
+    final _ret = _gCacheInsert(this.handle, key ?? ffi.nullptr);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Calls the given function for each of the keys in the #GCache.

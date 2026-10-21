@@ -1161,9 +1161,8 @@ class GtkWidget extends GInitiallyUnowned
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkWidget? getAncestor(int widgetType) {
-    return (_gtkWidgetGetAncestor(this.handle, widgetType)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetAncestor(this.handle, widgetType));
+    final _ret = _gtkWidgetGetAncestor(this.handle, widgetType);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the baseline that has currently been allocated to the widget.
@@ -1280,9 +1279,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_cursor')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkCursor? getCursor() {
-    return (_gtkWidgetGetCursor(this.handle)) == ffi.nullptr
-        ? null
-        : GdkCursor.fromPointer(_gtkWidgetGetCursor(this.handle));
+    final _ret = _gtkWidgetGetCursor(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkCursor.fromPointer(_ret);
   }
 
   /// Gets the reading direction for the widget.
@@ -1326,9 +1324,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_first_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFirstChild() {
-    return (_gtkWidgetGetFirstChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetFirstChild(this.handle));
+    final _ret = _gtkWidgetGetFirstChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the focus child of the widget.
@@ -1340,9 +1337,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_focus_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFocusChild() {
-    return (_gtkWidgetGetFocusChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetFocusChild(this.handle));
+    final _ret = _gtkWidgetGetFocusChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns whether the widget should grab focus when it is clicked
@@ -1379,9 +1375,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_font_map')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMap? getFontMap() {
-    return (_gtkWidgetGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_gtkWidgetGetFontMap(this.handle));
+    final _ret = _gtkWidgetGetFontMap(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMap.fromPointer(_ret);
   }
 
   /// Returns the `cairo_font_options_t` of the widget.
@@ -1395,9 +1390,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_font_options')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoFontOptions? getFontOptions() {
-    return (_gtkWidgetGetFontOptions(this.handle)) == ffi.nullptr
-        ? null
-        : CairoFontOptions.fromPointer(_gtkWidgetGetFontOptions(this.handle));
+    final _ret = _gtkWidgetGetFontOptions(this.handle);
+    return (_ret) == ffi.nullptr ? null : CairoFontOptions.fromPointer(_ret);
   }
 
   /// Obtains the frame clock for a widget.
@@ -1430,9 +1424,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_frame_clock')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkFrameClock? getFrameClock() {
-    return (_gtkWidgetGetFrameClock(this.handle)) == ffi.nullptr
-        ? null
-        : GdkFrameClock.fromPointer(_gtkWidgetGetFrameClock(this.handle));
+    final _ret = _gtkWidgetGetFrameClock(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkFrameClock.fromPointer(_ret);
   }
 
   /// Gets the horizontal alignment of the widget.
@@ -1528,9 +1521,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_last_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getLastChild() {
-    return (_gtkWidgetGetLastChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetLastChild(this.handle));
+    final _ret = _gtkWidgetGetLastChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Retrieves the layout manager of the widget.
@@ -1544,9 +1536,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_layout_manager')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkLayoutManager? getLayoutManager() {
-    return (_gtkWidgetGetLayoutManager(this.handle)) == ffi.nullptr
-        ? null
-        : GtkLayoutManager.fromPointer(_gtkWidgetGetLayoutManager(this.handle));
+    final _ret = _gtkWidgetGetLayoutManager(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkLayoutManager.fromPointer(_ret);
   }
 
   /// Gets the value of the [property@Gtk.Widget:limit-events] property.
@@ -1634,9 +1625,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_native')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkNative? getNative() {
-    return (_gtkWidgetGetNative(this.handle)) == ffi.nullptr
-        ? null
-        : GtkNative.fromPointer(_gtkWidgetGetNative(this.handle));
+    final _ret = _gtkWidgetGetNative(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkNative.fromPointer(_ret);
   }
 
   /// Returns the widget’s next sibling.
@@ -1650,9 +1640,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_next_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getNextSibling() {
-    return (_gtkWidgetGetNextSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetNextSibling(this.handle));
+    final _ret = _gtkWidgetGetNextSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Fetches the requested opacity for the widget.
@@ -1707,9 +1696,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getParent() {
-    return (_gtkWidgetGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetParent(this.handle));
+    final _ret = _gtkWidgetGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Retrieves the minimum and natural size of a widget, taking
@@ -1780,9 +1768,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_prev_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getPrevSibling() {
-    return (_gtkWidgetGetPrevSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetGetPrevSibling(this.handle));
+    final _ret = _gtkWidgetGetPrevSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the primary clipboard of the widget.
@@ -1854,9 +1841,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_get_root')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkRoot? getRoot() {
-    return (_gtkWidgetGetRoot(this.handle)) == ffi.nullptr
-        ? null
-        : GtkRoot.fromPointer(_gtkWidgetGetRoot(this.handle));
+    final _ret = _gtkWidgetGetRoot(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkRoot.fromPointer(_ret);
   }
 
   /// Retrieves the internal scale factor that maps from window
@@ -2685,9 +2671,8 @@ class GtkWidget extends GInitiallyUnowned
             )
           >();
   GtkWidget? pick(double x, double y, GtkPickFlags flags) {
-    return (_gtkWidgetPick(this.handle, x, y, flags.value)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetPick(this.handle, x, y, flags.value));
+    final _ret = _gtkWidgetPick(this.handle, x, y, flags.value);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Flags the widget for a rerun of the [vfunc@Gtk.Widget.size_allocate]
@@ -4014,11 +3999,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -4101,11 +4083,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -4117,11 +4096,8 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

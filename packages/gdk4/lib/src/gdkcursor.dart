@@ -241,13 +241,11 @@ class GdkCursor extends GObject {
           >();
   factory GdkCursor.fromName(String name, [GdkCursor? fallback]) {
     return withNativeString(name, (nativeName) {
-      return GdkCursor.fromPointer(
-        _gdkCursorNewFromName(
-          nativeName.cast<Utf8>(),
-          fallback?.handle ?? ffi.nullptr,
-        ),
-        owned: true,
+      final _ret = _gdkCursorNewFromName(
+        nativeName.cast<Utf8>(),
+        fallback?.handle ?? ffi.nullptr,
       );
+      return GdkCursor.fromPointer(_ret, owned: true);
     });
   }
 
@@ -301,9 +299,8 @@ class GdkCursor extends GObject {
           >('gdk_cursor_get_fallback')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkCursor? getFallback() {
-    return (_gdkCursorGetFallback(this.handle)) == ffi.nullptr
-        ? null
-        : GdkCursor.fromPointer(_gdkCursorGetFallback(this.handle));
+    final _ret = _gdkCursorGetFallback(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkCursor.fromPointer(_ret);
   }
 
   /// Returns the horizontal offset of the hotspot.
@@ -364,9 +361,8 @@ class GdkCursor extends GObject {
           >('gdk_cursor_get_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkTexture? getTexture() {
-    return (_gdkCursorGetTexture(this.handle)) == ffi.nullptr
-        ? null
-        : GdkTexture.fromPointer(_gdkCursorGetTexture(this.handle));
+    final _ret = _gdkCursorGetTexture(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

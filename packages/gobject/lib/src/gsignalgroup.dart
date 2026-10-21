@@ -250,9 +250,8 @@ class GSignalGroup extends GObject {
           >('g_signal_group_dup_target')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupTarget() {
-    return (_gSignalGroupDupTarget(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gSignalGroupDupTarget(this.handle));
+    final _ret = _gSignalGroupDupTarget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Sets the target instance used when connecting signals. Any signal

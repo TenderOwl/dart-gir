@@ -57,9 +57,8 @@ class GDBusInterface {
           >('g_dbus_interface_dup_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusObject? dupObject() {
-    return (_gDbusInterfaceDupObject(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusObject.fromPointer(_gDbusInterfaceDupObject(this.handle));
+    final _ret = _gDbusInterfaceDupObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
   }
 
   /// Gets D-Bus introspection information for the D-Bus interface
@@ -77,9 +76,8 @@ class GDBusInterface {
           >('g_dbus_interface_get_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusInterfaceInfo? getInfo() {
-    return (_gDbusInterfaceGetInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusInterfaceInfo.fromPointer(_gDbusInterfaceGetInfo(this.handle));
+    final _ret = _gDbusInterfaceGetInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusInterfaceInfo.fromPointer(_ret);
   }
 
   /// Sets the #GDBusObject for @interface_ to @object.
@@ -164,18 +162,11 @@ class GDBusObject {
           >();
   GDBusInterface? getInterface(String interfaceName) {
     return withNativeString(interfaceName, (nativeInterfaceName) {
-      return (_gDbusObjectGetInterface(
-                this.handle,
-                nativeInterfaceName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusInterface.fromPointer(
-              _gDbusObjectGetInterface(
-                this.handle,
-                nativeInterfaceName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusObjectGetInterface(
+        this.handle,
+        nativeInterfaceName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GDBusInterface.fromPointer(_ret);
     });
   }
 
@@ -296,20 +287,12 @@ class GDBusObjectManager {
   GDBusInterface? getInterface(String objectPath, String interfaceName) {
     return withNativeString(objectPath, (nativeObjectPath) {
       return withNativeString(interfaceName, (nativeInterfaceName) {
-        return (_gDbusObjectManagerGetInterface(
-                  this.handle,
-                  nativeObjectPath.cast<Utf8>(),
-                  nativeInterfaceName.cast<Utf8>(),
-                )) ==
-                ffi.nullptr
-            ? null
-            : GDBusInterface.fromPointer(
-                _gDbusObjectManagerGetInterface(
-                  this.handle,
-                  nativeObjectPath.cast<Utf8>(),
-                  nativeInterfaceName.cast<Utf8>(),
-                ),
-              );
+        final _ret = _gDbusObjectManagerGetInterface(
+          this.handle,
+          nativeObjectPath.cast<Utf8>(),
+          nativeInterfaceName.cast<Utf8>(),
+        );
+        return (_ret) == ffi.nullptr ? null : GDBusInterface.fromPointer(_ret);
       });
     });
   }
@@ -332,18 +315,11 @@ class GDBusObjectManager {
           >();
   GDBusObject? getObject(String objectPath) {
     return withNativeString(objectPath, (nativeObjectPath) {
-      return (_gDbusObjectManagerGetObject(
-                this.handle,
-                nativeObjectPath.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusObject.fromPointer(
-              _gDbusObjectManagerGetObject(
-                this.handle,
-                nativeObjectPath.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusObjectManagerGetObject(
+        this.handle,
+        nativeObjectPath.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
     });
   }
 

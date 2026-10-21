@@ -92,9 +92,8 @@ class GdkSeat extends GObject {
           >('gdk_seat_get_keyboard')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDevice? getKeyboard() {
-    return (_gdkSeatGetKeyboard(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDevice.fromPointer(_gdkSeatGetKeyboard(this.handle));
+    final _ret = _gdkSeatGetKeyboard(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDevice.fromPointer(_ret);
   }
 
   /// Returns the device that routes pointer events.
@@ -106,9 +105,8 @@ class GdkSeat extends GObject {
           >('gdk_seat_get_pointer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDevice? getPointer() {
-    return (_gdkSeatGetPointer(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDevice.fromPointer(_gdkSeatGetPointer(this.handle));
+    final _ret = _gdkSeatGetPointer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDevice.fromPointer(_ret);
   }
 
   /// Returns all `GdkDeviceTools` that are known to the application.

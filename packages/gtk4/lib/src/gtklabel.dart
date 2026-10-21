@@ -331,9 +331,8 @@ class GtkLabel extends GtkWidget
           >('gtk_label_get_attributes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrList? getAttributes() {
-    return (_gtkLabelGetAttributes(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrList.fromPointer(_gtkLabelGetAttributes(this.handle));
+    final _ret = _gtkLabelGetAttributes(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
   }
 
   /// Returns the URI for the active link in the label.
@@ -380,9 +379,8 @@ class GtkLabel extends GtkWidget
           >('gtk_label_get_extra_menu')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getExtraMenu() {
-    return (_gtkLabelGetExtraMenu(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_gtkLabelGetExtraMenu(this.handle));
+    final _ret = _gtkLabelGetExtraMenu(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Returns the justification of the label.
@@ -516,9 +514,8 @@ class GtkLabel extends GtkWidget
           >('gtk_label_get_mnemonic_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getMnemonicWidget() {
-    return (_gtkLabelGetMnemonicWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkLabelGetMnemonicWidget(this.handle));
+    final _ret = _gtkLabelGetMnemonicWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns natural line wrap mode used by the label.
@@ -595,9 +592,8 @@ class GtkLabel extends GtkWidget
           >('gtk_label_get_tabs')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoTabArray? getTabs() {
-    return (_gtkLabelGetTabs(this.handle)) == ffi.nullptr
-        ? null
-        : PangoTabArray.fromPointer(_gtkLabelGetTabs(this.handle));
+    final _ret = _gtkLabelGetTabs(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoTabArray.fromPointer(_ret);
   }
 
   /// Gets the text of the label.
@@ -1427,11 +1423,8 @@ class GtkLabel extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1514,11 +1507,8 @@ class GtkLabel extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1530,11 +1520,8 @@ class GtkLabel extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

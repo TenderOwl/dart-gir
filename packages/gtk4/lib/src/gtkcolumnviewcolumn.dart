@@ -106,11 +106,8 @@ class GtkColumnViewColumn extends GObject {
           >('gtk_column_view_column_get_column_view')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkColumnView? getColumnView() {
-    return (_gtkColumnViewColumnGetColumnView(this.handle)) == ffi.nullptr
-        ? null
-        : GtkColumnView.fromPointer(
-            _gtkColumnViewColumnGetColumnView(this.handle),
-          );
+    final _ret = _gtkColumnViewColumnGetColumnView(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkColumnView.fromPointer(_ret);
   }
 
   /// Returns whether this column should expand.
@@ -132,11 +129,8 @@ class GtkColumnViewColumn extends GObject {
           >('gtk_column_view_column_get_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getFactory() {
-    return (_gtkColumnViewColumnGetFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(
-            _gtkColumnViewColumnGetFactory(this.handle),
-          );
+    final _ret = _gtkColumnViewColumnGetFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the fixed width of the column.
@@ -158,11 +152,8 @@ class GtkColumnViewColumn extends GObject {
           >('gtk_column_view_column_get_header_menu')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getHeaderMenu() {
-    return (_gtkColumnViewColumnGetHeaderMenu(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(
-            _gtkColumnViewColumnGetHeaderMenu(this.handle),
-          );
+    final _ret = _gtkColumnViewColumnGetHeaderMenu(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Returns the ID set with [method@Gtk.ColumnViewColumn.set_id].
@@ -198,9 +189,8 @@ class GtkColumnViewColumn extends GObject {
           >('gtk_column_view_column_get_sorter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSorter? getSorter() {
-    return (_gtkColumnViewColumnGetSorter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSorter.fromPointer(_gtkColumnViewColumnGetSorter(this.handle));
+    final _ret = _gtkColumnViewColumnGetSorter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSorter.fromPointer(_ret);
   }
 
   /// Returns the title set with [method@Gtk.ColumnViewColumn.set_title].

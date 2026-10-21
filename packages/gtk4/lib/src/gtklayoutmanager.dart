@@ -175,9 +175,8 @@ class GtkLayoutManager extends GObject {
           >('gtk_layout_manager_get_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getWidget() {
-    return (_gtkLayoutManagerGetWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkLayoutManagerGetWidget(this.handle));
+    final _ret = _gtkLayoutManagerGetWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Queues a resize on the `GtkWidget` using @manager, if any.

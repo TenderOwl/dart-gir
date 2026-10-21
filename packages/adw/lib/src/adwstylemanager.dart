@@ -120,9 +120,8 @@ class AdwStyleManager extends GObject {
           >('adw_style_manager_get_display')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay? getDisplay() {
-    return (_adwStyleManagerGetDisplay(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(_adwStyleManagerGetDisplay(this.handle));
+    final _ret = _adwStyleManagerGetDisplay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// Gets the system document font.

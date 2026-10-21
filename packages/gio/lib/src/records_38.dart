@@ -158,9 +158,8 @@ class GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.
@@ -299,7 +298,7 @@ class GLoadableIcon {
       }
       return (
         GInputStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);
@@ -462,7 +461,7 @@ class GLoadableIcon {
       }
       return (
         GInputStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);

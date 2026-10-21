@@ -64,9 +64,8 @@ class GZlibDecompressor extends GObject implements GConverter {
           >('g_zlib_decompressor_get_file_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFileInfo? getFileInfo() {
-    return (_gZlibDecompressorGetFileInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GFileInfo.fromPointer(_gZlibDecompressorGetFileInfo(this.handle));
+    final _ret = _gZlibDecompressorGetFileInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFileInfo.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

@@ -115,11 +115,8 @@ class GtkDropTargetAsync extends GtkEventController {
           >('gtk_drop_target_async_get_formats')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkContentFormats? getFormats() {
-    return (_gtkDropTargetAsyncGetFormats(this.handle)) == ffi.nullptr
-        ? null
-        : GdkContentFormats.fromPointer(
-            _gtkDropTargetAsyncGetFormats(this.handle),
-          );
+    final _ret = _gtkDropTargetAsyncGetFormats(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkContentFormats.fromPointer(_ret);
   }
 
   /// Sets the @drop as not accepted on this drag site.

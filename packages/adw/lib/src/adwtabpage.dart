@@ -67,9 +67,8 @@ class AdwTabPage extends GObject implements GtkAccessible {
           >('adw_tab_page_get_icon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getIcon() {
-    return (_adwTabPageGetIcon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_adwTabPageGetIcon(this.handle));
+    final _ret = _adwTabPageGetIcon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Gets whether the indicator of @self is activatable.
@@ -90,9 +89,8 @@ class AdwTabPage extends GObject implements GtkAccessible {
           >('adw_tab_page_get_indicator_icon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getIndicatorIcon() {
-    return (_adwTabPageGetIndicatorIcon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_adwTabPageGetIndicatorIcon(this.handle));
+    final _ret = _adwTabPageGetIndicatorIcon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Gets the tooltip of the indicator icon of @self.
@@ -163,9 +161,8 @@ class AdwTabPage extends GObject implements GtkAccessible {
           >('adw_tab_page_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwTabPage? getParent() {
-    return (_adwTabPageGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : AdwTabPage.fromPointer(_adwTabPageGetParent(this.handle));
+    final _ret = _adwTabPageGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwTabPage.fromPointer(_ret);
   }
 
   /// Gets whether @self is pinned.
@@ -602,11 +599,8 @@ class AdwTabPage extends GObject implements GtkAccessible {
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -689,11 +683,8 @@ class AdwTabPage extends GObject implements GtkAccessible {
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -705,11 +696,8 @@ class AdwTabPage extends GObject implements GtkAccessible {
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

@@ -393,9 +393,8 @@ class GCancellable extends GObject {
         'g_cancellable_get_current',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GCancellable? getCurrent() {
-    return (_gCancellableGetCurrent()) == ffi.nullptr
-        ? null
-        : GCancellable.fromPointer(_gCancellableGetCurrent());
+    final _ret = _gCancellableGetCurrent();
+    return (_ret) == ffi.nullptr ? null : GCancellable.fromPointer(_ret);
   }
 
   /// Emitted when the operation has been cancelled.

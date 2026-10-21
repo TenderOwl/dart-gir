@@ -407,7 +407,7 @@ class GirParser {
     nullable: _bool(e, 'nullable') || _bool(e, 'allow-none'),
     transferOwnership: _transfer(e.getAttribute('transfer-ownership')),
     optional: _bool(e, 'optional'),
-    callerAllocates: _bool(e, 'caller-allocates'),
+    callerAllocates: _bool(e, 'caller-allocates', defaultValue: true),
     scope: e.getAttribute('scope'),
     closureIndex: _int(e, 'closure'),
     doc: _doc(e),

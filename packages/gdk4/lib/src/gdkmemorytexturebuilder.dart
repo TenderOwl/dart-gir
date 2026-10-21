@@ -92,9 +92,8 @@ class GdkMemoryTextureBuilder extends GObject {
           >('gdk_memory_texture_builder_get_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes? getBytes() {
-    return (_gdkMemoryTextureBuilderGetBytes(this.handle)) == ffi.nullptr
-        ? null
-        : GBytes.fromPointer(_gdkMemoryTextureBuilderGetBytes(this.handle));
+    final _ret = _gdkMemoryTextureBuilderGetBytes(this.handle);
+    return (_ret) == ffi.nullptr ? null : GBytes.fromPointer(_ret);
   }
 
   /// Gets the colorstate previously set via gdk_memory_texture_builder_set_color_state().
@@ -175,11 +174,8 @@ class GdkMemoryTextureBuilder extends GObject {
           >('gdk_memory_texture_builder_get_update_region')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoRegion? getUpdateRegion() {
-    return (_gdkMemoryTextureBuilderGetUpdateRegion(this.handle)) == ffi.nullptr
-        ? null
-        : CairoRegion.fromPointer(
-            _gdkMemoryTextureBuilderGetUpdateRegion(this.handle),
-          );
+    final _ret = _gdkMemoryTextureBuilderGetUpdateRegion(this.handle);
+    return (_ret) == ffi.nullptr ? null : CairoRegion.fromPointer(_ret);
   }
 
   /// Gets the texture previously set via gdk_memory_texture_builder_set_update_texture()
@@ -192,12 +188,8 @@ class GdkMemoryTextureBuilder extends GObject {
           >('gdk_memory_texture_builder_get_update_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkTexture? getUpdateTexture() {
-    return (_gdkMemoryTextureBuilderGetUpdateTexture(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkTexture.fromPointer(
-            _gdkMemoryTextureBuilderGetUpdateTexture(this.handle),
-          );
+    final _ret = _gdkMemoryTextureBuilderGetUpdateTexture(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
   }
 
   /// Gets the width previously set via gdk_memory_texture_builder_set_width()

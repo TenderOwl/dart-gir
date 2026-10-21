@@ -70,9 +70,8 @@ class GtkMultiSelection extends GObject
           >('gtk_multi_selection_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkMultiSelectionGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkMultiSelectionGetModel(this.handle));
+    final _ret = _gtkMultiSelectionGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Sets the model that @self should wrap.
@@ -220,9 +219,8 @@ class GtkMultiSelection extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

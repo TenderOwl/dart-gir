@@ -88,9 +88,8 @@ class GtkFileLauncher extends GObject {
           >('gtk_file_launcher_get_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
-    return (_gtkFileLauncherGetFile(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkFileLauncherGetFile(this.handle));
+    final _ret = _gtkFileLauncherGetFile(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Returns whether to make the file writable for the handler.

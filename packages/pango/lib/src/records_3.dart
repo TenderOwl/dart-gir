@@ -94,11 +94,10 @@ final class PangoFontDescription {
           >('pango_font_description_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? copy() {
-    return (_pangoFontDescriptionCopy(this.handle)) == ffi.nullptr
+    final _ret = _pangoFontDescriptionCopy(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _pangoFontDescriptionCopy(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Make a copy of a `PangoFontDescription`, but don't duplicate
@@ -116,11 +115,10 @@ final class PangoFontDescription {
           >('pango_font_description_copy_static')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? copyStatic() {
-    return (_pangoFontDescriptionCopyStatic(this.handle)) == ffi.nullptr
+    final _ret = _pangoFontDescriptionCopyStatic(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _pangoFontDescriptionCopyStatic(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Compares two font descriptions for equality.

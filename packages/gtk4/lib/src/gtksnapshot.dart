@@ -1397,9 +1397,8 @@ class GtkSnapshot extends GdkSnapshot {
           >('gtk_snapshot_to_node')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderNode? toNode() {
-    return (_gtkSnapshotToNode(this.handle)) == ffi.nullptr
-        ? null
-        : GskRenderNode.fromPointer(_gtkSnapshotToNode(this.handle));
+    final _ret = _gtkSnapshotToNode(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
   }
 
   /// Returns a paintable encapsulating the render node
@@ -1424,15 +1423,11 @@ class GtkSnapshot extends GdkSnapshot {
             )
           >();
   GdkPaintable? toPaintable([GrapheneSize? size]) {
-    return (_gtkSnapshotToPaintable(
-              this.handle,
-              size?.handle ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(
-            _gtkSnapshotToPaintable(this.handle, size?.handle ?? ffi.nullptr),
-          );
+    final _ret = _gtkSnapshotToPaintable(
+      this.handle,
+      size?.handle ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Transforms @snapshot's coordinate system with the given @transform.

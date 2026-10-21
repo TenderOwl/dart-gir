@@ -351,11 +351,8 @@ final class PangoAttrIterator {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   PangoAttribute? get_(PangoAttrType type_) {
-    return (_pangoAttrIteratorGet(this.handle, type_.value)) == ffi.nullptr
-        ? null
-        : PangoAttribute.fromPointer(
-            _pangoAttrIteratorGet(this.handle, type_.value),
-          );
+    final _ret = _pangoAttrIteratorGet(this.handle, type_.value);
+    return (_ret) == ffi.nullptr ? null : PangoAttribute.fromPointer(_ret);
   }
 
   /// Gets a list of all attributes at the current position of the

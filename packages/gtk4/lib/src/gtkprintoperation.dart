@@ -240,11 +240,8 @@ class GtkPrintOperation extends GObject implements GtkPrintOperationPreview {
           >('gtk_print_operation_get_print_settings')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPrintSettings? getPrintSettings() {
-    return (_gtkPrintOperationGetPrintSettings(this.handle)) == ffi.nullptr
-        ? null
-        : GtkPrintSettings.fromPointer(
-            _gtkPrintOperationGetPrintSettings(this.handle),
-          );
+    final _ret = _gtkPrintOperationGetPrintSettings(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkPrintSettings.fromPointer(_ret);
   }
 
   /// Returns the status of the print operation.

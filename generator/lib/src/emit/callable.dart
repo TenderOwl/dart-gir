@@ -3,6 +3,7 @@ library;
 
 import '../gir/gir.dart';
 import '../resolve/naming.dart';
+import '../resolve/types.dart';
 import 'context.dart';
 
 class _InParam {
@@ -30,10 +31,22 @@ class _CallbackAlloc {
 }
 
 class _OutParam {
-  _OutParam(this.varName, this.name, this.bridge);
+  _OutParam(this.varName, this.name, this.bridge, {required this.paramIndex});
   final String varName;
   final String name;
   final TypeBridge bridge;
+
+  /// Index of the underlying [GirParameter] in `fn.parameters`. The
+  /// byte count of a callee-allocated byte buffer is found through it.
+  final int paramIndex;
+
+  /// `true` when the value is consumed by another OUT parameter — the
+  /// byte count of a callee-allocated byte buffer.
+  ///
+  /// The slot is still allocated and released like any other OUT slot,
+  /// but the count is not a separate element of the returned record: the
+  /// buffer is copied into a `Uint8List` that knows its own length.
+  bool absorbed = false;
 }
 
 /// Emits a Dart wrapper (plus its private native binding) for a
@@ -97,6 +110,16 @@ class CallableEmitter {
     final callbackAllocs = <_CallbackAlloc>[];
     // Bridges indexed by parameter position, in declaration order.
     final bridges = <int, TypeBridge>{};
+    // The byte count of a callee-allocated byte buffer is consumed by
+    // the buffer itself: the wrapper copies the bytes into a
+    // `Uint8List` that knows its own length, so the count is not a
+    // separate element of the returned record.
+    final absorbedOutIndices = <int>{};
+    for (final p in fn.parameters) {
+      if (!TypeResolver.isByteBufferOut(p)) continue;
+      absorbedOutIndices.add(p.type!.array!.lengthParameterIndex!);
+    }
+
     for (var i = 0; i < fn.parameters.length; i++) {
       final p = fn.parameters[i];
       final (bridge, reason) = ctx.bridgeFor(
@@ -104,6 +127,7 @@ class CallableEmitter {
         nullable: p.nullable,
         transfer: p.transferOwnership,
         direction: p.direction,
+        callerAllocates: p.callerAllocates,
         relativeTo: relativeTo,
       );
       if (bridge == null) {
@@ -137,7 +161,10 @@ class CallableEmitter {
             );
             return null;
           }
-          outs.add(_OutParam('_out${outs.length}', p.name, bridge));
+          outs.add(
+            _OutParam('_out${outs.length}', p.name, bridge, paramIndex: i)
+              ..absorbed = absorbedOutIndices.contains(i),
+          );
       }
     }
 
@@ -381,10 +408,9 @@ class CallableEmitter {
       } else {
         converted = retBridge.fromNative(raw);
       }
-      if (outs.isEmpty) return converted;
-      final outExprs = outs
-          .map((o) => o.bridge.outExtract!(o.varName))
-          .join(', ');
+      final visible = outs.where((o) => !o.absorbed).toList();
+      if (visible.isEmpty) return converted;
+      final outExprs = visible.map((o) => _outExpr(o, outs)).join(', ');
       return '($converted, $outExprs)';
     }
 
@@ -404,6 +430,13 @@ class CallableEmitter {
       } else if (retBridge.isVoid) {
         core.add('$call;');
         core.add('return ${_outsOnlyExpr(outs)};');
+      } else if (retBridge.evaluatesArgTwice) {
+        // The conversion mentions its argument twice
+        // (`($call) == ffi.nullptr ? null : $call`), so the call is
+        // bound to a local first — inlined, the native function would
+        // run twice.
+        core.add('final _ret = $call;');
+        core.add('return ${resultExpr('_ret')};');
       } else {
         core.add('return ${resultExpr(call)};');
       }
@@ -422,10 +455,12 @@ class CallableEmitter {
             'final ${o.varName}Anchor = HeapAnchor.allocate(${o.bridge.outAllocSize});',
           );
           core.add('final ${o.varName} = ${o.varName}Anchor.buffer;');
-        } else if (o.bridge.outPointee == 'ffi.Pointer<ffi.Void>') {
+        } else if (o.bridge.outPointee == 'ffi.Pointer<ffi.Void>' ||
+            o.bridge.outExtractBytes != null) {
           // A pointer-sized slot is zeroed: the C function is allowed
           // to leave the out parameter untouched, and an uninitialized
-          // pointer would be a wild read.
+          // pointer would be a wild read. A byte buffer's slot counts —
+          // the callee writes the buffer pointer into it.
           core.add('final ${o.varName} = calloc<${o.bridge.outPointee}>();');
         } else {
           core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
@@ -541,21 +576,38 @@ class CallableEmitter {
     return b.toString();
   }
 
-  static String _outsOnlyExpr(List<_OutParam> outs) {
-    if (outs.length == 1) {
-      return outs.single.bridge.outExtract!(outs.single.varName);
+  /// The expression that reads [o] out of its slot after the call.
+  ///
+  /// A callee-allocated byte buffer needs its byte count, which lives
+  /// in a sibling OUT slot — the `outs` list is complete by the time
+  /// this runs, so the sibling is found through its parameter index.
+  String _outExpr(_OutParam o, List<_OutParam> outs) {
+    final bytes = o.bridge.outExtractBytes;
+    if (bytes != null) {
+      final lengthIndex = o.bridge.outByteBufferLengthIndex!;
+      final lengthOut = outs.firstWhere((x) => x.paramIndex == lengthIndex);
+      return bytes(o.varName, lengthOut.varName);
     }
-    return '(${outs.map((o) => o.bridge.outExtract!(o.varName)).join(', ')})';
+    return o.bridge.outExtract!(o.varName);
+  }
+
+  String _outsOnlyExpr(List<_OutParam> outs) {
+    final visible = outs.where((o) => !o.absorbed).toList();
+    if (visible.length == 1) {
+      return _outExpr(visible.single, outs);
+    }
+    return '(${visible.map((o) => _outExpr(o, outs)).join(', ')})';
   }
 
   static String _returnType(TypeBridge ret, List<_OutParam> outs) {
+    final visible = outs.where((o) => !o.absorbed).toList();
     if (ret.isVoid) {
-      if (outs.isEmpty) return 'void';
-      if (outs.length == 1) return outs.single.bridge.wrapperType;
-      return '(${outs.map((o) => o.bridge.wrapperType).join(', ')})';
+      if (visible.isEmpty) return 'void';
+      if (visible.length == 1) return visible.single.bridge.wrapperType;
+      return '(${visible.map((o) => o.bridge.wrapperType).join(', ')})';
     }
-    if (outs.isEmpty) return ret.wrapperType;
-    return '(${[ret.wrapperType, ...outs.map((o) => o.bridge.wrapperType)].join(', ')})';
+    if (visible.isEmpty) return ret.wrapperType;
+    return '(${[ret.wrapperType, ...visible.map((o) => o.bridge.wrapperType)].join(', ')})';
   }
 
   /// `dart:core` type names that a class member must not shadow (a member

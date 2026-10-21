@@ -172,9 +172,8 @@ class AdwDialog extends GtkWidget
           >('adw_dialog_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_adwDialogGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwDialogGetChild(this.handle));
+    final _ret = _adwDialogGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the height of the dialog's contents.
@@ -204,11 +203,8 @@ class AdwDialog extends GtkWidget
           >('adw_dialog_get_current_breakpoint')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBreakpoint? getCurrentBreakpoint() {
-    return (_adwDialogGetCurrentBreakpoint(this.handle)) == ffi.nullptr
-        ? null
-        : AdwBreakpoint.fromPointer(
-            _adwDialogGetCurrentBreakpoint(this.handle),
-          );
+    final _ret = _adwDialogGetCurrentBreakpoint(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwBreakpoint.fromPointer(_ret);
   }
 
   /// Gets the default widget for @self.
@@ -220,9 +216,8 @@ class AdwDialog extends GtkWidget
           >('adw_dialog_get_default_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getDefaultWidget() {
-    return (_adwDialogGetDefaultWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwDialogGetDefaultWidget(this.handle));
+    final _ret = _adwDialogGetDefaultWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the focus widget for @self.
@@ -234,9 +229,8 @@ class AdwDialog extends GtkWidget
           >('adw_dialog_get_focus')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFocus() {
-    return (_adwDialogGetFocus(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwDialogGetFocus(this.handle));
+    final _ret = _adwDialogGetFocus(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets whether to size content of @self automatically.
@@ -699,11 +693,8 @@ class AdwDialog extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -786,11 +777,8 @@ class AdwDialog extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -802,11 +790,8 @@ class AdwDialog extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

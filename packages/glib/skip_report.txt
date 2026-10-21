@@ -1,8 +1,8 @@
 # Skip report for package glib (GLib 2.0)
-Total skipped: 351
+Total skipped: 349
 
 ## By category
-callable: 332
+callable: 330
 alias: 13
 constant: 2
 callback: 2
@@ -18,10 +18,10 @@ parameter string: array of TypeKind.string (later phase): 6
 parameter strv: array of TypeKind.string (later phase): 3
 return: unknown type: time_t: 3
 unsupported out parameter out (ffi.Pointer<ffi.Uint8>): 2
-unsupported out parameter end (ffi.Pointer<ffi.Uint8>): 2
 array parameter in callback signature: 2
 inout parameter rc: 2
 unsupported out parameter standard_output (ffi.Pointer<ffi.Uint8>): 2
+unsupported out parameter end (ffi.Pointer<ffi.Uint8>): 2
 parameter stamp: unknown type: time_t: 2
 parameter list: array of TypeKind.string (later phase): 2
 inout parameter location: 2
@@ -42,17 +42,16 @@ moved to Date.get_sunday_weeks_in_year: 1
 moved to Date.get_weeks_in_year: 1
 moved to Date.is_leap_year: 1
 moved to Date.strftime: 1
-moved to AsyncQueue.new: 1
+moved to Date.valid_day: 1
 moved to Date.valid_dmy: 1
 moved to Date.valid_julian: 1
 moved to Date.valid_month: 1
 moved to Date.valid_weekday: 1
 moved to Date.valid_year: 1
 moved to Dir.make_tmp: 1
-moved to AsyncQueue.new_full: 1
+moved to AsyncQueue.new: 1
 moved to Error.domain_register: 1
 moved to Error.domain_register_static: 1
-unsupported out parameter contents (ffi.Pointer<ffi.Uint8>): 1
 parameter filename_charsets: array of TypeKind.string (later phase): 1
 moved to HashTable.add: 1
 moved to HashTable.contains: 1
@@ -89,7 +88,7 @@ moved to KeyFile.error_quark: 1
 moved to List.pop_allocator: 1
 moved to List.push_allocator: 1
 introspectable=0 (C macro; use log_set_handler_full): 1
-inout parameter text: 1
+moved to AsyncQueue.new_full: 1
 parameter func: callback LogWriterFunc has unsupported signature: 1
 moved to MainContext.default: 1
 moved to MainContext.get_thread_default: 1
@@ -104,7 +103,7 @@ moved to Once.init_leave: 1
 moved to Once.init_leave_pointer: 1
 moved to PathBuf.equal: 1
 inout parameter err: 1
-unparseable int value: 18446744073709551615: 1
+inout parameter text: 1
 moved to Regex.check_replacement: 1
 moved to Regex.error_quark: 1
 moved to Regex.escape_nul: 1
@@ -130,7 +129,7 @@ moved to Source.remove: 1
 moved to Source.remove_by_funcs_user_data: 1
 moved to Source.remove_by_user_data: 1
 moved to Source.set_name_by_id: 1
-moved to BookmarkFile.error_quark: 1
+unparseable int value: 18446744073709551615: 1
 parameter ascii_alternates: array of TypeKind.string (later phase): 1
 moved to Thread.error_quark: 1
 moved to Thread.exit: 1
@@ -138,7 +137,7 @@ moved to ThreadPool.get_max_idle_time: 1
 moved to ThreadPool.get_max_unused_threads: 1
 moved to ThreadPool.get_num_unused_threads: 1
 moved to ThreadPool.set_max_idle_time: 1
-moved to ByteArray.append: 1
+moved to BookmarkFile.error_quark: 1
 moved to ThreadPool.stop_unused_threads: 1
 moved to Thread.self: 1
 moved to Thread.yield: 1
@@ -171,7 +170,7 @@ moved to Uri.split_with_user: 1
 moved to Uri.unescape_bytes: 1
 moved to Uri.unescape_segment: 1
 moved to Uri.unescape_string: 1
-moved to ThreadPool.set_max_unused_threads: 1
+moved to ByteArray.append: 1
 moved to Variant.is_object_path: 1
 moved to Variant.is_signature: 1
 moved to Variant.parse: 1
@@ -192,7 +191,6 @@ parameter visited: unknown type: time_t: 1
 parameter timet: unknown type: time_t: 1
 unsupported out parameter buf (ffi.Pointer<ffi.Uint8>): 1
 parameter terminator_pos: nullable scalar parameter (gsize): 1
-unsupported out parameter str_return (ffi.Pointer<ffi.Uint8>): 1
 moved to ByteArray.new_take: 1
 unsupported out parameter fds (ffi.Pointer<ffi.Void>): 1
 moved to ByteArray.prepend: 1
@@ -203,7 +201,7 @@ moved to ByteArray.remove_index: 1
 inout parameter time_: 1
 moved to ByteArray.remove_index_fast: 1
 moved to ByteArray.remove_range: 1
-moved to Date.valid_day: 1
+moved to ThreadPool.set_max_unused_threads: 1
 
 ## First 50 entries
 [constant] GLib.CSET_a_2_z — duplicate constant: GLib.CSET_a_2_z and GLib.CSET_A_2_Z both map to csetA2Z

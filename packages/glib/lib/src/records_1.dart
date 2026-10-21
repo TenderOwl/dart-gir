@@ -567,9 +567,8 @@ final class GAsyncQueue {
             )
           >();
   ffi.Pointer<ffi.Void>? timedPop(GTimeVal endTime) {
-    return (_gAsyncQueueTimedPop(this.handle, endTime.handle)) == ffi.nullptr
-        ? null
-        : (_gAsyncQueueTimedPop(this.handle, endTime.handle));
+    final _ret = _gAsyncQueueTimedPop(this.handle, endTime.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Pops data from the @queue. If the queue is empty, blocks until
@@ -597,10 +596,8 @@ final class GAsyncQueue {
             )
           >();
   ffi.Pointer<ffi.Void>? timedPopUnlocked(GTimeVal endTime) {
-    return (_gAsyncQueueTimedPopUnlocked(this.handle, endTime.handle)) ==
-            ffi.nullptr
-        ? null
-        : (_gAsyncQueueTimedPopUnlocked(this.handle, endTime.handle));
+    final _ret = _gAsyncQueueTimedPopUnlocked(this.handle, endTime.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Pops data from the @queue. If the queue is empty, blocks for
@@ -617,9 +614,8 @@ final class GAsyncQueue {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? timeoutPop(int timeout) {
-    return (_gAsyncQueueTimeoutPop(this.handle, timeout)) == ffi.nullptr
-        ? null
-        : (_gAsyncQueueTimeoutPop(this.handle, timeout));
+    final _ret = _gAsyncQueueTimeoutPop(this.handle, timeout);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Pops data from the @queue. If the queue is empty, blocks for
@@ -638,9 +634,8 @@ final class GAsyncQueue {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? timeoutPopUnlocked(int timeout) {
-    return (_gAsyncQueueTimeoutPopUnlocked(this.handle, timeout)) == ffi.nullptr
-        ? null
-        : (_gAsyncQueueTimeoutPopUnlocked(this.handle, timeout));
+    final _ret = _gAsyncQueueTimeoutPopUnlocked(this.handle, timeout);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Tries to pop data from the @queue. If no data is available,
@@ -653,9 +648,8 @@ final class GAsyncQueue {
           >('g_async_queue_try_pop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? tryPop() {
-    return (_gAsyncQueueTryPop(this.handle)) == ffi.nullptr
-        ? null
-        : (_gAsyncQueueTryPop(this.handle));
+    final _ret = _gAsyncQueueTryPop(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Tries to pop data from the @queue. If no data is available,
@@ -670,9 +664,8 @@ final class GAsyncQueue {
           >('g_async_queue_try_pop_unlocked')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? tryPopUnlocked() {
-    return (_gAsyncQueueTryPopUnlocked(this.handle)) == ffi.nullptr
-        ? null
-        : (_gAsyncQueueTryPopUnlocked(this.handle));
+    final _ret = _gAsyncQueueTryPopUnlocked(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Releases the queue's lock.

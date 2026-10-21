@@ -93,11 +93,8 @@ class GtkGestureSingle extends GtkGesture {
           >('gtk_gesture_single_get_current_sequence')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkEventSequence? getCurrentSequence() {
-    return (_gtkGestureSingleGetCurrentSequence(this.handle)) == ffi.nullptr
-        ? null
-        : GdkEventSequence.fromPointer(
-            _gtkGestureSingleGetCurrentSequence(this.handle),
-          );
+    final _ret = _gtkGestureSingleGetCurrentSequence(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkEventSequence.fromPointer(_ret);
   }
 
   /// Gets whether a gesture is exclusive.

@@ -118,9 +118,8 @@ final class PangoItem {
           >('pango_item_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoItem? copy() {
-    return (_pangoItemCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoItem.fromPointer(_pangoItemCopy(this.handle));
+    final _ret = _pangoItemCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoItem.fromPointer(_ret);
   }
 
   /// Free a `PangoItem` and all associated memory.
@@ -364,12 +363,8 @@ final class PangoLanguage {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static PangoLanguage? fromString([String? language]) {
     return withNativeString(language, (nativeLanguage) {
-      return (_pangoLanguageFromString(nativeLanguage.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : PangoLanguage.fromPointer(
-              _pangoLanguageFromString(nativeLanguage.cast<Utf8>()),
-            );
+      final _ret = _pangoLanguageFromString(nativeLanguage.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : PangoLanguage.fromPointer(_ret);
     });
   }
 

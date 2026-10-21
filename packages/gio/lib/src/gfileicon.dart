@@ -137,9 +137,8 @@ class GFileIcon extends GObject implements GIcon, GLoadableIcon {
           >('g_icon_serialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? serialize() {
-    return (_gIconSerialize(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gIconSerialize(this.handle));
+    final _ret = _gIconSerialize(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Loads a loadable icon. For the asynchronous version of this function,
@@ -181,7 +180,7 @@ class GFileIcon extends GObject implements GIcon, GLoadableIcon {
       }
       return (
         GInputStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);
@@ -344,7 +343,7 @@ class GFileIcon extends GObject implements GIcon, GLoadableIcon {
       }
       return (
         GInputStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);

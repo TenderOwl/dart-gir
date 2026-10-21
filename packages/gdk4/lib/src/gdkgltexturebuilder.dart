@@ -142,9 +142,8 @@ class GdkGLTextureBuilder extends GObject {
           >('gdk_gl_texture_builder_get_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkGLContext? getContext() {
-    return (_gdkGlTextureBuilderGetContext(this.handle)) == ffi.nullptr
-        ? null
-        : GdkGLContext.fromPointer(_gdkGlTextureBuilderGetContext(this.handle));
+    final _ret = _gdkGlTextureBuilderGetContext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkGLContext.fromPointer(_ret);
   }
 
   /// Gets the format previously set via gdk_gl_texture_builder_set_format().
@@ -197,9 +196,8 @@ class GdkGLTextureBuilder extends GObject {
           >('gdk_gl_texture_builder_get_sync')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getSync() {
-    return (_gdkGlTextureBuilderGetSync(this.handle)) == ffi.nullptr
-        ? null
-        : (_gdkGlTextureBuilderGetSync(this.handle));
+    final _ret = _gdkGlTextureBuilderGetSync(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Gets the region previously set via gdk_gl_texture_builder_set_update_region() or
@@ -212,11 +210,8 @@ class GdkGLTextureBuilder extends GObject {
           >('gdk_gl_texture_builder_get_update_region')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoRegion? getUpdateRegion() {
-    return (_gdkGlTextureBuilderGetUpdateRegion(this.handle)) == ffi.nullptr
-        ? null
-        : CairoRegion.fromPointer(
-            _gdkGlTextureBuilderGetUpdateRegion(this.handle),
-          );
+    final _ret = _gdkGlTextureBuilderGetUpdateRegion(this.handle);
+    return (_ret) == ffi.nullptr ? null : CairoRegion.fromPointer(_ret);
   }
 
   /// Gets the texture previously set via gdk_gl_texture_builder_set_update_texture() or
@@ -229,11 +224,8 @@ class GdkGLTextureBuilder extends GObject {
           >('gdk_gl_texture_builder_get_update_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkTexture? getUpdateTexture() {
-    return (_gdkGlTextureBuilderGetUpdateTexture(this.handle)) == ffi.nullptr
-        ? null
-        : GdkTexture.fromPointer(
-            _gdkGlTextureBuilderGetUpdateTexture(this.handle),
-          );
+    final _ret = _gdkGlTextureBuilderGetUpdateTexture(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
   }
 
   /// Gets the width previously set via gdk_gl_texture_builder_set_width() or

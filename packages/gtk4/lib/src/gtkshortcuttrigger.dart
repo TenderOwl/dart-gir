@@ -81,10 +81,8 @@ class GtkShortcutTrigger extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   factory GtkShortcutTrigger.parseString(String string) {
     return withNativeString(string, (nativeString) {
-      return GtkShortcutTrigger.fromPointer(
-        _gtkShortcutTriggerParseString(nativeString.cast<Utf8>()),
-        owned: true,
-      );
+      final _ret = _gtkShortcutTriggerParseString(nativeString.cast<Utf8>());
+      return GtkShortcutTrigger.fromPointer(_ret, owned: true);
     });
   }
 

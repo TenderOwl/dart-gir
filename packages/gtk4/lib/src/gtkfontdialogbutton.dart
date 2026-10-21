@@ -92,9 +92,8 @@ class GtkFontDialogButton extends GtkWidget
           >('gtk_font_dialog_button_get_dialog')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFontDialog? getDialog() {
-    return (_gtkFontDialogButtonGetDialog(this.handle)) == ffi.nullptr
-        ? null
-        : GtkFontDialog.fromPointer(_gtkFontDialogButtonGetDialog(this.handle));
+    final _ret = _gtkFontDialogButtonGetDialog(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkFontDialog.fromPointer(_ret);
   }
 
   /// Returns the font of the button.
@@ -110,11 +109,10 @@ class GtkFontDialogButton extends GtkWidget
           >('gtk_font_dialog_button_get_font_desc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? getFontDesc() {
-    return (_gtkFontDialogButtonGetFontDesc(this.handle)) == ffi.nullptr
+    final _ret = _gtkFontDialogButtonGetFontDesc(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _gtkFontDialogButtonGetFontDesc(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Returns the font features of the button.
@@ -149,11 +147,8 @@ class GtkFontDialogButton extends GtkWidget
           >('gtk_font_dialog_button_get_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLanguage? getLanguage() {
-    return (_gtkFontDialogButtonGetLanguage(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLanguage.fromPointer(
-            _gtkFontDialogButtonGetLanguage(this.handle),
-          );
+    final _ret = _gtkFontDialogButtonGetLanguage(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLanguage.fromPointer(_ret);
   }
 
   /// Returns the level of detail at which this dialog
@@ -532,11 +527,8 @@ class GtkFontDialogButton extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -619,11 +611,8 @@ class GtkFontDialogButton extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -635,11 +624,8 @@ class GtkFontDialogButton extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

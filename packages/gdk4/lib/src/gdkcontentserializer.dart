@@ -67,11 +67,8 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
           >('gdk_content_serializer_get_cancellable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GCancellable? getCancellable() {
-    return (_gdkContentSerializerGetCancellable(this.handle)) == ffi.nullptr
-        ? null
-        : GCancellable.fromPointer(
-            _gdkContentSerializerGetCancellable(this.handle),
-          );
+    final _ret = _gdkContentSerializerGetCancellable(this.handle);
+    return (_ret) == ffi.nullptr ? null : GCancellable.fromPointer(_ret);
   }
 
   /// Gets the `GType` to of the object to serialize.
@@ -136,9 +133,8 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
           >('gdk_content_serializer_get_task_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getTaskData() {
-    return (_gdkContentSerializerGetTaskData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gdkContentSerializerGetTaskData(this.handle));
+    final _ret = _gdkContentSerializerGetTaskData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Gets the user data that was passed when the serializer was registered.
@@ -150,9 +146,8 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
           >('gdk_content_serializer_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getUserData() {
-    return (_gdkContentSerializerGetUserData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gdkContentSerializerGetUserData(this.handle));
+    final _ret = _gdkContentSerializerGetUserData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Gets the `GValue` to read the object to serialize from.
@@ -271,9 +266,8 @@ class GdkContentSerializer extends GObject implements GAsyncResult {
           >('g_async_result_get_source_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSourceObject() {
-    return (_gAsyncResultGetSourceObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gAsyncResultGetSourceObject(this.handle));
+    final _ret = _gAsyncResultGetSourceObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Checks if @res has the given @source_tag (generally a function

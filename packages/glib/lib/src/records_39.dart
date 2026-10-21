@@ -1155,13 +1155,13 @@ final class GUri {
         }
         return (
           (_ret) != 0,
-          stringFromNative(_out0.value.cast(), free: true)!,
-          stringFromNative(_out1.value.cast(), free: true)!,
-          stringFromNative(_out2.value.cast(), free: true)!,
+          stringFromNative(_out0.value.cast(), free: true),
+          stringFromNative(_out1.value.cast(), free: true),
+          stringFromNative(_out2.value.cast(), free: true),
           _out3.value,
-          stringFromNative(_out4.value.cast(), free: true)!,
-          stringFromNative(_out5.value.cast(), free: true)!,
-          stringFromNative(_out6.value.cast(), free: true)!,
+          stringFromNative(_out4.value.cast(), free: true),
+          stringFromNative(_out5.value.cast(), free: true),
+          stringFromNative(_out6.value.cast(), free: true),
         );
       } finally {
         malloc.free(_out0);
@@ -1228,8 +1228,8 @@ final class GUri {
         }
         return (
           (_ret) != 0,
-          stringFromNative(_out0.value.cast(), free: true)!,
-          stringFromNative(_out1.value.cast(), free: true)!,
+          stringFromNative(_out0.value.cast(), free: true),
+          stringFromNative(_out1.value.cast(), free: true),
           _out2.value,
         );
       } finally {
@@ -1331,15 +1331,15 @@ final class GUri {
         }
         return (
           (_ret) != 0,
-          stringFromNative(_out0.value.cast(), free: true)!,
-          stringFromNative(_out1.value.cast(), free: true)!,
-          stringFromNative(_out2.value.cast(), free: true)!,
-          stringFromNative(_out3.value.cast(), free: true)!,
-          stringFromNative(_out4.value.cast(), free: true)!,
+          stringFromNative(_out0.value.cast(), free: true),
+          stringFromNative(_out1.value.cast(), free: true),
+          stringFromNative(_out2.value.cast(), free: true),
+          stringFromNative(_out3.value.cast(), free: true),
+          stringFromNative(_out4.value.cast(), free: true),
           _out5.value,
-          stringFromNative(_out6.value.cast(), free: true)!,
-          stringFromNative(_out7.value.cast(), free: true)!,
-          stringFromNative(_out8.value.cast(), free: true)!,
+          stringFromNative(_out6.value.cast(), free: true),
+          stringFromNative(_out7.value.cast(), free: true),
+          stringFromNative(_out8.value.cast(), free: true),
         );
       } finally {
         malloc.free(_out0);

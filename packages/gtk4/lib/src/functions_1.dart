@@ -1093,9 +1093,8 @@ final _gtkValueDupExpression =
         >('gtk_value_dup_expression')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GtkExpression? valueDupExpression(GValue value) {
-  return (_gtkValueDupExpression(value.handle)) == ffi.nullptr
-      ? null
-      : GtkExpression.fromPointer(_gtkValueDupExpression(value.handle));
+  final _ret = _gtkValueDupExpression(value.handle);
+  return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
 }
 
 /// Retrieves the `GtkExpression` stored inside the given `value`.
@@ -1107,9 +1106,8 @@ final _gtkValueGetExpression =
         >('gtk_value_get_expression')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GtkExpression? valueGetExpression(GValue value) {
-  return (_gtkValueGetExpression(value.handle)) == ffi.nullptr
-      ? null
-      : GtkExpression.fromPointer(_gtkValueGetExpression(value.handle));
+  final _ret = _gtkValueGetExpression(value.handle);
+  return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
 }
 
 /// Stores the given `GtkExpression` inside `value`.

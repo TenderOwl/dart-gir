@@ -197,9 +197,8 @@ class GtkConstraint extends GObject {
           >('gtk_constraint_get_source')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkConstraintTarget? getSource() {
-    return (_gtkConstraintGetSource(this.handle)) == ffi.nullptr
-        ? null
-        : GtkConstraintTarget.fromPointer(_gtkConstraintGetSource(this.handle));
+    final _ret = _gtkConstraintGetSource(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkConstraintTarget.fromPointer(_ret);
   }
 
   /// Retrieves the attribute of the source to be read by the constraint.
@@ -235,9 +234,8 @@ class GtkConstraint extends GObject {
           >('gtk_constraint_get_target')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkConstraintTarget? getTarget() {
-    return (_gtkConstraintGetTarget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkConstraintTarget.fromPointer(_gtkConstraintGetTarget(this.handle));
+    final _ret = _gtkConstraintGetTarget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkConstraintTarget.fromPointer(_ret);
   }
 
   /// Retrieves the attribute of the target to be set by the constraint.

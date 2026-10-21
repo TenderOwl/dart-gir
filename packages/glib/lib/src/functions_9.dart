@@ -120,7 +120,8 @@ final _gMalloc =
       'g_malloc',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 ffi.Pointer<ffi.Void>? mallocFn(int nBytes) {
-  return (_gMalloc(nBytes)) == ffi.nullptr ? null : (_gMalloc(nBytes));
+  final _ret = _gMalloc(nBytes);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Allocates @n_bytes bytes of memory, initialized to 0's.
@@ -133,7 +134,8 @@ final _gMalloc0 =
       'g_malloc0',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 ffi.Pointer<ffi.Void>? malloc0(int nBytes) {
-  return (_gMalloc0(nBytes)) == ffi.nullptr ? null : (_gMalloc0(nBytes));
+  final _ret = _gMalloc0(nBytes);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// This function is similar to g_malloc0(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -147,9 +149,8 @@ final _gMalloc0N =
         >('g_malloc0_n')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
 ffi.Pointer<ffi.Void>? malloc0N(int nBlocks, int nBlockBytes) {
-  return (_gMalloc0N(nBlocks, nBlockBytes)) == ffi.nullptr
-      ? null
-      : (_gMalloc0N(nBlocks, nBlockBytes));
+  final _ret = _gMalloc0N(nBlocks, nBlockBytes);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// This function is similar to g_malloc(), allocating (@n_blocks * @n_block_bytes) bytes,
@@ -163,9 +164,8 @@ final _gMallocN =
         >('g_malloc_n')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
 ffi.Pointer<ffi.Void>? mallocN(int nBlocks, int nBlockBytes) {
-  return (_gMallocN(nBlocks, nBlockBytes)) == ffi.nullptr
-      ? null
-      : (_gMallocN(nBlocks, nBlockBytes));
+  final _ret = _gMallocN(nBlocks, nBlockBytes);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 final _gMarkupErrorQuark =
@@ -253,9 +253,8 @@ final _gMemdup =
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
 ffi.Pointer<ffi.Void>? memdup(ffi.Pointer<ffi.Void>? mem, int byteSize) {
-  return (_gMemdup(mem ?? ffi.nullptr, byteSize)) == ffi.nullptr
-      ? null
-      : (_gMemdup(mem ?? ffi.nullptr, byteSize));
+  final _ret = _gMemdup(mem ?? ffi.nullptr, byteSize);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Allocates @byte_size bytes of memory, and copies @byte_size bytes into it
@@ -273,9 +272,8 @@ final _gMemdup2 =
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
 ffi.Pointer<ffi.Void>? memdup2(ffi.Pointer<ffi.Void>? mem, int byteSize) {
-  return (_gMemdup2(mem ?? ffi.nullptr, byteSize)) == ffi.nullptr
-      ? null
-      : (_gMemdup2(mem ?? ffi.nullptr, byteSize));
+  final _ret = _gMemdup2(mem ?? ffi.nullptr, byteSize);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// A wrapper for the POSIX mkdir() function. The mkdir() function
@@ -488,26 +486,6 @@ String pathGetBasename(String fileName) {
   return withNativeString(fileName, (nativeFileName) {
     return stringFromNative(
       (_gPathGetBasename(nativeFileName.cast<Utf8>())).cast(),
-      free: true,
-    )!;
-  });
-}
-
-/// Gets the directory components of a file name. For example, the directory
-/// component of `/usr/bin/test` is `/usr/bin`. The directory component of `/`
-/// is `/`.
-///
-/// If the file name has no directory components "." is returned.
-/// The returned string should be freed when no longer needed.
-final _gPathGetDirname =
-    glibLookup<
-          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>
-        >('g_path_get_dirname')
-        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>();
-String pathGetDirname(String fileName) {
-  return withNativeString(fileName, (nativeFileName) {
-    return stringFromNative(
-      (_gPathGetDirname(nativeFileName.cast<Utf8>())).cast(),
       free: true,
     )!;
   });

@@ -684,10 +684,8 @@ final _gDatalistGetData =
         >();
 ffi.Pointer<ffi.Void>? datalistGetData(GData datalist, String key) {
   return withNativeString(key, (nativeKey) {
-    return (_gDatalistGetData(datalist.handle, nativeKey.cast<Utf8>())) ==
-            ffi.nullptr
-        ? null
-        : (_gDatalistGetData(datalist.handle, nativeKey.cast<Utf8>()));
+    final _ret = _gDatalistGetData(datalist.handle, nativeKey.cast<Utf8>());
+    return (_ret) == ffi.nullptr ? null : (_ret);
   });
 }
 
@@ -712,9 +710,8 @@ final _gDatalistIdGetData =
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
 ffi.Pointer<ffi.Void>? datalistIdGetData(GData datalist, int keyId) {
-  return (_gDatalistIdGetData(datalist.handle, keyId)) == ffi.nullptr
-      ? null
-      : (_gDatalistIdGetData(datalist.handle, keyId));
+  final _ret = _gDatalistIdGetData(datalist.handle, keyId);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Removes multiple keys from a datalist.

@@ -303,9 +303,8 @@ final class GtkTreePath {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   factory GtkTreePath.fromString(String path) {
     return withNativeString(path, (nativePath) {
-      return GtkTreePath.fromPointer(
-        _gtkTreePathNewFromString(nativePath.cast<Utf8>()),
-      );
+      final _ret = _gtkTreePathNewFromString(nativePath.cast<Utf8>());
+      return GtkTreePath.fromPointer(_ret);
     });
   }
 

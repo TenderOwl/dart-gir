@@ -945,12 +945,11 @@ class GSettings extends GObject {
           >();
   GVariant? getDefaultValue(String key) {
     return withNativeString(key, (nativeKey) {
-      return (_gSettingsGetDefaultValue(this.handle, nativeKey.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gSettingsGetDefaultValue(this.handle, nativeKey.cast<Utf8>()),
-            );
+      final _ret = _gSettingsGetDefaultValue(
+        this.handle,
+        nativeKey.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -1297,12 +1296,8 @@ class GSettings extends GObject {
           >();
   GVariant? getUserValue(String key) {
     return withNativeString(key, (nativeKey) {
-      return (_gSettingsGetUserValue(this.handle, nativeKey.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gSettingsGetUserValue(this.handle, nativeKey.cast<Utf8>()),
-            );
+      final _ret = _gSettingsGetUserValue(this.handle, nativeKey.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 

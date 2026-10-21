@@ -333,9 +333,8 @@ final class GtkBuildableParseContext {
           >('gtk_buildable_parse_context_pop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? pop() {
-    return (_gtkBuildableParseContextPop(this.handle)) == ffi.nullptr
-        ? null
-        : (_gtkBuildableParseContextPop(this.handle));
+    final _ret = _gtkBuildableParseContextPop(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Temporarily redirects markup data to a sub-parser.

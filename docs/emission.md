@@ -535,6 +535,67 @@ GUnixFDList? fdList() {
 hands the reference over, so the wrapper owns it and releases it when
 it is collected.
 
+**Byte-buffer OUT** (`char**`, `guchar**` — two stars, an array of
+bytes). This is the shape of `g_file_load_contents`' `contents`: the C
+function *allocates* the buffer, fills it, and writes the pointer into
+the caller's slot. A sibling parameter carries the byte count, and the
+GIR binds the two together with `<array length="N">` — `N` is the
+0-based index of the count parameter in the callable's parameter list.
+
+The wrapper copies the bytes into a Dart `Uint8List` and releases the
+native buffer. A raw pointer would not do: the garbage collector cannot
+see native memory, so a buffer handed over with `transfer="full"` would
+leak, and a `Uint8List` leaves the user with plain Dart memory and no
+lifetime rules.
+
+```dart
+(bool, Uint8List, String?) loadContents([GCancellable? cancellable]) {
+  final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+  final _out1 = malloc<ffi.Size>();
+  final _out2 = malloc<ffi.Pointer<Utf8>>();
+  final _error = calloc<ffi.Pointer<ffi.Void>>();
+  try {
+    final _ret = _gFileLoadContents(
+      this.handle, cancellable?.handle ?? ffi.nullptr,
+      _out0, _out1, _out2, _error,
+    );
+    if (_error.value != ffi.nullptr) {
+      throw GlibException.fromError(_error.value);
+    }
+    return (
+      (_ret) != 0,
+      bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value),
+      stringFromNative(_out2.value.cast(), free: true),
+    );
+  } finally {
+    malloc.free(_out0);
+    malloc.free(_out1);
+    malloc.free(_out2);
+    calloc.free(_error);
+  }
+}
+```
+
+The byte count is **absorbed** into the buffer: the count is a property
+of the buffer, so it is not a second element of the returned record. The
+count's slot is still allocated — the C function writes into it — and
+still released, but the Dart API does not repeat it.
+
+The shape is narrow on purpose. A parameter qualifies when it is
+`direction="out"`, `caller-allocates="0"` (the *callee* allocates),
+`transfer-ownership="full"` (the caller owns it), an array of bytes
+handed over as a double pointer, and it has a length binding. That
+excludes the look-alikes: `g_spawn_sync`'s `standard_output` (a
+`gchar**` with no length binding — the size would have to come from
+`strlen`), `g_utf8_validate`'s `end` (a `const gchar **` pointing *into*
+the input, and `transfer-ownership="none"`), `g_base64_encode_step`'s
+`out` (a single `gchar*`), and the caller-allocated buffers of
+`g_input_stream_read`.
+
+`bytesFromNative` (in `package:gir_ffi`) does the copy and the release;
+`gFree` resolves `g_free` through an explicitly opened GLib, because a
+`dlopen`ed library is not part of the process-global symbol namespace.
+
 Caveat documented for users: GTK functions that *copy* an OUT struct
 into GTK-owned memory (e.g. `gtk_text_iter_copy`) keep using the
 caller's pointer for the copy; the anchor protects only the buffer we

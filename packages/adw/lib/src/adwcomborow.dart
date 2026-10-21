@@ -123,9 +123,8 @@ class AdwComboRow extends AdwActionRow
           >('adw_combo_row_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_adwComboRowGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(_adwComboRowGetExpression(this.handle));
+    final _ret = _adwComboRowGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Gets the factory for populating list items.
@@ -137,9 +136,8 @@ class AdwComboRow extends AdwActionRow
           >('adw_combo_row_get_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getFactory() {
-    return (_adwComboRowGetFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(_adwComboRowGetFactory(this.handle));
+    final _ret = _adwComboRowGetFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the factory that's currently used to create header widgets for the popup.
@@ -151,11 +149,8 @@ class AdwComboRow extends AdwActionRow
           >('adw_combo_row_get_header_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getHeaderFactory() {
-    return (_adwComboRowGetHeaderFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(
-            _adwComboRowGetHeaderFactory(this.handle),
-          );
+    final _ret = _adwComboRowGetHeaderFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the factory for populating list items in the popup.
@@ -167,11 +162,8 @@ class AdwComboRow extends AdwActionRow
           >('adw_combo_row_get_list_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getListFactory() {
-    return (_adwComboRowGetListFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(
-            _adwComboRowGetListFactory(this.handle),
-          );
+    final _ret = _adwComboRowGetListFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the model that provides the displayed items.
@@ -183,9 +175,8 @@ class AdwComboRow extends AdwActionRow
           >('adw_combo_row_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_adwComboRowGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_adwComboRowGetModel(this.handle));
+    final _ret = _adwComboRowGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Returns the match mode that the search filter is using.
@@ -217,9 +208,8 @@ class AdwComboRow extends AdwActionRow
           >('adw_combo_row_get_selected_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSelectedItem() {
-    return (_adwComboRowGetSelectedItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_adwComboRowGetSelectedItem(this.handle));
+    final _ret = _adwComboRowGetSelectedItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets whether to use the current value as the subtitle.
@@ -622,11 +612,8 @@ class AdwComboRow extends AdwActionRow
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -709,11 +696,8 @@ class AdwComboRow extends AdwActionRow
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -725,11 +709,8 @@ class AdwComboRow extends AdwActionRow
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -990,9 +971,8 @@ class AdwComboRow extends AdwActionRow
           >('gtk_actionable_get_action_target_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getActionTargetValue() {
-    return (_gtkActionableGetActionTargetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gtkActionableGetActionTargetValue(this.handle));
+    final _ret = _gtkActionableGetActionTargetValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Specifies the name of the action with which this widget should be

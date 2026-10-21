@@ -765,9 +765,8 @@ class GtkFontDialog extends GObject {
           >('gtk_font_dialog_get_filter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFilter? getFilter() {
-    return (_gtkFontDialogGetFilter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkFilter.fromPointer(_gtkFontDialogGetFilter(this.handle));
+    final _ret = _gtkFontDialogGetFilter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkFilter.fromPointer(_ret);
   }
 
   /// Returns the fontmap from which fonts are selected,
@@ -780,9 +779,8 @@ class GtkFontDialog extends GObject {
           >('gtk_font_dialog_get_font_map')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMap? getFontMap() {
-    return (_gtkFontDialogGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_gtkFontDialogGetFontMap(this.handle));
+    final _ret = _gtkFontDialogGetFontMap(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMap.fromPointer(_ret);
   }
 
   /// Returns the language for which font features are applied.
@@ -794,9 +792,8 @@ class GtkFontDialog extends GObject {
           >('gtk_font_dialog_get_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLanguage? getLanguage() {
-    return (_gtkFontDialogGetLanguage(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLanguage.fromPointer(_gtkFontDialogGetLanguage(this.handle));
+    final _ret = _gtkFontDialogGetLanguage(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLanguage.fromPointer(_ret);
   }
 
   /// Returns whether the font chooser dialog blocks interaction

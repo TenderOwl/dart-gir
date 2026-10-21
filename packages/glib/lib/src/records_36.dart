@@ -152,9 +152,8 @@ final class GTimeZone {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   factory GTimeZone.identifier([String? identifier]) {
     return withNativeString(identifier, (nativeIdentifier) {
-      return GTimeZone.fromPointer(
-        _gTimeZoneNewIdentifier(nativeIdentifier.cast<Utf8>()),
-      );
+      final _ret = _gTimeZoneNewIdentifier(nativeIdentifier.cast<Utf8>());
+      return GTimeZone.fromPointer(_ret);
     });
   }
 

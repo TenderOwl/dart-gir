@@ -237,20 +237,12 @@ class GMenuItem extends GObject {
           >();
   GVariant? getAttributeValue(String attribute, [GVariantType? expectedType]) {
     return withNativeString(attribute, (nativeAttribute) {
-      return (_gMenuItemGetAttributeValue(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gMenuItemGetAttributeValue(
-                this.handle,
-                nativeAttribute.cast<Utf8>(),
-                expectedType?.handle ?? ffi.nullptr,
-              ),
-            );
+      final _ret = _gMenuItemGetAttributeValue(
+        this.handle,
+        nativeAttribute.cast<Utf8>(),
+        expectedType?.handle ?? ffi.nullptr,
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -272,12 +264,8 @@ class GMenuItem extends GObject {
           >();
   GMenuModel? getLink(String link) {
     return withNativeString(link, (nativeLink) {
-      return (_gMenuItemGetLink(this.handle, nativeLink.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GMenuModel.fromPointer(
-              _gMenuItemGetLink(this.handle, nativeLink.cast<Utf8>()),
-            );
+      final _ret = _gMenuItemGetLink(this.handle, nativeLink.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
     });
   }
 

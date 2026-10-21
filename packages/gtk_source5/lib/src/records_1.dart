@@ -136,12 +136,8 @@ final class GtkSourceEncoding {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static GtkSourceEncoding? getFromCharset(String charset) {
     return withNativeString(charset, (nativeCharset) {
-      return (_gtkSourceEncodingGetFromCharset(nativeCharset.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GtkSourceEncoding.fromPointer(
-              _gtkSourceEncodingGetFromCharset(nativeCharset.cast<Utf8>()),
-            );
+      final _ret = _gtkSourceEncodingGetFromCharset(nativeCharset.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GtkSourceEncoding.fromPointer(_ret);
     });
   }
 

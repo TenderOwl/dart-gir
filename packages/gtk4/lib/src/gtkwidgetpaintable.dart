@@ -87,9 +87,8 @@ class GtkWidgetPaintable extends GObject implements GdkPaintable {
           >('gtk_widget_paintable_get_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getWidget() {
-    return (_gtkWidgetPaintableGetWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkWidgetPaintableGetWidget(this.handle));
+    final _ret = _gtkWidgetPaintableGetWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Sets the widget that should be observed.

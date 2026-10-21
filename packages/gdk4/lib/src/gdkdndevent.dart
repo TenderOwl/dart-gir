@@ -52,8 +52,7 @@ class GdkDNDEvent extends GdkEvent {
           >('gdk_dnd_event_get_drop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDrop? getDrop() {
-    return (_gdkDndEventGetDrop(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDrop.fromPointer(_gdkDndEventGetDrop(this.handle));
+    final _ret = _gdkDndEventGetDrop(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDrop.fromPointer(_ret);
   }
 }

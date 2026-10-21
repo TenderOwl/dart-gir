@@ -209,9 +209,8 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >('gtk_application_get_active_window')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWindow? getActiveWindow() {
-    return (_gtkApplicationGetActiveWindow(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWindow.fromPointer(_gtkApplicationGetActiveWindow(this.handle));
+    final _ret = _gtkApplicationGetActiveWindow(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWindow.fromPointer(_ret);
   }
 
   /// Gets a menu from automatically loaded resources.
@@ -235,12 +234,11 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >();
   GMenu? getMenuById(String id) {
     return withNativeString(id, (nativeId) {
-      return (_gtkApplicationGetMenuById(this.handle, nativeId.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GMenu.fromPointer(
-              _gtkApplicationGetMenuById(this.handle, nativeId.cast<Utf8>()),
-            );
+      final _ret = _gtkApplicationGetMenuById(
+        this.handle,
+        nativeId.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GMenu.fromPointer(_ret);
     });
   }
 
@@ -253,9 +251,8 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >('gtk_application_get_menubar')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getMenubar() {
-    return (_gtkApplicationGetMenubar(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_gtkApplicationGetMenubar(this.handle));
+    final _ret = _gtkApplicationGetMenubar(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Returns the window with the given ID.
@@ -272,9 +269,8 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkWindow? getWindowById(int id) {
-    return (_gtkApplicationGetWindowById(this.handle, id)) == ffi.nullptr
-        ? null
-        : GtkWindow.fromPointer(_gtkApplicationGetWindowById(this.handle, id));
+    final _ret = _gtkApplicationGetWindowById(this.handle, id);
+    return (_ret) == ffi.nullptr ? null : GtkWindow.fromPointer(_ret);
   }
 
   /// Gets a list of the window associated with the application.
@@ -895,18 +891,11 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >();
   GVariantType? getActionParameterType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionParameterType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -935,18 +924,11 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >();
   GVariant? getActionState(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionState(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -985,18 +967,11 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >();
   GVariant? getActionStateHint(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateHint(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -1033,18 +1008,11 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >();
   GVariantType? getActionStateType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -1271,18 +1239,11 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
           >();
   GAction? lookupAction(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GAction.fromPointer(
-              _gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionMapLookupAction(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GAction.fromPointer(_ret);
     });
   }
 

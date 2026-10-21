@@ -157,9 +157,8 @@ class GtkMapListModel extends GObject implements GListModel, GtkSectionModel {
           >('gtk_map_list_model_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkMapListModelGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkMapListModelGetModel(this.handle));
+    final _ret = _gtkMapListModelGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Checks if a map function is currently set on @self.
@@ -386,9 +385,8 @@ class GtkMapListModel extends GObject implements GListModel, GtkSectionModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

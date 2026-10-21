@@ -212,18 +212,11 @@ class GtkSourceCompletion extends GObject {
   static PangoAttrList? fuzzyHighlight(String haystack, String casefoldQuery) {
     return withNativeString(haystack, (nativeHaystack) {
       return withNativeString(casefoldQuery, (nativeCasefoldQuery) {
-        return (_gtkSourceCompletionFuzzyHighlight(
-                  nativeHaystack.cast<Utf8>(),
-                  nativeCasefoldQuery.cast<Utf8>(),
-                )) ==
-                ffi.nullptr
-            ? null
-            : PangoAttrList.fromPointer(
-                _gtkSourceCompletionFuzzyHighlight(
-                  nativeHaystack.cast<Utf8>(),
-                  nativeCasefoldQuery.cast<Utf8>(),
-                ),
-              );
+        final _ret = _gtkSourceCompletionFuzzyHighlight(
+          nativeHaystack.cast<Utf8>(),
+          nativeCasefoldQuery.cast<Utf8>(),
+        );
+        return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
       });
     });
   }

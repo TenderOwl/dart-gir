@@ -80,9 +80,8 @@ ffi.Pointer<ffi.Void>? datasetIdGetData(
   ffi.Pointer<ffi.Void> datasetLocation,
   int keyId,
 ) {
-  return (_gDatasetIdGetData(datasetLocation, keyId)) == ffi.nullptr
-      ? null
-      : (_gDatasetIdGetData(datasetLocation, keyId));
+  final _ret = _gDatasetIdGetData(datasetLocation, keyId);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// This is a variant of g_dgettext() that allows specifying a locale
@@ -417,6 +416,62 @@ int fileErrorQuark() {
   return _gFileErrorQuark();
 }
 
+/// Reads an entire file into allocated memory, with good error
+/// checking.
+///
+/// If the call was successful, it returns %TRUE and sets @contents to the file
+/// contents and @length to the length of the file contents in bytes. The string
+/// stored in @contents will be nul-terminated, so for text files you can pass
+/// %NULL for the @length argument. If the call was not successful, it returns
+/// %FALSE and sets @error. The error domain is %G_FILE_ERROR. Possible error
+/// codes are those in the #GFileError enumeration. In the error case,
+/// @contents is set to %NULL and @length is set to zero.
+final _gFileGetContents =
+    glibLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >
+        >('g_file_get_contents')
+        .asFunction<
+          int Function(
+            ffi.Pointer<Utf8>,
+            ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+          )
+        >();
+(bool, Uint8List) fileGetContents(String filename) {
+  return withNativeString(filename, (nativeFilename) {
+    final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+    final _out1 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gFileGetContents(
+        nativeFilename.cast<Utf8>(),
+        _out0,
+        _out1,
+        _error,
+      );
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        (_ret) != 0,
+        bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      calloc.free(_error);
+    }
+  });
+}
+
 /// Opens a file for writing in the preferred directory for temporary
 /// files (as returned by g_get_tmp_dir()).
 ///
@@ -555,111 +610,6 @@ bool fileSetContents(
         nativeFilename.cast<Utf8>(),
         contents,
         length,
-        _error,
-      );
-      if (_error.value != ffi.nullptr) {
-        throw GlibException.fromError(_error.value);
-      }
-      return (_ret) != 0;
-    } finally {
-      calloc.free(_error);
-    }
-  });
-}
-
-/// Writes all of @contents to a file named @filename, with good error checking.
-/// If a file called @filename already exists it will be overwritten.
-///
-/// @flags control the properties of the write operation: whether it’s atomic,
-/// and what the tradeoff is between returning quickly or being resilient to
-/// system crashes.
-///
-/// As this function performs file I/O, it is recommended to not call it anywhere
-/// where blocking would cause problems, such as in the main loop of a graphical
-/// application. In particular, if @flags has any value other than
-/// %G_FILE_SET_CONTENTS_NONE then this function may call `fsync()`.
-///
-/// If %G_FILE_SET_CONTENTS_CONSISTENT is set in @flags, the operation is atomic
-/// in the sense that it is first written to a temporary file which is then
-/// renamed to the final name.
-///
-/// Notes:
-///
-/// - On UNIX, if @filename already exists hard links to @filename will break.
-/// Also since the file is recreated, existing permissions, access control
-/// lists, metadata etc. may be lost. If @filename is a symbolic link,
-/// the link itself will be replaced, not the linked file.
-///
-/// - On UNIX, if @filename already exists and is non-empty, and if the system
-/// supports it (via a journalling filesystem or equivalent), and if
-/// %G_FILE_SET_CONTENTS_CONSISTENT is set in @flags, the `fsync()` call (or
-/// equivalent) will be used to ensure atomic replacement: @filename
-/// will contain either its old contents or @contents, even in the face of
-/// system power loss, the disk being unsafely removed, etc.
-///
-/// - On UNIX, if @filename does not already exist or is empty, there is a
-/// possibility that system power loss etc. after calling this function will
-/// leave @filename empty or full of NUL bytes, depending on the underlying
-/// filesystem, unless %G_FILE_SET_CONTENTS_DURABLE and
-/// %G_FILE_SET_CONTENTS_CONSISTENT are set in @flags.
-///
-/// - On Windows renaming a file will not remove an existing file with the
-/// new name, so on Windows there is a race condition between the existing
-/// file being removed and the temporary file being renamed.
-///
-/// - On Windows there is no way to remove a file that is open to some
-/// process, or mapped into memory. Thus, this function will fail if
-/// @filename already exists and is open.
-///
-/// If the call was successful, it returns %TRUE. If the call was not successful,
-/// it returns %FALSE and sets @error. The error domain is %G_FILE_ERROR.
-/// Possible error codes are those in the #GFileError enumeration.
-///
-/// Note that the name for the temporary file is constructed by appending up
-/// to 7 characters to @filename.
-///
-/// If the file didn’t exist before and is created, it will be given the
-/// permissions from @mode. Otherwise, the permissions of the existing file will
-/// remain unchanged.
-final _gFileSetContentsFull =
-    glibLookup<
-          ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<ffi.Uint8>,
-              ffi.IntPtr,
-              ffi.Uint32,
-              ffi.Int32,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >
-        >('g_file_set_contents_full')
-        .asFunction<
-          int Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<ffi.Uint8>,
-            int,
-            int,
-            int,
-            ffi.Pointer<ffi.Pointer<ffi.Void>>,
-          )
-        >();
-bool fileSetContentsFull(
-  String filename,
-  ffi.Pointer<ffi.Uint8> contents,
-  int length,
-  GFileSetContentsFlags flags,
-  int mode,
-) {
-  return withNativeString(filename, (nativeFilename) {
-    final _error = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      final _ret = _gFileSetContentsFull(
-        nativeFilename.cast<Utf8>(),
-        contents,
-        length,
-        flags.value,
-        mode,
         _error,
       );
       if (_error.value != ffi.nullptr) {

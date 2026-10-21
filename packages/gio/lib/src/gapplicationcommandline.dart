@@ -353,11 +353,8 @@ class GApplicationCommandLine extends GObject {
           >('g_application_command_line_get_platform_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getPlatformData() {
-    return (_gApplicationCommandLineGetPlatformData(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(
-            _gApplicationCommandLineGetPlatformData(this.handle),
-          );
+    final _ret = _gApplicationCommandLineGetPlatformData(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Gets the stdin of the invoking process.
@@ -378,11 +375,8 @@ class GApplicationCommandLine extends GObject {
           >('g_application_command_line_get_stdin')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GInputStream? getStdin() {
-    return (_gApplicationCommandLineGetStdin(this.handle)) == ffi.nullptr
-        ? null
-        : GInputStream.fromPointer(
-            _gApplicationCommandLineGetStdin(this.handle),
-          );
+    final _ret = _gApplicationCommandLineGetStdin(this.handle);
+    return (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret);
   }
 
   /// Gets the value of a particular environment variable of the command

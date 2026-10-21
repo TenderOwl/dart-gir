@@ -86,11 +86,8 @@ final class GdkColorState {
           >('gdk_color_state_create_cicp_params')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkCicpParams? createCicpParams() {
-    return (_gdkColorStateCreateCicpParams(this.handle)) == ffi.nullptr
-        ? null
-        : GdkCicpParams.fromPointer(
-            _gdkColorStateCreateCicpParams(this.handle),
-          );
+    final _ret = _gdkColorStateCreateCicpParams(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkCicpParams.fromPointer(_ret);
   }
 
   /// Compares two `GdkColorStates` for equality.
@@ -578,11 +575,8 @@ final class GdkContentFormats {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static GdkContentFormats? parse(String string) {
     return withNativeString(string, (nativeString) {
-      return (_gdkContentFormatsParse(nativeString.cast<Utf8>())) == ffi.nullptr
-          ? null
-          : GdkContentFormats.fromPointer(
-              _gdkContentFormatsParse(nativeString.cast<Utf8>()),
-            );
+      final _ret = _gdkContentFormatsParse(nativeString.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GdkContentFormats.fromPointer(_ret);
     });
   }
 }

@@ -156,18 +156,11 @@ class GtkSourceStyleScheme extends GObject {
           >();
   GtkSourceStyle? getStyle(String styleId) {
     return withNativeString(styleId, (nativeStyleId) {
-      return (_gtkSourceStyleSchemeGetStyle(
-                this.handle,
-                nativeStyleId.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GtkSourceStyle.fromPointer(
-              _gtkSourceStyleSchemeGetStyle(
-                this.handle,
-                nativeStyleId.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gtkSourceStyleSchemeGetStyle(
+        this.handle,
+        nativeStyleId.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GtkSourceStyle.fromPointer(_ret);
     });
   }
 

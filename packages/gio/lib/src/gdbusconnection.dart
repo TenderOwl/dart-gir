@@ -1762,11 +1762,8 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
           >('g_dbus_connection_get_peer_credentials')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GCredentials? getPeerCredentials() {
-    return (_gDbusConnectionGetPeerCredentials(this.handle)) == ffi.nullptr
-        ? null
-        : GCredentials.fromPointer(
-            _gDbusConnectionGetPeerCredentials(this.handle),
-          );
+    final _ret = _gDbusConnectionGetPeerCredentials(this.handle);
+    return (_ret) == ffi.nullptr ? null : GCredentials.fromPointer(_ret);
   }
 
   /// Gets the underlying stream used for IO.

@@ -280,9 +280,8 @@ final class GMarkupParseContext {
           >('g_markup_parse_context_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getUserData() {
-    return (_gMarkupParseContextGetUserData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMarkupParseContextGetUserData(this.handle));
+    final _ret = _gMarkupParseContextGetUserData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Feed some data to the #GMarkupParseContext.
@@ -355,9 +354,8 @@ final class GMarkupParseContext {
           >('g_markup_parse_context_pop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? pop() {
-    return (_gMarkupParseContextPop(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMarkupParseContextPop(this.handle));
+    final _ret = _gMarkupParseContextPop(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Temporarily redirects markup data to a sub-parser.

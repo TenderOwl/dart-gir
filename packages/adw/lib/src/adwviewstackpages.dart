@@ -62,11 +62,8 @@ class AdwViewStackPages extends GObject
           >('adw_view_stack_pages_get_selected_page')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwViewStackPage? getSelectedPage() {
-    return (_adwViewStackPagesGetSelectedPage(this.handle)) == ffi.nullptr
-        ? null
-        : AdwViewStackPage.fromPointer(
-            _adwViewStackPagesGetSelectedPage(this.handle),
-          );
+    final _ret = _adwViewStackPagesGetSelectedPage(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwViewStackPage.fromPointer(_ret);
   }
 
   /// Sets the visible child in the associated [class@ViewStack].
@@ -213,9 +210,8 @@ class AdwViewStackPages extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

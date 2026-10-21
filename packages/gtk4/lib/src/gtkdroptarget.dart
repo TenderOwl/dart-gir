@@ -152,9 +152,8 @@ class GtkDropTarget extends GtkEventController {
           >('gtk_drop_target_get_current_drop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDrop? getCurrentDrop() {
-    return (_gtkDropTargetGetCurrentDrop(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDrop.fromPointer(_gtkDropTargetGetCurrentDrop(this.handle));
+    final _ret = _gtkDropTargetGetCurrentDrop(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDrop.fromPointer(_ret);
   }
 
   /// Gets the currently handled drop operation.
@@ -168,9 +167,8 @@ class GtkDropTarget extends GtkEventController {
           >('gtk_drop_target_get_drop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDrop? getDrop() {
-    return (_gtkDropTargetGetDrop(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDrop.fromPointer(_gtkDropTargetGetDrop(this.handle));
+    final _ret = _gtkDropTargetGetDrop(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDrop.fromPointer(_ret);
   }
 
   /// Gets the data formats that this drop target accepts.
@@ -184,9 +182,8 @@ class GtkDropTarget extends GtkEventController {
           >('gtk_drop_target_get_formats')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkContentFormats? getFormats() {
-    return (_gtkDropTargetGetFormats(this.handle)) == ffi.nullptr
-        ? null
-        : GdkContentFormats.fromPointer(_gtkDropTargetGetFormats(this.handle));
+    final _ret = _gtkDropTargetGetFormats(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkContentFormats.fromPointer(_ret);
   }
 
   /// Gets the list of supported `GType`s that can be dropped on the target.
@@ -235,9 +232,8 @@ class GtkDropTarget extends GtkEventController {
           >('gtk_drop_target_get_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GValue? getValue() {
-    return (_gtkDropTargetGetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GValue.fromPointer(_gtkDropTargetGetValue(this.handle));
+    final _ret = _gtkDropTargetGetValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : GValue.fromPointer(_ret);
   }
 
   /// Rejects the ongoing drop operation.

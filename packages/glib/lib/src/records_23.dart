@@ -62,9 +62,8 @@ final class GPrivate {
           >('g_private_get')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? get_() {
-    return (_gPrivateGet(this.handle)) == ffi.nullptr
-        ? null
-        : (_gPrivateGet(this.handle));
+    final _ret = _gPrivateGet(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Sets the thread local variable @key to have the value @value in the
@@ -436,9 +435,8 @@ final class GQueue {
           >('g_queue_peek_head')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? peekHead() {
-    return (_gQueuePeekHead(this.handle)) == ffi.nullptr
-        ? null
-        : (_gQueuePeekHead(this.handle));
+    final _ret = _gQueuePeekHead(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Returns the @n'th element of @queue.
@@ -452,9 +450,8 @@ final class GQueue {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? peekNth(int n) {
-    return (_gQueuePeekNth(this.handle, n)) == ffi.nullptr
-        ? null
-        : (_gQueuePeekNth(this.handle, n));
+    final _ret = _gQueuePeekNth(this.handle, n);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Returns the last element of the queue.
@@ -466,9 +463,8 @@ final class GQueue {
           >('g_queue_peek_tail')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? peekTail() {
-    return (_gQueuePeekTail(this.handle)) == ffi.nullptr
-        ? null
-        : (_gQueuePeekTail(this.handle));
+    final _ret = _gQueuePeekTail(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Removes the first element of the queue and returns its data.
@@ -480,9 +476,8 @@ final class GQueue {
           >('g_queue_pop_head')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? popHead() {
-    return (_gQueuePopHead(this.handle)) == ffi.nullptr
-        ? null
-        : (_gQueuePopHead(this.handle));
+    final _ret = _gQueuePopHead(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Removes the @n'th element of @queue and returns its data.
@@ -496,9 +491,8 @@ final class GQueue {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? popNth(int n) {
-    return (_gQueuePopNth(this.handle, n)) == ffi.nullptr
-        ? null
-        : (_gQueuePopNth(this.handle, n));
+    final _ret = _gQueuePopNth(this.handle, n);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Removes the last element of the queue and returns its data.
@@ -510,9 +504,8 @@ final class GQueue {
           >('g_queue_pop_tail')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? popTail() {
-    return (_gQueuePopTail(this.handle)) == ffi.nullptr
-        ? null
-        : (_gQueuePopTail(this.handle));
+    final _ret = _gQueuePopTail(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Adds a new element at the head of the queue.

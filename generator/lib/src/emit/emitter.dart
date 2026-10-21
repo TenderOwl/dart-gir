@@ -302,6 +302,7 @@ class PackageEmitter {
         crossImports: ctx.imports,
         usesFfiPackage: ctx.usesFfiString || ctx.usesMalloc,
         usesGirFfi: ctx.usesGirFfi,
+        usesTypedData: ctx.usesTypedData,
         parts: parts,
       ),
     );

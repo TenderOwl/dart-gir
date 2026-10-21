@@ -40,9 +40,8 @@ final class GMemChunk {
           >('g_mem_chunk_alloc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? alloc() {
-    return (_gMemChunkAlloc(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMemChunkAlloc(this.handle));
+    final _ret = _gMemChunkAlloc(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   static final _gMemChunkAlloc0 =
@@ -53,9 +52,8 @@ final class GMemChunk {
           >('g_mem_chunk_alloc0')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? alloc0() {
-    return (_gMemChunkAlloc0(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMemChunkAlloc0(this.handle));
+    final _ret = _gMemChunkAlloc0(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   static final _gMemChunkClean =

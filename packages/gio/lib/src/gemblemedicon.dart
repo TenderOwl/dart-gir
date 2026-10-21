@@ -185,8 +185,7 @@ class GEmblemedIcon extends GObject implements GIcon {
           >('g_icon_serialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? serialize() {
-    return (_gIconSerialize(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gIconSerialize(this.handle));
+    final _ret = _gIconSerialize(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 }

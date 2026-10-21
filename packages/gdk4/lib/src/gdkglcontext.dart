@@ -135,9 +135,8 @@ class GdkGLContext extends GdkDrawContext {
           >('gdk_gl_context_get_display')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay? getDisplay() {
-    return (_gdkGlContextGetDisplay(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(_gdkGlContextGetDisplay(this.handle));
+    final _ret = _gdkGlContextGetDisplay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// Retrieves whether the context is forward-compatible.
@@ -198,9 +197,8 @@ class GdkGLContext extends GdkDrawContext {
           >('gdk_gl_context_get_shared_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkGLContext? getSharedContext() {
-    return (_gdkGlContextGetSharedContext(this.handle)) == ffi.nullptr
-        ? null
-        : GdkGLContext.fromPointer(_gdkGlContextGetSharedContext(this.handle));
+    final _ret = _gdkGlContextGetSharedContext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkGLContext.fromPointer(_ret);
   }
 
   /// Retrieves the surface used by the @context.
@@ -212,9 +210,8 @@ class GdkGLContext extends GdkDrawContext {
           >('gdk_gl_context_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gdkGlContextGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gdkGlContextGetSurface(this.handle));
+    final _ret = _gdkGlContextGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Checks whether the @context is using an OpenGL or OpenGL ES profile.
@@ -465,9 +462,8 @@ class GdkGLContext extends GdkDrawContext {
         'gdk_gl_context_get_current',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkGLContext? getCurrent() {
-    return (_gdkGlContextGetCurrent()) == ffi.nullptr
-        ? null
-        : GdkGLContext.fromPointer(_gdkGlContextGetCurrent());
+    final _ret = _gdkGlContextGetCurrent();
+    return (_ret) == ffi.nullptr ? null : GdkGLContext.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

@@ -253,15 +253,11 @@ class AdwNavigationView extends GtkWidget
           >();
   AdwNavigationPage? findPage(String tag) {
     return withNativeString(tag, (nativeTag) {
-      return (_adwNavigationViewFindPage(
-                this.handle,
-                nativeTag.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : AdwNavigationPage.fromPointer(
-              _adwNavigationViewFindPage(this.handle, nativeTag.cast<Utf8>()),
-            );
+      final _ret = _adwNavigationViewFindPage(
+        this.handle,
+        nativeTag.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : AdwNavigationPage.fromPointer(_ret);
     });
   }
 
@@ -332,12 +328,8 @@ class AdwNavigationView extends GtkWidget
             )
           >();
   AdwNavigationPage? getPreviousPage(AdwNavigationPage page) {
-    return (_adwNavigationViewGetPreviousPage(this.handle, page.handle)) ==
-            ffi.nullptr
-        ? null
-        : AdwNavigationPage.fromPointer(
-            _adwNavigationViewGetPreviousPage(this.handle, page.handle),
-          );
+    final _ret = _adwNavigationViewGetPreviousPage(this.handle, page.handle);
+    return (_ret) == ffi.nullptr ? null : AdwNavigationPage.fromPointer(_ret);
   }
 
   /// Gets whether @self is vertically homogeneous.
@@ -358,11 +350,8 @@ class AdwNavigationView extends GtkWidget
           >('adw_navigation_view_get_visible_page')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwNavigationPage? getVisiblePage() {
-    return (_adwNavigationViewGetVisiblePage(this.handle)) == ffi.nullptr
-        ? null
-        : AdwNavigationPage.fromPointer(
-            _adwNavigationViewGetVisiblePage(this.handle),
-          );
+    final _ret = _adwNavigationViewGetVisiblePage(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwNavigationPage.fromPointer(_ret);
   }
 
   /// Gets the tag of the currently visible page in @self.
@@ -980,11 +969,8 @@ class AdwNavigationView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1067,11 +1053,8 @@ class AdwNavigationView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1083,11 +1066,8 @@ class AdwNavigationView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

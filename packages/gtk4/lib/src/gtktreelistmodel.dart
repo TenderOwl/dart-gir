@@ -155,11 +155,8 @@ class GtkTreeListModel extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkTreeListRow? getChildRow(int position) {
-    return (_gtkTreeListModelGetChildRow(this.handle, position)) == ffi.nullptr
-        ? null
-        : GtkTreeListRow.fromPointer(
-            _gtkTreeListModelGetChildRow(this.handle, position),
-          );
+    final _ret = _gtkTreeListModelGetChildRow(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
   }
 
   /// Gets the root model that @self was created with.
@@ -219,11 +216,8 @@ class GtkTreeListModel extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkTreeListRow? getRow(int position) {
-    return (_gtkTreeListModelGetRow(this.handle, position)) == ffi.nullptr
-        ? null
-        : GtkTreeListRow.fromPointer(
-            _gtkTreeListModelGetRow(this.handle, position),
-          );
+    final _ret = _gtkTreeListModelGetRow(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
   }
 
   /// Sets whether the model should autoexpand.
@@ -339,9 +333,8 @@ class GtkTreeListModel extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

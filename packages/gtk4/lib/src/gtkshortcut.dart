@@ -95,9 +95,8 @@ class GtkShortcut extends GObject {
           >('gtk_shortcut_get_action')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkShortcutAction? getAction() {
-    return (_gtkShortcutGetAction(this.handle)) == ffi.nullptr
-        ? null
-        : GtkShortcutAction.fromPointer(_gtkShortcutGetAction(this.handle));
+    final _ret = _gtkShortcutGetAction(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkShortcutAction.fromPointer(_ret);
   }
 
   /// Gets the arguments that are passed when activating the shortcut.
@@ -109,9 +108,8 @@ class GtkShortcut extends GObject {
           >('gtk_shortcut_get_arguments')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getArguments() {
-    return (_gtkShortcutGetArguments(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gtkShortcutGetArguments(this.handle));
+    final _ret = _gtkShortcutGetArguments(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Gets the trigger used to trigger @self.
@@ -123,9 +121,8 @@ class GtkShortcut extends GObject {
           >('gtk_shortcut_get_trigger')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkShortcutTrigger? getTrigger() {
-    return (_gtkShortcutGetTrigger(this.handle)) == ffi.nullptr
-        ? null
-        : GtkShortcutTrigger.fromPointer(_gtkShortcutGetTrigger(this.handle));
+    final _ret = _gtkShortcutGetTrigger(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkShortcutTrigger.fromPointer(_ret);
   }
 
   /// Sets the new action for @self to be @action.

@@ -79,9 +79,8 @@ class GtkCenterLayout extends GtkLayoutManager {
           >('gtk_center_layout_get_center_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getCenterWidget() {
-    return (_gtkCenterLayoutGetCenterWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkCenterLayoutGetCenterWidget(this.handle));
+    final _ret = _gtkCenterLayoutGetCenterWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the end widget of the layout.
@@ -93,9 +92,8 @@ class GtkCenterLayout extends GtkLayoutManager {
           >('gtk_center_layout_get_end_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getEndWidget() {
-    return (_gtkCenterLayoutGetEndWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkCenterLayoutGetEndWidget(this.handle));
+    final _ret = _gtkCenterLayoutGetEndWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the current orienration of the layout manager.
@@ -127,9 +125,8 @@ class GtkCenterLayout extends GtkLayoutManager {
           >('gtk_center_layout_get_start_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getStartWidget() {
-    return (_gtkCenterLayoutGetStartWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkCenterLayoutGetStartWidget(this.handle));
+    final _ret = _gtkCenterLayoutGetStartWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Sets the new baseline position of @self

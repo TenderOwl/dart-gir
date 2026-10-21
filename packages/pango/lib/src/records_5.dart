@@ -93,9 +93,8 @@ final class PangoGlyphItem {
           >('pango_glyph_item_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoGlyphItem? copy() {
-    return (_pangoGlyphItemCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItem.fromPointer(_pangoGlyphItemCopy(this.handle));
+    final _ret = _pangoGlyphItemCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoGlyphItem.fromPointer(_ret);
   }
 
   /// Frees a `PangoGlyphItem` and resources to which it points.
@@ -137,20 +136,12 @@ final class PangoGlyphItem {
           >();
   PangoGlyphItem? split(String text, int splitIndex) {
     return withNativeString(text, (nativeText) {
-      return (_pangoGlyphItemSplit(
-                this.handle,
-                nativeText.cast<Utf8>(),
-                splitIndex,
-              )) ==
-              ffi.nullptr
-          ? null
-          : PangoGlyphItem.fromPointer(
-              _pangoGlyphItemSplit(
-                this.handle,
-                nativeText.cast<Utf8>(),
-                splitIndex,
-              ),
-            );
+      final _ret = _pangoGlyphItemSplit(
+        this.handle,
+        nativeText.cast<Utf8>(),
+        splitIndex,
+      );
+      return (_ret) == ffi.nullptr ? null : PangoGlyphItem.fromPointer(_ret);
     });
   }
 }
@@ -235,9 +226,8 @@ final class PangoGlyphItemIter {
           >('pango_glyph_item_iter_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoGlyphItemIter? copy() {
-    return (_pangoGlyphItemIterCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItemIter.fromPointer(_pangoGlyphItemIterCopy(this.handle));
+    final _ret = _pangoGlyphItemIterCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoGlyphItemIter.fromPointer(_ret);
   }
 
   /// Frees a `PangoGlyphItem`Iter.
@@ -389,9 +379,8 @@ final class PangoGlyphString {
           >('pango_glyph_string_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoGlyphString? copy() {
-    return (_pangoGlyphStringCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphString.fromPointer(_pangoGlyphStringCopy(this.handle));
+    final _ret = _pangoGlyphStringCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoGlyphString.fromPointer(_ret);
   }
 
   /// Compute the logical and ink extents of a glyph string.

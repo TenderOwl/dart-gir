@@ -165,20 +165,12 @@ final class GMainContext {
     GSourceFuncs funcs, [
     ffi.Pointer<ffi.Void>? userData,
   ]) {
-    return (_gMainContextFindSourceByFuncsUserData(
-              this.handle,
-              funcs.handle,
-              userData ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GSource.fromPointer(
-            _gMainContextFindSourceByFuncsUserData(
-              this.handle,
-              funcs.handle,
-              userData ?? ffi.nullptr,
-            ),
-          );
+    final _ret = _gMainContextFindSourceByFuncsUserData(
+      this.handle,
+      funcs.handle,
+      userData ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GSource.fromPointer(_ret);
   }
 
   /// Finds a [struct@GLib.Source] given a pair of context and ID.
@@ -228,18 +220,11 @@ final class GMainContext {
             )
           >();
   GSource? findSourceByUserData([ffi.Pointer<ffi.Void>? userData]) {
-    return (_gMainContextFindSourceByUserData(
-              this.handle,
-              userData ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GSource.fromPointer(
-            _gMainContextFindSourceByUserData(
-              this.handle,
-              userData ?? ffi.nullptr,
-            ),
-          );
+    final _ret = _gMainContextFindSourceByUserData(
+      this.handle,
+      userData ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GSource.fromPointer(_ret);
   }
 
   /// Invokes a function in such a way that @context is owned during the
@@ -638,9 +623,8 @@ final class GMainContext {
         'g_main_context_get_thread_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GMainContext? getThreadDefault() {
-    return (_gMainContextGetThreadDefault()) == ffi.nullptr
-        ? null
-        : GMainContext.fromPointer(_gMainContextGetThreadDefault());
+    final _ret = _gMainContextGetThreadDefault();
+    return (_ret) == ffi.nullptr ? null : GMainContext.fromPointer(_ret);
   }
 
   /// Gets a reference to the thread-default [struct@GLib.MainContext] for this

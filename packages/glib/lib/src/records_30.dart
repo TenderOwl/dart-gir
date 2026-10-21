@@ -204,9 +204,8 @@ final class GSource {
           >('g_source_dup_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMainContext? dupContext() {
-    return (_gSourceDupContext(this.handle)) == ffi.nullptr
-        ? null
-        : GMainContext.fromPointer(_gSourceDupContext(this.handle));
+    final _ret = _gSourceDupContext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMainContext.fromPointer(_ret);
   }
 
   /// Checks whether a source is allowed to be called recursively.
@@ -240,9 +239,8 @@ final class GSource {
           >('g_source_get_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMainContext? getContext() {
-    return (_gSourceGetContext(this.handle)) == ffi.nullptr
-        ? null
-        : GMainContext.fromPointer(_gSourceGetContext(this.handle));
+    final _ret = _gSourceGetContext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMainContext.fromPointer(_ret);
   }
 
   /// This function ignores @source and is otherwise the same as

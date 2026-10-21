@@ -173,9 +173,8 @@ class GBindingGroup extends GObject {
           >('g_binding_group_dup_source')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupSource() {
-    return (_gBindingGroupDupSource(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gBindingGroupDupSource(this.handle));
+    final _ret = _gBindingGroupDupSource(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Sets @source as the source object used for creating property

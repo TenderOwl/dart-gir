@@ -86,9 +86,8 @@ class GskRenderer extends GObject {
           >('gsk_renderer_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gskRendererGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gskRendererGetSurface(this.handle));
+    final _ret = _gskRendererGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Checks whether the renderer is realized or not.

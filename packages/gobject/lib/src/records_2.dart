@@ -495,22 +495,13 @@ final class GParamSpecPool {
           >();
   GParamSpec? lookup(String paramName, int ownerType, bool walkAncestors) {
     return withNativeString(paramName, (nativeParamName) {
-      return (_gParamSpecPoolLookup(
-                this.handle,
-                nativeParamName.cast<Utf8>(),
-                ownerType,
-                walkAncestors ? 1 : 0,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GParamSpec.fromPointer(
-              _gParamSpecPoolLookup(
-                this.handle,
-                nativeParamName.cast<Utf8>(),
-                ownerType,
-                walkAncestors ? 1 : 0,
-              ),
-            );
+      final _ret = _gParamSpecPoolLookup(
+        this.handle,
+        nativeParamName.cast<Utf8>(),
+        ownerType,
+        walkAncestors ? 1 : 0,
+      );
+      return (_ret) == ffi.nullptr ? null : GParamSpec.fromPointer(_ret);
     });
   }
 

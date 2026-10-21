@@ -186,11 +186,8 @@ class GdkDmabufTextureBuilder extends GObject {
           >('gdk_dmabuf_texture_builder_get_color_state')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkColorState? getColorState() {
-    return (_gdkDmabufTextureBuilderGetColorState(this.handle)) == ffi.nullptr
-        ? null
-        : GdkColorState.fromPointer(
-            _gdkDmabufTextureBuilderGetColorState(this.handle),
-          );
+    final _ret = _gdkDmabufTextureBuilderGetColorState(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkColorState.fromPointer(_ret);
   }
 
   /// Returns the display that this texture builder is
@@ -307,11 +304,8 @@ class GdkDmabufTextureBuilder extends GObject {
           >('gdk_dmabuf_texture_builder_get_update_region')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoRegion? getUpdateRegion() {
-    return (_gdkDmabufTextureBuilderGetUpdateRegion(this.handle)) == ffi.nullptr
-        ? null
-        : CairoRegion.fromPointer(
-            _gdkDmabufTextureBuilderGetUpdateRegion(this.handle),
-          );
+    final _ret = _gdkDmabufTextureBuilderGetUpdateRegion(this.handle);
+    return (_ret) == ffi.nullptr ? null : CairoRegion.fromPointer(_ret);
   }
 
   /// Gets the texture previously set via gdk_dmabuf_texture_builder_set_update_texture() or
@@ -324,12 +318,8 @@ class GdkDmabufTextureBuilder extends GObject {
           >('gdk_dmabuf_texture_builder_get_update_texture')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkTexture? getUpdateTexture() {
-    return (_gdkDmabufTextureBuilderGetUpdateTexture(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkTexture.fromPointer(
-            _gdkDmabufTextureBuilderGetUpdateTexture(this.handle),
-          );
+    final _ret = _gdkDmabufTextureBuilderGetUpdateTexture(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
   }
 
   /// Gets the width previously set via gdk_dmabuf_texture_builder_set_width() or

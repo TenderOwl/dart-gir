@@ -825,6 +825,179 @@ void main() {
         reason: 'read-back extracts the bool value',
       );
     });
+
+    // A byte buffer the *callee* allocates: `g_file_load_contents`'
+    // `contents`. GIR:
+    //   <parameter name="contents" direction="out" caller-allocates="0"
+    //              transfer-ownership="full">
+    //     <array length="2" zero-terminated="0" c:type="char**">
+    //       <type name="guint8"/>
+    //     </array>
+    //   </parameter>
+    //   <parameter name="length" direction="out" ...><type name="gsize" .../></parameter>
+    GirFunction byteBufferFn({
+      required int? lengthIndex,
+      required bool callerAllocates,
+    }) => GirFunction(
+      name: 'load_contents',
+      cIdentifier: 'g_file_load_contents',
+      returnType: const GirTypeRef(name: 'gboolean', cType: 'gboolean'),
+      parameters: [
+        GirParameter(
+          name: 'contents',
+          direction: GirParameterDirection.out,
+          transferOwnership: GirTransferOwnership.full,
+          callerAllocates: callerAllocates,
+          type: GirTypeRef(
+            name: 'guint8',
+            cType: 'char**',
+            array: GirArrayInfo(
+              lengthParameterIndex: lengthIndex,
+              elementType: GirTypeRef(name: 'guint8'),
+            ),
+          ),
+        ),
+        GirParameter(
+          name: 'length',
+          direction: GirParameterDirection.out,
+          transferOwnership: GirTransferOwnership.full,
+          callerAllocates: false,
+          type: const GirTypeRef(name: 'gsize', cType: 'gsize*'),
+        ),
+      ],
+    );
+
+    test('a callee-allocated byte buffer becomes a Uint8List', () {
+      final report = GenerationReport();
+      final fn = byteBufferFn(lengthIndex: 1, callerAllocates: false);
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The public shape is a Dart list of bytes, not a raw pointer.
+      expect(code, contains('(bool, Uint8List)'));
+      // The bytes are copied out of the native buffer and the native
+      // buffer is released.
+      expect(
+        code,
+        contains('bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value)'),
+      );
+      // The native parameter is a `char **`: a pointer to the slot.
+      expect(code, contains('ffi.Pointer<ffi.Pointer<ffi.Uint8>>'));
+      // The slot is zeroed — the callee may leave it untouched.
+      expect(code, contains('calloc<ffi.Pointer<ffi.Uint8>>()'));
+    });
+
+    test('the byte count is absorbed into the buffer, not returned', () {
+      final report = GenerationReport();
+      final fn = byteBufferFn(lengthIndex: 1, callerAllocates: false);
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      // The length is a property of the buffer — it is not a second
+      // element of the returned record.
+      expect(code, contains('(bool, Uint8List)'));
+      expect(code, isNot(contains('(bool, Uint8List, int)')));
+      // The slot is still allocated — the C function writes into it —
+      // and released afterwards.
+      expect(code, contains('malloc<ffi.Size>()'));
+      expect(code, contains('malloc.free(_out1);'));
+    });
+
+    test('a byte buffer without a length binding is still skipped', () {
+      // Without `<array length="N">` the size of the buffer is unknown,
+      // so the wrapper could not copy it.
+      final report = GenerationReport();
+      final fn = byteBufferFn(lengthIndex: null, callerAllocates: false);
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNull);
+      expect(report.totalSkipped, 1);
+    });
+
+    test('a caller-allocated byte array is not a callee-allocated buffer', () {
+      // `caller-allocates="1"`: the caller owns the memory, the callee
+      // only fills it. That is a different shape and stays unsupported.
+      final report = GenerationReport();
+      final fn = byteBufferFn(lengthIndex: 1, callerAllocates: true);
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNull);
+      expect(report.totalSkipped, 1);
+    });
+
+    test('a nullable OUT string stays nullable instead of asserting', () {
+      // `g_file_load_contents`' `etag_out` is `nullable="1"`: GLib
+      // leaves the slot NULL when the file has no etag. The old
+      // `stringFromNative(...)!` threw a TypeError there.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'get_etag',
+        cIdentifier: 'g_file_get_etag',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'etag_out',
+            direction: GirParameterDirection.out,
+            transferOwnership: GirTransferOwnership.full,
+            callerAllocates: false,
+            optional: true,
+            nullable: true,
+            type: GirTypeRef(name: 'utf8', cType: 'char**'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The OUT parameter becomes the wrapper's return value, and it
+      // stays nullable.
+      expect(code, contains('String? fileGetEtag()'));
+      expect(
+        code,
+        contains('stringFromNative(_out0.value.cast(), free: true)'),
+      );
+      expect(
+        code,
+        isNot(contains('stringFromNative(_out0.value.cast(), free: true)!')),
+        reason: 'a nullable OUT string must not assert non-null',
+      );
+    });
+
+    test('a nullable pointer return calls the native function once', () {
+      // The conversion `($call) == ffi.nullptr ? null : $call` mentions
+      // the call twice — inlined, the native function would run twice.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'alloc',
+        cIdentifier: 'g_malloc',
+        returnType: const GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+        returnNullable: true,
+        parameters: const [
+          GirParameter(
+            name: 'n_bytes',
+            direction: GirParameterDirection.in_,
+            type: GirTypeRef(name: 'gsize', cType: 'gsize'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      expect(
+        RegExp(r'_gMalloc\(').allMatches(code).length,
+        1,
+        reason: 'the native function must be called exactly once',
+      );
+      expect(code, contains('final _ret = _gMalloc(nBytes);'));
+    });
   });
 
   group('FunctionEmitter.emitConstant', () {

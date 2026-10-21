@@ -137,9 +137,8 @@ class GAsyncResult {
           >('g_async_result_get_source_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSourceObject() {
-    return (_gAsyncResultGetSourceObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gAsyncResultGetSourceObject(this.handle));
+    final _ret = _gAsyncResultGetSourceObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the user data from a [iface@Gio.AsyncResult].
@@ -151,9 +150,8 @@ class GAsyncResult {
           >('g_async_result_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getUserData() {
-    return (_gAsyncResultGetUserData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gAsyncResultGetUserData(this.handle));
+    final _ret = _gAsyncResultGetUserData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Checks if @res has the given @source_tag (generally a function

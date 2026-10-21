@@ -222,9 +222,8 @@ class AdwToast extends GObject {
           >('adw_toast_get_action_target_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getActionTargetValue() {
-    return (_adwToastGetActionTargetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_adwToastGetActionTargetValue(this.handle));
+    final _ret = _adwToastGetActionTargetValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Gets the label to show on the button.
@@ -251,9 +250,8 @@ class AdwToast extends GObject {
           >('adw_toast_get_custom_title')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getCustomTitle() {
-    return (_adwToastGetCustomTitle(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwToastGetCustomTitle(this.handle));
+    final _ret = _adwToastGetCustomTitle(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets priority for @self.

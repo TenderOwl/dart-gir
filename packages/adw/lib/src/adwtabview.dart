@@ -322,9 +322,8 @@ class AdwTabView extends GtkWidget
           >('adw_tab_view_get_menu_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getMenuModel() {
-    return (_adwTabViewGetMenuModel(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_adwTabViewGetMenuModel(this.handle));
+    final _ret = _adwTabViewGetMenuModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Gets the number of pages in @self.
@@ -426,9 +425,8 @@ class AdwTabView extends GtkWidget
           >('adw_tab_view_get_selected_page')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwTabPage? getSelectedPage() {
-    return (_adwTabViewGetSelectedPage(this.handle)) == ffi.nullptr
-        ? null
-        : AdwTabPage.fromPointer(_adwTabViewGetSelectedPage(this.handle));
+    final _ret = _adwTabViewGetSelectedPage(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwTabPage.fromPointer(_ret);
   }
 
   /// Gets the enabled shortcuts for @self.
@@ -1146,11 +1144,8 @@ class AdwTabView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1233,11 +1228,8 @@ class AdwTabView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1249,11 +1241,8 @@ class AdwTabView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

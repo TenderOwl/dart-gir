@@ -414,11 +414,8 @@ class GTlsClientConnection {
           >('g_tls_client_connection_get_server_identity')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GSocketConnectable? getServerIdentity() {
-    return (_gTlsClientConnectionGetServerIdentity(this.handle)) == ffi.nullptr
-        ? null
-        : GSocketConnectable.fromPointer(
-            _gTlsClientConnectionGetServerIdentity(this.handle),
-          );
+    final _ret = _gTlsClientConnectionGetServerIdentity(this.handle);
+    return (_ret) == ffi.nullptr ? null : GSocketConnectable.fromPointer(_ret);
   }
 
   /// SSL 3.0 is no longer supported. See

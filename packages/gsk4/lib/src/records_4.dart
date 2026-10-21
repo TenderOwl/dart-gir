@@ -148,11 +148,8 @@ final class GskRenderReplay {
             )
           >();
   GskRenderNode? default_(GskRenderNode node) {
-    return (_gskRenderReplayDefault(this.handle, node.handle)) == ffi.nullptr
-        ? null
-        : GskRenderNode.fromPointer(
-            _gskRenderReplayDefault(this.handle, node.handle),
-          );
+    final _ret = _gskRenderReplayDefault(this.handle, node.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
   }
 
   /// Filters a font using the current filter function.
@@ -200,11 +197,8 @@ final class GskRenderReplay {
             )
           >();
   GskRenderNode? filterNode(GskRenderNode node) {
-    return (_gskRenderReplayFilterNode(this.handle, node.handle)) == ffi.nullptr
-        ? null
-        : GskRenderNode.fromPointer(
-            _gskRenderReplayFilterNode(this.handle, node.handle),
-          );
+    final _ret = _gskRenderReplayFilterNode(this.handle, node.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
   }
 
   /// Filters a texture using the current filter function.

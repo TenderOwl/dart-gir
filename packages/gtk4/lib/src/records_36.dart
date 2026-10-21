@@ -91,11 +91,10 @@ class GtkFontChooser {
           >('gtk_font_chooser_get_font_desc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? getFontDesc() {
-    return (_gtkFontChooserGetFontDesc(this.handle)) == ffi.nullptr
+    final _ret = _gtkFontChooserGetFontDesc(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _gtkFontChooserGetFontDesc(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Gets the `PangoFontFace` representing the selected font group
@@ -110,9 +109,8 @@ class GtkFontChooser {
           >('gtk_font_chooser_get_font_face')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontFace? getFontFace() {
-    return (_gtkFontChooserGetFontFace(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontFace.fromPointer(_gtkFontChooserGetFontFace(this.handle));
+    final _ret = _gtkFontChooserGetFontFace(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontFace.fromPointer(_ret);
   }
 
   /// Gets the `PangoFontFamily` representing the selected font family.
@@ -128,11 +126,8 @@ class GtkFontChooser {
           >('gtk_font_chooser_get_font_family')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontFamily? getFontFamily() {
-    return (_gtkFontChooserGetFontFamily(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontFamily.fromPointer(
-            _gtkFontChooserGetFontFamily(this.handle),
-          );
+    final _ret = _gtkFontChooserGetFontFamily(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontFamily.fromPointer(_ret);
   }
 
   /// Gets the currently-selected font features.
@@ -164,9 +159,8 @@ class GtkFontChooser {
           >('gtk_font_chooser_get_font_map')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMap? getFontMap() {
-    return (_gtkFontChooserGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_gtkFontChooserGetFontMap(this.handle));
+    final _ret = _gtkFontChooserGetFontMap(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMap.fromPointer(_ret);
   }
 
   /// The selected font size.
@@ -505,9 +499,8 @@ class GtkNative {
           >('gtk_native_get_renderer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderer? getRenderer() {
-    return (_gtkNativeGetRenderer(this.handle)) == ffi.nullptr
-        ? null
-        : GskRenderer.fromPointer(_gtkNativeGetRenderer(this.handle));
+    final _ret = _gtkNativeGetRenderer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderer.fromPointer(_ret);
   }
 
   /// Returns the surface of this `GtkNative`.
@@ -519,9 +512,8 @@ class GtkNative {
           >('gtk_native_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gtkNativeGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gtkNativeGetSurface(this.handle));
+    final _ret = _gtkNativeGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Retrieves the surface transform of @self.
@@ -588,82 +580,7 @@ class GtkNative {
           >('gtk_native_get_for_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static GtkNative? getForSurface(GdkSurface surface) {
-    return (_gtkNativeGetForSurface(surface.handle)) == ffi.nullptr
-        ? null
-        : GtkNative.fromPointer(_gtkNativeGetForSurface(surface.handle));
-  }
-}
-
-/// An interface for widgets that can be oriented horizontally or vertically.
-///
-/// `GtkOrientable` is more flexible in that it allows the orientation to be
-/// changed at runtime, allowing the widgets to “flip”.
-///
-/// ## CSS nodes
-///
-/// `GtkWidget` types implementing the `GtkOrientable` interface will
-/// automatically acquire the `horizontal` or `vertical` CSS class depending on
-/// the value of the [property@Gtk.Orientable:orientation] property.
-class GtkOrientable {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GtkOrientable.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GtkOrientable>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GtkOrientable.rawFromPointer(handle, owned: owned);
-  }
-  GtkOrientable.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// The native `GType` of this interface.
-  static int get GType => _gType;
-
-  /// The cached native `GType` of this interface.
-  ///
-  /// The `get_type` function GLib exports for every registered type is
-  /// looked up once and the result is kept.
-  static final int _gType = gtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
-    'gtk_orientable_get_type',
-  ).asFunction<int Function()>()();
-
-  /// Retrieves the orientation of the @orientable.
-  static final _gtkOrientableGetOrientation =
-      gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_orientable_get_orientation',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  GtkOrientation getOrientation() {
-    return GtkOrientation.fromValue(_gtkOrientableGetOrientation(this.handle));
-  }
-
-  /// Sets the orientation of the @orientable.
-  static final _gtkOrientableSetOrientation =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('gtk_orientable_set_orientation')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
-  void setOrientation(GtkOrientation orientation) {
-    _gtkOrientableSetOrientation(this.handle, orientation.value);
+    final _ret = _gtkNativeGetForSurface(surface.handle);
+    return (_ret) == ffi.nullptr ? null : GtkNative.fromPointer(_ret);
   }
 }

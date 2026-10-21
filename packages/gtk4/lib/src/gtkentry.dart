@@ -189,9 +189,8 @@ class GtkEntry extends GtkWidget
           >('gtk_entry_get_attributes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrList? getAttributes() {
-    return (_gtkEntryGetAttributes(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrList.fromPointer(_gtkEntryGetAttributes(this.handle));
+    final _ret = _gtkEntryGetAttributes(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
   }
 
   /// Get the `GtkEntryBuffer` object which holds the text for
@@ -217,9 +216,8 @@ class GtkEntry extends GtkWidget
           >('gtk_entry_get_completion')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEntryCompletion? getCompletion() {
-    return (_gtkEntryGetCompletion(this.handle)) == ffi.nullptr
-        ? null
-        : GtkEntryCompletion.fromPointer(_gtkEntryGetCompletion(this.handle));
+    final _ret = _gtkEntryGetCompletion(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkEntryCompletion.fromPointer(_ret);
   }
 
   /// Returns the index of the icon which is the source of the
@@ -241,9 +239,8 @@ class GtkEntry extends GtkWidget
           >('gtk_entry_get_extra_menu')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getExtraMenu() {
-    return (_gtkEntryGetExtraMenu(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_gtkEntryGetExtraMenu(this.handle));
+    final _ret = _gtkEntryGetExtraMenu(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Gets the value set by gtk_entry_set_has_frame().
@@ -330,9 +327,8 @@ class GtkEntry extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIcon? getIconGicon(GtkEntryIconPosition iconPos) {
-    return (_gtkEntryGetIconGicon(this.handle, iconPos.value)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gtkEntryGetIconGicon(this.handle, iconPos.value));
+    final _ret = _gtkEntryGetIconGicon(this.handle, iconPos.value);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Retrieves the icon name used for the icon.
@@ -366,12 +362,8 @@ class GtkEntry extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GdkPaintable? getIconPaintable(GtkEntryIconPosition iconPos) {
-    return (_gtkEntryGetIconPaintable(this.handle, iconPos.value)) ==
-            ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(
-            _gtkEntryGetIconPaintable(this.handle, iconPos.value),
-          );
+    final _ret = _gtkEntryGetIconPaintable(this.handle, iconPos.value);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Returns whether the icon appears sensitive or insensitive.
@@ -556,9 +548,8 @@ class GtkEntry extends GtkWidget
           >('gtk_entry_get_tabs')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoTabArray? getTabs() {
-    return (_gtkEntryGetTabs(this.handle)) == ffi.nullptr
-        ? null
-        : PangoTabArray.fromPointer(_gtkEntryGetTabs(this.handle));
+    final _ret = _gtkEntryGetTabs(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoTabArray.fromPointer(_ret);
   }
 
   /// Retrieves the current length of the text in @entry.
@@ -1504,11 +1495,8 @@ class GtkEntry extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1591,11 +1579,8 @@ class GtkEntry extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1607,11 +1592,8 @@ class GtkEntry extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -2036,9 +2018,8 @@ class GtkEntry extends GtkWidget
           >('gtk_editable_get_delegate')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEditable? getDelegate() {
-    return (_gtkEditableGetDelegate(this.handle)) == ffi.nullptr
-        ? null
-        : GtkEditable.fromPointer(_gtkEditableGetDelegate(this.handle));
+    final _ret = _gtkEditableGetDelegate(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkEditable.fromPointer(_ret);
   }
 
   /// Retrieves whether @editable is editable.

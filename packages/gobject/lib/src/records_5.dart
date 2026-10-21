@@ -76,9 +76,8 @@ final class GValue {
           >('g_value_dup_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupObject() {
-    return (_gValueDupObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gValueDupObject(this.handle));
+    final _ret = _gValueDupObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Get a copy the contents of a %G_TYPE_STRING #GValue.
@@ -103,9 +102,8 @@ final class GValue {
           >('g_value_dup_variant')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? dupVariant() {
-    return (_gValueDupVariant(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gValueDupVariant(this.handle));
+    final _ret = _gValueDupVariant(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Determines if @value will fit inside the size of a pointer value.
@@ -139,9 +137,8 @@ final class GValue {
           >('g_value_get_boxed')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getBoxed() {
-    return (_gValueGetBoxed(this.handle)) == ffi.nullptr
-        ? null
-        : (_gValueGetBoxed(this.handle));
+    final _ret = _gValueGetBoxed(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Do not use this function; it is broken on platforms where the %char
@@ -246,9 +243,8 @@ final class GValue {
           >('g_value_get_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getObject() {
-    return (_gValueGetObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gValueGetObject(this.handle));
+    final _ret = _gValueGetObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Get the contents of a %G_TYPE_PARAM #GValue.
@@ -272,9 +268,8 @@ final class GValue {
           >('g_value_get_pointer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getPointer() {
-    return (_gValueGetPointer(this.handle)) == ffi.nullptr
-        ? null
-        : (_gValueGetPointer(this.handle));
+    final _ret = _gValueGetPointer(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Get the contents of a %G_TYPE_CHAR #GValue.
@@ -351,9 +346,8 @@ final class GValue {
           >('g_value_get_variant')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getVariant() {
-    return (_gValueGetVariant(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gValueGetVariant(this.handle));
+    final _ret = _gValueGetVariant(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Initializes @value to store values of the given @type, and sets its value
@@ -418,9 +412,8 @@ final class GValue {
           >('g_value_peek_pointer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? peekPointer() {
-    return (_gValuePeekPointer(this.handle)) == ffi.nullptr
-        ? null
-        : (_gValuePeekPointer(this.handle));
+    final _ret = _gValuePeekPointer(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Clears the current value in @value and resets it to the initial value

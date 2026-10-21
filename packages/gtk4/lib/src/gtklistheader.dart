@@ -60,9 +60,8 @@ class GtkListHeader extends GObject {
           >('gtk_list_header_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkListHeaderGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkListHeaderGetChild(this.handle));
+    final _ret = _gtkListHeaderGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the end position in the model of the section that @self is
@@ -91,9 +90,8 @@ class GtkListHeader extends GObject {
           >('gtk_list_header_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
-    return (_gtkListHeaderGetItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkListHeaderGetItem(this.handle));
+    final _ret = _gtkListHeaderGetItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the the number of items in the section.

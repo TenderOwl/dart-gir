@@ -16,9 +16,8 @@ final _gAtomicPointerGet =
         >('g_atomic_pointer_get')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 ffi.Pointer<ffi.Void>? atomicPointerGet(ffi.Pointer<ffi.Void> atomic) {
-  return (_gAtomicPointerGet(atomic)) == ffi.nullptr
-      ? null
-      : (_gAtomicPointerGet(atomic));
+  final _ret = _gAtomicPointerGet(atomic);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Performs an atomic bitwise 'or' of the value of @atomic and @val,

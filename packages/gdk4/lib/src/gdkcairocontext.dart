@@ -66,9 +66,8 @@ class GdkCairoContext extends GdkDrawContext {
           >('gdk_cairo_context_cairo_create')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoContext? cairoCreate() {
-    return (_gdkCairoContextCairoCreate(this.handle)) == ffi.nullptr
-        ? null
-        : CairoContext.fromPointer(_gdkCairoContextCairoCreate(this.handle));
+    final _ret = _gdkCairoContextCairoCreate(this.handle);
+    return (_ret) == ffi.nullptr ? null : CairoContext.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

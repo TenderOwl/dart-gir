@@ -84,9 +84,8 @@ class GtkStringFilter extends GtkFilter {
           >('gtk_string_filter_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_gtkStringFilterGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(_gtkStringFilterGetExpression(this.handle));
+    final _ret = _gtkStringFilterGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Returns whether the filter ignores case differences.

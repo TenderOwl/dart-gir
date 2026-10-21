@@ -238,11 +238,8 @@ class GtkFlowBox extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkFlowBoxChild? getChildAtIndex(int idx) {
-    return (_gtkFlowBoxGetChildAtIndex(this.handle, idx)) == ffi.nullptr
-        ? null
-        : GtkFlowBoxChild.fromPointer(
-            _gtkFlowBoxGetChildAtIndex(this.handle, idx),
-          );
+    final _ret = _gtkFlowBoxGetChildAtIndex(this.handle, idx);
+    return (_ret) == ffi.nullptr ? null : GtkFlowBoxChild.fromPointer(_ret);
   }
 
   /// Gets the child in the (@x, @y) position.
@@ -262,11 +259,8 @@ class GtkFlowBox extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
   GtkFlowBoxChild? getChildAtPos(int x, int y) {
-    return (_gtkFlowBoxGetChildAtPos(this.handle, x, y)) == ffi.nullptr
-        ? null
-        : GtkFlowBoxChild.fromPointer(
-            _gtkFlowBoxGetChildAtPos(this.handle, x, y),
-          );
+    final _ret = _gtkFlowBoxGetChildAtPos(this.handle, x, y);
+    return (_ret) == ffi.nullptr ? null : GtkFlowBoxChild.fromPointer(_ret);
   }
 
   /// Gets the horizontal spacing.
@@ -1172,11 +1166,8 @@ class GtkFlowBox extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1259,11 +1250,8 @@ class GtkFlowBox extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1275,11 +1263,8 @@ class GtkFlowBox extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

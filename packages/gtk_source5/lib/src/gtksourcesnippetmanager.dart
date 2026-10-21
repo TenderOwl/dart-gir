@@ -87,22 +87,15 @@ class GtkSourceSnippetManager extends GObject {
     return withNativeString(group, (nativeGroup) {
       return withNativeString(languageId, (nativeLanguageId) {
         return withNativeString(trigger, (nativeTrigger) {
-          return (_gtkSourceSnippetManagerGetSnippet(
-                    this.handle,
-                    nativeGroup.cast<Utf8>(),
-                    nativeLanguageId.cast<Utf8>(),
-                    nativeTrigger.cast<Utf8>(),
-                  )) ==
-                  ffi.nullptr
+          final _ret = _gtkSourceSnippetManagerGetSnippet(
+            this.handle,
+            nativeGroup.cast<Utf8>(),
+            nativeLanguageId.cast<Utf8>(),
+            nativeTrigger.cast<Utf8>(),
+          );
+          return (_ret) == ffi.nullptr
               ? null
-              : GtkSourceSnippet.fromPointer(
-                  _gtkSourceSnippetManagerGetSnippet(
-                    this.handle,
-                    nativeGroup.cast<Utf8>(),
-                    nativeLanguageId.cast<Utf8>(),
-                    nativeTrigger.cast<Utf8>(),
-                  ),
-                );
+              : GtkSourceSnippet.fromPointer(_ret);
         });
       });
     });

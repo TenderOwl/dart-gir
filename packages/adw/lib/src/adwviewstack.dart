@@ -273,15 +273,11 @@ class AdwViewStack extends GtkWidget
           >();
   GtkWidget? getChildByName(String name) {
     return withNativeString(name, (nativeName) {
-      return (_adwViewStackGetChildByName(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GtkWidget.fromPointer(
-              _adwViewStackGetChildByName(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _adwViewStackGetChildByName(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
     });
   }
 
@@ -389,9 +385,8 @@ class AdwViewStack extends GtkWidget
           >('adw_view_stack_get_visible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getVisibleChild() {
-    return (_adwViewStackGetVisibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwViewStackGetVisibleChild(this.handle));
+    final _ret = _adwViewStackGetVisibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the name of the currently visible child of @self.
@@ -752,11 +747,8 @@ class AdwViewStack extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -839,11 +831,8 @@ class AdwViewStack extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -855,11 +844,8 @@ class AdwViewStack extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

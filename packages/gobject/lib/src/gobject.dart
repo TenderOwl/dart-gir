@@ -302,10 +302,8 @@ class GObject implements ffi.Finalizable {
           >();
   ffi.Pointer<ffi.Void>? getData(String key) {
     return withNativeString(key, (nativeKey) {
-      return (_gObjectGetData(this.handle, nativeKey.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : (_gObjectGetData(this.handle, nativeKey.cast<Utf8>()));
+      final _ret = _gObjectGetData(this.handle, nativeKey.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : (_ret);
     });
   }
 
@@ -364,9 +362,8 @@ class GObject implements ffi.Finalizable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? getQdata(int quark) {
-    return (_gObjectGetQdata(this.handle, quark)) == ffi.nullptr
-        ? null
-        : (_gObjectGetQdata(this.handle, quark));
+    final _ret = _gObjectGetQdata(this.handle, quark);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Gets @n_properties properties for an @object.
@@ -619,10 +616,8 @@ class GObject implements ffi.Finalizable {
           >();
   ffi.Pointer<ffi.Void>? stealData(String key) {
     return withNativeString(key, (nativeKey) {
-      return (_gObjectStealData(this.handle, nativeKey.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : (_gObjectStealData(this.handle, nativeKey.cast<Utf8>()));
+      final _ret = _gObjectStealData(this.handle, nativeKey.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : (_ret);
     });
   }
 
@@ -671,9 +666,8 @@ class GObject implements ffi.Finalizable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? stealQdata(int quark) {
-    return (_gObjectStealQdata(this.handle, quark)) == ffi.nullptr
-        ? null
-        : (_gObjectStealQdata(this.handle, quark));
+    final _ret = _gObjectStealQdata(this.handle, quark);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Reverts the effect of a previous call to

@@ -182,18 +182,11 @@ class GtkTreeModelFilter extends GObject
             )
           >();
   GtkTreePath? convertChildPathToPath(GtkTreePath childPath) {
-    return (_gtkTreeModelFilterConvertChildPathToPath(
-              this.handle,
-              childPath.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GtkTreePath.fromPointer(
-            _gtkTreeModelFilterConvertChildPathToPath(
-              this.handle,
-              childPath.handle,
-            ),
-          );
+    final _ret = _gtkTreeModelFilterConvertChildPathToPath(
+      this.handle,
+      childPath.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : GtkTreePath.fromPointer(_ret);
   }
 
   /// Sets @child_iter to point to the row pointed to by @filter_iter.
@@ -248,18 +241,11 @@ class GtkTreeModelFilter extends GObject
             )
           >();
   GtkTreePath? convertPathToChildPath(GtkTreePath filterPath) {
-    return (_gtkTreeModelFilterConvertPathToChildPath(
-              this.handle,
-              filterPath.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GtkTreePath.fromPointer(
-            _gtkTreeModelFilterConvertPathToChildPath(
-              this.handle,
-              filterPath.handle,
-            ),
-          );
+    final _ret = _gtkTreeModelFilterConvertPathToChildPath(
+      this.handle,
+      filterPath.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : GtkTreePath.fromPointer(_ret);
   }
 
   /// Returns a pointer to the child model of @filter.
@@ -633,12 +619,8 @@ class GtkTreeModelFilter extends GObject
             )
           >();
   GdkContentProvider? dragDataGet(GtkTreePath path) {
-    return (_gtkTreeDragSourceDragDataGet(this.handle, path.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkContentProvider.fromPointer(
-            _gtkTreeDragSourceDragDataGet(this.handle, path.handle),
-          );
+    final _ret = _gtkTreeDragSourceDragDataGet(this.handle, path.handle);
+    return (_ret) == ffi.nullptr ? null : GdkContentProvider.fromPointer(_ret);
   }
 
   /// Asks the `GtkTreeDragSource` whether a particular row can be used as

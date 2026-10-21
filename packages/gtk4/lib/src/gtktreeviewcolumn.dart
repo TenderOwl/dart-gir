@@ -462,9 +462,8 @@ class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
           >('gtk_tree_view_column_get_tree_view')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getTreeView() {
-    return (_gtkTreeViewColumnGetTreeView(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkTreeViewColumnGetTreeView(this.handle));
+    final _ret = _gtkTreeViewColumnGetTreeView(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns %TRUE if @tree_column is visible.
@@ -487,9 +486,8 @@ class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
           >('gtk_tree_view_column_get_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getWidget() {
-    return (_gtkTreeViewColumnGetWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkTreeViewColumnGetWidget(this.handle));
+    final _ret = _gtkTreeViewColumnGetWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the current size of @tree_column in pixels.
@@ -961,9 +959,8 @@ class GtkTreeViewColumn extends GInitiallyUnowned implements GtkBuildable {
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.

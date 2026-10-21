@@ -357,20 +357,12 @@ final class GSettingsSchemaSource {
           >();
   GSettingsSchema? lookup(String schemaId, bool recursive) {
     return withNativeString(schemaId, (nativeSchemaId) {
-      return (_gSettingsSchemaSourceLookup(
-                this.handle,
-                nativeSchemaId.cast<Utf8>(),
-                recursive ? 1 : 0,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GSettingsSchema.fromPointer(
-              _gSettingsSchemaSourceLookup(
-                this.handle,
-                nativeSchemaId.cast<Utf8>(),
-                recursive ? 1 : 0,
-              ),
-            );
+      final _ret = _gSettingsSchemaSourceLookup(
+        this.handle,
+        nativeSchemaId.cast<Utf8>(),
+        recursive ? 1 : 0,
+      );
+      return (_ret) == ffi.nullptr ? null : GSettingsSchema.fromPointer(_ret);
     });
   }
 
@@ -415,9 +407,10 @@ final class GSettingsSchemaSource {
         'g_settings_schema_source_get_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GSettingsSchemaSource? getDefault() {
-    return (_gSettingsSchemaSourceGetDefault()) == ffi.nullptr
+    final _ret = _gSettingsSchemaSourceGetDefault();
+    return (_ret) == ffi.nullptr
         ? null
-        : GSettingsSchemaSource.fromPointer(_gSettingsSchemaSourceGetDefault());
+        : GSettingsSchemaSource.fromPointer(_ret);
   }
 }
 

@@ -266,9 +266,8 @@ class GtkImage extends GtkWidget
           >('gtk_image_get_gicon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getGicon() {
-    return (_gtkImageGetGicon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gtkImageGetGicon(this.handle));
+    final _ret = _gtkImageGetGicon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Gets the icon name and size being displayed by the `GtkImage`.
@@ -314,9 +313,8 @@ class GtkImage extends GtkWidget
           >('gtk_image_get_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable? getPaintable() {
-    return (_gtkImageGetPaintable(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(_gtkImageGetPaintable(this.handle));
+    final _ret = _gtkImageGetPaintable(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Gets the pixel size used for named icons.
@@ -715,11 +713,8 @@ class GtkImage extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -802,11 +797,8 @@ class GtkImage extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -818,11 +810,8 @@ class GtkImage extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

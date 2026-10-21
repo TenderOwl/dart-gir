@@ -871,9 +871,8 @@ final class GSequence {
           >('g_sequence_get')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static ffi.Pointer<ffi.Void>? get_(GSequenceIter iter) {
-    return (_gSequenceGet(iter.handle)) == ffi.nullptr
-        ? null
-        : (_gSequenceGet(iter.handle));
+    final _ret = _gSequenceGet(iter.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Inserts a new item just before the item pointed to by @iter.

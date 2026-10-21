@@ -68,9 +68,8 @@ final class GTrashStack {
           >('g_trash_stack_peek')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static ffi.Pointer<ffi.Void>? peek(GTrashStack stackP) {
-    return (_gTrashStackPeek(stackP.handle)) == ffi.nullptr
-        ? null
-        : (_gTrashStackPeek(stackP.handle));
+    final _ret = _gTrashStackPeek(stackP.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Pops a piece of memory off a #GTrashStack.
@@ -82,9 +81,8 @@ final class GTrashStack {
           >('g_trash_stack_pop')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static ffi.Pointer<ffi.Void>? pop(GTrashStack stackP) {
-    return (_gTrashStackPop(stackP.handle)) == ffi.nullptr
-        ? null
-        : (_gTrashStackPop(stackP.handle));
+    final _ret = _gTrashStackPop(stackP.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Pushes a piece of memory onto a #GTrashStack.
@@ -433,20 +431,12 @@ final class GTree {
     ffi.Pointer<ffi.Void>? key,
     ffi.Pointer<ffi.Void>? value,
   ]) {
-    return (_gTreeInsertNode(
-              this.handle,
-              key ?? ffi.nullptr,
-              value ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(
-            _gTreeInsertNode(
-              this.handle,
-              key ?? ffi.nullptr,
-              value ?? ffi.nullptr,
-            ),
-          );
+    final _ret = _gTreeInsertNode(
+      this.handle,
+      key ?? ffi.nullptr,
+      value ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Gets the value corresponding to the given key. Since a #GTree is
@@ -468,9 +458,8 @@ final class GTree {
             )
           >();
   ffi.Pointer<ffi.Void>? lookup([ffi.Pointer<ffi.Void>? key]) {
-    return (_gTreeLookup(this.handle, key ?? ffi.nullptr)) == ffi.nullptr
-        ? null
-        : (_gTreeLookup(this.handle, key ?? ffi.nullptr));
+    final _ret = _gTreeLookup(this.handle, key ?? ffi.nullptr);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Looks up a key in the #GTree, returning the original key and the
@@ -534,11 +523,8 @@ final class GTree {
             )
           >();
   GTreeNode? lookupNode([ffi.Pointer<ffi.Void>? key]) {
-    return (_gTreeLookupNode(this.handle, key ?? ffi.nullptr)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(
-            _gTreeLookupNode(this.handle, key ?? ffi.nullptr),
-          );
+    final _ret = _gTreeLookupNode(this.handle, key ?? ffi.nullptr);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Gets the lower bound node corresponding to the given key,
@@ -563,11 +549,8 @@ final class GTree {
             )
           >();
   GTreeNode? lowerBound([ffi.Pointer<ffi.Void>? key]) {
-    return (_gTreeLowerBound(this.handle, key ?? ffi.nullptr)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(
-            _gTreeLowerBound(this.handle, key ?? ffi.nullptr),
-          );
+    final _ret = _gTreeLowerBound(this.handle, key ?? ffi.nullptr);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Gets the number of nodes in a #GTree.
@@ -589,9 +572,8 @@ final class GTree {
           >('g_tree_node_first')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTreeNode? nodeFirst() {
-    return (_gTreeNodeFirst(this.handle)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(_gTreeNodeFirst(this.handle));
+    final _ret = _gTreeNodeFirst(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Returns the last in-order node of the tree, or %NULL
@@ -604,9 +586,8 @@ final class GTree {
           >('g_tree_node_last')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTreeNode? nodeLast() {
-    return (_gTreeNodeLast(this.handle)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(_gTreeNodeLast(this.handle));
+    final _ret = _gTreeNodeLast(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Increments the reference count of @tree by one.
@@ -709,20 +690,12 @@ final class GTree {
     ffi.Pointer<ffi.Void>? key,
     ffi.Pointer<ffi.Void>? value,
   ]) {
-    return (_gTreeReplaceNode(
-              this.handle,
-              key ?? ffi.nullptr,
-              value ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(
-            _gTreeReplaceNode(
-              this.handle,
-              key ?? ffi.nullptr,
-              value ?? ffi.nullptr,
-            ),
-          );
+    final _ret = _gTreeReplaceNode(
+      this.handle,
+      key ?? ffi.nullptr,
+      value ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Searches a #GTree using @search_func.
@@ -964,10 +937,7 @@ final class GTree {
             )
           >();
   GTreeNode? upperBound([ffi.Pointer<ffi.Void>? key]) {
-    return (_gTreeUpperBound(this.handle, key ?? ffi.nullptr)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(
-            _gTreeUpperBound(this.handle, key ?? ffi.nullptr),
-          );
+    final _ret = _gTreeUpperBound(this.handle, key ?? ffi.nullptr);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 }

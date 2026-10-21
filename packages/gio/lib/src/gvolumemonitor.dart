@@ -89,18 +89,11 @@ class GVolumeMonitor extends GObject {
           >();
   GMount? getMountForUuid(String uuid) {
     return withNativeString(uuid, (nativeUuid) {
-      return (_gVolumeMonitorGetMountForUuid(
-                this.handle,
-                nativeUuid.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GMount.fromPointer(
-              _gVolumeMonitorGetMountForUuid(
-                this.handle,
-                nativeUuid.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gVolumeMonitorGetMountForUuid(
+        this.handle,
+        nativeUuid.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GMount.fromPointer(_ret);
     });
   }
 
@@ -137,18 +130,11 @@ class GVolumeMonitor extends GObject {
           >();
   GVolume? getVolumeForUuid(String uuid) {
     return withNativeString(uuid, (nativeUuid) {
-      return (_gVolumeMonitorGetVolumeForUuid(
-                this.handle,
-                nativeUuid.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVolume.fromPointer(
-              _gVolumeMonitorGetVolumeForUuid(
-                this.handle,
-                nativeUuid.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gVolumeMonitorGetVolumeForUuid(
+        this.handle,
+        nativeUuid.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVolume.fromPointer(_ret);
     });
   }
 

@@ -518,9 +518,8 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           >('gtk_file_chooser_get_current_folder')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getCurrentFolder() {
-    return (_gtkFileChooserGetCurrentFolder(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkFileChooserGetCurrentFolder(this.handle));
+    final _ret = _gtkFileChooserGetCurrentFolder(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the current name in the file selector, as entered by the user.
@@ -557,9 +556,8 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           >('gtk_file_chooser_get_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
-    return (_gtkFileChooserGetFile(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkFileChooserGetFile(this.handle));
+    final _ret = _gtkFileChooserGetFile(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Lists all the selected files and subfolders in the current folder
@@ -584,9 +582,8 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           >('gtk_file_chooser_get_filter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFileFilter? getFilter() {
-    return (_gtkFileChooserGetFilter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkFileFilter.fromPointer(_gtkFileChooserGetFilter(this.handle));
+    final _ret = _gtkFileChooserGetFilter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkFileFilter.fromPointer(_ret);
   }
 
   /// Gets the current set of user-selectable filters, as a list model.

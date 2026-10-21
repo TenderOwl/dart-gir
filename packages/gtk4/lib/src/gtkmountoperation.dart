@@ -91,9 +91,8 @@ class GtkMountOperation extends GMountOperation {
           >('gtk_mount_operation_get_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWindow? getParent() {
-    return (_gtkMountOperationGetParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWindow.fromPointer(_gtkMountOperationGetParent(this.handle));
+    final _ret = _gtkMountOperationGetParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWindow.fromPointer(_ret);
   }
 
   /// Returns whether the `GtkMountOperation` is currently displaying

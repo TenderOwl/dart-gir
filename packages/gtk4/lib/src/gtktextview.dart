@@ -480,9 +480,8 @@ class GtkTextView extends GtkWidget
           >('gtk_text_view_get_extra_menu')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getExtraMenu() {
-    return (_gtkTextViewGetExtraMenu(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_gtkTextViewGetExtraMenu(this.handle));
+    final _ret = _gtkTextViewGetExtraMenu(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Gets a `GtkWidget` that has previously been set as gutter.
@@ -501,9 +500,8 @@ class GtkTextView extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkWidget? getGutter(GtkTextWindowType win) {
-    return (_gtkTextViewGetGutter(this.handle, win.value)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkTextViewGetGutter(this.handle, win.value));
+    final _ret = _gtkTextViewGetGutter(this.handle, win.value);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the default indentation of paragraphs in @text_view.
@@ -868,9 +866,8 @@ class GtkTextView extends GtkWidget
           >('gtk_text_view_get_tabs')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoTabArray? getTabs() {
-    return (_gtkTextViewGetTabs(this.handle)) == ffi.nullptr
-        ? null
-        : PangoTabArray.fromPointer(_gtkTextViewGetTabs(this.handle));
+    final _ret = _gtkTextViewGetTabs(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoTabArray.fromPointer(_ret);
   }
 
   /// Gets the top margin for text in the @text_view.
@@ -2088,11 +2085,8 @@ class GtkTextView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -2175,11 +2169,8 @@ class GtkTextView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -2191,11 +2182,8 @@ class GtkTextView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -2539,9 +2527,8 @@ class GtkTextView extends GtkWidget
           >('gtk_scrollable_get_hadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getHadjustment() {
-    return (_gtkScrollableGetHadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetHadjustment(this.handle));
+    final _ret = _gtkScrollableGetHadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the horizontal `GtkScrollablePolicy`.
@@ -2564,9 +2551,8 @@ class GtkTextView extends GtkWidget
           >('gtk_scrollable_get_vadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getVadjustment() {
-    return (_gtkScrollableGetVadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetVadjustment(this.handle));
+    final _ret = _gtkScrollableGetVadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the vertical `GtkScrollablePolicy`.

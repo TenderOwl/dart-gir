@@ -103,9 +103,8 @@ class GtkSettings extends GObject implements GtkStyleProvider {
         'gtk_settings_get_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GtkSettings? getDefault() {
-    return (_gtkSettingsGetDefault()) == ffi.nullptr
-        ? null
-        : GtkSettings.fromPointer(_gtkSettingsGetDefault());
+    final _ret = _gtkSettingsGetDefault();
+    return (_ret) == ffi.nullptr ? null : GtkSettings.fromPointer(_ret);
   }
 
   /// Gets the `GtkSettings` object for @display, creating it if necessary.

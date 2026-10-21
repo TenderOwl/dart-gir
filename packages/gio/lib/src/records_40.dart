@@ -426,9 +426,8 @@ class GMount {
           >('g_mount_get_drive')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDrive? getDrive() {
-    return (_gMountGetDrive(this.handle)) == ffi.nullptr
-        ? null
-        : GDrive.fromPointer(_gMountGetDrive(this.handle));
+    final _ret = _gMountGetDrive(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDrive.fromPointer(_ret);
   }
 
   /// Gets the icon for @mount.
@@ -518,9 +517,8 @@ class GMount {
           >('g_mount_get_volume')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVolume? getVolume() {
-    return (_gMountGetVolume(this.handle)) == ffi.nullptr
-        ? null
-        : GVolume.fromPointer(_gMountGetVolume(this.handle));
+    final _ret = _gMountGetVolume(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVolume.fromPointer(_ret);
   }
 
   /// Tries to guess the type of content stored on @mount. Returns one or

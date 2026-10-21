@@ -148,11 +148,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_application_window_get_help_overlay')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkShortcutsWindow? getHelpOverlay() {
-    return (_gtkApplicationWindowGetHelpOverlay(this.handle)) == ffi.nullptr
-        ? null
-        : GtkShortcutsWindow.fromPointer(
-            _gtkApplicationWindowGetHelpOverlay(this.handle),
-          );
+    final _ret = _gtkApplicationWindowGetHelpOverlay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkShortcutsWindow.fromPointer(_ret);
   }
 
   /// Returns the unique ID of the window.
@@ -707,18 +704,11 @@ class GtkApplicationWindow extends GtkWindow
           >();
   GVariantType? getActionParameterType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionParameterType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -747,18 +737,11 @@ class GtkApplicationWindow extends GtkWindow
           >();
   GVariant? getActionState(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionState(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -797,18 +780,11 @@ class GtkApplicationWindow extends GtkWindow
           >();
   GVariant? getActionStateHint(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateHint(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -845,18 +821,11 @@ class GtkApplicationWindow extends GtkWindow
           >();
   GVariantType? getActionStateType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -1083,18 +1052,11 @@ class GtkApplicationWindow extends GtkWindow
           >();
   GAction? lookupAction(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GAction.fromPointer(
-              _gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionMapLookupAction(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GAction.fromPointer(_ret);
     });
   }
 
@@ -1219,11 +1181,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1306,11 +1265,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1322,11 +1278,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -1590,9 +1543,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_native_get_renderer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderer? getRenderer() {
-    return (_gtkNativeGetRenderer(this.handle)) == ffi.nullptr
-        ? null
-        : GskRenderer.fromPointer(_gtkNativeGetRenderer(this.handle));
+    final _ret = _gtkNativeGetRenderer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderer.fromPointer(_ret);
   }
 
   /// Returns the surface of this `GtkNative`.
@@ -1604,9 +1556,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_native_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gtkNativeGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gtkNativeGetSurface(this.handle));
+    final _ret = _gtkNativeGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Retrieves the surface transform of @self.
@@ -1690,9 +1641,8 @@ class GtkApplicationWindow extends GtkWindow
           >('gtk_root_get_focus')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFocus() {
-    return (_gtkRootGetFocus(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkRootGetFocus(this.handle));
+    final _ret = _gtkRootGetFocus(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// If @focus is not the current focus widget, and is focusable, sets

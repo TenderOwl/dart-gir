@@ -375,11 +375,8 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
           >('g_application_get_dbus_connection')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusConnection? getDbusConnection() {
-    return (_gApplicationGetDbusConnection(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusConnection.fromPointer(
-            _gApplicationGetDbusConnection(this.handle),
-          );
+    final _ret = _gApplicationGetDbusConnection(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusConnection.fromPointer(_ret);
   }
 
   /// Gets the D-Bus object path being used by the application, or %NULL.
@@ -1147,9 +1144,8 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
         'g_application_get_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GApplication? getDefault() {
-    return (_gApplicationGetDefault()) == ffi.nullptr
-        ? null
-        : GApplication.fromPointer(_gApplicationGetDefault());
+    final _ret = _gApplicationGetDefault();
+    return (_ret) == ffi.nullptr ? null : GApplication.fromPointer(_ret);
   }
 
   /// Checks if @application_id is a valid application identifier.
@@ -1604,18 +1600,11 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
           >();
   GVariantType? getActionParameterType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionParameterType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionParameterType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -1644,18 +1633,11 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
           >();
   GVariant? getActionState(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionState(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionState(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -1694,18 +1676,11 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
           >();
   GVariant? getActionStateHint(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariant.fromPointer(
-              _gActionGroupGetActionStateHint(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateHint(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
     });
   }
 
@@ -1742,18 +1717,11 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
           >();
   GVariantType? getActionStateType(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GVariantType.fromPointer(
-              _gActionGroupGetActionStateType(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionGroupGetActionStateType(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
     });
   }
 
@@ -1980,18 +1948,11 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
           >();
   GAction? lookupAction(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GAction.fromPointer(
-              _gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionMapLookupAction(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GAction.fromPointer(_ret);
     });
   }
 

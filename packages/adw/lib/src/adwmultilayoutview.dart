@@ -166,15 +166,11 @@ class AdwMultiLayoutView extends GtkWidget
           >();
   GtkWidget? getChild(String id) {
     return withNativeString(id, (nativeId) {
-      return (_adwMultiLayoutViewGetChild(
-                this.handle,
-                nativeId.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GtkWidget.fromPointer(
-              _adwMultiLayoutViewGetChild(this.handle, nativeId.cast<Utf8>()),
-            );
+      final _ret = _adwMultiLayoutViewGetChild(
+        this.handle,
+        nativeId.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
     });
   }
 
@@ -187,9 +183,8 @@ class AdwMultiLayoutView extends GtkWidget
           >('adw_multi_layout_view_get_layout')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwLayout? getLayout() {
-    return (_adwMultiLayoutViewGetLayout(this.handle)) == ffi.nullptr
-        ? null
-        : AdwLayout.fromPointer(_adwMultiLayoutViewGetLayout(this.handle));
+    final _ret = _adwMultiLayoutViewGetLayout(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwLayout.fromPointer(_ret);
   }
 
   /// Gets layout with the name @name from @self, or `NULL` if it doesn't exist.
@@ -212,18 +207,11 @@ class AdwMultiLayoutView extends GtkWidget
           >();
   AdwLayout? getLayoutByName(String name) {
     return withNativeString(name, (nativeName) {
-      return (_adwMultiLayoutViewGetLayoutByName(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : AdwLayout.fromPointer(
-              _adwMultiLayoutViewGetLayoutByName(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _adwMultiLayoutViewGetLayoutByName(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : AdwLayout.fromPointer(_ret);
     });
   }
 
@@ -553,11 +541,8 @@ class AdwMultiLayoutView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -640,11 +625,8 @@ class AdwMultiLayoutView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -656,11 +638,8 @@ class AdwMultiLayoutView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

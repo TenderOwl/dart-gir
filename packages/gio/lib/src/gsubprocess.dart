@@ -464,8 +464,8 @@ class GSubprocess extends GObject implements GInitable {
         }
         return (
           (_ret) != 0,
-          stringFromNative(_out0.value.cast(), free: true)!,
-          stringFromNative(_out1.value.cast(), free: true)!,
+          stringFromNative(_out0.value.cast(), free: true),
+          stringFromNative(_out1.value.cast(), free: true),
         );
       } finally {
         malloc.free(_out0);
@@ -637,8 +637,8 @@ class GSubprocess extends GObject implements GInitable {
       }
       return (
         (_ret) != 0,
-        stringFromNative(_out0.value.cast(), free: true)!,
-        stringFromNative(_out1.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
+        stringFromNative(_out1.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);
@@ -756,9 +756,8 @@ class GSubprocess extends GObject implements GInitable {
           >('g_subprocess_get_stderr_pipe')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GInputStream? getStderrPipe() {
-    return (_gSubprocessGetStderrPipe(this.handle)) == ffi.nullptr
-        ? null
-        : GInputStream.fromPointer(_gSubprocessGetStderrPipe(this.handle));
+    final _ret = _gSubprocessGetStderrPipe(this.handle);
+    return (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret);
   }
 
   /// Gets the #GOutputStream that you can write to in order to give data
@@ -774,9 +773,8 @@ class GSubprocess extends GObject implements GInitable {
           >('g_subprocess_get_stdin_pipe')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GOutputStream? getStdinPipe() {
-    return (_gSubprocessGetStdinPipe(this.handle)) == ffi.nullptr
-        ? null
-        : GOutputStream.fromPointer(_gSubprocessGetStdinPipe(this.handle));
+    final _ret = _gSubprocessGetStdinPipe(this.handle);
+    return (_ret) == ffi.nullptr ? null : GOutputStream.fromPointer(_ret);
   }
 
   /// Gets the #GInputStream from which to read the stdout output of
@@ -792,9 +790,8 @@ class GSubprocess extends GObject implements GInitable {
           >('g_subprocess_get_stdout_pipe')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GInputStream? getStdoutPipe() {
-    return (_gSubprocessGetStdoutPipe(this.handle)) == ffi.nullptr
-        ? null
-        : GInputStream.fromPointer(_gSubprocessGetStdoutPipe(this.handle));
+    final _ret = _gSubprocessGetStdoutPipe(this.handle);
+    return (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret);
   }
 
   /// Checks if the process was "successful".  A process is considered

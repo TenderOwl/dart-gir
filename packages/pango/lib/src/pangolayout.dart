@@ -144,9 +144,8 @@ class PangoLayout extends GObject {
           >('pango_layout_get_attributes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrList? getAttributes() {
-    return (_pangoLayoutGetAttributes(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrList.fromPointer(_pangoLayoutGetAttributes(this.handle));
+    final _ret = _pangoLayoutGetAttributes(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
   }
 
   /// Gets whether to calculate the base direction for the layout
@@ -416,11 +415,10 @@ class PangoLayout extends GObject {
           >('pango_layout_get_font_description')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? getFontDescription() {
-    return (_pangoLayoutGetFontDescription(this.handle)) == ffi.nullptr
+    final _ret = _pangoLayoutGetFontDescription(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _pangoLayoutGetFontDescription(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Gets the height of layout used for ellipsization.
@@ -495,9 +493,8 @@ class PangoLayout extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   PangoLayoutLine? getLine(int line) {
-    return (_pangoLayoutGetLine(this.handle, line)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(_pangoLayoutGetLine(this.handle, line));
+    final _ret = _pangoLayoutGetLine(this.handle, line);
+    return (_ret) == ffi.nullptr ? null : PangoLayoutLine.fromPointer(_ret);
   }
 
   /// Retrieves the count of lines for the @layout.
@@ -525,11 +522,8 @@ class PangoLayout extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   PangoLayoutLine? getLineReadonly(int line) {
-    return (_pangoLayoutGetLineReadonly(this.handle, line)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(
-            _pangoLayoutGetLineReadonly(this.handle, line),
-          );
+    final _ret = _pangoLayoutGetLineReadonly(this.handle, line);
+    return (_ret) == ffi.nullptr ? null : PangoLayoutLine.fromPointer(_ret);
   }
 
   /// Gets the line spacing factor of @layout.
@@ -785,9 +779,8 @@ class PangoLayout extends GObject {
           >('pango_layout_get_tabs')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoTabArray? getTabs() {
-    return (_pangoLayoutGetTabs(this.handle)) == ffi.nullptr
-        ? null
-        : PangoTabArray.fromPointer(_pangoLayoutGetTabs(this.handle));
+    final _ret = _pangoLayoutGetTabs(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoTabArray.fromPointer(_ret);
   }
 
   /// Gets the text in the layout.

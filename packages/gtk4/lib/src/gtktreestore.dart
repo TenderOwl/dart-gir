@@ -839,12 +839,8 @@ class GtkTreeStore extends GObject
             )
           >();
   GdkContentProvider? dragDataGet(GtkTreePath path) {
-    return (_gtkTreeDragSourceDragDataGet(this.handle, path.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkContentProvider.fromPointer(
-            _gtkTreeDragSourceDragDataGet(this.handle, path.handle),
-          );
+    final _ret = _gtkTreeDragSourceDragDataGet(this.handle, path.handle);
+    return (_ret) == ffi.nullptr ? null : GdkContentProvider.fromPointer(_ret);
   }
 
   /// Asks the `GtkTreeDragSource` whether a particular row can be used as

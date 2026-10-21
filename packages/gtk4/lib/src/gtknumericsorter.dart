@@ -75,11 +75,8 @@ class GtkNumericSorter extends GtkSorter {
           >('gtk_numeric_sorter_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_gtkNumericSorterGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(
-            _gtkNumericSorterGetExpression(this.handle),
-          );
+    final _ret = _gtkNumericSorterGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Gets whether this sorter will sort smaller numbers first.

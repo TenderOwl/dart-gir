@@ -249,9 +249,8 @@ class GdkSurface extends GObject {
           >('gdk_surface_get_cursor')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkCursor? getCursor() {
-    return (_gdkSurfaceGetCursor(this.handle)) == ffi.nullptr
-        ? null
-        : GdkCursor.fromPointer(_gdkSurfaceGetCursor(this.handle));
+    final _ret = _gdkSurfaceGetCursor(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkCursor.fromPointer(_ret);
   }
 
   /// Retrieves a `GdkCursor` pointer for the @device currently set on the
@@ -277,12 +276,8 @@ class GdkSurface extends GObject {
             )
           >();
   GdkCursor? getDeviceCursor(GdkDevice device) {
-    return (_gdkSurfaceGetDeviceCursor(this.handle, device.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkCursor.fromPointer(
-            _gdkSurfaceGetDeviceCursor(this.handle, device.handle),
-          );
+    final _ret = _gdkSurfaceGetDeviceCursor(this.handle, device.handle);
+    return (_ret) == ffi.nullptr ? null : GdkCursor.fromPointer(_ret);
   }
 
   /// Obtains the current device position and modifier state.

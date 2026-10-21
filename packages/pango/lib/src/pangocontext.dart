@@ -119,11 +119,10 @@ class PangoContext extends GObject {
           >('pango_context_get_font_description')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription? getFontDescription() {
-    return (_pangoContextGetFontDescription(this.handle)) == ffi.nullptr
+    final _ret = _pangoContextGetFontDescription(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : PangoFontDescription.fromPointer(
-            _pangoContextGetFontDescription(this.handle),
-          );
+        : PangoFontDescription.fromPointer(_ret);
   }
 
   /// Gets the `PangoFontMap` used to look up fonts for this context.
@@ -135,9 +134,8 @@ class PangoContext extends GObject {
           >('pango_context_get_font_map')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMap? getFontMap() {
-    return (_pangoContextGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_pangoContextGetFontMap(this.handle));
+    final _ret = _pangoContextGetFontMap(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMap.fromPointer(_ret);
   }
 
   /// Retrieves the gravity for the context.
@@ -191,9 +189,8 @@ class PangoContext extends GObject {
           >('pango_context_get_matrix')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoMatrix? getMatrix() {
-    return (_pangoContextGetMatrix(this.handle)) == ffi.nullptr
-        ? null
-        : PangoMatrix.fromPointer(_pangoContextGetMatrix(this.handle));
+    final _ret = _pangoContextGetMatrix(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoMatrix.fromPointer(_ret);
   }
 
   /// Get overall metric information for a particular font description.
@@ -287,11 +284,8 @@ class PangoContext extends GObject {
             )
           >();
   PangoFont? loadFont(PangoFontDescription desc) {
-    return (_pangoContextLoadFont(this.handle, desc.handle)) == ffi.nullptr
-        ? null
-        : PangoFont.fromPointer(
-            _pangoContextLoadFont(this.handle, desc.handle),
-          );
+    final _ret = _pangoContextLoadFont(this.handle, desc.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
   }
 
   /// Load a set of fonts in the context that can be used to render
@@ -314,16 +308,12 @@ class PangoContext extends GObject {
             )
           >();
   PangoFontset? loadFontset(PangoFontDescription desc, PangoLanguage language) {
-    return (_pangoContextLoadFontset(
-              this.handle,
-              desc.handle,
-              language.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : PangoFontset.fromPointer(
-            _pangoContextLoadFontset(this.handle, desc.handle, language.handle),
-          );
+    final _ret = _pangoContextLoadFontset(
+      this.handle,
+      desc.handle,
+      language.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : PangoFontset.fromPointer(_ret);
   }
 
   /// Sets the base direction for the context.

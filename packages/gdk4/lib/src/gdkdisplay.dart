@@ -187,9 +187,8 @@ class GdkDisplay extends GObject {
           >('gdk_display_get_default_seat')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSeat? getDefaultSeat() {
-    return (_gdkDisplayGetDefaultSeat(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSeat.fromPointer(_gdkDisplayGetDefaultSeat(this.handle));
+    final _ret = _gdkDisplayGetDefaultSeat(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSeat.fromPointer(_ret);
   }
 
   /// Returns the dma-buf formats that are supported on this display.
@@ -234,12 +233,8 @@ class GdkDisplay extends GObject {
             )
           >();
   GdkMonitor? getMonitorAtSurface(GdkSurface surface) {
-    return (_gdkDisplayGetMonitorAtSurface(this.handle, surface.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkMonitor.fromPointer(
-            _gdkDisplayGetMonitorAtSurface(this.handle, surface.handle),
-          );
+    final _ret = _gdkDisplayGetMonitorAtSurface(this.handle, surface.handle);
+    return (_ret) == ffi.nullptr ? null : GdkMonitor.fromPointer(_ret);
   }
 
   /// Gets the list of monitors associated with this display.
@@ -612,9 +607,8 @@ class GdkDisplay extends GObject {
         'gdk_display_get_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkDisplay? getDefault() {
-    return (_gdkDisplayGetDefault()) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(_gdkDisplayGetDefault());
+    final _ret = _gdkDisplayGetDefault();
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// Opens a display.
@@ -629,11 +623,8 @@ class GdkDisplay extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static GdkDisplay? open([String? displayName]) {
     return withNativeString(displayName, (nativeDisplayName) {
-      return (_gdkDisplayOpen(nativeDisplayName.cast<Utf8>())) == ffi.nullptr
-          ? null
-          : GdkDisplay.fromPointer(
-              _gdkDisplayOpen(nativeDisplayName.cast<Utf8>()),
-            );
+      final _ret = _gdkDisplayOpen(nativeDisplayName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
     });
   }
 

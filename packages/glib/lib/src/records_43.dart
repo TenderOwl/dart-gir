@@ -378,9 +378,8 @@ final class GVariantType {
           >('g_variant_type_first')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariantType? first() {
-    return (_gVariantTypeFirst(this.handle)) == ffi.nullptr
-        ? null
-        : GVariantType.fromPointer(_gVariantTypeFirst(this.handle));
+    final _ret = _gVariantTypeFirst(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
   }
 
   /// Frees a [type@GLib.VariantType] that was allocated with
@@ -615,9 +614,8 @@ final class GVariantType {
           >('g_variant_type_next')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariantType? next() {
-    return (_gVariantTypeNext(this.handle)) == ffi.nullptr
-        ? null
-        : GVariantType.fromPointer(_gVariantTypeNext(this.handle));
+    final _ret = _gVariantTypeNext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
   }
 
   /// Determines the value type of a dictionary entry type.
@@ -717,7 +715,7 @@ final class GVariantType {
           );
           return (
             (_ret) != 0,
-            stringFromNative(_out0.value.cast(), free: true)!,
+            stringFromNative(_out0.value.cast(), free: true),
           );
         } finally {
           malloc.free(_out0);

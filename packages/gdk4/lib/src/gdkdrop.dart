@@ -132,9 +132,8 @@ class GdkDrop extends GObject {
           >('gdk_drop_get_drag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDrag? getDrag() {
-    return (_gdkDropGetDrag(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDrag.fromPointer(_gdkDropGetDrag(this.handle));
+    final _ret = _gdkDropGetDrag(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDrag.fromPointer(_ret);
   }
 
   /// Returns the `GdkContentFormats` that the drop offers the data

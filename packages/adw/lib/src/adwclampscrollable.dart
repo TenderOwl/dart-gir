@@ -77,9 +77,8 @@ class AdwClampScrollable extends GtkWidget
           >('adw_clamp_scrollable_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_adwClampScrollableGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwClampScrollableGetChild(this.handle));
+    final _ret = _adwClampScrollableGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the maximum size allocated to the child.
@@ -411,11 +410,8 @@ class AdwClampScrollable extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -498,11 +494,8 @@ class AdwClampScrollable extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -514,11 +507,8 @@ class AdwClampScrollable extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -828,9 +818,8 @@ class AdwClampScrollable extends GtkWidget
           >('gtk_scrollable_get_hadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getHadjustment() {
-    return (_gtkScrollableGetHadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetHadjustment(this.handle));
+    final _ret = _gtkScrollableGetHadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the horizontal `GtkScrollablePolicy`.
@@ -853,9 +842,8 @@ class AdwClampScrollable extends GtkWidget
           >('gtk_scrollable_get_vadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getVadjustment() {
-    return (_gtkScrollableGetVadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetVadjustment(this.handle));
+    final _ret = _gtkScrollableGetVadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the vertical `GtkScrollablePolicy`.

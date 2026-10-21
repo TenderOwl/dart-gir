@@ -83,9 +83,8 @@ class GtkIconPaintable extends GObject
           >('gtk_icon_paintable_get_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
-    return (_gtkIconPaintableGetFile(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkIconPaintableGetFile(this.handle));
+    final _ret = _gtkIconPaintableGetFile(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Get the icon name being used for this icon.

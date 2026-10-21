@@ -618,12 +618,8 @@ class GProxy {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static GProxy? getDefaultForProtocol(String protocol) {
     return withNativeString(protocol, (nativeProtocol) {
-      return (_gProxyGetDefaultForProtocol(nativeProtocol.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GProxy.fromPointer(
-              _gProxyGetDefaultForProtocol(nativeProtocol.cast<Utf8>()),
-            );
+      final _ret = _gProxyGetDefaultForProtocol(nativeProtocol.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GProxy.fromPointer(_ret);
     });
   }
 }

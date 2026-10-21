@@ -376,6 +376,46 @@ final class GIOChannel {
     }
   }
 
+  /// Reads all the remaining data from the file.
+  static final _gIoChannelReadToEnd =
+      glibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_io_channel_read_to_end')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GIOStatus, Uint8List) readToEnd() {
+    final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+    final _out1 = malloc<ffi.Size>();
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gIoChannelReadToEnd(this.handle, _out0, _out1, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (
+        GIOStatus.fromValue(_ret),
+        bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+      calloc.free(_error);
+    }
+  }
+
   /// Reads a Unicode character from @channel.
   /// This function cannot be called on a channel with %NULL encoding.
   static final _gIoChannelReadUnichar =

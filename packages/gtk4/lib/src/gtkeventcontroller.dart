@@ -68,9 +68,8 @@ class GtkEventController extends GObject {
           >('gtk_event_controller_get_current_event')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkEvent? getCurrentEvent() {
-    return (_gtkEventControllerGetCurrentEvent(this.handle)) == ffi.nullptr
-        ? null
-        : GdkEvent.fromPointer(_gtkEventControllerGetCurrentEvent(this.handle));
+    final _ret = _gtkEventControllerGetCurrentEvent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkEvent.fromPointer(_ret);
   }
 
   /// Returns the device of the event that is currently being
@@ -85,12 +84,8 @@ class GtkEventController extends GObject {
           >('gtk_event_controller_get_current_event_device')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDevice? getCurrentEventDevice() {
-    return (_gtkEventControllerGetCurrentEventDevice(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkDevice.fromPointer(
-            _gtkEventControllerGetCurrentEventDevice(this.handle),
-          );
+    final _ret = _gtkEventControllerGetCurrentEventDevice(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDevice.fromPointer(_ret);
   }
 
   /// Returns the modifier state of the event that is currently being
@@ -167,9 +162,8 @@ class GtkEventController extends GObject {
           >('gtk_event_controller_get_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getWidget() {
-    return (_gtkEventControllerGetWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkEventControllerGetWidget(this.handle));
+    final _ret = _gtkEventControllerGetWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Resets the @controller to a clean state.

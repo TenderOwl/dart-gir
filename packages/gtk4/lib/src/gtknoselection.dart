@@ -75,9 +75,8 @@ class GtkNoSelection extends GObject
           >('gtk_no_selection_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkNoSelectionGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkNoSelectionGetModel(this.handle));
+    final _ret = _gtkNoSelectionGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Sets the model that @self should wrap.
@@ -225,9 +224,8 @@ class GtkNoSelection extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

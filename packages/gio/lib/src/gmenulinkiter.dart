@@ -102,7 +102,7 @@ class GMenuLinkIter extends GObject {
       final _ret = _gMenuLinkIterGetNext(this.handle, _out0, _out1);
       return (
         (_ret) != 0,
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
         (_out1.value) == ffi.nullptr
             ? null
             : GMenuModel.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),

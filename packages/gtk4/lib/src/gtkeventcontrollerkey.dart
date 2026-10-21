@@ -94,11 +94,8 @@ class GtkEventControllerKey extends GtkEventController {
           >('gtk_event_controller_key_get_im_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkIMContext? getImContext() {
-    return (_gtkEventControllerKeyGetImContext(this.handle)) == ffi.nullptr
-        ? null
-        : GtkIMContext.fromPointer(
-            _gtkEventControllerKeyGetImContext(this.handle),
-          );
+    final _ret = _gtkEventControllerKeyGetImContext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkIMContext.fromPointer(_ret);
   }
 
   /// Sets the input method context of the key @controller.

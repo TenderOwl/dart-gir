@@ -70,11 +70,8 @@ class GtkSelectionFilterModel extends GObject implements GListModel {
           >('gtk_selection_filter_model_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSelectionModel? getModel() {
-    return (_gtkSelectionFilterModelGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSelectionModel.fromPointer(
-            _gtkSelectionFilterModelGetModel(this.handle),
-          );
+    final _ret = _gtkSelectionFilterModelGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSelectionModel.fromPointer(_ret);
   }
 
   /// Sets the model to be filtered.
@@ -193,9 +190,8 @@ class GtkSelectionFilterModel extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

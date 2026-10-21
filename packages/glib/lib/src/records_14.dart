@@ -983,7 +983,7 @@ final class GKeyFile {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true)!);
+        return ((_ret) != 0, stringFromNative(_out0.value.cast(), free: true));
       } finally {
         malloc.free(_out0);
         calloc.free(_error);
@@ -1052,7 +1052,7 @@ final class GKeyFile {
           }
           return (
             (_ret) != 0,
-            stringFromNative(_out0.value.cast(), free: true)!,
+            stringFromNative(_out0.value.cast(), free: true),
           );
         } finally {
           malloc.free(_out0);

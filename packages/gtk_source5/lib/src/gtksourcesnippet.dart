@@ -157,11 +157,10 @@ class GtkSourceSnippet extends GObject {
           >('gtk_source_snippet_get_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceSnippetContext? getContext() {
-    return (_gtkSourceSnippetGetContext(this.handle)) == ffi.nullptr
+    final _ret = _gtkSourceSnippetGetContext(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : GtkSourceSnippetContext.fromPointer(
-            _gtkSourceSnippetGetContext(this.handle),
-          );
+        : GtkSourceSnippetContext.fromPointer(_ret);
   }
 
   /// Gets the description for the snippet.

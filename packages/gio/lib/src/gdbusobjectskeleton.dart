@@ -241,18 +241,11 @@ class GDBusObjectSkeleton extends GObject implements GDBusObject {
           >();
   GDBusInterface? getInterface(String interfaceName) {
     return withNativeString(interfaceName, (nativeInterfaceName) {
-      return (_gDbusObjectGetInterface(
-                this.handle,
-                nativeInterfaceName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GDBusInterface.fromPointer(
-              _gDbusObjectGetInterface(
-                this.handle,
-                nativeInterfaceName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gDbusObjectGetInterface(
+        this.handle,
+        nativeInterfaceName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GDBusInterface.fromPointer(_ret);
     });
   }
 

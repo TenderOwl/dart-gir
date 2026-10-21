@@ -951,9 +951,8 @@ class GtkBuilder extends GObject {
           >('gtk_builder_get_current_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getCurrentObject() {
-    return (_gtkBuilderGetCurrentObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkBuilderGetCurrentObject(this.handle));
+    final _ret = _gtkBuilderGetCurrentObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the object named @name.
@@ -977,12 +976,8 @@ class GtkBuilder extends GObject {
           >();
   GObject? getObject(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gtkBuilderGetObject(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GObject.fromPointer(
-              _gtkBuilderGetObject(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _gtkBuilderGetObject(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
     });
   }
 

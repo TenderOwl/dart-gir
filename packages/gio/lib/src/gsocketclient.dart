@@ -1064,11 +1064,8 @@ class GSocketClient extends GObject {
           >('g_socket_client_get_local_address')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GSocketAddress? getLocalAddress() {
-    return (_gSocketClientGetLocalAddress(this.handle)) == ffi.nullptr
-        ? null
-        : GSocketAddress.fromPointer(
-            _gSocketClientGetLocalAddress(this.handle),
-          );
+    final _ret = _gSocketClientGetLocalAddress(this.handle);
+    return (_ret) == ffi.nullptr ? null : GSocketAddress.fromPointer(_ret);
   }
 
   /// Gets the protocol name type of the socket client.

@@ -454,12 +454,8 @@ class GtkTreeView extends GtkWidget
             )
           >();
   GdkPaintable? createRowDragIcon(GtkTreePath path) {
-    return (_gtkTreeViewCreateRowDragIcon(this.handle, path.handle)) ==
-            ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(
-            _gtkTreeViewCreateRowDragIcon(this.handle, path.handle),
-          );
+    final _ret = _gtkTreeViewCreateRowDragIcon(this.handle, path.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Turns @tree_view into a drop destination for automatic DND. Calling
@@ -667,9 +663,8 @@ class GtkTreeView extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkTreeViewColumn? getColumn(int n) {
-    return (_gtkTreeViewGetColumn(this.handle, n)) == ffi.nullptr
-        ? null
-        : GtkTreeViewColumn.fromPointer(_gtkTreeViewGetColumn(this.handle, n));
+    final _ret = _gtkTreeViewGetColumn(this.handle, n);
+    return (_ret) == ffi.nullptr ? null : GtkTreeViewColumn.fromPointer(_ret);
   }
 
   /// Returns a `GList` of all the `GtkTreeViewColumn`s currently in @tree_view.
@@ -853,11 +848,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_tree_view_get_expander_column')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeViewColumn? getExpanderColumn() {
-    return (_gtkTreeViewGetExpanderColumn(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeViewColumn.fromPointer(
-            _gtkTreeViewGetExpanderColumn(this.handle),
-          );
+    final _ret = _gtkTreeViewGetExpanderColumn(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeViewColumn.fromPointer(_ret);
   }
 
   /// Returns whether fixed height mode is turned on for @tree_view.
@@ -936,9 +928,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_tree_view_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeModel? getModel() {
-    return (_gtkTreeViewGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeModel.fromPointer(_gtkTreeViewGetModel(this.handle));
+    final _ret = _gtkTreeViewGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeModel.fromPointer(_ret);
   }
 
   /// Queries the number of columns in the given @tree_view.
@@ -1073,9 +1064,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_tree_view_get_search_entry')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEditable? getSearchEntry() {
-    return (_gtkTreeViewGetSearchEntry(this.handle)) == ffi.nullptr
-        ? null
-        : GtkEditable.fromPointer(_gtkTreeViewGetSearchEntry(this.handle));
+    final _ret = _gtkTreeViewGetSearchEntry(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkEditable.fromPointer(_ret);
   }
 
   /// Gets the `GtkTreeSelection` associated with @tree_view.
@@ -2829,11 +2819,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -2916,11 +2903,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -2932,11 +2916,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -3225,9 +3206,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_scrollable_get_hadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getHadjustment() {
-    return (_gtkScrollableGetHadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetHadjustment(this.handle));
+    final _ret = _gtkScrollableGetHadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the horizontal `GtkScrollablePolicy`.
@@ -3250,9 +3230,8 @@ class GtkTreeView extends GtkWidget
           >('gtk_scrollable_get_vadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getVadjustment() {
-    return (_gtkScrollableGetVadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetVadjustment(this.handle));
+    final _ret = _gtkScrollableGetVadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the vertical `GtkScrollablePolicy`.

@@ -800,18 +800,14 @@ GdkPixbuf? pixbufGetFromSurface(
   int width,
   int height,
 ) {
-  return (_gdkPixbufGetFromSurface(
-            surface.handle,
-            srcX,
-            srcY,
-            width,
-            height,
-          )) ==
-          ffi.nullptr
-      ? null
-      : GdkPixbuf.fromPointer(
-          _gdkPixbufGetFromSurface(surface.handle, srcX, srcY, width, height),
-        );
+  final _ret = _gdkPixbufGetFromSurface(
+    surface.handle,
+    srcX,
+    srcY,
+    width,
+    height,
+  );
+  return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
 }
 
 /// Creates a new pixbuf from @texture.
@@ -827,9 +823,8 @@ final _gdkPixbufGetFromTexture =
         >('gdk_pixbuf_get_from_texture')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GdkPixbuf? pixbufGetFromTexture(GdkTexture texture) {
-  return (_gdkPixbufGetFromTexture(texture.handle)) == ffi.nullptr
-      ? null
-      : GdkPixbuf.fromPointer(_gdkPixbufGetFromTexture(texture.handle));
+  final _ret = _gdkPixbufGetFromTexture(texture.handle);
+  return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
 }
 
 /// Sets a list of backends that GDK should try to use.

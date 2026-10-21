@@ -112,9 +112,8 @@ class GtkSourceFile extends GObject {
           >('gtk_source_file_get_location')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getLocation() {
-    return (_gtkSourceFileGetLocation(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkSourceFileGetLocation(this.handle));
+    final _ret = _gtkSourceFileGetLocation(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   static final _gtkSourceFileGetNewlineType =

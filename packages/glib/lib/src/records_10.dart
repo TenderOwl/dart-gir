@@ -447,10 +447,8 @@ final class GHashTable {
     GHashTable hashTable, [
     ffi.Pointer<ffi.Void>? key,
   ]) {
-    return (_gHashTableLookup(hashTable.handle, key ?? ffi.nullptr)) ==
-            ffi.nullptr
-        ? null
-        : (_gHashTableLookup(hashTable.handle, key ?? ffi.nullptr));
+    final _ret = _gHashTableLookup(hashTable.handle, key ?? ffi.nullptr);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Looks up a key in the #GHashTable, returning the original key and the

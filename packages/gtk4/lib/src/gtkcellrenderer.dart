@@ -719,28 +719,16 @@ class GtkCellRenderer extends GInitiallyUnowned {
     GtkCellRendererState flags,
   ) {
     return withNativeString(path, (nativePath) {
-      return (_gtkCellRendererStartEditing(
-                this.handle,
-                event?.handle ?? ffi.nullptr,
-                widget.handle,
-                nativePath.cast<Utf8>(),
-                backgroundArea.handle,
-                cellArea.handle,
-                flags.value,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GtkCellEditable.fromPointer(
-              _gtkCellRendererStartEditing(
-                this.handle,
-                event?.handle ?? ffi.nullptr,
-                widget.handle,
-                nativePath.cast<Utf8>(),
-                backgroundArea.handle,
-                cellArea.handle,
-                flags.value,
-              ),
-            );
+      final _ret = _gtkCellRendererStartEditing(
+        this.handle,
+        event?.handle ?? ffi.nullptr,
+        widget.handle,
+        nativePath.cast<Utf8>(),
+        backgroundArea.handle,
+        cellArea.handle,
+        flags.value,
+      );
+      return (_ret) == ffi.nullptr ? null : GtkCellEditable.fromPointer(_ret);
     });
   }
 

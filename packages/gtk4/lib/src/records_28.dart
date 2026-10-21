@@ -389,7 +389,7 @@ final class GtkWidgetClass {
         (_out2.value) == ffi.nullptr
             ? null
             : GVariantType.fromPointer(_out2.value.cast<ffi.Void>()),
-        stringFromNative(_out3.value.cast(), free: true)!,
+        stringFromNative(_out3.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);

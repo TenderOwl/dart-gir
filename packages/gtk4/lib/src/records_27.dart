@@ -150,9 +150,8 @@ final class GtkTreeRowReference {
           >('gtk_tree_row_reference_get_path')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreePath? getPath() {
-    return (_gtkTreeRowReferenceGetPath(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreePath.fromPointer(_gtkTreeRowReferenceGetPath(this.handle));
+    final _ret = _gtkTreeRowReferenceGetPath(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreePath.fromPointer(_ret);
   }
 
   /// Returns %TRUE if the @reference is non-%NULL and refers to

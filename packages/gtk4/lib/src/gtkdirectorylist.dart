@@ -129,9 +129,8 @@ class GtkDirectoryList extends GObject implements GListModel {
           >('gtk_directory_list_get_error')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GError? getError() {
-    return (_gtkDirectoryListGetError(this.handle)) == ffi.nullptr
-        ? null
-        : GError.fromPointer(_gtkDirectoryListGetError(this.handle));
+    final _ret = _gtkDirectoryListGetError(this.handle);
+    return (_ret) == ffi.nullptr ? null : GError.fromPointer(_ret);
   }
 
   /// Gets the file whose children are currently enumerated.
@@ -143,9 +142,8 @@ class GtkDirectoryList extends GObject implements GListModel {
           >('gtk_directory_list_get_file')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
-    return (_gtkDirectoryListGetFile(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkDirectoryListGetFile(this.handle));
+    final _ret = _gtkDirectoryListGetFile(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the IO priority set via gtk_directory_list_set_io_priority().
@@ -358,9 +356,8 @@ class GtkDirectoryList extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

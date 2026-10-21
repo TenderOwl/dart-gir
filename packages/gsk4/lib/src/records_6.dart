@@ -95,9 +95,8 @@ final class GskTransform {
           >('gsk_transform_invert')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskTransform? invert() {
-    return (_gskTransformInvert(this.handle)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(_gskTransformInvert(this.handle));
+    final _ret = _gskTransformInvert(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Multiplies @next with the given @matrix.
@@ -166,12 +165,8 @@ final class GskTransform {
     double dx,
     double dy,
   ) {
-    return (_gskTransformMatrix2d(this.handle, xx, yx, xy, yy, dx, dy)) ==
-            ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformMatrix2d(this.handle, xx, yx, xy, yy, dx, dy),
-          );
+    final _ret = _gskTransformMatrix2d(this.handle, xx, yx, xy, yy, dx, dy);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Applies a perspective projection transform.
@@ -224,9 +219,8 @@ final class GskTransform {
           >('gsk_transform_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskTransform? ref() {
-    return (_gskTransformRef(this.handle)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(_gskTransformRef(this.handle));
+    final _ret = _gskTransformRef(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Rotates @next by an angle around the Z axis.
@@ -245,9 +239,8 @@ final class GskTransform {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, double)
           >();
   GskTransform? rotate(double angle) {
-    return (_gskTransformRotate(this.handle, angle)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(_gskTransformRotate(this.handle, angle));
+    final _ret = _gskTransformRotate(this.handle, angle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Rotates @next @angle degrees around @axis.
@@ -274,12 +267,8 @@ final class GskTransform {
             )
           >();
   GskTransform? rotate3d(double angle, GrapheneVec3 axis) {
-    return (_gskTransformRotate3d(this.handle, angle, axis.handle)) ==
-            ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformRotate3d(this.handle, angle, axis.handle),
-          );
+    final _ret = _gskTransformRotate3d(this.handle, angle, axis.handle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Scales @next in 2-dimensional space by the given factors.
@@ -306,11 +295,8 @@ final class GskTransform {
             )
           >();
   GskTransform? scale(double factorX, double factorY) {
-    return (_gskTransformScale(this.handle, factorX, factorY)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformScale(this.handle, factorX, factorY),
-          );
+    final _ret = _gskTransformScale(this.handle, factorX, factorY);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Scales @next by the given factors.
@@ -337,12 +323,8 @@ final class GskTransform {
             )
           >();
   GskTransform? scale3d(double factorX, double factorY, double factorZ) {
-    return (_gskTransformScale3d(this.handle, factorX, factorY, factorZ)) ==
-            ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformScale3d(this.handle, factorX, factorY, factorZ),
-          );
+    final _ret = _gskTransformScale3d(this.handle, factorX, factorY, factorZ);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Applies a skew transform.
@@ -367,11 +349,8 @@ final class GskTransform {
             )
           >();
   GskTransform? skew(double skewX, double skewY) {
-    return (_gskTransformSkew(this.handle, skewX, skewY)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformSkew(this.handle, skewX, skewY),
-          );
+    final _ret = _gskTransformSkew(this.handle, skewX, skewY);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Converts a transform to a 2D transformation matrix.
@@ -665,15 +644,11 @@ final class GskTransform {
             )
           >();
   GskTransform? transform([GskTransform? other]) {
-    return (_gskTransformTransform(
-              this.handle,
-              other?.handle ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformTransform(this.handle, other?.handle ?? ffi.nullptr),
-          );
+    final _ret = _gskTransformTransform(
+      this.handle,
+      other?.handle ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Transforms a rectangle using the given transform.
@@ -764,11 +739,8 @@ final class GskTransform {
             )
           >();
   GskTransform? translate(GraphenePoint point) {
-    return (_gskTransformTranslate(this.handle, point.handle)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformTranslate(this.handle, point.handle),
-          );
+    final _ret = _gskTransformTranslate(this.handle, point.handle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Translates @next by @point.
@@ -791,11 +763,8 @@ final class GskTransform {
             )
           >();
   GskTransform? translate3d(GraphenePoint3D point) {
-    return (_gskTransformTranslate3d(this.handle, point.handle)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gskTransformTranslate3d(this.handle, point.handle),
-          );
+    final _ret = _gskTransformTranslate3d(this.handle, point.handle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Releases a reference on the given transform.

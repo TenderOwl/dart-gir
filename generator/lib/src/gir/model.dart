@@ -246,7 +246,7 @@ class GirParameter {
     this.nullable = false,
     this.transferOwnership = GirTransferOwnership.none,
     this.optional = false,
-    this.callerAllocates = false,
+    this.callerAllocates = true,
     this.isVarargs = false,
     this.scope,
     this.closureIndex,
@@ -259,6 +259,13 @@ class GirParameter {
   final bool nullable;
   final GirTransferOwnership transferOwnership;
   final bool optional;
+
+  /// Whether the *caller* allocates the memory for this parameter.
+  ///
+  /// Follows the GIR default: `caller-allocates` defaults to `true`, so
+  /// an absent attribute means the caller allocates. Only an explicit
+  /// `caller-allocates="0"` marks a parameter whose buffer the callee
+  /// allocates (`g_file_load_contents`' `contents`).
   final bool callerAllocates;
   final bool isVarargs;
 

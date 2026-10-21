@@ -162,18 +162,11 @@ class GActionMap {
           >();
   GAction? lookupAction(String actionName) {
     return withNativeString(actionName, (nativeActionName) {
-      return (_gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GAction.fromPointer(
-              _gActionMapLookupAction(
-                this.handle,
-                nativeActionName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gActionMapLookupAction(
+        this.handle,
+        nativeActionName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GAction.fromPointer(_ret);
     });
   }
 

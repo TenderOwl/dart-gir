@@ -399,11 +399,8 @@ final class GdkToplevelLayout {
           >('gdk_toplevel_layout_get_fullscreen_monitor')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkMonitor? getFullscreenMonitor() {
-    return (_gdkToplevelLayoutGetFullscreenMonitor(this.handle)) == ffi.nullptr
-        ? null
-        : GdkMonitor.fromPointer(
-            _gdkToplevelLayoutGetFullscreenMonitor(this.handle),
-          );
+    final _ret = _gdkToplevelLayoutGetFullscreenMonitor(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkMonitor.fromPointer(_ret);
   }
 
   /// If the layout specifies whether to the toplevel should go maximized,

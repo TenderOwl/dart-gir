@@ -171,11 +171,8 @@ class GtkBuilderListItemFactory extends GtkListItemFactory {
           >('gtk_builder_list_item_factory_get_scope')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkBuilderScope? getScope() {
-    return (_gtkBuilderListItemFactoryGetScope(this.handle)) == ffi.nullptr
-        ? null
-        : GtkBuilderScope.fromPointer(
-            _gtkBuilderListItemFactoryGetScope(this.handle),
-          );
+    final _ret = _gtkBuilderListItemFactoryGetScope(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkBuilderScope.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

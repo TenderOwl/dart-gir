@@ -72,9 +72,8 @@ class GMemoryOutputStream extends GOutputStream
           >('g_memory_output_stream_get_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getDataMemoryOutputStream() {
-    return (_gMemoryOutputStreamGetData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMemoryOutputStreamGetData(this.handle));
+    final _ret = _gMemoryOutputStreamGetData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Returns the number of bytes from the start up to including the last
@@ -137,9 +136,8 @@ class GMemoryOutputStream extends GOutputStream
           >('g_memory_output_stream_steal_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? stealDataMemoryOutputStream() {
-    return (_gMemoryOutputStreamStealData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gMemoryOutputStreamStealData(this.handle));
+    final _ret = _gMemoryOutputStreamStealData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

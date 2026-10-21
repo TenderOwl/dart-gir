@@ -139,11 +139,8 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
           >('gtk_source_completion_context_get_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceBuffer? getBuffer() {
-    return (_gtkSourceCompletionContextGetBuffer(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceBuffer.fromPointer(
-            _gtkSourceCompletionContextGetBuffer(this.handle),
-          );
+    final _ret = _gtkSourceCompletionContextGetBuffer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSourceBuffer.fromPointer(_ret);
   }
 
   /// Gets the "busy" property. This is set to %TRUE while the completion
@@ -167,12 +164,8 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
           >('gtk_source_completion_context_get_completion')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceCompletion? getCompletion() {
-    return (_gtkSourceCompletionContextGetCompletion(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GtkSourceCompletion.fromPointer(
-            _gtkSourceCompletionContextGetCompletion(this.handle),
-          );
+    final _ret = _gtkSourceCompletionContextGetCompletion(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSourceCompletion.fromPointer(_ret);
   }
 
   /// Checks if any proposals have been provided to the context.
@@ -196,11 +189,8 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
           >('gtk_source_completion_context_get_language')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceLanguage? getLanguage() {
-    return (_gtkSourceCompletionContextGetLanguage(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceLanguage.fromPointer(
-            _gtkSourceCompletionContextGetLanguage(this.handle),
-          );
+    final _ret = _gtkSourceCompletionContextGetLanguage(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSourceLanguage.fromPointer(_ret);
   }
 
   /// Gets the #GListModel associated with the provider.
@@ -223,18 +213,11 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
             )
           >();
   GListModel? getProposalsForProvider(GtkSourceCompletionProvider provider) {
-    return (_gtkSourceCompletionContextGetProposalsForProvider(
-              this.handle,
-              provider.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GListModel.fromPointer(
-            _gtkSourceCompletionContextGetProposalsForProvider(
-              this.handle,
-              provider.handle,
-            ),
-          );
+    final _ret = _gtkSourceCompletionContextGetProposalsForProvider(
+      this.handle,
+      provider.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Gets the text view for the context.
@@ -246,11 +229,8 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
           >('gtk_source_completion_context_get_view')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceView? getView() {
-    return (_gtkSourceCompletionContextGetView(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceView.fromPointer(
-            _gtkSourceCompletionContextGetView(this.handle),
-          );
+    final _ret = _gtkSourceCompletionContextGetView(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSourceView.fromPointer(_ret);
   }
 
   /// Gets the word that is being completed up to the position of the insert mark.
@@ -430,9 +410,8 @@ class GtkSourceCompletionContext extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

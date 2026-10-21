@@ -813,11 +813,9 @@ ffi.Pointer<ffi.Void>? atomicPointerExchange([
   ffi.Pointer<ffi.Void>? atomic,
   ffi.Pointer<ffi.Void>? newval,
 ]) {
-  return (_gAtomicPointerExchange(
-            atomic ?? ffi.nullptr,
-            newval ?? ffi.nullptr,
-          )) ==
-          ffi.nullptr
-      ? null
-      : (_gAtomicPointerExchange(atomic ?? ffi.nullptr, newval ?? ffi.nullptr));
+  final _ret = _gAtomicPointerExchange(
+    atomic ?? ffi.nullptr,
+    newval ?? ffi.nullptr,
+  );
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }

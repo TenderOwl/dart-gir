@@ -48,6 +48,9 @@ class TypeBridge {
     this.arrayLengthParameter,
     this.structArgType,
     this.outIsStruct = false,
+    this.outByteBufferLengthIndex,
+    this.outExtractBytes,
+    this.evaluatesArgTwice = false,
   });
 
   /// Public Dart type used in wrapper signatures, e.g. `int`, `GObject?`.
@@ -112,6 +115,33 @@ class TypeBridge {
   /// Set when the out parameter is an `ffi.Struct`: the buffer holds
   /// the struct itself, and the value is read back by value.
   final bool outIsStruct;
+
+  /// For a callee-allocated byte buffer, the 0-based index of the
+  /// sibling OUT parameter that carries the byte count.
+  ///
+  /// The GIR binds the two together with `<array length="N">`, where `N`
+  /// is that index. The emitter resolves it to the sibling's local
+  /// variable and hands it to [outExtractBytes]; the count itself is
+  /// not a separate element of the returned record — the buffer already
+  /// carries its length.
+  final int? outByteBufferLengthIndex;
+
+  /// Reads a callee-allocated byte buffer. [bufferVar] is the local
+  /// holding the pointer slot the callee filled, [lengthVar] the local
+  /// holding the byte count.
+  ///
+  /// The generated code copies the bytes into a Dart [Uint8List] and
+  /// releases the native buffer — the garbage collector cannot see
+  /// native memory.
+  final String Function(String bufferVar, String lengthVar)? outExtractBytes;
+
+  /// `true` when [fromNative] mentions its argument twice, so the
+  /// argument must be bound to a local before it is converted.
+  ///
+  /// A nullable pointer return converts as
+  /// `($expr) == ffi.nullptr ? null : $expr`; inlining a call there
+  /// would call the native function twice.
+  final bool evaluatesArgTwice;
 }
 
 /// Per-package emission state shared by all emitters.
@@ -188,6 +218,10 @@ class EmitContext {
   bool usesMalloc = false;
   bool usesGirFfi = false; // stringFromNative / withNativeString
   bool usesGlibException = false;
+
+  /// `dart:typed_data` — needed by the `Uint8List` a callee-allocated
+  /// byte buffer is copied into.
+  bool usesTypedData = false;
 
   /// C identifier prefix prepended to GIR type names (`G` for GLib/GObject).
   String prefixFor(GirNamespace ns) =>
@@ -472,6 +506,7 @@ class EmitContext {
         fromNative: nullable
             ? (e) => '($e) == ffi.nullptr ? null : $dartType.fromPointer($e)'
             : (e) => '$dartType.fromPointer($e)',
+        evaluatesArgTwice: nullable,
         outPointee: 'ffi.Pointer<ffi.Void>',
         outExtract: nullable
             ? (v) =>
@@ -491,6 +526,7 @@ class EmitContext {
       fromNative: nullable
           ? (e) => '($e) == ffi.nullptr ? null : $dartType.fromPointer($e)'
           : (e) => '$dartType.fromPointer($e)',
+      evaluatesArgTwice: nullable,
       // The C function writes the whole struct (~24 bytes for
       // GtkTextIter, ~72 for GtkTreeIter) into the buffer the wrapper
       // passes. The size is not known statically, so the generator
@@ -529,12 +565,17 @@ class EmitContext {
   /// used when emitting inherited signals whose arg types belong to an
   /// ancestor namespace (e.g. an Adw class emitting a Gtk signal whose
   /// `Window` arg must resolve against the Gtk namespace).
+  ///
+  /// [callerAllocates] mirrors the GIR's `caller-allocates` attribute: it
+  /// is `false` only for a parameter whose buffer the *callee* allocates
+  /// (`g_file_load_contents`' `contents`).
   (TypeBridge?, String?) bridgeFor(
     GirTypeRef? ref, {
     bool nullable = false,
     GirTransferOwnership transfer = GirTransferOwnership.none,
     bool forReturn = false,
     GirParameterDirection direction = GirParameterDirection.in_,
+    bool callerAllocates = true,
     GirNamespace? relativeTo,
   }) {
     if (ref == null) {
@@ -622,7 +663,14 @@ class EmitContext {
             fromNative: fromNative,
             isString: true,
             outPointee: 'ffi.Pointer<Utf8>',
-            outExtract: (v) => 'stringFromNative($v.value.cast(), free: true)!',
+            // A nullable OUT string stays nullable on the Dart side:
+            // GLib leaves the slot `NULL` when there is no value to
+            // report (`g_file_load_contents`' `etag_out` for a file
+            // without an etag), and asserting non-null there would
+            // throw instead of yielding `null`.
+            outExtract: nullable
+                ? (v) => 'stringFromNative($v.value.cast(), free: true)'
+                : (v) => 'stringFromNative($v.value.cast(), free: true)!',
           ),
           null,
         );
@@ -662,6 +710,7 @@ class EmitContext {
             fromNative: nullable
                 ? (e) => '($e) == ffi.nullptr ? null : ($e)'
                 : _id,
+            evaluatesArgTwice: nullable,
             outPointee: 'ffi.Pointer<ffi.Void>',
             outExtract: (v) => '$v.value',
           ),
@@ -765,6 +814,39 @@ class EmitContext {
         );
       case TypeKind.primitiveArray:
       case TypeKind.recordArray:
+        // A byte buffer the *callee* allocates: the C function allocates
+        // the buffer, fills it, and writes the pointer into the caller's
+        // slot; a sibling parameter carries the byte count. This is the
+        // shape of `g_file_load_contents`' `contents`.
+        //
+        // The wrapper copies the bytes into a Dart `Uint8List` and
+        // releases the native buffer — the garbage collector cannot see
+        // native memory, so leaving the buffer to it would leak.
+        if (direction == GirParameterDirection.out &&
+            !callerAllocates &&
+            transfer == GirTransferOwnership.full &&
+            TypeResolver.isCalleeAllocatedByteBuffer(ref)) {
+          usesGirFfi = true;
+          usesTypedData = true;
+          return (
+            TypeBridge(
+              wrapperType: 'Uint8List',
+              nativeType: 'ffi.Pointer<ffi.Uint8>',
+              dartFfiType: 'ffi.Pointer<ffi.Uint8>',
+              toNative: _id,
+              fromNative: (e) => e,
+              // The slot the callee writes the buffer pointer into. The
+              // native parameter is a pointer to it (`char **`), so the
+              // emitter allocates one pointer-sized cell.
+              outPointee: 'ffi.Pointer<ffi.Uint8>',
+              outByteBufferLengthIndex: ref.array!.lengthParameterIndex!,
+              outExtractBytes: (bufferVar, lengthVar) =>
+                  'bytesFromNative($bufferVar.value.cast<ffi.Uint8>(), '
+                  '$lengthVar.value)',
+            ),
+            null,
+          );
+        }
         // Both array shapes expose a typed `Pointer<T>` on the Dart
         // side. The user `calloc<T>(n)` directly (or in PRIMITIVE
         // cases `calloc<Int32>(n)` and casts at the buffer level),

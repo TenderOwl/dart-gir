@@ -109,9 +109,8 @@ class GIcon {
           >('g_icon_serialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? serialize() {
-    return (_gIconSerialize(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gIconSerialize(this.handle));
+    final _ret = _gIconSerialize(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Deserializes a #GIcon previously serialized using g_icon_serialize().
@@ -123,9 +122,8 @@ class GIcon {
           >('g_icon_deserialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static GIcon? deserialize(GVariant value) {
-    return (_gIconDeserialize(value.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gIconDeserialize(value.handle));
+    final _ret = _gIconDeserialize(value.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Generate a #GIcon instance from @str. This function can fail if

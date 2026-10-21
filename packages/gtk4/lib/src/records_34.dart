@@ -309,9 +309,8 @@ class GtkEditable {
           >('gtk_editable_get_delegate')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEditable? getDelegate() {
-    return (_gtkEditableGetDelegate(this.handle)) == ffi.nullptr
-        ? null
-        : GtkEditable.fromPointer(_gtkEditableGetDelegate(this.handle));
+    final _ret = _gtkEditableGetDelegate(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkEditable.fromPointer(_ret);
   }
 
   /// Retrieves whether @editable is editable.

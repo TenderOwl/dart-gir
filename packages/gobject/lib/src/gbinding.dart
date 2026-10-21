@@ -133,9 +133,8 @@ class GBinding extends GObject {
           >('g_binding_dup_source')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupSource() {
-    return (_gBindingDupSource(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gBindingDupSource(this.handle));
+    final _ret = _gBindingDupSource(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Retrieves the #GObject instance used as the target of the binding.
@@ -151,9 +150,8 @@ class GBinding extends GObject {
           >('g_binding_dup_target')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupTarget() {
-    return (_gBindingDupTarget(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gBindingDupTarget(this.handle));
+    final _ret = _gBindingDupTarget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Retrieves the flags passed when constructing the #GBinding.
@@ -183,9 +181,8 @@ class GBinding extends GObject {
           >('g_binding_get_source')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSource() {
-    return (_gBindingGetSource(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gBindingGetSource(this.handle));
+    final _ret = _gBindingGetSource(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Retrieves the name of the property of #GBinding:source used as the source
@@ -221,9 +218,8 @@ class GBinding extends GObject {
           >('g_binding_get_target')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getTarget() {
-    return (_gBindingGetTarget(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gBindingGetTarget(this.handle));
+    final _ret = _gBindingGetTarget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Retrieves the name of the property of #GBinding:target used as the target

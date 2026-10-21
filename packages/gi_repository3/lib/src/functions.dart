@@ -80,10 +80,8 @@ ffi.Pointer<ffi.Void>? typeTagHashPointerFromArgument(
   GITypeTag storageType,
   GIArgument arg,
 ) {
-  return (_giTypeTagHashPointerFromArgument(storageType.value, arg.handle)) ==
-          ffi.nullptr
-      ? null
-      : (_giTypeTagHashPointerFromArgument(storageType.value, arg.handle));
+  final _ret = _giTypeTagHashPointerFromArgument(storageType.value, arg.handle);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Obtain a string representation of @type

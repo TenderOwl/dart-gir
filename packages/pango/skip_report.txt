@@ -1,8 +1,8 @@
 # Skip report for package pango (Pango 1.0)
-Total skipped: 67
+Total skipped: 66
 
 ## By category
-callable: 54
+callable: 53
 method: 5
 property: 4
 alias: 3
@@ -13,19 +13,19 @@ unsupported out parameter attrs (ffi.Pointer<ffi.Void>): 6
 name collision: 5
 inout parameter pos: 4
 aliases are resolved to their target: 3
-missing getter get_n-items: 2
-unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>): 2
-return: array of TypeKind.record (later phase): 2
-inout parameter rect: 2
 unsupported out parameter families (ffi.Pointer<ffi.Void>): 2
+missing getter get_n-items: 2
 missing getter get_item-type: 2
-moved to Gravity.get_for_script_and_width: 1
+inout parameter rect: 2
+return: array of TypeKind.record (later phase): 2
+unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>): 2
+moved to AttrType.register: 1
 moved to BidiType.for_unichar: 1
 inout parameter inclusive: 1
 moved to FontDescription.from_string: 1
 moved to Gravity.get_for_matrix: 1
-moved to Gravity.get_for_script: 1
 moved to AttrFontFeatures.new: 1
+moved to Gravity.get_for_script_and_width: 1
 moved to Gravity.to_rotation: 1
 moved to Language.from_string: 1
 moved to Language.get_default: 1
@@ -39,22 +39,21 @@ moved to Script.get_sample_language: 1
 return: string list return type (null): 1
 moved to TabArray.from_string: 1
 moved to AttrList.from_string: 1
-moved to AttrShape.new: 1
+moved to AttrType.get_name: 1
 parameter log_attrs: array of TypeKind.record (later phase): 1
-moved to AttrShape.new_with_data: 1
+moved to AttrSize.new_absolute: 1
 unsupported out parameter ranges (ffi.Pointer<ffi.Int32>): 1
 inout parameter dx: 1
 moved to AttrFontDesc.new: 1
 inout parameter x: 1
 unsupported out parameter locations (ffi.Pointer<ffi.Int32>): 1
-moved to AttrSize.new_absolute: 1
+moved to Gravity.get_for_script: 1
 override-incompatible with ancestor; renamed to refCoverage: 1
-unsupported out parameter bytes (ffi.Pointer<ffi.Uint8>): 1
 unsupported out parameter features (ffi.Pointer<ffi.Void>): 1
 unsupported out parameter sizes (ffi.Pointer<ffi.Int32>): 1
 unsupported out parameter faces (ffi.Pointer<ffi.Void>): 1
-moved to AttrType.get_name: 1
-moved to AttrType.register: 1
+moved to AttrShape.new_with_data: 1
+moved to AttrShape.new: 1
 moved to AttrSize.new: 1
 
 ## First 50 entries

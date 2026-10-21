@@ -456,9 +456,8 @@ class GVolume {
           >('g_volume_get_activation_root')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getActivationRoot() {
-    return (_gVolumeGetActivationRoot(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gVolumeGetActivationRoot(this.handle));
+    final _ret = _gVolumeGetActivationRoot(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   /// Gets the drive for the @volume.
@@ -470,9 +469,8 @@ class GVolume {
           >('g_volume_get_drive')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDrive? getDrive() {
-    return (_gVolumeGetDrive(this.handle)) == ffi.nullptr
-        ? null
-        : GDrive.fromPointer(_gVolumeGetDrive(this.handle));
+    final _ret = _gVolumeGetDrive(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDrive.fromPointer(_ret);
   }
 
   /// Gets the icon for @volume.
@@ -520,9 +518,8 @@ class GVolume {
           >('g_volume_get_mount')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMount? getMount() {
-    return (_gVolumeGetMount(this.handle)) == ffi.nullptr
-        ? null
-        : GMount.fromPointer(_gVolumeGetMount(this.handle));
+    final _ret = _gVolumeGetMount(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMount.fromPointer(_ret);
   }
 
   /// Gets the name of @volume.

@@ -679,11 +679,8 @@ class GtkSourceSearchContext extends GObject {
           >('gtk_source_search_context_get_match_style')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceStyle? getMatchStyle() {
-    return (_gtkSourceSearchContextGetMatchStyle(this.handle)) == ffi.nullptr
-        ? null
-        : GtkSourceStyle.fromPointer(
-            _gtkSourceSearchContextGetMatchStyle(this.handle),
-          );
+    final _ret = _gtkSourceSearchContextGetMatchStyle(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkSourceStyle.fromPointer(_ret);
   }
 
   /// Gets the position of a search occurrence.
@@ -744,9 +741,8 @@ class GtkSourceSearchContext extends GObject {
           >('gtk_source_search_context_get_regex_error')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GError? getRegexError() {
-    return (_gtkSourceSearchContextGetRegexError(this.handle)) == ffi.nullptr
-        ? null
-        : GError.fromPointer(_gtkSourceSearchContextGetRegexError(this.handle));
+    final _ret = _gtkSourceSearchContextGetRegexError(this.handle);
+    return (_ret) == ffi.nullptr ? null : GError.fromPointer(_ret);
   }
 
   static final _gtkSourceSearchContextGetSettings =

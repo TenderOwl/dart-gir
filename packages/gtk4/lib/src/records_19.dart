@@ -203,9 +203,8 @@ final class GtkRecentInfo {
           >('gtk_recent_info_get_gicon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getGicon() {
-    return (_gtkRecentInfoGetGicon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gtkRecentInfoGetGicon(this.handle));
+    final _ret = _gtkRecentInfoGetGicon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Gets the MIME type of the resource.

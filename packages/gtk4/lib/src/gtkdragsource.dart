@@ -156,9 +156,8 @@ class GtkDragSource extends GtkGestureSingle {
           >('gtk_drag_source_get_content')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkContentProvider? getContent() {
-    return (_gtkDragSourceGetContent(this.handle)) == ffi.nullptr
-        ? null
-        : GdkContentProvider.fromPointer(_gtkDragSourceGetContent(this.handle));
+    final _ret = _gtkDragSourceGetContent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkContentProvider.fromPointer(_ret);
   }
 
   /// Returns the underlying `GdkDrag` object for an ongoing drag.
@@ -170,9 +169,8 @@ class GtkDragSource extends GtkGestureSingle {
           >('gtk_drag_source_get_drag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDrag? getDrag() {
-    return (_gtkDragSourceGetDrag(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDrag.fromPointer(_gtkDragSourceGetDrag(this.handle));
+    final _ret = _gtkDragSourceGetDrag(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDrag.fromPointer(_ret);
   }
 
   /// Sets the actions on the `GtkDragSource`.

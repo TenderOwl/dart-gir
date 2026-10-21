@@ -128,11 +128,8 @@ class GDBusMethodInvocation extends GObject {
           >('g_dbus_method_invocation_get_method_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusMethodInfo? getMethodInfo() {
-    return (_gDbusMethodInvocationGetMethodInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusMethodInfo.fromPointer(
-            _gDbusMethodInvocationGetMethodInfo(this.handle),
-          );
+    final _ret = _gDbusMethodInvocationGetMethodInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusMethodInfo.fromPointer(_ret);
   }
 
   /// Gets the name of the method that was invoked.
@@ -199,11 +196,8 @@ class GDBusMethodInvocation extends GObject {
           >('g_dbus_method_invocation_get_property_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusPropertyInfo? getPropertyInfo() {
-    return (_gDbusMethodInvocationGetPropertyInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusPropertyInfo.fromPointer(
-            _gDbusMethodInvocationGetPropertyInfo(this.handle),
-          );
+    final _ret = _gDbusMethodInvocationGetPropertyInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusPropertyInfo.fromPointer(_ret);
   }
 
   /// Gets the bus name that invoked the method.

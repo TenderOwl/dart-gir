@@ -83,9 +83,8 @@ class GdkDevice extends GObject {
           >('gdk_device_get_device_tool')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDeviceTool? getDeviceTool() {
-    return (_gdkDeviceGetDeviceTool(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDeviceTool.fromPointer(_gdkDeviceGetDeviceTool(this.handle));
+    final _ret = _gdkDeviceGetDeviceTool(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDeviceTool.fromPointer(_ret);
   }
 
   /// Returns the direction of effective layout of the keyboard.

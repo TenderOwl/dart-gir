@@ -110,9 +110,8 @@ class GtkColumnViewRow extends GObject {
           >('gtk_column_view_row_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
-    return (_gtkColumnViewRowGetItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkColumnViewRowGetItem(this.handle));
+    final _ret = _gtkColumnViewRowGetItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the position in the model that @self currently displays.

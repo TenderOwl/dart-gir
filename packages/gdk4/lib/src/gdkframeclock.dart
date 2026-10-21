@@ -112,11 +112,8 @@ class GdkFrameClock extends GObject {
           >('gdk_frame_clock_get_current_timings')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkFrameTimings? getCurrentTimings() {
-    return (_gdkFrameClockGetCurrentTimings(this.handle)) == ffi.nullptr
-        ? null
-        : GdkFrameTimings.fromPointer(
-            _gdkFrameClockGetCurrentTimings(this.handle),
-          );
+    final _ret = _gdkFrameClockGetCurrentTimings(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkFrameTimings.fromPointer(_ret);
   }
 
   /// Calculates the current frames-per-second, based on the
@@ -225,11 +222,8 @@ class GdkFrameClock extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GdkFrameTimings? getTimings(int frameCounter) {
-    return (_gdkFrameClockGetTimings(this.handle, frameCounter)) == ffi.nullptr
-        ? null
-        : GdkFrameTimings.fromPointer(
-            _gdkFrameClockGetTimings(this.handle, frameCounter),
-          );
+    final _ret = _gdkFrameClockGetTimings(this.handle, frameCounter);
+    return (_ret) == ffi.nullptr ? null : GdkFrameTimings.fromPointer(_ret);
   }
 
   /// Asks the frame clock to run a particular phase.

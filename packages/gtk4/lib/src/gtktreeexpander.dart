@@ -138,9 +138,8 @@ class GtkTreeExpander extends GtkWidget
           >('gtk_tree_expander_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkTreeExpanderGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkTreeExpanderGetChild(this.handle));
+    final _ret = _gtkTreeExpanderGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets whether the TreeExpander should be hidden in a GtkTreeListRow.
@@ -185,9 +184,8 @@ class GtkTreeExpander extends GtkWidget
           >('gtk_tree_expander_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
-    return (_gtkTreeExpanderGetItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkTreeExpanderGetItem(this.handle));
+    final _ret = _gtkTreeExpanderGetItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the list row managed by @self.
@@ -199,9 +197,8 @@ class GtkTreeExpander extends GtkWidget
           >('gtk_tree_expander_get_list_row')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeListRow? getListRow() {
-    return (_gtkTreeExpanderGetListRow(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeListRow.fromPointer(_gtkTreeExpanderGetListRow(this.handle));
+    final _ret = _gtkTreeExpanderGetListRow(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
   }
 
   /// Sets the content widget to display.
@@ -503,11 +500,8 @@ class GtkTreeExpander extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -590,11 +584,8 @@ class GtkTreeExpander extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -606,11 +597,8 @@ class GtkTreeExpander extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

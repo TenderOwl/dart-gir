@@ -66,9 +66,8 @@ class AdwToggle extends GObject {
           >('adw_toggle_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_adwToggleGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwToggleGetChild(this.handle));
+    final _ret = _adwToggleGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the description of @self.

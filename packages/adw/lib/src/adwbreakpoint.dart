@@ -222,11 +222,10 @@ class AdwBreakpoint extends GObject implements GtkBuildable {
           >('adw_breakpoint_get_condition')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBreakpointCondition? getCondition() {
-    return (_adwBreakpointGetCondition(this.handle)) == ffi.nullptr
+    final _ret = _adwBreakpointGetCondition(this.handle);
+    return (_ret) == ffi.nullptr
         ? null
-        : AdwBreakpointCondition.fromPointer(
-            _adwBreakpointGetCondition(this.handle),
-          );
+        : AdwBreakpointCondition.fromPointer(_ret);
   }
 
   /// Sets the condition for @self.

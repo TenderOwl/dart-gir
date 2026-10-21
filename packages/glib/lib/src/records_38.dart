@@ -42,9 +42,8 @@ final class GTreeNode {
           >('g_tree_node_key')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? key() {
-    return (_gTreeNodeKey(this.handle)) == ffi.nullptr
-        ? null
-        : (_gTreeNodeKey(this.handle));
+    final _ret = _gTreeNodeKey(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Returns the next in-order node of the tree, or %NULL
@@ -57,9 +56,8 @@ final class GTreeNode {
           >('g_tree_node_next')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTreeNode? next() {
-    return (_gTreeNodeNext(this.handle)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(_gTreeNodeNext(this.handle));
+    final _ret = _gTreeNodeNext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Returns the previous in-order node of the tree, or %NULL
@@ -72,9 +70,8 @@ final class GTreeNode {
           >('g_tree_node_previous')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTreeNode? previous() {
-    return (_gTreeNodePrevious(this.handle)) == ffi.nullptr
-        ? null
-        : GTreeNode.fromPointer(_gTreeNodePrevious(this.handle));
+    final _ret = _gTreeNodePrevious(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTreeNode.fromPointer(_ret);
   }
 
   /// Gets the value stored at a particular tree node.
@@ -86,9 +83,8 @@ final class GTreeNode {
           >('g_tree_node_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? value() {
-    return (_gTreeNodeValue(this.handle)) == ffi.nullptr
-        ? null
-        : (_gTreeNodeValue(this.handle));
+    final _ret = _gTreeNodeValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 }
 
@@ -156,8 +152,7 @@ final class GTuples {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
   ffi.Pointer<ffi.Void>? index(int index, int field) {
-    return (_gTuplesIndex(this.handle, index, field)) == ffi.nullptr
-        ? null
-        : (_gTuplesIndex(this.handle, index, field));
+    final _ret = _gTuplesIndex(this.handle, index, field);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 }

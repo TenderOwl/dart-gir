@@ -273,9 +273,8 @@ class GAppInfo {
           >('g_app_info_get_icon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getIcon() {
-    return (_gAppInfoGetIcon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gAppInfoGetIcon(this.handle));
+    final _ret = _gAppInfoGetIcon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   /// Gets the ID of an application. An id is a string that identifies the
@@ -870,18 +869,11 @@ class GAppInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, int)>();
   static GAppInfo? getDefaultForType(String contentType, bool mustSupportUris) {
     return withNativeString(contentType, (nativeContentType) {
-      return (_gAppInfoGetDefaultForType(
-                nativeContentType.cast<Utf8>(),
-                mustSupportUris ? 1 : 0,
-              )) ==
-              ffi.nullptr
-          ? null
-          : GAppInfo.fromPointer(
-              _gAppInfoGetDefaultForType(
-                nativeContentType.cast<Utf8>(),
-                mustSupportUris ? 1 : 0,
-              ),
-            );
+      final _ret = _gAppInfoGetDefaultForType(
+        nativeContentType.cast<Utf8>(),
+        mustSupportUris ? 1 : 0,
+      );
+      return (_ret) == ffi.nullptr ? null : GAppInfo.fromPointer(_ret);
     });
   }
 
@@ -1006,12 +998,10 @@ class GAppInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static GAppInfo? getDefaultForUriScheme(String uriScheme) {
     return withNativeString(uriScheme, (nativeUriScheme) {
-      return (_gAppInfoGetDefaultForUriScheme(nativeUriScheme.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GAppInfo.fromPointer(
-              _gAppInfoGetDefaultForUriScheme(nativeUriScheme.cast<Utf8>()),
-            );
+      final _ret = _gAppInfoGetDefaultForUriScheme(
+        nativeUriScheme.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GAppInfo.fromPointer(_ret);
     });
   }
 

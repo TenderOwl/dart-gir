@@ -55,11 +55,8 @@ class GtkFixedLayoutChild extends GtkLayoutChild {
           >('gtk_fixed_layout_child_get_transform')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskTransform? getTransform() {
-    return (_gtkFixedLayoutChildGetTransform(this.handle)) == ffi.nullptr
-        ? null
-        : GskTransform.fromPointer(
-            _gtkFixedLayoutChildGetTransform(this.handle),
-          );
+    final _ret = _gtkFixedLayoutChildGetTransform(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskTransform.fromPointer(_ret);
   }
 
   /// Sets the transformation of the child of a `GtkFixedLayout`.

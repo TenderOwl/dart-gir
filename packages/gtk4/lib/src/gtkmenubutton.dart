@@ -160,9 +160,8 @@ class GtkMenuButton extends GtkWidget
           >('gtk_menu_button_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkMenuButtonGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkMenuButtonGetChild(this.handle));
+    final _ret = _gtkMenuButtonGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the direction the popup will be pointing at when popped up.
@@ -222,9 +221,8 @@ class GtkMenuButton extends GtkWidget
           >('gtk_menu_button_get_menu_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getMenuModel() {
-    return (_gtkMenuButtonGetMenuModel(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_gtkMenuButtonGetMenuModel(this.handle));
+    final _ret = _gtkMenuButtonGetMenuModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Returns the `GtkPopover` that pops out of the button.
@@ -239,9 +237,8 @@ class GtkMenuButton extends GtkWidget
           >('gtk_menu_button_get_popover')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPopover? getPopover() {
-    return (_gtkMenuButtonGetPopover(this.handle)) == ffi.nullptr
-        ? null
-        : GtkPopover.fromPointer(_gtkMenuButtonGetPopover(this.handle));
+    final _ret = _gtkMenuButtonGetPopover(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkPopover.fromPointer(_ret);
   }
 
   /// Returns whether the menu button acts as a primary menu.
@@ -810,11 +807,8 @@ class GtkMenuButton extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -897,11 +891,8 @@ class GtkMenuButton extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -913,11 +904,8 @@ class GtkMenuButton extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

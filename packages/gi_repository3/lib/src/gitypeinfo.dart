@@ -182,9 +182,8 @@ class GITypeInfo extends GIBaseInfo {
           >('gi_type_info_get_interface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIBaseInfo? getInterface() {
-    return (_giTypeInfoGetInterface(this.handle)) == ffi.nullptr
-        ? null
-        : GIBaseInfo.fromPointer(_giTypeInfoGetInterface(this.handle));
+    final _ret = _giTypeInfoGetInterface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIBaseInfo.fromPointer(_ret);
   }
 
   /// Obtain the parameter type @n, or `NULL` if the type is not an array.
@@ -198,9 +197,8 @@ class GITypeInfo extends GIBaseInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GITypeInfo? getParamType(int n) {
-    return (_giTypeInfoGetParamType(this.handle, n)) == ffi.nullptr
-        ? null
-        : GITypeInfo.fromPointer(_giTypeInfoGetParamType(this.handle, n));
+    final _ret = _giTypeInfoGetParamType(this.handle, n);
+    return (_ret) == ffi.nullptr ? null : GITypeInfo.fromPointer(_ret);
   }
 
   /// Obtain the type tag corresponding to the underlying storage type in C for
@@ -259,10 +257,8 @@ class GITypeInfo extends GIBaseInfo {
             )
           >();
   ffi.Pointer<ffi.Void>? hashPointerFromArgument(GIArgument arg) {
-    return (_giTypeInfoHashPointerFromArgument(this.handle, arg.handle)) ==
-            ffi.nullptr
-        ? null
-        : (_giTypeInfoHashPointerFromArgument(this.handle, arg.handle));
+    final _ret = _giTypeInfoHashPointerFromArgument(this.handle, arg.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Obtain if the type is passed as a reference.

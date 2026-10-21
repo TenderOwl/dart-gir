@@ -116,9 +116,8 @@ class GdkDrawContext extends GObject {
           >('gdk_draw_context_get_display')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay? getDisplay() {
-    return (_gdkDrawContextGetDisplay(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(_gdkDrawContextGetDisplay(this.handle));
+    final _ret = _gdkDrawContextGetDisplay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// Retrieves the region that is currently being repainted.
@@ -137,9 +136,8 @@ class GdkDrawContext extends GObject {
           >('gdk_draw_context_get_frame_region')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoRegion? getFrameRegion() {
-    return (_gdkDrawContextGetFrameRegion(this.handle)) == ffi.nullptr
-        ? null
-        : CairoRegion.fromPointer(_gdkDrawContextGetFrameRegion(this.handle));
+    final _ret = _gdkDrawContextGetFrameRegion(this.handle);
+    return (_ret) == ffi.nullptr ? null : CairoRegion.fromPointer(_ret);
   }
 
   /// Retrieves the surface that @context is bound to.
@@ -151,9 +149,8 @@ class GdkDrawContext extends GObject {
           >('gdk_draw_context_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gdkDrawContextGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gdkDrawContextGetSurface(this.handle));
+    final _ret = _gdkDrawContextGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Returns %TRUE if @context is in the process of drawing to its surface.

@@ -108,9 +108,8 @@ class GIVFuncInfo extends GICallableInfo {
           >('gi_vfunc_info_get_invoker')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIFunctionInfo? getInvoker() {
-    return (_giVfuncInfoGetInvoker(this.handle)) == ffi.nullptr
-        ? null
-        : GIFunctionInfo.fromPointer(_giVfuncInfoGetInvoker(this.handle));
+    final _ret = _giVfuncInfoGetInvoker(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
   }
 
   /// Obtain the offset of the function pointer in the class struct.
@@ -137,8 +136,7 @@ class GIVFuncInfo extends GICallableInfo {
           >('gi_vfunc_info_get_signal')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GISignalInfo? getSignal() {
-    return (_giVfuncInfoGetSignal(this.handle)) == ffi.nullptr
-        ? null
-        : GISignalInfo.fromPointer(_giVfuncInfoGetSignal(this.handle));
+    final _ret = _giVfuncInfoGetSignal(this.handle);
+    return (_ret) == ffi.nullptr ? null : GISignalInfo.fromPointer(_ret);
   }
 }

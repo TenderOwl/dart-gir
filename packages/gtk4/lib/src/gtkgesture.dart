@@ -210,9 +210,8 @@ class GtkGesture extends GtkEventController {
           >('gtk_gesture_get_device')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDevice? getDevice() {
-    return (_gtkGestureGetDevice(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDevice.fromPointer(_gtkGestureGetDevice(this.handle));
+    final _ret = _gtkGestureGetDevice(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDevice.fromPointer(_ret);
   }
 
   /// Returns all gestures in the group of @gesture
@@ -248,18 +247,11 @@ class GtkGesture extends GtkEventController {
             )
           >();
   GdkEvent? getLastEvent([GdkEventSequence? sequence]) {
-    return (_gtkGestureGetLastEvent(
-              this.handle,
-              sequence?.handle ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GdkEvent.fromPointer(
-            _gtkGestureGetLastEvent(
-              this.handle,
-              sequence?.handle ?? ffi.nullptr,
-            ),
-          );
+    final _ret = _gtkGestureGetLastEvent(
+      this.handle,
+      sequence?.handle ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GdkEvent.fromPointer(_ret);
   }
 
   /// Returns the `GdkEventSequence` that was last updated on @gesture.
@@ -271,11 +263,8 @@ class GtkGesture extends GtkEventController {
           >('gtk_gesture_get_last_updated_sequence')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkEventSequence? getLastUpdatedSequence() {
-    return (_gtkGestureGetLastUpdatedSequence(this.handle)) == ffi.nullptr
-        ? null
-        : GdkEventSequence.fromPointer(
-            _gtkGestureGetLastUpdatedSequence(this.handle),
-          );
+    final _ret = _gtkGestureGetLastUpdatedSequence(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkEventSequence.fromPointer(_ret);
   }
 
   /// If @sequence is currently being interpreted by @gesture,

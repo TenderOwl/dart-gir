@@ -228,9 +228,8 @@ class GtkGLArea extends GtkWidget
           >('gtk_gl_area_get_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkGLContext? getContext() {
-    return (_gtkGlAreaGetContext(this.handle)) == ffi.nullptr
-        ? null
-        : GdkGLContext.fromPointer(_gtkGlAreaGetContext(this.handle));
+    final _ret = _gtkGlAreaGetContext(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkGLContext.fromPointer(_ret);
   }
 
   /// Gets the current error set on the @area.
@@ -242,9 +241,8 @@ class GtkGLArea extends GtkWidget
           >('gtk_gl_area_get_error')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GError? getError() {
-    return (_gtkGlAreaGetError(this.handle)) == ffi.nullptr
-        ? null
-        : GError.fromPointer(_gtkGlAreaGetError(this.handle));
+    final _ret = _gtkGlAreaGetError(this.handle);
+    return (_ret) == ffi.nullptr ? null : GError.fromPointer(_ret);
   }
 
   /// Returns whether the area has a depth buffer.
@@ -716,11 +714,8 @@ class GtkGLArea extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -803,11 +798,8 @@ class GtkGLArea extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -819,11 +811,8 @@ class GtkGLArea extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

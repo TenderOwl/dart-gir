@@ -91,9 +91,8 @@ class GtkFilterListModel extends GObject
           >('gtk_filter_list_model_get_filter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkFilter? getFilter() {
-    return (_gtkFilterListModelGetFilter(this.handle)) == ffi.nullptr
-        ? null
-        : GtkFilter.fromPointer(_gtkFilterListModelGetFilter(this.handle));
+    final _ret = _gtkFilterListModelGetFilter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkFilter.fromPointer(_ret);
   }
 
   /// Returns whether incremental filtering is enabled.
@@ -116,9 +115,8 @@ class GtkFilterListModel extends GObject
           >('gtk_filter_list_model_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkFilterListModelGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkFilterListModelGetModel(this.handle));
+    final _ret = _gtkFilterListModelGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Returns the number of items that have not been filtered yet.
@@ -350,9 +348,8 @@ class GtkFilterListModel extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

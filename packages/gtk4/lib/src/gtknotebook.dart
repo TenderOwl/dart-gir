@@ -264,12 +264,8 @@ class GtkNotebook extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkWidget? getActionWidget(GtkPackType packType) {
-    return (_gtkNotebookGetActionWidget(this.handle, packType.value)) ==
-            ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(
-            _gtkNotebookGetActionWidget(this.handle, packType.value),
-          );
+    final _ret = _gtkNotebookGetActionWidget(this.handle, packType.value);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the page number of the current page.
@@ -313,11 +309,8 @@ class GtkNotebook extends GtkWidget
             )
           >();
   GtkWidget? getMenuLabel(GtkWidget child) {
-    return (_gtkNotebookGetMenuLabel(this.handle, child.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(
-            _gtkNotebookGetMenuLabel(this.handle, child.handle),
-          );
+    final _ret = _gtkNotebookGetMenuLabel(this.handle, child.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Retrieves the text of the menu label for the page containing
@@ -364,9 +357,8 @@ class GtkNotebook extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GtkWidget? getNthPage(int pageNum) {
-    return (_gtkNotebookGetNthPage(this.handle, pageNum)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkNotebookGetNthPage(this.handle, pageNum));
+    final _ret = _gtkNotebookGetNthPage(this.handle, pageNum);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Returns the `GtkNotebookPage` for @child.
@@ -468,11 +460,8 @@ class GtkNotebook extends GtkWidget
             )
           >();
   GtkWidget? getTabLabel(GtkWidget child) {
-    return (_gtkNotebookGetTabLabel(this.handle, child.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(
-            _gtkNotebookGetTabLabel(this.handle, child.handle),
-          );
+    final _ret = _gtkNotebookGetTabLabel(this.handle, child.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Retrieves the text of the tab label for the page containing
@@ -1385,11 +1374,8 @@ class GtkNotebook extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1472,11 +1458,8 @@ class GtkNotebook extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1488,11 +1471,8 @@ class GtkNotebook extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

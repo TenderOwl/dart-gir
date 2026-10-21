@@ -66,12 +66,8 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
           >();
   GIFunctionInfo? findMethod(String name) {
     return withNativeString(name, (nativeName) {
-      return (_giUnionInfoFindMethod(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GIFunctionInfo.fromPointer(
-              _giUnionInfoFindMethod(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _giUnionInfoFindMethod(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
     });
   }
 
@@ -115,11 +111,8 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIConstantInfo? getDiscriminator(int n) {
-    return (_giUnionInfoGetDiscriminator(this.handle, n)) == ffi.nullptr
-        ? null
-        : GIConstantInfo.fromPointer(
-            _giUnionInfoGetDiscriminator(this.handle, n),
-          );
+    final _ret = _giUnionInfoGetDiscriminator(this.handle, n);
+    return (_ret) == ffi.nullptr ? null : GIConstantInfo.fromPointer(_ret);
   }
 
   /// Obtain the offset of the discriminator field within the structure.
@@ -153,9 +146,8 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
           >('gi_union_info_get_discriminator_type')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GITypeInfo? getDiscriminatorType() {
-    return (_giUnionInfoGetDiscriminatorType(this.handle)) == ffi.nullptr
-        ? null
-        : GITypeInfo.fromPointer(_giUnionInfoGetDiscriminatorType(this.handle));
+    final _ret = _giUnionInfoGetDiscriminatorType(this.handle);
+    return (_ret) == ffi.nullptr ? null : GITypeInfo.fromPointer(_ret);
   }
 
   /// Obtain the type information for the field with the specified index.

@@ -73,9 +73,8 @@ class GtkFlattenListModel extends GObject
           >('gtk_flatten_list_model_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkFlattenListModelGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkFlattenListModelGetModel(this.handle));
+    final _ret = _gtkFlattenListModelGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Returns the model containing the item at the given position.
@@ -89,12 +88,8 @@ class GtkFlattenListModel extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GListModel? getModelForItem(int position) {
-    return (_gtkFlattenListModelGetModelForItem(this.handle, position)) ==
-            ffi.nullptr
-        ? null
-        : GListModel.fromPointer(
-            _gtkFlattenListModelGetModelForItem(this.handle, position),
-          );
+    final _ret = _gtkFlattenListModelGetModelForItem(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Sets a new model to be flattened.
@@ -226,9 +221,8 @@ class GtkFlattenListModel extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

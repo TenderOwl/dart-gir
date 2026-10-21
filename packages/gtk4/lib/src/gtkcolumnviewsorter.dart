@@ -143,12 +143,8 @@ class GtkColumnViewSorter extends GtkSorter {
           >('gtk_column_view_sorter_get_primary_sort_column')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkColumnViewColumn? getPrimarySortColumn() {
-    return (_gtkColumnViewSorterGetPrimarySortColumn(this.handle)) ==
-            ffi.nullptr
-        ? null
-        : GtkColumnViewColumn.fromPointer(
-            _gtkColumnViewSorterGetPrimarySortColumn(this.handle),
-          );
+    final _ret = _gtkColumnViewSorterGetPrimarySortColumn(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkColumnViewColumn.fromPointer(_ret);
   }
 
   /// Returns the primary sort order.

@@ -136,11 +136,8 @@ class AdwSidebarItem extends GObject {
           >('adw_sidebar_item_get_icon_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable? getIconPaintable() {
-    return (_adwSidebarItemGetIconPaintable(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(
-            _adwSidebarItemGetIconPaintable(this.handle),
-          );
+    final _ret = _adwSidebarItemGetIconPaintable(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Gets index of @self within its [class@Sidebar].
@@ -169,9 +166,8 @@ class AdwSidebarItem extends GObject {
           >('adw_sidebar_item_get_section')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwSidebarSection? getSection() {
-    return (_adwSidebarItemGetSection(this.handle)) == ffi.nullptr
-        ? null
-        : AdwSidebarSection.fromPointer(_adwSidebarItemGetSection(this.handle));
+    final _ret = _adwSidebarItemGetSection(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwSidebarSection.fromPointer(_ret);
   }
 
   /// Gets index of @self within its [class@SidebarSection].
@@ -212,9 +208,8 @@ class AdwSidebarItem extends GObject {
           >('adw_sidebar_item_get_suffix')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getSuffix() {
-    return (_adwSidebarItemGetSuffix(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwSidebarItemGetSuffix(this.handle));
+    final _ret = _adwSidebarItemGetSuffix(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the title of @self.

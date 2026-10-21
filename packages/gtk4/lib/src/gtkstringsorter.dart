@@ -89,9 +89,8 @@ class GtkStringSorter extends GtkSorter {
           >('gtk_string_sorter_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_gtkStringSorterGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(_gtkStringSorterGetExpression(this.handle));
+    final _ret = _gtkStringSorterGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Gets whether the sorter ignores case differences.

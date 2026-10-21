@@ -202,9 +202,8 @@ class GtkSourceRegion extends GObject {
           >('gtk_source_region_get_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextBuffer? getBuffer() {
-    return (_gtkSourceRegionGetBuffer(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTextBuffer.fromPointer(_gtkSourceRegionGetBuffer(this.handle));
+    final _ret = _gtkSourceRegionGetBuffer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTextBuffer.fromPointer(_ret);
   }
 
   /// Initializes a [struct@RegionIter] to the first subregion of @region.
@@ -248,18 +247,11 @@ class GtkSourceRegion extends GObject {
             )
           >();
   GtkSourceRegion? intersectRegion([GtkSourceRegion? region2]) {
-    return (_gtkSourceRegionIntersectRegion(
-              this.handle,
-              region2?.handle ?? ffi.nullptr,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GtkSourceRegion.fromPointer(
-            _gtkSourceRegionIntersectRegion(
-              this.handle,
-              region2?.handle ?? ffi.nullptr,
-            ),
-          );
+    final _ret = _gtkSourceRegionIntersectRegion(
+      this.handle,
+      region2?.handle ?? ffi.nullptr,
+    );
+    return (_ret) == ffi.nullptr ? null : GtkSourceRegion.fromPointer(_ret);
   }
 
   /// Returns the intersection between @region and the subregion delimited by
@@ -284,20 +276,12 @@ class GtkSourceRegion extends GObject {
             )
           >();
   GtkSourceRegion? intersectSubregion(GtkTextIter start, GtkTextIter end) {
-    return (_gtkSourceRegionIntersectSubregion(
-              this.handle,
-              start.handle,
-              end.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GtkSourceRegion.fromPointer(
-            _gtkSourceRegionIntersectSubregion(
-              this.handle,
-              start.handle,
-              end.handle,
-            ),
-          );
+    final _ret = _gtkSourceRegionIntersectSubregion(
+      this.handle,
+      start.handle,
+      end.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : GtkSourceRegion.fromPointer(_ret);
   }
 
   /// Returns whether the @region is empty.

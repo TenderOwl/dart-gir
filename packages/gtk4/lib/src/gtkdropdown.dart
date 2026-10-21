@@ -172,9 +172,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_drop_down_get_expression')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression? getExpression() {
-    return (_gtkDropDownGetExpression(this.handle)) == ffi.nullptr
-        ? null
-        : GtkExpression.fromPointer(_gtkDropDownGetExpression(this.handle));
+    final _ret = _gtkDropDownGetExpression(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
   }
 
   /// Gets the factory that's currently used to populate list items.
@@ -190,9 +189,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_drop_down_get_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getFactory() {
-    return (_gtkDropDownGetFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(_gtkDropDownGetFactory(this.handle));
+    final _ret = _gtkDropDownGetFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the factory that's currently used to create header widgets for the popup.
@@ -204,11 +202,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_drop_down_get_header_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getHeaderFactory() {
-    return (_gtkDropDownGetHeaderFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(
-            _gtkDropDownGetHeaderFactory(this.handle),
-          );
+    final _ret = _gtkDropDownGetHeaderFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the factory that's currently used to populate list items in the popup.
@@ -220,11 +215,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_drop_down_get_list_factory')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkListItemFactory? getListFactory() {
-    return (_gtkDropDownGetListFactory(this.handle)) == ffi.nullptr
-        ? null
-        : GtkListItemFactory.fromPointer(
-            _gtkDropDownGetListFactory(this.handle),
-          );
+    final _ret = _gtkDropDownGetListFactory(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkListItemFactory.fromPointer(_ret);
   }
 
   /// Gets the model that provides the displayed items.
@@ -236,9 +228,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_drop_down_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkDropDownGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkDropDownGetModel(this.handle));
+    final _ret = _gtkDropDownGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Returns the match mode that the search filter is using.
@@ -271,9 +262,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_drop_down_get_selected_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSelectedItem() {
-    return (_gtkDropDownGetSelectedItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkDropDownGetSelectedItem(this.handle));
+    final _ret = _gtkDropDownGetSelectedItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Returns whether to show an arrow within the widget.
@@ -653,11 +643,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -740,11 +727,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -756,11 +740,8 @@ class GtkDropDown extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

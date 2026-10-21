@@ -139,9 +139,8 @@ class GtkIconTheme extends GObject {
           >('gtk_icon_theme_get_display')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay? getDisplay() {
-    return (_gtkIconThemeGetDisplay(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(_gtkIconThemeGetDisplay(this.handle));
+    final _ret = _gtkIconThemeGetDisplay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// Returns an array of integers describing the sizes at which

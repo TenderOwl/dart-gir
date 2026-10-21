@@ -187,9 +187,8 @@ class AdwBreakpointBin extends GtkWidget
           >('adw_breakpoint_bin_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_adwBreakpointBinGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwBreakpointBinGetChild(this.handle));
+    final _ret = _adwBreakpointBinGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the current breakpoint.
@@ -201,11 +200,8 @@ class AdwBreakpointBin extends GtkWidget
           >('adw_breakpoint_bin_get_current_breakpoint')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBreakpoint? getCurrentBreakpoint() {
-    return (_adwBreakpointBinGetCurrentBreakpoint(this.handle)) == ffi.nullptr
-        ? null
-        : AdwBreakpoint.fromPointer(
-            _adwBreakpointBinGetCurrentBreakpoint(this.handle),
-          );
+    final _ret = _adwBreakpointBinGetCurrentBreakpoint(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwBreakpoint.fromPointer(_ret);
   }
 
   /// Removes @breakpoint from @self.
@@ -471,11 +467,8 @@ class AdwBreakpointBin extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -558,11 +551,8 @@ class AdwBreakpointBin extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -574,11 +564,8 @@ class AdwBreakpointBin extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

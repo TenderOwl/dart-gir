@@ -374,9 +374,8 @@ class GTlsCertificate extends GObject {
           >('g_tls_certificate_get_issuer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTlsCertificate? getIssuer() {
-    return (_gTlsCertificateGetIssuer(this.handle)) == ffi.nullptr
-        ? null
-        : GTlsCertificate.fromPointer(_gTlsCertificateGetIssuer(this.handle));
+    final _ret = _gTlsCertificateGetIssuer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTlsCertificate.fromPointer(_ret);
   }
 
   /// Returns the issuer name from the certificate.
@@ -403,9 +402,8 @@ class GTlsCertificate extends GObject {
           >('g_tls_certificate_get_not_valid_after')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getNotValidAfter() {
-    return (_gTlsCertificateGetNotValidAfter(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gTlsCertificateGetNotValidAfter(this.handle));
+    final _ret = _gTlsCertificateGetNotValidAfter(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Returns the time at which the certificate became or will become valid.
@@ -417,9 +415,8 @@ class GTlsCertificate extends GObject {
           >('g_tls_certificate_get_not_valid_before')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getNotValidBefore() {
-    return (_gTlsCertificateGetNotValidBefore(this.handle)) == ffi.nullptr
-        ? null
-        : GDateTime.fromPointer(_gTlsCertificateGetNotValidBefore(this.handle));
+    final _ret = _gTlsCertificateGetNotValidBefore(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
   }
 
   /// Returns the subject name from the certificate.

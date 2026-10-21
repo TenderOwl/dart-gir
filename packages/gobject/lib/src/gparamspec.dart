@@ -140,9 +140,8 @@ class GParamSpec {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? getQdata(int quark) {
-    return (_gParamSpecGetQdata(this.handle, quark)) == ffi.nullptr
-        ? null
-        : (_gParamSpecGetQdata(this.handle, quark));
+    final _ret = _gParamSpecGetQdata(this.handle, quark);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// If the paramspec redirects operations to another paramspec,
@@ -160,9 +159,8 @@ class GParamSpec {
           >('g_param_spec_get_redirect_target')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GParamSpec? getRedirectTarget() {
-    return (_gParamSpecGetRedirectTarget(this.handle)) == ffi.nullptr
-        ? null
-        : GParamSpec.fromPointer(_gParamSpecGetRedirectTarget(this.handle));
+    final _ret = _gParamSpecGetRedirectTarget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GParamSpec.fromPointer(_ret);
   }
 
   /// Sets an opaque, named pointer on a #GParamSpec. The name is
@@ -218,9 +216,8 @@ class GParamSpec {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   ffi.Pointer<ffi.Void>? stealQdata(int quark) {
-    return (_gParamSpecStealQdata(this.handle, quark)) == ffi.nullptr
-        ? null
-        : (_gParamSpecStealQdata(this.handle, quark));
+    final _ret = _gParamSpecStealQdata(this.handle, quark);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Validate a property name for a #GParamSpec. This can be useful for

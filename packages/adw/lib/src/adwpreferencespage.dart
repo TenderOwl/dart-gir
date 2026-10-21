@@ -94,9 +94,8 @@ class AdwPreferencesPage extends GtkWidget
           >('adw_preferences_page_get_banner')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBanner? getBanner() {
-    return (_adwPreferencesPageGetBanner(this.handle)) == ffi.nullptr
-        ? null
-        : AdwBanner.fromPointer(_adwPreferencesPageGetBanner(this.handle));
+    final _ret = _adwPreferencesPageGetBanner(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwBanner.fromPointer(_ret);
   }
 
   /// Gets the description of @self.
@@ -136,11 +135,8 @@ class AdwPreferencesPage extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   AdwPreferencesGroup? getGroup(int index) {
-    return (_adwPreferencesPageGetGroup(this.handle, index)) == ffi.nullptr
-        ? null
-        : AdwPreferencesGroup.fromPointer(
-            _adwPreferencesPageGetGroup(this.handle, index),
-          );
+    final _ret = _adwPreferencesPageGetGroup(this.handle, index);
+    return (_ret) == ffi.nullptr ? null : AdwPreferencesGroup.fromPointer(_ret);
   }
 
   /// Gets the icon name for @self.
@@ -583,11 +579,8 @@ class AdwPreferencesPage extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -670,11 +663,8 @@ class AdwPreferencesPage extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -686,11 +676,8 @@ class AdwPreferencesPage extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

@@ -11,6 +11,37 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 ## Unreleased
 
 ### Added
+- **A byte buffer the callee allocates is now a `Uint8List`.** A GIR
+  parameter like `g_file_load_contents`' `contents` is a `char**` the
+  *callee* allocates, fills, and hands over with `transfer="full"`. The
+  generator had no shape for it and skipped the whole callable — so
+  `GFile.loadContents`, `GFile.loadContentsFinish` and
+  `GFile.loadPartialContentsFinish` were missing entirely, and so were
+  `g_file_get_contents`, `g_io_channel_read_to_end`,
+  `gdk_pixbuf_save_to_bufferv` and `pango_coverage_to_bytes`.
+
+  The wrapper now copies the bytes into a Dart `Uint8List` and releases
+  the native buffer with `g_free` — the garbage collector cannot see
+  native memory, so the buffer would otherwise leak. The byte count the
+  GIR binds to the buffer (`<array length="N">`) is absorbed into the
+  list: it is a property of the buffer, not a second value.
+
+  ```dart
+  file.loadContentsAsyncCallback(null, (source, result) {
+    final (ok, bytes, etag) = file.loadContentsFinish(result);
+    textView.getBuffer().setText(utf8.decode(bytes), -1);
+  });
+  ```
+
+  `packages/gir_ffi` gained `bytesFromNative(buffer, length)` for the
+  copy-and-release, and `gFree` now resolves `g_free` through an
+  explicitly opened GLib when the process-global namespace does not
+  have it — a `dlopen`ed library is not globally visible.
+
+  `example/notepad` opens a file the way the GNOME text-viewer tutorial
+  does — `loadContentsAsyncCallback` → `loadContentsFinish` → the text
+  in the window's text view.
+
 - **Dart classes can have a native type.** A Dart subclass of a
   generated GObject wrapper had no native identity: as far as GLib was
   concerned it was a plain `GObject`, so a `GListStore` refused it and
@@ -57,6 +88,28 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   would be freed while the parent still uses it.
 
 ### Fixed
+- **A failing GLib call no longer crashes the process.** `GError` is
+  `{ GQuark domain; gint code; gchar *message; }` and a `GQuark` is a
+  `guint32` — four bytes. The generated struct declared `domain` as
+  `ffi.Size`, eight bytes, which pushed the message pointer eight bytes
+  too far: every `GlibException` read its message from the wrong offset,
+  and the wild pointer segfaulted the VM instead of throwing. The struct
+  now matches the C layout.
+
+- **A nullable OUT string no longer asserts non-null.** The wrapper read
+  the string out of its slot and appended `!`, so a parameter the GIR
+  marks `nullable="1"` threw a `TypeError` when the C function left the
+  slot `NULL` — `g_file_load_contents`' `etag_out` for a file without an
+  etag, `g_uri_split`'s `query`, `g_subprocess_communicate_utf8`'s
+  `stdout_buf`. Those parameters now yield `null`.
+
+- **A nullable pointer return no longer calls the native function twice.**
+  The conversion of a nullable pointer return mentions its argument
+  twice (`($call) == ffi.nullptr ? null : $call`), and the call was
+  inlined into it — so `g_malloc` allocated twice and returned the second
+  buffer, leaking the first, and a function with side effects performed
+  them twice. The call is now bound to a local first.
+
 - **The template builder names a signal's helper the way the bindings
   do.** The builder called `on` + the signal name with its first letter
   capitalized, so `icon-release` became `onIcon-release` — not even a

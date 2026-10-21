@@ -343,10 +343,11 @@ final class GScanner {
           >();
   ffi.Pointer<ffi.Void>? lookupSymbol(String symbol) {
     return withNativeString(symbol, (nativeSymbol) {
-      return (_gScannerLookupSymbol(this.handle, nativeSymbol.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : (_gScannerLookupSymbol(this.handle, nativeSymbol.cast<Utf8>()));
+      final _ret = _gScannerLookupSymbol(
+        this.handle,
+        nativeSymbol.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : (_ret);
     });
   }
 
@@ -494,18 +495,12 @@ final class GScanner {
           >();
   ffi.Pointer<ffi.Void>? scopeLookupSymbol(int scopeId, String symbol) {
     return withNativeString(symbol, (nativeSymbol) {
-      return (_gScannerScopeLookupSymbol(
-                this.handle,
-                scopeId,
-                nativeSymbol.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : (_gScannerScopeLookupSymbol(
-              this.handle,
-              scopeId,
-              nativeSymbol.cast<Utf8>(),
-            ));
+      final _ret = _gScannerScopeLookupSymbol(
+        this.handle,
+        scopeId,
+        nativeSymbol.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : (_ret);
     });
   }
 

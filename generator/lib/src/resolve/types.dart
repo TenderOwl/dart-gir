@@ -460,6 +460,59 @@ class TypeResolver {
         elem.cType == 'gchar*';
   }
 
+  /// `c:type` strings for a byte buffer the callee allocates: the C
+  /// parameter is a pointer to a pointer to a byte (`char**`, `guchar**`).
+  ///
+  /// The single-pointer spellings (`gchar *`) are deliberately absent:
+  /// they are either a caller-allocated buffer (`g_io_channel_read_chars`)
+  /// or a returned string (`g_base64_encode_step`).
+  static const Set<String> _byteBufferCtypes = {
+    'char**',
+    'gchar**',
+    'guchar**',
+    'const char**',
+    'const gchar**',
+    'const guchar**',
+  };
+
+  /// The GIR names of the byte-sized element types.
+  static const Set<String> _byteNames = {'guint8', 'guchar', 'gchar'};
+
+  /// Whether [ref] is an array of bytes handed over as a double pointer
+  /// (`char**` / `guchar**`) — the shape of a buffer the *callee*
+  /// allocates and fills in.
+  ///
+  /// The array must carry a length binding (`<array length="N">`), whose
+  /// index is the 0-based position of the sibling parameter holding the
+  /// byte count; without one the size of the buffer is unknown and the
+  /// wrapper cannot copy it.
+  static bool isCalleeAllocatedByteBuffer(GirTypeRef? ref) {
+    final array = ref?.array;
+    if (array == null) return false;
+    final cType = ref!.cType;
+    if (cType == null || !_byteBufferCtypes.contains(cType)) return false;
+    if (!_byteNames.contains(array.elementType.name)) return false;
+    return array.lengthParameterIndex != null;
+  }
+
+  /// Whether [p] is an OUT parameter of the callee-allocated byte-buffer
+  /// shape: the callee allocates the buffer, the caller owns it, and a
+  /// sibling parameter carries the byte count.
+  ///
+  /// This is the shape of `g_file_load_contents`' `contents`:
+  /// `direction="out" caller-allocates="0" transfer-ownership="full"`,
+  /// a `char**` of bytes, and a `gsize *length` beside it.
+  static bool isByteBufferOut(GirParameter p) {
+    if (p.direction != GirParameterDirection.out) return false;
+    // `caller-allocates="0"` — the callee allocates the buffer. The GIR
+    // default is `true` (the caller allocates), so an absent attribute
+    // never reaches this branch.
+    if (p.callerAllocates) return false;
+    // The caller owns the buffer and has to release it.
+    if (p.transferOwnership != GirTransferOwnership.full) return false;
+    return isCalleeAllocatedByteBuffer(p.type);
+  }
+
   /// The GIR records the generator emits as real `ffi.Struct`s.
   ///
   /// A record qualifies when the GIR declares no methods and no

@@ -109,9 +109,8 @@ class GtkListItem extends GObject {
           >('gtk_list_item_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_gtkListItemGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkListItemGetChild(this.handle));
+    final _ret = _gtkListItemGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Checks if a listitem has been set to be focusable via
@@ -135,9 +134,8 @@ class GtkListItem extends GObject {
           >('gtk_list_item_get_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
-    return (_gtkListItemGetItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkListItemGetItem(this.handle));
+    final _ret = _gtkListItemGetItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets the position in the model that @self currently displays.

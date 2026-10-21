@@ -634,7 +634,7 @@ final _pangoMarkupParserFinish =
               _out0.value.cast<ffi.Void>(),
               owned: true,
             ),
-      stringFromNative(_out1.value.cast(), free: true)!,
+      stringFromNative(_out1.value.cast(), free: true),
       _out2.value,
     );
   } finally {

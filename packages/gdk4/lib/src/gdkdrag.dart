@@ -137,9 +137,8 @@ class GdkDrag extends GObject {
           >('gdk_drag_get_drag_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getDragSurface() {
-    return (_gdkDragGetDragSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gdkDragGetDragSurface(this.handle));
+    final _ret = _gdkDragGetDragSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Retrieves the formats supported by this `GdkDrag` object.
@@ -236,26 +235,15 @@ class GdkDrag extends GObject {
     double dx,
     double dy,
   ) {
-    return (_gdkDragBegin(
-              surface.handle,
-              device.handle,
-              content.handle,
-              actions.value,
-              dx,
-              dy,
-            )) ==
-            ffi.nullptr
-        ? null
-        : GdkDrag.fromPointer(
-            _gdkDragBegin(
-              surface.handle,
-              device.handle,
-              content.handle,
-              actions.value,
-              dx,
-              dy,
-            ),
-          );
+    final _ret = _gdkDragBegin(
+      surface.handle,
+      device.handle,
+      content.handle,
+      actions.value,
+      dx,
+      dy,
+    );
+    return (_ret) == ffi.nullptr ? null : GdkDrag.fromPointer(_ret);
   }
 
   /// Emitted when the drag operation is cancelled.

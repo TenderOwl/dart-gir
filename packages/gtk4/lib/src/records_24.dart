@@ -1110,11 +1110,8 @@ final class GtkTextIter {
           >('gtk_text_iter_get_child_anchor')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextChildAnchor? getChildAnchor() {
-    return (_gtkTextIterGetChildAnchor(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTextChildAnchor.fromPointer(
-            _gtkTextIterGetChildAnchor(this.handle),
-          );
+    final _ret = _gtkTextIterGetChildAnchor(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTextChildAnchor.fromPointer(_ret);
   }
 
   /// Returns the language in effect at @iter.
@@ -1213,9 +1210,8 @@ final class GtkTextIter {
           >('gtk_text_iter_get_paintable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable? getPaintable() {
-    return (_gtkTextIterGetPaintable(this.handle)) == ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(_gtkTextIterGetPaintable(this.handle));
+    final _ret = _gtkTextIterGetPaintable(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Returns the text in the given range.

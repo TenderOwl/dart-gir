@@ -153,8 +153,8 @@ final class GUriParamsIter {
       }
       return (
         (_ret) != 0,
-        stringFromNative(_out0.value.cast(), free: true)!,
-        stringFromNative(_out1.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
+        stringFromNative(_out1.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);

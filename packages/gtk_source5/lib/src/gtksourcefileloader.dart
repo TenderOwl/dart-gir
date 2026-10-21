@@ -178,11 +178,8 @@ class GtkSourceFileLoader extends GObject {
           >('gtk_source_file_loader_get_input_stream')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GInputStream? getInputStream() {
-    return (_gtkSourceFileLoaderGetInputStream(this.handle)) == ffi.nullptr
-        ? null
-        : GInputStream.fromPointer(
-            _gtkSourceFileLoaderGetInputStream(this.handle),
-          );
+    final _ret = _gtkSourceFileLoaderGetInputStream(this.handle);
+    return (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret);
   }
 
   static final _gtkSourceFileLoaderGetLocation =
@@ -193,9 +190,8 @@ class GtkSourceFileLoader extends GObject {
           >('gtk_source_file_loader_get_location')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getLocation() {
-    return (_gtkSourceFileLoaderGetLocation(this.handle)) == ffi.nullptr
-        ? null
-        : GFile.fromPointer(_gtkSourceFileLoaderGetLocation(this.handle));
+    final _ret = _gtkSourceFileLoaderGetLocation(this.handle);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
   }
 
   static final _gtkSourceFileLoaderGetNewlineType =

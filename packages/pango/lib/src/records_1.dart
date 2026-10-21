@@ -131,9 +131,8 @@ final class PangoAttrList {
           >('pango_attr_list_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoAttrList? copy() {
-    return (_pangoAttrListCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoAttrList.fromPointer(_pangoAttrListCopy(this.handle));
+    final _ret = _pangoAttrListCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
   }
 
   /// Checks whether @list and @other_list contain the same
@@ -381,11 +380,8 @@ final class PangoAttrList {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   static PangoAttrList? fromString(String text) {
     return withNativeString(text, (nativeText) {
-      return (_pangoAttrListFromString(nativeText.cast<Utf8>())) == ffi.nullptr
-          ? null
-          : PangoAttrList.fromPointer(
-              _pangoAttrListFromString(nativeText.cast<Utf8>()),
-            );
+      final _ret = _pangoAttrListFromString(nativeText.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : PangoAttrList.fromPointer(_ret);
     });
   }
 }

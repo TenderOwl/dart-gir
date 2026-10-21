@@ -69,12 +69,11 @@ class PangoFontFamily extends GObject implements GListModel {
           >();
   PangoFontFace? getFace([String? name]) {
     return withNativeString(name, (nativeName) {
-      return (_pangoFontFamilyGetFace(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : PangoFontFace.fromPointer(
-              _pangoFontFamilyGetFace(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _pangoFontFamilyGetFace(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : PangoFontFace.fromPointer(_ret);
     });
   }
 
@@ -231,9 +230,8 @@ class PangoFontFamily extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

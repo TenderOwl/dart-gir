@@ -64,12 +64,8 @@ class GIStructInfo extends GIRegisteredTypeInfo {
           >();
   GIFieldInfo? findField(String name) {
     return withNativeString(name, (nativeName) {
-      return (_giStructInfoFindField(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GIFieldInfo.fromPointer(
-              _giStructInfoFindField(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _giStructInfoFindField(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GIFieldInfo.fromPointer(_ret);
     });
   }
 
@@ -91,12 +87,11 @@ class GIStructInfo extends GIRegisteredTypeInfo {
           >();
   GIFunctionInfo? findMethod(String name) {
     return withNativeString(name, (nativeName) {
-      return (_giStructInfoFindMethod(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GIFunctionInfo.fromPointer(
-              _giStructInfoFindMethod(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _giStructInfoFindMethod(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
     });
   }
 

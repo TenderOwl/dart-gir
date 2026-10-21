@@ -576,9 +576,8 @@ class GtkPrintSettings extends GObject {
           >('gtk_print_settings_get_paper_size')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPaperSize? getPaperSize() {
-    return (_gtkPrintSettingsGetPaperSize(this.handle)) == ffi.nullptr
-        ? null
-        : GtkPaperSize.fromPointer(_gtkPrintSettingsGetPaperSize(this.handle));
+    final _ret = _gtkPrintSettingsGetPaperSize(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkPaperSize.fromPointer(_ret);
   }
 
   /// Gets the value of %GTK_PRINT_SETTINGS_PAPER_WIDTH,

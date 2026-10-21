@@ -175,12 +175,8 @@ class GtkTextTagTable extends GObject implements GtkBuildable {
           >();
   GtkTextTag? lookup(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gtkTextTagTableLookup(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GtkTextTag.fromPointer(
-              _gtkTextTagTableLookup(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _gtkTextTagTableLookup(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GtkTextTag.fromPointer(_ret);
     });
   }
 

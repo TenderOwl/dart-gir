@@ -185,9 +185,8 @@ class GtkActionable {
           >('gtk_actionable_get_action_target_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getActionTargetValue() {
-    return (_gtkActionableGetActionTargetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gtkActionableGetActionTargetValue(this.handle));
+    final _ret = _gtkActionableGetActionTargetValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Specifies the name of the action with which this widget should be
@@ -346,9 +345,8 @@ class GtkAppChooser {
           >('gtk_app_chooser_get_app_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GAppInfo? getAppInfo() {
-    return (_gtkAppChooserGetAppInfo(this.handle)) == ffi.nullptr
-        ? null
-        : GAppInfo.fromPointer(_gtkAppChooserGetAppInfo(this.handle));
+    final _ret = _gtkAppChooserGetAppInfo(this.handle);
+    return (_ret) == ffi.nullptr ? null : GAppInfo.fromPointer(_ret);
   }
 
   /// Returns the content type for which the `GtkAppChooser`

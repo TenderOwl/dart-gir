@@ -219,9 +219,8 @@ class GtkEntryCompletion extends GObject
           >('gtk_entry_completion_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeModel? getModel() {
-    return (_gtkEntryCompletionGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeModel.fromPointer(_gtkEntryCompletionGetModel(this.handle));
+    final _ret = _gtkEntryCompletionGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeModel.fromPointer(_ret);
   }
 
   /// Returns whether the completions should be presented in a popup window.
@@ -660,9 +659,8 @@ class GtkEntryCompletion extends GObject
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.

@@ -122,9 +122,8 @@ class AdwTabBar extends GtkWidget
           >('adw_tab_bar_get_end_action_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getEndActionWidget() {
-    return (_adwTabBarGetEndActionWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwTabBarGetEndActionWidget(this.handle));
+    final _ret = _adwTabBarGetEndActionWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets whether tabs expand to full width.
@@ -189,9 +188,8 @@ class AdwTabBar extends GtkWidget
           >('adw_tab_bar_get_start_action_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getStartActionWidget() {
-    return (_adwTabBarGetStartActionWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwTabBarGetStartActionWidget(this.handle));
+    final _ret = _adwTabBarGetStartActionWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets whether the tabs are currently revealed.
@@ -214,9 +212,8 @@ class AdwTabBar extends GtkWidget
           >('adw_tab_bar_get_view')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwTabView? getView() {
-    return (_adwTabBarGetView(this.handle)) == ffi.nullptr
-        ? null
-        : AdwTabView.fromPointer(_adwTabBarGetView(this.handle));
+    final _ret = _adwTabBarGetView(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwTabView.fromPointer(_ret);
   }
 
   /// Sets whether the tabs automatically hide.
@@ -607,11 +604,8 @@ class AdwTabBar extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -694,11 +688,8 @@ class AdwTabBar extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -710,11 +701,8 @@ class AdwTabBar extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

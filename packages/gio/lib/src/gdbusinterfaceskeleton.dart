@@ -117,11 +117,8 @@ class GDBusInterfaceSkeleton extends GObject {
           >('g_dbus_interface_skeleton_get_connection')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusConnection? getConnection() {
-    return (_gDbusInterfaceSkeletonGetConnection(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusConnection.fromPointer(
-            _gDbusInterfaceSkeletonGetConnection(this.handle),
-          );
+    final _ret = _gDbusInterfaceSkeletonGetConnection(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusConnection.fromPointer(_ret);
   }
 
   /// Gets a list of the connections that @interface_ is exported on.
@@ -353,9 +350,8 @@ class GDBusInterfaceSkeleton extends GObject {
           >('g_dbus_interface_dup_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusObject? dupObject() {
-    return (_gDbusInterfaceDupObject(this.handle)) == ffi.nullptr
-        ? null
-        : GDBusObject.fromPointer(_gDbusInterfaceDupObject(this.handle));
+    final _ret = _gDbusInterfaceDupObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
   }
 
   /// Sets the #GDBusObject for @interface_ to @object.

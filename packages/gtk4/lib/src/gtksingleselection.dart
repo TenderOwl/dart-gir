@@ -95,9 +95,8 @@ class GtkSingleSelection extends GObject
           >('gtk_single_selection_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel? getModel() {
-    return (_gtkSingleSelectionGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GListModel.fromPointer(_gtkSingleSelectionGetModel(this.handle));
+    final _ret = _gtkSingleSelectionGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GListModel.fromPointer(_ret);
   }
 
   /// Gets the position of the selected item.
@@ -123,9 +122,8 @@ class GtkSingleSelection extends GObject
           >('gtk_single_selection_get_selected_item')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSelectedItem() {
-    return (_gtkSingleSelectionGetSelectedItem(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gtkSingleSelectionGetSelectedItem(this.handle));
+    final _ret = _gtkSingleSelectionGetSelectedItem(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Enables or disables autoselect.
@@ -326,9 +324,8 @@ class GtkSingleSelection extends GObject
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

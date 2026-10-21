@@ -1003,12 +1003,8 @@ class GtkTextBuffer extends GObject {
           >();
   GtkTextMark? getMark(String name) {
     return withNativeString(name, (nativeName) {
-      return (_gtkTextBufferGetMark(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : GtkTextMark.fromPointer(
-              _gtkTextBufferGetMark(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _gtkTextBufferGetMark(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : GtkTextMark.fromPointer(_ret);
     });
   }
 

@@ -255,9 +255,8 @@ class GAction {
           >('g_action_get_parameter_type')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariantType? getParameterType() {
-    return (_gActionGetParameterType(this.handle)) == ffi.nullptr
-        ? null
-        : GVariantType.fromPointer(_gActionGetParameterType(this.handle));
+    final _ret = _gActionGetParameterType(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
   }
 
   /// Queries the current state of @action.
@@ -276,9 +275,8 @@ class GAction {
           >('g_action_get_state')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getState() {
-    return (_gActionGetState(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gActionGetState(this.handle));
+    final _ret = _gActionGetState(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Requests a hint about the valid range of values for the state of
@@ -307,9 +305,8 @@ class GAction {
           >('g_action_get_state_hint')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getStateHint() {
-    return (_gActionGetStateHint(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gActionGetStateHint(this.handle));
+    final _ret = _gActionGetStateHint(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Queries the type of the state of @action.
@@ -332,9 +329,8 @@ class GAction {
           >('g_action_get_state_type')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariantType? getStateType() {
-    return (_gActionGetStateType(this.handle)) == ffi.nullptr
-        ? null
-        : GVariantType.fromPointer(_gActionGetStateType(this.handle));
+    final _ret = _gActionGetStateType(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariantType.fromPointer(_ret);
   }
 
   /// Checks if @action_name is valid.
@@ -420,7 +416,7 @@ class GAction {
         }
         return (
           (_ret) != 0,
-          stringFromNative(_out0.value.cast(), free: true)!,
+          stringFromNative(_out0.value.cast(), free: true),
           (_out1.value) == ffi.nullptr
               ? null
               : GVariant.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),

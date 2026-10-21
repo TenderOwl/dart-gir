@@ -138,11 +138,8 @@ class GtkSearchEntry extends GtkWidget
           >('gtk_search_entry_get_key_capture_widget')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getKeyCaptureWidget() {
-    return (_gtkSearchEntryGetKeyCaptureWidget(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(
-            _gtkSearchEntryGetKeyCaptureWidget(this.handle),
-          );
+    final _ret = _gtkSearchEntryGetKeyCaptureWidget(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the placeholder text associated with @entry.
@@ -591,11 +588,8 @@ class GtkSearchEntry extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -678,11 +672,8 @@ class GtkSearchEntry extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -694,11 +685,8 @@ class GtkSearchEntry extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -1091,9 +1079,8 @@ class GtkSearchEntry extends GtkWidget
           >('gtk_editable_get_delegate')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkEditable? getDelegate() {
-    return (_gtkEditableGetDelegate(this.handle)) == ffi.nullptr
-        ? null
-        : GtkEditable.fromPointer(_gtkEditableGetDelegate(this.handle));
+    final _ret = _gtkEditableGetDelegate(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkEditable.fromPointer(_ret);
   }
 
   /// Retrieves whether @editable is editable.

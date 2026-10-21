@@ -110,9 +110,8 @@ class GtkSourceAnnotation extends GObject {
           >('gtk_source_annotation_get_icon')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIcon? getIcon() {
-    return (_gtkSourceAnnotationGetIcon(this.handle)) == ffi.nullptr
-        ? null
-        : GIcon.fromPointer(_gtkSourceAnnotationGetIcon(this.handle));
+    final _ret = _gtkSourceAnnotationGetIcon(this.handle);
+    return (_ret) == ffi.nullptr ? null : GIcon.fromPointer(_ret);
   }
 
   static final _gtkSourceAnnotationGetLine =

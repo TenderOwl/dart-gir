@@ -110,11 +110,8 @@ class GIRepository extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIEnumInfo? findByErrorDomain(int domain) {
-    return (_giRepositoryFindByErrorDomain(this.handle, domain)) == ffi.nullptr
-        ? null
-        : GIEnumInfo.fromPointer(
-            _giRepositoryFindByErrorDomain(this.handle, domain),
-          );
+    final _ret = _giRepositoryFindByErrorDomain(this.handle, domain);
+    return (_ret) == ffi.nullptr ? null : GIEnumInfo.fromPointer(_ret);
   }
 
   /// Searches all loaded namespaces for a particular [type@GObject.Type].
@@ -134,9 +131,8 @@ class GIRepository extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIBaseInfo? findByGtype(int gtype) {
-    return (_giRepositoryFindByGtype(this.handle, gtype)) == ffi.nullptr
-        ? null
-        : GIBaseInfo.fromPointer(_giRepositoryFindByGtype(this.handle, gtype));
+    final _ret = _giRepositoryFindByGtype(this.handle, gtype);
+    return (_ret) == ffi.nullptr ? null : GIBaseInfo.fromPointer(_ret);
   }
 
   /// Searches for a particular entry in a namespace.
@@ -164,20 +160,12 @@ class GIRepository extends GObject {
   GIBaseInfo? findByName(String namespace, String name) {
     return withNativeString(namespace, (nativeNamespace) {
       return withNativeString(name, (nativeName) {
-        return (_giRepositoryFindByName(
-                  this.handle,
-                  nativeNamespace.cast<Utf8>(),
-                  nativeName.cast<Utf8>(),
-                )) ==
-                ffi.nullptr
-            ? null
-            : GIBaseInfo.fromPointer(
-                _giRepositoryFindByName(
-                  this.handle,
-                  nativeNamespace.cast<Utf8>(),
-                  nativeName.cast<Utf8>(),
-                ),
-              );
+        final _ret = _giRepositoryFindByName(
+          this.handle,
+          nativeNamespace.cast<Utf8>(),
+          nativeName.cast<Utf8>(),
+        );
+        return (_ret) == ffi.nullptr ? null : GIBaseInfo.fromPointer(_ret);
       });
     });
   }

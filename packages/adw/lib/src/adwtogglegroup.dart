@@ -232,9 +232,8 @@ class AdwToggleGroup extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   AdwToggle? getToggle(int index) {
-    return (_adwToggleGroupGetToggle(this.handle, index)) == ffi.nullptr
-        ? null
-        : AdwToggle.fromPointer(_adwToggleGroupGetToggle(this.handle, index));
+    final _ret = _adwToggleGroupGetToggle(this.handle, index);
+    return (_ret) == ffi.nullptr ? null : AdwToggle.fromPointer(_ret);
   }
 
   /// Gets the toggle with the name @name from @self.
@@ -255,18 +254,11 @@ class AdwToggleGroup extends GtkWidget
           >();
   AdwToggle? getToggleByName(String name) {
     return withNativeString(name, (nativeName) {
-      return (_adwToggleGroupGetToggleByName(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : AdwToggle.fromPointer(
-              _adwToggleGroupGetToggleByName(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _adwToggleGroupGetToggleByName(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : AdwToggle.fromPointer(_ret);
     });
   }
 
@@ -610,11 +602,8 @@ class AdwToggleGroup extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -697,11 +686,8 @@ class AdwToggleGroup extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -713,11 +699,8 @@ class AdwToggleGroup extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.

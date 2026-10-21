@@ -80,12 +80,14 @@ String barrelFor(
   required Set<String> crossImports,
   required bool usesFfiPackage,
   required bool usesGirFfi,
+  required bool usesTypedData,
   required List<String> parts,
 }) {
   final b = StringBuffer()
     ..writeln(generatedHeader)
     ..writeln()
     ..writeln("import 'dart:ffi' as ffi;");
+  if (usesTypedData) b.writeln("import 'dart:typed_data';");
   if (usesFfiPackage) b.writeln("import 'package:ffi/ffi.dart';");
   if (usesGirFfi) b.writeln("import 'package:gir_ffi/gir_ffi.dart';");
   final others = crossImports.where((p) => p != pkg && p != 'gir_ffi').toList()
@@ -155,7 +157,12 @@ $generatedHeader
 part of '../$pkg.dart';
 
 final class _GErrorStruct extends ffi.Struct {
-  @ffi.Size()
+  // `GQuark` is a `guint32` (glib/gquark.h). The C layout is
+  //   struct _GError { GQuark domain; gint code; gchar *message; };
+  // so `domain` and `code` are 4 bytes each and `message` sits at
+  // offset 8. A wider `domain` would shift the message pointer and
+  // read it from the wrong offset.
+  @ffi.Uint32()
   external int domain;
   @ffi.Int32()
   external int code;

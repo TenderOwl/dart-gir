@@ -89,11 +89,8 @@ class GTlsConnection extends GIOStream {
           >('g_tls_connection_get_certificate')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTlsCertificate? getCertificate() {
-    return (_gTlsConnectionGetCertificate(this.handle)) == ffi.nullptr
-        ? null
-        : GTlsCertificate.fromPointer(
-            _gTlsConnectionGetCertificate(this.handle),
-          );
+    final _ret = _gTlsConnectionGetCertificate(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTlsCertificate.fromPointer(_ret);
   }
 
   /// Returns the name of the current TLS ciphersuite, or %NULL if the
@@ -128,9 +125,8 @@ class GTlsConnection extends GIOStream {
           >('g_tls_connection_get_database')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTlsDatabase? getDatabase() {
-    return (_gTlsConnectionGetDatabase(this.handle)) == ffi.nullptr
-        ? null
-        : GTlsDatabase.fromPointer(_gTlsConnectionGetDatabase(this.handle));
+    final _ret = _gTlsConnectionGetDatabase(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTlsDatabase.fromPointer(_ret);
   }
 
   /// Get the object that will be used to interact with the user. It will be used
@@ -144,11 +140,8 @@ class GTlsConnection extends GIOStream {
           >('g_tls_connection_get_interaction')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTlsInteraction? getInteraction() {
-    return (_gTlsConnectionGetInteraction(this.handle)) == ffi.nullptr
-        ? null
-        : GTlsInteraction.fromPointer(
-            _gTlsConnectionGetInteraction(this.handle),
-          );
+    final _ret = _gTlsConnectionGetInteraction(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTlsInteraction.fromPointer(_ret);
   }
 
   /// Gets the name of the application-layer protocol negotiated during
@@ -183,11 +176,8 @@ class GTlsConnection extends GIOStream {
           >('g_tls_connection_get_peer_certificate')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GTlsCertificate? getPeerCertificate() {
-    return (_gTlsConnectionGetPeerCertificate(this.handle)) == ffi.nullptr
-        ? null
-        : GTlsCertificate.fromPointer(
-            _gTlsConnectionGetPeerCertificate(this.handle),
-          );
+    final _ret = _gTlsConnectionGetPeerCertificate(this.handle);
+    return (_ret) == ffi.nullptr ? null : GTlsCertificate.fromPointer(_ret);
   }
 
   /// Gets the errors associated with validating @conn's peer's

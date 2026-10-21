@@ -57,9 +57,8 @@ final class PangoLayoutIter {
           >('pango_layout_iter_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayoutIter? copy() {
-    return (_pangoLayoutIterCopy(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutIter.fromPointer(_pangoLayoutIterCopy(this.handle));
+    final _ret = _pangoLayoutIterCopy(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLayoutIter.fromPointer(_ret);
   }
 
   /// Frees an iterator that's no longer in use.
@@ -179,9 +178,8 @@ final class PangoLayoutIter {
           >('pango_layout_iter_get_layout')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayout? getLayout() {
-    return (_pangoLayoutIterGetLayout(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayout.fromPointer(_pangoLayoutIterGetLayout(this.handle));
+    final _ret = _pangoLayoutIterGetLayout(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLayout.fromPointer(_ret);
   }
 
   /// Obtains the extents of the `PangoLayout` being iterated over.
@@ -241,9 +239,8 @@ final class PangoLayoutIter {
           >('pango_layout_iter_get_line')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayoutLine? getLine() {
-    return (_pangoLayoutIterGetLine(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(_pangoLayoutIterGetLine(this.handle));
+    final _ret = _pangoLayoutIterGetLine(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLayoutLine.fromPointer(_ret);
   }
 
   /// Obtains the extents of the current line.
@@ -308,11 +305,8 @@ final class PangoLayoutIter {
           >('pango_layout_iter_get_line_readonly')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayoutLine? getLineReadonly() {
-    return (_pangoLayoutIterGetLineReadonly(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(
-            _pangoLayoutIterGetLineReadonly(this.handle),
-          );
+    final _ret = _pangoLayoutIterGetLineReadonly(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoLayoutLine.fromPointer(_ret);
   }
 
   /// Divides the vertical space in the `PangoLayout` being iterated over
@@ -372,9 +366,8 @@ final class PangoLayoutIter {
           >('pango_layout_iter_get_run')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoGlyphItem? getRun() {
-    return (_pangoLayoutIterGetRun(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItem.fromPointer(_pangoLayoutIterGetRun(this.handle));
+    final _ret = _pangoLayoutIterGetRun(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoGlyphItem.fromPointer(_ret);
   }
 
   /// Gets the Y position of the current run's baseline, in layout
@@ -457,11 +450,8 @@ final class PangoLayoutIter {
           >('pango_layout_iter_get_run_readonly')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoGlyphItem? getRunReadonly() {
-    return (_pangoLayoutIterGetRunReadonly(this.handle)) == ffi.nullptr
-        ? null
-        : PangoGlyphItem.fromPointer(
-            _pangoLayoutIterGetRunReadonly(this.handle),
-          );
+    final _ret = _pangoLayoutIterGetRunReadonly(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoGlyphItem.fromPointer(_ret);
   }
 
   /// Moves @iter forward to the next character in visual order.
@@ -510,306 +500,5 @@ final class PangoLayoutIter {
           .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
   bool nextRun() {
     return (_pangoLayoutIterNextRun(this.handle)) != 0;
-  }
-}
-
-/// A `PangoLayoutLine` represents one of the lines resulting from laying
-/// out a paragraph via `PangoLayout`.
-///
-/// `PangoLayoutLine` structures are obtained by calling
-/// [method@Pango.Layout.get_line] and are only valid until the text,
-/// attributes, or settings of the parent `PangoLayout` are modified.
-final class PangoLayoutLine {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory PangoLayoutLine.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<PangoLayoutLine>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return PangoLayoutLine.rawFromPointer(handle, owned: owned);
-  }
-  PangoLayoutLine.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Computes the logical and ink extents of a layout line.
-  ///
-  /// See [method@Pango.Font.get_glyph_extents] for details
-  /// about the interpretation of the rectangles.
-  static final _pangoLayoutLineGetExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_layout_line_get_extents')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (PangoRectangle?, PangoRectangle?) getExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    _pangoLayoutLineGetExtents(
-      this.handle,
-      _out0.cast<ffi.Void>(),
-      _out1.cast<ffi.Void>(),
-    );
-    return (
-      (_out0) == ffi.nullptr
-          ? null
-          : keepAlive(
-              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-              _out0Anchor,
-            ),
-      (_out1) == ffi.nullptr
-          ? null
-          : keepAlive(
-              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-              _out1Anchor,
-            ),
-    );
-  }
-
-  /// Computes the height of the line, as the maximum of the heights
-  /// of fonts used in this line.
-  ///
-  /// Note that the actual baseline-to-baseline distance between lines
-  /// of text is influenced by other factors, such as
-  /// [method@Pango.Layout.set_spacing] and
-  /// [method@Pango.Layout.set_line_spacing].
-  static final _pangoLayoutLineGetHeight =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Int32>)
-            >
-          >('pango_layout_line_get_height')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Int32>)
-          >();
-  int getHeight() {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      _pangoLayoutLineGetHeight(this.handle, _out0);
-      return _out0.value;
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Returns the length of the line, in bytes.
-  static final _pangoLayoutLineGetLength =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_line_get_length')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getLength() {
-    return _pangoLayoutLineGetLength(this.handle);
-  }
-
-  /// Computes the logical and ink extents of @layout_line in device units.
-  ///
-  /// This function just calls [method@Pango.LayoutLine.get_extents] followed by
-  /// two [func@extents_to_pixels] calls, rounding @ink_rect and @logical_rect
-  /// such that the rounded rectangles fully contain the unrounded one (that is,
-  /// passes them as first argument to [func@extents_to_pixels]).
-  static final _pangoLayoutLineGetPixelExtents =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('pango_layout_line_get_pixel_extents')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  (PangoRectangle?, PangoRectangle?) getPixelExtents() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1Anchor = HeapAnchor.allocate(256);
-    final _out1 = _out1Anchor.buffer;
-    _pangoLayoutLineGetPixelExtents(
-      this.handle,
-      _out0.cast<ffi.Void>(),
-      _out1.cast<ffi.Void>(),
-    );
-    return (
-      (_out0) == ffi.nullptr
-          ? null
-          : keepAlive(
-              PangoRectangle.fromPointer(_out0.cast<ffi.Void>()),
-              _out0Anchor,
-            ),
-      (_out1) == ffi.nullptr
-          ? null
-          : keepAlive(
-              PangoRectangle.fromPointer(_out1.cast<ffi.Void>()),
-              _out1Anchor,
-            ),
-    );
-  }
-
-  /// Returns the resolved direction of the line.
-  static final _pangoLayoutLineGetResolvedDirection =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_line_get_resolved_direction')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  PangoDirection getResolvedDirection() {
-    return PangoDirection.fromValue(
-      _pangoLayoutLineGetResolvedDirection(this.handle),
-    );
-  }
-
-  /// Returns the start index of the line, as byte index
-  /// into the text of the layout.
-  static final _pangoLayoutLineGetStartIndex =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_line_get_start_index')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getStartIndex() {
-    return _pangoLayoutLineGetStartIndex(this.handle);
-  }
-
-  /// Converts an index within a line to a X position.
-  static final _pangoLayoutLineIndexToX =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Int32,
-                ffi.Pointer<ffi.Int32>,
-              )
-            >
-          >('pango_layout_line_index_to_x')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              int,
-              ffi.Pointer<ffi.Int32>,
-            )
-          >();
-  int indexToX(int index, bool trailing) {
-    final _out0 = malloc<ffi.Int32>();
-    try {
-      _pangoLayoutLineIndexToX(this.handle, index, trailing ? 1 : 0, _out0);
-      return _out0.value;
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Returns whether this is the first line of the paragraph.
-  static final _pangoLayoutLineIsParagraphStart =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_layout_line_is_paragraph_start')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isParagraphStart() {
-    return (_pangoLayoutLineIsParagraphStart(this.handle)) != 0;
-  }
-
-  /// Increase the reference count of a `PangoLayoutLine` by one.
-  static final _pangoLayoutLineRef =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_layout_line_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoLayoutLine? ref() {
-    return (_pangoLayoutLineRef(this.handle)) == ffi.nullptr
-        ? null
-        : PangoLayoutLine.fromPointer(_pangoLayoutLineRef(this.handle));
-  }
-
-  /// Decrease the reference count of a `PangoLayoutLine` by one.
-  ///
-  /// If the result is zero, the line and all associated memory
-  /// will be freed.
-  static final _pangoLayoutLineUnref =
-      pangoLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'pango_layout_line_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _pangoLayoutLineUnref(this.handle);
-  }
-
-  /// Converts from x offset to the byte index of the corresponding character
-  /// within the text of the layout.
-  ///
-  /// If @x_pos is outside the line, @index_ and @trailing will point to the very
-  /// first or very last position in the line. This determination is based on the
-  /// resolved direction of the paragraph; for example, if the resolved direction
-  /// is right-to-left, then an X position to the right of the line (after it)
-  /// results in 0 being stored in @index_ and @trailing. An X position to the
-  /// left of the line results in @index_ pointing to the (logical) last grapheme
-  /// in the line and @trailing being set to the number of characters in that
-  /// grapheme. The reverse is true for a left-to-right line.
-  static final _pangoLayoutLineXToIndex =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Int32,
-                ffi.Pointer<ffi.Int32>,
-                ffi.Pointer<ffi.Int32>,
-              )
-            >
-          >('pango_layout_line_x_to_index')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>,
-            )
-          >();
-  (bool, int, int) xToIndex(int xPos) {
-    final _out0 = malloc<ffi.Int32>();
-    final _out1 = malloc<ffi.Int32>();
-    try {
-      final _ret = _pangoLayoutLineXToIndex(this.handle, xPos, _out0, _out1);
-      return ((_ret) != 0, _out0.value, _out1.value);
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-    }
   }
 }

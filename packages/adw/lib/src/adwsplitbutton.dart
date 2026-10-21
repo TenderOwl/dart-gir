@@ -118,9 +118,8 @@ class AdwSplitButton extends GtkWidget
           >('adw_split_button_get_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getChild() {
-    return (_adwSplitButtonGetChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwSplitButtonGetChild(this.handle));
+    final _ret = _adwSplitButtonGetChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the direction in which the popup will be popped up.
@@ -186,9 +185,8 @@ class AdwSplitButton extends GtkWidget
           >('adw_split_button_get_menu_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMenuModel? getMenuModel() {
-    return (_adwSplitButtonGetMenuModel(this.handle)) == ffi.nullptr
-        ? null
-        : GMenuModel.fromPointer(_adwSplitButtonGetMenuModel(this.handle));
+    final _ret = _adwSplitButtonGetMenuModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
   }
 
   /// Gets the popover that will be popped up when the dropdown is clicked.
@@ -200,9 +198,8 @@ class AdwSplitButton extends GtkWidget
           >('adw_split_button_get_popover')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPopover? getPopover() {
-    return (_adwSplitButtonGetPopover(this.handle)) == ffi.nullptr
-        ? null
-        : GtkPopover.fromPointer(_adwSplitButtonGetPopover(this.handle));
+    final _ret = _adwSplitButtonGetPopover(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkPopover.fromPointer(_ret);
   }
 
   /// Gets whether an underline in the text indicates a mnemonic.
@@ -648,11 +645,8 @@ class AdwSplitButton extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -735,11 +729,8 @@ class AdwSplitButton extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -751,11 +742,8 @@ class AdwSplitButton extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -1016,9 +1004,8 @@ class AdwSplitButton extends GtkWidget
           >('gtk_actionable_get_action_target_value')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getActionTargetValue() {
-    return (_gtkActionableGetActionTargetValue(this.handle)) == ffi.nullptr
-        ? null
-        : GVariant.fromPointer(_gtkActionableGetActionTargetValue(this.handle));
+    final _ret = _gtkActionableGetActionTargetValue(this.handle);
+    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
   }
 
   /// Specifies the name of the action with which this widget should be

@@ -125,6 +125,36 @@ class PangoCoverage extends GObject {
     _pangoCoverageSet(this.handle, index, level.value);
   }
 
+  /// Convert a `PangoCoverage` structure into a flat binary format.
+  static final _pangoCoverageToBytes =
+      pangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_coverage_to_bytes')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  Uint8List toBytes() {
+    final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoCoverageToBytes(this.handle, _out0, _out1);
+      return bytesFromNative(_out0.value.cast<ffi.Uint8>(), _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Decrease the reference count on the `PangoCoverage` by one.
   ///
   /// If the result is zero, free the coverage and all associated memory.
@@ -148,9 +178,8 @@ class PangoCoverage extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>, int)
           >();
   static PangoCoverage? fromBytes(ffi.Pointer<ffi.Uint8> bytes, int nBytes) {
-    return (_pangoCoverageFromBytes(bytes, nBytes)) == ffi.nullptr
-        ? null
-        : PangoCoverage.fromPointer(_pangoCoverageFromBytes(bytes, nBytes));
+    final _ret = _pangoCoverageFromBytes(bytes, nBytes);
+    return (_ret) == ffi.nullptr ? null : PangoCoverage.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

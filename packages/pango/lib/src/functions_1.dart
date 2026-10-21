@@ -47,7 +47,7 @@ final _pangoParseEnum =
       return (
         (_ret) != 0,
         _out0.value,
-        stringFromNative(_out1.value.cast(), free: true)!,
+        stringFromNative(_out1.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);
@@ -129,7 +129,7 @@ final _pangoParseMarkup =
                 _out0.value.cast<ffi.Void>(),
                 owned: true,
               ),
-        stringFromNative(_out1.value.cast(), free: true)!,
+        stringFromNative(_out1.value.cast(), free: true),
         _out2.value,
       );
     } finally {

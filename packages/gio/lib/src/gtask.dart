@@ -659,9 +659,8 @@ class GTask extends GObject {
           >('g_task_get_cancellable')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GCancellable? getCancellable() {
-    return (_gTaskGetCancellable(this.handle)) == ffi.nullptr
-        ? null
-        : GCancellable.fromPointer(_gTaskGetCancellable(this.handle));
+    final _ret = _gTaskGetCancellable(this.handle);
+    return (_ret) == ffi.nullptr ? null : GCancellable.fromPointer(_ret);
   }
 
   /// Gets @task's check-cancellable flag. See
@@ -744,9 +743,8 @@ class GTask extends GObject {
           >('g_task_get_source_object')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSourceObjectTask() {
-    return (_gTaskGetSourceObject(this.handle)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gTaskGetSourceObject(this.handle));
+    final _ret = _gTaskGetSourceObject(this.handle);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Gets @task's source tag. See g_task_set_source_tag().
@@ -758,9 +756,8 @@ class GTask extends GObject {
           >('g_task_get_source_tag')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getSourceTag() {
-    return (_gTaskGetSourceTag(this.handle)) == ffi.nullptr
-        ? null
-        : (_gTaskGetSourceTag(this.handle));
+    final _ret = _gTaskGetSourceTag(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Gets @task's `task_data`.
@@ -772,9 +769,8 @@ class GTask extends GObject {
           >('g_task_get_task_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getTaskData() {
-    return (_gTaskGetTaskData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gTaskGetTaskData(this.handle));
+    final _ret = _gTaskGetTaskData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Tests if @task resulted in an error.
@@ -1600,9 +1596,8 @@ class GTask extends GObject {
           >('g_async_result_get_user_data')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   ffi.Pointer<ffi.Void>? getUserData() {
-    return (_gAsyncResultGetUserData(this.handle)) == ffi.nullptr
-        ? null
-        : (_gAsyncResultGetUserData(this.handle));
+    final _ret = _gAsyncResultGetUserData(this.handle);
+    return (_ret) == ffi.nullptr ? null : (_ret);
   }
 
   /// Checks if @res has the given @source_tag (generally a function

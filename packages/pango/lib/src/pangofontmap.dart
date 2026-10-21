@@ -144,12 +144,8 @@ class PangoFontMap extends GObject implements GListModel {
           >();
   PangoFontFamily? getFamily(String name) {
     return withNativeString(name, (nativeName) {
-      return (_pangoFontMapGetFamily(this.handle, nativeName.cast<Utf8>())) ==
-              ffi.nullptr
-          ? null
-          : PangoFontFamily.fromPointer(
-              _pangoFontMapGetFamily(this.handle, nativeName.cast<Utf8>()),
-            );
+      final _ret = _pangoFontMapGetFamily(this.handle, nativeName.cast<Utf8>());
+      return (_ret) == ffi.nullptr ? null : PangoFontFamily.fromPointer(_ret);
     });
   }
 
@@ -193,12 +189,12 @@ class PangoFontMap extends GObject implements GListModel {
             )
           >();
   PangoFont? loadFont(PangoContext context, PangoFontDescription desc) {
-    return (_pangoFontMapLoadFont(this.handle, context.handle, desc.handle)) ==
-            ffi.nullptr
-        ? null
-        : PangoFont.fromPointer(
-            _pangoFontMapLoadFont(this.handle, context.handle, desc.handle),
-          );
+    final _ret = _pangoFontMapLoadFont(
+      this.handle,
+      context.handle,
+      desc.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
   }
 
   /// Load a set of fonts in the fontmap that can be used to render
@@ -227,22 +223,13 @@ class PangoFontMap extends GObject implements GListModel {
     PangoFontDescription desc,
     PangoLanguage language,
   ) {
-    return (_pangoFontMapLoadFontset(
-              this.handle,
-              context.handle,
-              desc.handle,
-              language.handle,
-            )) ==
-            ffi.nullptr
-        ? null
-        : PangoFontset.fromPointer(
-            _pangoFontMapLoadFontset(
-              this.handle,
-              context.handle,
-              desc.handle,
-              language.handle,
-            ),
-          );
+    final _ret = _pangoFontMapLoadFontset(
+      this.handle,
+      context.handle,
+      desc.handle,
+      language.handle,
+    );
+    return (_ret) == ffi.nullptr ? null : PangoFontset.fromPointer(_ret);
   }
 
   /// Returns a new font that is like @font, except that it is scaled
@@ -390,9 +377,8 @@ class PangoFontMap extends GObject implements GListModel {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GObject? getObject(int position) {
-    return (_gListModelGetObject(this.handle, position)) == ffi.nullptr
-        ? null
-        : GObject.fromPointer(_gListModelGetObject(this.handle, position));
+    final _ret = _gListModelGetObject(this.handle, position);
+    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

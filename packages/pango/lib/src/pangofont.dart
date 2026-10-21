@@ -114,9 +114,8 @@ class PangoFont extends GObject {
           >('pango_font_get_face')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontFace? getFace() {
-    return (_pangoFontGetFace(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontFace.fromPointer(_pangoFontGetFace(this.handle));
+    final _ret = _pangoFontGetFace(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontFace.fromPointer(_ret);
   }
 
   /// Gets the font map for which the font was created.
@@ -138,9 +137,8 @@ class PangoFont extends GObject {
           >('pango_font_get_font_map')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMap? getFontMap() {
-    return (_pangoFontGetFontMap(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMap.fromPointer(_pangoFontGetFontMap(this.handle));
+    final _ret = _pangoFontGetFontMap(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMap.fromPointer(_ret);
   }
 
   /// Gets the logical and ink extents of a glyph within a font.

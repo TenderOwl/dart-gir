@@ -146,12 +146,10 @@ class GSocketControlMessage extends GObject {
     int size,
     ffi.Pointer<ffi.Uint8> data,
   ) {
-    return (_gSocketControlMessageDeserialize(level, type_, size, data)) ==
-            ffi.nullptr
+    final _ret = _gSocketControlMessageDeserialize(level, type_, size, data);
+    return (_ret) == ffi.nullptr
         ? null
-        : GSocketControlMessage.fromPointer(
-            _gSocketControlMessageDeserialize(level, type_, size, data),
-          );
+        : GSocketControlMessage.fromPointer(_ret);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

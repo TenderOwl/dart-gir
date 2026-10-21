@@ -80,7 +80,7 @@ final _gDbusAddressGetStreamFinish =
     }
     return (
       GIOStream.fromPointer(_ret),
-      stringFromNative(_out0.value.cast(), free: true)!,
+      stringFromNative(_out0.value.cast(), free: true),
     );
   } finally {
     malloc.free(_out0);
@@ -136,7 +136,7 @@ final _gDbusAddressGetStreamSync =
       }
       return (
         GIOStream.fromPointer(_ret),
-        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
       malloc.free(_out0);

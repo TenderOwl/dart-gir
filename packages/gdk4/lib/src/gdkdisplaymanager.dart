@@ -97,11 +97,8 @@ class GdkDisplayManager extends GObject {
           >('gdk_display_manager_get_default_display')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkDisplay? getDefaultDisplay() {
-    return (_gdkDisplayManagerGetDefaultDisplay(this.handle)) == ffi.nullptr
-        ? null
-        : GdkDisplay.fromPointer(
-            _gdkDisplayManagerGetDefaultDisplay(this.handle),
-          );
+    final _ret = _gdkDisplayManagerGetDefaultDisplay(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
   }
 
   /// List all currently open displays.
@@ -134,18 +131,11 @@ class GdkDisplayManager extends GObject {
           >();
   GdkDisplay? openDisplay([String? name]) {
     return withNativeString(name, (nativeName) {
-      return (_gdkDisplayManagerOpenDisplay(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              )) ==
-              ffi.nullptr
-          ? null
-          : GdkDisplay.fromPointer(
-              _gdkDisplayManagerOpenDisplay(
-                this.handle,
-                nativeName.cast<Utf8>(),
-              ),
-            );
+      final _ret = _gdkDisplayManagerOpenDisplay(
+        this.handle,
+        nativeName.cast<Utf8>(),
+      );
+      return (_ret) == ffi.nullptr ? null : GdkDisplay.fromPointer(_ret);
     });
   }
 

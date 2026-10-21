@@ -116,9 +116,8 @@ class GtkTextMark extends GObject {
           >('gtk_text_mark_get_buffer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTextBuffer? getBuffer() {
-    return (_gtkTextMarkGetBuffer(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTextBuffer.fromPointer(_gtkTextMarkGetBuffer(this.handle));
+    final _ret = _gtkTextMarkGetBuffer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTextBuffer.fromPointer(_ret);
   }
 
   /// Returns %TRUE if the mark has been removed from its buffer.

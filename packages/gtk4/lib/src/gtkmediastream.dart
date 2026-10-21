@@ -129,9 +129,8 @@ class GtkMediaStream extends GObject implements GdkPaintable {
           >('gtk_media_stream_get_error')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GError? getError() {
-    return (_gtkMediaStreamGetError(this.handle)) == ffi.nullptr
-        ? null
-        : GError.fromPointer(_gtkMediaStreamGetError(this.handle));
+    final _ret = _gtkMediaStreamGetError(this.handle);
+    return (_ret) == ffi.nullptr ? null : GError.fromPointer(_ret);
   }
 
   /// Returns whether the stream is set to loop.

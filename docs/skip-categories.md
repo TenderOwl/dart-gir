@@ -219,6 +219,23 @@ A scalar name not in the built-in table (`TypeResolver._byGirName` and
 `_byCType`). Examples: `va_list`, complex GCC types. Open an issue if
 the GIR type is reasonable.
 
+### `unsupported out parameter <name> (<type>)`
+
+The OUT parameter's type has no marshalling shape the generator can
+express. Two shapes remain in the current corpus:
+
+* a **caller-allocated** byte array (`g_input_stream_read`'s `buffer`) —
+  the caller owns the memory, so the wrapper would have to hand the user
+  a buffer to fill in; that is a different feature;
+* a **length-less** `gchar**` (`g_spawn_sync`'s `standard_output`) —
+  the GIR carries no byte count, so the size would have to be measured
+  with `strlen`.
+
+The **callee-allocated** byte buffer — a `char**` / `guchar**` with a
+sibling length parameter — *is* supported: the wrapper copies the bytes
+into a `Uint8List` and releases the native buffer. See
+[emission.md](./emission.md#out-parameters).
+
 ### `varargs`
 
 Functions with `...` parameters are skipped — variadic FFI calls

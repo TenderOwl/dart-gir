@@ -135,10 +135,8 @@ class GInetAddress extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
   factory GInetAddress.fromString(String string) {
     return withNativeString(string, (nativeString) {
-      return GInetAddress.fromPointer(
-        _gInetAddressNewFromString(nativeString.cast<Utf8>()),
-        owned: true,
-      );
+      final _ret = _gInetAddressNewFromString(nativeString.cast<Utf8>());
+      return GInetAddress.fromPointer(_ret, owned: true);
     });
   }
 

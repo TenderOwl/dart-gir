@@ -46,9 +46,8 @@ ffi.Pointer<ffi.Void>? alignedAllocFn(
   int nBlockBytes,
   int alignment,
 ) {
-  return (_gAlignedAlloc(nBlocks, nBlockBytes, alignment)) == ffi.nullptr
-      ? null
-      : (_gAlignedAlloc(nBlocks, nBlockBytes, alignment));
+  final _ret = _gAlignedAlloc(nBlocks, nBlockBytes, alignment);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// This function is similar to g_aligned_alloc(), but it will
@@ -65,9 +64,8 @@ ffi.Pointer<ffi.Void>? alignedAlloc0(
   int nBlockBytes,
   int alignment,
 ) {
-  return (_gAlignedAlloc0(nBlocks, nBlockBytes, alignment)) == ffi.nullptr
-      ? null
-      : (_gAlignedAlloc0(nBlocks, nBlockBytes, alignment));
+  final _ret = _gAlignedAlloc0(nBlocks, nBlockBytes, alignment);
+  return (_ret) == ffi.nullptr ? null : (_ret);
 }
 
 /// Frees the memory allocated by g_aligned_alloc().
@@ -443,7 +441,7 @@ final _gAsciiStrtod =
     final _out0 = malloc<ffi.Pointer<Utf8>>();
     try {
       final _ret = _gAsciiStrtod(nativeNptr.cast<Utf8>(), _out0);
-      return (_ret, stringFromNative(_out0.value.cast(), free: true)!);
+      return (_ret, stringFromNative(_out0.value.cast(), free: true));
     } finally {
       malloc.free(_out0);
     }
@@ -486,7 +484,7 @@ final _gAsciiStrtoll =
     final _out0 = malloc<ffi.Pointer<Utf8>>();
     try {
       final _ret = _gAsciiStrtoll(nativeNptr.cast<Utf8>(), _out0, base_);
-      return (_ret, stringFromNative(_out0.value.cast(), free: true)!);
+      return (_ret, stringFromNative(_out0.value.cast(), free: true));
     } finally {
       malloc.free(_out0);
     }
@@ -534,7 +532,7 @@ final _gAsciiStrtoull =
     final _out0 = malloc<ffi.Pointer<Utf8>>();
     try {
       final _ret = _gAsciiStrtoull(nativeNptr.cast<Utf8>(), _out0, base_);
-      return (_ret, stringFromNative(_out0.value.cast(), free: true)!);
+      return (_ret, stringFromNative(_out0.value.cast(), free: true));
     } finally {
       malloc.free(_out0);
     }

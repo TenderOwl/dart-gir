@@ -121,9 +121,8 @@ final _gEnumGetValue =
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
 GEnumValue? enumGetValue(GEnumClass enumClass, int value) {
-  return (_gEnumGetValue(enumClass.handle, value)) == ffi.nullptr
-      ? null
-      : GEnumValue.fromPointer(_gEnumGetValue(enumClass.handle, value));
+  final _ret = _gEnumGetValue(enumClass.handle, value);
+  return (_ret) == ffi.nullptr ? null : GEnumValue.fromPointer(_ret);
 }
 
 /// Looks up a #GEnumValue by name.
@@ -144,12 +143,11 @@ final _gEnumGetValueByName =
         >();
 GEnumValue? enumGetValueByName(GEnumClass enumClass, String name) {
   return withNativeString(name, (nativeName) {
-    return (_gEnumGetValueByName(enumClass.handle, nativeName.cast<Utf8>())) ==
-            ffi.nullptr
-        ? null
-        : GEnumValue.fromPointer(
-            _gEnumGetValueByName(enumClass.handle, nativeName.cast<Utf8>()),
-          );
+    final _ret = _gEnumGetValueByName(
+      enumClass.handle,
+      nativeName.cast<Utf8>(),
+    );
+    return (_ret) == ffi.nullptr ? null : GEnumValue.fromPointer(_ret);
   });
 }
 
@@ -171,12 +169,11 @@ final _gEnumGetValueByNick =
         >();
 GEnumValue? enumGetValueByNick(GEnumClass enumClass, String nick) {
   return withNativeString(nick, (nativeNick) {
-    return (_gEnumGetValueByNick(enumClass.handle, nativeNick.cast<Utf8>())) ==
-            ffi.nullptr
-        ? null
-        : GEnumValue.fromPointer(
-            _gEnumGetValueByNick(enumClass.handle, nativeNick.cast<Utf8>()),
-          );
+    final _ret = _gEnumGetValueByNick(
+      enumClass.handle,
+      nativeNick.cast<Utf8>(),
+    );
+    return (_ret) == ffi.nullptr ? null : GEnumValue.fromPointer(_ret);
   });
 }
 
@@ -207,9 +204,8 @@ final _gFlagsGetFirstValue =
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
 GFlagsValue? flagsGetFirstValue(GFlagsClass flagsClass, int value) {
-  return (_gFlagsGetFirstValue(flagsClass.handle, value)) == ffi.nullptr
-      ? null
-      : GFlagsValue.fromPointer(_gFlagsGetFirstValue(flagsClass.handle, value));
+  final _ret = _gFlagsGetFirstValue(flagsClass.handle, value);
+  return (_ret) == ffi.nullptr ? null : GFlagsValue.fromPointer(_ret);
 }
 
 /// Looks up a #GFlagsValue by name.
@@ -230,15 +226,11 @@ final _gFlagsGetValueByName =
         >();
 GFlagsValue? flagsGetValueByName(GFlagsClass flagsClass, String name) {
   return withNativeString(name, (nativeName) {
-    return (_gFlagsGetValueByName(
-              flagsClass.handle,
-              nativeName.cast<Utf8>(),
-            )) ==
-            ffi.nullptr
-        ? null
-        : GFlagsValue.fromPointer(
-            _gFlagsGetValueByName(flagsClass.handle, nativeName.cast<Utf8>()),
-          );
+    final _ret = _gFlagsGetValueByName(
+      flagsClass.handle,
+      nativeName.cast<Utf8>(),
+    );
+    return (_ret) == ffi.nullptr ? null : GFlagsValue.fromPointer(_ret);
   });
 }
 
@@ -260,15 +252,11 @@ final _gFlagsGetValueByNick =
         >();
 GFlagsValue? flagsGetValueByNick(GFlagsClass flagsClass, String nick) {
   return withNativeString(nick, (nativeNick) {
-    return (_gFlagsGetValueByNick(
-              flagsClass.handle,
-              nativeNick.cast<Utf8>(),
-            )) ==
-            ffi.nullptr
-        ? null
-        : GFlagsValue.fromPointer(
-            _gFlagsGetValueByNick(flagsClass.handle, nativeNick.cast<Utf8>()),
-          );
+    final _ret = _gFlagsGetValueByNick(
+      flagsClass.handle,
+      nativeNick.cast<Utf8>(),
+    );
+    return (_ret) == ffi.nullptr ? null : GFlagsValue.fromPointer(_ret);
   });
 }
 
@@ -1234,63 +1222,6 @@ GParamSpec paramSpecUint64(
       return withNativeString(blurb, (nativeBlurb) {
         return GParamSpec.fromPointer(
           _gParamSpecUint64(
-            nativeName.cast<Utf8>(),
-            nativeNick.cast<Utf8>(),
-            nativeBlurb.cast<Utf8>(),
-            minimum,
-            maximum,
-            defaultValue,
-            flags.value,
-          ),
-        );
-      });
-    });
-  });
-}
-
-/// Creates a new #GParamSpecULong instance specifying a %G_TYPE_ULONG
-/// property.
-///
-/// See g_param_spec_internal() for details on property names.
-final _gParamSpecUlong =
-    gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.Pointer<Utf8>,
-              ffi.UnsignedLong,
-              ffi.UnsignedLong,
-              ffi.UnsignedLong,
-              ffi.Uint32,
-            )
-          >
-        >('g_param_spec_ulong')
-        .asFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            ffi.Pointer<Utf8>,
-            int,
-            int,
-            int,
-            int,
-          )
-        >();
-GParamSpec paramSpecUlong(
-  String name,
-  String? nick,
-  String? blurb,
-  int minimum,
-  int maximum,
-  int defaultValue,
-  GParamFlags flags,
-) {
-  return withNativeString(name, (nativeName) {
-    return withNativeString(nick, (nativeNick) {
-      return withNativeString(blurb, (nativeBlurb) {
-        return GParamSpec.fromPointer(
-          _gParamSpecUlong(
             nativeName.cast<Utf8>(),
             nativeNick.cast<Utf8>(),
             nativeBlurb.cast<Utf8>(),

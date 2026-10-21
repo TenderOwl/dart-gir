@@ -127,11 +127,8 @@ class GtkIconView extends GtkWidget
             )
           >();
   GdkPaintable? createDragIcon(GtkTreePath path) {
-    return (_gtkIconViewCreateDragIcon(this.handle, path.handle)) == ffi.nullptr
-        ? null
-        : GdkPaintable.fromPointer(
-            _gtkIconViewCreateDragIcon(this.handle, path.handle),
-          );
+    final _ret = _gtkIconViewCreateDragIcon(this.handle, path.handle);
+    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
   }
 
   /// Turns @icon_view into a drop destination for automatic DND. Calling this
@@ -520,9 +517,8 @@ class GtkIconView extends GtkWidget
           >('gtk_icon_view_get_model')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeModel? getModel() {
-    return (_gtkIconViewGetModel(this.handle)) == ffi.nullptr
-        ? null
-        : GtkTreeModel.fromPointer(_gtkIconViewGetModel(this.handle));
+    final _ret = _gtkIconViewGetModel(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkTreeModel.fromPointer(_ret);
   }
 
   /// Gets the path for the icon at the given position.
@@ -540,9 +536,8 @@ class GtkIconView extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int, int)
           >();
   GtkTreePath? getPathAtPos(int x, int y) {
-    return (_gtkIconViewGetPathAtPos(this.handle, x, y)) == ffi.nullptr
-        ? null
-        : GtkTreePath.fromPointer(_gtkIconViewGetPathAtPos(this.handle, x, y));
+    final _ret = _gtkIconViewGetPathAtPos(this.handle, x, y);
+    return (_ret) == ffi.nullptr ? null : GtkTreePath.fromPointer(_ret);
   }
 
   /// Returns the column with pixbufs for @icon_view.
@@ -1678,11 +1673,8 @@ class GtkIconView extends GtkWidget
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1765,11 +1757,8 @@ class GtkIconView extends GtkWidget
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1781,11 +1770,8 @@ class GtkIconView extends GtkWidget
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -2113,9 +2099,8 @@ class GtkIconView extends GtkWidget
           >('gtk_cell_layout_get_area')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkCellArea? getArea() {
-    return (_gtkCellLayoutGetArea(this.handle)) == ffi.nullptr
-        ? null
-        : GtkCellArea.fromPointer(_gtkCellLayoutGetArea(this.handle));
+    final _ret = _gtkCellLayoutGetArea(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkCellArea.fromPointer(_ret);
   }
 
   /// Returns the cell renderers which have been added to @cell_layout.
@@ -2323,9 +2308,8 @@ class GtkIconView extends GtkWidget
           >('gtk_scrollable_get_hadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getHadjustment() {
-    return (_gtkScrollableGetHadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetHadjustment(this.handle));
+    final _ret = _gtkScrollableGetHadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the horizontal `GtkScrollablePolicy`.
@@ -2348,9 +2332,8 @@ class GtkIconView extends GtkWidget
           >('gtk_scrollable_get_vadjustment')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAdjustment? getVadjustment() {
-    return (_gtkScrollableGetVadjustment(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAdjustment.fromPointer(_gtkScrollableGetVadjustment(this.handle));
+    final _ret = _gtkScrollableGetVadjustment(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAdjustment.fromPointer(_ret);
   }
 
   /// Gets the vertical `GtkScrollablePolicy`.

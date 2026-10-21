@@ -275,9 +275,8 @@ final class PangoFontMetrics {
           >('pango_font_metrics_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontMetrics? ref() {
-    return (_pangoFontMetricsRef(this.handle)) == ffi.nullptr
-        ? null
-        : PangoFontMetrics.fromPointer(_pangoFontMetricsRef(this.handle));
+    final _ret = _pangoFontMetricsRef(this.handle);
+    return (_ret) == ffi.nullptr ? null : PangoFontMetrics.fromPointer(_ret);
   }
 
   /// Decrease the reference count of a font metrics structure by one.

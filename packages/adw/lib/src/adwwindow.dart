@@ -169,9 +169,8 @@ class AdwWindow extends GtkWindow
           >('adw_window_get_content')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getContent() {
-    return (_adwWindowGetContent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_adwWindowGetContent(this.handle));
+    final _ret = _adwWindowGetContent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// Gets the current breakpoint.
@@ -183,11 +182,8 @@ class AdwWindow extends GtkWindow
           >('adw_window_get_current_breakpoint')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwBreakpoint? getCurrentBreakpoint() {
-    return (_adwWindowGetCurrentBreakpoint(this.handle)) == ffi.nullptr
-        ? null
-        : AdwBreakpoint.fromPointer(
-            _adwWindowGetCurrentBreakpoint(this.handle),
-          );
+    final _ret = _adwWindowGetCurrentBreakpoint(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwBreakpoint.fromPointer(_ret);
   }
 
   /// Returns a [iface@Gio.ListModel] that contains the open dialogs of @self.
@@ -213,9 +209,8 @@ class AdwWindow extends GtkWindow
           >('adw_window_get_visible_dialog')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   AdwDialog? getVisibleDialog() {
-    return (_adwWindowGetVisibleDialog(this.handle)) == ffi.nullptr
-        ? null
-        : AdwDialog.fromPointer(_adwWindowGetVisibleDialog(this.handle));
+    final _ret = _adwWindowGetVisibleDialog(this.handle);
+    return (_ret) == ffi.nullptr ? null : AdwDialog.fromPointer(_ret);
   }
 
   /// Sets whether adaptive preview for @self is currently open.
@@ -534,11 +529,8 @@ class AdwWindow extends GtkWindow
           >('gtk_accessible_get_accessible_parent')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
-    return (_gtkAccessibleGetAccessibleParent(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetAccessibleParent(this.handle),
-          );
+    final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -621,11 +613,8 @@ class AdwWindow extends GtkWindow
           >('gtk_accessible_get_first_accessible_child')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
-    return (_gtkAccessibleGetFirstAccessibleChild(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetFirstAccessibleChild(this.handle),
-          );
+    final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -637,11 +626,8 @@ class AdwWindow extends GtkWindow
           >('gtk_accessible_get_next_accessible_sibling')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
-    return (_gtkAccessibleGetNextAccessibleSibling(this.handle)) == ffi.nullptr
-        ? null
-        : GtkAccessible.fromPointer(
-            _gtkAccessibleGetNextAccessibleSibling(this.handle),
-          );
+    final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
   }
 
   /// Queries a platform state, such as focus.
@@ -905,9 +891,8 @@ class AdwWindow extends GtkWindow
           >('gtk_native_get_renderer')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderer? getRenderer() {
-    return (_gtkNativeGetRenderer(this.handle)) == ffi.nullptr
-        ? null
-        : GskRenderer.fromPointer(_gtkNativeGetRenderer(this.handle));
+    final _ret = _gtkNativeGetRenderer(this.handle);
+    return (_ret) == ffi.nullptr ? null : GskRenderer.fromPointer(_ret);
   }
 
   /// Returns the surface of this `GtkNative`.
@@ -919,9 +904,8 @@ class AdwWindow extends GtkWindow
           >('gtk_native_get_surface')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkSurface? getSurface() {
-    return (_gtkNativeGetSurface(this.handle)) == ffi.nullptr
-        ? null
-        : GdkSurface.fromPointer(_gtkNativeGetSurface(this.handle));
+    final _ret = _gtkNativeGetSurface(this.handle);
+    return (_ret) == ffi.nullptr ? null : GdkSurface.fromPointer(_ret);
   }
 
   /// Retrieves the surface transform of @self.
@@ -1005,9 +989,8 @@ class AdwWindow extends GtkWindow
           >('gtk_root_get_focus')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkWidget? getFocus() {
-    return (_gtkRootGetFocus(this.handle)) == ffi.nullptr
-        ? null
-        : GtkWidget.fromPointer(_gtkRootGetFocus(this.handle));
+    final _ret = _gtkRootGetFocus(this.handle);
+    return (_ret) == ffi.nullptr ? null : GtkWidget.fromPointer(_ret);
   }
 
   /// If @focus is not the current focus widget, and is focusable, sets

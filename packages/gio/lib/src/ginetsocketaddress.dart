@@ -80,10 +80,11 @@ class GInetSocketAddress extends GSocketAddress implements GSocketConnectable {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>, int)>();
   factory GInetSocketAddress.fromString(String address, int port) {
     return withNativeString(address, (nativeAddress) {
-      return GInetSocketAddress.fromPointer(
-        _gInetSocketAddressNewFromString(nativeAddress.cast<Utf8>(), port),
-        owned: true,
+      final _ret = _gInetSocketAddressNewFromString(
+        nativeAddress.cast<Utf8>(),
+        port,
       );
+      return GInetSocketAddress.fromPointer(_ret, owned: true);
     });
   }
 
