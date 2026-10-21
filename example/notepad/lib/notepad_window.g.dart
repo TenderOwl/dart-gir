@@ -37,7 +37,7 @@ const String _$NotepadWindowTemplate_xml = '''
               <child type="end">
                 <object class="GtkMenuButton" id="menu_button">
                   <property name="icon-name">open-menu-symbolic</property>
-                  <property name="menu-model">main-menu</property>
+                  <property name="menu-model">primary_menu</property>
                 </object>
               </child>
               <child type="end">
@@ -72,33 +72,24 @@ const String _$NotepadWindowTemplate_xml = '''
     </property>
   </template>
 
-  <menu id="main-menu">
-    <submenu>
-      <attribute name="label" translatable="yes">_Filter</attribute>
+  <menu id="primary_menu">
+    <section>
       <item>
-        <attribute name="label" translatable="yes">_All</attribute>
-        <attribute name="action">win.filter</attribute>
-        <attribute name="target">All</attribute>
+        <attribute name="label" translatable="yes">_Save as...</attribute>
+        <attribute name="action">win.save-as</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Open</attribute>
-        <attribute name="action">win.filter</attribute>
-        <attribute name="target">Open</attribute>
+        <attribute
+                    name="label"
+                    translatable="yes"
+                >_Keyboard Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Done</attribute>
-        <attribute name="action">win.filter</attribute>
-        <attribute name="target">Done</attribute>
+        <attribute name="label" translatable="yes">_About {{name}}</attribute>
+        <attribute name="action">app.about</attribute>
       </item>
-    </submenu>
-    <item>
-      <attribute name="label" translatable="yes">_Remove Done Tasks</attribute>
-      <attribute name="action">win.remove-done-tasks</attribute>
-    </item>
-    <item>
-      <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-      <attribute name="action">win.show-help-overlay</attribute>
-    </item>
+    </section>
   </menu>
 
 </interface>

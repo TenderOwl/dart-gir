@@ -22,6 +22,7 @@ class NotepadApp {
     createAction("show-toast", onShowToast, null, GVariantType('s'));
 
     app.setAccelsForAction('win.open', ['<Ctrl>o']);
+    app.setAccelsForAction('win.save-as', ['<Ctrl><Shift>s']);
   }
 
   void onActivate() {

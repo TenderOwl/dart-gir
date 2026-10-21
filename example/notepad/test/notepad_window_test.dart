@@ -1,4 +1,5 @@
-// The text viewer's contract: opening a file puts its text on screen.
+// The text viewer's contract: opening a file puts its text on screen,
+// saving a file puts it back.
 //
 // The window loads the file the way the GNOME text-viewer tutorial
 // does — `g_file_load_contents_async` hands over a `GAsyncResult`, and
@@ -6,13 +7,21 @@
 // arrive as a `Uint8List`: the binding copies them out of the buffer
 // GLib allocated and releases that buffer.
 //
-// The suite exercises the loader against a plain `GtkTextView` rather
-// than against the window. GTK allows exactly one template per native
-// class, and both this example and `example/todo` template an
-// `AdwApplicationWindow` — so a second templated window in the same
-// process (the test runner keeps every suite in one process) cannot
-// install its template, and GTK's own assertion tears the heap down.
-// The window itself is a three-line wrapper around [loadFileInto].
+// Saving goes through the `GBytes` variant of the call:
+// `g_file_replace_contents_bytes_async` takes a `GBytes`, and the
+// binding builds one straight from a `Uint8List` — `GBytes(utf8.encode(text))`
+// — so the user never handles a native pointer. The `GBytes` variant is
+// the one that works asynchronously: GIO keeps a reference to the bytes
+// "for the duration of the call", while the raw-buffer variant would
+// need the buffer to stay valid until the callback fires.
+//
+// The suite exercises the loader and the saver against a plain
+// `GtkTextView` rather than against the window. GTK allows exactly one
+// template per native class, and both this example and `example/todo`
+// template an `AdwApplicationWindow` — so a second templated window in
+// the same process (the test runner keeps every suite in one process)
+// cannot install its template, and GTK's own assertion tears the heap
+// down. The window itself is a thin wrapper around the same calls.
 //
 // GTK needs a display, so the suite skips itself when there is none.
 // CI runs headless; run it locally under `xvfb-run`:
@@ -20,12 +29,12 @@
 //   xvfb-run -a dart test example/notepad
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:gio/gio.dart';
 import 'package:glib/glib.dart';
 import 'package:gtk4/gtk4.dart';
-import 'package:notepad/file_loader.dart';
 import 'package:notepad/notepad.dart';
 import 'package:test/test.dart';
 
@@ -39,23 +48,19 @@ final bool _hasDisplay =
 String _bufferText(GtkTextBuffer buffer) =>
     buffer.getText(buffer.getStartIter(), buffer.getEndIter(), true);
 
-/// Loads [file] into [buffer] and drives the default main context until
-/// the load finishes.
+/// Runs [action] and drives a main context of its own until it is done.
 ///
-/// The load dispatches its callback on the *thread-default* main
-/// context, so the suite pushes a context of its own and iterates that
-/// one. The default context is shared by every suite in the process —
-/// the test runner keeps them all in one — and two suites iterating it
-/// at the same time is a data race inside GLib.
-Future<void> _loadInto(GFile file, GtkTextBuffer buffer) async {
+/// The callbacks are dispatched on the *thread-default* main context, so
+/// the suite pushes a context of its own and iterates that one. The
+/// default context is shared by every suite in the process — the test
+/// runner keeps them all in one — and two suites iterating it at the
+/// same time is a data race inside GLib.
+Future<void> _withOwnContext(Future<void> Function() action) async {
   final context = GMainContext();
   context.pushThreadDefault();
   final completer = Completer<void>();
   unawaited(
-    loadFileInto(
-      file,
-      buffer,
-    ).then(completer.complete, onError: completer.completeError),
+    action().then(completer.complete, onError: completer.completeError),
   );
   try {
     final deadline = DateTime.now().add(const Duration(seconds: 10));
@@ -69,6 +74,43 @@ Future<void> _loadInto(GFile file, GtkTextBuffer buffer) async {
   } finally {
     context.popThreadDefault();
   }
+}
+
+/// Loads [file] into [buffer] the way the window does.
+Future<void> _loadInto(GFile file, GtkTextBuffer buffer) {
+  final completer = Completer<void>();
+  file.loadContentsAsyncCallback(null, (source, result) {
+    final (ok, contents, _) = source!
+        .cast<GFile>(GFile.fromPointer)
+        .loadContentsFinish(result);
+    if (!ok) {
+      completer.completeError(StateError('the file did not load'));
+      return;
+    }
+    buffer.setText(utf8.decode(contents, allowMalformed: true), -1);
+    completer.complete();
+  });
+  return completer.future;
+}
+
+/// Saves [text] into [file] the way the window does.
+Future<void> _saveFrom(GFile file, String text) {
+  final completer = Completer<void>();
+  final bytes = GBytes(utf8.encode(text));
+  file.replaceContentsBytesAsyncCallback(bytes, null, false, .none, null, (
+    source,
+    result,
+  ) {
+    final (ok, _) = source!
+        .cast<GFile>(GFile.fromPointer)
+        .replaceContentsFinish(result);
+    if (!ok) {
+      completer.completeError(StateError('the file did not save'));
+      return;
+    }
+    completer.complete();
+  });
+  return completer.future;
 }
 
 void main() {
@@ -100,7 +142,9 @@ void main() {
       final view = GtkTextView();
       final buffer = view.getBuffer();
 
-      await _loadInto(GFile.newForPath(file.path), buffer);
+      await _withOwnContext(
+        () => _loadInto(GFile.newForPath(file.path), buffer),
+      );
 
       expect(_bufferText(buffer), 'hello notepad');
     }, skip: skip);
@@ -113,9 +157,55 @@ void main() {
       final view = GtkTextView();
       final buffer = view.getBuffer();
 
-      await _loadInto(GFile.newForPath(binary.path), buffer);
+      await _withOwnContext(
+        () => _loadInto(GFile.newForPath(binary.path), buffer),
+      );
 
       expect(_bufferText(buffer), contains('hi'));
+    }, skip: skip);
+  });
+
+  group('the file saver', () {
+    final skip = _hasDisplay ? null : 'GTK needs a display';
+
+    late Directory dir;
+    late File file;
+
+    setUpAll(() {
+      if (!_hasDisplay) return;
+      init();
+    });
+
+    setUp(() {
+      dir = Directory.systemTemp.createTempSync('gir_notepad_save');
+      file = File('${dir.path}/saved.txt');
+    });
+
+    tearDown(() => dir.deleteSync(recursive: true));
+
+    test('saving writes the buffer contents to the file', () async {
+      final view = GtkTextView();
+      final buffer = view.getBuffer();
+      buffer.setText('saved by the notepad', -1);
+
+      await _withOwnContext(
+        () => _saveFrom(GFile.newForPath(file.path), _bufferText(buffer)),
+      );
+
+      expect(file.readAsStringSync(), 'saved by the notepad');
+    }, skip: skip);
+
+    test('a `GBytes` built from a `Uint8List` carries the bytes', () async {
+      // The binding builds the `GBytes` straight from the list — the
+      // user never sees a native pointer.
+      final bytes = GBytes(utf8.encode('hello notepad'));
+      expect(bytes.getSize(), 'hello notepad'.length);
+
+      await _withOwnContext(
+        () => _saveFrom(GFile.newForPath(file.path), 'hello notepad'),
+      );
+
+      expect(file.readAsStringSync(), 'hello notepad');
     }, skip: skip);
   });
 }

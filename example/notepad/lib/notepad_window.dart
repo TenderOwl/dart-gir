@@ -18,6 +18,10 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     openAction.onActivate(openFileDialog);
     addAction(openAction);
 
+    final saveAction = GSimpleAction('save-as');
+    saveAction.onActivate(saveFileDialog);
+    addAction(saveAction);
+
     final buffer = mainTextView.getBuffer();
     buffer.onNotify((params) {
       if (params.getName() == "cursor-position") {
@@ -83,5 +87,59 @@ class NotepadWindow extends AdwApplicationWindow with _$NotepadWindowTemplate {
     final line = iter.getLine() + 1;
     final column = iter.getLineOffset() + 1;
     cursorPos.setLabel('Ln $line, Col $column');
+  }
+
+  void saveFileDialog(GVariant? parameter) {
+    final native = GtkFileDialog();
+    native.saveCallback(this, null, onSaveResponse);
+  }
+
+  void onSaveResponse(GObject? source, GAsyncResult result) {
+    final dialog = source?.cast<GtkFileDialog>(GtkFileDialog.fromPointer);
+    final file = dialog?.saveFinish(result);
+    if (file != null) {
+      saveFile(file);
+    }
+  }
+
+  void saveFile(GFile file) {
+    final buffer = mainTextView.getBuffer();
+
+    // Retrieve the iterator at the start of the buffer
+    final start = buffer.getStartIter();
+    // Retrieve the iterator at the end of the buffer
+    final end = buffer.getEndIter();
+    // Retrieve all the visible text between the two bounds
+    final text = buffer.getText(start, end, false);
+
+    // If there is nothing to save, return early
+    if (text.isEmpty) return;
+
+    final bytes = GBytes(utf8.encode(text));
+    file.replaceContentsBytesAsyncCallback(
+      bytes,
+      null,
+      false,
+      .none,
+      null,
+      saveFileComplete,
+    );
+  }
+
+  void saveFileComplete(GObject? source, GAsyncResult result) {
+    final file = source?.cast<GFile>(GFile.fromPointer);
+    final res = file?.replaceContentsFinish(result);
+    final info = file?.queryInfo('standard::display-name', .none);
+
+    String? displayName;
+    if (info != null) {
+      displayName = info.getAttributeString("standard::display-name");
+    } else {
+      displayName = file?.getBasename();
+    }
+
+    if (res == null) {
+      print('Unable to save $displayName');
+    }
   }
 }
