@@ -61,7 +61,18 @@ class GtkGridView extends GtkListBase
     final cached = cachedObject<GtkGridView>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -117,14 +128,28 @@ class GtkGridView extends GtkListBase
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkGridView([GtkSelectionModel? model, GtkListItemFactory? factory_])
-    : this.rawFromPointer(
+  factory GtkGridView([
+    GtkSelectionModel? model,
+    GtkListItemFactory? factory_,
+  ]) {
+    if (model != null && model.owned) {
+      gobjectFinalizer.detach(model);
+      model.owned = false;
+    }
+    if (factory_ != null && factory_.owned) {
+      gobjectFinalizer.detach(factory_);
+      factory_.owned = false;
+    }
+    return GtkGridView.fromPointer(
+      gObjectRefSink(
         _gtkGridViewNew(
           model?.handle ?? ffi.nullptr,
           factory_?.handle ?? ffi.nullptr,
         ),
-        owned: true,
-      );
+      ),
+      owned: true,
+    );
+  }
 
   /// Returns whether rows can be selected by dragging with the mouse.
   static final _gtkGridViewGetEnableRubberband =
@@ -227,6 +252,10 @@ class GtkGridView extends GtkListBase
             )
           >();
   void scrollTo(int pos, GtkListScrollFlags flags, [GtkScrollInfo? scroll]) {
+    if (scroll != null && scroll.owned) {
+      GtkScrollInfo.scrollInfoFinalizer.detach(scroll);
+      scroll.owned = false;
+    }
     _gtkGridViewScrollTo(
       this.handle,
       pos,
@@ -585,7 +614,9 @@ class GtkGridView extends GtkListBase
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
     final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -608,7 +639,10 @@ class GtkGridView extends GtkListBase
           >('gtk_accessible_get_at_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkATContext getAtContext() {
-    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+    return GtkATContext.fromPointer(
+      _gtkAccessibleGetAtContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Queries the coordinates and dimensions of this accessible
@@ -669,7 +703,9 @@ class GtkGridView extends GtkListBase
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
     final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -682,7 +718,9 @@ class GtkGridView extends GtkListBase
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
     final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Queries a platform state, such as focus.

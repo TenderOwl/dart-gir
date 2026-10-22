@@ -160,6 +160,53 @@ dispose the model they wrap, so the model has to outlive the
 selection. See [docs/dart-gobjects.md](docs/dart-gobjects.md) for the
 whole story, and `example/todo` for the worked example.
 
+## Ownership comes from the GIR
+
+The GIR says who owns a reference — `transfer-ownership="full"` on a
+return value or a parameter. The bindings follow it exactly, in both
+directions:
+
+- a `transfer="full"` **return** is claimed by the wrapper and released
+  by a `NativeFinalizer` when the wrapper is collected;
+- a `transfer="full"` **parameter** is handed to the callee: the call
+  site detaches the finalizer and clears the `owned` flag;
+- a boxed type with a destructor (`free`/`unref`/`destroy`/`release`/
+  `close`) gets a `NativeFinalizer` of its own;
+- the public `bool owned` field says whether the wrapper still holds the
+  reference.
+
+**Rule: the ownership is in the GIR, not in the wrapper's shape.** A
+callable that hands a reference to the callee must not keep a claim on
+it, and a callable that receives one must release it exactly once. The
+`owned` flag is the single source of that truth: `true` while the
+wrapper holds the reference, `false` once it has been released or handed
+over. Never release a reference behind the wrapper's back — call
+`unref()`/`free()`, which detaches the finalizer first.
+
+**Rule: a callback that outlives its call needs a permanent trampoline.**
+A `GDestroyNotify` next to a byte buffer is called when the *callee* is
+done with the buffer — after the call that passed it returned. A scoped
+`NativeCallable` would be closed before the notify fires, and the Dart
+VM aborts the isolate with *"Callback invoked after it has been
+deleted"*. The generator emits a permanent `ffi.Pointer.fromFunction`
+trampoline over a static function, with the user's callback parked in
+a per-callable registry until the notify arrives.
+
+**Rule: a byte buffer the callee keeps carries its lifetime on the
+wrapper.** A byte array that stays a raw pointer — because the callable
+is asynchronous or because the callee takes the buffer over — gets a
+doc comment that states the contract and names the `GBytes` sibling
+when the library declares one. The note belongs on the **public**
+wrapper: a note on the private native binding never reaches the API
+reference.
+
+The rules are written down in [docs/emission.md](docs/emission.md) and
+[docs/subclassing.md](docs/subclassing.md), and pinned by the
+*Ownership transfer* and *Byte arrays* groups in
+`generator/test/emitter_test.dart` plus the runtime tests in
+`packages/{gobject,glib,gio,gtk4}/test/ownership_test.dart` and
+`packages/gio/test/byte_array_test.dart`.
+
 ## Generated classes are extendable
 
 Generated GObject classes are emitted as `class`, **not**

@@ -5,7 +5,7 @@ part of '../graphene.dart';
 ///
 /// The contents of the `graphene_ray_t` structure are private, and should not
 /// be modified directly.
-final class GrapheneRay {
+final class GrapheneRay implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -15,14 +15,46 @@ final class GrapheneRay {
   }) {
     final cached = cachedObject<GrapheneRay>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseRay(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          rayFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneRay.rawFromPointer(handle, owned: owned);
   }
-  GrapheneRay.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneRay.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      rayFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneRay` with `graphene_ray_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final rayFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_ray_free'),
+  );
+
+  static final _releaseRay =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_ray_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -43,7 +75,7 @@ final class GrapheneRay {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_ray_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneRay.alloc() : this.rawFromPointer(_grapheneRayAlloc());
+  GrapheneRay.alloc() : this.rawFromPointer(_grapheneRayAlloc(), owned: true);
 
   /// Checks whether the two given #graphene_ray_t are equal.
   static final _grapheneRayEqual =
@@ -66,6 +98,11 @@ final class GrapheneRay {
           >('graphene_ray_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      rayFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneRayFree(this.handle);
   }
 

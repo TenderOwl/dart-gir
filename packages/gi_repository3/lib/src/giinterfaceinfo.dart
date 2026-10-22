@@ -71,7 +71,9 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
         this.handle,
         nativeName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GIFunctionInfo.fromPointer(_ret, owned: true);
     });
   }
 
@@ -99,7 +101,9 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
         this.handle,
         nativeName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GISignalInfo.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GISignalInfo.fromPointer(_ret, owned: true);
     });
   }
 
@@ -128,7 +132,9 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
         this.handle,
         nativeName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GIVFuncInfo.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GIVFuncInfo.fromPointer(_ret, owned: true);
     });
   }
 
@@ -145,6 +151,7 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
   GIConstantInfo getConstant(int n) {
     return GIConstantInfo.fromPointer(
       _giInterfaceInfoGetConstant(this.handle, n),
+      owned: true,
     );
   }
 
@@ -158,7 +165,9 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIStructInfo? getIfaceStruct() {
     final _ret = _giInterfaceInfoGetIfaceStruct(this.handle);
-    return (_ret) == ffi.nullptr ? null : GIStructInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIStructInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain an interface type method at index @n.
@@ -174,6 +183,7 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
   GIFunctionInfo getMethod(int n) {
     return GIFunctionInfo.fromPointer(
       _giInterfaceInfoGetMethod(this.handle, n),
+      owned: true,
     );
   }
 
@@ -253,6 +263,7 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
   GIBaseInfo getPrerequisite(int n) {
     return GIBaseInfo.fromPointer(
       _giInterfaceInfoGetPrerequisite(this.handle, n),
+      owned: true,
     );
   }
 
@@ -269,6 +280,7 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
   GIPropertyInfo getProperty(int n) {
     return GIPropertyInfo.fromPointer(
       _giInterfaceInfoGetProperty(this.handle, n),
+      owned: true,
     );
   }
 
@@ -283,7 +295,10 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GISignalInfo getSignal(int n) {
-    return GISignalInfo.fromPointer(_giInterfaceInfoGetSignal(this.handle, n));
+    return GISignalInfo.fromPointer(
+      _giInterfaceInfoGetSignal(this.handle, n),
+      owned: true,
+    );
   }
 
   /// Obtain an interface type virtual function at index @n.
@@ -297,6 +312,9 @@ class GIInterfaceInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIVFuncInfo getVfunc(int n) {
-    return GIVFuncInfo.fromPointer(_giInterfaceInfoGetVfunc(this.handle, n));
+    return GIVFuncInfo.fromPointer(
+      _giInterfaceInfoGetVfunc(this.handle, n),
+      owned: true,
+    );
   }
 }

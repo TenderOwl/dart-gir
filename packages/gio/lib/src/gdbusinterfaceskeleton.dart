@@ -14,7 +14,18 @@ class GDBusInterfaceSkeleton extends GObject {
     final cached = cachedObject<GDBusInterfaceSkeleton>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -132,6 +143,7 @@ class GDBusInterfaceSkeleton extends GObject {
   GList getConnections() {
     return GList.fromPointer(
       _gDbusInterfaceSkeletonGetConnections(this.handle),
+      owned: true,
     );
   }
 
@@ -188,6 +200,7 @@ class GDBusInterfaceSkeleton extends GObject {
   GVariant getProperties() {
     return GVariant.fromPointer(
       _gDbusInterfaceSkeletonGetProperties(this.handle),
+      owned: true,
     );
   }
 
@@ -351,7 +364,9 @@ class GDBusInterfaceSkeleton extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusObject? dupObject() {
     final _ret = _gDbusInterfaceDupObject(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDBusObject.fromPointer(_ret, owned: true);
   }
 
   /// Sets the #GDBusObject for @interface_ to @object.

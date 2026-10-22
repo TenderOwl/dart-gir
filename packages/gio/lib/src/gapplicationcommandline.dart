@@ -181,7 +181,18 @@ class GApplicationCommandLine extends GObject {
     final cached = cachedObject<GApplicationCommandLine>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -241,6 +252,7 @@ class GApplicationCommandLine extends GObject {
           this.handle,
           nativeArg.cast<Utf8>(),
         ),
+        owned: true,
       );
     });
   }
@@ -354,7 +366,9 @@ class GApplicationCommandLine extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getPlatformData() {
     final _ret = _gApplicationCommandLineGetPlatformData(this.handle);
-    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_ret, owned: true);
   }
 
   /// Gets the stdin of the invoking process.
@@ -376,7 +390,9 @@ class GApplicationCommandLine extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GInputStream? getStdin() {
     final _ret = _gApplicationCommandLineGetStdin(this.handle);
-    return (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GInputStream.fromPointer(_ret, owned: true);
   }
 
   /// Gets the value of a particular environment variable of the command

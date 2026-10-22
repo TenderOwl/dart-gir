@@ -86,6 +86,7 @@ class GtkSnapshot extends GdkSnapshot {
   CairoContext appendCairo(GrapheneRect bounds) {
     return CairoContext.fromPointer(
       _gtkSnapshotAppendCairo(this.handle, bounds.handle),
+      owned: true,
     );
   }
 
@@ -928,6 +929,10 @@ class GtkSnapshot extends GdkSnapshot {
             )
           >();
   void pushGlShader(GskGLShader shader, GrapheneRect bounds, GBytes takeArgs) {
+    if (takeArgs.owned) {
+      GBytes.bytesFinalizer.detach(takeArgs);
+      takeArgs.owned = false;
+    }
     _gtkSnapshotPushGlShader(
       this.handle,
       shader.handle,
@@ -1398,7 +1403,9 @@ class GtkSnapshot extends GdkSnapshot {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderNode? toNode() {
     final _ret = _gtkSnapshotToNode(this.handle);
-    return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GskRenderNode.fromPointer(_ret, owned: true);
   }
 
   /// Returns a paintable encapsulating the render node
@@ -1427,7 +1434,9 @@ class GtkSnapshot extends GdkSnapshot {
       this.handle,
       size?.handle ?? ffi.nullptr,
     );
-    return (_ret) == ffi.nullptr ? null : GdkPaintable.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPaintable.fromPointer(_ret, owned: true);
   }
 
   /// Transforms @snapshot's coordinate system with the given @transform.

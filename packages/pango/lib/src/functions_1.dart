@@ -316,7 +316,7 @@ final _pangoReorderItems =
         >('pango_reorder_items')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GList reorderItems(GList items) {
-  return GList.fromPointer(_pangoReorderItems(items.handle));
+  return GList.fromPointer(_pangoReorderItems(items.handle), owned: true);
 }
 
 /// Convert the characters in @text into glyphs.

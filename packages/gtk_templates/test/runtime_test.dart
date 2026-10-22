@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:gobject/gobject.dart';
 import 'package:gtk_templates/gtk_templates.dart';
@@ -298,19 +299,32 @@ void main() {
   });
 
   group('claimTemplateType', () {
+    // The registry lives in the type system's `qdata` — native memory
+    // every isolate of the process shares — so the test needs *real*
+    // GTypes: `g_type_set_qdata()` rejects an id that names no type.
+    //
+    // The classes' own `GType` accessors are the way to get one: they
+    // call the type's `get_type` function, which registers the type
+    // (GLib registers a derived type lazily) and hands back its id.
+    // A derived type's id is the address of its type node — only the
+    // fundamental types have the small ids.
+    final gObject = GObject.GType;
+    final gInitiallyUnowned = GInitiallyUnowned.GType;
+    final gTypeModule = GTypeModule.GType;
+
     test('the first owner claims the type', () {
-      expect(claimTemplateType(1001, 'First'), isTrue);
+      expect(claimTemplateType(gObject, 'First'), isTrue);
     });
 
     test('the same owner claiming it again is a no-op', () {
-      expect(claimTemplateType(1002, 'Same'), isTrue);
-      expect(claimTemplateType(1002, 'Same'), isFalse);
+      expect(claimTemplateType(gInitiallyUnowned, 'Same'), isTrue);
+      expect(claimTemplateType(gInitiallyUnowned, 'Same'), isFalse);
     });
 
     test('a second owner is rejected', () {
-      expect(claimTemplateType(1003, 'Owner'), isTrue);
+      expect(claimTemplateType(gTypeModule, 'Owner'), isTrue);
       expect(
-        () => claimTemplateType(1003, 'Other'),
+        () => claimTemplateType(gTypeModule, 'Other'),
         throwsA(
           isA<StateError>().having(
             (e) => e.message,
@@ -319,6 +333,42 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('the claim names the owner that holds it', () {
+      expect(claimTemplateType(gTypeModule, 'Owner'), isFalse);
+      expect(
+        () => claimTemplateType(gTypeModule, 'Other'),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            contains('installed by `Owner`'),
+          ),
+        ),
+      );
+    });
+
+    test('the claim is visible from another isolate', () async {
+      // The registry lives in the type system's `qdata` — native memory
+      // the process shares — so a second isolate of the same process
+      // sees the claim. A Dart `static` would be per-isolate, and the
+      // second isolate would install a second template on the shared
+      // native class, which GTK refuses.
+      final type = GBinding.GType;
+      expect(claimTemplateType(type, 'IsolateOwner'), isTrue);
+
+      final message = await Isolate.run(() {
+        try {
+          claimTemplateType(type, 'OtherIsolate');
+          return null;
+        } on StateError catch (e) {
+          return e.message;
+        }
+      });
+
+      expect(message, contains('already carries a template'));
+      expect(message, contains('installed by `IsolateOwner`'));
     });
   });
 }

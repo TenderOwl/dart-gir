@@ -134,7 +134,7 @@ part of '../glib.dart';
 /// }
 /// g_autoptr(GBytes) bytes = g_bytes_new_take (g_steal_pointer (&data), data_len);
 /// ```
-final class GKeyFile {
+final class GKeyFile implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -144,14 +144,45 @@ final class GKeyFile {
   }) {
     final cached = cachedObject<GKeyFile>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseKeyFile(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          keyFileFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GKeyFile.rawFromPointer(handle, owned: owned);
   }
-  GKeyFile.rawFromPointer(this.handle, {bool owned = false}) {
+  GKeyFile.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      keyFileFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GKeyFile` with `g_key_file_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final keyFileFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_key_file_unref',
+    ),
+  );
+
+  static final _releaseKeyFile =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_key_file_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -175,7 +206,7 @@ final class GKeyFile {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_key_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GKeyFile() : this.rawFromPointer(_gKeyFileNew());
+  GKeyFile() : this.rawFromPointer(_gKeyFileNew(), owned: true);
 
   /// Returns the value associated with @key under @group_name as a
   /// boolean.
@@ -1832,6 +1863,11 @@ final class GKeyFile {
         'g_key_file_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      keyFileFinalizer.detach(this);
+      owned = false;
+    }
     _gKeyFileUnref(this.handle);
   }
 

@@ -69,7 +69,18 @@ class GtkRecentManager extends GObject {
     final cached = cachedObject<GtkRecentManager>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -196,7 +207,10 @@ class GtkRecentManager extends GObject {
           >('gtk_recent_manager_get_items')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList getItems() {
-    return GList.fromPointer(_gtkRecentManagerGetItems(this.handle));
+    return GList.fromPointer(
+      _gtkRecentManagerGetItems(this.handle),
+      owned: true,
+    );
   }
 
   /// Checks whether there is a recently used resource registered
@@ -247,7 +261,9 @@ class GtkRecentManager extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return (_ret) == ffi.nullptr ? null : GtkRecentInfo.fromPointer(_ret);
+        return (_ret) == ffi.nullptr
+            ? null
+            : GtkRecentInfo.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }

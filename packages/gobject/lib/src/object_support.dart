@@ -12,6 +12,11 @@ final _gObjectRefSink =
           >
         >('g_object_ref_sink')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
+final _gObjectIsFloating =
+    gobjectLookup<
+          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
+        >('g_object_is_floating')
+        .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
 /// Decrements the reference count of a GObject instance.
 void gObjectUnref(ffi.Pointer<ffi.Void> object) => _gObjectUnref(object);
@@ -19,6 +24,15 @@ void gObjectUnref(ffi.Pointer<ffi.Void> object) => _gObjectUnref(object);
 /// Sinks the floating reference of [object], returning the same pointer.
 ffi.Pointer<ffi.Void> gObjectRefSink(ffi.Pointer<ffi.Void> object) =>
     _gObjectRefSink(object);
+
+/// Whether [object] still carries a floating reference.
+///
+/// A freshly created GObject starts out floating: nobody owns it until a
+/// parent takes it. A wrapper that owns such an object has to sink the
+/// reference — otherwise the parent that takes it would own the very
+/// reference the wrapper's finalizer releases.
+bool gObjectIsFloating(ffi.Pointer<ffi.Void> object) =>
+    _gObjectIsFloating(object) != 0;
 
 /// Finalizer releasing owned GObject instances with [gObjectUnref].
 final gobjectFinalizer = ffi.NativeFinalizer(

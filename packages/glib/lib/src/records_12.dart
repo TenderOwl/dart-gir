@@ -51,10 +51,11 @@ final class GIOChannel {
     }
     return GIOChannel.rawFromPointer(handle, owned: owned);
   }
-  GIOChannel.rawFromPointer(this.handle, {bool owned = false}) {
+  GIOChannel.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -103,7 +104,7 @@ final class GIOChannel {
           if (_error.value != ffi.nullptr) {
             throw GlibException.fromError(_error.value);
           }
-          return GIOChannel.fromPointer(_ret);
+          return GIOChannel.fromPointer(_ret, owned: true);
         } finally {
           calloc.free(_error);
         }
@@ -137,7 +138,8 @@ final class GIOChannel {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int32)>>(
         'g_io_channel_unix_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  GIOChannel.unixNew(int fd) : this.rawFromPointer(_gIoChannelUnixNew(fd));
+  GIOChannel.unixNew(int fd)
+    : this.rawFromPointer(_gIoChannelUnixNew(fd), owned: true);
 
   /// Close an IO channel. Any pending data to be written will be
   /// flushed, ignoring errors. The channel will not be freed until the
@@ -459,7 +461,7 @@ final class GIOChannel {
           >('g_io_channel_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIOChannel ref() {
-    return GIOChannel.fromPointer(_gIoChannelRef(this.handle));
+    return GIOChannel.fromPointer(_gIoChannelRef(this.handle), owned: true);
   }
 
   /// Sets the current position in the #GIOChannel, similar to the standard

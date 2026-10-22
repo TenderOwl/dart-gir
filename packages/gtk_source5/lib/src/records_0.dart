@@ -15,10 +15,11 @@ final class GtkSourceAnnotationClass {
     }
     return GtkSourceAnnotationClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceAnnotationClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceAnnotationClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -54,11 +55,12 @@ final class GtkSourceAnnotationProviderClass {
   }
   GtkSourceAnnotationProviderClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -87,10 +89,11 @@ final class GtkSourceAnnotationsClass {
     }
     return GtkSourceAnnotationsClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceAnnotationsClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceAnnotationsClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -119,10 +122,11 @@ final class GtkSourceBufferClass {
     }
     return GtkSourceBufferClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceBufferClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceBufferClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -153,11 +157,12 @@ final class GtkSourceCompletionCellClass {
   }
   GtkSourceCompletionCellClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -186,10 +191,11 @@ final class GtkSourceCompletionClass {
     }
     return GtkSourceCompletionClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceCompletionClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceCompletionClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -222,11 +228,12 @@ final class GtkSourceCompletionContextClass {
   }
   GtkSourceCompletionContextClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -262,11 +269,12 @@ final class GtkSourceCompletionProposalInterface {
   }
   GtkSourceCompletionProposalInterface.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -302,11 +310,12 @@ final class GtkSourceCompletionProviderInterface {
   }
   GtkSourceCompletionProviderInterface.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -342,11 +351,12 @@ final class GtkSourceCompletionSnippetsClass {
   }
   GtkSourceCompletionSnippetsClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -377,11 +387,12 @@ final class GtkSourceCompletionWordsClass {
   }
   GtkSourceCompletionWordsClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

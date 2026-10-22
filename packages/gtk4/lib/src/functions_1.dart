@@ -39,6 +39,7 @@ GParamSpec paramSpecExpression(
             nativeBlurb.cast<Utf8>(),
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -82,6 +83,7 @@ GtkPageSetup printRunPageSetupDialog(
       pageSetup?.handle ?? ffi.nullptr,
       settings.handle,
     ),
+    owned: true,
   );
 }
 
@@ -1039,6 +1041,7 @@ GdkContentProvider treeCreateRowDragContent(
 ) {
   return GdkContentProvider.fromPointer(
     _gtkTreeCreateRowDragContent(treeModel.handle, path.handle),
+    owned: true,
   );
 }
 
@@ -1094,7 +1097,9 @@ final _gtkValueDupExpression =
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GtkExpression? valueDupExpression(GValue value) {
   final _ret = _gtkValueDupExpression(value.handle);
-  return (_ret) == ffi.nullptr ? null : GtkExpression.fromPointer(_ret);
+  return (_ret) == ffi.nullptr
+      ? null
+      : GtkExpression.fromPointer(_ret, owned: true);
 }
 
 /// Retrieves the `GtkExpression` stored inside the given `value`.

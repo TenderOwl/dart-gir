@@ -26,7 +26,7 @@ part of '../glib.dart';
 /// March 28th or March 29th.  Also note that adding 24 hours is not
 /// always the same as adding one day (since days containing daylight
 /// savings time transitions are either 23 or 25 hours in length).
-final class GDateTime {
+final class GDateTime implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -36,14 +36,45 @@ final class GDateTime {
   }) {
     final cached = cachedObject<GDateTime>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseDateTime(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          dateTimeFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GDateTime.rawFromPointer(handle, owned: owned);
   }
-  GDateTime.rawFromPointer(this.handle, {bool owned = false}) {
+  GDateTime.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      dateTimeFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GDateTime` with `g_date_time_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final dateTimeFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_date_time_unref',
+    ),
+  );
+
+  static final _releaseDateTime =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_date_time_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -120,6 +151,7 @@ final class GDateTime {
     double seconds,
   ) : this.rawFromPointer(
         _gDateTimeNew(tz.handle, year, month, day, hour, minute, seconds),
+        owned: true,
       );
 
   /// Creates a #GDateTime corresponding to the given
@@ -186,7 +218,7 @@ final class GDateTime {
         nativeText.cast<Utf8>(),
         defaultTz?.handle ?? ffi.nullptr,
       );
-      return GDateTime.fromPointer(_ret);
+      return GDateTime.fromPointer(_ret, owned: true);
     });
   }
 
@@ -210,7 +242,10 @@ final class GDateTime {
           >('g_date_time_new_from_timeval_local')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime.fromTimevalLocal(GTimeVal tv)
-    : this.rawFromPointer(_gDateTimeNewFromTimevalLocal(tv.handle));
+    : this.rawFromPointer(
+        _gDateTimeNewFromTimevalLocal(tv.handle),
+        owned: true,
+      );
 
   /// Creates a #GDateTime corresponding to the given #GTimeVal @tv in UTC.
   ///
@@ -230,7 +265,7 @@ final class GDateTime {
           >('g_date_time_new_from_timeval_utc')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime.fromTimevalUtc(GTimeVal tv)
-    : this.rawFromPointer(_gDateTimeNewFromTimevalUtc(tv.handle));
+    : this.rawFromPointer(_gDateTimeNewFromTimevalUtc(tv.handle), owned: true);
 
   /// Creates a #GDateTime corresponding to the given Unix time @t in the
   /// local time zone.
@@ -248,7 +283,7 @@ final class GDateTime {
         'g_date_time_new_from_unix_local',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GDateTime.fromUnixLocal(int t)
-    : this.rawFromPointer(_gDateTimeNewFromUnixLocal(t));
+    : this.rawFromPointer(_gDateTimeNewFromUnixLocal(t), owned: true);
 
   /// Creates a [struct@GLib.DateTime] corresponding to the given Unix time @t in the
   /// local time zone.
@@ -266,7 +301,7 @@ final class GDateTime {
         'g_date_time_new_from_unix_local_usec',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GDateTime.fromUnixLocalUsec(int usecs)
-    : this.rawFromPointer(_gDateTimeNewFromUnixLocalUsec(usecs));
+    : this.rawFromPointer(_gDateTimeNewFromUnixLocalUsec(usecs), owned: true);
 
   /// Creates a #GDateTime corresponding to the given Unix time @t in UTC.
   ///
@@ -283,7 +318,7 @@ final class GDateTime {
         'g_date_time_new_from_unix_utc',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GDateTime.fromUnixUtc(int t)
-    : this.rawFromPointer(_gDateTimeNewFromUnixUtc(t));
+    : this.rawFromPointer(_gDateTimeNewFromUnixUtc(t), owned: true);
 
   /// Creates a [struct@GLib.DateTime] corresponding to the given Unix time @t in UTC.
   ///
@@ -300,7 +335,7 @@ final class GDateTime {
         'g_date_time_new_from_unix_utc_usec',
       ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GDateTime.fromUnixUtcUsec(int usecs)
-    : this.rawFromPointer(_gDateTimeNewFromUnixUtcUsec(usecs));
+    : this.rawFromPointer(_gDateTimeNewFromUnixUtcUsec(usecs), owned: true);
 
   /// Creates a new #GDateTime corresponding to the given date and time in
   /// the local time zone.
@@ -332,6 +367,7 @@ final class GDateTime {
     double seconds,
   ) : this.rawFromPointer(
         _gDateTimeNewLocal(year, month, day, hour, minute, seconds),
+        owned: true,
       );
 
   /// Creates a #GDateTime corresponding to this exact instant in the given
@@ -351,7 +387,7 @@ final class GDateTime {
           >('g_date_time_new_now')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime.now(GTimeZone tz)
-    : this.rawFromPointer(_gDateTimeNewNow(tz.handle));
+    : this.rawFromPointer(_gDateTimeNewNow(tz.handle), owned: true);
 
   /// Creates a #GDateTime corresponding to this exact instant in the local
   /// time zone.
@@ -362,7 +398,8 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_date_time_new_now_local',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GDateTime.nowLocal() : this.rawFromPointer(_gDateTimeNewNowLocal());
+  GDateTime.nowLocal()
+    : this.rawFromPointer(_gDateTimeNewNowLocal(), owned: true);
 
   /// Creates a #GDateTime corresponding to this exact instant in UTC.
   ///
@@ -372,7 +409,7 @@ final class GDateTime {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_date_time_new_now_utc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GDateTime.nowUtc() : this.rawFromPointer(_gDateTimeNewNowUtc());
+  GDateTime.nowUtc() : this.rawFromPointer(_gDateTimeNewNowUtc(), owned: true);
 
   /// Creates a new #GDateTime corresponding to the given date and time in
   /// UTC.
@@ -404,6 +441,7 @@ final class GDateTime {
     double seconds,
   ) : this.rawFromPointer(
         _gDateTimeNewUtc(year, month, day, hour, minute, seconds),
+        owned: true,
       );
 
   /// Creates a copy of @datetime and adds the specified timespan to the copy.
@@ -418,7 +456,9 @@ final class GDateTime {
           >();
   GDateTime? add(int timespan) {
     final _ret = _gDateTimeAdd(this.handle, timespan);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime and adds the specified number of days to the
@@ -434,7 +474,9 @@ final class GDateTime {
           >();
   GDateTime? addDays(int days) {
     final _ret = _gDateTimeAddDays(this.handle, days);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a new #GDateTime adding the specified values to the current date and
@@ -481,7 +523,9 @@ final class GDateTime {
       minutes,
       seconds,
     );
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime and adds the specified number of hours.
@@ -497,7 +541,9 @@ final class GDateTime {
           >();
   GDateTime? addHours(int hours) {
     final _ret = _gDateTimeAddHours(this.handle, hours);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime adding the specified number of minutes.
@@ -513,7 +559,9 @@ final class GDateTime {
           >();
   GDateTime? addMinutes(int minutes) {
     final _ret = _gDateTimeAddMinutes(this.handle, minutes);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime and adds the specified number of months to the
@@ -534,7 +582,9 @@ final class GDateTime {
           >();
   GDateTime? addMonths(int months) {
     final _ret = _gDateTimeAddMonths(this.handle, months);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime and adds the specified number of seconds.
@@ -550,7 +600,9 @@ final class GDateTime {
           >();
   GDateTime? addSeconds(double seconds) {
     final _ret = _gDateTimeAddSeconds(this.handle, seconds);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime and adds the specified number of weeks to the
@@ -566,7 +618,9 @@ final class GDateTime {
           >();
   GDateTime? addWeeks(int weeks) {
     final _ret = _gDateTimeAddWeeks(this.handle, weeks);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Creates a copy of @datetime and adds the specified number of years to the
@@ -585,7 +639,9 @@ final class GDateTime {
           >();
   GDateTime? addYears(int years) {
     final _ret = _gDateTimeAddYears(this.handle, years);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// A comparison function for #GDateTimes that is suitable
@@ -1069,7 +1125,7 @@ final class GDateTime {
           >('g_date_time_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime ref() {
-    return GDateTime.fromPointer(_gDateTimeRef(this.handle));
+    return GDateTime.fromPointer(_gDateTimeRef(this.handle), owned: true);
   }
 
   /// Creates a new #GDateTime corresponding to the same instant in time as
@@ -1086,7 +1142,9 @@ final class GDateTime {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? toLocal() {
     final _ret = _gDateTimeToLocal(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Stores the instant in time that @datetime represents into @tv.
@@ -1138,7 +1196,9 @@ final class GDateTime {
           >();
   GDateTime? toTimezone(GTimeZone tz) {
     final _ret = _gDateTimeToTimezone(this.handle, tz.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Gives the Unix time corresponding to @datetime, rounding down to the
@@ -1180,7 +1240,9 @@ final class GDateTime {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? toUtc() {
     final _ret = _gDateTimeToUtc(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Atomically decrements the reference count of @datetime by one.
@@ -1192,6 +1254,11 @@ final class GDateTime {
         'g_date_time_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      dateTimeFinalizer.detach(this);
+      owned = false;
+    }
     _gDateTimeUnref(this.handle);
   }
 }

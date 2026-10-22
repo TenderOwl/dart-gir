@@ -32,7 +32,18 @@ class GResolver extends GObject {
     final cached = cachedObject<GResolver>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -334,7 +345,7 @@ class GResolver extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GList.fromPointer(_ret);
+        return GList.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -500,7 +511,7 @@ class GResolver extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GList.fromPointer(_ret);
+      return GList.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -548,7 +559,7 @@ class GResolver extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GList.fromPointer(_ret);
+        return GList.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -720,7 +731,7 @@ class GResolver extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GList.fromPointer(_ret);
+      return GList.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -775,7 +786,7 @@ class GResolver extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GList.fromPointer(_ret);
+        return GList.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -949,7 +960,7 @@ class GResolver extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GList.fromPointer(_ret);
+      return GList.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -1021,7 +1032,7 @@ class GResolver extends GObject {
             if (_error.value != ffi.nullptr) {
               throw GlibException.fromError(_error.value);
             }
-            return GList.fromPointer(_ret);
+            return GList.fromPointer(_ret, owned: true);
           } finally {
             calloc.free(_error);
           }
@@ -1210,7 +1221,7 @@ class GResolver extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GList.fromPointer(_ret);
+      return GList.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -1253,7 +1264,7 @@ class GResolver extends GObject {
         'g_resolver_get_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GResolver getDefault() {
-    return GResolver.fromPointer(_gResolverGetDefault());
+    return GResolver.fromPointer(_gResolverGetDefault(), owned: true);
   }
 
   /// Emitted when the resolver notices that the system resolver

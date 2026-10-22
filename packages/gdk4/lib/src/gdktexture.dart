@@ -39,7 +39,18 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
     final cached = cachedObject<GdkTexture>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -378,7 +389,10 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
           >('gdk_texture_save_to_png_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes saveToPngBytes() {
-    return GBytes.fromPointer(_gdkTextureSaveToPngBytes(this.handle));
+    return GBytes.fromPointer(
+      _gdkTextureSaveToPngBytes(this.handle),
+      owned: true,
+    );
   }
 
   /// Store the given @texture to the @filename as a TIFF file.
@@ -421,7 +435,10 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
           >('gdk_texture_save_to_tiff_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes saveToTiffBytes() {
-    return GBytes.fromPointer(_gdkTextureSaveToTiffBytes(this.handle));
+    return GBytes.fromPointer(
+      _gdkTextureSaveToTiffBytes(this.handle),
+      owned: true,
+    );
   }
 
   /// The notify signal is emitted on an object when one of its properties has
@@ -549,7 +566,10 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
           >('gdk_paintable_get_current_image')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable getCurrentImage() {
-    return GdkPaintable.fromPointer(_gdkPaintableGetCurrentImage(this.handle));
+    return GdkPaintable.fromPointer(
+      _gdkPaintableGetCurrentImage(this.handle),
+      owned: true,
+    );
   }
 
   /// Get flags for the paintable.
@@ -730,7 +750,9 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? serialize() {
     final _ret = _gIconSerialize(this.handle);
-    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_ret, owned: true);
   }
 
   /// Loads a loadable icon. For the asynchronous version of this function,
@@ -771,7 +793,7 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GInputStream.fromPointer(_ret),
+        GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
@@ -934,7 +956,7 @@ class GdkTexture extends GObject implements GdkPaintable, GIcon, GLoadableIcon {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GInputStream.fromPointer(_ret),
+        GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {

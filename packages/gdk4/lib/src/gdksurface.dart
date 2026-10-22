@@ -22,7 +22,18 @@ class GdkSurface extends GObject {
     final cached = cachedObject<GdkSurface>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -107,6 +118,7 @@ class GdkSurface extends GObject {
   GdkCairoContext createCairoContext() {
     return GdkCairoContext.fromPointer(
       _gdkSurfaceCreateCairoContext(this.handle),
+      owned: true,
     );
   }
 
@@ -138,7 +150,7 @@ class GdkSurface extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GdkGLContext.fromPointer(_ret);
+      return GdkGLContext.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -185,6 +197,7 @@ class GdkSurface extends GObject {
         width,
         height,
       ),
+      owned: true,
     );
   }
 
@@ -211,7 +224,7 @@ class GdkSurface extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GdkVulkanContext.fromPointer(_ret);
+      return GdkVulkanContext.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

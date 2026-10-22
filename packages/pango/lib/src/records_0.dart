@@ -17,10 +17,11 @@ final class PangoAnalysis {
     }
     return PangoAnalysis.rawFromPointer(handle, owned: owned);
   }
-  PangoAnalysis.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAnalysis.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -54,10 +55,11 @@ final class PangoAttrClass {
     }
     return PangoAttrClass.rawFromPointer(handle, owned: owned);
   }
-  PangoAttrClass.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAttrClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -88,10 +90,11 @@ final class PangoAttrColor {
     }
     return PangoAttrColor.rawFromPointer(handle, owned: owned);
   }
-  PangoAttrColor.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAttrColor.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -122,10 +125,11 @@ final class PangoAttrFloat {
     }
     return PangoAttrFloat.rawFromPointer(handle, owned: owned);
   }
-  PangoAttrFloat.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAttrFloat.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -156,10 +160,11 @@ final class PangoAttrFontDesc {
     }
     return PangoAttrFontDesc.rawFromPointer(handle, owned: owned);
   }
-  PangoAttrFontDesc.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAttrFontDesc.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -185,7 +190,10 @@ final class PangoAttrFontDesc {
           >('pango_attr_font_desc_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static PangoAttribute new_(PangoFontDescription desc) {
-    return PangoAttribute.fromPointer(_pangoAttrFontDescNew(desc.handle));
+    return PangoAttribute.fromPointer(
+      _pangoAttrFontDescNew(desc.handle),
+      owned: true,
+    );
   }
 }
 
@@ -205,10 +213,11 @@ final class PangoAttrFontFeatures {
     }
     return PangoAttrFontFeatures.rawFromPointer(handle, owned: owned);
   }
-  PangoAttrFontFeatures.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAttrFontFeatures.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -237,6 +246,7 @@ final class PangoAttrFontFeatures {
     return withNativeString(features, (nativeFeatures) {
       return PangoAttribute.fromPointer(
         _pangoAttrFontFeaturesNew(nativeFeatures.cast<Utf8>()),
+        owned: true,
       );
     });
   }
@@ -258,10 +268,11 @@ final class PangoAttrInt {
     }
     return PangoAttrInt.rawFromPointer(handle, owned: owned);
   }
-  PangoAttrInt.rawFromPointer(this.handle, {bool owned = false}) {
+  PangoAttrInt.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -273,186 +284,5 @@ final class PangoAttrInt {
   /// (which produced this object) remains the owner.
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
-  }
-}
-
-/// A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
-///
-/// A new iterator is created with [method@Pango.AttrList.get_iterator].
-/// Once the iterator is created, it can be advanced through the style
-/// changes in the text using [method@Pango.AttrIterator.next]. At each
-/// style change, the range of the current style segment and the attributes
-/// currently in effect can be queried.
-final class PangoAttrIterator {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory PangoAttrIterator.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<PangoAttrIterator>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return PangoAttrIterator.rawFromPointer(handle, owned: owned);
-  }
-  PangoAttrIterator.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Copy a `PangoAttrIterator`.
-  static final _pangoAttrIteratorCopy =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_iterator_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoAttrIterator copy() {
-    return PangoAttrIterator.fromPointer(_pangoAttrIteratorCopy(this.handle));
-  }
-
-  /// Destroy a `PangoAttrIterator` and free all associated memory.
-  static final _pangoAttrIteratorDestroy =
-      pangoLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'pango_attr_iterator_destroy',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void destroy() {
-    _pangoAttrIteratorDestroy(this.handle);
-  }
-
-  /// Find the current attribute of a particular type
-  /// at the iterator location.
-  ///
-  /// When multiple attributes of the same type overlap,
-  /// the attribute whose range starts closest to the
-  /// current location is used.
-  static final _pangoAttrIteratorGet =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, ffi.Int32)
-            >
-          >('pango_attr_iterator_get')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
-          >();
-  PangoAttribute? get_(PangoAttrType type_) {
-    final _ret = _pangoAttrIteratorGet(this.handle, type_.value);
-    return (_ret) == ffi.nullptr ? null : PangoAttribute.fromPointer(_ret);
-  }
-
-  /// Gets a list of all attributes at the current position of the
-  /// iterator.
-  static final _pangoAttrIteratorGetAttrs =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_attr_iterator_get_attrs')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GSList getAttrs() {
-    return GSList.fromPointer(_pangoAttrIteratorGetAttrs(this.handle));
-  }
-
-  /// Get the font and other attributes at the current
-  /// iterator position.
-  static final _pangoAttrIteratorGetFont =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-                ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              )
-            >
-          >('pango_attr_iterator_get_font')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            )
-          >();
-  (PangoLanguage?, GSList?) getFont(PangoFontDescription desc) {
-    final _out0 = calloc<ffi.Pointer<ffi.Void>>();
-    final _out1 = calloc<ffi.Pointer<ffi.Void>>();
-    try {
-      _pangoAttrIteratorGetFont(this.handle, desc.handle, _out0, _out1);
-      return (
-        (_out0.value) == ffi.nullptr
-            ? null
-            : PangoLanguage.fromPointer(
-                _out0.value.cast<ffi.Void>(),
-                owned: true,
-              ),
-        (_out1.value) == ffi.nullptr
-            ? null
-            : GSList.fromPointer(_out1.value.cast<ffi.Void>(), owned: true),
-      );
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-    }
-  }
-
-  /// Advance the iterator until the next change of style.
-  static final _pangoAttrIteratorNext =
-      pangoLookup<
-            ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>
-          >('pango_attr_iterator_next')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool next() {
-    return (_pangoAttrIteratorNext(this.handle)) != 0;
-  }
-
-  /// Get the range of the current segment.
-  ///
-  /// Note that the stored return values are signed, not unsigned
-  /// like the values in `PangoAttribute`. To deal with this API
-  /// oversight, stored return values that wouldn't fit into
-  /// a signed integer are clamped to %G_MAXINT.
-  static final _pangoAttrIteratorRange =
-      pangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Int32>,
-                ffi.Pointer<ffi.Int32>,
-              )
-            >
-          >('pango_attr_iterator_range')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Int32>,
-              ffi.Pointer<ffi.Int32>,
-            )
-          >();
-  (int, int) range() {
-    final _out0 = malloc<ffi.Int32>();
-    final _out1 = malloc<ffi.Int32>();
-    try {
-      _pangoAttrIteratorRange(this.handle, _out0, _out1);
-      return (_out0.value, _out1.value);
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-    }
   }
 }

@@ -80,10 +80,11 @@ final class GCond {
     }
     return GCond.rawFromPointer(handle, owned: owned);
   }
-  GCond.rawFromPointer(this.handle, {bool owned = false}) {
+  GCond.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -265,10 +266,11 @@ final class GData {
     }
     return GData.rawFromPointer(handle, owned: owned);
   }
-  GData.rawFromPointer(this.handle, {bool owned = false}) {
+  GData.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

@@ -5,7 +5,7 @@ part of '../graphene.dart';
 ///
 /// The contents of the #graphene_quaternion_t structure are private
 /// and should never be accessed directly.
-final class GrapheneQuaternion {
+final class GrapheneQuaternion implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -15,14 +15,46 @@ final class GrapheneQuaternion {
   }) {
     final cached = cachedObject<GrapheneQuaternion>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseQuaternion(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          quaternionFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneQuaternion.rawFromPointer(handle, owned: owned);
   }
-  GrapheneQuaternion.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneQuaternion.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      quaternionFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneQuaternion` with `graphene_quaternion_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final quaternionFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_quaternion_free'),
+  );
+
+  static final _releaseQuaternion =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_quaternion_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -43,7 +75,8 @@ final class GrapheneQuaternion {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_quaternion_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneQuaternion.alloc() : this.rawFromPointer(_grapheneQuaternionAlloc());
+  GrapheneQuaternion.alloc()
+    : this.rawFromPointer(_grapheneQuaternionAlloc(), owned: true);
 
   /// Adds two #graphene_quaternion_t @a and @b.
   static final _grapheneQuaternionAdd =
@@ -108,6 +141,11 @@ final class GrapheneQuaternion {
           >('graphene_quaternion_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      quaternionFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneQuaternionFree(this.handle);
   }
 

@@ -35,7 +35,18 @@ class GtkDirectoryList extends GObject implements GListModel {
     final cached = cachedObject<GtkDirectoryList>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -357,7 +368,9 @@ class GtkDirectoryList extends GObject implements GListModel {
           >();
   GObject? getObject(int position) {
     final _ret = _gListModelGetObject(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

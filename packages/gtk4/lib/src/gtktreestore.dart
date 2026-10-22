@@ -50,7 +50,18 @@ class GtkTreeStore extends GObject
     final cached = cachedObject<GtkTreeStore>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -840,7 +851,9 @@ class GtkTreeStore extends GObject
           >();
   GdkContentProvider? dragDataGet(GtkTreePath path) {
     final _ret = _gtkTreeDragSourceDragDataGet(this.handle, path.handle);
-    return (_ret) == ffi.nullptr ? null : GdkContentProvider.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkContentProvider.fromPointer(_ret, owned: true);
   }
 
   /// Asks the `GtkTreeDragSource` whether a particular row can be used as
@@ -879,6 +892,7 @@ class GtkTreeStore extends GObject
   GtkTreeModel filterNew([GtkTreePath? root]) {
     return GtkTreeModel.fromPointer(
       _gtkTreeModelFilterNew(this.handle, root?.handle ?? ffi.nullptr),
+      owned: true,
     );
   }
 
@@ -1102,6 +1116,7 @@ class GtkTreeStore extends GObject
   GtkTreePath getPath(GtkTreeIter iter) {
     return GtkTreePath.fromPointer(
       _gtkTreeModelGetPath(this.handle, iter.handle),
+      owned: true,
     );
   }
 

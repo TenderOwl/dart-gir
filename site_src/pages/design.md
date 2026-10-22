@@ -135,6 +135,28 @@ Ownership transfers to the caller, so the string is copied into Dart memory and 
 A property accessor takes its Dart type from the typed `get<Name>` / `set<Name>` method's resolved bridge, not from the property's raw `<type>` element. The property element and the method bridge can disagree — and when they do, the method is what the user will actually execute.
 :::
 
+### An object reference has an owner, and the wrapper says so
+
+The copy-and-free rule is for strings. A *reference* — a GObject, a boxed
+type — cannot be copied into Dart memory, so `transfer-ownership="full"`
+on it means something else: the receiver owns the reference, and the
+receiver has to release it exactly once.
+
+Every generated wrapper therefore carries a public `owned` flag, and the
+binding follows the GIR in both directions:
+
+- a transfer-full **return** is claimed by the wrapper, and a finalizer
+  releases it when the wrapper is collected;
+- a transfer-full **parameter** is handed to the callee at the call site —
+  the finalizer is detached and the flag is cleared, so the reference is
+  released once, by the callee;
+- an explicit `unref()` takes the release over from the collector, so a
+  caller that frees an object early does not get a double release.
+
+A boxed type with a destructor the GIR names gets a finalizer of its own;
+a type the GIR gives no release function for keeps the borrowed
+behaviour, because there is nothing to call.
+
 ### Namespace resolution needs an explicit anchor
 
 The subtlest bug class in this project is unqualified type names resolving against the wrong namespace. Emitting `Adw` that inherits from `Gtk` means `<type name="Application"/>` has two plausible answers. The resolver therefore takes a `relativeTo` parameter, and inherited properties, inherited signals and interface mirrors all pass the namespace that actually declared the symbol.

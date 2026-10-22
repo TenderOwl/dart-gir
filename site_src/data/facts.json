@@ -1675,7 +1675,7 @@
     },
     {
       "name": "branch-state.md",
-      "lines": 128
+      "lines": 139
     },
     {
       "name": "dart-gobjects.md",
@@ -1683,7 +1683,7 @@
     },
     {
       "name": "emission.md",
-      "lines": 785
+      "lines": 950
     },
     {
       "name": "signals.md",
@@ -1699,11 +1699,11 @@
     },
     {
       "name": "subclassing.md",
-      "lines": 275
+      "lines": 311
     },
     {
       "name": "templates.md",
-      "lines": 748
+      "lines": 756
     },
     {
       "name": "type-system.md",
@@ -1717,8 +1717,8 @@
     "async_callbacks": 164
   },
   "skip_report_example": "# Skip report for package glib (GLib 2.0)\nTotal skipped: 349\n\n## By category\ncallable: 330\nalias: 13\nconstant: 2\ncallback: 2\nmethod: 1\nconstructor: 1\n\n## By reason\nintrospectable=0: 98\nreturn: string list return type (null): 25\naliases are resolved to their target: 13\nintrospectable=0 (C macro; use child_watch_add_full): 1",
-  "generated_files": 1421,
-  "generated_lines": 587606,
+  "generated_files": 1444,
+  "generated_lines": 604400,
   "generator_files": 20,
-  "generator_lines": 9054
+  "generator_lines": 9777
 }

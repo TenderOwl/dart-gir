@@ -5,7 +5,7 @@ part of '../graphene.dart';
 ///
 /// The contents of the #graphene_matrix_t structure are private and
 /// should never be accessed directly.
-final class GrapheneMatrix {
+final class GrapheneMatrix implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -15,14 +15,46 @@ final class GrapheneMatrix {
   }) {
     final cached = cachedObject<GrapheneMatrix>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseMatrix(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          matrixFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneMatrix.rawFromPointer(handle, owned: owned);
   }
-  GrapheneMatrix.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneMatrix.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      matrixFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneMatrix` with `graphene_matrix_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final matrixFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_matrix_free'),
+  );
+
+  static final _releaseMatrix =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_matrix_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -41,7 +73,8 @@ final class GrapheneMatrix {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_matrix_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneMatrix.alloc() : this.rawFromPointer(_grapheneMatrixAlloc());
+  GrapheneMatrix.alloc()
+    : this.rawFromPointer(_grapheneMatrixAlloc(), owned: true);
 
   /// Decomposes a transformation matrix into its component transformations.
   ///
@@ -180,6 +213,11 @@ final class GrapheneMatrix {
           >('graphene_matrix_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      matrixFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneMatrixFree(this.handle);
   }
 

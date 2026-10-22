@@ -24,7 +24,18 @@ class GdkMemoryTextureBuilder extends GObject {
     final cached = cachedObject<GdkMemoryTextureBuilder>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -79,7 +90,10 @@ class GdkMemoryTextureBuilder extends GObject {
           >('gdk_memory_texture_builder_build')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkTexture build() {
-    return GdkTexture.fromPointer(_gdkMemoryTextureBuilderBuild(this.handle));
+    return GdkTexture.fromPointer(
+      _gdkMemoryTextureBuilderBuild(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the bytes previously set via gdk_memory_texture_builder_set_bytes()

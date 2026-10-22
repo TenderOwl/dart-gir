@@ -324,6 +324,10 @@ final _gPropagateError =
           )
         >();
 GError? propagateError(GError src) {
+  if (src.owned) {
+    GError.errorFinalizer.detach(src);
+    src.owned = false;
+  }
   final _out0 = calloc<ffi.Pointer<ffi.Void>>();
   try {
     _gPropagateError(_out0, src.handle);

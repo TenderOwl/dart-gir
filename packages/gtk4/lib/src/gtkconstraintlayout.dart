@@ -176,7 +176,18 @@ class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
     final cached = cachedObject<GtkConstraintLayout>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -239,6 +250,10 @@ class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void addConstraint(GtkConstraint constraint) {
+    if (constraint.owned) {
+      gobjectFinalizer.detach(constraint);
+      constraint.owned = false;
+    }
     _gtkConstraintLayoutAddConstraint(this.handle, constraint.handle);
   }
 
@@ -259,6 +274,10 @@ class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void addGuide(GtkConstraintGuide guide) {
+    if (guide.owned) {
+      gobjectFinalizer.detach(guide);
+      guide.owned = false;
+    }
     _gtkConstraintLayoutAddGuide(this.handle, guide.handle);
   }
 
@@ -281,6 +300,7 @@ class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
   GListModel observeConstraints() {
     return GListModel.fromPointer(
       _gtkConstraintLayoutObserveConstraints(this.handle),
+      owned: true,
     );
   }
 
@@ -303,6 +323,7 @@ class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
   GListModel observeGuides() {
     return GListModel.fromPointer(
       _gtkConstraintLayoutObserveGuides(this.handle),
+      owned: true,
     );
   }
 

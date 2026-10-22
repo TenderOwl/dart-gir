@@ -235,7 +235,18 @@ class GtkLabel extends GtkWidget
     final cached = cachedObject<GtkLabel>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -593,7 +604,9 @@ class GtkLabel extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoTabArray? getTabs() {
     final _ret = _gtkLabelGetTabs(this.handle);
-    return (_ret) == ffi.nullptr ? null : PangoTabArray.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoTabArray.fromPointer(_ret, owned: true);
   }
 
   /// Gets the text of the label.
@@ -1424,7 +1437,9 @@ class GtkLabel extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
     final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -1447,7 +1462,10 @@ class GtkLabel extends GtkWidget
           >('gtk_accessible_get_at_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkATContext getAtContext() {
-    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+    return GtkATContext.fromPointer(
+      _gtkAccessibleGetAtContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Queries the coordinates and dimensions of this accessible
@@ -1508,7 +1526,9 @@ class GtkLabel extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
     final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1521,7 +1541,9 @@ class GtkLabel extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
     final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Queries a platform state, such as focus.

@@ -88,7 +88,18 @@ class GBinding extends GObject {
     final cached = cachedObject<GBinding>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -134,7 +145,9 @@ class GBinding extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupSource() {
     final _ret = _gBindingDupSource(this.handle);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the #GObject instance used as the target of the binding.
@@ -151,7 +164,9 @@ class GBinding extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? dupTarget() {
     final _ret = _gBindingDupTarget(this.handle);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the flags passed when constructing the #GBinding.

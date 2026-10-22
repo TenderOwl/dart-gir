@@ -29,7 +29,18 @@ class GdkClipboard extends GObject {
     final cached = cachedObject<GdkClipboard>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -284,7 +295,9 @@ class GdkClipboard extends GObject {
         throw GlibException.fromError(_error.value);
       }
       return (
-        (_ret) == ffi.nullptr ? null : GInputStream.fromPointer(_ret),
+        (_ret) == ffi.nullptr
+            ? null
+            : GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
@@ -593,7 +606,9 @@ class GdkClipboard extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return (_ret) == ffi.nullptr ? null : GdkTexture.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GdkTexture.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

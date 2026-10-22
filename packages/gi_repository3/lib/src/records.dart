@@ -17,10 +17,11 @@ final class GIAttributeIter {
     }
     return GIAttributeIter.rawFromPointer(handle, owned: owned);
   }
-  GIAttributeIter.rawFromPointer(this.handle, {bool owned = false}) {
+  GIAttributeIter.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -49,10 +50,11 @@ final class GIBaseInfoClass {
     }
     return GIBaseInfoClass.rawFromPointer(handle, owned: owned);
   }
-  GIBaseInfoClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GIBaseInfoClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -81,10 +83,11 @@ final class GIBaseInfoStack {
     }
     return GIBaseInfoStack.rawFromPointer(handle, owned: owned);
   }
-  GIBaseInfoStack.rawFromPointer(this.handle, {bool owned = false}) {
+  GIBaseInfoStack.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -113,10 +116,11 @@ final class GIRepositoryClass {
     }
     return GIRepositoryClass.rawFromPointer(handle, owned: owned);
   }
-  GIRepositoryClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GIRepositoryClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -133,7 +137,7 @@ final class GIRepositoryClass {
 
 /// `GITypelib` represents a loaded `.typelib` file, which contains a description
 /// of a single module’s API.
-final class GITypelib {
+final class GITypelib implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -143,14 +147,46 @@ final class GITypelib {
   }) {
     final cached = cachedObject<GITypelib>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseTypelib(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          typelibFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GITypelib.rawFromPointer(handle, owned: owned);
   }
-  GITypelib.rawFromPointer(this.handle, {bool owned = false}) {
+  GITypelib.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      typelibFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GITypelib` with `gi_typelib_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final typelibFinalizer = ffi.NativeFinalizer(
+    giRepository3Lookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('gi_typelib_unref'),
+  );
+
+  static final _releaseTypelib =
+      giRepository3Lookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('gi_typelib_unref')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -190,7 +226,7 @@ final class GITypelib {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GITypelib.fromPointer(_ret);
+      return GITypelib.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -220,7 +256,7 @@ final class GITypelib {
           >('gi_typelib_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GITypelib ref() {
-    return GITypelib.fromPointer(_giTypelibRef(this.handle));
+    return GITypelib.fromPointer(_giTypelibRef(this.handle), owned: true);
   }
 
   /// Loads a symbol from a `GITypelib`.
@@ -266,6 +302,11 @@ final class GITypelib {
           >('gi_typelib_unref')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      typelibFinalizer.detach(this);
+      owned = false;
+    }
     _giTypelibUnref(this.handle);
   }
 }
@@ -285,10 +326,11 @@ final class GIArgument {
     }
     return GIArgument.rawFromPointer(handle, owned: owned);
   }
-  GIArgument.rawFromPointer(this.handle, {bool owned = false}) {
+  GIArgument.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

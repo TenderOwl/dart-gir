@@ -18,7 +18,18 @@ class GtkIconPaintable extends GObject
     final cached = cachedObject<GtkIconPaintable>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -84,7 +95,7 @@ class GtkIconPaintable extends GObject
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
     final _ret = _gtkIconPaintableGetFile(this.handle);
-    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret, owned: true);
   }
 
   /// Get the icon name being used for this icon.
@@ -247,7 +258,10 @@ class GtkIconPaintable extends GObject
           >('gdk_paintable_get_current_image')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable getCurrentImage() {
-    return GdkPaintable.fromPointer(_gdkPaintableGetCurrentImage(this.handle));
+    return GdkPaintable.fromPointer(
+      _gdkPaintableGetCurrentImage(this.handle),
+      owned: true,
+    );
   }
 
   /// Get flags for the paintable.

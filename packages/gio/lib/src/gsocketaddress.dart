@@ -17,7 +17,18 @@ class GSocketAddress extends GObject implements GSocketConnectable {
     final cached = cachedObject<GSocketAddress>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -169,6 +180,7 @@ class GSocketAddress extends GObject implements GSocketConnectable {
   GSocketAddressEnumerator enumerate() {
     return GSocketAddressEnumerator.fromPointer(
       _gSocketConnectableEnumerate(this.handle),
+      owned: true,
     );
   }
 
@@ -189,6 +201,7 @@ class GSocketAddress extends GObject implements GSocketConnectable {
   GSocketAddressEnumerator proxyEnumerate() {
     return GSocketAddressEnumerator.fromPointer(
       _gSocketConnectableProxyEnumerate(this.handle),
+      owned: true,
     );
   }
 

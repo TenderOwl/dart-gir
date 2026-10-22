@@ -24,7 +24,18 @@ class GtkFontDialog extends GObject {
     final cached = cachedObject<GtkFontDialog>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -223,7 +234,7 @@ class GtkFontDialog extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return PangoFontFace.fromPointer(_ret);
+      return PangoFontFace.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -387,7 +398,7 @@ class GtkFontDialog extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return PangoFontFamily.fromPointer(_ret);
+      return PangoFontFamily.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -749,7 +760,7 @@ class GtkFontDialog extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return PangoFontDescription.fromPointer(_ret);
+      return PangoFontDescription.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -793,7 +804,9 @@ class GtkFontDialog extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLanguage? getLanguage() {
     final _ret = _gtkFontDialogGetLanguage(this.handle);
-    return (_ret) == ffi.nullptr ? null : PangoLanguage.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoLanguage.fromPointer(_ret, owned: true);
   }
 
   /// Returns whether the font chooser dialog blocks interaction

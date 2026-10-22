@@ -179,7 +179,18 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
     final cached = cachedObject<GSimpleAsyncResult>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -610,7 +621,9 @@ class GSimpleAsyncResult extends GObject implements GAsyncResult {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getSourceObject() {
     final _ret = _gAsyncResultGetSourceObject(this.handle);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Gets the user data from a [iface@Gio.AsyncResult].

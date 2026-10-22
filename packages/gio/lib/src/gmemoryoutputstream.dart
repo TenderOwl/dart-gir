@@ -19,7 +19,18 @@ class GMemoryOutputStream extends GOutputStream
     final cached = cachedObject<GMemoryOutputStream>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -119,7 +130,10 @@ class GMemoryOutputStream extends GOutputStream
           >('g_memory_output_stream_steal_as_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes stealAsBytes() {
-    return GBytes.fromPointer(_gMemoryOutputStreamStealAsBytes(this.handle));
+    return GBytes.fromPointer(
+      _gMemoryOutputStreamStealAsBytes(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets any loaded data from the @ostream. Ownership of the data
@@ -216,6 +230,7 @@ class GMemoryOutputStream extends GOutputStream
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
       ),
+      owned: true,
     );
   }
 

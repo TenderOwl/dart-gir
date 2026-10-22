@@ -67,7 +67,9 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
   GIFunctionInfo? findMethod(String name) {
     return withNativeString(name, (nativeName) {
       final _ret = _giUnionInfoFindMethod(this.handle, nativeName.cast<Utf8>());
-      return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GIFunctionInfo.fromPointer(_ret, owned: true);
     });
   }
 
@@ -112,7 +114,9 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
           >();
   GIConstantInfo? getDiscriminator(int n) {
     final _ret = _giUnionInfoGetDiscriminator(this.handle, n);
-    return (_ret) == ffi.nullptr ? null : GIConstantInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIConstantInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain the offset of the discriminator field within the structure.
@@ -147,7 +151,9 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GITypeInfo? getDiscriminatorType() {
     final _ret = _giUnionInfoGetDiscriminatorType(this.handle);
-    return (_ret) == ffi.nullptr ? null : GITypeInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GITypeInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain the type information for the field with the specified index.
@@ -161,7 +167,10 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIFieldInfo getField(int n) {
-    return GIFieldInfo.fromPointer(_giUnionInfoGetField(this.handle, n));
+    return GIFieldInfo.fromPointer(
+      _giUnionInfoGetField(this.handle, n),
+      owned: true,
+    );
   }
 
   /// Retrieves the name of the free function for @info, if any is set.
@@ -190,7 +199,10 @@ class GIUnionInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIFunctionInfo getMethod(int n) {
-    return GIFunctionInfo.fromPointer(_giUnionInfoGetMethod(this.handle, n));
+    return GIFunctionInfo.fromPointer(
+      _giUnionInfoGetMethod(this.handle, n),
+      owned: true,
+    );
   }
 
   /// Obtain the number of fields this union has.

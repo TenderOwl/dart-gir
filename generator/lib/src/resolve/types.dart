@@ -624,6 +624,131 @@ class TypeResolver {
     return structRecords.contains('$namespaceName.${record.name}');
   }
 
+  /// The GIR method names that release a boxed type.
+  ///
+  /// GLib spells the destructor `unref` for a refcounted type, `free` for
+  /// a plain one and `destroy` for a couple of leftovers; the GIR's
+  /// `free-function` attribute covers the types that have no such method.
+  static const destructorMethodNames = <String>{
+    'free',
+    'unref',
+    'destroy',
+    'release',
+    'close',
+  };
+
+  /// Boxed types whose destructor must not run from a finalizer thread.
+  ///
+  /// A `NativeFinalizer` callback may run on any VM thread. Releasing a
+  /// refcounted value or freeing a buffer is safe there; tearing down
+  /// something bound to a thread or to a main context is not — GLib
+  /// expects the release to happen on the owning thread. These types keep
+  /// the caller's explicit `unref()` / `free()` call.
+  static const threadAffineDestructors = <String>{
+    'GLib.MainContext',
+    'GLib.MainLoop',
+    'GLib.Source',
+    'GLib.Thread',
+    'GLib.IOChannel',
+    'GLib.Timer',
+  };
+
+  /// Whether [fn] carries an async-scoped parameter.
+  ///
+  /// GLib marks the callback of an asynchronous operation with
+  /// `scope="async"`: the callable returns before the callback runs, so
+  /// anything the callee keeps — a byte buffer, for instance — has to stay
+  /// valid past the call.
+  ///
+  /// A `GDestroyNotify` is async-scoped too, but it is not an
+  /// asynchronous *operation*: the callee calls it when it is done with
+  /// the buffer, which is a different lifetime rule.
+  static bool isAsync(GirCallable fn) =>
+      fn.parameters.any((p) => p.scope == 'async' && !isDestroyNotify(p));
+
+  /// The byte-array IN parameters of [fn] that stay raw pointers.
+  ///
+  /// A byte array is normally mirrored into a `Uint8List` (see
+  /// [isByteArrayIn]). Two situations keep the raw pointer:
+  ///
+  /// * the callable is **async** — GIO says it outright for
+  ///   `g_file_replace_contents_async`: *"no copy of `@contents` will be
+  ///   made, so it must stay valid until `@callback` is called"*;
+  /// * the callable has a **`GDestroyNotify`** sibling — the callee takes
+  ///   over the buffer's lifetime (`g_tls_password_set_value_full`).
+  ///
+  /// Both shapes need a lifetime note on the generated wrapper, so they
+  /// are collected here.
+  static List<GirParameter> rawByteArrays(GirCallable fn) {
+    final result = <GirParameter>[];
+    for (final p in fn.parameters) {
+      if (!isByteArrayElement(p.type)) continue;
+      if (isByteArrayIn(p, fn.parameters) && !isAsync(fn)) continue;
+      result.add(p);
+    }
+    return result;
+  }
+
+  /// The C identifier of the `GBytes`-based sibling of [cIdentifier].
+  ///
+  /// GLib spells the `GBytes` variant of a byte-buffer callable by
+  /// inserting `_bytes` into its name: `g_file_replace_contents_async` →
+  /// `g_file_replace_contents_bytes_async`, `g_memory_input_stream_add_data`
+  /// → `g_memory_input_stream_add_bytes`. The sibling takes the same
+  /// buffer as a `GBytes`, which the callee keeps alive on its own — the
+  /// property a raw pointer does not have.
+  ///
+  /// Returns null when the name carries no such hint (the caller then
+  /// looks the symbol up and gives up when it is not in the library).
+  static String? bytesSiblingCIdentifier(String? cIdentifier) {
+    if (cIdentifier == null || cIdentifier.isEmpty) return null;
+    if (cIdentifier.endsWith('_async')) {
+      final base = cIdentifier.substring(
+        0,
+        cIdentifier.length - '_async'.length,
+      );
+      return '${base}_bytes_async';
+    }
+    if (cIdentifier.endsWith('_data')) {
+      final base = cIdentifier.substring(
+        0,
+        cIdentifier.length - '_data'.length,
+      );
+      return '${base}_bytes';
+    }
+    return null;
+  }
+
+  /// The C function that releases [type], or null when the bindings cannot
+  /// release it.
+  ///
+  /// The destructor is the type's own `free` / `unref` / `destroy` /
+  /// `release` / `close` method — the very function the generated wrapper
+  /// already exposes — or, when the type has no such method, the GIR's
+  /// `free-function` attribute.
+  ///
+  /// [namespaceName] is the namespace the type is declared in; the
+  /// thread-affine list is keyed by it.
+  static String? destructorOf(GirRegisteredType type, String namespaceName) {
+    if (threadAffineDestructors.contains('$namespaceName.${type.name}')) {
+      return null;
+    }
+    final methods = switch (type) {
+      GirRecord r => r.methods,
+      GirUnion u => u.methods,
+      GirInterface i => i.methods,
+      _ => const <GirMethod>[],
+    };
+    for (final m in methods) {
+      if (!destructorMethodNames.contains(m.name)) continue;
+      final id = m.cIdentifier;
+      if (id != null && id.isNotEmpty) return id;
+    }
+    if (type is GirRecord) return type.freeFunction;
+    if (type is GirUnion) return type.freeFunction;
+    return null;
+  }
+
   /// Maps a bound-length array whose element is an int-sized primitive
   /// (gint-family scalars), boolean, enumeration, or bitfield. The
   /// wrapper signature and the FFI native signature both use

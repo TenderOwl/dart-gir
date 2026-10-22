@@ -34,7 +34,18 @@ class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
     final cached = cachedObject<GDBusObjectManagerServer>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -139,7 +150,9 @@ class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusConnection? getConnection() {
     final _ret = _gDbusObjectManagerServerGetConnection(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDBusConnection.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDBusConnection.fromPointer(_ret, owned: true);
   }
 
   /// Returns whether @object is currently exported on @manager.
@@ -299,7 +312,9 @@ class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
           nativeObjectPath.cast<Utf8>(),
           nativeInterfaceName.cast<Utf8>(),
         );
-        return (_ret) == ffi.nullptr ? null : GDBusInterface.fromPointer(_ret);
+        return (_ret) == ffi.nullptr
+            ? null
+            : GDBusInterface.fromPointer(_ret, owned: true);
       });
     });
   }
@@ -326,7 +341,9 @@ class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
         this.handle,
         nativeObjectPath.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GDBusObject.fromPointer(_ret, owned: true);
     });
   }
 
@@ -354,7 +371,10 @@ class GDBusObjectManagerServer extends GObject implements GDBusObjectManager {
           >('g_dbus_object_manager_get_objects')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList getObjects() {
-    return GList.fromPointer(_gDbusObjectManagerGetObjects(this.handle));
+    return GList.fromPointer(
+      _gDbusObjectManagerGetObjects(this.handle),
+      owned: true,
+    );
   }
 
   /// PyGObject-style typed property accessor. Reads and

@@ -46,7 +46,18 @@ class GtkDropTargetAsync extends GtkEventController {
     final cached = cachedObject<GtkDropTargetAsync>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -88,11 +99,19 @@ class GtkDropTargetAsync extends GtkEventController {
           .asFunction<
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
-  GtkDropTargetAsync(GdkContentFormats? formats, GdkDragAction actions)
-    : this.rawFromPointer(
-        _gtkDropTargetAsyncNew(formats?.handle ?? ffi.nullptr, actions.value),
-        owned: true,
-      );
+  factory GtkDropTargetAsync(
+    GdkContentFormats? formats,
+    GdkDragAction actions,
+  ) {
+    if (formats != null && formats.owned) {
+      GdkContentFormats.contentFormatsFinalizer.detach(formats);
+      formats.owned = false;
+    }
+    return GtkDropTargetAsync.fromPointer(
+      _gtkDropTargetAsyncNew(formats?.handle ?? ffi.nullptr, actions.value),
+      owned: true,
+    );
+  }
 
   /// Gets the actions that this drop target supports.
   static final _gtkDropTargetAsyncGetActions =

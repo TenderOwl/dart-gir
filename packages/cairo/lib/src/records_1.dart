@@ -15,10 +15,11 @@ final class CairoRectangleInt {
     }
     return CairoRectangleInt.rawFromPointer(handle, owned: owned);
   }
-  CairoRectangleInt.rawFromPointer(this.handle, {bool owned = false}) {
+  CairoRectangleInt.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,10 +48,11 @@ final class CairoGlyph {
     }
     return CairoGlyph.rawFromPointer(handle, owned: owned);
   }
-  CairoGlyph.rawFromPointer(this.handle, {bool owned = false}) {
+  CairoGlyph.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -79,10 +81,11 @@ final class CairoTextCluster {
     }
     return CairoTextCluster.rawFromPointer(handle, owned: owned);
   }
-  CairoTextCluster.rawFromPointer(this.handle, {bool owned = false}) {
+  CairoTextCluster.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

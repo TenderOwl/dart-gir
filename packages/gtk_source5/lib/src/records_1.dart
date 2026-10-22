@@ -6,7 +6,7 @@ part of '../gtk_source5.dart';
 /// The #GtkSourceEncoding boxed type represents a character encoding. It is used
 /// for example by #GtkSourceFile. Note that the text in GTK widgets is always
 /// encoded in UTF-8.
-final class GtkSourceEncoding {
+final class GtkSourceEncoding implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -16,14 +16,46 @@ final class GtkSourceEncoding {
   }) {
     final cached = cachedObject<GtkSourceEncoding>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseEncoding(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          encodingFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GtkSourceEncoding.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceEncoding.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceEncoding.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      encodingFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GtkSourceEncoding` with `gtk_source_encoding_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final encodingFinalizer = ffi.NativeFinalizer(
+    gtkSource5Lookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('gtk_source_encoding_free'),
+  );
+
+  static final _releaseEncoding =
+      gtkSource5Lookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('gtk_source_encoding_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -46,7 +78,10 @@ final class GtkSourceEncoding {
           >('gtk_source_encoding_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceEncoding copy() {
-    return GtkSourceEncoding.fromPointer(_gtkSourceEncodingCopy(this.handle));
+    return GtkSourceEncoding.fromPointer(
+      _gtkSourceEncodingCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Used by language bindings.
@@ -56,6 +91,11 @@ final class GtkSourceEncoding {
           >('gtk_source_encoding_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      encodingFinalizer.detach(this);
+      owned = false;
+    }
     _gtkSourceEncodingFree(this.handle);
   }
 
@@ -164,10 +204,11 @@ final class GtkSourceFileClass {
     }
     return GtkSourceFileClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceFileClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceFileClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -196,10 +237,11 @@ final class GtkSourceFileLoaderClass {
     }
     return GtkSourceFileLoaderClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceFileLoaderClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceFileLoaderClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -228,10 +270,11 @@ final class GtkSourceFileSaverClass {
     }
     return GtkSourceFileSaverClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceFileSaverClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceFileSaverClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -260,10 +303,11 @@ final class GtkSourceGutterClass {
     }
     return GtkSourceGutterClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceGutterClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceGutterClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -292,10 +336,11 @@ final class GtkSourceGutterLinesClass {
     }
     return GtkSourceGutterLinesClass.rawFromPointer(handle, owned: owned);
   }
-  GtkSourceGutterLinesClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkSourceGutterLinesClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -326,11 +371,12 @@ final class GtkSourceGutterRendererClass {
   }
   GtkSourceGutterRendererClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -366,51 +412,12 @@ final class GtkSourceGutterRendererPixbufClass {
   }
   GtkSourceGutterRendererPixbufClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkSourceGutterRendererTextClass {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GtkSourceGutterRendererTextClass.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GtkSourceGutterRendererTextClass>(
-      handle.address,
-    );
-    if (cached != null) {
-      return cached;
-    }
-    return GtkSourceGutterRendererTextClass.rawFromPointer(
-      handle,
-      owned: owned,
-    );
-  }
-  GtkSourceGutterRendererTextClass.rawFromPointer(
-    this.handle, {
-    bool owned = false,
-  }) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

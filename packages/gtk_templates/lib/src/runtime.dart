@@ -10,6 +10,10 @@
 /// `GType` of its own.
 library;
 
+import 'dart:ffi' as ffi;
+
+import 'package:ffi/ffi.dart';
+import 'package:glib/glib.dart';
 import 'package:gobject/gobject.dart';
 import 'package:gtk4/gtk4.dart';
 
@@ -56,6 +60,24 @@ GtkWidgetClass? getWidgetClass(GtkWidget widget) {
   return GtkWidgetClass.fromPointer(classPtr.handle);
 }
 
+/// The quark the template owner is stored under.
+///
+/// A quark is an interned string: the same string always yields the
+/// same quark, in every isolate of the process. That is what makes it
+/// usable as the key of process-wide state.
+final int _ownerQuark = quarkFromString('gtk_templates-template-owner');
+
+/// `g_strdup` — a copy of the string in GLib's own memory.
+///
+/// The generated `strdup` frees its result, which is not what the
+/// registry needs: the owner's name has to outlive the call, in memory
+/// every isolate can read.
+final _gStrdup =
+    glibLookup<
+          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>
+        >('g_strdup')
+        .asFunction<ffi.Pointer<Utf8> Function(ffi.Pointer<Utf8>)>();
+
 /// The native types that already carry a GTK template.
 ///
 /// GTK stores the template on the **native class**, and
@@ -65,9 +87,14 @@ GtkWidgetClass? getWidgetClass(GtkWidget widget) {
 /// classes cannot share one native widget type — the second one has
 /// to be told so instead of tripping a GTK assertion.
 ///
-/// Maps the native `GType` to the name of the Dart class that
-/// claimed it.
-final Map<int, String> _templateOwners = <int, String>{};
+/// The registry lives in the **type system**, not in a Dart `Map`: a
+/// Dart `static` is per-isolate, but GTK's rule belongs to the native
+/// class, which every isolate of the process shares. Two isolates each
+/// believing they own the type would both install a template, and GTK
+/// would abort with an assertion.
+///
+/// The owner's name is kept in the type's `qdata` — native memory,
+/// keyed by the type — under [_ownerQuark].
 
 /// Claims [widgetType] for the template owned by the Dart class
 /// [owner].
@@ -82,20 +109,51 @@ final Map<int, String> _templateOwners = <int, String>{};
 /// Throws a [StateError] when a *different* owner already claimed
 /// the type: GTK allows exactly one template per native class, and a
 /// Dart subclass does not create a new `GType`.
+///
+/// The claim is **process-wide**: it lives in the type's `qdata`, so a
+/// second isolate of the same process sees it and does not install a
+/// second template on the shared native class.
 bool claimTemplateType(int widgetType, String owner) {
-  final existing = _templateOwners[widgetType];
+  final existing = typeGetQdata(widgetType, _ownerQuark);
   if (existing == null) {
-    _templateOwners[widgetType] = owner;
+    typeSetQdata(widgetType, _ownerQuark, _copyToNative(owner));
     return true;
   }
-  if (existing == owner) return false;
+  final existingOwner = _readNative(existing);
+  if (existingOwner == owner) return false;
   throw StateError(
     'gtk_templates: the native widget type (GType $widgetType) already '
-    'carries a template installed by `$existing`. GTK allows one template '
+    'carries a template installed by `$existingOwner`. GTK allows one template '
     'per native class, and a Dart subclass does not register a GType of its '
     'own — so two Dart template classes cannot share the same native '
     'widget type.',
   );
+}
+
+/// A copy of [text] in GLib's own memory.
+///
+/// The registry stores the owner's name natively: another isolate has
+/// to be able to read it, and a Dart `String` lives in the isolate that
+/// created it.
+ffi.Pointer<ffi.Void> _copyToNative(String text) {
+  final bytes = text.toNativeUtf8();
+  try {
+    return _gStrdup(bytes.cast<Utf8>()).cast<ffi.Void>();
+  } finally {
+    malloc.free(bytes);
+  }
+}
+
+/// Reads a string the registry stored natively.
+///
+/// The copy is read and released; the registry keeps its own.
+String _readNative(ffi.Pointer<ffi.Void> pointer) {
+  final copy = _gStrdup(pointer.cast<Utf8>());
+  try {
+    return copy.toDartString();
+  } finally {
+    freeFn(copy.cast<ffi.Void>());
+  }
 }
 
 /// Prepares the user's template XML for GTK.

@@ -24,7 +24,18 @@ class GVolumeMonitor extends GObject {
     final cached = cachedObject<GVolumeMonitor>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -68,7 +79,10 @@ class GVolumeMonitor extends GObject {
           >('g_volume_monitor_get_connected_drives')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList getConnectedDrives() {
-    return GList.fromPointer(_gVolumeMonitorGetConnectedDrives(this.handle));
+    return GList.fromPointer(
+      _gVolumeMonitorGetConnectedDrives(this.handle),
+      owned: true,
+    );
   }
 
   /// Finds a #GMount object by its UUID (see g_mount_get_uuid())
@@ -93,7 +107,9 @@ class GVolumeMonitor extends GObject {
         this.handle,
         nativeUuid.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GMount.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GMount.fromPointer(_ret, owned: true);
     });
   }
 
@@ -109,7 +125,10 @@ class GVolumeMonitor extends GObject {
           >('g_volume_monitor_get_mounts')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList getMounts() {
-    return GList.fromPointer(_gVolumeMonitorGetMounts(this.handle));
+    return GList.fromPointer(
+      _gVolumeMonitorGetMounts(this.handle),
+      owned: true,
+    );
   }
 
   /// Finds a #GVolume object by its UUID (see g_volume_get_uuid())
@@ -134,7 +153,9 @@ class GVolumeMonitor extends GObject {
         this.handle,
         nativeUuid.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVolume.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVolume.fromPointer(_ret, owned: true);
     });
   }
 
@@ -150,7 +171,10 @@ class GVolumeMonitor extends GObject {
           >('g_volume_monitor_get_volumes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList getVolumes() {
-    return GList.fromPointer(_gVolumeMonitorGetVolumes(this.handle));
+    return GList.fromPointer(
+      _gVolumeMonitorGetVolumes(this.handle),
+      owned: true,
+    );
   }
 
   /// This function should be called by any #GVolumeMonitor
@@ -189,7 +213,10 @@ class GVolumeMonitor extends GObject {
           >('g_volume_monitor_adopt_orphan_mount')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static GVolume adoptOrphanMount(GMount mount) {
-    return GVolume.fromPointer(_gVolumeMonitorAdoptOrphanMount(mount.handle));
+    return GVolume.fromPointer(
+      _gVolumeMonitorAdoptOrphanMount(mount.handle),
+      owned: true,
+    );
   }
 
   /// Gets the volume monitor used by gio.
@@ -198,7 +225,7 @@ class GVolumeMonitor extends GObject {
         'g_volume_monitor_get',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GVolumeMonitor get_() {
-    return GVolumeMonitor.fromPointer(_gVolumeMonitorGet());
+    return GVolumeMonitor.fromPointer(_gVolumeMonitorGet(), owned: true);
   }
 
   /// Emitted when a drive changes.

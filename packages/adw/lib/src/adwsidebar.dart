@@ -230,7 +230,18 @@ class AdwSidebar extends GtkWidget
     final cached = cachedObject<AdwSidebar>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -280,6 +291,10 @@ class AdwSidebar extends GtkWidget
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void append(AdwSidebarSection section) {
+    if (section.owned) {
+      gobjectFinalizer.detach(section);
+      section.owned = false;
+    }
     _adwSidebarAppend(this.handle, section.handle);
   }
 
@@ -344,7 +359,10 @@ class AdwSidebar extends GtkWidget
           >('adw_sidebar_get_items')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSelectionModel getItems() {
-    return GtkSelectionModel.fromPointer(_adwSidebarGetItems(this.handle));
+    return GtkSelectionModel.fromPointer(
+      _adwSidebarGetItems(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the context menu model for @self's items.
@@ -412,7 +430,10 @@ class AdwSidebar extends GtkWidget
           >('adw_sidebar_get_sections')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel getSections() {
-    return GListModel.fromPointer(_adwSidebarGetSections(this.handle));
+    return GListModel.fromPointer(
+      _adwSidebarGetSections(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the index of the currently selected item.
@@ -462,6 +483,10 @@ class AdwSidebar extends GtkWidget
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
           >();
   void insert(AdwSidebarSection section, int position) {
+    if (section.owned) {
+      gobjectFinalizer.detach(section);
+      section.owned = false;
+    }
     _adwSidebarInsert(this.handle, section.handle, position);
   }
 
@@ -476,6 +501,10 @@ class AdwSidebar extends GtkWidget
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void prepend(AdwSidebarSection section) {
+    if (section.owned) {
+      gobjectFinalizer.detach(section);
+      section.owned = false;
+    }
     _adwSidebarPrepend(this.handle, section.handle);
   }
 
@@ -925,7 +954,9 @@ class AdwSidebar extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
     final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -948,7 +979,10 @@ class AdwSidebar extends GtkWidget
           >('gtk_accessible_get_at_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkATContext getAtContext() {
-    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+    return GtkATContext.fromPointer(
+      _gtkAccessibleGetAtContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Queries the coordinates and dimensions of this accessible
@@ -1009,7 +1043,9 @@ class AdwSidebar extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
     final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -1022,7 +1058,9 @@ class AdwSidebar extends GtkWidget
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
     final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Queries a platform state, such as focus.

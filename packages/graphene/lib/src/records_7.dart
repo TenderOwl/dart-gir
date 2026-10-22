@@ -13,7 +13,7 @@ part of '../graphene.dart';
 /// positive values. All functions taking a #graphene_rect_t as an argument
 /// will internally operate on a normalized copy; all functions returning a
 /// #graphene_rect_t will always return a normalized rectangle.
-final class GrapheneRect {
+final class GrapheneRect implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -23,14 +23,46 @@ final class GrapheneRect {
   }) {
     final cached = cachedObject<GrapheneRect>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseRect(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          rectFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneRect.rawFromPointer(handle, owned: owned);
   }
-  GrapheneRect.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneRect.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      rectFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneRect` with `graphene_rect_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final rectFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_rect_free'),
+  );
+
+  static final _releaseRect =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_rect_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -122,6 +154,11 @@ final class GrapheneRect {
           >('graphene_rect_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      rectFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneRectFree(this.handle);
   }
 
@@ -740,7 +777,7 @@ final class GrapheneRect {
         'graphene_rect_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GrapheneRect alloc() {
-    return GrapheneRect.fromPointer(_grapheneRectAlloc());
+    return GrapheneRect.fromPointer(_grapheneRectAlloc(), owned: true);
   }
 
   /// Returns a degenerate rectangle with origin fixed at (0, 0) and
@@ -751,37 +788,5 @@ final class GrapheneRect {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GrapheneRect zero() {
     return GrapheneRect.fromPointer(_grapheneRectZero());
-  }
-}
-
-final class GrapheneSimd4F {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GrapheneSimd4F.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GrapheneSimd4F>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GrapheneSimd4F.rawFromPointer(handle, owned: owned);
-  }
-  GrapheneSimd4F.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

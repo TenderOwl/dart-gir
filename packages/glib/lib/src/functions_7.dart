@@ -280,7 +280,7 @@ final _gIdleSourceNew =
       'g_idle_source_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function()>();
 GSource idleSourceNew() {
-  return GSource.fromPointer(_gIdleSourceNew());
+  return GSource.fromPointer(_gIdleSourceNew(), owned: true);
 }
 
 /// Compares the two #gint64 values being pointed to and returns
@@ -503,7 +503,10 @@ final _gIoCreateWatch =
           ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
         >();
 GSource ioCreateWatch(GIOChannel channel, GIOCondition condition) {
-  return GSource.fromPointer(_gIoCreateWatch(channel.handle, condition.value));
+  return GSource.fromPointer(
+    _gIoCreateWatch(channel.handle, condition.value),
+    owned: true,
+  );
 }
 
 /// Converts a string from UTF-8 to the encoding used for strings by

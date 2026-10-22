@@ -69,7 +69,18 @@ class GtkSourceRegion extends GObject {
     final cached = cachedObject<GtkSourceRegion>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -251,7 +262,9 @@ class GtkSourceRegion extends GObject {
       this.handle,
       region2?.handle ?? ffi.nullptr,
     );
-    return (_ret) == ffi.nullptr ? null : GtkSourceRegion.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkSourceRegion.fromPointer(_ret, owned: true);
   }
 
   /// Returns the intersection between @region and the subregion delimited by
@@ -281,7 +294,9 @@ class GtkSourceRegion extends GObject {
       start.handle,
       end.handle,
     );
-    return (_ret) == ffi.nullptr ? null : GtkSourceRegion.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkSourceRegion.fromPointer(_ret, owned: true);
   }
 
   /// Returns whether the @region is empty.

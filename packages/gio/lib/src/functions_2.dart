@@ -169,6 +169,7 @@ GSettingsBackend keyfileSettingsBackendNew(
             nativeRootPath.cast<Utf8>(),
             nativeRootGroup.cast<Utf8>(),
           ),
+          owned: true,
         );
       });
     });
@@ -185,7 +186,10 @@ final _gMemorySettingsBackendNew =
       'g_memory_settings_backend_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function()>();
 GSettingsBackend memorySettingsBackendNew() {
-  return GSettingsBackend.fromPointer(_gMemorySettingsBackendNew());
+  return GSettingsBackend.fromPointer(
+    _gMemorySettingsBackendNew(),
+    owned: true,
+  );
 }
 
 /// Initializes the platform networking libraries (eg, on Windows, this
@@ -208,7 +212,7 @@ final _gNullSettingsBackendNew =
       'g_null_settings_backend_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function()>();
 GSettingsBackend nullSettingsBackendNew() {
-  return GSettingsBackend.fromPointer(_gNullSettingsBackendNew());
+  return GSettingsBackend.fromPointer(_gNullSettingsBackendNew(), owned: true);
 }
 
 /// Utility method for #GPollableInputStream and #GPollableOutputStream
@@ -224,7 +228,10 @@ final _gPollableSourceNew =
         >('g_pollable_source_new')
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GSource pollableSourceNew(GObject pollableStream) {
-  return GSource.fromPointer(_gPollableSourceNew(pollableStream.handle));
+  return GSource.fromPointer(
+    _gPollableSourceNew(pollableStream.handle),
+    owned: true,
+  );
 }
 
 /// Utility method for #GPollableInputStream and #GPollableOutputStream
@@ -259,6 +266,7 @@ GSource pollableSourceNewFull(
       childSource?.handle ?? ffi.nullptr,
       cancellable?.handle ?? ffi.nullptr,
     ),
+    owned: true,
   );
 }
 
@@ -562,7 +570,7 @@ GBytes resourcesLookupData(String path, GResourceLookupFlags lookupFlags) {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GBytes.fromPointer(_ret);
+      return GBytes.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -606,7 +614,7 @@ GInputStream resourcesOpenStream(
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GInputStream.fromPointer(_ret);
+      return GInputStream.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

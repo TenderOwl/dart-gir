@@ -74,6 +74,7 @@ class RecordEmitter {
     final callables = CallableEmitter(ctx);
     final memberNames = <String>{
       'handle',
+      'owned',
       'fromPointer',
       dartName,
       'GType',
@@ -84,13 +85,59 @@ class RecordEmitter {
     for (final line in ctx.docLines(doc)) {
       b.writeln(line);
     }
+    // The release kind of the wrapper:
+    //
+    // * An interface is a GObject in C, so it is released with
+    //   `g_object_unref` — exactly like a class.
+    // * A boxed record or union is released with its own destructor,
+    //   which the GIR names (`unref`, `free`, `destroy`, …) or declares
+    //   as the record's `free-function`.
+    // * A type the GIR gives no destructor keeps the borrowed-reference
+    //   behaviour: the reference is never released.
+    final destructor = isInterface
+        ? null
+        : TypeResolver.destructorOf(type, ctx.namespace.name);
+    final finalizerMember = isInterface ? null : boxedFinalizerName(type.name);
+    // The `NativeFinalizer` that releases the reference, and the
+    // expressions that release a surplus reference the cache handed back
+    // and adopt a reference the cached wrapper does not own yet.
+    final String? finalizerExpr;
+    final String? releaseExpr;
+    final String? adoptExpr;
+    if (isInterface) {
+      finalizerExpr = 'gobjectFinalizer';
+      releaseExpr = 'gObjectUnref(handle)';
+      adoptExpr = '''
+        if (gObjectIsFloating(handle)) {
+          gObjectRefSink(handle);
+        }
+        gobjectFinalizer.attach(cached, handle, detach: cached);''';
+    } else if (destructor != null && finalizerMember != null) {
+      finalizerExpr = finalizerMember;
+      releaseExpr = '_release${toUpperCamel(type.name)}(handle)';
+      adoptExpr = '$finalizerMember.attach(cached, handle, detach: cached);';
+    } else {
+      finalizerExpr = null;
+      releaseExpr = null;
+      adoptExpr = null;
+    }
+    if (isInterface && packageNameFor(ctx.namespace) != 'gobject') {
+      // `gobjectFinalizer` and `gObjectUnref` live in `package:gobject`.
+      ctx.imports.add('gobject');
+    }
     // Interfaces must NOT be `final class`: the implements-clause plan
     // (T2) requires other classes to be able to `implements <Name>`.
     // `final class` forbids implementation outside the library, and the
     // implementing class lives in another generated file. Records and
     // unions stay `final class` because they're concrete struct wrappers
     // that aren't meant to be subclassed by user code.
-    b.writeln(isInterface ? 'class $dartName {' : 'final class $dartName {');
+    b.writeln(
+      isInterface
+          ? 'class $dartName implements ffi.Finalizable {'
+          : (finalizerExpr == null
+                ? 'final class $dartName {'
+                : 'final class $dartName implements ffi.Finalizable {'),
+    );
     // The `{bool owned}` named parameter is always accepted (even
     // when the class doesn't actually attach a finalizer, because
     // it's not a `GObject` subclass) so existing callers that don't
@@ -102,13 +149,59 @@ class RecordEmitter {
     // forwarding constructor (`fromPointer(handle)`).
     // The wrapper cache lives in `package:gir_ffi`.
     ctx.usesGirFfi = true;
-    // The wrapper cache lives in `package:gir_ffi`.
-    ctx.usesGirFfi = true;
-    b.writeln(_recordFromPointerFactory(dartName));
-    b.writeln('$dartName.rawFromPointer(this.handle, {bool owned = false}) {');
+    b.writeln(
+      _recordFromPointerFactory(
+        dartName,
+        release: releaseExpr,
+        adopt: adoptExpr,
+      ),
+    );
+    b.writeln('$dartName.rawFromPointer(this.handle, {this.owned = false}) {');
     b.writeln('registerDartObject(this, handle.address);');
+    if (finalizerExpr != null) {
+      b.writeln('if (owned) {');
+      if (isInterface) {
+        // A freshly created GObject starts out floating: nobody owns it
+        // until a parent takes it. The wrapper owns the object, so the
+        // reference is sunk — otherwise the parent that takes it would
+        // own the very reference this wrapper's finalizer releases.
+        b.writeln('  if (gObjectIsFloating(handle)) {');
+        b.writeln('    gObjectRefSink(handle);');
+        b.writeln('  }');
+      }
+      b.writeln('  $finalizerExpr.attach(this, handle, detach: this);');
+      b.writeln('}');
+    }
     b.writeln('}');
     b.writeln('final ffi.Pointer<ffi.Void> handle;');
+    // `owned` says whether *this* wrapper still holds the reference the
+    // GIR handed over. It is mutable: a callee that takes the reference
+    // over (`transfer-ownership="full"`) clears it.
+    b.writeln('bool owned;');
+    if (destructor != null && finalizerMember != null) {
+      final release = '_release${toUpperCamel(type.name)}';
+      b.writeln();
+      b.writeln('/// Releases an owned `$dartName` with `$destructor`.');
+      b.writeln('///');
+      b.writeln('/// The finalizer runs when the wrapper is collected, so a');
+      b.writeln('/// reference the GIR hands over is released exactly once.');
+      b.writeln('static final $finalizerMember = ffi.NativeFinalizer(');
+      b.writeln(
+        '  ${ctx.pkgIdent}Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(',
+      );
+      b.writeln("    '$destructor',");
+      b.writeln('  ),');
+      b.writeln(');');
+      b.writeln();
+      b.writeln('static final $release =');
+      b.writeln(
+        '    ${ctx.pkgIdent}Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(',
+      );
+      b.writeln("      '$destructor',");
+      b.writeln('    ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();');
+      memberNames.add(finalizerMember);
+      memberNames.add(release);
+    }
     // `cast<T>(factory)` lets the user recover the destination class's
     // methods from a borrowed wrapper (e.g. `GObject` from
     // `GListModel.getObject`, `GtkWidget` from `AdwTabPage.getChild`).
@@ -164,7 +257,10 @@ class RecordEmitter {
         ownerName: dartName,
         classMember: true,
         factoryClass: dartName,
-        factoryOwned: false,
+        // A boxed constructor hands the caller a reference the GIR marks
+        // `transfer-ownership="full"` — the wrapper owns it and releases
+        // it when it is collected.
+        factoryOwned: c.returnTransfer == GirTransferOwnership.full,
       );
       if (code != null) b.writeln(_indent(code));
     }
@@ -193,6 +289,7 @@ class RecordEmitter {
         ownerName: dartName,
         classMember: true,
         selfArgExpr: 'this.handle',
+        bodyPrelude: _destructorPrelude(m, destructor, finalizerMember),
       );
       if (code != null) b.writeln(_indent(code));
       // `*Callback` lifetime-safe overload for async methods. Skip when
@@ -309,6 +406,28 @@ class RecordEmitter {
     return escapeKeyword(toLowerCamel(name));
   }
 
+  /// The lines a boxed type's destructor method starts with.
+  ///
+  /// The wrapper's finalizer releases the reference when the wrapper is
+  /// collected. An *explicit* release takes over from the collector: the
+  /// finalizer is detached, so the reference is released once — by the
+  /// caller, not by the garbage collector.
+  static List<String> _destructorPrelude(
+    GirMethod m,
+    String? destructor,
+    String? finalizerMember,
+  ) {
+    if (destructor == null || finalizerMember == null) return const [];
+    if (m.cIdentifier != destructor) return const [];
+    return [
+      'if (owned) {',
+      '  // The caller releases the reference — the collector must not.',
+      '  $finalizerMember.detach(this);',
+      '  owned = false;',
+      '}',
+    ];
+  }
+
   static String _indent(String code) =>
       code.split('\n').map((l) => l.isEmpty ? l : '  $l').join('\n');
 }
@@ -319,8 +438,38 @@ class RecordEmitter {
 /// always yields the same Dart object. The generative work moves to
 /// `rawFromPointer`, which the constructor chain calls — a generative
 /// constructor may not redirect to a factory.
-String _recordFromPointerFactory(String dartName) =>
-    '''
+///
+/// On a cache hit the reference the C call handed over has to be balanced:
+///
+/// * The cached wrapper owns a reference of its own — the new one is a
+///   surplus and goes back.
+/// * The cached wrapper owns nothing — it *adopts* the new reference,
+///   because the reference was moved to it rather than duplicated (that
+///   is what `g_propagate_error` does with its `GError`).
+///
+/// [release] releases a surplus reference, [adopt] takes over a reference
+/// the cached wrapper does not own yet. Both are null when the type has no
+/// destructor the bindings can call.
+String _recordFromPointerFactory(
+  String dartName, {
+  String? release,
+  String? adopt,
+}) {
+  final balance = release == null && adopt == null
+      ? ''
+      : '''
+    if (owned) {
+      if (cached.owned) {
+        // The cached wrapper owns a reference of its own: the new one is
+        // a surplus and goes back.
+        $release;
+      } else {
+        // The cached wrapper owns nothing: it adopts the reference.
+        $adopt;
+        cached.owned = true;
+      }
+    }''';
+  return '''
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -329,11 +478,12 @@ String _recordFromPointerFactory(String dartName) =>
     bool owned = false,
   }) {
     final cached = cachedObject<$dartName>(handle.address);
-    if (cached != null) {
+    if (cached != null) {$balance
       return cached;
     }
     return $dartName.rawFromPointer(handle, owned: owned);
   }''';
+}
 
 /// The Dart FFI declaration of a struct field.
 ///

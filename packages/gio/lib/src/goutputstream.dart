@@ -30,7 +30,18 @@ class GOutputStream extends GObject {
     final cached = cachedObject<GOutputStream>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -959,6 +970,8 @@ class GOutputStream extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
+
+  /// `buffer` is **not** copied: it has to stay valid until the callback fires.
   void writeAllAsync(
     ffi.Pointer<ffi.Uint8> buffer,
     int count,
@@ -1026,6 +1039,7 @@ class GOutputStream extends GObject {
 
   /// Lifetime-safe variant of [writeAllAsync] for use with
   /// async callbacks. See `docs/async.md`.
+  /// `buffer` is **not** copied: it has to stay valid until the callback fires.
   void writeAllAsyncCallback(
     ffi.Pointer<ffi.Uint8> buffer,
     int count,
@@ -1172,6 +1186,9 @@ class GOutputStream extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
+
+  /// `buffer` is **not** copied: it has to stay valid until the callback fires.
+  /// The `GBytes` variant [writeBytesAsync] owns the buffer for the duration of the call — prefer it.
   void writeAsync(
     ffi.Pointer<ffi.Uint8> buffer,
     int count,
@@ -1239,6 +1256,8 @@ class GOutputStream extends GObject {
 
   /// Lifetime-safe variant of [writeAsync] for use with
   /// async callbacks. See `docs/async.md`.
+  /// `buffer` is **not** copied: it has to stay valid until the callback fires.
+  /// The `GBytes` variant [writeBytesAsync] owns the buffer for the duration of the call — prefer it.
   void writeAsyncCallback(
     ffi.Pointer<ffi.Uint8> buffer,
     int count,

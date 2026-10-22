@@ -41,7 +41,18 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
     final cached = cachedObject<GtkSortListModel>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -89,14 +100,23 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkSortListModel([GListModel? model, GtkSorter? sorter])
-    : this.rawFromPointer(
-        _gtkSortListModelNew(
-          model?.handle ?? ffi.nullptr,
-          sorter?.handle ?? ffi.nullptr,
-        ),
-        owned: true,
-      );
+  factory GtkSortListModel([GListModel? model, GtkSorter? sorter]) {
+    if (model != null && model.owned) {
+      gobjectFinalizer.detach(model);
+      model.owned = false;
+    }
+    if (sorter != null && sorter.owned) {
+      gobjectFinalizer.detach(sorter);
+      sorter.owned = false;
+    }
+    return GtkSortListModel.fromPointer(
+      _gtkSortListModelNew(
+        model?.handle ?? ffi.nullptr,
+        sorter?.handle ?? ffi.nullptr,
+      ),
+      owned: true,
+    );
+  }
 
   /// Returns whether incremental sorting is enabled.
   ///
@@ -365,7 +385,9 @@ class GtkSortListModel extends GObject implements GListModel, GtkSectionModel {
           >();
   GObject? getObject(int position) {
     final _ret = _gListModelGetObject(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

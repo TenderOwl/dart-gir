@@ -18,7 +18,18 @@ class GCancellable extends GObject {
     final cached = cachedObject<GCancellable>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -384,7 +395,10 @@ class GCancellable extends GObject {
           >('g_cancellable_source_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GSource sourceNew() {
-    return GSource.fromPointer(_gCancellableSourceNew(this.handle));
+    return GSource.fromPointer(
+      _gCancellableSourceNew(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the top cancellable from the stack.

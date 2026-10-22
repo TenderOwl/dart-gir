@@ -164,7 +164,7 @@ final _gChildWatchSourceNew =
       'g_child_watch_source_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 GSource childWatchSourceNew(int pid) {
-  return GSource.fromPointer(_gChildWatchSourceNew(pid));
+  return GSource.fromPointer(_gChildWatchSourceNew(pid), owned: true);
 }
 
 /// A wrapper for the POSIX chmod() function. The chmod() function is

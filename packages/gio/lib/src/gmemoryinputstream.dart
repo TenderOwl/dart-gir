@@ -19,7 +19,18 @@ class GMemoryInputStream extends GInputStream
     final cached = cachedObject<GMemoryInputStream>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -74,6 +85,26 @@ class GMemoryInputStream extends GInputStream
       );
 
   /// Creates a new #GMemoryInputStream with data in memory of a given size.
+  /// The destroy notify the callee calls when it is done
+  /// with the buffer it took over.
+  ///
+  /// The notify outlives the call, so the trampoline is
+  /// permanent — a scoped `NativeCallable` would be closed
+  /// before the notify fires.
+  static final _gMemoryInputStreamNewFromDataDestroyCallbacks =
+      <void Function(ffi.Pointer<ffi.Void>)>[];
+  static void _gMemoryInputStreamNewFromDataDestroyTrampoline(
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    if (_gMemoryInputStreamNewFromDataDestroyCallbacks.isEmpty) return;
+    final fn = _gMemoryInputStreamNewFromDataDestroyCallbacks.removeAt(0);
+    fn(data);
+  }
+
+  static final _gMemoryInputStreamNewFromDataDestroyPtr =
+      ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>(
+        _gMemoryInputStreamNewFromDataDestroyTrampoline,
+      );
   static final _gMemoryInputStreamNewFromData =
       gioLookup<
             ffi.NativeFunction<
@@ -95,26 +126,27 @@ class GMemoryInputStream extends GInputStream
               >,
             )
           >();
+
+  /// The callee takes over `data`: keep it valid until the destroy notify runs.
+  /// The `GBytes` variant [fromBytes] owns the buffer for the duration of the call — prefer it.
   factory GMemoryInputStream.fromData(
     ffi.Pointer<ffi.Uint8> data,
     int len, [
     void Function(ffi.Pointer<ffi.Void>)? destroy,
   ]) {
-    final _nc3 = destroy == null
-        ? null
-        : ffi.NativeCallable<
-            ffi.Void Function(ffi.Pointer<ffi.Void>)
-          >.isolateLocal(destroy);
-    try {
-      final _ret = _gMemoryInputStreamNewFromData(
+    if (destroy != null) {
+      _gMemoryInputStreamNewFromDataDestroyCallbacks.add(destroy);
+    }
+    return GMemoryInputStream.fromPointer(
+      _gMemoryInputStreamNewFromData(
         data,
         len,
-        _nc3?.nativeFunction ?? ffi.nullptr,
-      );
-      return GMemoryInputStream.fromPointer(_ret, owned: true);
-    } finally {
-      _nc3?.close();
-    }
+        destroy == null
+            ? ffi.nullptr
+            : _gMemoryInputStreamNewFromDataDestroyPtr,
+      ),
+      owned: true,
+    );
   }
 
   /// Appends @bytes to data that can be read from the input stream.
@@ -132,6 +164,26 @@ class GMemoryInputStream extends GInputStream
   }
 
   /// Appends @data to data that can be read from the input stream
+  /// The destroy notify the callee calls when it is done
+  /// with the buffer it took over.
+  ///
+  /// The notify outlives the call, so the trampoline is
+  /// permanent — a scoped `NativeCallable` would be closed
+  /// before the notify fires.
+  static final _gMemoryInputStreamAddDataDestroyCallbacks =
+      <void Function(ffi.Pointer<ffi.Void>)>[];
+  static void _gMemoryInputStreamAddDataDestroyTrampoline(
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    if (_gMemoryInputStreamAddDataDestroyCallbacks.isEmpty) return;
+    final fn = _gMemoryInputStreamAddDataDestroyCallbacks.removeAt(0);
+    fn(data);
+  }
+
+  static final _gMemoryInputStreamAddDataDestroyPtr =
+      ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>(
+        _gMemoryInputStreamAddDataDestroyTrampoline,
+      );
   static final _gMemoryInputStreamAddData =
       gioLookup<
             ffi.NativeFunction<
@@ -155,26 +207,23 @@ class GMemoryInputStream extends GInputStream
               >,
             )
           >();
+
+  /// The callee takes over `data`: keep it valid until the destroy notify runs.
+  /// The `GBytes` variant [addBytes] owns the buffer for the duration of the call — prefer it.
   void addData(
     ffi.Pointer<ffi.Uint8> data,
     int len, [
     void Function(ffi.Pointer<ffi.Void>)? destroy,
   ]) {
-    final _nc3 = destroy == null
-        ? null
-        : ffi.NativeCallable<
-            ffi.Void Function(ffi.Pointer<ffi.Void>)
-          >.isolateLocal(destroy);
-    try {
-      _gMemoryInputStreamAddData(
-        this.handle,
-        data,
-        len,
-        _nc3?.nativeFunction ?? ffi.nullptr,
-      );
-    } finally {
-      _nc3?.close();
+    if (destroy != null) {
+      _gMemoryInputStreamAddDataDestroyCallbacks.add(destroy);
     }
+    _gMemoryInputStreamAddData(
+      this.handle,
+      data,
+      len,
+      destroy == null ? ffi.nullptr : _gMemoryInputStreamAddDataDestroyPtr,
+    );
   }
 
   /// The notify signal is emitted on an object when one of its properties has
@@ -253,6 +302,7 @@ class GMemoryInputStream extends GInputStream
         this.handle,
         cancellable?.handle ?? ffi.nullptr,
       ),
+      owned: true,
     );
   }
 

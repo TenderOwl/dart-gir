@@ -18,10 +18,11 @@ final class GdkPixbufAnimationClass {
     }
     return GdkPixbufAnimationClass.rawFromPointer(handle, owned: owned);
   }
-  GdkPixbufAnimationClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GdkPixbufAnimationClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -55,11 +56,12 @@ final class GdkPixbufAnimationIterClass {
   }
   GdkPixbufAnimationIterClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -79,7 +81,7 @@ final class GdkPixbufAnimationIterClass {
 ///
 /// Only modules should access the fields directly, applications should
 /// use the `gdk_pixbuf_format_*` family of functions.
-final class GdkPixbufFormat {
+final class GdkPixbufFormat implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -89,14 +91,46 @@ final class GdkPixbufFormat {
   }) {
     final cached = cachedObject<GdkPixbufFormat>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePixbufFormat(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          pixbufFormatFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GdkPixbufFormat.rawFromPointer(handle, owned: owned);
   }
-  GdkPixbufFormat.rawFromPointer(this.handle, {bool owned = false}) {
+  GdkPixbufFormat.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      pixbufFormatFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GdkPixbufFormat` with `gdk_pixbuf_format_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final pixbufFormatFinalizer = ffi.NativeFinalizer(
+    gdkPixbufLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('gdk_pixbuf_format_free'),
+  );
+
+  static final _releasePixbufFormat =
+      gdkPixbufLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('gdk_pixbuf_format_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -120,7 +154,9 @@ final class GdkPixbufFormat {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbufFormat? copy() {
     final _ret = _gdkPixbufFormatCopy(this.handle);
-    return (_ret) == ffi.nullptr ? null : GdkPixbufFormat.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbufFormat.fromPointer(_ret, owned: true);
   }
 
   /// Frees the resources allocated when copying a `GdkPixbufFormat`
@@ -131,6 +167,11 @@ final class GdkPixbufFormat {
           >('gdk_pixbuf_format_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      pixbufFormatFinalizer.detach(this);
+      owned = false;
+    }
     _gdkPixbufFormatFree(this.handle);
   }
 
@@ -272,10 +313,11 @@ final class GdkPixbufLoaderClass {
     }
     return GdkPixbufLoaderClass.rawFromPointer(handle, owned: owned);
   }
-  GdkPixbufLoaderClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GdkPixbufLoaderClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -349,104 +391,11 @@ final class GdkPixbufModule {
     }
     return GdkPixbufModule.rawFromPointer(handle, owned: owned);
   }
-  GdkPixbufModule.rawFromPointer(this.handle, {bool owned = false}) {
+  GdkPixbufModule.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// The signature prefix for a module.
-///
-/// The signature of a module is a set of prefixes. Prefixes are encoded as
-/// pairs of ordinary strings, where the second string, called the mask, if
-/// not `NULL`, must be of the same length as the first one and may contain
-/// ' ', '!', 'x', 'z', and 'n' to indicate bytes that must be matched,
-/// not matched, "don't-care"-bytes, zeros and non-zeros, respectively.
-///
-/// Each prefix has an associated integer that describes the relevance of
-/// the prefix, with 0 meaning a mismatch and 100 a "perfect match".
-///
-/// Starting with gdk-pixbuf 2.8, the first byte of the mask may be '*',
-/// indicating an unanchored pattern that matches not only at the beginning,
-/// but also in the middle. Versions prior to 2.8 will interpret the '*'
-/// like an 'x'.
-///
-/// The signature of a module is stored as an array of
-/// `GdkPixbufModulePatterns`. The array is terminated by a pattern
-/// where the `prefix` is `NULL`.
-///
-/// ```c
-/// GdkPixbufModulePattern *signature[] = {
-/// { "abcdx", " !x z", 100 },
-/// { "bla", NULL,  90 },
-/// { NULL, NULL, 0 }
-/// };
-/// ```
-///
-/// In the example above, the signature matches e.g. "auud\0" with
-/// relevance 100, and "blau" with relevance 90.
-final class GdkPixbufModulePattern {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GdkPixbufModulePattern.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GdkPixbufModulePattern>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GdkPixbufModulePattern.rawFromPointer(handle, owned: owned);
-  }
-  GdkPixbufModulePattern.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GdkPixbufSimpleAnimClass {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GdkPixbufSimpleAnimClass.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GdkPixbufSimpleAnimClass>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GdkPixbufSimpleAnimClass.rawFromPointer(handle, owned: owned);
-  }
-  GdkPixbufSimpleAnimClass.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

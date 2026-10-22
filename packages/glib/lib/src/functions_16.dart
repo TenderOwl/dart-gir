@@ -480,7 +480,7 @@ final _gTimeoutSourceNew =
       'g_timeout_source_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 GSource timeoutSourceNew(int interval) {
-  return GSource.fromPointer(_gTimeoutSourceNew(interval));
+  return GSource.fromPointer(_gTimeoutSourceNew(interval), owned: true);
 }
 
 /// Creates a new timeout source.
@@ -499,7 +499,7 @@ final _gTimeoutSourceNewSeconds =
       'g_timeout_source_new_seconds',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 GSource timeoutSourceNewSeconds(int interval) {
-  return GSource.fromPointer(_gTimeoutSourceNewSeconds(interval));
+  return GSource.fromPointer(_gTimeoutSourceNewSeconds(interval), owned: true);
 }
 
 /// Attempts to allocate @n_bytes, and returns %NULL on failure.

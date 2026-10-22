@@ -222,7 +222,10 @@ class ClassEmitter {
       }
       b.writeln('}');
       b.writeln('final ffi.Pointer<ffi.Void> handle;');
-      b.writeln('final bool owned;');
+      // `owned` says whether *this* wrapper still holds the reference the
+      // GIR handed over. It is mutable: a callee that takes the reference
+      // over (`transfer-ownership="full"`) clears it.
+      b.writeln('bool owned;');
       if (rooted) {
         b.writeln(
           'void _attachFinalizer() => gobjectFinalizer.attach(this, handle, detach: this);',
@@ -365,6 +368,7 @@ class ClassEmitter {
         ownerName: dartName,
         classMember: true,
         selfArgExpr: 'this.handle',
+        bodyPrelude: _unrefPrelude(m, rooted),
       );
       if (code != null) b.writeln(_indent(code));
       // `*Callback` lifetime-safe overload for async methods. Generated
@@ -1347,6 +1351,24 @@ class ClassEmitter {
   }
 }
 
+/// The lines `g_object_unref` starts with.
+///
+/// The wrapper's finalizer releases the reference when the wrapper is
+/// collected. An *explicit* `unref()` takes over from the collector: the
+/// finalizer is detached, so the reference is released once — by the caller,
+/// not by the garbage collector.
+List<String> _unrefPrelude(GirMethod m, bool rooted) {
+  if (!rooted) return const [];
+  if (m.cIdentifier != 'g_object_unref') return const [];
+  return [
+    'if (owned) {',
+    '  // The caller releases the reference — the collector must not.',
+    '  gobjectFinalizer.detach(this);',
+    '  owned = false;',
+    '}',
+  ];
+}
+
 /// The `fromPointer` factory every GObject wrapper gets.
 ///
 /// The factory consults the wrapper cache first: the same native pointer
@@ -1354,11 +1376,30 @@ class ClassEmitter {
 /// GObject class would come back from native code as a bare wrapper and
 /// lose its Dart state.
 ///
-/// On a cache hit the reference the C call handed over is surplus — the
-/// cached wrapper already owns one — so it is released.
+/// On a cache hit the reference the C call handed over has to be balanced:
+///
+/// * The cached wrapper owns a reference of its own — the new one is a
+///   surplus and goes back.
+/// * The cached wrapper owns nothing — it *adopts* the new reference,
+///   because the reference was moved to it rather than duplicated (that
+///   is what `g_propagate_error` does with its `GError`).
 String _fromPointerFactory(String dartName, {required bool rooted}) {
   final release = rooted
-      ? '      if (owned) {\n        gObjectUnref(handle);\n      }'
+      ? '''
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
+      }'''
       : '';
   return '''
   /// Wraps the native object at [handle].

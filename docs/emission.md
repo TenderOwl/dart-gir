@@ -356,6 +356,89 @@ declared, and the package's `signals.dart` was missing the
 `_connectSignal_v_3_i_i_i_int_int_int` helper the connector called
 (`unknown_method _connectSignal_v_X` from the analyzer).
 
+## Ownership
+
+The GIR says who owns a reference: `transfer-ownership="full"` on a
+return value or a parameter means the *receiver* owns it, anything else
+means the reference is borrowed. The generator follows that literally, and
+every wrapper carries a public `bool owned` field that says where the
+reference stands at any moment.
+
+### The three releases
+
+A reference the wrapper owns is released exactly once, by one of three
+parties:
+
+| Party | When | How |
+| --- | --- | --- |
+| **The collector** | the wrapper is garbage-collected | the `NativeFinalizer` attached to the wrapper |
+| **The caller** | the caller asks for it | `unref()` / `free()` — the finalizer is detached first |
+| **The callee** | a `transfer-ownership="full"` parameter | the call site detaches the finalizer and clears `owned` |
+
+```dart
+final file = GFile.newForPath('/tmp/notes');
+file.owned;             // true — the GIR says transfer-ownership="full"
+file.unref();           // the caller releases it; the finalizer is detached
+file.owned;             // false — released once, by the caller
+```
+
+An explicit release takes over from the collector: the destructor method
+detaches the finalizer before it calls the release function, so the
+reference is not released a second time when the wrapper is collected.
+
+### What releases a type
+
+| Kind | Released with |
+| --- | --- |
+| A GObject-rooted **class** | `g_object_unref` (`gobjectFinalizer`) |
+| A GObject-rooted **interface** | `g_object_unref` (`gobjectFinalizer`) — an interface is a GObject in C |
+| A **boxed record or union** with a destructor | its own destructor: the type's `free`/`unref`/`destroy`/`release`/`close` method, or the record's `free-function` attribute |
+| A boxed type **without** a destructor | nothing — the reference is never released |
+
+132 of the corpus's boxed types have a destructor the bindings can call,
+and each of them now gets its own `NativeFinalizer`
+(`static final bytesFinalizer = ffi.NativeFinalizer(…)`). The rest keep
+the borrowed behaviour: the GIR names no release function for them, so
+there is nothing to call.
+
+### The handover
+
+A parameter the GIR marks `transfer-ownership="full"` belongs to the
+callee from the call on. The wrapper gives up its claim at the call site,
+before the call:
+
+```dart
+void addBreakpoint(AdwBreakpoint breakpoint) {
+  if (breakpoint.owned) {
+    gobjectFinalizer.detach(breakpoint);
+    breakpoint.owned = false;
+  }
+  _adwApplicationWindowAddBreakpoint(this.handle, breakpoint.handle);
+}
+```
+
+The detach is what stops the collector from releasing a reference the
+callee owns, and clearing `owned` is what stops a second handover of the
+same wrapper from detaching twice. A *nullable* handover is guarded on
+the null check as well.
+
+The handover is skipped for a generative constructor: the constructor's
+initializer list cannot host it, so the generator emits a factory
+constructor for a callable that has one.
+
+### A thread-affine destructor is left to the caller
+
+A `NativeFinalizer` may run on any VM thread — the collector does not
+promise the thread the wrapper was created on. Releasing a main context
+from another thread is not safe, so the types whose destructor is
+thread-affine keep the caller's explicit release:
+
+`GLib.MainContext`, `GLib.MainLoop`, `GLib.Source`, `GLib.Thread`,
+`GLib.IOChannel`, `GLib.Timer`.
+
+They get no `NativeFinalizer`, and the generator test group *Ownership
+transfer* pins that.
+
 ## CallableEmitter — `generator/lib/src/emit/callable.dart`
 
 Used by every emitter that produces a function-shaped wrapper (methods,
@@ -650,6 +733,88 @@ The last two exclusions are the interesting ones:
   `GBytes` variant (`g_file_replace_contents_bytes_async`) is the one
   that works asynchronously — GIO holds a reference to the bytes "for
   the duration of the call" without copying them.
+
+### The lifetime note on a raw byte array
+
+A byte array that stays a raw pointer has a lifetime the *caller* has to
+honour, and the GIR states it. The wrapper carries that contract in its
+doc comment, so it is visible in the API reference and next to the call
+site:
+
+```dart
+/// `contents` is **not** copied: it has to stay valid until the callback fires.
+/// The `GBytes` variant [replaceContentsBytesAsync] owns the buffer for the
+/// duration of the call — prefer it.
+void replaceContentsAsync(...)
+```
+
+The note is emitted by `EmitContext.byteArrayLifetimeDoc` and has three
+parts, each of them present only when it applies:
+
+| part | when |
+| --- | --- |
+| *is **not** copied: it has to stay valid until the callback fires* | the callable is async (a callback with `scope="async"`) |
+| *The callee takes over the buffer: keep it valid until the destroy notify runs* | the callable has a `GDestroyNotify` sibling |
+| *The `GBytes` variant [name] owns the buffer for the duration of the call — prefer it* | the library declares a `GBytes` sibling |
+
+The `GBytes` sibling is found by the C identifier: GLib spells it by
+inserting `_bytes` into the name — `g_file_replace_contents_async` →
+`g_file_replace_contents_bytes_async`, `g_memory_input_stream_add_data` →
+`g_memory_input_stream_add_bytes`. The lookup verifies that the candidate
+really takes a `GBytes`, so a name that merely looks similar is not
+mistaken for a sibling. Five of the ten async byte-array callables in the
+corpus have one; the other five keep the raw pointer with the lifetime
+note alone.
+
+The note lands on the **public** wrapper, not on the private native
+binding — a note on the binding would never reach the API reference.
+
+### A destroy notify outlives the call
+
+A `GDestroyNotify` next to a byte buffer is the callee's promise to
+release that buffer later: `g_memory_input_stream_new_from_data` calls the
+notify when the *stream* is finalized, not when the constructor returns.
+The callback therefore outlives the call that passed it.
+
+A normal callback gets a scoped `NativeCallable`: the wrapper allocates it,
+hands `.nativeFunction` to C, and `.close()`-s it in `finally`. That is
+wrong for a destroy notify — the `NativeCallable` would be closed before
+the callee calls it, and the callback would run against freed memory. The
+Dart VM aborts the isolate with *"Callback invoked after it has been
+deleted"*.
+
+A destroy notify next to a byte buffer therefore gets a **permanent**
+trampoline instead: a `static` Dart function behind a
+`ffi.Pointer.fromFunction`, plus a per-callable registry the wrapper
+parks the user's callback in before the call and the trampoline pops when
+the notify arrives.
+
+```dart
+static final _gMemoryInputStreamNewFromDataDestroyCallbacks =
+    <void Function(ffi.Pointer<ffi.Void>)>[];
+static void _gMemoryInputStreamNewFromDataDestroyTrampoline(
+  ffi.Pointer<ffi.Void> data,
+) {
+  if (_gMemoryInputStreamNewFromDataDestroyCallbacks.isEmpty) return;
+  final fn = _gMemoryInputStreamNewFromDataDestroyCallbacks.removeAt(0);
+  fn(data);
+}
+static final _gMemoryInputStreamNewFromDataDestroyPtr =
+    ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>(
+      _gMemoryInputStreamNewFromDataDestroyTrampoline,
+    );
+```
+
+A destroy notify *without* a byte buffer keeps the scoped `NativeCallable`:
+those call the notify during the call itself (`g_list_free_full` calls it
+once per element), so the scoped lifetime is the right one.
+
+**Known limitation.** The permanent trampoline is a Dart callback, and the
+Dart VM refuses to run a callback while the isolate shuts down. A buffer
+whose notify is still pending when the isolate goes away therefore aborts
+the VM — the same hazard the native GTK suite documents for signal
+handlers. Release the object that owns the buffer before the isolate shuts
+down (`stream.unref()`), and the notify runs while the isolate is alive.
 
 A byte-array parameter also rules out the generative-constructor form of
 a constructor: the mirroring needs a body, and a generative initializer

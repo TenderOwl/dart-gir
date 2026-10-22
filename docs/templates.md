@@ -407,7 +407,9 @@ net, not the supported way to use a template.
    `GType` of its own, so the first instance installs the template and
    every later instance reuses it. A *different* Dart class claiming
    the same native type is a hard error, reported as a `StateError`
-   instead of a GTK assertion.
+   instead of a GTK assertion. The claim is **process-wide** — it lives
+   in the native type's `qdata`, so a second isolate of the same
+   process sees it and does not install a second template.
 4. `widgetClass.setTemplate(_templateBytes)` and
    `widgetClass.bindTemplateChildFull(child.id, false, 0)` for every
    child in the XML, in source order — **only on the first instance**,
@@ -682,15 +684,21 @@ byte-identical output to the `build_runner` path. Exit codes:
   type between two template classes needs a real `GType` — which means
   a C extension, not a Dart mixin.
 
-  The ownership registry behind that check is a Dart static, so it is
-  per **isolate**, while GTK's slot is per **native class** and
-  therefore per **process**. Two template classes in two isolates of
-  one process are *not* caught by the registry: the second
-  `setTemplate` trips GTK's own assertion, which tears the heap down.
-  The test runner keeps every suite of a `dart test` invocation in one
-  process, so two suites that template the same native widget type
-  (an `AdwApplicationWindow`, say) collide. Give the two classes
-  different native types, or keep them in one isolate.
+  The ownership registry behind that check lives in the **type system** —
+  the owner's name is kept in the native type's `qdata`, under a quark
+  (`g_quark_from_string()` interns the key, so every isolate of the
+  process agrees on it). That makes the registry per **process**, like
+  GTK's slot, instead of per **isolate**: two template classes in two
+  isolates of one process are caught by the registry, and the second one
+  is rejected with a `StateError` rather than tripping GTK's own
+  assertion, which tears the heap down.
+
+  The `qdata` is native memory, so the owner's name is stored there as
+  a `g_strdup`'d copy — a Dart `String` lives in the isolate that
+  created it and the other isolate could not read it. The copy is
+  released when the type is finalized, which for a widget type is
+  never: the registry holds one name per template class for the life of
+  the process.
 - **The template must be built from the constructor.** Dart has no
   instance initializer, so the host widget has to call
   `initTemplate()` itself (see §5). Forgetting it does not fail

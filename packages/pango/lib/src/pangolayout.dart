@@ -51,7 +51,18 @@ class PangoLayout extends GObject {
     final cached = cachedObject<PangoLayout>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -121,7 +132,7 @@ class PangoLayout extends GObject {
           >('pango_layout_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayout copy() {
-    return PangoLayout.fromPointer(_pangoLayoutCopy(this.handle));
+    return PangoLayout.fromPointer(_pangoLayoutCopy(this.handle), owned: true);
   }
 
   /// Gets the alignment for the layout: how partial lines are
@@ -454,7 +465,10 @@ class PangoLayout extends GObject {
           >('pango_layout_get_iter')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoLayoutIter getIter() {
-    return PangoLayoutIter.fromPointer(_pangoLayoutGetIter(this.handle));
+    return PangoLayoutIter.fromPointer(
+      _pangoLayoutGetIter(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets whether each complete line should be stretched to fill the entire
@@ -780,7 +794,9 @@ class PangoLayout extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoTabArray? getTabs() {
     final _ret = _pangoLayoutGetTabs(this.handle);
-    return (_ret) == ffi.nullptr ? null : PangoTabArray.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoTabArray.fromPointer(_ret, owned: true);
   }
 
   /// Gets the text in the layout.
@@ -1022,7 +1038,10 @@ class PangoLayout extends GObject {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GBytes serialize(PangoLayoutSerializeFlags flags) {
-    return GBytes.fromPointer(_pangoLayoutSerialize(this.handle, flags.value));
+    return GBytes.fromPointer(
+      _pangoLayoutSerialize(this.handle, flags.value),
+      owned: true,
+    );
   }
 
   /// Sets the alignment for the layout: how partial lines are
@@ -1601,7 +1620,9 @@ class PangoLayout extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return (_ret) == ffi.nullptr ? null : PangoLayout.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : PangoLayout.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

@@ -115,6 +115,7 @@ final _gdkCairoRegionCreateFromSurface =
 CairoRegion cairoRegionCreateFromSurface(CairoSurface surface) {
   return CairoRegion.fromPointer(
     _gdkCairoRegionCreateFromSurface(surface.handle),
+    owned: true,
   );
 }
 
@@ -807,7 +808,9 @@ GdkPixbuf? pixbufGetFromSurface(
     width,
     height,
   );
-  return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+  return (_ret) == ffi.nullptr
+      ? null
+      : GdkPixbuf.fromPointer(_ret, owned: true);
 }
 
 /// Creates a new pixbuf from @texture.
@@ -824,7 +827,9 @@ final _gdkPixbufGetFromTexture =
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
 GdkPixbuf? pixbufGetFromTexture(GdkTexture texture) {
   final _ret = _gdkPixbufGetFromTexture(texture.handle);
-  return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+  return (_ret) == ffi.nullptr
+      ? null
+      : GdkPixbuf.fromPointer(_ret, owned: true);
 }
 
 /// Sets a list of backends that GDK should try to use.

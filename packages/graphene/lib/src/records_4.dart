@@ -2,7 +2,7 @@
 part of '../graphene.dart';
 
 /// A point with three components: X, Y, and Z.
-final class GraphenePoint3D {
+final class GraphenePoint3D implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -12,14 +12,46 @@ final class GraphenePoint3D {
   }) {
     final cached = cachedObject<GraphenePoint3D>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePoint3D(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          point3DFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GraphenePoint3D.rawFromPointer(handle, owned: owned);
   }
-  GraphenePoint3D.rawFromPointer(this.handle, {bool owned = false}) {
+  GraphenePoint3D.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      point3DFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GraphenePoint3D` with `graphene_point3d_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final point3DFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_point3d_free'),
+  );
+
+  static final _releasePoint3D =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_point3d_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -38,7 +70,8 @@ final class GraphenePoint3D {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_point3d_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePoint3D.alloc() : this.rawFromPointer(_graphenePoint3dAlloc());
+  GraphenePoint3D.alloc()
+    : this.rawFromPointer(_graphenePoint3dAlloc(), owned: true);
 
   /// Computes the cross product of the two given #graphene_point3d_t.
   static final _graphenePoint3dCross =
@@ -140,6 +173,11 @@ final class GraphenePoint3D {
           >('graphene_point3d_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      point3DFinalizer.detach(this);
+      owned = false;
+    }
     _graphenePoint3dFree(this.handle);
   }
 
@@ -408,7 +446,7 @@ final class GraphenePoint3D {
 ///
 /// The contents of a #graphene_quad_t are private and should never be
 /// accessed directly.
-final class GrapheneQuad {
+final class GrapheneQuad implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -418,14 +456,46 @@ final class GrapheneQuad {
   }) {
     final cached = cachedObject<GrapheneQuad>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseQuad(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          quadFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneQuad.rawFromPointer(handle, owned: owned);
   }
-  GrapheneQuad.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneQuad.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      quadFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneQuad` with `graphene_quad_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final quadFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_quad_free'),
+  );
+
+  static final _releaseQuad =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_quad_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -446,7 +516,7 @@ final class GrapheneQuad {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_quad_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneQuad.alloc() : this.rawFromPointer(_grapheneQuadAlloc());
+  GrapheneQuad.alloc() : this.rawFromPointer(_grapheneQuadAlloc(), owned: true);
 
   /// Computes the bounding rectangle of @q and places it into @r.
   static final _grapheneQuadBounds =
@@ -489,6 +559,11 @@ final class GrapheneQuad {
           >('graphene_quad_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      quadFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneQuadFree(this.handle);
   }
 

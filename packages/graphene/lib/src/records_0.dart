@@ -3,7 +3,7 @@ part of '../graphene.dart';
 
 /// A 3D box, described as the volume between a minimum and
 /// a maximum vertices.
-final class GrapheneBox {
+final class GrapheneBox implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -13,14 +13,46 @@ final class GrapheneBox {
   }) {
     final cached = cachedObject<GrapheneBox>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseBox(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          boxFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneBox.rawFromPointer(handle, owned: owned);
   }
-  GrapheneBox.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneBox.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      boxFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneBox` with `graphene_box_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final boxFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_box_free'),
+  );
+
+  static final _releaseBox =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_box_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -41,7 +73,7 @@ final class GrapheneBox {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_box_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneBox.alloc() : this.rawFromPointer(_grapheneBoxAlloc());
+  GrapheneBox.alloc() : this.rawFromPointer(_grapheneBoxAlloc(), owned: true);
 
   /// Checks whether the #graphene_box_t @a contains the given
   /// #graphene_box_t @b.
@@ -177,6 +209,11 @@ final class GrapheneBox {
           >('graphene_box_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      boxFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneBoxFree(this.handle);
   }
 

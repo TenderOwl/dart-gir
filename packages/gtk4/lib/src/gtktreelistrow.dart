@@ -24,7 +24,18 @@ class GtkTreeListRow extends GObject {
     final cached = cachedObject<GtkTreeListRow>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -69,7 +80,9 @@ class GtkTreeListRow extends GObject {
           >();
   GtkTreeListRow? getChildRow(int position) {
     final _ret = _gtkTreeListRowGetChildRow(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkTreeListRow.fromPointer(_ret, owned: true);
   }
 
   /// If the row is expanded, gets the model holding the children of @self.
@@ -126,7 +139,9 @@ class GtkTreeListRow extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject? getItem() {
     final _ret = _gtkTreeListRowGetItem(this.handle);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Gets the row representing the parent for @self.
@@ -149,7 +164,9 @@ class GtkTreeListRow extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkTreeListRow? getParent() {
     final _ret = _gtkTreeListRowGetParent(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkTreeListRow.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkTreeListRow.fromPointer(_ret, owned: true);
   }
 
   /// Returns the position in the `GtkTreeListModel` that @self occupies

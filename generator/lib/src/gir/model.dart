@@ -504,6 +504,7 @@ class GirRecord extends GirRegisteredType {
     super.cType,
     this.glibTypeName,
     this.disguised = false,
+    this.freeFunction,
     List<GirField>? fields,
     List<GirConstructor>? constructors,
     List<GirMethod>? methods,
@@ -520,6 +521,14 @@ class GirRecord extends GirRegisteredType {
   /// absent and `glib:type-name` present).
   final String? glibTypeName;
   final bool disguised;
+
+  /// The C function that releases the record, from the GIR's
+  /// `free-function` attribute — e.g. `g_bytes_unref` for `GBytes`.
+  ///
+  /// The GIR declares it for a handful of types that have no `free` /
+  /// `unref` / `destroy` method. It is the destructor the bindings use to
+  /// release a reference the caller owns.
+  final String? freeFunction;
   final List<GirField> fields;
   final List<GirConstructor> constructors;
   final List<GirMethod> methods;
@@ -533,6 +542,7 @@ class GirUnion extends GirRegisteredType {
     required super.name,
     super.cType,
     this.glibTypeName,
+    this.freeFunction,
     List<GirField>? fields,
     List<GirConstructor>? constructors,
     List<GirMethod>? methods,
@@ -546,6 +556,10 @@ class GirUnion extends GirRegisteredType {
        functions = List.unmodifiable(functions ?? const []);
 
   final String? glibTypeName;
+
+  /// The C function that releases the union, from the GIR's
+  /// `free-function` attribute.
+  final String? freeFunction;
   final List<GirField> fields;
   final List<GirConstructor> constructors;
   final List<GirMethod> methods;

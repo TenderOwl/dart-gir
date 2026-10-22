@@ -557,3 +557,7 @@ part 'src/records_38.dart';
 part 'src/records_39.dart';
 part 'src/records_40.dart';
 part 'src/records_41.dart';
+part 'src/records_42.dart';
+part 'src/records_43.dart';
+part 'src/records_44.dart';
+part 'src/records_45.dart';

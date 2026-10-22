@@ -82,7 +82,18 @@ class GtkPrintContext extends GObject {
     final cached = cachedObject<GtkPrintContext>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -126,6 +137,7 @@ class GtkPrintContext extends GObject {
   PangoContext createPangoContext() {
     return PangoContext.fromPointer(
       _gtkPrintContextCreatePangoContext(this.handle),
+      owned: true,
     );
   }
 
@@ -141,6 +153,7 @@ class GtkPrintContext extends GObject {
   PangoLayout createPangoLayout() {
     return PangoLayout.fromPointer(
       _gtkPrintContextCreatePangoLayout(this.handle),
+      owned: true,
     );
   }
 

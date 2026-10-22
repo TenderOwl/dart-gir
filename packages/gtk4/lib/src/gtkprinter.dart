@@ -22,7 +22,18 @@ class GtkPrinter extends GObject {
     final cached = cachedObject<GtkPrinter>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -158,7 +169,10 @@ class GtkPrinter extends GObject {
           >('gtk_printer_get_default_page_size')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPageSetup getDefaultPageSize() {
-    return GtkPageSetup.fromPointer(_gtkPrinterGetDefaultPageSize(this.handle));
+    return GtkPageSetup.fromPointer(
+      _gtkPrinterGetDefaultPageSize(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the description of the printer.
@@ -426,7 +440,7 @@ class GtkPrinter extends GObject {
           >('gtk_printer_list_papers')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList listPapers() {
-    return GList.fromPointer(_gtkPrinterListPapers(this.handle));
+    return GList.fromPointer(_gtkPrinterListPapers(this.handle), owned: true);
   }
 
   /// Requests the printer details.

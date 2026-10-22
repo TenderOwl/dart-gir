@@ -5,7 +5,7 @@ part of '../graphene.dart';
 ///
 /// The contents of the `graphene_plane_t` are private, and should not be
 /// modified directly.
-final class GraphenePlane {
+final class GraphenePlane implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -15,14 +15,46 @@ final class GraphenePlane {
   }) {
     final cached = cachedObject<GraphenePlane>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePlane(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          planeFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GraphenePlane.rawFromPointer(handle, owned: owned);
   }
-  GraphenePlane.rawFromPointer(this.handle, {bool owned = false}) {
+  GraphenePlane.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      planeFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GraphenePlane` with `graphene_plane_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final planeFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_plane_free'),
+  );
+
+  static final _releasePlane =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_plane_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -43,7 +75,8 @@ final class GraphenePlane {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_plane_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePlane.alloc() : this.rawFromPointer(_graphenePlaneAlloc());
+  GraphenePlane.alloc()
+    : this.rawFromPointer(_graphenePlaneAlloc(), owned: true);
 
   /// Computes the distance of @point from a #graphene_plane_t.
   static final _graphenePlaneDistance =
@@ -80,6 +113,11 @@ final class GraphenePlane {
           >('graphene_plane_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      planeFinalizer.detach(this);
+      owned = false;
+    }
     _graphenePlaneFree(this.handle);
   }
 
@@ -334,7 +372,7 @@ final class GraphenePlane {
 }
 
 /// A point with two coordinates.
-final class GraphenePoint {
+final class GraphenePoint implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -344,14 +382,46 @@ final class GraphenePoint {
   }) {
     final cached = cachedObject<GraphenePoint>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePoint(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          pointFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GraphenePoint.rawFromPointer(handle, owned: owned);
   }
-  GraphenePoint.rawFromPointer(this.handle, {bool owned = false}) {
+  GraphenePoint.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      pointFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GraphenePoint` with `graphene_point_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final pointFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_point_free'),
+  );
+
+  static final _releasePoint =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_point_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -389,7 +459,8 @@ final class GraphenePoint {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_point_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GraphenePoint.alloc() : this.rawFromPointer(_graphenePointAlloc());
+  GraphenePoint.alloc()
+    : this.rawFromPointer(_graphenePointAlloc(), owned: true);
 
   /// Computes the distance between @a and @b.
   static final _graphenePointDistance =
@@ -449,6 +520,11 @@ final class GraphenePoint {
           >('graphene_point_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      pointFinalizer.detach(this);
+      owned = false;
+    }
     _graphenePointFree(this.handle);
   }
 

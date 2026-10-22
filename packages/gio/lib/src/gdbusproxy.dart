@@ -62,7 +62,18 @@ class GDBusProxy extends GObject
     final cached = cachedObject<GDBusProxy>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -509,7 +520,7 @@ class GDBusProxy extends GObject
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GVariant.fromPointer(_ret);
+      return GVariant.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -596,7 +607,7 @@ class GDBusProxy extends GObject
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GVariant.fromPointer(_ret);
+        return GVariant.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -785,7 +796,7 @@ class GDBusProxy extends GObject
         throw GlibException.fromError(_error.value);
       }
       return (
-        GVariant.fromPointer(_ret),
+        GVariant.fromPointer(_ret, owned: true),
         (_out0.value) == ffi.nullptr
             ? null
             : GUnixFDList.fromPointer(
@@ -858,7 +869,7 @@ class GDBusProxy extends GObject
           throw GlibException.fromError(_error.value);
         }
         return (
-          GVariant.fromPointer(_ret),
+          GVariant.fromPointer(_ret, owned: true),
           (_out0.value) == ffi.nullptr
               ? null
               : GUnixFDList.fromPointer(
@@ -900,7 +911,9 @@ class GDBusProxy extends GObject
         this.handle,
         nativePropertyName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -1584,7 +1597,7 @@ class GDBusProxy extends GObject
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GObject.fromPointer(_ret);
+      return GObject.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -1600,7 +1613,9 @@ class GDBusProxy extends GObject
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusObject? dupObject() {
     final _ret = _gDbusInterfaceDupObject(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDBusObject.fromPointer(_ret, owned: true);
   }
 
   /// Gets D-Bus introspection information for the D-Bus interface

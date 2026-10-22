@@ -54,7 +54,18 @@ class GIRepository extends GObject {
     final cached = cachedObject<GIRepository>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -111,7 +122,9 @@ class GIRepository extends GObject {
           >();
   GIEnumInfo? findByErrorDomain(int domain) {
     final _ret = _giRepositoryFindByErrorDomain(this.handle, domain);
-    return (_ret) == ffi.nullptr ? null : GIEnumInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIEnumInfo.fromPointer(_ret, owned: true);
   }
 
   /// Searches all loaded namespaces for a particular [type@GObject.Type].
@@ -132,7 +145,9 @@ class GIRepository extends GObject {
           >();
   GIBaseInfo? findByGtype(int gtype) {
     final _ret = _giRepositoryFindByGtype(this.handle, gtype);
-    return (_ret) == ffi.nullptr ? null : GIBaseInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIBaseInfo.fromPointer(_ret, owned: true);
   }
 
   /// Searches for a particular entry in a namespace.
@@ -165,7 +180,9 @@ class GIRepository extends GObject {
           nativeNamespace.cast<Utf8>(),
           nativeName.cast<Utf8>(),
         );
-        return (_ret) == ffi.nullptr ? null : GIBaseInfo.fromPointer(_ret);
+        return (_ret) == ffi.nullptr
+            ? null
+            : GIBaseInfo.fromPointer(_ret, owned: true);
       });
     });
   }
@@ -230,6 +247,7 @@ class GIRepository extends GObject {
     return withNativeString(namespace, (nativeNamespace) {
       return GIBaseInfo.fromPointer(
         _giRepositoryGetInfo(this.handle, nativeNamespace.cast<Utf8>(), idx),
+        owned: true,
       );
     });
   }
@@ -610,7 +628,7 @@ class GIRepository extends GObject {
         'gi_repository_dup_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GIRepository dupDefault() {
-    return GIRepository.fromPointer(_giRepositoryDupDefault());
+    return GIRepository.fromPointer(_giRepositoryDupDefault(), owned: true);
   }
 
   static final _giRepositoryErrorQuark =
@@ -630,7 +648,7 @@ class GIRepository extends GObject {
         'gi_repository_get_option_group',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GOptionGroup getOptionGroup() {
-    return GOptionGroup.fromPointer(_giRepositoryGetOptionGroup());
+    return GOptionGroup.fromPointer(_giRepositoryGetOptionGroup(), owned: true);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

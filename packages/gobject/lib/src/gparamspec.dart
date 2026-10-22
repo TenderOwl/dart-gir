@@ -32,7 +32,7 @@ class GParamSpec {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

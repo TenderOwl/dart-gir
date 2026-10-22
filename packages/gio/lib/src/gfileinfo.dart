@@ -49,7 +49,18 @@ class GFileInfo extends GObject {
     final cached = cachedObject<GFileInfo>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -121,7 +132,7 @@ class GFileInfo extends GObject {
           >('g_file_info_dup')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFileInfo dup() {
-    return GFileInfo.fromPointer(_gFileInfoDup(this.handle));
+    return GFileInfo.fromPointer(_gFileInfoDup(this.handle), owned: true);
   }
 
   /// Gets the access time of the current @info and returns it as a
@@ -143,7 +154,9 @@ class GFileInfo extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getAccessDateTime() {
     final _ret = _gFileInfoGetAccessDateTime(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Gets the value of an attribute, formatted as a human readable string.
@@ -511,7 +524,9 @@ class GFileInfo extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getCreationDateTime() {
     final _ret = _gFileInfoGetCreationDateTime(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Returns the #GDateTime representing the deletion date of the file, as
@@ -526,7 +541,9 @@ class GFileInfo extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getDeletionDate() {
     final _ret = _gFileInfoGetDeletionDate(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Gets a display name for a file. This is guaranteed to always be set.
@@ -673,7 +690,9 @@ class GFileInfo extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getModificationDateTime() {
     final _ret = _gFileInfoGetModificationDateTime(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Gets the modification time of the current @info and sets it

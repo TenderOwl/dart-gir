@@ -2,7 +2,7 @@
 part of '../graphene.dart';
 
 /// A triangle.
-final class GrapheneTriangle {
+final class GrapheneTriangle implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -12,14 +12,46 @@ final class GrapheneTriangle {
   }) {
     final cached = cachedObject<GrapheneTriangle>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseTriangle(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          triangleFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneTriangle.rawFromPointer(handle, owned: owned);
   }
-  GrapheneTriangle.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneTriangle.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      triangleFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneTriangle` with `graphene_triangle_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final triangleFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_triangle_free'),
+  );
+
+  static final _releaseTriangle =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_triangle_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -40,7 +72,8 @@ final class GrapheneTriangle {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_triangle_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneTriangle.alloc() : this.rawFromPointer(_grapheneTriangleAlloc());
+  GrapheneTriangle.alloc()
+    : this.rawFromPointer(_grapheneTriangleAlloc(), owned: true);
 
   /// Checks whether the given triangle @t contains the point @p.
   static final _grapheneTriangleContainsPoint =
@@ -77,6 +110,11 @@ final class GrapheneTriangle {
           >('graphene_triangle_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      triangleFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneTriangleFree(this.handle);
   }
 
@@ -488,518 +526,5 @@ final class GrapheneTriangle {
         c?.handle ?? ffi.nullptr,
       ),
     );
-  }
-}
-
-/// A structure capable of holding a vector with two dimensions, x and y.
-///
-/// The contents of the #graphene_vec2_t structure are private and should
-/// never be accessed directly.
-final class GrapheneVec2 {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GrapheneVec2.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GrapheneVec2>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GrapheneVec2.rawFromPointer(handle, owned: owned);
-  }
-  GrapheneVec2.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Allocates a new #graphene_vec2_t structure.
-  ///
-  /// The contents of the returned structure are undefined.
-  ///
-  /// Use graphene_vec2_init() to initialize the vector.
-  static final _grapheneVec2Alloc =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_vec2_alloc',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneVec2.alloc() : this.rawFromPointer(_grapheneVec2Alloc());
-
-  /// Adds each component of the two passed vectors and places
-  /// each result into the components of @res.
-  static final _grapheneVec2Add =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_add')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 add(GrapheneVec2 b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Add(this.handle, b.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Divides each component of the first operand @a by the corresponding
-  /// component of the second operand @b, and places the results into the
-  /// vector @res.
-  static final _grapheneVec2Divide =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_divide')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 divide(GrapheneVec2 b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Divide(this.handle, b.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Computes the dot product of the two given vectors.
-  static final _grapheneVec2Dot =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Float Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_vec2_dot')
-          .asFunction<
-            double Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  double dot(GrapheneVec2 b) {
-    return _grapheneVec2Dot(this.handle, b.handle);
-  }
-
-  /// Checks whether the two given #graphene_vec2_t are equal.
-  static final _grapheneVec2Equal =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_vec2_equal')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool equal(GrapheneVec2 v2) {
-    return (_grapheneVec2Equal(this.handle, v2.handle)) != 0;
-  }
-
-  /// Frees the resources allocated by @v
-  static final _grapheneVec2Free =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_vec2_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    _grapheneVec2Free(this.handle);
-  }
-
-  /// Retrieves the X component of the #graphene_vec2_t.
-  static final _grapheneVec2GetX =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_vec2_get_x')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getX() {
-    return _grapheneVec2GetX(this.handle);
-  }
-
-  /// Retrieves the Y component of the #graphene_vec2_t.
-  static final _grapheneVec2GetY =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_vec2_get_y')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getY() {
-    return _grapheneVec2GetY(this.handle);
-  }
-
-  /// Initializes a #graphene_vec2_t using the given values.
-  ///
-  /// This function can be called multiple times.
-  static final _grapheneVec2Init =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Float,
-              )
-            >
-          >('graphene_vec2_init')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              double,
-              double,
-            )
-          >();
-  GrapheneVec2 init(double x, double y) {
-    return GrapheneVec2.fromPointer(_grapheneVec2Init(this.handle, x, y));
-  }
-
-  /// Initializes @v with the contents of the given array.
-  static final _grapheneVec2InitFromFloat =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Float>,
-              )
-            >
-          >('graphene_vec2_init_from_float')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Float>,
-            )
-          >();
-  GrapheneVec2 initFromFloat(ffi.Pointer<ffi.Float> src) {
-    return GrapheneVec2.fromPointer(
-      _grapheneVec2InitFromFloat(this.handle, src),
-    );
-  }
-
-  /// Copies the contents of @src into @v.
-  static final _grapheneVec2InitFromVec2 =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_init_from_vec2')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 initFromVec2(GrapheneVec2 src) {
-    return GrapheneVec2.fromPointer(
-      _grapheneVec2InitFromVec2(this.handle, src.handle),
-    );
-  }
-
-  /// Linearly interpolates @v1 and @v2 using the given @factor.
-  static final _grapheneVec2Interpolate =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Double,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_interpolate')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              double,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 interpolate(GrapheneVec2 v2, double factor) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Interpolate(
-      this.handle,
-      v2.handle,
-      factor,
-      _out0.cast<ffi.Void>(),
-    );
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Computes the length of the given vector.
-  static final _grapheneVec2Length =
-      grapheneLookup<
-            ffi.NativeFunction<ffi.Float Function(ffi.Pointer<ffi.Void>)>
-          >('graphene_vec2_length')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double length() {
-    return _grapheneVec2Length(this.handle);
-  }
-
-  /// Compares the two given vectors and places the maximum
-  /// values of each component into @res.
-  static final _grapheneVec2Max =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_max')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 max(GrapheneVec2 b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Max(this.handle, b.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Compares the two given vectors and places the minimum
-  /// values of each component into @res.
-  static final _grapheneVec2Min =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_min')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 min(GrapheneVec2 b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Min(this.handle, b.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Multiplies each component of the two passed vectors and places
-  /// each result into the components of @res.
-  static final _grapheneVec2Multiply =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_multiply')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 multiply(GrapheneVec2 b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Multiply(this.handle, b.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Compares the two given #graphene_vec2_t vectors and checks
-  /// whether their values are within the given @epsilon.
-  static final _grapheneVec2Near =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-              )
-            >
-          >('graphene_vec2_near')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, double)
-          >();
-  bool near(GrapheneVec2 v2, double epsilon) {
-    return (_grapheneVec2Near(this.handle, v2.handle, epsilon)) != 0;
-  }
-
-  /// Negates the given #graphene_vec2_t.
-  static final _grapheneVec2Negate =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_vec2_negate')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneVec2 negate() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Negate(this.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Computes the normalized vector for the given vector @v.
-  static final _grapheneVec2Normalize =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('graphene_vec2_normalize')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneVec2 normalize() {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Normalize(this.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Multiplies all components of the given vector with the given scalar @factor.
-  static final _grapheneVec2Scale =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Float,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_scale')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, double, ffi.Pointer<ffi.Void>)
-          >();
-  GrapheneVec2 scale(double factor) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Scale(this.handle, factor, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Subtracts from each component of the first operand @a the
-  /// corresponding component of the second operand @b and places
-  /// each result into the components of @res.
-  static final _grapheneVec2Subtract =
-      grapheneLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('graphene_vec2_subtract')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GrapheneVec2 subtract(GrapheneVec2 b) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    _grapheneVec2Subtract(this.handle, b.handle, _out0.cast<ffi.Void>());
-    return keepAlive(
-      GrapheneVec2.fromPointer(_out0.cast<ffi.Void>()),
-      _out0Anchor,
-    );
-  }
-
-  /// Retrieves a constant vector with (1, 1) components.
-  static final _grapheneVec2One =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_vec2_one',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GrapheneVec2 one() {
-    return GrapheneVec2.fromPointer(_grapheneVec2One());
-  }
-
-  /// Retrieves a constant vector with (1, 0) components.
-  static final _grapheneVec2XAxis =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_vec2_x_axis',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GrapheneVec2 xAxis() {
-    return GrapheneVec2.fromPointer(_grapheneVec2XAxis());
-  }
-
-  /// Retrieves a constant vector with (0, 1) components.
-  static final _grapheneVec2YAxis =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_vec2_y_axis',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GrapheneVec2 yAxis() {
-    return GrapheneVec2.fromPointer(_grapheneVec2YAxis());
-  }
-
-  /// Retrieves a constant vector with (0, 0) components.
-  static final _grapheneVec2Zero =
-      grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
-        'graphene_vec2_zero',
-      ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  static GrapheneVec2 zero() {
-    return GrapheneVec2.fromPointer(_grapheneVec2Zero());
   }
 }

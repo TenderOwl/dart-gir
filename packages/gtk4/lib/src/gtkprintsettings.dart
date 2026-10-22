@@ -24,7 +24,18 @@ class GtkPrintSettings extends GObject {
     final cached = cachedObject<GtkPrintSettings>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -170,7 +181,10 @@ class GtkPrintSettings extends GObject {
           >('gtk_print_settings_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPrintSettings copy() {
-    return GtkPrintSettings.fromPointer(_gtkPrintSettingsCopy(this.handle));
+    return GtkPrintSettings.fromPointer(
+      _gtkPrintSettingsCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Calls @func for each key-value pair of @settings.
@@ -577,7 +591,9 @@ class GtkPrintSettings extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPaperSize? getPaperSize() {
     final _ret = _gtkPrintSettingsGetPaperSize(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkPaperSize.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkPaperSize.fromPointer(_ret, owned: true);
   }
 
   /// Gets the value of %GTK_PRINT_SETTINGS_PAPER_WIDTH,

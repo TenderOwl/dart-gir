@@ -159,7 +159,18 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
     final cached = cachedObject<GtkFileChooserNative>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -519,7 +530,7 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getCurrentFolder() {
     final _ret = _gtkFileChooserGetCurrentFolder(this.handle);
-    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret, owned: true);
   }
 
   /// Gets the current name in the file selector, as entered by the user.
@@ -557,7 +568,7 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GFile? getFile() {
     final _ret = _gtkFileChooserGetFile(this.handle);
-    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret);
+    return (_ret) == ffi.nullptr ? null : GFile.fromPointer(_ret, owned: true);
   }
 
   /// Lists all the selected files and subfolders in the current folder
@@ -570,7 +581,10 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           >('gtk_file_chooser_get_files')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel getFiles() {
-    return GListModel.fromPointer(_gtkFileChooserGetFiles(this.handle));
+    return GListModel.fromPointer(
+      _gtkFileChooserGetFiles(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the current filter.
@@ -601,7 +615,10 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
           >('gtk_file_chooser_get_filters')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel getFilters() {
-    return GListModel.fromPointer(_gtkFileChooserGetFilters(this.handle));
+    return GListModel.fromPointer(
+      _gtkFileChooserGetFilters(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets whether multiple files can be selected in the file
@@ -628,6 +645,7 @@ class GtkFileChooserNative extends GtkNativeDialog implements GtkFileChooser {
   GListModel getShortcutFolders() {
     return GListModel.fromPointer(
       _gtkFileChooserGetShortcutFolders(this.handle),
+      owned: true,
     );
   }
 

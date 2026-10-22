@@ -18,10 +18,11 @@ final class GHashTable {
     }
     return GHashTable.rawFromPointer(handle, owned: owned);
   }
-  GHashTable.rawFromPointer(this.handle, {bool owned = false}) {
+  GHashTable.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -514,7 +515,10 @@ final class GHashTable {
           >('g_hash_table_new_similar')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static GHashTable newSimilar(GHashTable otherHashTable) {
-    return GHashTable.fromPointer(_gHashTableNewSimilar(otherHashTable.handle));
+    return GHashTable.fromPointer(
+      _gHashTableNewSimilar(otherHashTable.handle),
+      owned: true,
+    );
   }
 
   /// Atomically increments the reference count of @hash_table by one.
@@ -527,7 +531,10 @@ final class GHashTable {
           >('g_hash_table_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   static GHashTable ref(GHashTable hashTable) {
-    return GHashTable.fromPointer(_gHashTableRef(hashTable.handle));
+    return GHashTable.fromPointer(
+      _gHashTableRef(hashTable.handle),
+      owned: true,
+    );
   }
 
   /// Removes a key and its associated value from a #GHashTable.

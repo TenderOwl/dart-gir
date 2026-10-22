@@ -217,6 +217,42 @@ native object is unreffed. If the native side still holds a
 reference of its own (GTK's widget tree, for example), the object
 survives — the finalizer only releases *this* reference.
 
+### `owned` says whether the wrapper still holds the reference
+
+Every generated class, record and interface carries a public
+`bool owned` field. It is the wrapper's claim on the reference:
+
+- `true` — the wrapper holds the reference the GIR handed over, and its
+  finalizer releases it when the wrapper is collected.
+- `false` — the reference has been released (`unref()`, `free()`) or
+  handed to the callee, and the wrapper must not release it again.
+
+```dart
+final file = GFile.newForPath('/tmp/notes');
+expect(file.owned, isTrue);   // the GIR says transfer-ownership="full"
+file.unref();
+expect(file.owned, isFalse);  // released once, by the caller
+```
+
+The field is **mutable** on purpose: a handover to a callee clears it,
+so the same rule covers both directions. A parameter the GIR marks
+`transfer-ownership="full"` belongs to the callee from the call on, so
+the call site hands the reference over — the finalizer is detached and
+`owned` is set to `false`:
+
+```dart
+// `gtk_widget_add_controller` takes the controller over.
+controller.owned;            // true before the call
+window.addController(controller);
+controller.owned;            // false after it — the callee owns it now
+```
+
+Your subclass inherits the flag with the rest of the wrapper: it is one
+Dart object, one claim, one finalizer. A subclass that releases the
+reference itself must let the wrapper know — call `unref()` rather than
+`g_object_unref` behind the wrapper's back, or the collector will
+release it a second time.
+
 ---
 
 ## 6. Cross-package subclassing

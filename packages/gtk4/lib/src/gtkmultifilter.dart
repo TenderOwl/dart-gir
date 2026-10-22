@@ -14,7 +14,18 @@ class GtkMultiFilter extends GtkFilter implements GListModel, GtkBuildable {
     final cached = cachedObject<GtkMultiFilter>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -57,6 +68,10 @@ class GtkMultiFilter extends GtkFilter implements GListModel, GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void append(GtkFilter filter) {
+    if (filter.owned) {
+      gobjectFinalizer.detach(filter);
+      filter.owned = false;
+    }
     _gtkMultiFilterAppend(this.handle, filter.handle);
   }
 
@@ -191,7 +206,9 @@ class GtkMultiFilter extends GtkFilter implements GListModel, GtkBuildable {
           >();
   GObject? getObject(int position) {
     final _ret = _gListModelGetObject(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

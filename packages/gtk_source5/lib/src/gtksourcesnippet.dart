@@ -25,7 +25,18 @@ class GtkSourceSnippet extends GObject {
     final cached = cachedObject<GtkSourceSnippet>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -145,7 +156,10 @@ class GtkSourceSnippet extends GObject {
           >('gtk_source_snippet_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkSourceSnippet copy() {
-    return GtkSourceSnippet.fromPointer(_gtkSourceSnippetCopy(this.handle));
+    return GtkSourceSnippet.fromPointer(
+      _gtkSourceSnippetCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the context used for expanding the snippet.

@@ -20,7 +20,18 @@ class GtkSingleSelection extends GObject
     final cached = cachedObject<GtkSingleSelection>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -60,11 +71,16 @@ class GtkSingleSelection extends GObject
             >
           >('gtk_single_selection_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkSingleSelection([GListModel? model])
-    : this.rawFromPointer(
-        _gtkSingleSelectionNew(model?.handle ?? ffi.nullptr),
-        owned: true,
-      );
+  factory GtkSingleSelection([GListModel? model]) {
+    if (model != null && model.owned) {
+      gobjectFinalizer.detach(model);
+      model.owned = false;
+    }
+    return GtkSingleSelection.fromPointer(
+      _gtkSingleSelectionNew(model?.handle ?? ffi.nullptr),
+      owned: true,
+    );
+  }
 
   /// Checks if autoselect has been enabled or disabled via
   /// gtk_single_selection_set_autoselect().
@@ -325,7 +341,9 @@ class GtkSingleSelection extends GObject
           >();
   GObject? getObject(int position) {
     final _ret = _gListModelGetObject(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.
@@ -439,7 +457,10 @@ class GtkSingleSelection extends GObject
           >('gtk_selection_model_get_selection')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkBitset getSelection() {
-    return GtkBitset.fromPointer(_gtkSelectionModelGetSelection(this.handle));
+    return GtkBitset.fromPointer(
+      _gtkSelectionModelGetSelection(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the set of selected items in a range.
@@ -465,6 +486,7 @@ class GtkSingleSelection extends GObject
   GtkBitset getSelectionInRange(int position, int nItems) {
     return GtkBitset.fromPointer(
       _gtkSelectionModelGetSelectionInRange(this.handle, position, nItems),
+      owned: true,
     );
   }
 

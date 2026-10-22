@@ -24,7 +24,18 @@ class GtkFilterListModel extends GObject
     final cached = cachedObject<GtkFilterListModel>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -73,14 +84,23 @@ class GtkFilterListModel extends GObject
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkFilterListModel([GListModel? model, GtkFilter? filter])
-    : this.rawFromPointer(
-        _gtkFilterListModelNew(
-          model?.handle ?? ffi.nullptr,
-          filter?.handle ?? ffi.nullptr,
-        ),
-        owned: true,
-      );
+  factory GtkFilterListModel([GListModel? model, GtkFilter? filter]) {
+    if (model != null && model.owned) {
+      gobjectFinalizer.detach(model);
+      model.owned = false;
+    }
+    if (filter != null && filter.owned) {
+      gobjectFinalizer.detach(filter);
+      filter.owned = false;
+    }
+    return GtkFilterListModel.fromPointer(
+      _gtkFilterListModelNew(
+        model?.handle ?? ffi.nullptr,
+        filter?.handle ?? ffi.nullptr,
+      ),
+      owned: true,
+    );
+  }
 
   /// Gets the `GtkFilter` currently set on @self.
   static final _gtkFilterListModelGetFilter =
@@ -349,7 +369,9 @@ class GtkFilterListModel extends GObject
           >();
   GObject? getObject(int position) {
     final _ret = _gListModelGetObject(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

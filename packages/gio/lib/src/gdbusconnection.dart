@@ -65,7 +65,18 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
     final cached = cachedObject<GDBusConnection>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -636,7 +647,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GVariant.fromPointer(_ret);
+      return GVariant.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -744,7 +755,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
               if (_error.value != ffi.nullptr) {
                 throw GlibException.fromError(_error.value);
               }
-              return GVariant.fromPointer(_ret);
+              return GVariant.fromPointer(_ret, owned: true);
             } finally {
               calloc.free(_error);
             }
@@ -995,7 +1006,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GVariant.fromPointer(_ret),
+        GVariant.fromPointer(_ret, owned: true),
         (_out0.value) == ffi.nullptr
             ? null
             : GUnixFDList.fromPointer(
@@ -1089,7 +1100,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
                 throw GlibException.fromError(_error.value);
               }
               return (
-                GVariant.fromPointer(_ret),
+                GVariant.fromPointer(_ret, owned: true),
                 (_out0.value) == ffi.nullptr
                     ? null
                     : GUnixFDList.fromPointer(
@@ -2268,7 +2279,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GDBusMessage.fromPointer(_ret);
+      return GDBusMessage.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -2351,7 +2362,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return (GDBusMessage.fromPointer(_ret), _out0.value);
+      return (GDBusMessage.fromPointer(_ret, owned: true), _out0.value);
     } finally {
       malloc.free(_out0);
       calloc.free(_error);
@@ -3108,7 +3119,7 @@ class GDBusConnection extends GObject implements GAsyncInitable, GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GObject.fromPointer(_ret);
+      return GObject.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

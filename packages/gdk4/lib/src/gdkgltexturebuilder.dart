@@ -23,7 +23,18 @@ class GdkGLTextureBuilder extends GObject {
     final cached = cachedObject<GdkGLTextureBuilder>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -112,7 +123,7 @@ class GdkGLTextureBuilder extends GObject {
         _nc1?.nativeFunction ?? ffi.nullptr,
         data ?? ffi.nullptr,
       );
-      return GdkTexture.fromPointer(_ret);
+      return GdkTexture.fromPointer(_ret, owned: true);
     } finally {
       _nc1?.close();
     }

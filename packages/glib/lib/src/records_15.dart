@@ -16,10 +16,11 @@ final class GList {
     }
     return GList.rawFromPointer(handle, owned: owned);
   }
-  GList.rawFromPointer(this.handle, {bool owned = false}) {
+  GList.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -71,10 +72,11 @@ final class GLogField {
     }
     return GLogField.rawFromPointer(handle, owned: owned);
   }
-  GLogField.rawFromPointer(this.handle, {bool owned = false}) {
+  GLogField.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

@@ -38,7 +38,7 @@ part of '../glib.dart';
 /// If a bookmark has no applications then it won't be dumped when creating
 /// the on disk representation, using [method@GLib.BookmarkFile.to_data] or
 /// [method@GLib.BookmarkFile.to_file].
-final class GBookmarkFile {
+final class GBookmarkFile implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -48,14 +48,45 @@ final class GBookmarkFile {
   }) {
     final cached = cachedObject<GBookmarkFile>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseBookmarkFile(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          bookmarkFileFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GBookmarkFile.rawFromPointer(handle, owned: owned);
   }
-  GBookmarkFile.rawFromPointer(this.handle, {bool owned = false}) {
+  GBookmarkFile.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      bookmarkFileFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GBookmarkFile` with `g_bookmark_file_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final bookmarkFileFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_bookmark_file_free',
+    ),
+  );
+
+  static final _releaseBookmarkFile =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_bookmark_file_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -78,7 +109,7 @@ final class GBookmarkFile {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_bookmark_file_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GBookmarkFile() : this.rawFromPointer(_gBookmarkFileNew());
+  GBookmarkFile() : this.rawFromPointer(_gBookmarkFileNew(), owned: true);
 
   /// Adds the application with @name and @exec to the list of
   /// applications that have registered a bookmark for @uri into
@@ -178,7 +209,10 @@ final class GBookmarkFile {
           >('g_bookmark_file_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBookmarkFile copy() {
-    return GBookmarkFile.fromPointer(_gBookmarkFileCopy(this.handle));
+    return GBookmarkFile.fromPointer(
+      _gBookmarkFileCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Frees a #GBookmarkFile.
@@ -187,6 +221,11 @@ final class GBookmarkFile {
         'g_bookmark_file_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      bookmarkFileFinalizer.detach(this);
+      owned = false;
+    }
     _gBookmarkFileFree(this.handle);
   }
 

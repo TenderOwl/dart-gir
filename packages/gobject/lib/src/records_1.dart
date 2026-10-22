@@ -45,7 +45,7 @@ part of '../gobject.dart';
 ///
 /// - [method@Closure.invalidate] and invalidation notifiers allow callbacks to be
 /// automatically removed when the objects they point to go away.
-final class GClosure {
+final class GClosure implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -55,14 +55,46 @@ final class GClosure {
   }) {
     final cached = cachedObject<GClosure>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseClosure(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          closureFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GClosure.rawFromPointer(handle, owned: owned);
   }
-  GClosure.rawFromPointer(this.handle, {bool owned = false}) {
+  GClosure.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      closureFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GClosure` with `g_closure_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final closureFinalizer = ffi.NativeFinalizer(
+    gobjectLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_closure_unref',
+    ),
+  );
+
+  static final _releaseClosure =
+      gobjectLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('g_closure_unref')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -218,7 +250,7 @@ final class GClosure {
           >('g_closure_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GClosure ref() {
-    return GClosure.fromPointer(_gClosureRef(this.handle));
+    return GClosure.fromPointer(_gClosureRef(this.handle), owned: true);
   }
 
   /// Takes over the initial ownership of a closure.
@@ -288,6 +320,11 @@ final class GClosure {
           >('g_closure_unref')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      closureFinalizer.detach(this);
+      owned = false;
+    }
     _gClosureUnref(this.handle);
   }
 }
@@ -306,10 +343,11 @@ final class GClosureNotifyData {
     }
     return GClosureNotifyData.rawFromPointer(handle, owned: owned);
   }
-  GClosureNotifyData.rawFromPointer(this.handle, {bool owned = false}) {
+  GClosureNotifyData.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -340,10 +378,11 @@ final class GEnumClass {
     }
     return GEnumClass.rawFromPointer(handle, owned: owned);
   }
-  GEnumClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GEnumClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -374,10 +413,11 @@ final class GEnumValue {
     }
     return GEnumValue.rawFromPointer(handle, owned: owned);
   }
-  GEnumValue.rawFromPointer(this.handle, {bool owned = false}) {
+  GEnumValue.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -408,44 +448,11 @@ final class GFlagsClass {
     }
     return GFlagsClass.rawFromPointer(handle, owned: owned);
   }
-  GFlagsClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GFlagsClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// A structure which contains a single flags value, its name, and its
-/// nickname.
-final class GFlagsValue {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GFlagsValue.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GFlagsValue>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GFlagsValue.rawFromPointer(handle, owned: owned);
-  }
-  GFlagsValue.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

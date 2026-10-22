@@ -330,6 +330,7 @@ GParamSpec paramSpecBoolean(
             defaultValue ? 1 : 0,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -379,6 +380,7 @@ GParamSpec paramSpecBoxed(
             boxedType,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -433,6 +435,7 @@ GParamSpec paramSpecChar(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -490,6 +493,7 @@ GParamSpec paramSpecDouble(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -543,6 +547,7 @@ GParamSpec paramSpecEnum(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -596,6 +601,7 @@ GParamSpec paramSpecFlags(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -652,6 +658,7 @@ GParamSpec paramSpecFloat(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -701,6 +708,7 @@ GParamSpec paramSpecGtype(
             isAType,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -757,6 +765,7 @@ GParamSpec paramSpecInt(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -813,6 +822,7 @@ GParamSpec paramSpecInt64(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -869,6 +879,7 @@ GParamSpec paramSpecLong(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -918,6 +929,7 @@ GParamSpec paramSpecObject(
             objectType,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -967,6 +979,7 @@ GParamSpec paramSpecParam(
             paramType,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -1013,6 +1026,7 @@ GParamSpec paramSpecPointer(
             nativeBlurb.cast<Utf8>(),
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -1062,6 +1076,7 @@ GParamSpec paramSpecString(
               nativeDefaultValue.cast<Utf8>(),
               flags.value,
             ),
+            owned: true,
           );
         });
       });
@@ -1117,6 +1132,7 @@ GParamSpec paramSpecUchar(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -1173,6 +1189,7 @@ GParamSpec paramSpecUint(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -1230,6 +1247,7 @@ GParamSpec paramSpecUint64(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });

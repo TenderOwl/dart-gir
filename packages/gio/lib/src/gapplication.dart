@@ -136,7 +136,18 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
     final cached = cachedObject<GApplication>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -303,6 +314,10 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void addOptionGroup(GOptionGroup group) {
+    if (group.owned) {
+      GOptionGroup.optionGroupFinalizer.detach(group);
+      group.owned = false;
+    }
     _gApplicationAddOptionGroup(this.handle, group.handle);
   }
 
@@ -1637,7 +1652,9 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
         this.handle,
         nativeActionName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -1680,7 +1697,9 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
         this.handle,
         nativeActionName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 

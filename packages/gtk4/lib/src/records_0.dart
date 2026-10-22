@@ -15,10 +15,11 @@ final class GtkATContextClass {
     }
     return GtkATContextClass.rawFromPointer(handle, owned: owned);
   }
-  GtkATContextClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkATContextClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -49,11 +50,12 @@ final class GtkAccessibleHyperlinkClass {
   }
   GtkAccessibleHyperlinkClass.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -87,11 +89,12 @@ final class GtkAccessibleHypertextInterface {
   }
   GtkAccessibleHypertextInterface.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -121,10 +124,11 @@ final class GtkAccessibleInterface {
     }
     return GtkAccessibleInterface.rawFromPointer(handle, owned: owned);
   }
-  GtkAccessibleInterface.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkAccessibleInterface.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -154,10 +158,11 @@ final class GtkAccessibleList {
     }
     return GtkAccessibleList.rawFromPointer(handle, owned: owned);
   }
-  GtkAccessibleList.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkAccessibleList.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -186,6 +191,7 @@ final class GtkAccessibleList {
     int nAccessibles,
   ) : this.rawFromPointer(
         _gtkAccessibleListNewFromArray(accessibles, nAccessibles),
+        owned: true,
       );
 
   /// Allocates a new `GtkAccessibleList`, doing a shallow copy
@@ -198,7 +204,10 @@ final class GtkAccessibleList {
           >('gtk_accessible_list_new_from_list')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessibleList.fromList(GList list)
-    : this.rawFromPointer(_gtkAccessibleListNewFromList(list.handle));
+    : this.rawFromPointer(
+        _gtkAccessibleListNewFromList(list.handle),
+        owned: true,
+      );
 
   /// Gets the list of objects this boxed type holds.
   static final _gtkAccessibleListGetObjects =
@@ -229,11 +238,12 @@ final class GtkAccessibleRangeInterface {
   }
   GtkAccessibleRangeInterface.rawFromPointer(
     this.handle, {
-    bool owned = false,
+    this.owned = false,
   }) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -263,10 +273,11 @@ final class GtkAccessibleTextInterface {
     }
     return GtkAccessibleTextInterface.rawFromPointer(handle, owned: owned);
   }
-  GtkAccessibleTextInterface.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkAccessibleTextInterface.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -296,10 +307,11 @@ final class GtkAccessibleTextRange {
     }
     return GtkAccessibleTextRange.rawFromPointer(handle, owned: owned);
   }
-  GtkAccessibleTextRange.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkAccessibleTextRange.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -329,10 +341,11 @@ final class GtkActionableInterface {
     }
     return GtkActionableInterface.rawFromPointer(handle, owned: owned);
   }
-  GtkActionableInterface.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkActionableInterface.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -361,42 +374,11 @@ final class GtkActivateActionClass {
     }
     return GtkActivateActionClass.rawFromPointer(handle, owned: owned);
   }
-  GtkActivateActionClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkActivateActionClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-final class GtkAdjustmentClass {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GtkAdjustmentClass.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GtkAdjustmentClass>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GtkAdjustmentClass.rawFromPointer(handle, owned: owned);
-  }
-  GtkAdjustmentClass.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

@@ -15,7 +15,18 @@ class PangoFont extends GObject {
     final cached = cachedObject<PangoFont>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -60,7 +71,10 @@ class PangoFont extends GObject {
           >('pango_font_describe')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoFontDescription describe() {
-    return PangoFontDescription.fromPointer(_pangoFontDescribe(this.handle));
+    return PangoFontDescription.fromPointer(
+      _pangoFontDescribe(this.handle),
+      owned: true,
+    );
   }
 
   /// Returns a description of the font, with absolute font size set
@@ -77,6 +91,7 @@ class PangoFont extends GObject {
   PangoFontDescription describeWithAbsoluteSize() {
     return PangoFontDescription.fromPointer(
       _pangoFontDescribeWithAbsoluteSize(this.handle),
+      owned: true,
     );
   }
 
@@ -99,6 +114,7 @@ class PangoFont extends GObject {
   PangoCoverage getCoverage(PangoLanguage language) {
     return PangoCoverage.fromPointer(
       _pangoFontGetCoverage(this.handle, language.handle),
+      owned: true,
     );
   }
 
@@ -224,6 +240,7 @@ class PangoFont extends GObject {
   PangoFontMetrics getMetrics([PangoLanguage? language]) {
     return PangoFontMetrics.fromPointer(
       _pangoFontGetMetrics(this.handle, language?.handle ?? ffi.nullptr),
+      owned: true,
     );
   }
 
@@ -256,7 +273,7 @@ class PangoFont extends GObject {
           >('pango_font_serialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes serialize() {
-    return GBytes.fromPointer(_pangoFontSerialize(this.handle));
+    return GBytes.fromPointer(_pangoFontSerialize(this.handle), owned: true);
   }
 
   /// Frees an array of font descriptions.
@@ -302,7 +319,9 @@ class PangoFont extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : PangoFont.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

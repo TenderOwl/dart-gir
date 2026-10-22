@@ -928,7 +928,9 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
         this.handle,
         nativeActionName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -971,7 +973,9 @@ class GtkApplication extends GApplication implements GActionGroup, GActionMap {
         this.handle,
         nativeActionName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 

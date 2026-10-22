@@ -16,7 +16,7 @@ part of '../gtk4.dart';
 ///
 /// The main use case for `GtkBitset` is implementing complex selections for
 /// [iface@Gtk.SelectionModel].
-final class GtkBitset {
+final class GtkBitset implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -26,14 +26,45 @@ final class GtkBitset {
   }) {
     final cached = cachedObject<GtkBitset>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseBitset(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          bitsetFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GtkBitset.rawFromPointer(handle, owned: owned);
   }
-  GtkBitset.rawFromPointer(this.handle, {bool owned = false}) {
+  GtkBitset.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      bitsetFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GtkBitset` with `gtk_bitset_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final bitsetFinalizer = ffi.NativeFinalizer(
+    gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'gtk_bitset_unref',
+    ),
+  );
+
+  static final _releaseBitset =
+      gtk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gtk_bitset_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -52,7 +83,7 @@ final class GtkBitset {
       gtk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gtk_bitset_new_empty',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GtkBitset.empty() : this.rawFromPointer(_gtkBitsetNewEmpty());
+  GtkBitset.empty() : this.rawFromPointer(_gtkBitsetNewEmpty(), owned: true);
 
   /// Creates a bitset with the given range set.
   static final _gtkBitsetNewRange =
@@ -63,7 +94,7 @@ final class GtkBitset {
           >('gtk_bitset_new_range')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int)>();
   GtkBitset.range(int start, int nItems)
-    : this.rawFromPointer(_gtkBitsetNewRange(start, nItems));
+    : this.rawFromPointer(_gtkBitsetNewRange(start, nItems), owned: true);
 
   /// Adds @value to @self if it wasn't part of it before.
   static final _gtkBitsetAdd =
@@ -145,7 +176,7 @@ final class GtkBitset {
           >('gtk_bitset_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkBitset copy() {
-    return GtkBitset.fromPointer(_gtkBitsetCopy(this.handle));
+    return GtkBitset.fromPointer(_gtkBitsetCopy(this.handle), owned: true);
   }
 
   /// Sets @self to be the symmetric difference of @self and @other.
@@ -464,248 +495,11 @@ final class GtkBitset {
         'gtk_bitset_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      bitsetFinalizer.detach(this);
+      owned = false;
+    }
     _gtkBitsetUnref(this.handle);
-  }
-}
-
-/// Iterates over the elements of a [struct@Gtk.Bitset].
-///
-/// `GtkBitSetIter is an opaque, stack-allocated struct.
-///
-/// Before a `GtkBitsetIter` can be used, it needs to be initialized with
-/// [func@Gtk.BitsetIter.init_first], [func@Gtk.BitsetIter.init_last]
-/// or [func@Gtk.BitsetIter.init_at].
-final class GtkBitsetIter {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GtkBitsetIter.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GtkBitsetIter>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GtkBitsetIter.rawFromPointer(handle, owned: owned);
-  }
-  GtkBitsetIter.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Gets the current value that @iter points to.
-  ///
-  /// If @iter is not valid and [method@Gtk.BitsetIter.is_valid]
-  /// returns %FALSE, this function returns 0.
-  static final _gtkBitsetIterGetValue =
-      gtk4Lookup<
-            ffi.NativeFunction<ffi.Uint32 Function(ffi.Pointer<ffi.Void>)>
-          >('gtk_bitset_iter_get_value')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  int getValue() {
-    return _gtkBitsetIterGetValue(this.handle);
-  }
-
-  /// Checks if @iter points to a valid value.
-  static final _gtkBitsetIterIsValid =
-      gtk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gtk_bitset_iter_is_valid',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isValid() {
-    return (_gtkBitsetIterIsValid(this.handle)) != 0;
-  }
-
-  /// Moves @iter to the next value in the set.
-  ///
-  /// If it was already pointing to the last value in the set,
-  /// %FALSE is returned and @iter is invalidated.
-  static final _gtkBitsetIterNext =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
-            >
-          >('gtk_bitset_iter_next')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
-          >();
-  (bool, int) next() {
-    final _out0 = malloc<ffi.Uint32>();
-    try {
-      final _ret = _gtkBitsetIterNext(this.handle, _out0);
-      return ((_ret) != 0, _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Moves @iter to the previous value in the set.
-  ///
-  /// If it was already pointing to the first value in the set,
-  /// %FALSE is returned and @iter is invalidated.
-  static final _gtkBitsetIterPrevious =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
-            >
-          >('gtk_bitset_iter_previous')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>)
-          >();
-  (bool, int) previous() {
-    final _out0 = malloc<ffi.Uint32>();
-    try {
-      final _ret = _gtkBitsetIterPrevious(this.handle, _out0);
-      return ((_ret) != 0, _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Initializes @iter to point to @target.
-  ///
-  /// If @target is not found, finds the next value after it.
-  /// If no value >= @target exists in @set, this function returns %FALSE.
-  static final _gtkBitsetIterInitAt =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Uint32,
-                ffi.Pointer<ffi.Uint32>,
-              )
-            >
-          >('gtk_bitset_iter_init_at')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              int,
-              ffi.Pointer<ffi.Uint32>,
-            )
-          >();
-  static (bool, GtkBitsetIter, int) initAt(GtkBitset set_, int target) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1 = malloc<ffi.Uint32>();
-    try {
-      final _ret = _gtkBitsetIterInitAt(
-        _out0.cast<ffi.Void>(),
-        set_.handle,
-        target,
-        _out1,
-      );
-      return (
-        (_ret) != 0,
-        keepAlive(
-          GtkBitsetIter.fromPointer(_out0.cast<ffi.Void>()),
-          _out0Anchor,
-        ),
-        _out1.value,
-      );
-    } finally {
-      malloc.free(_out1);
-    }
-  }
-
-  /// Initializes an iterator for @set and points it to the first
-  /// value in @set.
-  ///
-  /// If @set is empty, %FALSE is returned and @value is set to %G_MAXUINT.
-  static final _gtkBitsetIterInitFirst =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Uint32>,
-              )
-            >
-          >('gtk_bitset_iter_init_first')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Uint32>,
-            )
-          >();
-  static (bool, GtkBitsetIter, int) initFirst(GtkBitset set_) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1 = malloc<ffi.Uint32>();
-    try {
-      final _ret = _gtkBitsetIterInitFirst(
-        _out0.cast<ffi.Void>(),
-        set_.handle,
-        _out1,
-      );
-      return (
-        (_ret) != 0,
-        keepAlive(
-          GtkBitsetIter.fromPointer(_out0.cast<ffi.Void>()),
-          _out0Anchor,
-        ),
-        _out1.value,
-      );
-    } finally {
-      malloc.free(_out1);
-    }
-  }
-
-  /// Initializes an iterator for @set and points it to the last
-  /// value in @set.
-  ///
-  /// If @set is empty, %FALSE is returned.
-  static final _gtkBitsetIterInitLast =
-      gtk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Uint32>,
-              )
-            >
-          >('gtk_bitset_iter_init_last')
-          .asFunction<
-            int Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Uint32>,
-            )
-          >();
-  static (bool, GtkBitsetIter, int) initLast(GtkBitset set_) {
-    final _out0Anchor = HeapAnchor.allocate(256);
-    final _out0 = _out0Anchor.buffer;
-    final _out1 = malloc<ffi.Uint32>();
-    try {
-      final _ret = _gtkBitsetIterInitLast(
-        _out0.cast<ffi.Void>(),
-        set_.handle,
-        _out1,
-      );
-      return (
-        (_ret) != 0,
-        keepAlive(
-          GtkBitsetIter.fromPointer(_out0.cast<ffi.Void>()),
-          _out0Anchor,
-        ),
-        _out1.value,
-      );
-    } finally {
-      malloc.free(_out1);
-    }
   }
 }

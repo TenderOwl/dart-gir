@@ -134,7 +134,10 @@ class GIArgInfo extends GIBaseInfo {
           >('gi_arg_info_get_type_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GITypeInfo getTypeInfo() {
-    return GITypeInfo.fromPointer(_giArgInfoGetTypeInfo(this.handle));
+    return GITypeInfo.fromPointer(
+      _giArgInfoGetTypeInfo(this.handle),
+      owned: true,
+    );
   }
 
   /// Obtain if the argument is a pointer to a struct or object that will

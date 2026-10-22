@@ -17,10 +17,11 @@ final class GMainLoop {
     }
     return GMainLoop.rawFromPointer(handle, owned: owned);
   }
-  GMainLoop.rawFromPointer(this.handle, {bool owned = false}) {
+  GMainLoop.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,6 +48,7 @@ final class GMainLoop {
   GMainLoop(GMainContext? context, bool isRunning)
     : this.rawFromPointer(
         _gMainLoopNew(context?.handle ?? ffi.nullptr, isRunning ? 1 : 0),
+        owned: true,
       );
 
   /// Returns the [struct@GLib.MainContext] of @loop.
@@ -93,7 +95,7 @@ final class GMainLoop {
           >('g_main_loop_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMainLoop ref() {
-    return GMainLoop.fromPointer(_gMainLoopRef(this.handle));
+    return GMainLoop.fromPointer(_gMainLoopRef(this.handle), owned: true);
   }
 
   /// Runs a main loop until [method@GLib.MainLoop.quit] is called on the loop.
@@ -124,7 +126,7 @@ final class GMainLoop {
 /// The #GMappedFile represents a file mapping created with
 /// g_mapped_file_new(). It has only private members and should
 /// not be accessed directly.
-final class GMappedFile {
+final class GMappedFile implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -134,14 +136,45 @@ final class GMappedFile {
   }) {
     final cached = cachedObject<GMappedFile>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseMappedFile(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          mappedFileFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GMappedFile.rawFromPointer(handle, owned: owned);
   }
-  GMappedFile.rawFromPointer(this.handle, {bool owned = false}) {
+  GMappedFile.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      mappedFileFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GMappedFile` with `g_mapped_file_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final mappedFileFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_mapped_file_free',
+    ),
+  );
+
+  static final _releaseMappedFile =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_mapped_file_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -200,7 +233,7 @@ final class GMappedFile {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GMappedFile.fromPointer(_ret);
+        return GMappedFile.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -242,7 +275,7 @@ final class GMappedFile {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GMappedFile.fromPointer(_ret);
+      return GMappedFile.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -255,6 +288,11 @@ final class GMappedFile {
         'g_mapped_file_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      mappedFileFinalizer.detach(this);
+      owned = false;
+    }
     _gMappedFileFree(this.handle);
   }
 
@@ -269,7 +307,7 @@ final class GMappedFile {
           >('g_mapped_file_get_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes getBytes() {
-    return GBytes.fromPointer(_gMappedFileGetBytes(this.handle));
+    return GBytes.fromPointer(_gMappedFileGetBytes(this.handle), owned: true);
   }
 
   /// Returns the contents of a #GMappedFile.
@@ -311,7 +349,7 @@ final class GMappedFile {
           >('g_mapped_file_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMappedFile ref() {
-    return GMappedFile.fromPointer(_gMappedFileRef(this.handle));
+    return GMappedFile.fromPointer(_gMappedFileRef(this.handle), owned: true);
   }
 
   /// Decrements the reference count of @file by one.  If the reference count

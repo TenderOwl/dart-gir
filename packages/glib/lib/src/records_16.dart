@@ -17,10 +17,11 @@ final class GMainContext {
     }
     return GMainContext.rawFromPointer(handle, owned: owned);
   }
-  GMainContext.rawFromPointer(this.handle, {bool owned = false}) {
+  GMainContext.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -39,7 +40,7 @@ final class GMainContext {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_main_context_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GMainContext() : this.rawFromPointer(_gMainContextNew());
+  GMainContext() : this.rawFromPointer(_gMainContextNew(), owned: true);
 
   /// Creates a new [struct@GLib.MainContext] structure.
   static final _gMainContextNewWithFlags =
@@ -48,7 +49,7 @@ final class GMainContext {
           >('g_main_context_new_with_flags')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
   GMainContext.withFlags(GMainContextFlags flags)
-    : this.rawFromPointer(_gMainContextNewWithFlags(flags.value));
+    : this.rawFromPointer(_gMainContextNewWithFlags(flags.value), owned: true);
 
   /// Tries to become the owner of the specified context.
   ///
@@ -479,7 +480,7 @@ final class GMainContext {
           >('g_main_context_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GMainContext ref() {
-    return GMainContext.fromPointer(_gMainContextRef(this.handle));
+    return GMainContext.fromPointer(_gMainContextRef(this.handle), owned: true);
   }
 
   /// Releases ownership of a context previously acquired by this thread
@@ -642,6 +643,9 @@ final class GMainContext {
         'g_main_context_ref_thread_default',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GMainContext refThreadDefault() {
-    return GMainContext.fromPointer(_gMainContextRefThreadDefault());
+    return GMainContext.fromPointer(
+      _gMainContextRefThreadDefault(),
+      owned: true,
+    );
   }
 }

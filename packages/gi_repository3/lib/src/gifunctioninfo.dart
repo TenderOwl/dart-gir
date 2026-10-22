@@ -74,7 +74,9 @@ class GIFunctionInfo extends GICallableInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIPropertyInfo? getProperty() {
     final _ret = _giFunctionInfoGetProperty(this.handle);
-    return (_ret) == ffi.nullptr ? null : GIPropertyInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIPropertyInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain the symbol of the function.
@@ -108,6 +110,8 @@ class GIFunctionInfo extends GICallableInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIVFuncInfo? getVfunc() {
     final _ret = _giFunctionInfoGetVfunc(this.handle);
-    return (_ret) == ffi.nullptr ? null : GIVFuncInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIVFuncInfo.fromPointer(_ret, owned: true);
   }
 }

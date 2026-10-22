@@ -151,7 +151,18 @@ class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
     final cached = cachedObject<GtkSvg>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -325,7 +336,7 @@ class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
           >('gtk_svg_serialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes serialize() {
-    return GBytes.fromPointer(_gtkSvgSerialize(this.handle));
+    return GBytes.fromPointer(_gtkSvgSerialize(this.handle), owned: true);
   }
 
   /// Enables or disables features of the SVG paintable.
@@ -582,7 +593,10 @@ class GtkSvg extends GObject implements GdkPaintable, GtkSymbolicPaintable {
           >('gdk_paintable_get_current_image')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPaintable getCurrentImage() {
-    return GdkPaintable.fromPointer(_gdkPaintableGetCurrentImage(this.handle));
+    return GdkPaintable.fromPointer(
+      _gdkPaintableGetCurrentImage(this.handle),
+      owned: true,
+    );
   }
 
   /// Get flags for the paintable.

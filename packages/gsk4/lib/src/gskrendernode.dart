@@ -32,7 +32,7 @@ class GskRenderNode {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -178,7 +178,10 @@ class GskRenderNode {
           >('gsk_render_node_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskRenderNode ref() {
-    return GskRenderNode.fromPointer(_gskRenderNodeRef(this.handle));
+    return GskRenderNode.fromPointer(
+      _gskRenderNodeRef(this.handle),
+      owned: true,
+    );
   }
 
   /// Serializes the @node for later deserialization via
@@ -198,7 +201,10 @@ class GskRenderNode {
           >('gsk_render_node_serialize')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes serialize() {
-    return GBytes.fromPointer(_gskRenderNodeSerialize(this.handle));
+    return GBytes.fromPointer(
+      _gskRenderNodeSerialize(this.handle),
+      owned: true,
+    );
   }
 
   /// Releases a reference on the given `GskRenderNode`.
@@ -321,7 +327,9 @@ class GskRenderNode {
         _nc2?.nativeFunction ?? ffi.nullptr,
         userData ?? ffi.nullptr,
       );
-      return (_ret) == ffi.nullptr ? null : GskRenderNode.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GskRenderNode.fromPointer(_ret, owned: true);
     } finally {
       _nc2?.close();
     }

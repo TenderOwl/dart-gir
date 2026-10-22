@@ -146,6 +146,10 @@ class AdwWindow extends GtkWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void addBreakpoint(AdwBreakpoint breakpoint) {
+    if (breakpoint.owned) {
+      gobjectFinalizer.detach(breakpoint);
+      breakpoint.owned = false;
+    }
     _adwWindowAddBreakpoint(this.handle, breakpoint.handle);
   }
 
@@ -197,7 +201,10 @@ class AdwWindow extends GtkWindow
           >('adw_window_get_dialogs')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel getDialogs() {
-    return GListModel.fromPointer(_adwWindowGetDialogs(this.handle));
+    return GListModel.fromPointer(
+      _adwWindowGetDialogs(this.handle),
+      owned: true,
+    );
   }
 
   /// Returns the currently visible dialog in @self, if there's one.
@@ -530,7 +537,9 @@ class AdwWindow extends GtkWindow
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
     final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -553,7 +562,10 @@ class AdwWindow extends GtkWindow
           >('gtk_accessible_get_at_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkATContext getAtContext() {
-    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+    return GtkATContext.fromPointer(
+      _gtkAccessibleGetAtContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Queries the coordinates and dimensions of this accessible
@@ -614,7 +626,9 @@ class AdwWindow extends GtkWindow
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
     final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -627,7 +641,9 @@ class AdwWindow extends GtkWindow
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
     final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Queries a platform state, such as focus.

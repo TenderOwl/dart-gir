@@ -15,7 +15,18 @@ class GTlsPassword extends GObject {
     final cached = cachedObject<GTlsPassword>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -198,6 +209,26 @@ class GTlsPassword extends GObject {
   /// @length if using a nul-terminated password, and @length will be
   /// calculated automatically. (Note that the terminating nul is not
   /// considered part of the password in this case.)
+  /// The destroy notify the callee calls when it is done
+  /// with the buffer it took over.
+  ///
+  /// The notify outlives the call, so the trampoline is
+  /// permanent — a scoped `NativeCallable` would be closed
+  /// before the notify fires.
+  static final _gTlsPasswordSetValueFullDestroyCallbacks =
+      <void Function(ffi.Pointer<ffi.Void>)>[];
+  static void _gTlsPasswordSetValueFullDestroyTrampoline(
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    if (_gTlsPasswordSetValueFullDestroyCallbacks.isEmpty) return;
+    final fn = _gTlsPasswordSetValueFullDestroyCallbacks.removeAt(0);
+    fn(data);
+  }
+
+  static final _gTlsPasswordSetValueFullDestroyPtr =
+      ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>(
+        _gTlsPasswordSetValueFullDestroyTrampoline,
+      );
   static final _gTlsPasswordSetValueFull =
       gioLookup<
             ffi.NativeFunction<
@@ -221,26 +252,22 @@ class GTlsPassword extends GObject {
               >,
             )
           >();
+
+  /// The callee takes over `value`: keep it valid until the destroy notify runs.
   void setValueFull(
     ffi.Pointer<ffi.Uint8> value,
     int length, [
     void Function(ffi.Pointer<ffi.Void>)? destroy,
   ]) {
-    final _nc3 = destroy == null
-        ? null
-        : ffi.NativeCallable<
-            ffi.Void Function(ffi.Pointer<ffi.Void>)
-          >.isolateLocal(destroy);
-    try {
-      _gTlsPasswordSetValueFull(
-        this.handle,
-        value,
-        length,
-        _nc3?.nativeFunction ?? ffi.nullptr,
-      );
-    } finally {
-      _nc3?.close();
+    if (destroy != null) {
+      _gTlsPasswordSetValueFullDestroyCallbacks.add(destroy);
     }
+    _gTlsPasswordSetValueFull(
+      this.handle,
+      value,
+      length,
+      destroy == null ? ffi.nullptr : _gTlsPasswordSetValueFullDestroyPtr,
+    );
   }
 
   /// Set a user readable translated warning. Usually this warning is a

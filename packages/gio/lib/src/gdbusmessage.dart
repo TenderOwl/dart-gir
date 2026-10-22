@@ -15,7 +15,18 @@ class GDBusMessage extends GObject {
     final cached = cachedObject<GDBusMessage>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -210,7 +221,7 @@ class GDBusMessage extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GDBusMessage.fromPointer(_ret);
+      return GDBusMessage.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -525,6 +536,7 @@ class GDBusMessage extends GObject {
             nativeErrorName.cast<Utf8>(),
             nativeErrorMessage.cast<Utf8>(),
           ),
+          owned: true,
         );
       });
     });
@@ -539,7 +551,10 @@ class GDBusMessage extends GObject {
           >('g_dbus_message_new_method_reply')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDBusMessage newMethodReply() {
-    return GDBusMessage.fromPointer(_gDbusMessageNewMethodReply(this.handle));
+    return GDBusMessage.fromPointer(
+      _gDbusMessageNewMethodReply(this.handle),
+      owned: true,
+    );
   }
 
   /// Produces a human-readable multi-line description of @message.

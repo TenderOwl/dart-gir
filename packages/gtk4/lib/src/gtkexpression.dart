@@ -203,7 +203,7 @@ class GtkExpression {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -343,7 +343,10 @@ class GtkExpression {
           >('gtk_expression_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkExpression ref() {
-    return GtkExpression.fromPointer(_gtkExpressionRef(this.handle));
+    return GtkExpression.fromPointer(
+      _gtkExpressionRef(this.handle),
+      owned: true,
+    );
   }
 
   /// Releases a reference on the given `GtkExpression`.

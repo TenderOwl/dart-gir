@@ -28,7 +28,18 @@ class GtkShortcut extends GObject {
     final cached = cachedObject<GtkShortcut>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -77,14 +88,26 @@ class GtkShortcut extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkShortcut([GtkShortcutTrigger? trigger, GtkShortcutAction? action])
-    : this.rawFromPointer(
-        _gtkShortcutNew(
-          trigger?.handle ?? ffi.nullptr,
-          action?.handle ?? ffi.nullptr,
-        ),
-        owned: true,
-      );
+  factory GtkShortcut([
+    GtkShortcutTrigger? trigger,
+    GtkShortcutAction? action,
+  ]) {
+    if (trigger != null && trigger.owned) {
+      gobjectFinalizer.detach(trigger);
+      trigger.owned = false;
+    }
+    if (action != null && action.owned) {
+      gobjectFinalizer.detach(action);
+      action.owned = false;
+    }
+    return GtkShortcut.fromPointer(
+      _gtkShortcutNew(
+        trigger?.handle ?? ffi.nullptr,
+        action?.handle ?? ffi.nullptr,
+      ),
+      owned: true,
+    );
+  }
 
   /// Gets the action that is activated by this shortcut.
   static final _gtkShortcutGetAction =
@@ -136,6 +159,10 @@ class GtkShortcut extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void setAction([GtkShortcutAction? action]) {
+    if (action != null && action.owned) {
+      gobjectFinalizer.detach(action);
+      action.owned = false;
+    }
     _gtkShortcutSetAction(this.handle, action?.handle ?? ffi.nullptr);
   }
 
@@ -164,6 +191,10 @@ class GtkShortcut extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void setTrigger([GtkShortcutTrigger? trigger]) {
+    if (trigger != null && trigger.owned) {
+      gobjectFinalizer.detach(trigger);
+      trigger.owned = false;
+    }
     _gtkShortcutSetTrigger(this.handle, trigger?.handle ?? ffi.nullptr);
   }
 

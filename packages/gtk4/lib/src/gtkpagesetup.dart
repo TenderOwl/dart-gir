@@ -55,7 +55,18 @@ class GtkPageSetup extends GObject {
     final cached = cachedObject<GtkPageSetup>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -199,7 +210,10 @@ class GtkPageSetup extends GObject {
           >('gtk_page_setup_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkPageSetup copy() {
-    return GtkPageSetup.fromPointer(_gtkPageSetupCopy(this.handle));
+    return GtkPageSetup.fromPointer(
+      _gtkPageSetupCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the bottom margin in units of @unit.

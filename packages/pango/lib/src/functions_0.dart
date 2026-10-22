@@ -12,6 +12,7 @@ final _pangoAttrAllowBreaksNew =
 PangoAttribute attrAllowBreaksNew(bool allowBreaks) {
   return PangoAttribute.fromPointer(
     _pangoAttrAllowBreaksNew(allowBreaks ? 1 : 0),
+    owned: true,
   );
 }
 
@@ -21,7 +22,10 @@ final _pangoAttrBackgroundAlphaNew =
       'pango_attr_background_alpha_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrBackgroundAlphaNew(int alpha) {
-  return PangoAttribute.fromPointer(_pangoAttrBackgroundAlphaNew(alpha));
+  return PangoAttribute.fromPointer(
+    _pangoAttrBackgroundAlphaNew(alpha),
+    owned: true,
+  );
 }
 
 /// Create a new background color attribute.
@@ -33,7 +37,10 @@ final _pangoAttrBackgroundNew =
         >('pango_attr_background_new')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
 PangoAttribute attrBackgroundNew(int red, int green, int blue) {
-  return PangoAttribute.fromPointer(_pangoAttrBackgroundNew(red, green, blue));
+  return PangoAttribute.fromPointer(
+    _pangoAttrBackgroundNew(red, green, blue),
+    owned: true,
+  );
 }
 
 /// Create a new baseline displacement attribute.
@@ -50,7 +57,10 @@ final _pangoAttrBaselineShiftNew =
       'pango_attr_baseline_shift_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrBaselineShiftNew(int shift) {
-  return PangoAttribute.fromPointer(_pangoAttrBaselineShiftNew(shift));
+  return PangoAttribute.fromPointer(
+    _pangoAttrBaselineShiftNew(shift),
+    owned: true,
+  );
 }
 
 /// Create a new font fallback attribute.
@@ -66,6 +76,7 @@ final _pangoAttrFallbackNew =
 PangoAttribute attrFallbackNew(bool enableFallback) {
   return PangoAttribute.fromPointer(
     _pangoAttrFallbackNew(enableFallback ? 1 : 0),
+    owned: true,
   );
 }
 
@@ -79,6 +90,7 @@ PangoAttribute attrFamilyNew(String family) {
   return withNativeString(family, (nativeFamily) {
     return PangoAttribute.fromPointer(
       _pangoAttrFamilyNew(nativeFamily.cast<Utf8>()),
+      owned: true,
     );
   });
 }
@@ -92,7 +104,10 @@ final _pangoAttrFontScaleNew =
       'pango_attr_font_scale_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrFontScaleNew(PangoFontScale scale) {
-  return PangoAttribute.fromPointer(_pangoAttrFontScaleNew(scale.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrFontScaleNew(scale.value),
+    owned: true,
+  );
 }
 
 /// Create a new foreground alpha attribute.
@@ -101,7 +116,10 @@ final _pangoAttrForegroundAlphaNew =
       'pango_attr_foreground_alpha_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrForegroundAlphaNew(int alpha) {
-  return PangoAttribute.fromPointer(_pangoAttrForegroundAlphaNew(alpha));
+  return PangoAttribute.fromPointer(
+    _pangoAttrForegroundAlphaNew(alpha),
+    owned: true,
+  );
 }
 
 /// Create a new foreground color attribute.
@@ -113,7 +131,10 @@ final _pangoAttrForegroundNew =
         >('pango_attr_foreground_new')
         .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
 PangoAttribute attrForegroundNew(int red, int green, int blue) {
-  return PangoAttribute.fromPointer(_pangoAttrForegroundNew(red, green, blue));
+  return PangoAttribute.fromPointer(
+    _pangoAttrForegroundNew(red, green, blue),
+    owned: true,
+  );
 }
 
 /// Create a new gravity hint attribute.
@@ -122,7 +143,10 @@ final _pangoAttrGravityHintNew =
       'pango_attr_gravity_hint_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrGravityHintNew(PangoGravityHint hint) {
-  return PangoAttribute.fromPointer(_pangoAttrGravityHintNew(hint.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrGravityHintNew(hint.value),
+    owned: true,
+  );
 }
 
 /// Create a new gravity attribute.
@@ -131,7 +155,10 @@ final _pangoAttrGravityNew =
       'pango_attr_gravity_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrGravityNew(PangoGravity gravity) {
-  return PangoAttribute.fromPointer(_pangoAttrGravityNew(gravity.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrGravityNew(gravity.value),
+    owned: true,
+  );
 }
 
 /// Create a new insert-hyphens attribute.
@@ -146,6 +173,7 @@ final _pangoAttrInsertHyphensNew =
 PangoAttribute attrInsertHyphensNew(bool insertHyphens) {
   return PangoAttribute.fromPointer(
     _pangoAttrInsertHyphensNew(insertHyphens ? 1 : 0),
+    owned: true,
   );
 }
 
@@ -155,7 +183,10 @@ final _pangoAttrLetterSpacingNew =
       'pango_attr_letter_spacing_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrLetterSpacingNew(int letterSpacing) {
-  return PangoAttribute.fromPointer(_pangoAttrLetterSpacingNew(letterSpacing));
+  return PangoAttribute.fromPointer(
+    _pangoAttrLetterSpacingNew(letterSpacing),
+    owned: true,
+  );
 }
 
 /// Modify the height of logical line extents by a factor.
@@ -169,7 +200,10 @@ final _pangoAttrLineHeightNew =
       'pango_attr_line_height_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(double)>();
 PangoAttribute attrLineHeightNew(double factor) {
-  return PangoAttribute.fromPointer(_pangoAttrLineHeightNew(factor));
+  return PangoAttribute.fromPointer(
+    _pangoAttrLineHeightNew(factor),
+    owned: true,
+  );
 }
 
 /// Override the height of logical line extents to be @height.
@@ -183,7 +217,10 @@ final _pangoAttrLineHeightNewAbsolute =
       'pango_attr_line_height_new_absolute',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrLineHeightNewAbsolute(int height) {
-  return PangoAttribute.fromPointer(_pangoAttrLineHeightNewAbsolute(height));
+  return PangoAttribute.fromPointer(
+    _pangoAttrLineHeightNewAbsolute(height),
+    owned: true,
+  );
 }
 
 /// Create a new overline color attribute.
@@ -200,6 +237,7 @@ final _pangoAttrOverlineColorNew =
 PangoAttribute attrOverlineColorNew(int red, int green, int blue) {
   return PangoAttribute.fromPointer(
     _pangoAttrOverlineColorNew(red, green, blue),
+    owned: true,
   );
 }
 
@@ -209,7 +247,10 @@ final _pangoAttrOverlineNew =
       'pango_attr_overline_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrOverlineNew(PangoOverline overline) {
-  return PangoAttribute.fromPointer(_pangoAttrOverlineNew(overline.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrOverlineNew(overline.value),
+    owned: true,
+  );
 }
 
 /// Create a new baseline displacement attribute.
@@ -218,7 +259,7 @@ final _pangoAttrRiseNew =
       'pango_attr_rise_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrRiseNew(int rise) {
-  return PangoAttribute.fromPointer(_pangoAttrRiseNew(rise));
+  return PangoAttribute.fromPointer(_pangoAttrRiseNew(rise), owned: true);
 }
 
 /// Create a new font size scale attribute.
@@ -230,7 +271,10 @@ final _pangoAttrScaleNew =
       'pango_attr_scale_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(double)>();
 PangoAttribute attrScaleNew(double scaleFactor) {
-  return PangoAttribute.fromPointer(_pangoAttrScaleNew(scaleFactor));
+  return PangoAttribute.fromPointer(
+    _pangoAttrScaleNew(scaleFactor),
+    owned: true,
+  );
 }
 
 /// Marks the range of the attribute as a single sentence.
@@ -242,7 +286,7 @@ final _pangoAttrSentenceNew =
       'pango_attr_sentence_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function()>();
 PangoAttribute attrSentenceNew() {
-  return PangoAttribute.fromPointer(_pangoAttrSentenceNew());
+  return PangoAttribute.fromPointer(_pangoAttrSentenceNew(), owned: true);
 }
 
 /// Create a new attribute that influences how invisible
@@ -252,7 +296,10 @@ final _pangoAttrShowNew =
       'pango_attr_show_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrShowNew(PangoShowFlags flags) {
-  return PangoAttribute.fromPointer(_pangoAttrShowNew(flags.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrShowNew(flags.value),
+    owned: true,
+  );
 }
 
 /// Create a new font stretch attribute.
@@ -261,7 +308,10 @@ final _pangoAttrStretchNew =
       'pango_attr_stretch_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrStretchNew(PangoStretch stretch) {
-  return PangoAttribute.fromPointer(_pangoAttrStretchNew(stretch.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrStretchNew(stretch.value),
+    owned: true,
+  );
 }
 
 /// Create a new strikethrough color attribute.
@@ -278,6 +328,7 @@ final _pangoAttrStrikethroughColorNew =
 PangoAttribute attrStrikethroughColorNew(int red, int green, int blue) {
   return PangoAttribute.fromPointer(
     _pangoAttrStrikethroughColorNew(red, green, blue),
+    owned: true,
   );
 }
 
@@ -289,6 +340,7 @@ final _pangoAttrStrikethroughNew =
 PangoAttribute attrStrikethroughNew(bool strikethrough) {
   return PangoAttribute.fromPointer(
     _pangoAttrStrikethroughNew(strikethrough ? 1 : 0),
+    owned: true,
   );
 }
 
@@ -298,7 +350,10 @@ final _pangoAttrStyleNew =
       'pango_attr_style_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrStyleNew(PangoStyle style) {
-  return PangoAttribute.fromPointer(_pangoAttrStyleNew(style.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrStyleNew(style.value),
+    owned: true,
+  );
 }
 
 /// Create a new attribute that influences how characters
@@ -310,6 +365,7 @@ final _pangoAttrTextTransformNew =
 PangoAttribute attrTextTransformNew(PangoTextTransform transform) {
   return PangoAttribute.fromPointer(
     _pangoAttrTextTransformNew(transform.value),
+    owned: true,
   );
 }
 
@@ -327,6 +383,7 @@ final _pangoAttrUnderlineColorNew =
 PangoAttribute attrUnderlineColorNew(int red, int green, int blue) {
   return PangoAttribute.fromPointer(
     _pangoAttrUnderlineColorNew(red, green, blue),
+    owned: true,
   );
 }
 
@@ -336,7 +393,10 @@ final _pangoAttrUnderlineNew =
       'pango_attr_underline_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrUnderlineNew(PangoUnderline underline) {
-  return PangoAttribute.fromPointer(_pangoAttrUnderlineNew(underline.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrUnderlineNew(underline.value),
+    owned: true,
+  );
 }
 
 /// Create a new font variant attribute (normal or small caps).
@@ -345,7 +405,10 @@ final _pangoAttrVariantNew =
       'pango_attr_variant_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrVariantNew(PangoVariant variant) {
-  return PangoAttribute.fromPointer(_pangoAttrVariantNew(variant.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrVariantNew(variant.value),
+    owned: true,
+  );
 }
 
 /// Create a new font weight attribute.
@@ -354,7 +417,10 @@ final _pangoAttrWeightNew =
       'pango_attr_weight_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
 PangoAttribute attrWeightNew(PangoWeight weight) {
-  return PangoAttribute.fromPointer(_pangoAttrWeightNew(weight.value));
+  return PangoAttribute.fromPointer(
+    _pangoAttrWeightNew(weight.value),
+    owned: true,
+  );
 }
 
 /// Marks the range of the attribute as a single word.
@@ -366,7 +432,7 @@ final _pangoAttrWordNew =
       'pango_attr_word_new',
     ).asFunction<ffi.Pointer<ffi.Void> Function()>();
 PangoAttribute attrWordNew() {
-  return PangoAttribute.fromPointer(_pangoAttrWordNew());
+  return PangoAttribute.fromPointer(_pangoAttrWordNew(), owned: true);
 }
 
 /// Searches a string the first character that has a strong
@@ -523,6 +589,7 @@ GList itemize(
         attrs.handle,
         cachedIter?.handle ?? ffi.nullptr,
       ),
+      owned: true,
     );
   });
 }
@@ -577,6 +644,7 @@ GList itemizeWithBaseDir(
         attrs.handle,
         cachedIter?.handle ?? ffi.nullptr,
       ),
+      owned: true,
     );
   });
 }

@@ -448,9 +448,15 @@ void main() {
       expect(code, contains('factory GioFile.fromPointer('));
       expect(
         code,
-        contains('GioFile.rawFromPointer(this.handle, {bool owned = false})'),
+        contains('GioFile.rawFromPointer(this.handle, {this.owned = false})'),
       );
       expect(code, contains('cachedObject<GioFile>(handle.address)'));
+      // An interface is a GObject in C, so the wrapper owns the reference
+      // the GIR hands over and releases it with `g_object_unref`.
+      expect(
+        code,
+        contains('gobjectFinalizer.attach(this, handle, detach: this);'),
+      );
       // cast<T>(factory) re-wraps handle as T via the user-provided
       // callback. Bound is `Object` (not `GObject`) so this works for
       // interfaces like `GFile` that don't have an `extends` clause
@@ -3292,6 +3298,483 @@ void main() {
         report.entries.any((e) => e.reason.startsWith('brought to ')),
         isFalse,
         reason: 'no static-promotion skip entry should be produced',
+      );
+    });
+  });
+
+  group('Ownership transfer', () {
+    test('a transfer-full return hands the reference to the wrapper', () {
+      final report = GenerationReport();
+      // `g_object_ref` returns a reference the caller owns: the GIR says
+      // `transfer-ownership="full"`, so the wrapper must claim it and
+      // release it when it is collected.
+      final fn = GirFunction(
+        name: 'ref',
+        cIdentifier: 'g_object_ref',
+        returnTransfer: GirTransferOwnership.full,
+        returnType: const GirTypeRef(name: 'Object', cType: 'GObject*'),
+      );
+      final objectNs = _gobjectNs();
+      final ctx = _ctx(objectNs, [objectNs], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(code, contains('owned: true'));
+      expect(report.totalSkipped, 0);
+    });
+
+    test('a borrowed return stays borrowed', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'get_parent',
+        cIdentifier: 'gtk_widget_get_parent',
+        returnTransfer: GirTransferOwnership.none,
+        returnType: const GirTypeRef(name: 'Widget', cType: 'GtkWidget*'),
+      );
+      final ns = _glibNs();
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      // The type is unknown to the resolver, so the callable is skipped —
+      // what matters is that no `owned: true` sneaks in.
+      expect(code == null || !code.contains('owned: true'), isTrue);
+    });
+
+    test('an interface owns the reference and releases it with '
+        'g_object_unref', () {
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'Gio',
+        version: '2.0',
+        sharedLibrary: 'libgio-2.0.so.0',
+        cIdentifierPrefixes: const ['Gio', 'gio'],
+        cSymbolPrefixes: const ['gio'],
+        interfaces: [
+          GirInterface(
+            name: 'File',
+            cType: 'GFile',
+            methods: const [],
+            functions: const [],
+            doc: '',
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitInterface(ns.interfaces.first)!;
+      // An interface is a GObject in C: the wrapper owns the reference
+      // and releases it with `g_object_unref`.
+      expect(
+        code,
+        contains('gobjectFinalizer.attach(this, handle, detach: this);'),
+      );
+      // A surplus reference — the wrapper cache already holds the
+      // pointer — is released instead of leaked.
+      expect(code, contains('gObjectUnref(handle);'));
+      expect(code, contains('class GioFile implements ffi.Finalizable {'));
+    });
+
+    test('a boxed type with a destructor gets its own finalizer', () {
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'GLib',
+        version: '2.0',
+        sharedLibrary: 'libglib-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['glib', 'g'],
+        records: [
+          GirRecord(
+            name: 'Bytes',
+            cType: 'GBytes',
+            methods: [GirMethod(name: 'unref', cIdentifier: 'g_bytes_unref')],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      expect(
+        code,
+        contains('static final bytesFinalizer = ffi.NativeFinalizer('),
+      );
+      expect(code, contains("'g_bytes_unref',"));
+      expect(
+        code,
+        contains('bytesFinalizer.attach(this, handle, detach: this);'),
+      );
+      // The surplus reference the cache handed back is released with the
+      // type's own destructor.
+      expect(code, contains('_releaseBytes(handle);'));
+      expect(code, contains('final class GBytes implements ffi.Finalizable {'));
+    });
+
+    test('a boxed type without a destructor gets no finalizer', () {
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'GLib',
+        version: '2.0',
+        sharedLibrary: 'libglib-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['glib', 'g'],
+        records: [GirRecord(name: 'Opaque', cType: 'GOpaque')],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      expect(code, isNot(contains('NativeFinalizer')));
+      expect(code, isNot(contains('implements ffi.Finalizable')));
+    });
+
+    test('a thread-affine destructor is left to the caller', () {
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'GLib',
+        version: '2.0',
+        sharedLibrary: 'libglib-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['glib', 'g'],
+        records: [
+          GirRecord(
+            name: 'MainContext',
+            cType: 'GMainContext',
+            methods: [
+              GirMethod(name: 'unref', cIdentifier: 'g_main_context_unref'),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      // A `NativeFinalizer` may run on any VM thread — releasing a main
+      // context from there is not safe, so the caller keeps the job.
+      expect(code, isNot(contains('NativeFinalizer')));
+    });
+
+    test('a record constructor follows the GIR transfer', () {
+      final report = GenerationReport();
+      final ns = GirNamespace(
+        name: 'GLib',
+        version: '2.0',
+        sharedLibrary: 'libglib-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['glib', 'g'],
+        records: [
+          GirRecord(
+            name: 'Bytes',
+            cType: 'GBytes',
+            methods: [GirMethod(name: 'unref', cIdentifier: 'g_bytes_unref')],
+            constructors: [
+              GirConstructor(
+                name: 'new',
+                cIdentifier: 'g_bytes_new',
+                returnTransfer: GirTransferOwnership.full,
+                returnType: GirTypeRef(name: 'Bytes', cType: 'GBytes*'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      expect(code, contains('owned: true'));
+    });
+
+    test('a transfer-full parameter hands the reference to the callee', () {
+      final report = GenerationReport();
+      // `gtk_widget_add_controller` takes the controller over: the GIR
+      // says `transfer-ownership="full"`, so the Dart side must give up
+      // its claim instead of releasing the reference twice.
+      final fn = GirFunction(
+        name: 'add_controller',
+        cIdentifier: 'gtk_widget_add_controller',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'controller',
+            type: GirTypeRef(
+              name: 'EventController',
+              cType: 'GtkEventController*',
+            ),
+            transferOwnership: GirTransferOwnership.full,
+          ),
+        ],
+      );
+      final ns = _glibNs(classes: const []);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      // The parameter's type is unknown to the resolver here, so the
+      // callable is skipped; the handover is covered by the runtime test
+      // and by the emitted shape below.
+      expect(code == null || !code.contains('detach('), isTrue);
+    });
+
+    test('a transfer-full parameter emits the detach and clears `owned`', () {
+      final report = GenerationReport();
+      // A namespace with a class the parameter can point at, so the
+      // bridge resolves and the handover code is emitted.
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.so.1',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [
+          GirClass(
+            name: 'EventController',
+            cType: 'GtkEventController',
+            parent: 'GObject.Object',
+          ),
+          GirClass(
+            name: 'Widget',
+            cType: 'GtkWidget',
+            parent: 'GObject.Object',
+            methods: [
+              GirMethod(
+                name: 'add_controller',
+                cIdentifier: 'gtk_widget_add_controller',
+                returnType: GirTypeRef(name: 'none'),
+                parameters: [
+                  GirParameter(
+                    name: 'controller',
+                    type: GirTypeRef(
+                      name: 'EventController',
+                      cType: 'GtkEventController*',
+                    ),
+                    transferOwnership: GirTransferOwnership.full,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      );
+      final objectNs = _gobjectNs();
+      final ctx = _ctx(ns, [ns, objectNs], report);
+      final code = RecordEmitter(ctx)
+          .emitRecord(GirRecord(name: 'Dummy', cType: 'GDummy'));
+      expect(code, isNotNull);
+      final classCode = ClassEmitter(
+        ctx,
+        emittedPackages: {'gtk'},
+      ).emitClass(ns.classes.last)!;
+      expect(classCode, contains('gobjectFinalizer.detach(controller);'));
+      expect(classCode, contains('controller.owned = false;'));
+    });
+  });
+
+  group('Byte arrays', () {
+    /// A namespace with the `Bytes` record, so a `GBytes` parameter
+    /// resolves and the `GBytes` sibling of a byte-array callable is
+    /// found.
+    GirNamespace nsWithBytes({
+      List<GirFunction> functions = const [],
+      List<GirRecord> records = const [],
+    }) => GirNamespace(
+      name: 'Gio',
+      version: '2.0',
+      sharedLibrary: 'libgio-2.0.so.0',
+      cIdentifierPrefixes: const ['Gio', 'gio'],
+      cSymbolPrefixes: const ['gio'],
+      functions: functions,
+      records: records,
+      callbacks: [
+        GirCallback(
+          name: 'AsyncReadyCallback',
+          cType: 'GAsyncReadyCallback',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: [
+            const GirParameter(
+              name: 'source',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+            const GirParameter(
+              name: 'result',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        ),
+        GirCallback(
+          name: 'DestroyNotify',
+          cType: 'GDestroyNotify',
+          returnType: const GirTypeRef(name: 'none'),
+          parameters: [
+            const GirParameter(
+              name: 'data',
+              type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    GirRecord bytesRecord() => GirRecord(
+      name: 'Bytes',
+      cType: 'GBytes',
+      methods: [GirMethod(name: 'unref', cIdentifier: 'g_bytes_unref')],
+    );
+
+    test('an async byte array keeps its raw pointer and says so', () {
+      final report = GenerationReport();
+      // `g_file_replace_contents_async` does not copy the buffer: it has
+      // to stay valid until the callback fires.
+      final fn = GirFunction(
+        name: 'replace_contents_async',
+        cIdentifier: 'g_file_replace_contents_async',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'contents',
+            type: GirTypeRef(
+              cType: 'const guint8*',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(name: 'guint8'),
+              ),
+            ),
+          ),
+          GirParameter(
+            name: 'length',
+            type: GirTypeRef(name: 'gsize'),
+          ),
+          GirParameter(
+            name: 'callback',
+            type: GirTypeRef(name: 'AsyncReadyCallback'),
+            scope: 'async',
+          ),
+        ],
+      );
+      final ns = nsWithBytes(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(report.entries.map((e) => e.reason).toList(), isEmpty);
+      expect(code, isNotNull);
+      // The buffer stays a raw pointer — the emitter cannot mirror it
+      // into a `Uint8List`, because the callee reads it after the call.
+      expect(code, contains('ffi.Pointer<ffi.Uint8> contents'));
+      expect(code, isNot(contains('withNativeBytes')));
+      // ... and the wrapper says so.
+      expect(code, contains('is **not** copied'));
+      expect(code, contains('until the callback fires'));
+    });
+
+    test('the note names the GBytes sibling when the library has one', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'replace_contents_async',
+        cIdentifier: 'g_file_replace_contents_async',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'contents',
+            type: GirTypeRef(
+              cType: 'const guint8*',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(name: 'guint8'),
+              ),
+            ),
+          ),
+          GirParameter(
+            name: 'length',
+            type: GirTypeRef(name: 'gsize'),
+          ),
+          GirParameter(
+            name: 'callback',
+            type: GirTypeRef(name: 'AsyncReadyCallback'),
+            scope: 'async',
+          ),
+        ],
+      );
+      final sibling = GirFunction(
+        name: 'replace_contents_bytes_async',
+        cIdentifier: 'g_file_replace_contents_bytes_async',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'contents',
+            type: GirTypeRef(name: 'Bytes'),
+          ),
+        ],
+      );
+      final ns = nsWithBytes(
+        functions: [fn, sibling],
+        records: [bytesRecord()],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+      expect(
+        code,
+        contains('The `GBytes` variant [replaceContentsBytesAsync]'),
+      );
+    });
+
+    test('a destroy notify next to a buffer gets a permanent trampoline', () {
+      final report = GenerationReport();
+      // The callee takes the buffer over and calls the notify when it is
+      // done — the notify outlives the call, so a scoped `NativeCallable`
+      // would be closed before it fires.
+      final fn = GirFunction(
+        name: 'new_from_data',
+        cIdentifier: 'g_memory_input_stream_new_from_data',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'data',
+            type: GirTypeRef(
+              cType: 'const guint8*',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(name: 'guint8'),
+              ),
+            ),
+          ),
+          GirParameter(
+            name: 'len',
+            type: GirTypeRef(name: 'gssize'),
+          ),
+          GirParameter(
+            name: 'destroy',
+            type: GirTypeRef(name: 'DestroyNotify'),
+            scope: 'async',
+          ),
+        ],
+      );
+      final ns = nsWithBytes(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(report.entries.map((e) => e.reason).toList(), isEmpty);
+      expect(code, isNotNull);
+      // The permanent trampoline over a static function.
+      expect(code, contains('ffi.Pointer.fromFunction<'));
+      expect(code, contains('Trampoline'));
+      // The user's callback is parked before the call and popped by the
+      // trampoline.
+      expect(code, contains('Callbacks.add(destroy);'));
+      // No scoped `NativeCallable` for the notify — it would be closed
+      // before the callee calls it.
+      expect(code, isNot(contains('isolateLocal(destroy)')));
+    });
+
+    test('a destroy notify without a buffer keeps the scoped callable', () {
+      final report = GenerationReport();
+      // `g_list_free_full` calls the notify *during* the call, so the
+      // scoped `NativeCallable` is the right shape there.
+      final fn = GirFunction(
+        name: 'free_full',
+        cIdentifier: 'g_list_free_full',
+        returnType: const GirTypeRef(name: 'none'),
+        parameters: const [
+          GirParameter(
+            name: 'list',
+            type: GirTypeRef(name: 'GLib.List'),
+          ),
+          GirParameter(
+            name: 'free_func',
+            type: GirTypeRef(name: 'GLib.DestroyNotify'),
+            scope: 'async',
+          ),
+        ],
+      );
+      final ns = nsWithBytes(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(
+        code == null || !code.contains('ffi.Pointer.fromFunction<'),
+        isTrue,
       );
     });
   });

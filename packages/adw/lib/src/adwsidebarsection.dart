@@ -79,7 +79,18 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
     final cached = cachedObject<AdwSidebarSection>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -132,6 +143,10 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void append(AdwSidebarItem item) {
+    if (item.owned) {
+      gobjectFinalizer.detach(item);
+      item.owned = false;
+    }
     _adwSidebarSectionAppend(this.handle, item.handle);
   }
 
@@ -257,7 +272,10 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
           >('adw_sidebar_section_get_items')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel getItems() {
-    return GListModel.fromPointer(_adwSidebarSectionGetItems(this.handle));
+    return GListModel.fromPointer(
+      _adwSidebarSectionGetItems(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets the context menu model for @self's items.
@@ -321,6 +339,10 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>, int)
           >();
   void insert(AdwSidebarItem item, int position) {
+    if (item.owned) {
+      gobjectFinalizer.detach(item);
+      item.owned = false;
+    }
     _adwSidebarSectionInsert(this.handle, item.handle, position);
   }
 
@@ -337,6 +359,10 @@ class AdwSidebarSection extends GObject implements GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void prepend(AdwSidebarItem item) {
+    if (item.owned) {
+      gobjectFinalizer.detach(item);
+      item.owned = false;
+    }
     _adwSidebarSectionPrepend(this.handle, item.handle);
   }
 

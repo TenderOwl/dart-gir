@@ -18,7 +18,18 @@ class PangoFontMap extends GObject implements GListModel {
     final cached = cachedObject<PangoFontMap>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -123,7 +134,10 @@ class PangoFontMap extends GObject implements GListModel {
           >('pango_font_map_create_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoContext createContext() {
-    return PangoContext.fromPointer(_pangoFontMapCreateContext(this.handle));
+    return PangoContext.fromPointer(
+      _pangoFontMapCreateContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Gets a font family by name.
@@ -194,7 +208,9 @@ class PangoFontMap extends GObject implements GListModel {
       context.handle,
       desc.handle,
     );
-    return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoFont.fromPointer(_ret, owned: true);
   }
 
   /// Load a set of fonts in the fontmap that can be used to render
@@ -229,7 +245,9 @@ class PangoFontMap extends GObject implements GListModel {
       desc.handle,
       language.handle,
     );
-    return (_ret) == ffi.nullptr ? null : PangoFontset.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoFontset.fromPointer(_ret, owned: true);
   }
 
   /// Returns a new font that is like @font, except that it is scaled
@@ -276,6 +294,7 @@ class PangoFontMap extends GObject implements GListModel {
           context?.handle ?? ffi.nullptr,
           nativeVariations.cast<Utf8>(),
         ),
+        owned: true,
       );
     });
   }
@@ -378,7 +397,9 @@ class PangoFontMap extends GObject implements GListModel {
           >();
   GObject? getObject(int position) {
     final _ret = _gListModelGetObject(this.handle, position);
-    return (_ret) == ffi.nullptr ? null : GObject.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GObject.fromPointer(_ret, owned: true);
   }
 
   /// Emits the #GListModel::items-changed signal on @list.

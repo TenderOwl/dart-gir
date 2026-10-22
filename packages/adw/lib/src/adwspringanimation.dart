@@ -44,7 +44,18 @@ class AdwSpringAnimation extends AdwAnimation {
     final cached = cachedObject<AdwSpringAnimation>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -101,22 +112,32 @@ class AdwSpringAnimation extends AdwAnimation {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  AdwSpringAnimation(
+  factory AdwSpringAnimation(
     GtkWidget widget,
     double from,
     double to,
     AdwSpringParams springParams,
     AdwAnimationTarget target,
-  ) : this.rawFromPointer(
-        _adwSpringAnimationNew(
-          widget.handle,
-          from,
-          to,
-          springParams.handle,
-          target.handle,
-        ),
-        owned: true,
-      );
+  ) {
+    if (springParams.owned) {
+      AdwSpringParams.springParamsFinalizer.detach(springParams);
+      springParams.owned = false;
+    }
+    if (target.owned) {
+      gobjectFinalizer.detach(target);
+      target.owned = false;
+    }
+    return AdwSpringAnimation.fromPointer(
+      _adwSpringAnimationNew(
+        widget.handle,
+        from,
+        to,
+        springParams.handle,
+        target.handle,
+      ),
+      owned: true,
+    );
+  }
 
   /// Calculates the value @self will have at @time.
   ///

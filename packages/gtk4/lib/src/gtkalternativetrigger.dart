@@ -18,7 +18,18 @@ class GtkAlternativeTrigger extends GtkShortcutTrigger {
     final cached = cachedObject<GtkAlternativeTrigger>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -70,11 +81,23 @@ class GtkAlternativeTrigger extends GtkShortcutTrigger {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  GtkAlternativeTrigger(GtkShortcutTrigger first, GtkShortcutTrigger second)
-    : this.rawFromPointer(
-        _gtkAlternativeTriggerNew(first.handle, second.handle),
-        owned: true,
-      );
+  factory GtkAlternativeTrigger(
+    GtkShortcutTrigger first,
+    GtkShortcutTrigger second,
+  ) {
+    if (first.owned) {
+      gobjectFinalizer.detach(first);
+      first.owned = false;
+    }
+    if (second.owned) {
+      gobjectFinalizer.detach(second);
+      second.owned = false;
+    }
+    return GtkAlternativeTrigger.fromPointer(
+      _gtkAlternativeTriggerNew(first.handle, second.handle),
+      owned: true,
+    );
+  }
 
   /// Gets the first of the two alternative triggers that may
   /// trigger @self.

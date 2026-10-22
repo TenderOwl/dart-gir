@@ -57,6 +57,9 @@ class GIConstantInfo extends GIBaseInfo {
           >('gi_constant_info_get_type_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GITypeInfo getTypeInfo() {
-    return GITypeInfo.fromPointer(_giConstantInfoGetTypeInfo(this.handle));
+    return GITypeInfo.fromPointer(
+      _giConstantInfoGetTypeInfo(this.handle),
+      owned: true,
+    );
   }
 }

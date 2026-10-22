@@ -52,6 +52,7 @@ GParamSpec paramSpecUlong(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -102,6 +103,7 @@ GParamSpec paramSpecUnichar(
             defaultValue,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -148,6 +150,10 @@ GParamSpec paramSpecVariant(
   return withNativeString(name, (nativeName) {
     return withNativeString(nick, (nativeNick) {
       return withNativeString(blurb, (nativeBlurb) {
+        if (defaultValue != null && defaultValue.owned) {
+          GVariant.variantFinalizer.detach(defaultValue);
+          defaultValue.owned = false;
+        }
         return GParamSpec.fromPointer(
           _gParamSpecVariant(
             nativeName.cast<Utf8>(),
@@ -157,6 +163,7 @@ GParamSpec paramSpecVariant(
             defaultValue?.handle ?? ffi.nullptr,
             flags.value,
           ),
+          owned: true,
         );
       });
     });
@@ -936,26 +943,4 @@ final _gSignalName =
     ).asFunction<ffi.Pointer<Utf8> Function(int)>();
 String? signalName(int signalId) {
   return stringFromNative((_gSignalName(signalId)).cast(), free: false);
-}
-
-/// Overrides the class closure (i.e. the default handler) for the given signal
-/// for emissions on instances of @instance_type. @instance_type must be derived
-/// from the type to which the signal belongs.
-///
-/// See g_signal_chain_from_overridden() and
-/// g_signal_chain_from_overridden_handler() for how to chain up to the
-/// parent class closure from inside the overridden one.
-final _gSignalOverrideClassClosure =
-    gobjectLookup<
-          ffi.NativeFunction<
-            ffi.Void Function(ffi.Uint32, ffi.Size, ffi.Pointer<ffi.Void>)
-          >
-        >('g_signal_override_class_closure')
-        .asFunction<void Function(int, int, ffi.Pointer<ffi.Void>)>();
-void signalOverrideClassClosure(
-  int signalId,
-  int instanceType,
-  GClosure classClosure,
-) {
-  _gSignalOverrideClassClosure(signalId, instanceType, classClosure.handle);
 }

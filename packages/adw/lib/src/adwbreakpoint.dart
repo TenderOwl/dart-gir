@@ -59,7 +59,18 @@ class AdwBreakpoint extends GObject implements GtkBuildable {
     final cached = cachedObject<AdwBreakpoint>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -99,8 +110,16 @@ class AdwBreakpoint extends GObject implements GtkBuildable {
             >
           >('adw_breakpoint_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  AdwBreakpoint(AdwBreakpointCondition condition)
-    : this.rawFromPointer(_adwBreakpointNew(condition.handle), owned: true);
+  factory AdwBreakpoint(AdwBreakpointCondition condition) {
+    if (condition.owned) {
+      AdwBreakpointCondition.breakpointConditionFinalizer.detach(condition);
+      condition.owned = false;
+    }
+    return AdwBreakpoint.fromPointer(
+      _adwBreakpointNew(condition.handle),
+      owned: true,
+    );
+  }
 
   /// Adds a setter to @self.
   ///

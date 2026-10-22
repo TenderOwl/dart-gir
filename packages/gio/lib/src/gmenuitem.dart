@@ -15,7 +15,18 @@ class GMenuItem extends GObject {
     final cached = cachedObject<GMenuItem>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -242,7 +253,9 @@ class GMenuItem extends GObject {
         nativeAttribute.cast<Utf8>(),
         expectedType?.handle ?? ffi.nullptr,
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -265,7 +278,9 @@ class GMenuItem extends GObject {
   GMenuModel? getLink(String link) {
     return withNativeString(link, (nativeLink) {
       final _ret = _gMenuItemGetLink(this.handle, nativeLink.cast<Utf8>());
-      return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GMenuModel.fromPointer(_ret, owned: true);
     });
   }
 

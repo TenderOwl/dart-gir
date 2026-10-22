@@ -4,7 +4,7 @@ part of '../glib.dart';
 /// An opaque data structure which represents an asynchronous queue.
 ///
 /// It should only be accessed through the `g_async_queue_*` functions.
-final class GAsyncQueue {
+final class GAsyncQueue implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -14,14 +14,45 @@ final class GAsyncQueue {
   }) {
     final cached = cachedObject<GAsyncQueue>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseAsyncQueue(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          asyncQueueFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GAsyncQueue.rawFromPointer(handle, owned: owned);
   }
-  GAsyncQueue.rawFromPointer(this.handle, {bool owned = false}) {
+  GAsyncQueue.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      asyncQueueFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GAsyncQueue` with `g_async_queue_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final asyncQueueFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_async_queue_unref',
+    ),
+  );
+
+  static final _releaseAsyncQueue =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_async_queue_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -349,7 +380,7 @@ final class GAsyncQueue {
           >('g_async_queue_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GAsyncQueue ref() {
-    return GAsyncQueue.fromPointer(_gAsyncQueueRef(this.handle));
+    return GAsyncQueue.fromPointer(_gAsyncQueueRef(this.handle), owned: true);
   }
 
   /// Increases the reference count of the asynchronous @queue by 1.
@@ -692,6 +723,11 @@ final class GAsyncQueue {
         'g_async_queue_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      asyncQueueFinalizer.detach(this);
+      owned = false;
+    }
     _gAsyncQueueUnref(this.handle);
   }
 
@@ -713,7 +749,7 @@ final class GAsyncQueue {
         'g_async_queue_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GAsyncQueue new_() {
-    return GAsyncQueue.fromPointer(_gAsyncQueueNew());
+    return GAsyncQueue.fromPointer(_gAsyncQueueNew(), owned: true);
   }
 
   /// Creates a new asynchronous queue and sets up a destroy notify
@@ -746,7 +782,7 @@ final class GAsyncQueue {
           >.isolateLocal(itemFreeFunc);
     try {
       final _ret = _gAsyncQueueNewFull(_nc1?.nativeFunction ?? ffi.nullptr);
-      return GAsyncQueue.fromPointer(_ret);
+      return GAsyncQueue.fromPointer(_ret, owned: true);
     } finally {
       _nc1?.close();
     }

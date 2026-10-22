@@ -70,7 +70,10 @@ class GskCairoNode extends GskRenderNode {
           >('gsk_cairo_node_get_draw_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoContext getDrawContext() {
-    return CairoContext.fromPointer(_gskCairoNodeGetDrawContext(this.handle));
+    return CairoContext.fromPointer(
+      _gskCairoNodeGetDrawContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Retrieves the Cairo surface used by the render node.

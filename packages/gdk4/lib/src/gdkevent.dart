@@ -27,7 +27,7 @@ class GdkEvent {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -287,7 +287,7 @@ class GdkEvent {
           >('gdk_event_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkEvent ref() {
-    return GdkEvent.fromPointer(_gdkEventRef(this.handle));
+    return GdkEvent.fromPointer(_gdkEventRef(this.handle), owned: true);
   }
 
   /// Returns whether a `GdkEvent` should trigger a context menu,

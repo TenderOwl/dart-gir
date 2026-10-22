@@ -17,10 +17,11 @@ final class GDebugKey {
     }
     return GDebugKey.rawFromPointer(handle, owned: owned);
   }
-  GDebugKey.rawFromPointer(this.handle, {bool owned = false}) {
+  GDebugKey.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -36,21 +37,52 @@ final class GDebugKey {
 }
 
 /// An opaque structure representing an opened directory.
-final class GDir {
+final class GDir implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
   factory GDir.fromPointer(ffi.Pointer<ffi.Void> handle, {bool owned = false}) {
     final cached = cachedObject<GDir>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseDir(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          dirFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GDir.rawFromPointer(handle, owned: owned);
   }
-  GDir.rawFromPointer(this.handle, {bool owned = false}) {
+  GDir.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      dirFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GDir` with `g_dir_close`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final dirFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_dir_close',
+    ),
+  );
+
+  static final _releaseDir =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_dir_close',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -92,7 +124,7 @@ final class GDir {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GDir.fromPointer(_ret);
+        return GDir.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -112,6 +144,11 @@ final class GDir {
         'g_dir_close',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void close() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      dirFinalizer.detach(this);
+      owned = false;
+    }
     _gDirClose(this.handle);
   }
 
@@ -148,7 +185,7 @@ final class GDir {
           >('g_dir_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDir ref() {
-    return GDir.fromPointer(_gDirRef(this.handle));
+    return GDir.fromPointer(_gDirRef(this.handle), owned: true);
   }
 
   /// Resets the given directory. The next call to g_dir_read_name()
@@ -224,7 +261,7 @@ final class GDir {
 
 /// The `GError` structure contains information about
 /// an error that has occurred.
-final class GError {
+final class GError implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -234,14 +271,45 @@ final class GError {
   }) {
     final cached = cachedObject<GError>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseError(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          errorFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GError.rawFromPointer(handle, owned: owned);
   }
-  GError.rawFromPointer(this.handle, {bool owned = false}) {
+  GError.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      errorFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GError` with `g_error_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final errorFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_error_free',
+    ),
+  );
+
+  static final _releaseError =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_error_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -276,6 +344,7 @@ final class GError {
     return withNativeString(message, (nativeMessage) {
       return GError.fromPointer(
         _gErrorNewLiteral(domain, code, nativeMessage.cast<Utf8>()),
+        owned: true,
       );
     });
   }
@@ -289,7 +358,7 @@ final class GError {
           >('g_error_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GError copy() {
-    return GError.fromPointer(_gErrorCopy(this.handle));
+    return GError.fromPointer(_gErrorCopy(this.handle), owned: true);
   }
 
   /// Frees a #GError and associated resources.
@@ -298,6 +367,11 @@ final class GError {
         'g_error_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      errorFinalizer.detach(this);
+      owned = false;
+    }
     _gErrorFree(this.handle);
   }
 

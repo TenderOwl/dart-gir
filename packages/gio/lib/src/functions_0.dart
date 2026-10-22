@@ -154,7 +154,7 @@ GDBusConnection busGetFinish(GAsyncResult res) {
     if (_error.value != ffi.nullptr) {
       throw GlibException.fromError(_error.value);
     }
-    return GDBusConnection.fromPointer(_ret);
+    return GDBusConnection.fromPointer(_ret, owned: true);
   } finally {
     calloc.free(_error);
   }
@@ -206,7 +206,7 @@ GDBusConnection busGetSync(GBusType busType, [GCancellable? cancellable]) {
     if (_error.value != ffi.nullptr) {
       throw GlibException.fromError(_error.value);
     }
-    return GDBusConnection.fromPointer(_ret);
+    return GDBusConnection.fromPointer(_ret, owned: true);
   } finally {
     calloc.free(_error);
   }
@@ -502,7 +502,10 @@ final _gContentTypeGetIcon =
         .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
 GIcon contentTypeGetIcon(String type_) {
   return withNativeString(type_, (nativeType_) {
-    return GIcon.fromPointer(_gContentTypeGetIcon(nativeType_.cast<Utf8>()));
+    return GIcon.fromPointer(
+      _gContentTypeGetIcon(nativeType_.cast<Utf8>()),
+      owned: true,
+    );
   });
 }
 
@@ -531,6 +534,7 @@ GIcon contentTypeGetSymbolicIcon(String type_) {
   return withNativeString(type_, (nativeType_) {
     return GIcon.fromPointer(
       _gContentTypeGetSymbolicIcon(nativeType_.cast<Utf8>()),
+      owned: true,
     );
   });
 }
@@ -674,7 +678,7 @@ final _gContentTypesGetRegistered =
       'g_content_types_get_registered',
     ).asFunction<ffi.Pointer<ffi.Void> Function()>();
 GList contentTypesGetRegistered() {
-  return GList.fromPointer(_gContentTypesGetRegistered());
+  return GList.fromPointer(_gContentTypesGetRegistered(), owned: true);
 }
 
 /// Escape @string so it can appear in a D-Bus address as the value

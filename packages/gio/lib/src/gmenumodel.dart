@@ -132,7 +132,18 @@ class GMenuModel extends GObject {
     final cached = cachedObject<GMenuModel>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -206,7 +217,9 @@ class GMenuModel extends GObject {
         nativeAttribute.cast<Utf8>(),
         expectedType?.handle ?? ffi.nullptr,
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -239,7 +252,9 @@ class GMenuModel extends GObject {
         itemIndex,
         nativeLink.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GMenuModel.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GMenuModel.fromPointer(_ret, owned: true);
     });
   }
 
@@ -311,6 +326,7 @@ class GMenuModel extends GObject {
   GMenuAttributeIter iterateItemAttributes(int itemIndex) {
     return GMenuAttributeIter.fromPointer(
       _gMenuModelIterateItemAttributes(this.handle, itemIndex),
+      owned: true,
     );
   }
 
@@ -330,6 +346,7 @@ class GMenuModel extends GObject {
   GMenuLinkIter iterateItemLinks(int itemIndex) {
     return GMenuLinkIter.fromPointer(
       _gMenuModelIterateItemLinks(this.handle, itemIndex),
+      owned: true,
     );
   }
 

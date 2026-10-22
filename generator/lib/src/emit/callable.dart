@@ -57,6 +57,43 @@ class _OutParam {
   bool absorbed = false;
 }
 
+/// A `GDestroyNotify`-style parameter whose callback the callee calls
+/// *after* the call that passed it.
+///
+/// The callee takes over the buffer and calls the notify when it is done
+/// with it — the notify outlives the call. A scoped `NativeCallable`
+/// would be closed in the `finally` block before the notify fires, and
+/// the callback would then run against freed memory (the Dart VM aborts
+/// the isolate with "Callback invoked after it has been deleted").
+///
+/// The emitter therefore passes a permanent function pointer over a
+/// static trampoline and keeps the user's callback in a per-callable
+/// registry until the notify arrives.
+class _DestroyNotify {
+  _DestroyNotify(
+    this.param,
+    this.inParam,
+    this.registryName,
+    this.trampolineName,
+    this.ptrName,
+  );
+
+  /// The GIR parameter.
+  final GirParameter param;
+
+  /// The Dart-side parameter.
+  final _InParam inParam;
+
+  /// Name of the generated registry member.
+  final String registryName;
+
+  /// Name of the generated trampoline member.
+  final String trampolineName;
+
+  /// Name of the generated permanent function pointer member.
+  final String ptrName;
+}
+
 /// Emits a Dart wrapper (plus its private native binding) for a
 /// [GirFunction]. Returns null when the callable is skipped; the reason is
 /// recorded in the context report.
@@ -76,6 +113,9 @@ class CallableEmitter {
   /// [selfArgExpr]: expression passed as first native argument for methods.
   /// [factoryClass]: when non-null, emits a factory constructor returning
   /// this class. [sinkFloating]: call `gObjectRefSink` on ctor results.
+  /// [bodyPrelude]: lines emitted at the top of the body — the destructor of
+  /// an owned wrapper uses it to hand the release from the collector to the
+  /// caller.
   String? emit(
     GirFunction fn, {
     required String dartName,
@@ -87,6 +127,7 @@ class CallableEmitter {
     bool factoryOwned = true,
     bool sinkFloating = false,
     GirNamespace? relativeTo,
+    List<String> bodyPrelude = const [],
   }) {
     final label = '$ownerName.$dartName';
     String? skipReason;
@@ -116,6 +157,15 @@ class CallableEmitter {
     final ins = <_InParam>[];
     final outs = <_OutParam>[];
     final callbackAllocs = <_CallbackAlloc>[];
+    // Destroy notifies the callee calls *after* the call — they need a
+    // permanent trampoline instead of a scoped `NativeCallable`.
+    final destroyNotifies = <_DestroyNotify>[];
+    // Whether the callable hands a byte buffer to the callee. A destroy
+    // notify next to such a buffer is the callee's promise to release it
+    // later, so the notify outlives the call.
+    final hasByteArray = fn.parameters.any(
+      (p) => TypeResolver.isByteArrayElement(p.type),
+    );
     // Bridges indexed by parameter position, in declaration order.
     final bridges = <int, TypeBridge>{};
     // The byte count of a callee-allocated byte buffer is consumed by
@@ -177,7 +227,22 @@ class CallableEmitter {
             ..absorbed = absorbedInIndices.contains(i);
           ins.add(inParam);
           if (_isCallbackBridge(bridge)) {
-            callbackAllocs.add(_CallbackAlloc('_nc${ins.length}', inParam));
+            if (TypeResolver.isDestroyNotify(p) && hasByteArray) {
+              // The callee takes over the buffer and calls the notify
+              // when it is done with it — the notify outlives the call,
+              // so it needs a permanent trampoline.
+              destroyNotifies.add(
+                _DestroyNotify(
+                  p,
+                  inParam,
+                  _destroyRegistryName(fn.cIdentifier!, p),
+                  _destroyTrampolineName(fn.cIdentifier!, p),
+                  _destroyPtrName(fn.cIdentifier!, p),
+                ),
+              );
+            } else {
+              callbackAllocs.add(_CallbackAlloc('_nc${ins.length}', inParam));
+            }
           }
         case GirParameterDirection.inout:
           ctx.report.skip('callable', label, 'inout parameter ${p.name}');
@@ -202,6 +267,21 @@ class CallableEmitter {
               ..absorbed = absorbedOutIndices.contains(i),
           );
       }
+    }
+
+    // Parameters the callee takes over: the GIR says
+    // `transfer-ownership="full"`, so from the call on the reference is
+    // the callee's. The Dart side has to give up its claim — it must not
+    // release a reference it no longer owns, and the wrapper's
+    // finalizer must not release it either.
+    final handovers = <_InParam>[];
+    for (var i = 0; i < fn.parameters.length; i++) {
+      final p = fn.parameters[i];
+      if (p.direction != GirParameterDirection.in_) continue;
+      if (p.transferOwnership != GirTransferOwnership.full) continue;
+      final bridge = bridges[i];
+      if (bridge == null || bridge.ownershipFinalizer == null) continue;
+      handovers.add(ins.firstWhere((x) => x.paramIndex == i));
     }
 
     final (retBridge, retReason) = ctx.bridgeFor(
@@ -233,6 +313,12 @@ class CallableEmitter {
     // NativeCallable above, the C side consumes its `.nativeFunction`.
     final callbackByParam = <int, _CallbackAlloc>{
       for (final c in callbackAllocs) c.inParam.paramIndex: c,
+    };
+    // Destroy notifies: the callee calls them after the call, so the
+    // native side gets a permanent function pointer, not the scoped
+    // `NativeCallable` of a normal callback.
+    final destroyByParam = <int, _DestroyNotify>{
+      for (final d in destroyNotifies) d.inParam.paramIndex: d,
     };
     // Struct arguments the C API takes by pointer: each one needs a
     // native copy for the duration of the call.
@@ -274,6 +360,15 @@ class CallableEmitter {
           // the helper computed from the `Uint8List`.
           argExprs.add(
             _bytesLengthVar(byteArrayByLengthIndex[inP.paramIndex]!),
+          );
+        } else if (destroyByParam.containsKey(i)) {
+          // A destroy notify the callee calls after the call: the native
+          // side gets the permanent pointer over the static trampoline.
+          final d = destroyByParam[i]!;
+          argExprs.add(
+            d.inParam.bridge.isNullableCallback
+                ? '${d.inParam.name} == null ? ffi.nullptr : ${d.ptrName}'
+                : d.ptrName,
           );
         } else if (callbackByParam.containsKey(i)) {
           // We allocated `_ncN` above; the native call uses its pointer.
@@ -362,6 +457,36 @@ class CallableEmitter {
     final hasCallbacks = callbackAllocs.isNotEmpty;
     final call = '$lookupVar(${argExprs.join(', ')})';
 
+    // The prelude runs before everything else: it hands the release of an
+    // owned reference from the collector to the caller.
+    core.addAll(bodyPrelude);
+
+    // Hand the reference over before the call: the callee owns it from
+    // now on, so the wrapper gives up its claim. The finalizer is
+    // detached — the wrapper must not release a reference the callee
+    // owns — and the flag is cleared, so a second handover of the same
+    // wrapper does not detach twice.
+    for (final h in handovers) {
+      final finalizer = h.bridge.ownershipFinalizer!;
+      final nullable = h.bridge.wrapperType.endsWith('?');
+      final arg = h.name;
+      core.add(
+        nullable ? 'if ($arg != null && $arg.owned) {' : 'if ($arg.owned) {',
+      );
+      core.add('  $finalizer.detach($arg);');
+      core.add('  $arg.owned = false;');
+      core.add('}');
+    }
+
+    // Park the destroy notify in the registry before the call: the
+    // trampoline pops it when the callee releases the buffer.
+    for (final d in destroyNotifies) {
+      final nullable = d.inParam.bridge.isNullableCallback;
+      core.add(nullable ? 'if (${d.inParam.name} != null) {' : '{');
+      core.add('  ${d.registryName}.add(${d.inParam.name});');
+      core.add('}');
+    }
+
     // Subclassable emission for `<constructor>` (the `factoryClass`
     // branch): when the constructor has no `throws`, no OUT params,
     // no string / string-list parameters, and no callback
@@ -395,6 +520,10 @@ class CallableEmitter {
       (p) => p.bridge.isString || p.bridge.isStringList,
     );
     final hasCallback = callbackAllocs.isNotEmpty;
+    // A destroy notify needs a body: the wrapper parks the user's callback
+    // in the registry before the call, and a generative initializer list
+    // has no body to host that.
+    final hasDestroyNotify = destroyNotifies.isNotEmpty;
     // A struct argument needs a native copy for the call, and a
     // generative constructor has no body to allocate it in.
     final hasStructInSet = ins.any((p) => p.bridge.structArgType != null);
@@ -402,13 +531,17 @@ class CallableEmitter {
     // mirror the list into native memory — and a generative constructor
     // has no body to host that call.
     final hasByteArrayInSet = ins.any((p) => p.bridge.isByteArrayIn);
+    // A parameter the callee takes over needs the handover code — and a
+    // generative constructor has no body to host it either.
     if (factoryClass != null &&
         !fn.throws &&
         outs.isEmpty &&
         !hasStringInSet &&
         !hasCallback &&
+        !hasDestroyNotify &&
         !hasStructInSet &&
-        !hasByteArrayInSet) {
+        !hasByteArrayInSet &&
+        handovers.isEmpty) {
       final ownedArg = factoryOwned ? ', owned: true' : '';
       // `this.fromPointer` is always valid — every generated class
       // (and record) declares a `fromPointer` named constructor that
@@ -450,6 +583,9 @@ class CallableEmitter {
         b.writeln(line);
       }
       b.writeln(lookupDecl);
+      for (final line in ctx.byteArrayLifetimeDoc(fn)) {
+        b.writeln(line);
+      }
       b.writeln(generativeHeader);
       return b.toString();
     }
@@ -646,7 +782,42 @@ class CallableEmitter {
     for (final line in ctx.docLines(fn.doc)) {
       b.writeln(line);
     }
+    // The permanent trampoline a destroy notify needs. The notify runs
+    // after the call that passed it, so a scoped `NativeCallable` would
+    // already be closed by then.
+    for (final d in destroyNotifies) {
+      final staticPrefix = staticMember || classMember ? 'static ' : '';
+      b.writeln('/// The destroy notify the callee calls when it is done');
+      b.writeln('/// with the buffer it took over.');
+      b.writeln('///');
+      b.writeln('/// The notify outlives the call, so the trampoline is');
+      b.writeln('/// permanent — a scoped `NativeCallable` would be closed');
+      b.writeln('/// before the notify fires.');
+      b.writeln(
+        '${staticPrefix}final ${d.registryName} = '
+        '<void Function(ffi.Pointer<ffi.Void>)>[];',
+      );
+      b.writeln(
+        '${staticPrefix}void ${d.trampolineName}(ffi.Pointer<ffi.Void> data) {',
+      );
+      b.writeln('  if (${d.registryName}.isEmpty) return;');
+      b.writeln('  final fn = ${d.registryName}.removeAt(0);');
+      b.writeln('  fn(data);');
+      b.writeln('}');
+      b.writeln(
+        '${staticPrefix}final ${d.ptrName} = '
+        'ffi.Pointer.fromFunction<'
+        'ffi.Void Function(ffi.Pointer<ffi.Void>)>('
+        '${d.trampolineName});',
+      );
+    }
     b.writeln(lookupDecl);
+    // The byte-array lifetime note belongs on the *public* wrapper: the
+    // native binding above is private, so a note there never reaches the
+    // API reference.
+    for (final line in ctx.byteArrayLifetimeDoc(fn)) {
+      b.writeln(line);
+    }
     b.writeln(header);
     b.writeln(bodyLines.join('\n'));
     b.write('}');
@@ -736,6 +907,22 @@ class CallableEmitter {
     return n.startsWith('ffi.Pointer<ffi.NativeFunction<') &&
         !n.contains('Pointer<NativeFunction<');
   }
+
+  /// The base name of the members a destroy notify generates.
+  static String _destroyBase(String cIdentifier, GirParameter p) =>
+      '_${toLowerCamel(cIdentifier)}${toUpperCamel(p.name)}';
+
+  /// Name of the generated registry member for a destroy notify.
+  static String _destroyRegistryName(String cIdentifier, GirParameter p) =>
+      '${_destroyBase(cIdentifier, p)}Callbacks';
+
+  /// Name of the generated trampoline member for a destroy notify.
+  static String _destroyTrampolineName(String cIdentifier, GirParameter p) =>
+      '${_destroyBase(cIdentifier, p)}Trampoline';
+
+  /// Name of the generated permanent function pointer for a destroy notify.
+  static String _destroyPtrName(String cIdentifier, GirParameter p) =>
+      '${_destroyBase(cIdentifier, p)}Ptr';
 
   /// Whether [name] would collide with a `dart:core` Object member.
   static bool conflictsWithObjectMember(String name) =>

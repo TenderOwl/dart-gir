@@ -22,7 +22,18 @@ class GTlsDatabase extends GObject {
     final cached = cachedObject<GTlsDatabase>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -142,7 +153,9 @@ class GTlsDatabase extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return (_ret) == ffi.nullptr ? null : GTlsCertificate.fromPointer(_ret);
+        return (_ret) == ffi.nullptr
+            ? null
+            : GTlsCertificate.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }
@@ -317,7 +330,7 @@ class GTlsDatabase extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GTlsCertificate.fromPointer(_ret);
+      return GTlsCertificate.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -385,7 +398,7 @@ class GTlsDatabase extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GTlsCertificate.fromPointer(_ret);
+      return GTlsCertificate.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -552,7 +565,7 @@ class GTlsDatabase extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GTlsCertificate.fromPointer(_ret);
+      return GTlsCertificate.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -604,7 +617,7 @@ class GTlsDatabase extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GList.fromPointer(_ret);
+      return GList.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -657,6 +670,8 @@ class GTlsDatabase extends GObject {
               ffi.Pointer<ffi.Void>,
             )
           >();
+
+  /// `issuer_raw_dn` is **not** copied: it has to stay valid until the callback fires.
   void lookupCertificatesIssuedByAsync(
     ffi.Pointer<ffi.Uint8> issuerRawDn,
     GTlsInteraction? interaction,
@@ -724,6 +739,7 @@ class GTlsDatabase extends GObject {
 
   /// Lifetime-safe variant of [lookupCertificatesIssuedByAsync] for use with
   /// async callbacks. See `docs/async.md`.
+  /// `issuer_raw_dn` is **not** copied: it has to stay valid until the callback fires.
   void lookupCertificatesIssuedByAsyncCallback(
     ffi.Pointer<ffi.Uint8> issuerRawDn,
     GTlsInteraction? interaction,
@@ -775,7 +791,7 @@ class GTlsDatabase extends GObject {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GList.fromPointer(_ret);
+      return GList.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }

@@ -65,7 +65,9 @@ class GIStructInfo extends GIRegisteredTypeInfo {
   GIFieldInfo? findField(String name) {
     return withNativeString(name, (nativeName) {
       final _ret = _giStructInfoFindField(this.handle, nativeName.cast<Utf8>());
-      return (_ret) == ffi.nullptr ? null : GIFieldInfo.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GIFieldInfo.fromPointer(_ret, owned: true);
     });
   }
 
@@ -91,7 +93,9 @@ class GIStructInfo extends GIRegisteredTypeInfo {
         this.handle,
         nativeName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GIFunctionInfo.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GIFunctionInfo.fromPointer(_ret, owned: true);
     });
   }
 
@@ -131,7 +135,10 @@ class GIStructInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIFieldInfo getField(int n) {
-    return GIFieldInfo.fromPointer(_giStructInfoGetField(this.handle, n));
+    return GIFieldInfo.fromPointer(
+      _giStructInfoGetField(this.handle, n),
+      owned: true,
+    );
   }
 
   /// Retrieves the name of the free function for @info, if any is set.
@@ -160,7 +167,10 @@ class GIStructInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIFunctionInfo getMethod(int n) {
-    return GIFunctionInfo.fromPointer(_giStructInfoGetMethod(this.handle, n));
+    return GIFunctionInfo.fromPointer(
+      _giStructInfoGetMethod(this.handle, n),
+      owned: true,
+    );
   }
 
   /// Obtain the number of fields this structure has.

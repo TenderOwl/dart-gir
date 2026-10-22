@@ -6,14 +6,19 @@ so it describes what a fresh clone would actually get.
 
 | Branch | Tip | Subject |
 | --- | --- | --- |
-| `main` | `59a4d36` | *feat: add generated docs* |
-| `composite-templates` | `932de6b` | *fix: composite template generation and loading* |
-| `origin/main` | `5762949` | *feat: add composite-template annotations, runtime, and codegen* |
+| `main` | `4deb5b37` | *docs: add dark mode toggle into notepad example* |
+| `origin/main` | `4deb5b37` | *docs: add dark mode toggle into notepad example* |
+| `composite-templates` | `932de6ba` | *fix: composite template generation and loading* |
+| `origin/composite-templates` | `932de6ba` | *fix: composite template generation and loading* |
 
 **The conclusion in one line:** both capabilities the `composite-templates`
 branch was holding are on `main`, and everything the branch still has that
 `main` does not is the prototype that was never in scope — so the branch is
 ready to be retired.
+
+`main` and `origin/main` are the **same commit**: the trunk is published.
+The one thing left is the `composite-templates` ref, which still exists
+both locally and on the remote.
 
 ## How to re-check this
 
@@ -80,11 +85,12 @@ The branch holds two commits on top of that point:
 | Commit | Subject |
 | --- | --- |
 | `836fd87e` | *feat: add composite templates support* |
-| `932de6b` | *fix: composite template generation and loading* |
+| `932de6ba` | *fix: composite template generation and loading* |
 
-`main` is 18 commits ahead of the branch point, including its own
-composite-template work (`b4e3e26c`, `57629492`, `24ad716e`) and the
-generated site (`59a4d36`).
+`main` is **33 commits** ahead of the branch point. Among them are its own
+composite-template work (`b4e3e26c`, `57629492`, `24ad716e`), the
+subclassing contract (`4a8d6c90`), the generated site (`59a4d36`), the
+byte-buffer work (`5de5cf58`, `b59a56d3`) and the notepad's own history.
 
 ## 4. What the branch still has that `main` does not
 
@@ -116,13 +122,18 @@ generated site.
 
 | Branch | Status |
 | --- | --- |
-| `main` | The trunk. Carries both capabilities. |
+| `main` | The trunk. Carries both capabilities. Published: `main` and `origin/main` are the same commit (`4deb5b37`). |
 | `composite-templates` | Nothing left to merge. Its merge-base is the subclassing commit itself, and its two unique commits are the out-of-scope prototype. **Ready to be retired.** |
 | `array-types`, `notepad`, `props` | Merged into `main`; do not build on them. |
 | `gasync` | Superseded — do not build on it. |
-| `origin/main` | Four commits behind local `main` (`b4e3e26c`, `8dc3d59c`, `24ad716e`, `59a4d36`). Pushing `main` publishes the composite-template stack, the subclassing test and the generated site. |
+| `origin/main` | In sync with local `main`. |
 
-Two actions remain, and both are the owner's:
+One action remains, and it is the owner's:
 
-1. Delete the `composite-templates` ref — `git branch -D composite-templates`.
-2. Push `main`, so `origin/main` catches up.
+```console
+git branch -D composite-templates
+git push origin --delete composite-templates
+```
+
+Both refs still exist — the local branch and `origin/composite-templates`,
+each at `932de6ba`.

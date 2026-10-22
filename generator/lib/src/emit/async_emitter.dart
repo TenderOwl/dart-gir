@@ -343,6 +343,9 @@ class AsyncCallbackEmitter {
     // Convenience overload method.
     b.writeln('/// Lifetime-safe variant of [$dartName] for use with');
     b.writeln('/// async callbacks. See `docs/async.md`.');
+    for (final line in ctx.byteArrayLifetimeDoc(m)) {
+      b.writeln(line);
+    }
     b.writeln('void $methodName($paramList) {');
     // Allocate `NativeCallable` locals for any non-`cb` callback
     // parameters so the C call receives a function pointer (not the
@@ -559,6 +562,9 @@ class AsyncCallbackEmitter {
     b.writeln('}');
     b.writeln('/// Lifetime-safe variant of [$dartName] for use with');
     b.writeln('/// async callbacks. See `docs/async.md`.');
+    for (final line in ctx.byteArrayLifetimeDoc(fn)) {
+      b.writeln(line);
+    }
     b.writeln('void $methodName($paramList) {');
     // Allocate `NativeCallable` locals for any non-`cb` callback
     // parameters so the C call receives a function pointer (not the

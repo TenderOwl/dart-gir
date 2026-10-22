@@ -29,7 +29,18 @@ class AdwTimedAnimation extends AdwAnimation {
     final cached = cachedObject<AdwTimedAnimation>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -84,16 +95,22 @@ class AdwTimedAnimation extends AdwAnimation {
               ffi.Pointer<ffi.Void>,
             )
           >();
-  AdwTimedAnimation(
+  factory AdwTimedAnimation(
     GtkWidget widget,
     double from,
     double to,
     int duration,
     AdwAnimationTarget target,
-  ) : this.rawFromPointer(
-        _adwTimedAnimationNew(widget.handle, from, to, duration, target.handle),
-        owned: true,
-      );
+  ) {
+    if (target.owned) {
+      gobjectFinalizer.detach(target);
+      target.owned = false;
+    }
+    return AdwTimedAnimation.fromPointer(
+      _adwTimedAnimationNew(widget.handle, from, to, duration, target.handle),
+      owned: true,
+    );
+  }
 
   /// Gets whether @self changes direction on every iteration.
   static final _adwTimedAnimationGetAlternate =

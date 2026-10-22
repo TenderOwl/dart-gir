@@ -36,6 +36,25 @@ String toLowerCamel(String input) {
   return first + words.skip(1).map(_capitalize).join();
 }
 
+/// The name of the `NativeFinalizer` a boxed type carries.
+///
+/// The name is derived from the *GIR* type name, not from the Dart class
+/// name: the class name carries the namespace prefix (`GBytes` for GLib's
+/// `Bytes`), the member name does not. `Bytes` → `bytesFinalizer`,
+/// `Attribute` → `attributeFinalizer`, `PaperSize` → `paperSizeFinalizer`.
+///
+/// The member lives on the class, so two packages may both have a
+/// `bytesFinalizer` without the names colliding.
+String boxedFinalizerName(String girLocalName) {
+  var local = girLocalName;
+  // Sanitize nested/odd GIR names the same way `dartTypeName` does, so
+  // the member name is always a valid Dart identifier.
+  if (!RegExp(r'^[A-Za-z][A-Za-z0-9]*$').hasMatch(local)) {
+    local = toUpperCamel(local);
+  }
+  return '${toLowerCamel(local)}Finalizer';
+}
+
 /// Converts any C-style or Dart-style identifier to UpperCamelCase.
 String toUpperCamel(String input) {
   final words = _words(input);

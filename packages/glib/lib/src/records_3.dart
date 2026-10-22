@@ -2,7 +2,7 @@
 part of '../glib.dart';
 
 /// Contains the public fields of a `GByteArray`.
-final class GByteArray {
+final class GByteArray implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -12,14 +12,45 @@ final class GByteArray {
   }) {
     final cached = cachedObject<GByteArray>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseByteArray(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          byteArrayFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GByteArray.rawFromPointer(handle, owned: owned);
   }
-  GByteArray.rawFromPointer(this.handle, {bool owned = false}) {
+  GByteArray.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      byteArrayFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GByteArray` with `g_byte_array_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final byteArrayFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_byte_array_unref',
+    ),
+  );
+
+  static final _releaseByteArray =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_byte_array_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -98,7 +129,7 @@ final class GByteArray {
           >('g_byte_array_free_to_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Uint8>)>();
   static GBytes freeToBytes(ffi.Pointer<ffi.Uint8> array) {
-    return GBytes.fromPointer(_gByteArrayFreeToBytes(array));
+    return GBytes.fromPointer(_gByteArrayFreeToBytes(array), owned: true);
   }
 
   /// Creates a new `GByteArray` with a reference count of 1.

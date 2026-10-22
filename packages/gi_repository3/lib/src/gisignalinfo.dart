@@ -63,7 +63,9 @@ class GISignalInfo extends GICallableInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIVFuncInfo? getClassClosure() {
     final _ret = _giSignalInfoGetClassClosure(this.handle);
-    return (_ret) == ffi.nullptr ? null : GIVFuncInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIVFuncInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain the flags for this signal info.

@@ -21,7 +21,18 @@ class PangoContext extends GObject {
     final cached = cachedObject<PangoContext>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -231,6 +242,7 @@ class PangoContext extends GObject {
         desc?.handle ?? ffi.nullptr,
         language?.handle ?? ffi.nullptr,
       ),
+      owned: true,
     );
   }
 
@@ -285,7 +297,9 @@ class PangoContext extends GObject {
           >();
   PangoFont? loadFont(PangoFontDescription desc) {
     final _ret = _pangoContextLoadFont(this.handle, desc.handle);
-    return (_ret) == ffi.nullptr ? null : PangoFont.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoFont.fromPointer(_ret, owned: true);
   }
 
   /// Load a set of fonts in the context that can be used to render
@@ -313,7 +327,9 @@ class PangoContext extends GObject {
       desc.handle,
       language.handle,
     );
-    return (_ret) == ffi.nullptr ? null : PangoFontset.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : PangoFontset.fromPointer(_ret, owned: true);
   }
 
   /// Sets the base direction for the context.

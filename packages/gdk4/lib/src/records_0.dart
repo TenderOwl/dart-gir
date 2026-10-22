@@ -15,10 +15,11 @@ final class GdkCicpParamsClass {
     }
     return GdkCicpParamsClass.rawFromPointer(handle, owned: owned);
   }
-  GdkCicpParamsClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GdkCicpParamsClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -42,7 +43,7 @@ final class GdkCicpParamsClass {
 /// state to another.
 ///
 /// `GdkColorState` objects are immutable and therefore threadsafe.
-final class GdkColorState {
+final class GdkColorState implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -52,14 +53,45 @@ final class GdkColorState {
   }) {
     final cached = cachedObject<GdkColorState>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseColorState(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          colorStateFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GdkColorState.rawFromPointer(handle, owned: owned);
   }
-  GdkColorState.rawFromPointer(this.handle, {bool owned = false}) {
+  GdkColorState.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      colorStateFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GdkColorState` with `gdk_color_state_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final colorStateFinalizer = ffi.NativeFinalizer(
+    gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'gdk_color_state_unref',
+    ),
+  );
+
+  static final _releaseColorState =
+      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gdk_color_state_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -87,7 +119,9 @@ final class GdkColorState {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkCicpParams? createCicpParams() {
     final _ret = _gdkColorStateCreateCicpParams(this.handle);
-    return (_ret) == ffi.nullptr ? null : GdkCicpParams.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkCicpParams.fromPointer(_ret, owned: true);
   }
 
   /// Compares two `GdkColorStates` for equality.
@@ -134,7 +168,10 @@ final class GdkColorState {
           >('gdk_color_state_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkColorState ref() {
-    return GdkColorState.fromPointer(_gdkColorStateRef(this.handle));
+    return GdkColorState.fromPointer(
+      _gdkColorStateRef(this.handle),
+      owned: true,
+    );
   }
 
   /// Decrease the reference count of @self.
@@ -146,6 +183,11 @@ final class GdkColorState {
         'gdk_color_state_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      colorStateFinalizer.detach(this);
+      owned = false;
+    }
     _gdkColorStateUnref(this.handle);
   }
 
@@ -157,7 +199,7 @@ final class GdkColorState {
         'gdk_color_state_get_oklab',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkColorState getOklab() {
-    return GdkColorState.fromPointer(_gdkColorStateGetOklab());
+    return GdkColorState.fromPointer(_gdkColorStateGetOklab(), owned: true);
   }
 
   /// Returns the color state object representing the oklch color space.
@@ -169,7 +211,7 @@ final class GdkColorState {
         'gdk_color_state_get_oklch',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkColorState getOklch() {
-    return GdkColorState.fromPointer(_gdkColorStateGetOklch());
+    return GdkColorState.fromPointer(_gdkColorStateGetOklch(), owned: true);
   }
 
   /// Returns the color state object representing the linear rec2100 color space.
@@ -186,7 +228,10 @@ final class GdkColorState {
         'gdk_color_state_get_rec2100_linear',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkColorState getRec2100Linear() {
-    return GdkColorState.fromPointer(_gdkColorStateGetRec2100Linear());
+    return GdkColorState.fromPointer(
+      _gdkColorStateGetRec2100Linear(),
+      owned: true,
+    );
   }
 
   /// Returns the color state object representing the rec2100-pq color space.
@@ -203,7 +248,7 @@ final class GdkColorState {
         'gdk_color_state_get_rec2100_pq',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkColorState getRec2100Pq() {
-    return GdkColorState.fromPointer(_gdkColorStateGetRec2100Pq());
+    return GdkColorState.fromPointer(_gdkColorStateGetRec2100Pq(), owned: true);
   }
 
   /// Returns the color state object representing the sRGB color space.
@@ -220,7 +265,7 @@ final class GdkColorState {
         'gdk_color_state_get_srgb',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkColorState getSrgb() {
-    return GdkColorState.fromPointer(_gdkColorStateGetSrgb());
+    return GdkColorState.fromPointer(_gdkColorStateGetSrgb(), owned: true);
   }
 
   /// Returns the color state object representing the linearized sRGB color space.
@@ -236,347 +281,9 @@ final class GdkColorState {
         'gdk_color_state_get_srgb_linear',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GdkColorState getSrgbLinear() {
-    return GdkColorState.fromPointer(_gdkColorStateGetSrgbLinear());
-  }
-}
-
-/// Used to advertise and negotiate the format of content.
-///
-/// You will encounter `GdkContentFormats` when interacting with objects
-/// controlling operations that pass data between different widgets, window
-/// or application, like [class@Gdk.Drag], [class@Gdk.Drop],
-/// [class@Gdk.Clipboard] or [class@Gdk.ContentProvider].
-///
-/// GDK supports content in 2 forms: `GType` and mime type.
-/// Using `GTypes` is meant only for in-process content transfers. Mime types
-/// are meant to be used for data passing both in-process and out-of-process.
-/// The details of how data is passed is described in the documentation of
-/// the actual implementations. To transform between the two forms,
-/// [class@Gdk.ContentSerializer] and [class@Gdk.ContentDeserializer] are used.
-///
-/// A `GdkContentFormats` describes a set of possible formats content can be
-/// exchanged in. It is assumed that this set is ordered. `GTypes` are more
-/// important than mime types. Order between different `GTypes` or mime types
-/// is the order they were added in, most important first. Functions that
-/// care about order, such as [method@Gdk.ContentFormats.union], will describe
-/// in their documentation how they interpret that order, though in general the
-/// order of the first argument is considered the primary order of the result,
-/// followed by the order of further arguments.
-///
-/// For debugging purposes, the function [method@Gdk.ContentFormats.to_string]
-/// exists. It will print a comma-separated list of formats from most important
-/// to least important.
-///
-/// `GdkContentFormats` is an immutable struct. After creation, you cannot change
-/// the types it represents. Instead, new `GdkContentFormats` have to be created.
-/// The [struct@Gdk.ContentFormatsBuilder] structure is meant to help in this
-/// endeavor.
-final class GdkContentFormats {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GdkContentFormats.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GdkContentFormats>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GdkContentFormats.rawFromPointer(handle, owned: owned);
-  }
-  GdkContentFormats.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Creates a new `GdkContentFormats` for a given `GType`.
-  static final _gdkContentFormatsNewForGtype =
-      gdk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size)>>(
-        'gdk_content_formats_new_for_gtype',
-      ).asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  GdkContentFormats.forGtype(int type_)
-    : this.rawFromPointer(_gdkContentFormatsNewForGtype(type_));
-
-  /// Checks if a given `GType` is part of the given @formats.
-  static final _gdkContentFormatsContainGtype =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Size)
-            >
-          >('gdk_content_formats_contain_gtype')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, int)>();
-  bool containGtype(int type_) {
-    return (_gdkContentFormatsContainGtype(this.handle, type_)) != 0;
-  }
-
-  /// Checks if a given mime type is part of the given @formats.
-  static final _gdkContentFormatsContainMimeType =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
-            >
-          >('gdk_content_formats_contain_mime_type')
-          .asFunction<int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)>();
-  bool containMimeType(String mimeType) {
-    return withNativeString(mimeType, (nativeMimeType) {
-      return (_gdkContentFormatsContainMimeType(
-            this.handle,
-            nativeMimeType.cast<Utf8>(),
-          )) !=
-          0;
-    });
-  }
-
-  /// Gets the `GType`s included in @formats.
-  ///
-  /// Note that @formats may not contain any `GType`s, in particular when
-  /// they are empty. In that case %NULL will be returned.
-  static final _gdkContentFormatsGetGtypes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Size> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Size>,
-              )
-            >
-          >('gdk_content_formats_get_gtypes')
-          .asFunction<
-            ffi.Pointer<ffi.Size> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Size>,
-            )
-          >();
-  (ffi.Pointer<ffi.Size>, int) getGtypes() {
-    final _out0 = malloc<ffi.Size>();
-    try {
-      final _ret = _gdkContentFormatsGetGtypes(this.handle, _out0);
-      return (_ret, _out0.value);
-    } finally {
-      malloc.free(_out0);
-    }
-  }
-
-  /// Returns whether the content formats contain any formats.
-  static final _gdkContentFormatsIsEmpty =
-      gdk4Lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_formats_is_empty',
-      ).asFunction<int Function(ffi.Pointer<ffi.Void>)>();
-  bool isEmpty() {
-    return (_gdkContentFormatsIsEmpty(this.handle)) != 0;
-  }
-
-  /// Checks if @first and @second have any matching formats.
-  static final _gdkContentFormatsMatch =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_match')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  bool match(GdkContentFormats second) {
-    return (_gdkContentFormatsMatch(this.handle, second.handle)) != 0;
-  }
-
-  /// Finds the first `GType` from @first that is also contained
-  /// in @second.
-  ///
-  /// If no matching `GType` is found, %G_TYPE_INVALID is returned.
-  static final _gdkContentFormatsMatchGtype =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Size Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_match_gtype')
-          .asFunction<
-            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  int matchGtype(GdkContentFormats second) {
-    return _gdkContentFormatsMatchGtype(this.handle, second.handle);
-  }
-
-  /// Finds the first mime type from @first that is also contained
-  /// in @second.
-  ///
-  /// If no matching mime type is found, %NULL is returned.
-  static final _gdkContentFormatsMatchMimeType =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<Utf8> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gdk_content_formats_match_mime_type')
-          .asFunction<
-            ffi.Pointer<Utf8> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  String? matchMimeType(GdkContentFormats second) {
-    return stringFromNative(
-      (_gdkContentFormatsMatchMimeType(this.handle, second.handle)).cast(),
-      free: false,
+    return GdkColorState.fromPointer(
+      _gdkColorStateGetSrgbLinear(),
+      owned: true,
     );
-  }
-
-  /// Prints the given @formats into a string for human consumption.
-  ///
-  /// The result of this function can later be parsed with
-  /// [func@Gdk.ContentFormats.parse].
-  static final _gdkContentFormatsPrint =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_print')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void print(GString string) {
-    _gdkContentFormatsPrint(this.handle, string.handle);
-  }
-
-  /// Increases the reference count of a `GdkContentFormats` by one.
-  static final _gdkContentFormatsRef =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_ref')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats ref() {
-    return GdkContentFormats.fromPointer(_gdkContentFormatsRef(this.handle));
-  }
-
-  /// Append all missing types from @second to @first, in the order
-  /// they had in @second.
-  static final _gdkContentFormatsUnion =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Void>,
-              )
-            >
-          >('gdk_content_formats_union')
-          .asFunction<
-            ffi.Pointer<ffi.Void> Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Void>,
-            )
-          >();
-  GdkContentFormats union(GdkContentFormats second) {
-    return GdkContentFormats.fromPointer(
-      _gdkContentFormatsUnion(this.handle, second.handle),
-    );
-  }
-
-  /// Add GTypes for mime types in @formats for which deserializers are
-  /// registered.
-  static final _gdkContentFormatsUnionDeserializeGtypes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_union_deserialize_gtypes')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats unionDeserializeGtypes() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentFormatsUnionDeserializeGtypes(this.handle),
-    );
-  }
-
-  /// Add mime types for GTypes in @formats for which deserializers are
-  /// registered.
-  static final _gdkContentFormatsUnionDeserializeMimeTypes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_union_deserialize_mime_types')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats unionDeserializeMimeTypes() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentFormatsUnionDeserializeMimeTypes(this.handle),
-    );
-  }
-
-  /// Add GTypes for the mime types in @formats for which serializers are
-  /// registered.
-  static final _gdkContentFormatsUnionSerializeGtypes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_union_serialize_gtypes')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats unionSerializeGtypes() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentFormatsUnionSerializeGtypes(this.handle),
-    );
-  }
-
-  /// Add mime types for GTypes in @formats for which serializers are
-  /// registered.
-  static final _gdkContentFormatsUnionSerializeMimeTypes =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('gdk_content_formats_union_serialize_mime_types')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GdkContentFormats unionSerializeMimeTypes() {
-    return GdkContentFormats.fromPointer(
-      _gdkContentFormatsUnionSerializeMimeTypes(this.handle),
-    );
-  }
-
-  /// Decreases the reference count of a `GdkContentFormats` by one.
-  ///
-  /// If the resulting reference count is zero, frees the formats.
-  static final _gdkContentFormatsUnref =
-      gdk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-        'gdk_content_formats_unref',
-      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void unref() {
-    _gdkContentFormatsUnref(this.handle);
-  }
-
-  /// Parses the given @string into `GdkContentFormats` and
-  /// returns the formats.
-  ///
-  /// Strings printed via [method@Gdk.ContentFormats.to_string]
-  /// can be read in again successfully using this function.
-  ///
-  /// If @string does not describe valid content formats, %NULL
-  /// is returned.
-  static final _gdkContentFormatsParse =
-      gdk4Lookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)
-            >
-          >('gdk_content_formats_parse')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<Utf8>)>();
-  static GdkContentFormats? parse(String string) {
-    return withNativeString(string, (nativeString) {
-      final _ret = _gdkContentFormatsParse(nativeString.cast<Utf8>());
-      return (_ret) == ffi.nullptr ? null : GdkContentFormats.fromPointer(_ret);
-    });
   }
 }

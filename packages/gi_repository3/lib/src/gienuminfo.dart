@@ -77,7 +77,10 @@ class GIEnumInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIFunctionInfo getMethod(int n) {
-    return GIFunctionInfo.fromPointer(_giEnumInfoGetMethod(this.handle, n));
+    return GIFunctionInfo.fromPointer(
+      _giEnumInfoGetMethod(this.handle, n),
+      owned: true,
+    );
   }
 
   /// Obtain the number of methods that this enum type has.
@@ -126,6 +129,9 @@ class GIEnumInfo extends GIRegisteredTypeInfo {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>, int)
           >();
   GIValueInfo getValue(int n) {
-    return GIValueInfo.fromPointer(_giEnumInfoGetValue(this.handle, n));
+    return GIValueInfo.fromPointer(
+      _giEnumInfoGetValue(this.handle, n),
+      owned: true,
+    );
   }
 }

@@ -145,7 +145,18 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     final cached = cachedObject<GdkPixbuf>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -818,7 +829,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       g,
       b,
     );
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Takes an existing pixbuf and checks for the presence of an
@@ -840,7 +853,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbuf? applyEmbeddedOrientation() {
     final _ret = _gdkPixbufApplyEmbeddedOrientation(this.handle);
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Creates a transformation of the source image @src by scaling by
@@ -1065,7 +1080,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       color1,
       color2,
     );
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Creates a new `GdkPixbuf` with a copy of the information in the specified
@@ -1082,7 +1099,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GdkPixbuf? copy() {
     final _ret = _gdkPixbufCopy(this.handle);
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Copies a rectangular area from `src_pixbuf` to `dest_pixbuf`.
@@ -1188,7 +1207,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           >();
   GdkPixbuf? flip(bool horizontal) {
     final _ret = _gdkPixbufFlip(this.handle, horizontal ? 1 : 0);
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Queries the number of bits per color sample in a pixbuf.
@@ -1387,6 +1408,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
   GdkPixbuf newSubpixbuf(int srcX, int srcY, int width, int height) {
     return GdkPixbuf.fromPointer(
       _gdkPixbufNewSubpixbuf(this.handle, srcX, srcY, width, height),
+      owned: true,
     );
   }
 
@@ -1403,7 +1425,10 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           >('gdk_pixbuf_read_pixel_bytes')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GBytes readPixelBytes() {
-    return GBytes.fromPointer(_gdkPixbufReadPixelBytes(this.handle));
+    return GBytes.fromPointer(
+      _gdkPixbufReadPixelBytes(this.handle),
+      owned: true,
+    );
   }
 
   /// Provides a read-only pointer to the raw pixel data.
@@ -1448,7 +1473,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           >();
   GdkPixbuf? rotateSimple(GdkPixbufRotation angle) {
     final _ret = _gdkPixbufRotateSimple(this.handle, angle.value);
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Modifies saturation and optionally pixelates `src`, placing the result in
@@ -1961,7 +1988,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
       destHeight,
       interpType.value,
     );
-    return (_ret) == ffi.nullptr ? null : GdkPixbuf.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GdkPixbuf.fromPointer(_ret, owned: true);
   }
 
   /// Attaches a key/value pair as an option to a `GdkPixbuf`.
@@ -2507,7 +2536,9 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? serialize() {
     final _ret = _gIconSerialize(this.handle);
-    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_ret, owned: true);
   }
 
   /// Loads a loadable icon. For the asynchronous version of this function,
@@ -2548,7 +2579,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GInputStream.fromPointer(_ret),
+        GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
@@ -2711,7 +2742,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GInputStream.fromPointer(_ret),
+        GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {

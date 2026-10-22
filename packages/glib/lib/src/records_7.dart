@@ -40,7 +40,7 @@ part of '../glib.dart';
 /// Use the API.
 ///
 /// GLib also features `GDateTime` which represents a precise time.
-final class GDate {
+final class GDate implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -50,14 +50,45 @@ final class GDate {
   }) {
     final cached = cachedObject<GDate>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseDate(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          dateFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GDate.rawFromPointer(handle, owned: owned);
   }
-  GDate.rawFromPointer(this.handle, {bool owned = false}) {
+  GDate.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      dateFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GDate` with `g_date_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final dateFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_date_free',
+    ),
+  );
+
+  static final _releaseDate =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_date_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -79,7 +110,7 @@ final class GDate {
       glibLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'g_date_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GDate() : this.rawFromPointer(_gDateNew());
+  GDate() : this.rawFromPointer(_gDateNew(), owned: true);
 
   /// Create a new #GDate representing the given day-month-year triplet.
   ///
@@ -94,7 +125,7 @@ final class GDate {
           >('g_date_new_dmy')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
   GDate.dmy(int day, GDateMonth month, int year)
-    : this.rawFromPointer(_gDateNewDmy(day, month.value, year));
+    : this.rawFromPointer(_gDateNewDmy(day, month.value, year), owned: true);
 
   /// Create a new #GDate representing the given Julian date.
   ///
@@ -106,7 +137,8 @@ final class GDate {
             ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
           >('g_date_new_julian')
           .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-  GDate.julian(int julianDay) : this.rawFromPointer(_gDateNewJulian(julianDay));
+  GDate.julian(int julianDay)
+    : this.rawFromPointer(_gDateNewJulian(julianDay), owned: true);
 
   /// Increments a date some number of days.
   /// To move forward by weeks, add weeks*7 days.
@@ -220,7 +252,7 @@ final class GDate {
           >('g_date_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDate copy() {
-    return GDate.fromPointer(_gDateCopy(this.handle));
+    return GDate.fromPointer(_gDateCopy(this.handle), owned: true);
   }
 
   /// Computes the number of days between two dates.
@@ -245,6 +277,11 @@ final class GDate {
         'g_date_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      dateFinalizer.detach(this);
+      owned = false;
+    }
     _gDateFree(this.handle);
   }
 

@@ -16,7 +16,18 @@ class GSimpleActionGroup extends GObject implements GActionGroup, GActionMap {
     final cached = cachedObject<GSimpleActionGroup>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -498,7 +509,9 @@ class GSimpleActionGroup extends GObject implements GActionGroup, GActionMap {
         this.handle,
         nativeActionName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -541,7 +554,9 @@ class GSimpleActionGroup extends GObject implements GActionGroup, GActionMap {
         this.handle,
         nativeActionName.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 

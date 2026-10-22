@@ -22,10 +22,11 @@ final class GHashTableIter {
     }
     return GHashTableIter.rawFromPointer(handle, owned: owned);
   }
-  GHashTableIter.rawFromPointer(this.handle, {bool owned = false}) {
+  GHashTableIter.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -172,7 +173,7 @@ final class GHashTableIter {
   }
 }
 
-final class GHmac {
+final class GHmac implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -182,14 +183,45 @@ final class GHmac {
   }) {
     final cached = cachedObject<GHmac>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseHmac(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          hmacFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GHmac.rawFromPointer(handle, owned: owned);
   }
-  GHmac.rawFromPointer(this.handle, {bool owned = false}) {
+  GHmac.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      hmacFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GHmac` with `g_hmac_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final hmacFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_hmac_unref',
+    ),
+  );
+
+  static final _releaseHmac =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_hmac_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -211,7 +243,10 @@ final class GHmac {
           >('g_hmac_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(int, int, int)>();
   GHmac(GChecksumType digestType, int key, int keyLen)
-    : this.rawFromPointer(_gHmacNew(digestType.value, key, keyLen));
+    : this.rawFromPointer(
+        _gHmacNew(digestType.value, key, keyLen),
+        owned: true,
+      );
 
   static final _gHmacCopy =
       glibLookup<
@@ -221,7 +256,7 @@ final class GHmac {
           >('g_hmac_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GHmac copy() {
-    return GHmac.fromPointer(_gHmacCopy(this.handle));
+    return GHmac.fromPointer(_gHmacCopy(this.handle), owned: true);
   }
 
   static final _gHmacGetDigest =
@@ -257,7 +292,7 @@ final class GHmac {
           >('g_hmac_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GHmac ref() {
-    return GHmac.fromPointer(_gHmacRef(this.handle));
+    return GHmac.fromPointer(_gHmacRef(this.handle), owned: true);
   }
 
   static final _gHmacUnref =
@@ -265,6 +300,11 @@ final class GHmac {
         'g_hmac_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      hmacFinalizer.detach(this);
+      owned = false;
+    }
     _gHmacUnref(this.handle);
   }
 
@@ -295,10 +335,11 @@ final class GHook {
     }
     return GHook.rawFromPointer(handle, owned: owned);
   }
-  GHook.rawFromPointer(this.handle, {bool owned = false}) {
+  GHook.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -489,10 +530,11 @@ final class GHookList {
     }
     return GHookList.rawFromPointer(handle, owned: owned);
   }
-  GHookList.rawFromPointer(this.handle, {bool owned = false}) {
+  GHookList.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

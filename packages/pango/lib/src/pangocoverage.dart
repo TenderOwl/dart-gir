@@ -21,7 +21,18 @@ class PangoCoverage extends GObject {
     final cached = cachedObject<PangoCoverage>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -70,7 +81,10 @@ class PangoCoverage extends GObject {
           >('pango_coverage_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoCoverage copy() {
-    return PangoCoverage.fromPointer(_pangoCoverageCopy(this.handle));
+    return PangoCoverage.fromPointer(
+      _pangoCoverageCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Determine whether a particular index is covered by @coverage.
@@ -110,7 +124,10 @@ class PangoCoverage extends GObject {
           >('pango_coverage_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoCoverage refCoverage() {
-    return PangoCoverage.fromPointer(_pangoCoverageRef(this.handle));
+    return PangoCoverage.fromPointer(
+      _pangoCoverageRef(this.handle),
+      owned: true,
+    );
   }
 
   /// Modify a particular index within @coverage
@@ -180,7 +197,9 @@ class PangoCoverage extends GObject {
   static PangoCoverage? fromBytes(Uint8List bytes) {
     return withNativeBytes(bytes, (_bytesBuf0, _bytesLen0) {
       final _ret = _pangoCoverageFromBytes(_bytesBuf0, _bytesLen0);
-      return (_ret) == ffi.nullptr ? null : PangoCoverage.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : PangoCoverage.fromPointer(_ret, owned: true);
     });
   }
 

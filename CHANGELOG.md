@@ -11,6 +11,29 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 ## Unreleased
 
 ### Added
+- **Every wrapper says whether it owns the reference.** The generated
+  classes and records carry a public `bool owned` field: `true` while the
+  wrapper holds the reference the GIR handed over, `false` once the
+  reference has been released or handed to the callee. It is the flag the
+  collector and the caller agree on, and it is what the wrapper's
+  `unref()`/`free()` consult before releasing.
+
+  ```dart
+  final file = GFile.newForPath('/tmp/notes');
+  expect(file.owned, isTrue);
+  file.unref();
+  expect(file.owned, isFalse);
+  ```
+
+- **A boxed type with a destructor releases itself.** A GIR record with a
+  `free`/`unref`/`destroy`/`release`/`close` method — 132 of them, from
+  `GBytes` to `GVariant` — now gets a `NativeFinalizer` of its own and
+  releases the reference when the wrapper is collected. Before, only the
+  GObject-rooted classes did; a boxed type was released by nobody and
+  leaked. The types the GIR gives no destructor for keep the borrowed
+  behaviour: there is no release function to call. See
+  [`docs/emission.md`](docs/emission.md#ownership).
+
 - **A byte buffer the callee allocates is now a `Uint8List`.** A GIR
   parameter like `g_file_load_contents`' `contents` is a `char**` the
   *callee* allocates, fills, and hands over with `transfer="full"`. The
@@ -114,6 +137,31 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   would be freed while the parent still uses it.
 
 ### Changed
+- **A byte buffer the callee keeps says so on the wrapper.** A byte array
+  that stays a raw pointer — because the callable is asynchronous or
+  because the callee takes the buffer over — now carries the lifetime
+  contract in its doc comment, and names the `GBytes` sibling when the
+  library declares one.
+
+  ```dart
+  /// `contents` is **not** copied: it has to stay valid until the callback fires.
+  /// The `GBytes` variant [replaceContentsBytesAsync] owns the buffer for the
+  /// duration of the call — prefer it.
+  void replaceContentsAsync(...)
+  ```
+
+  The note lands on the public wrapper, not on the private native
+  binding, so it reaches the API reference.
+
+- **The template ownership registry is process-wide.** The registry that
+  keeps two Dart template classes off the same native widget type lived
+  in a Dart `static` — per *isolate* — while GTK's slot is per *native
+  class*, that is per *process*. Two isolates of one process could each
+  install a template on the shared native class, and GTK's assertion
+  (`widget_class->priv->template == NULL`) tears the heap down. The
+  registry now lives in the native type's `qdata`, keyed by an interned
+  quark: every isolate of the process sees the same claim.
+
 - **The wrappers that take a caller-provided byte buffer now take a
   `Uint8List`.** `GBytes(Uint8List)`, `GBytes.take(Uint8List)`,
   `GFile.replaceContents(Uint8List, …)`,
@@ -123,6 +171,36 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   length. The packages are generated and unpublished (`publish_to:
   none`), so this is a source-level change for the consumers in this
   workspace.
+
+### Fixed
+- **A `transfer="full"` return no longer leaks.** The GIR says the caller
+  owns the returned reference — `transfer-ownership="full"`. The wrapper
+  did not claim it: nothing released it, and 1164 call sites across the
+  thirteen packages leaked a reference each. The wrapper now claims the
+  reference, and a `NativeFinalizer` releases it when the wrapper is
+  collected. An explicit `unref()`/`free()` takes the release over from
+  the collector, so the reference is released exactly once.
+
+- **A `transfer="full"` parameter is no longer released twice.** A
+  parameter the GIR marks `transfer-ownership="full"` belongs to the
+  callee from the call on. The wrapper kept its claim and released the
+  reference when it was collected — while the callee released it too.
+  The call site now *hands the reference over*: the finalizer is
+  detached and the `owned` flag is cleared, so the reference is released
+  once, by the callee.
+
+- **A destroy notify is no longer a use-after-free.** A `GDestroyNotify`
+  next to a byte buffer is the callee's promise to release that buffer
+  later — `g_memory_input_stream_new_from_data` calls the notify when the
+  *stream* is finalized. The wrapper passed the notify as a scoped
+  `NativeCallable` and closed it in `finally`, so the callback ran
+  against freed memory and the Dart VM aborted the isolate with
+  *"Callback invoked after it has been deleted"*. The four affected
+  callables (`g_memory_input_stream_new_from_data`,
+  `g_memory_input_stream_add_data`, `g_tls_password_set_value_full`,
+  `g_variant_new_from_data`) now pass a permanent trampoline over a
+  static function, with the user's callback parked in a registry until
+  the notify arrives.
 
 ### Fixed
 - **The notepad example's dark-mode menu entry is no longer dead.** A
@@ -1008,6 +1086,15 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   formatter `dart format` uses (`package:dart_style`), so the two
   cannot disagree, and a test asserts the output is a fixed point of
   the formatter.
+
+### Removed
+- **The notepad example's dead "Keyboard Shortcuts" menu entry.** The
+  entry pointed at the `win.show-help-overlay` action, which GTK only
+  creates when the application ships a `gtk/help-overlay.ui` resource —
+  the notepad ships none, so the action never existed and the menu item
+  did nothing. The entry is gone from
+  `example/notepad/data/notepad_window.ui` and from the part file the
+  builder regenerates from it.
 
 ## 1.0.0 — 2026-09-28
 

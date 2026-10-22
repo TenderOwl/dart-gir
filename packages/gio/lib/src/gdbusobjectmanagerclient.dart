@@ -92,7 +92,18 @@ class GDBusObjectManagerClient extends GObject
     final cached = cachedObject<GDBusObjectManagerClient>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -1080,7 +1091,7 @@ class GDBusObjectManagerClient extends GObject
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GObject.fromPointer(_ret);
+      return GObject.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -1113,7 +1124,9 @@ class GDBusObjectManagerClient extends GObject
           nativeObjectPath.cast<Utf8>(),
           nativeInterfaceName.cast<Utf8>(),
         );
-        return (_ret) == ffi.nullptr ? null : GDBusInterface.fromPointer(_ret);
+        return (_ret) == ffi.nullptr
+            ? null
+            : GDBusInterface.fromPointer(_ret, owned: true);
       });
     });
   }
@@ -1140,7 +1153,9 @@ class GDBusObjectManagerClient extends GObject
         this.handle,
         nativeObjectPath.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GDBusObject.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GDBusObject.fromPointer(_ret, owned: true);
     });
   }
 
@@ -1168,7 +1183,10 @@ class GDBusObjectManagerClient extends GObject
           >('g_dbus_object_manager_get_objects')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GList getObjects() {
-    return GList.fromPointer(_gDbusObjectManagerGetObjects(this.handle));
+    return GList.fromPointer(
+      _gDbusObjectManagerGetObjects(this.handle),
+      owned: true,
+    );
   }
 
   /// Initializes the object implementing the interface.

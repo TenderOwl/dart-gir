@@ -23,4 +23,5 @@ part 'src/gdkpixbufsimpleanimiter.dart';
 part 'src/enums.dart';
 part 'src/constants.dart';
 part 'src/callbacks.dart';
-part 'src/records.dart';
+part 'src/records_0.dart';
+part 'src/records_1.dart';

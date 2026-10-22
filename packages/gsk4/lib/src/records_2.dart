@@ -39,7 +39,7 @@ part of '../gsk4.dart';
 ///
 /// Note that `GskPathBuilder` will reduce the degree of added Bézier
 /// curves as much as possible, to simplify rendering.
-final class GskPathBuilder {
+final class GskPathBuilder implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -49,14 +49,45 @@ final class GskPathBuilder {
   }) {
     final cached = cachedObject<GskPathBuilder>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePathBuilder(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          pathBuilderFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GskPathBuilder.rawFromPointer(handle, owned: owned);
   }
-  GskPathBuilder.rawFromPointer(this.handle, {bool owned = false}) {
+  GskPathBuilder.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      pathBuilderFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GskPathBuilder` with `gsk_path_builder_close`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final pathBuilderFinalizer = ffi.NativeFinalizer(
+    gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'gsk_path_builder_close',
+    ),
+  );
+
+  static final _releasePathBuilder =
+      gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gsk_path_builder_close',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -78,7 +109,7 @@ final class GskPathBuilder {
       gsk4Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'gsk_path_builder_new',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GskPathBuilder() : this.rawFromPointer(_gskPathBuilderNew());
+  GskPathBuilder() : this.rawFromPointer(_gskPathBuilderNew(), owned: true);
 
   /// Adds a Cairo path to the builder.
   ///
@@ -278,6 +309,11 @@ final class GskPathBuilder {
         'gsk_path_builder_close',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void close() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      pathBuilderFinalizer.detach(this);
+      owned = false;
+    }
     _gskPathBuilderClose(this.handle);
   }
 
@@ -818,7 +854,7 @@ final class GskPathBuilder {
           >('gsk_path_builder_to_path')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskPath toPath() {
-    return GskPath.fromPointer(_gskPathBuilderToPath(this.handle));
+    return GskPath.fromPointer(_gskPathBuilderToPath(this.handle), owned: true);
   }
 
   /// Releases a reference on the given builder.

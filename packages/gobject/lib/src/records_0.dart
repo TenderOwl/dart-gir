@@ -16,10 +16,11 @@ final class GCClosure {
     }
     return GCClosure.rawFromPointer(handle, owned: owned);
   }
-  GCClosure.rawFromPointer(this.handle, {bool owned = false}) {
+  GCClosure.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

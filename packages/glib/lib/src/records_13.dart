@@ -17,10 +17,11 @@ final class GIOFuncs {
     }
     return GIOFuncs.rawFromPointer(handle, owned: owned);
   }
-  GIOFuncs.rawFromPointer(this.handle, {bool owned = false}) {
+  GIOFuncs.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

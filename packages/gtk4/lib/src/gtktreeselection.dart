@@ -38,7 +38,18 @@ class GtkTreeSelection extends GObject {
     final cached = cachedObject<GtkTreeSelection>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -168,7 +179,7 @@ class GtkTreeSelection extends GObject {
     try {
       final _ret = _gtkTreeSelectionGetSelectedRows(this.handle, _out0);
       return (
-        GList.fromPointer(_ret),
+        GList.fromPointer(_ret, owned: true),
         (_out0.value) == ffi.nullptr
             ? null
             : GtkTreeModel.fromPointer(_out0.value.cast<ffi.Void>()),

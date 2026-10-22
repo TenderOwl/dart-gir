@@ -10,7 +10,7 @@ part of '../gsk4.dart';
 ///
 /// A `GskPathMeasure` struct is a reference counted struct
 /// and should be treated as opaque.
-final class GskPathMeasure {
+final class GskPathMeasure implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -20,14 +20,45 @@ final class GskPathMeasure {
   }) {
     final cached = cachedObject<GskPathMeasure>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePathMeasure(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          pathMeasureFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GskPathMeasure.rawFromPointer(handle, owned: owned);
   }
-  GskPathMeasure.rawFromPointer(this.handle, {bool owned = false}) {
+  GskPathMeasure.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      pathMeasureFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GskPathMeasure` with `gsk_path_measure_unref`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final pathMeasureFinalizer = ffi.NativeFinalizer(
+    gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'gsk_path_measure_unref',
+    ),
+  );
+
+  static final _releasePathMeasure =
+      gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gsk_path_measure_unref',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -51,7 +82,7 @@ final class GskPathMeasure {
           >('gsk_path_measure_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskPathMeasure(GskPath path)
-    : this.rawFromPointer(_gskPathMeasureNew(path.handle));
+    : this.rawFromPointer(_gskPathMeasureNew(path.handle), owned: true);
 
   /// Creates a measure object for the given @path and @tolerance.
   static final _gskPathMeasureNewWithTolerance =
@@ -66,6 +97,7 @@ final class GskPathMeasure {
   GskPathMeasure.withTolerance(GskPath path, double tolerance)
     : this.rawFromPointer(
         _gskPathMeasureNewWithTolerance(path.handle, tolerance),
+        owned: true,
       );
 
   /// Gets the length of the path being measured.
@@ -139,7 +171,10 @@ final class GskPathMeasure {
           >('gsk_path_measure_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskPathMeasure ref() {
-    return GskPathMeasure.fromPointer(_gskPathMeasureRef(this.handle));
+    return GskPathMeasure.fromPointer(
+      _gskPathMeasureRef(this.handle),
+      owned: true,
+    );
   }
 
   /// Decreases the reference count of a `GskPathMeasure` by one.
@@ -150,6 +185,11 @@ final class GskPathMeasure {
         'gsk_path_measure_unref',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      pathMeasureFinalizer.detach(this);
+      owned = false;
+    }
     _gskPathMeasureUnref(this.handle);
   }
 }
@@ -167,7 +207,7 @@ final class GskPathMeasure {
 /// and don't hold a reference to the path object they are obtained from.
 /// It is the callers responsibility to keep a reference to the path
 /// as long as the `GskPathPoint` is used.
-final class GskPathPoint {
+final class GskPathPoint implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -177,14 +217,45 @@ final class GskPathPoint {
   }) {
     final cached = cachedObject<GskPathPoint>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releasePathPoint(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          pathPointFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GskPathPoint.rawFromPointer(handle, owned: owned);
   }
-  GskPathPoint.rawFromPointer(this.handle, {bool owned = false}) {
+  GskPathPoint.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      pathPointFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GskPathPoint` with `gsk_path_point_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final pathPointFinalizer = ffi.NativeFinalizer(
+    gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'gsk_path_point_free',
+    ),
+  );
+
+  static final _releasePathPoint =
+      gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gsk_path_point_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -221,7 +292,10 @@ final class GskPathPoint {
           >('gsk_path_point_copy')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GskPathPoint copy() {
-    return GskPathPoint.fromPointer(_gskPathPointCopy(this.handle));
+    return GskPathPoint.fromPointer(
+      _gskPathPointCopy(this.handle),
+      owned: true,
+    );
   }
 
   /// Returns whether the two path points refer to the same
@@ -251,6 +325,11 @@ final class GskPathPoint {
         'gsk_path_point_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      pathPointFinalizer.detach(this);
+      owned = false;
+    }
     _gskPathPointFree(this.handle);
   }
 

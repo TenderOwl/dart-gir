@@ -15,10 +15,11 @@ final class AdwAboutDialogClass {
     }
     return AdwAboutDialogClass.rawFromPointer(handle, owned: owned);
   }
-  AdwAboutDialogClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwAboutDialogClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,10 +48,11 @@ final class AdwAboutWindowClass {
     }
     return AdwAboutWindowClass.rawFromPointer(handle, owned: owned);
   }
-  AdwAboutWindowClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwAboutWindowClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -79,10 +81,11 @@ final class AdwActionRowClass {
     }
     return AdwActionRowClass.rawFromPointer(handle, owned: owned);
   }
-  AdwActionRowClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwActionRowClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -111,10 +114,11 @@ final class AdwAlertDialogClass {
     }
     return AdwAlertDialogClass.rawFromPointer(handle, owned: owned);
   }
-  AdwAlertDialogClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwAlertDialogClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -143,10 +147,11 @@ final class AdwAnimationClass {
     }
     return AdwAnimationClass.rawFromPointer(handle, owned: owned);
   }
-  AdwAnimationClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwAnimationClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -175,10 +180,11 @@ final class AdwAnimationTargetClass {
     }
     return AdwAnimationTargetClass.rawFromPointer(handle, owned: owned);
   }
-  AdwAnimationTargetClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwAnimationTargetClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -207,10 +213,11 @@ final class AdwApplicationClass {
     }
     return AdwApplicationClass.rawFromPointer(handle, owned: owned);
   }
-  AdwApplicationClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwApplicationClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -239,10 +246,11 @@ final class AdwApplicationWindowClass {
     }
     return AdwApplicationWindowClass.rawFromPointer(handle, owned: owned);
   }
-  AdwApplicationWindowClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwApplicationWindowClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -271,10 +279,11 @@ final class AdwAvatarClass {
     }
     return AdwAvatarClass.rawFromPointer(handle, owned: owned);
   }
-  AdwAvatarClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwAvatarClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -303,10 +312,11 @@ final class AdwBannerClass {
     }
     return AdwBannerClass.rawFromPointer(handle, owned: owned);
   }
-  AdwBannerClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwBannerClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -335,10 +345,11 @@ final class AdwBinClass {
     }
     return AdwBinClass.rawFromPointer(handle, owned: owned);
   }
-  AdwBinClass.rawFromPointer(this.handle, {bool owned = false}) {
+  AdwBinClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

@@ -79,18 +79,11 @@ const String _$NotepadWindowTemplate_xml = '''
         <attribute name="action">win.save-as</attribute>
       </item>
       <item>
-        <attribute
-                    name="label"
-                    translatable="yes"
-                >_Keyboard Shortcuts</attribute>
-        <attribute name="action">win.show-help-overlay</attribute>
-      </item>
-      <item>
         <attribute name="label" translatable="yes">_Dark mode</attribute>
         <attribute name="action">app.dark-mode</attribute>
         </item>
       <item>
-        <attribute name="label" translatable="yes">_About {{name}}</attribute>
+        <attribute name="label" translatable="yes">_About Text Viewer</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>

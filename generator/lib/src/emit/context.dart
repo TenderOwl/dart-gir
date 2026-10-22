@@ -54,6 +54,7 @@ class TypeBridge {
     this.isByteArrayIn = false,
     this.byteArrayLengthIndex,
     this.byteArrayOwnedByCallee = false,
+    this.ownershipFinalizer,
   });
 
   /// Public Dart type used in wrapper signatures, e.g. `int`, `GObject?`.
@@ -174,6 +175,18 @@ class TypeBridge {
   /// callee releases it with `g_free`, so the wrapper must not free it
   /// and must not copy the bytes back out of it.
   final bool byteArrayOwnedByCallee;
+
+  /// The `NativeFinalizer` that releases a reference this wrapper owns,
+  /// e.g. `gobjectFinalizer` or `GBytes.bytesFinalizer`.
+  ///
+  /// `null` when the wrapper cannot release the reference on its own —
+  /// a borrowed reference, a type without a destructor in the GIR, or a
+  /// type whose destructor must not run from a finalizer thread.
+  ///
+  /// The emitter uses it at a `transfer-ownership="full"` *parameter*:
+  /// the callee takes the reference over, so the Dart side has to give
+  /// up its claim instead of releasing it twice.
+  final String? ownershipFinalizer;
 }
 
 /// Per-package emission state shared by all emitters.
@@ -521,6 +534,7 @@ class EmitContext {
     String? cType, {
     required bool nullable,
     required GirTransferOwnership transfer,
+    String? ownershipFinalizer,
   }) {
     // `transfer="full"` hands the reference to the caller, so the
     // wrapper owns it and releases it when it is collected.
@@ -536,8 +550,9 @@ class EmitContext {
             ? (e) => '$e?.handle ?? ffi.nullptr'
             : (e) => '$e.handle',
         fromNative: nullable
-            ? (e) => '($e) == ffi.nullptr ? null : $dartType.fromPointer($e)'
-            : (e) => '$dartType.fromPointer($e)',
+            ? (e) =>
+                  '($e) == ffi.nullptr ? null : $dartType.fromPointer($e$ownedArg)'
+            : (e) => '$dartType.fromPointer($e$ownedArg)',
         evaluatesArgTwice: nullable,
         outPointee: 'ffi.Pointer<ffi.Void>',
         outExtract: nullable
@@ -546,6 +561,7 @@ class EmitContext {
                   '$dartType.fromPointer($v.value.cast<ffi.Void>()$ownedArg)'
             : (v) =>
                   '$dartType.fromPointer($v.value.cast<ffi.Void>()$ownedArg)',
+        ownershipFinalizer: ownershipFinalizer,
       );
     }
     return TypeBridge(
@@ -556,8 +572,9 @@ class EmitContext {
           ? (e) => '$e?.handle ?? ffi.nullptr'
           : (e) => '$e.handle',
       fromNative: nullable
-          ? (e) => '($e) == ffi.nullptr ? null : $dartType.fromPointer($e)'
-          : (e) => '$dartType.fromPointer($e)',
+          ? (e) =>
+                '($e) == ffi.nullptr ? null : $dartType.fromPointer($e$ownedArg)'
+          : (e) => '$dartType.fromPointer($e$ownedArg)',
       evaluatesArgTwice: nullable,
       // The C function writes the whole struct (~24 bytes for
       // GtkTextIter, ~72 for GtkTreeIter) into the buffer the wrapper
@@ -570,11 +587,12 @@ class EmitContext {
       outExtract: nullable
           ? (v) =>
                 '($v) == ffi.nullptr ? null : '
-                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()), '
+                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()$ownedArg), '
                 '${v}Anchor)'
           : (v) =>
-                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()), '
+                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()$ownedArg), '
                 '${v}Anchor)',
+      ownershipFinalizer: ownershipFinalizer,
     );
   }
 
@@ -802,6 +820,10 @@ class EmitContext {
               ref.cType,
               nullable: nullable,
               transfer: transfer,
+              ownershipFinalizer: ownershipFinalizerFor(
+                ref.name,
+                relativeTo: relativeTo,
+              ),
             ),
             null,
           );
@@ -847,6 +869,10 @@ class EmitContext {
             ref.cType,
             nullable: nullable,
             transfer: transfer,
+            ownershipFinalizer: ownershipFinalizerFor(
+              ref.name,
+              relativeTo: relativeTo,
+            ),
           ),
           null,
         );
@@ -1088,6 +1114,115 @@ class EmitContext {
     ];
   }
 
+  /// Every callable of the current namespace, in declaration order.
+  ///
+  /// The lookup is by C identifier, which is unique across the whole
+  /// library — the GIR's own names are only unique per owner.
+  Iterable<GirCallable> get _namespaceCallables sync* {
+    for (final c in namespace.classes) {
+      yield* c.constructors;
+      yield* c.methods;
+      yield* c.functions;
+    }
+    for (final i in namespace.interfaces) {
+      yield* i.methods;
+      yield* i.functions;
+    }
+    for (final r in namespace.records) {
+      yield* r.constructors;
+      yield* r.methods;
+      yield* r.functions;
+    }
+    for (final u in namespace.unions) {
+      yield* u.constructors;
+      yield* u.methods;
+      yield* u.functions;
+    }
+    yield* namespace.functions;
+  }
+
+  /// The `GBytes`-based sibling of [fn], when the library declares one.
+  ///
+  /// GLib spells the sibling by inserting `_bytes` into the C name
+  /// (`g_file_replace_contents_async` →
+  /// `g_file_replace_contents_bytes_async`). The sibling takes the same
+  /// buffer as a `GBytes`, which the callee keeps alive on its own — the
+  /// property a raw byte pointer does not have.
+  ///
+  /// The lookup verifies that the candidate really takes a `GBytes`, so a
+  /// name that merely looks similar is not mistaken for a sibling.
+  ({GirCallable sibling, String dartName})? bytesSibling(GirCallable fn) {
+    final id = TypeResolver.bytesSiblingCIdentifier(fn.cIdentifier);
+    if (id == null) return null;
+    for (final candidate in _namespaceCallables) {
+      if (candidate.cIdentifier != id) continue;
+      if (!candidate.parameters.any((p) => _isBytesType(p.type?.name))) {
+        continue;
+      }
+      return (sibling: candidate, dartName: _dartNameOf(candidate));
+    }
+    return null;
+  }
+
+  /// Whether [name] names GLib's `GBytes` record.
+  static bool _isBytesType(String? name) {
+    if (name == null) return false;
+    final dot = name.lastIndexOf('.');
+    final local = dot >= 0 ? name.substring(dot + 1) : name;
+    return local == 'Bytes';
+  }
+
+  /// The Dart name a callable is emitted under.
+  ///
+  /// A constructor drops the `new_` prefix (`new_from_bytes` →
+  /// `fromBytes`); every other callable is lowerCamelCased.
+  static String _dartNameOf(GirCallable callable) {
+    var name = callable.name;
+    if (callable is GirConstructor && name.startsWith('new_')) {
+      name = name.substring(4);
+    }
+    return escapeKeyword(toLowerCamel(name));
+  }
+
+  /// The lifetime note a byte-array wrapper carries.
+  ///
+  /// A byte array that stays a raw pointer has a lifetime the caller has
+  /// to honour, and the GIR states it: the buffer is not copied, so it has
+  /// to stay valid until the async callback fires, or until the destroy
+  /// notify runs. The note names the `GBytes` sibling when the library
+  /// declares one — that variant owns the buffer, so the caller does not
+  /// have to.
+  List<String> byteArrayLifetimeDoc(GirCallable fn) {
+    final raw = TypeResolver.rawByteArrays(fn);
+    if (raw.isEmpty) return const [];
+    final names = raw.map((p) => p.name).toSet();
+    final buffer = names.length == 1 ? '`${names.first}`' : 'the buffer';
+    final isAsync = TypeResolver.isAsync(fn);
+    final hasDestroy = fn.parameters.any(TypeResolver.isDestroyNotify);
+    final sibling = bytesSibling(fn);
+
+    final lines = <String>[];
+    if (isAsync) {
+      lines.add(
+        '/// $buffer is **not** copied: it has to stay valid until the '
+        'callback fires.',
+      );
+    }
+    if (hasDestroy) {
+      lines.add(
+        '/// The callee takes over $buffer: keep it valid until the '
+        'destroy notify runs.',
+      );
+    }
+    if (sibling != null) {
+      lines.add(
+        '/// The `GBytes` variant [${sibling.dartName}] owns the buffer '
+        'for the duration of the call — prefer it.',
+      );
+    }
+    return lines;
+  }
+
   /// Finds a class by (possibly qualified) GIR name.
   (GirNamespace, GirClass)? findClass(String name) {
     final dot = name.indexOf('.');
@@ -1165,6 +1300,37 @@ class EmitContext {
       current = parent;
     }
     return false;
+  }
+
+  /// The `NativeFinalizer` that releases a reference the wrapper of
+  /// [typeName] owns, or null when the wrapper cannot release it.
+  ///
+  /// * A GObject-rooted class and a GInterface are released with
+  ///   `g_object_unref` — an interface is a GObject in C too.
+  /// * A boxed record or union is released with its own destructor, which
+  ///   the record's class exposes as a `NativeFinalizer` member.
+  /// * Everything else — a borrowed reference, a type the GIR gives no
+  ///   destructor, a type whose destructor must not run from a finalizer
+  ///   thread — has no finalizer.
+  String? ownershipFinalizerFor(String? typeName, {GirNamespace? relativeTo}) {
+    final found = findDeclaration(typeName, relativeTo: relativeTo);
+    if (found == null) return null;
+    final (ns, decl) = found;
+    if (decl is GirClass) {
+      return isGObjectRooted(decl) ? 'gobjectFinalizer' : null;
+    }
+    if (decl is GirInterface) return 'gobjectFinalizer';
+    if (decl is GirRecord) {
+      if (TypeResolver.destructorOf(decl, ns.name) == null) return null;
+      return '${dartTypeName(ns.name, decl.name)}.'
+          '${boxedFinalizerName(decl.name)}';
+    }
+    if (decl is GirUnion) {
+      if (TypeResolver.destructorOf(decl, ns.name) == null) return null;
+      return '${dartTypeName(ns.name, decl.name)}.'
+          '${boxedFinalizerName(decl.name)}';
+    }
+    return null;
   }
 
   /// True when [cls] or any ancestor is `InitiallyUnowned`.

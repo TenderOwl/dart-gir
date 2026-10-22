@@ -15,7 +15,18 @@ class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
     final cached = cachedObject<GBytesIcon>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -139,7 +150,9 @@ class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? serialize() {
     final _ret = _gIconSerialize(this.handle);
-    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_ret, owned: true);
   }
 
   /// Loads a loadable icon. For the asynchronous version of this function,
@@ -180,7 +193,7 @@ class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GInputStream.fromPointer(_ret),
+        GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
@@ -343,7 +356,7 @@ class GBytesIcon extends GObject implements GIcon, GLoadableIcon {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GInputStream.fromPointer(_ret),
+        GInputStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {

@@ -5,7 +5,7 @@ part of '../graphene.dart';
 ///
 /// The contents of the #graphene_euler_t structure are private
 /// and should never be accessed directly.
-final class GrapheneEuler {
+final class GrapheneEuler implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -15,14 +15,46 @@ final class GrapheneEuler {
   }) {
     final cached = cachedObject<GrapheneEuler>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseEuler(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          eulerFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneEuler.rawFromPointer(handle, owned: owned);
   }
-  GrapheneEuler.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneEuler.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      eulerFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneEuler` with `graphene_euler_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final eulerFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_euler_free'),
+  );
+
+  static final _releaseEuler =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_euler_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -43,7 +75,8 @@ final class GrapheneEuler {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_euler_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneEuler.alloc() : this.rawFromPointer(_grapheneEulerAlloc());
+  GrapheneEuler.alloc()
+    : this.rawFromPointer(_grapheneEulerAlloc(), owned: true);
 
   /// Checks if two #graphene_euler_t are equal.
   static final _grapheneEulerEqual =
@@ -66,6 +99,11 @@ final class GrapheneEuler {
           >('graphene_euler_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      eulerFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneEulerFree(this.handle);
   }
 
@@ -479,7 +517,7 @@ final class GrapheneEuler {
 ///
 /// The contents of the `graphene_frustum_t` are private, and should not be
 /// modified directly.
-final class GrapheneFrustum {
+final class GrapheneFrustum implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -489,14 +527,46 @@ final class GrapheneFrustum {
   }) {
     final cached = cachedObject<GrapheneFrustum>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseFrustum(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          frustumFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GrapheneFrustum.rawFromPointer(handle, owned: owned);
   }
-  GrapheneFrustum.rawFromPointer(this.handle, {bool owned = false}) {
+  GrapheneFrustum.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      frustumFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GrapheneFrustum` with `graphene_frustum_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final frustumFinalizer = ffi.NativeFinalizer(
+    grapheneLookup<
+      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+    >('graphene_frustum_free'),
+  );
+
+  static final _releaseFrustum =
+      grapheneLookup<
+            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+          >('graphene_frustum_free')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -517,7 +587,8 @@ final class GrapheneFrustum {
       grapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
         'graphene_frustum_alloc',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
-  GrapheneFrustum.alloc() : this.rawFromPointer(_grapheneFrustumAlloc());
+  GrapheneFrustum.alloc()
+    : this.rawFromPointer(_grapheneFrustumAlloc(), owned: true);
 
   /// Checks whether a point is inside the volume defined by the given
   /// #graphene_frustum_t.
@@ -555,6 +626,11 @@ final class GrapheneFrustum {
           >('graphene_frustum_free')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      frustumFinalizer.detach(this);
+      owned = false;
+    }
     _grapheneFrustumFree(this.handle);
   }
 

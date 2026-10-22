@@ -233,3 +233,6 @@ part 'src/records_43.dart';
 part 'src/records_44.dart';
 part 'src/records_45.dart';
 part 'src/records_46.dart';
+part 'src/records_47.dart';
+part 'src/records_48.dart';
+part 'src/records_49.dart';

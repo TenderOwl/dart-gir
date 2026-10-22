@@ -48,7 +48,7 @@ class GIBaseInfo {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -214,7 +214,7 @@ class GIBaseInfo {
           >('gi_base_info_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIBaseInfo ref() {
-    return GIBaseInfo.fromPointer(_giBaseInfoRef(this.handle));
+    return GIBaseInfo.fromPointer(_giBaseInfoRef(this.handle), owned: true);
   }
 
   /// Decreases the reference count of @info. When its reference count

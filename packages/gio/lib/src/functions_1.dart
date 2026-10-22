@@ -79,7 +79,7 @@ final _gDbusAddressGetStreamFinish =
       throw GlibException.fromError(_error.value);
     }
     return (
-      GIOStream.fromPointer(_ret),
+      GIOStream.fromPointer(_ret, owned: true),
       stringFromNative(_out0.value.cast(), free: true),
     );
   } finally {
@@ -135,7 +135,7 @@ final _gDbusAddressGetStreamSync =
         throw GlibException.fromError(_error.value);
       }
       return (
-        GIOStream.fromPointer(_ret),
+        GIOStream.fromPointer(_ret, owned: true),
         stringFromNative(_out0.value.cast(), free: true),
       );
     } finally {
@@ -253,6 +253,7 @@ final _gDbusGvalueToGvariant =
 GVariant dbusGvalueToGvariant(GValue gvalue, GVariantType type_) {
   return GVariant.fromPointer(
     _gDbusGvalueToGvariant(gvalue.handle, type_.handle),
+    owned: true,
   );
 }
 
@@ -480,6 +481,7 @@ GList ioModulesLoadAllInDirectory(String dirname) {
   return withNativeString(dirname, (nativeDirname) {
     return GList.fromPointer(
       _gIoModulesLoadAllInDirectory(nativeDirname.cast<Utf8>()),
+      owned: true,
     );
   });
 }
@@ -514,6 +516,7 @@ GList ioModulesLoadAllInDirectoryWithScope(
         nativeDirname.cast<Utf8>(),
         scope.handle,
       ),
+      owned: true,
     );
   });
 }

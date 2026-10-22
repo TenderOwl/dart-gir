@@ -35,7 +35,18 @@ class GObject implements ffi.Finalizable {
     final cached = cachedObject<GObject>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -57,7 +68,7 @@ class GObject implements ffi.Finalizable {
     }
   }
   final ffi.Pointer<ffi.Void> handle;
-  final bool owned;
+  bool owned;
   void _attachFinalizer() =>
       gobjectFinalizer.attach(this, handle, detach: this);
 
@@ -498,7 +509,7 @@ class GObject implements ffi.Finalizable {
           >('g_object_ref')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GObject ref() {
-    return GObject.fromPointer(_gObjectRef(this.handle));
+    return GObject.fromPointer(_gObjectRef(this.handle), owned: true);
   }
 
   /// Increase the reference count of @object, and possibly remove the
@@ -701,6 +712,11 @@ class GObject implements ffi.Finalizable {
           >('g_object_unref')
           .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      gobjectFinalizer.detach(this);
+      owned = false;
+    }
     _gObjectUnref(this.handle);
   }
 

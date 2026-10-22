@@ -65,7 +65,18 @@ class GPropertyAction extends GObject implements GAction {
     final cached = cachedObject<GPropertyAction>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -274,7 +285,9 @@ class GPropertyAction extends GObject implements GAction {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getState() {
     final _ret = _gActionGetState(this.handle);
-    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_ret, owned: true);
   }
 
   /// Requests a hint about the valid range of values for the state of
@@ -304,7 +317,9 @@ class GPropertyAction extends GObject implements GAction {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant? getStateHint() {
     final _ret = _gActionGetStateHint(this.handle);
-    return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GVariant.fromPointer(_ret, owned: true);
   }
 
   /// Queries the type of the state of @action.

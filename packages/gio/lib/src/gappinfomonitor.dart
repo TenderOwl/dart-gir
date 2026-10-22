@@ -52,7 +52,18 @@ class GAppInfoMonitor extends GObject {
     final cached = cachedObject<GAppInfoMonitor>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -102,7 +113,7 @@ class GAppInfoMonitor extends GObject {
         'g_app_info_monitor_get',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   static GAppInfoMonitor get_() {
-    return GAppInfoMonitor.fromPointer(_gAppInfoMonitorGet());
+    return GAppInfoMonitor.fromPointer(_gAppInfoMonitorGet(), owned: true);
   }
 
   /// Signal emitted when the app info database changes, when applications are

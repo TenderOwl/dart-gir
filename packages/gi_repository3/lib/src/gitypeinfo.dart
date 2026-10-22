@@ -183,7 +183,9 @@ class GITypeInfo extends GIBaseInfo {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GIBaseInfo? getInterface() {
     final _ret = _giTypeInfoGetInterface(this.handle);
-    return (_ret) == ffi.nullptr ? null : GIBaseInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GIBaseInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain the parameter type @n, or `NULL` if the type is not an array.
@@ -198,7 +200,9 @@ class GITypeInfo extends GIBaseInfo {
           >();
   GITypeInfo? getParamType(int n) {
     final _ret = _giTypeInfoGetParamType(this.handle, n);
-    return (_ret) == ffi.nullptr ? null : GITypeInfo.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GITypeInfo.fromPointer(_ret, owned: true);
   }
 
   /// Obtain the type tag corresponding to the underlying storage type in C for

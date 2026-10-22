@@ -406,7 +406,18 @@ class GtkWidget extends GInitiallyUnowned
     final cached = cachedObject<GtkWidget>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -554,6 +565,10 @@ class GtkWidget extends GInitiallyUnowned
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void addController(GtkEventController controller) {
+    if (controller.owned) {
+      gobjectFinalizer.detach(controller);
+      controller.owned = false;
+    }
     _gtkWidgetAddController(this.handle, controller.handle);
   }
 
@@ -738,6 +753,10 @@ class GtkWidget extends GInitiallyUnowned
     int baseline, [
     GskTransform? transform,
   ]) {
+    if (transform != null && transform.owned) {
+      GskTransform.transformFinalizer.detach(transform);
+      transform.owned = false;
+    }
     _gtkWidgetAllocate(
       this.handle,
       width,
@@ -957,7 +976,10 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_create_pango_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   PangoContext createPangoContext() {
-    return PangoContext.fromPointer(_gtkWidgetCreatePangoContext(this.handle));
+    return PangoContext.fromPointer(
+      _gtkWidgetCreatePangoContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Creates a new `PangoLayout` that is configured for the widget.
@@ -988,6 +1010,7 @@ class GtkWidget extends GInitiallyUnowned
     return withNativeString(text, (nativeText) {
       return PangoLayout.fromPointer(
         _gtkWidgetCreatePangoLayout(this.handle, nativeText.cast<Utf8>()),
+        owned: true,
       );
     });
   }
@@ -2615,7 +2638,10 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_observe_children')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel observeChildren() {
-    return GListModel.fromPointer(_gtkWidgetObserveChildren(this.handle));
+    return GListModel.fromPointer(
+      _gtkWidgetObserveChildren(this.handle),
+      owned: true,
+    );
   }
 
   /// Returns a list model to track the event controllers of the widget.
@@ -2634,7 +2660,10 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_widget_observe_controllers')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GListModel observeControllers() {
-    return GListModel.fromPointer(_gtkWidgetObserveControllers(this.handle));
+    return GListModel.fromPointer(
+      _gtkWidgetObserveControllers(this.handle),
+      owned: true,
+    );
   }
 
   /// Finds the descendant of the widget closest to a point.
@@ -3172,6 +3201,10 @@ class GtkWidget extends GInitiallyUnowned
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
           >();
   void setLayoutManager([GtkLayoutManager? layoutManager]) {
+    if (layoutManager != null && layoutManager.owned) {
+      gobjectFinalizer.detach(layoutManager);
+      layoutManager.owned = false;
+    }
     _gtkWidgetSetLayoutManager(
       this.handle,
       layoutManager?.handle ?? ffi.nullptr,
@@ -4000,7 +4033,9 @@ class GtkWidget extends GInitiallyUnowned
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getAccessibleParent() {
     final _ret = _gtkAccessibleGetAccessibleParent(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the accessible role of an accessible object.
@@ -4023,7 +4058,10 @@ class GtkWidget extends GInitiallyUnowned
           >('gtk_accessible_get_at_context')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkATContext getAtContext() {
-    return GtkATContext.fromPointer(_gtkAccessibleGetAtContext(this.handle));
+    return GtkATContext.fromPointer(
+      _gtkAccessibleGetAtContext(this.handle),
+      owned: true,
+    );
   }
 
   /// Queries the coordinates and dimensions of this accessible
@@ -4084,7 +4122,9 @@ class GtkWidget extends GInitiallyUnowned
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getFirstAccessibleChild() {
     final _ret = _gtkAccessibleGetFirstAccessibleChild(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Retrieves the next accessible sibling of an accessible object
@@ -4097,7 +4137,9 @@ class GtkWidget extends GInitiallyUnowned
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GtkAccessible? getNextAccessibleSibling() {
     final _ret = _gtkAccessibleGetNextAccessibleSibling(this.handle);
-    return (_ret) == ffi.nullptr ? null : GtkAccessible.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GtkAccessible.fromPointer(_ret, owned: true);
   }
 
   /// Queries a platform state, such as focus.

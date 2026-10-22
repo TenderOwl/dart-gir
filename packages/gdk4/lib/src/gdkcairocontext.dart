@@ -18,7 +18,18 @@ class GdkCairoContext extends GdkDrawContext {
     final cached = cachedObject<GdkCairoContext>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -67,7 +78,9 @@ class GdkCairoContext extends GdkDrawContext {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   CairoContext? cairoCreate() {
     final _ret = _gdkCairoContextCairoCreate(this.handle);
-    return (_ret) == ffi.nullptr ? null : CairoContext.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : CairoContext.fromPointer(_ret, owned: true);
   }
 
   /// The notify signal is emitted on an object when one of its properties has

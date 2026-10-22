@@ -97,6 +97,9 @@ class GIFieldInfo extends GIBaseInfo {
           >('gi_field_info_get_type_info')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GITypeInfo getTypeInfo() {
-    return GITypeInfo.fromPointer(_giFieldInfoGetTypeInfo(this.handle));
+    return GITypeInfo.fromPointer(
+      _giFieldInfoGetTypeInfo(this.handle),
+      owned: true,
+    );
   }
 }

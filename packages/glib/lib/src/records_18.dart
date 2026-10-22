@@ -6,7 +6,7 @@ part of '../glib.dart';
 ///
 /// See g_markup_parse_context_new(), #GMarkupParser, and so
 /// on for more details.
-final class GMarkupParseContext {
+final class GMarkupParseContext implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -16,14 +16,45 @@ final class GMarkupParseContext {
   }) {
     final cached = cachedObject<GMarkupParseContext>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseMarkupParseContext(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          markupParseContextFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GMarkupParseContext.rawFromPointer(handle, owned: owned);
   }
-  GMarkupParseContext.rawFromPointer(this.handle, {bool owned = false}) {
+  GMarkupParseContext.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      markupParseContextFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GMarkupParseContext` with `g_markup_parse_context_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final markupParseContextFinalizer = ffi.NativeFinalizer(
+    glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'g_markup_parse_context_free',
+    ),
+  );
+
+  static final _releaseMarkupParseContext =
+      glibLookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'g_markup_parse_context_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -82,7 +113,7 @@ final class GMarkupParseContext {
         userData ?? ffi.nullptr,
         _nc4.nativeFunction,
       );
-      return GMarkupParseContext.fromPointer(_ret);
+      return GMarkupParseContext.fromPointer(_ret, owned: true);
     } finally {
       _nc4.close();
     }
@@ -130,6 +161,11 @@ final class GMarkupParseContext {
         'g_markup_parse_context_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      markupParseContextFinalizer.detach(this);
+      owned = false;
+    }
     _gMarkupParseContextFree(this.handle);
   }
 
@@ -508,6 +544,7 @@ final class GMarkupParseContext {
   GMarkupParseContext ref() {
     return GMarkupParseContext.fromPointer(
       _gMarkupParseContextRef(this.handle),
+      owned: true,
     );
   }
 
@@ -519,48 +556,5 @@ final class GMarkupParseContext {
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void unref() {
     _gMarkupParseContextUnref(this.handle);
-  }
-}
-
-/// Any of the fields in #GMarkupParser can be %NULL, in which case they
-/// will be ignored. Except for the @error function, any of these callbacks
-/// can set an error; in particular the %G_MARKUP_ERROR_UNKNOWN_ELEMENT,
-/// %G_MARKUP_ERROR_UNKNOWN_ATTRIBUTE, and %G_MARKUP_ERROR_INVALID_CONTENT
-/// errors are intended to be set from these callbacks. If you set an error
-/// from a callback, g_markup_parse_context_parse() will report that error
-/// back to its caller.
-///
-/// Refer to the [GMarkup](../glib/markup.html) documentation to understand
-/// the scope and limitations of `GMarkupParser`. In particular, it is not a
-/// full XML parser and it must not be used to process untrusted data.
-final class GMarkupParser {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GMarkupParser.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GMarkupParser>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GMarkupParser.rawFromPointer(handle, owned: owned);
-  }
-  GMarkupParser.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

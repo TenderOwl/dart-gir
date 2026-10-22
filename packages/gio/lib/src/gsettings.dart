@@ -394,7 +394,18 @@ class GSettings extends GObject {
     final cached = cachedObject<GSettings>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -838,6 +849,7 @@ class GSettings extends GObject {
     return withNativeString(key, (nativeKey) {
       return GAction.fromPointer(
         _gSettingsCreateAction(this.handle, nativeKey.cast<Utf8>()),
+        owned: true,
       );
     });
   }
@@ -903,6 +915,7 @@ class GSettings extends GObject {
     return withNativeString(name, (nativeName) {
       return GSettings.fromPointer(
         _gSettingsGetChild(this.handle, nativeName.cast<Utf8>()),
+        owned: true,
       );
     });
   }
@@ -949,7 +962,9 @@ class GSettings extends GObject {
         this.handle,
         nativeKey.cast<Utf8>(),
       );
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -1190,6 +1205,7 @@ class GSettings extends GObject {
     return withNativeString(key, (nativeKey) {
       return GVariant.fromPointer(
         _gSettingsGetRange(this.handle, nativeKey.cast<Utf8>()),
+        owned: true,
       );
     });
   }
@@ -1297,7 +1313,9 @@ class GSettings extends GObject {
   GVariant? getUserValue(String key) {
     return withNativeString(key, (nativeKey) {
       final _ret = _gSettingsGetUserValue(this.handle, nativeKey.cast<Utf8>());
-      return (_ret) == ffi.nullptr ? null : GVariant.fromPointer(_ret);
+      return (_ret) == ffi.nullptr
+          ? null
+          : GVariant.fromPointer(_ret, owned: true);
     });
   }
 
@@ -1324,6 +1342,7 @@ class GSettings extends GObject {
     return withNativeString(key, (nativeKey) {
       return GVariant.fromPointer(
         _gSettingsGetValue(this.handle, nativeKey.cast<Utf8>()),
+        owned: true,
       );
     });
   }

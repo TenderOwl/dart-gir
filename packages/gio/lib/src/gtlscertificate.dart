@@ -18,7 +18,18 @@ class GTlsCertificate extends GObject {
     final cached = cachedObject<GTlsCertificate>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -401,7 +412,9 @@ class GTlsCertificate extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getNotValidAfter() {
     final _ret = _gTlsCertificateGetNotValidAfter(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Returns the time at which the certificate became or will become valid.
@@ -414,7 +427,9 @@ class GTlsCertificate extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GDateTime? getNotValidBefore() {
     final _ret = _gTlsCertificateGetNotValidBefore(this.handle);
-    return (_ret) == ffi.nullptr ? null : GDateTime.fromPointer(_ret);
+    return (_ret) == ffi.nullptr
+        ? null
+        : GDateTime.fromPointer(_ret, owned: true);
   }
 
   /// Returns the subject name from the certificate.
@@ -544,7 +559,7 @@ class GTlsCertificate extends GObject {
         if (_error.value != ffi.nullptr) {
           throw GlibException.fromError(_error.value);
         }
-        return GList.fromPointer(_ret);
+        return GList.fromPointer(_ret, owned: true);
       } finally {
         calloc.free(_error);
       }

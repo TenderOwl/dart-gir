@@ -15,10 +15,11 @@ final class GskBroadwayRendererClass {
     }
     return GskBroadwayRendererClass.rawFromPointer(handle, owned: owned);
   }
-  GskBroadwayRendererClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GskBroadwayRendererClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -47,10 +48,11 @@ final class GskCairoRendererClass {
     }
     return GskCairoRendererClass.rawFromPointer(handle, owned: owned);
   }
-  GskCairoRendererClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GskCairoRendererClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -80,10 +82,11 @@ final class GskColorStop {
     }
     return GskColorStop.rawFromPointer(handle, owned: owned);
   }
-  GskColorStop.rawFromPointer(this.handle, {bool owned = false}) {
+  GskColorStop.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -106,7 +109,7 @@ final class GskColorStop {
 ///
 /// Note that the transfer function is applied to un-premultiplied
 /// values, and all results are clamped to the [0, 1] range.
-final class GskComponentTransfer {
+final class GskComponentTransfer implements ffi.Finalizable {
   /// Wraps the native object at [handle].
   ///
   /// The same native pointer always yields the same Dart object.
@@ -116,14 +119,45 @@ final class GskComponentTransfer {
   }) {
     final cached = cachedObject<GskComponentTransfer>(handle.address);
     if (cached != null) {
+      if (owned) {
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one is
+          // a surplus and goes back.
+          _releaseComponentTransfer(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          componentTransferFinalizer.attach(cached, handle, detach: cached);
+          ;
+          cached.owned = true;
+        }
+      }
       return cached;
     }
     return GskComponentTransfer.rawFromPointer(handle, owned: owned);
   }
-  GskComponentTransfer.rawFromPointer(this.handle, {bool owned = false}) {
+  GskComponentTransfer.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
+    if (owned) {
+      componentTransferFinalizer.attach(this, handle, detach: this);
+    }
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
+
+  /// Releases an owned `GskComponentTransfer` with `gsk_component_transfer_free`.
+  ///
+  /// The finalizer runs when the wrapper is collected, so a
+  /// reference the GIR hands over is released exactly once.
+  static final componentTransferFinalizer = ffi.NativeFinalizer(
+    gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+      'gsk_component_transfer_free',
+    ),
+  );
+
+  static final _releaseComponentTransfer =
+      gsk4Lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+        'gsk_component_transfer_free',
+      ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -164,7 +198,10 @@ final class GskComponentTransfer {
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Float>)
           >();
   GskComponentTransfer.discrete(int n, ffi.Pointer<ffi.Float> values)
-    : this.rawFromPointer(_gskComponentTransferNewDiscrete(n, values));
+    : this.rawFromPointer(
+        _gskComponentTransferNewDiscrete(n, values),
+        owned: true,
+      );
 
   /// Creates a new component transfer that applies
   /// a gamma transform.
@@ -187,7 +224,10 @@ final class GskComponentTransfer {
           >('gsk_component_transfer_new_gamma')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double, double)>();
   GskComponentTransfer.gamma(double amp, double exp, double ofs)
-    : this.rawFromPointer(_gskComponentTransferNewGamma(amp, exp, ofs));
+    : this.rawFromPointer(
+        _gskComponentTransferNewGamma(amp, exp, ofs),
+        owned: true,
+      );
 
   /// Creates a new component transfer that doesn't
   /// change the component value.
@@ -203,7 +243,7 @@ final class GskComponentTransfer {
         'gsk_component_transfer_new_identity',
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GskComponentTransfer.identity()
-    : this.rawFromPointer(_gskComponentTransferNewIdentity());
+    : this.rawFromPointer(_gskComponentTransferNewIdentity(), owned: true);
 
   /// Creates a new component transfer that limits
   /// the values of the component to `n` levels.
@@ -223,7 +263,7 @@ final class GskComponentTransfer {
         'gsk_component_transfer_new_levels',
       ).asFunction<ffi.Pointer<ffi.Void> Function(double)>();
   GskComponentTransfer.levels(double n)
-    : this.rawFromPointer(_gskComponentTransferNewLevels(n));
+    : this.rawFromPointer(_gskComponentTransferNewLevels(n), owned: true);
 
   /// Creates a new component transfer that applies
   /// a linear transform.
@@ -246,7 +286,7 @@ final class GskComponentTransfer {
           >('gsk_component_transfer_new_linear')
           .asFunction<ffi.Pointer<ffi.Void> Function(double, double)>();
   GskComponentTransfer.linear(double m, double b)
-    : this.rawFromPointer(_gskComponentTransferNewLinear(m, b));
+    : this.rawFromPointer(_gskComponentTransferNewLinear(m, b), owned: true);
 
   /// Creates a new component transfer that applies
   /// a piecewise linear function.
@@ -275,7 +315,10 @@ final class GskComponentTransfer {
             ffi.Pointer<ffi.Void> Function(int, ffi.Pointer<ffi.Float>)
           >();
   GskComponentTransfer.table(int n, ffi.Pointer<ffi.Float> values)
-    : this.rawFromPointer(_gskComponentTransferNewTable(n, values));
+    : this.rawFromPointer(
+        _gskComponentTransferNewTable(n, values),
+        owned: true,
+      );
 
   /// Creates a copy of @other.
   static final _gskComponentTransferCopy =
@@ -288,6 +331,7 @@ final class GskComponentTransfer {
   GskComponentTransfer copy() {
     return GskComponentTransfer.fromPointer(
       _gskComponentTransferCopy(this.handle),
+      owned: true,
     );
   }
 
@@ -297,6 +341,11 @@ final class GskComponentTransfer {
         'gsk_component_transfer_free',
       ).asFunction<void Function(ffi.Pointer<ffi.Void>)>();
   void free() {
+    if (owned) {
+      // The caller releases the reference — the collector must not.
+      componentTransferFinalizer.detach(this);
+      owned = false;
+    }
     _gskComponentTransferFree(this.handle);
   }
 
@@ -329,10 +378,11 @@ final class GskGLRendererClass {
     }
     return GskGLRendererClass.rawFromPointer(handle, owned: owned);
   }
-  GskGLRendererClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GskGLRendererClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///
@@ -361,43 +411,11 @@ final class GskGLShaderClass {
     }
     return GskGLShaderClass.rawFromPointer(handle, owned: owned);
   }
-  GskGLShaderClass.rawFromPointer(this.handle, {bool owned = false}) {
+  GskGLShaderClass.rawFromPointer(this.handle, {this.owned = false}) {
     registerDartObject(this, handle.address);
   }
   final ffi.Pointer<ffi.Void> handle;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-}
-
-/// A location in a parse buffer.
-final class GskParseLocation {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GskParseLocation.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GskParseLocation>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GskParseLocation.rawFromPointer(handle, owned: owned);
-  }
-  GskParseLocation.rawFromPointer(this.handle, {bool owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
+  bool owned;
 
   /// Re-wraps this wrapper's [handle] as [T] via [factory].
   ///

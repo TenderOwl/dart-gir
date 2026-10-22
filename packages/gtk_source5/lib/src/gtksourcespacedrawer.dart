@@ -74,7 +74,18 @@ class GtkSourceSpaceDrawer extends GObject {
     final cached = cachedObject<GtkSourceSpaceDrawer>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -183,7 +194,10 @@ class GtkSourceSpaceDrawer extends GObject {
           >('gtk_source_space_drawer_get_matrix')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GVariant getMatrix() {
-    return GVariant.fromPointer(_gtkSourceSpaceDrawerGetMatrix(this.handle));
+    return GVariant.fromPointer(
+      _gtkSourceSpaceDrawerGetMatrix(this.handle),
+      owned: true,
+    );
   }
 
   /// If only one location is specified, this function returns what kind of

@@ -83,7 +83,18 @@ class GSocket extends GObject implements GInitable {
     final cached = cachedObject<GSocket>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -247,7 +258,7 @@ class GSocket extends GObject implements GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GSocket.fromPointer(_ret);
+      return GSocket.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -604,6 +615,7 @@ class GSocket extends GObject implements GInitable {
   GSocketConnection connectionFactoryCreateConnection() {
     return GSocketConnection.fromPointer(
       _gSocketConnectionFactoryCreateConnection(this.handle),
+      owned: true,
     );
   }
 
@@ -690,7 +702,7 @@ class GSocket extends GObject implements GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GCredentials.fromPointer(_ret);
+      return GCredentials.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -763,7 +775,7 @@ class GSocket extends GObject implements GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GSocketAddress.fromPointer(_ret);
+      return GSocketAddress.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -879,7 +891,7 @@ class GSocket extends GObject implements GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GSocketAddress.fromPointer(_ret);
+      return GSocketAddress.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -1245,7 +1257,7 @@ class GSocket extends GObject implements GInitable {
       if (_error.value != ffi.nullptr) {
         throw GlibException.fromError(_error.value);
       }
-      return GBytes.fromPointer(_ret);
+      return GBytes.fromPointer(_ret, owned: true);
     } finally {
       calloc.free(_error);
     }
@@ -1308,7 +1320,7 @@ class GSocket extends GObject implements GInitable {
         throw GlibException.fromError(_error.value);
       }
       return (
-        GBytes.fromPointer(_ret),
+        GBytes.fromPointer(_ret, owned: true),
         (_out0.value) == ffi.nullptr
             ? null
             : GSocketAddress.fromPointer(
@@ -2173,6 +2185,7 @@ class GSocket extends GObject implements GInitable {
         condition.value,
         cancellable?.handle ?? ffi.nullptr,
       ),
+      owned: true,
     );
   }
 

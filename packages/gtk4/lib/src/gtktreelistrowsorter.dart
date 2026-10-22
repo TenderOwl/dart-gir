@@ -25,7 +25,18 @@ class GtkTreeListRowSorter extends GtkSorter {
     final cached = cachedObject<GtkTreeListRowSorter>(handle.address);
     if (cached != null) {
       if (owned) {
-        gObjectUnref(handle);
+        if (cached.owned) {
+          // The cached wrapper owns a reference of its own: the new one
+          // is a surplus and goes back.
+          gObjectUnref(handle);
+        } else {
+          // The cached wrapper owns nothing: it adopts the reference.
+          if (cached.isFloating()) {
+            cached.refSink();
+          }
+          cached.owned = true;
+          gobjectFinalizer.attach(cached, handle, detach: cached);
+        }
       }
       return cached;
     }
@@ -69,11 +80,16 @@ class GtkTreeListRowSorter extends GtkSorter {
             >
           >('gtk_tree_list_row_sorter_new')
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  GtkTreeListRowSorter([GtkSorter? sorter])
-    : this.rawFromPointer(
-        _gtkTreeListRowSorterNew(sorter?.handle ?? ffi.nullptr),
-        owned: true,
-      );
+  factory GtkTreeListRowSorter([GtkSorter? sorter]) {
+    if (sorter != null && sorter.owned) {
+      gobjectFinalizer.detach(sorter);
+      sorter.owned = false;
+    }
+    return GtkTreeListRowSorter.fromPointer(
+      _gtkTreeListRowSorterNew(sorter?.handle ?? ffi.nullptr),
+      owned: true,
+    );
+  }
 
   /// Returns the sorter used by @self.
   static final _gtkTreeListRowSorterGetSorter =
