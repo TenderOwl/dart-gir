@@ -178,11 +178,13 @@ A project site that overstates its own maturity is worse than no site, so here i
 | Whole workspace | `dart test` with every package directory named | All of the above, plus the per-package smoke tests. |
 | Generated template code type-checks | `cd example/todo && dart run build_runner build && dart analyze` | A real consumer app against the generated output. |
 | The site matches its sources | `dart run tool/build_site.dart --check` | The committed `site/` matches `site_src/`, and the facts match the repository. |
-| GLib / GTK4 runtime tests | `cd packages/gtk4 && dart test` | **Not verified in CI** — they need a real native GTK 4 installation. |
-| Continuous integration | `.github/workflows/ci.yml` | Analysis, the generator tests, the template tests and a build + analyze gate over `example/todo`, on Ubuntu. |
+| GLib / GTK4 runtime tests | `cd packages/gtk4 && dart test` | Verified in CI — the `native` job installs GTK 4, libadwaita and GtkSourceView and runs the native suites under a virtual display. |
+| Continuous integration | `.github/workflows/ci.yml` | Analysis, the generator tests, the template tests, a build + analyze gate over `example/todo`, and the native runtime suites, on Ubuntu. |
 
 :::{note variant=warn}
-**The GTK4/GLib runtime tests are the honest gap.** They need a real native GTK 4 / GLib installation. On a machine without one, `openLibrary()` falls back to the current process and fails with a bare *"None of the loaded modules contained the requested symbol"* instead of "libgtk-4 not found". CI currently lints and tests the generator but never exercises a native call, so runtime behaviour is reviewed and hand-tested rather than continuously verified. Fixing exactly that — a platform-aware loader with actionable diagnostics, plus a GTK4-enabled CI matrix — is the top item on the [roadmap](roadmap.html).
+**What is still the honest gap.** The native runtime tests now run in CI — a second job installs GTK 4, libadwaita and GtkSourceView and drives the bindings against the real libraries under a virtual display. A missing native library is no longer a mystery either: the loader throws an error that names the library, the package and the command that installs it, instead of falling back to the process and failing later with *"None of the loaded modules contained the requested symbol"*.
+
+What is **not** proven yet is the other two platforms. The loader carries the Windows and macOS file names — GTK 4 on Windows is `libgtk-4.dll`, with no version suffix, so the names cannot be derived from the Linux soname — but only Linux is ever executed. A wrong name there is a wrong name until someone runs it. That is phase 4 on the [roadmap](roadmap.html).
 :::
 
 ## Try it

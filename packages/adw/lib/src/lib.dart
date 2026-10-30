@@ -2,22 +2,26 @@
 part of '../adw.dart';
 
 /// Loaded native libraries for the Adw namespace.
-final adwLibs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libadwaita-1.so.0']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libadwaita-1.so.0 on Linux, libadwaita-1-0.dll on Windows, libadwaita-1.0.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final adwLibs = openLibrary(
+  package: 'adw',
+  library: 'Adw 1',
+  linux: const ['libadwaita-1.so.0'],
+  windows: const ['libadwaita-1-0.dll'],
+  macos: const ['libadwaita-1.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libadwaita-1-dev',
+    fedora: 'libadwaita-devel',
+    homebrew: 'libadwaita',
+    arch: 'libadwaita',
+  ),
+);
 
 /// Looks up [symbol] in each of the Adw libraries.
 ffi.Pointer<T> adwLookup<T extends ffi.NativeType>(String symbol) {

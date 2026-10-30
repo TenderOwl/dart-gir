@@ -4,27 +4,175 @@ import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
-/// Loads the first available library from [names].
+/// The distribution packages that ship a native library.
 ///
-/// Falls back to the current process when none can be opened (symbols may
-/// already be loaded globally).
-DynamicLibrary openLibrary(List<String> names) {
+/// The generator emits one of these per package, carrying the names the
+/// platform table holds for the library the package wraps.
+class InstallPackages {
+  const InstallPackages({
+    required this.debian,
+    required this.fedora,
+    required this.homebrew,
+    required this.arch,
+  });
+
+  /// The Debian/Ubuntu package (`apt install`).
+  final String debian;
+
+  /// The Fedora/RHEL package (`dnf install`).
+  final String fedora;
+
+  /// The Homebrew formula (`brew install`).
+  final String homebrew;
+
+  /// The Arch Linux package (`pacman -S`).
+  final String arch;
+
+  /// The install commands for the platform the process runs on.
+  ///
+  /// Linux does not name its distribution, so every common package
+  /// manager is listed and the user picks the line that matches their
+  /// system. Windows has no package manager to name, so the list is
+  /// empty and the caller falls back to a `PATH` hint.
+  List<String> commandsForCurrentPlatform() {
+    if (Platform.isMacOS) {
+      return homebrew.isEmpty ? const [] : ['brew install $homebrew'];
+    }
+    if (Platform.isWindows) return const [];
+    return [
+      if (debian.isNotEmpty) 'sudo apt install $debian',
+      if (fedora.isNotEmpty) 'sudo dnf install $fedora',
+      if (arch.isNotEmpty) 'sudo pacman -S $arch',
+    ];
+  }
+}
+
+/// A native library the bindings need is not installed.
+///
+/// The message names the library, the package that needs it, every file
+/// name that was tried and the command that installs it — the four
+/// things a user needs to fix the problem.
+///
+/// This is what the loader throws when a library is missing. The old
+/// behaviour — a silent fall back to the process namespace — turned a
+/// missing library into a *"None of the loaded modules contained the
+/// requested symbol"* error hundreds of calls later, which points at the
+/// bindings instead of at the system.
+class NativeLibraryNotFound implements Exception {
+  const NativeLibraryNotFound({
+    required this.package,
+    required this.library,
+    required this.tried,
+    required this.install,
+  });
+
+  /// The Dart package that needs the library (`gtk4`).
+  final String package;
+
+  /// The library's name in the GIR (`Gtk 4.0`).
+  final String library;
+
+  /// Every file name that was tried, in order.
+  final List<String> tried;
+
+  /// The distribution packages that ship the library.
+  final InstallPackages install;
+
+  @override
+  String toString() {
+    final b = StringBuffer();
+    final first = tried.isEmpty ? library : tried.first;
+    b.write('Could not load $first');
+    if (library.isNotEmpty && library != first) {
+      b.write(' ($library)');
+    }
+    b.write(', needed by package $package.');
+    if (tried.length > 1) {
+      b.write('\nTried: ${tried.join(', ')}');
+    }
+    final commands = install.commandsForCurrentPlatform();
+    if (commands.isEmpty) {
+      b.write(
+        '\nAdd the folder that holds $first to your PATH, or install the '
+        'library with your package manager.',
+      );
+    } else {
+      b.write('\nInstall it with:');
+      for (final command in commands) {
+        b.write('\n  $command');
+      }
+    }
+    return b.toString();
+  }
+}
+
+/// Opens the native libraries of a package.
+///
+/// The names for the platform the process runs on are tried in order —
+/// [linux], [windows] or [macos] — and every name that opens is
+/// returned. A namespace may list more than one shared library, and a
+/// symbol may live in any of them.
+///
+/// Throws [NativeLibraryNotFound] when **none** of the names opens.
+/// The library is missing, and the user needs to be told which one and
+/// how to install it — that is the whole point of the per-platform
+/// tables the generator emits.
+List<DynamicLibrary> openLibrary({
+  required String package,
+  required String library,
+  required List<String> linux,
+  required List<String> windows,
+  required List<String> macos,
+  required InstallPackages install,
+}) {
+  final names = namesForCurrentPlatform(
+    linux: linux,
+    windows: windows,
+    macos: macos,
+  );
+  final libs = <DynamicLibrary>[];
   for (final name in names) {
     try {
-      return DynamicLibrary.open(name);
+      libs.add(DynamicLibrary.open(name));
     } on ArgumentError {
-      // try next candidate
+      // Not present under this name; try the next one.
     }
   }
-  return Platform.isLinux
-      ? DynamicLibrary.process()
-      : DynamicLibrary.executable();
+  if (libs.isEmpty) {
+    throw NativeLibraryNotFound(
+      package: package,
+      library: library,
+      tried: names,
+      install: install,
+    );
+  }
+  return libs;
+}
+
+/// The file names to try for the platform the process runs on.
+///
+/// Anything that is neither Windows nor macOS is treated as Linux: the
+/// sonames the GIR carries are the Linux ones, and a platform without
+/// a table of its own is better served by them than by nothing.
+List<String> namesForCurrentPlatform({
+  required List<String> linux,
+  required List<String> windows,
+  required List<String> macos,
+}) {
+  if (Platform.isWindows) return windows;
+  if (Platform.isMacOS) return macos;
+  return linux;
 }
 
 /// Looks up [symbol] in the running process — used for GLib-internal
 /// helpers (`g_free`) that are loaded globally when libglib is present.
-DynamicLibrary _glibProcessLib() =>
-    Platform.isLinux ? DynamicLibrary.process() : DynamicLibrary.executable();
+///
+/// `DynamicLibrary.process()` is the global symbol namespace of the
+/// running process, and it is supported on every platform. The
+/// `DynamicLibrary.executable()` alternative is not: it throws
+/// `UnsupportedError` on Windows, which would make the allocator
+/// helpers fail outright there.
+DynamicLibrary _glibProcessLib() => DynamicLibrary.process();
 
 /// The GLib library handle the allocator helpers use.
 ///
@@ -48,20 +196,31 @@ DynamicLibrary _lookupGlib() {
   } on ArgumentError {
     // Not globally visible — open GLib explicitly.
   }
-  final lib = openLibrary(const [
-    'libglib-2.0.so.0',
-    'libglib-2.0.so',
-    'libglib-2.0.0.dylib',
-  ]);
-  try {
-    lib.lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
-    return lib;
-  } on ArgumentError {
-    throw StateError(
-      'g_free not found: libglib could not be opened, so GLib-allocated '
-      'memory cannot be released.',
-    );
+  final libs = openLibrary(
+    package: 'gir_ffi',
+    library: 'GLib 2.0',
+    linux: const ['libglib-2.0.so.0', 'libglib-2.0.so'],
+    windows: const ['libglib-2.0-0.dll'],
+    macos: const ['libglib-2.0.0.dylib'],
+    install: const InstallPackages(
+      debian: 'libglib2.0-dev',
+      fedora: 'glib2-devel',
+      homebrew: 'glib',
+      arch: 'glib',
+    ),
+  );
+  for (final lib in libs) {
+    try {
+      lib.lookup<NativeFunction<Void Function(Pointer<Void>)>>('g_free');
+      return lib;
+    } on ArgumentError {
+      // Opened, but it does not export `g_free` — try the next one.
+    }
   }
+  throw StateError(
+    'g_free not found: libglib was opened, but it does not export g_free, '
+    'so GLib-allocated memory cannot be released.',
+  );
 }
 
 /// The `g_free` implementation.

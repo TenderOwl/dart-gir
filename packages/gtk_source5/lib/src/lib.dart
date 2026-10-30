@@ -2,22 +2,26 @@
 part of '../gtk_source5.dart';
 
 /// Loaded native libraries for the GtkSource namespace.
-final gtkSource5Libs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libgtksourceview-5.so.0']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libgtksourceview-5.so.0 on Linux, libgtksourceview-5-0.dll on Windows, libgtksourceview-5.0.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final gtkSource5Libs = openLibrary(
+  package: 'gtk_source5',
+  library: 'GtkSource 5',
+  linux: const ['libgtksourceview-5.so.0'],
+  windows: const ['libgtksourceview-5-0.dll'],
+  macos: const ['libgtksourceview-5.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libgtksourceview-5-dev',
+    fedora: 'gtksourceview5-devel',
+    homebrew: 'gtksourceview5',
+    arch: 'gtksourceview5',
+  ),
+);
 
 /// Looks up [symbol] in each of the GtkSource libraries.
 ffi.Pointer<T> gtkSource5Lookup<T extends ffi.NativeType>(String symbol) {

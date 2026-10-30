@@ -2,22 +2,26 @@
 part of '../gdk_pixbuf.dart';
 
 /// Loaded native libraries for the GdkPixbuf namespace.
-final gdkPixbufLibs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libgdk_pixbuf-2.0.so.0']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libgdk_pixbuf-2.0.so.0 on Linux, libgdk_pixbuf-2.0-0.dll on Windows, libgdk_pixbuf-2.0.0.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final gdkPixbufLibs = openLibrary(
+  package: 'gdk_pixbuf',
+  library: 'GdkPixbuf 2.0',
+  linux: const ['libgdk_pixbuf-2.0.so.0'],
+  windows: const ['libgdk_pixbuf-2.0-0.dll'],
+  macos: const ['libgdk_pixbuf-2.0.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libgdk-pixbuf-2.0-dev',
+    fedora: 'gdk-pixbuf2-devel',
+    homebrew: 'gdk-pixbuf',
+    arch: 'gdk-pixbuf2',
+  ),
+);
 
 /// Looks up [symbol] in each of the GdkPixbuf libraries.
 ffi.Pointer<T> gdkPixbufLookup<T extends ffi.NativeType>(String symbol) {

@@ -11,6 +11,47 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 ## Unreleased
 
 ### Added
+- **CI now makes native calls.** A second job in
+  `.github/workflows/ci.yml` installs GTK 4, libadwaita and
+  GtkSourceView and runs the native suites — the ownership rules, the
+  byte-array rules and the template stack — against the real libraries
+  under a virtual display. Until now CI never made a native call, so
+  the bindings' central claim was verified by a linter and by generator
+  unit tests only.
+
+  Both jobs are pinned to `ubuntu-26.04`: `ubuntu-latest` moves between
+  Ubuntu 24.04 and 26.04 during the 2026 migration, and the native
+  job's result depends on the GTK version.
+
+- **A missing native library now says what to install.** The generated
+  loader used to open the Linux soname the GIR carries — and, when that
+  failed, fall back to the process namespace. The *symbol* lookup then
+  failed with *"None of the loaded modules contained the requested
+  symbol"*, an error that points at the bindings instead of at the
+  missing library.
+
+  The loader is now platform-aware: the generator emits the file names
+  the library has on each platform — GTK 4 on Windows is `libgtk-4.dll`,
+  with no version suffix, so the names cannot be derived from the
+  soname — together with the distribution package that ships it. When
+  none of the names opens, `package:gir_ffi` throws
+  `NativeLibraryNotFound`:
+
+  ```
+  Could not load libgtk-4.so.1 (Gtk 4.0), needed by package gtk4.
+  Install it with:
+    sudo apt install libgtk-4-dev
+    sudo dnf install gtk4-devel
+    sudo pacman -S gtk4
+  ```
+
+  The message names the library, the package, every name that was tried
+  and the command that installs it. The names live in
+  `generator/lib/src/resolve/platform_libraries.dart`; the mechanism —
+  `openLibrary`, `InstallPackages`, `NativeLibraryNotFound` — in
+  `packages/gir_ffi`. See
+  [docs/emission.md](docs/emission.md#the-native-library-loader).
+
 - **Every wrapper says whether it owns the reference.** The generated
   classes and records carry a public `bool owned` field: `true` while the
   wrapper holds the reference the GIR handed over, `false` once the
@@ -137,6 +178,13 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   would be freed while the parent still uses it.
 
 ### Changed
+- **`gir_ffi`'s `openLibrary` takes the platform names.** The helper used
+  to take a list of file names and fall back to the process namespace
+  when none of them opened. It now takes the package, the library's name
+  and the names of each platform, and throws `NativeLibraryNotFound`
+  when none of them opens. The generated packages call it; a caller that
+  used it directly has to pass the platform tables.
+
 - **A byte buffer the callee keeps says so on the wrapper.** A byte array
   that stays a raw pointer — because the callable is asynchronous or
   because the callee takes the buffer over — now carries the lifetime
@@ -201,6 +249,14 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `g_variant_new_from_data`) now pass a permanent trampoline over a
   static function, with the user's callback parked in a registry until
   the notify arrives.
+
+- **The allocator's lookup no longer fails on Windows.**
+  `DynamicLibrary.executable()` is supported on macOS and Linux only — on
+  Windows it throws `UnsupportedError`. `gir_ffi` used it on every
+  platform that is not Linux, so the `g_free`/`g_malloc` helpers would
+  have failed outright there. The process's global symbol namespace
+  (`DynamicLibrary.process()`) is supported everywhere and is used
+  instead.
 
 ### Fixed
 - **The notepad example's dark-mode menu entry is no longer dead.** A

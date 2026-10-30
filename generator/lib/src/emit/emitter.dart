@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../gir/gir.dart';
+import '../resolve/platform_libraries.dart';
 import '../resolve/types.dart';
 import 'class_emitter.dart';
 import 'context.dart';
@@ -239,6 +240,30 @@ class PackageEmitter {
       ctx.imports.add('glib');
     }
     ctx.imports.remove(pkg);
+
+    // The loader calls `package:gir_ffi` — every package needs it, even
+    // one whose declarations happen to need nothing from the runtime.
+    ctx.usesGirFfi = true;
+
+    // The platform table: a library that is not in it gets its Windows
+    // and macOS names derived mechanically. Say so in the skip report —
+    // the row in `platform_libraries.dart` is the fix.
+    final platformNames = resolvePlatformNames(namespace.sharedLibraries);
+    for (final derived in platformNames.derived) {
+      report.skip(
+        'platform-library',
+        derived,
+        'no platform table entry: the other platforms\' names are derived',
+      );
+    }
+    if (platformNames.linux.isEmpty) {
+      report.skip(
+        'platform-library',
+        namespace.name,
+        'the GIR declares no shared library: the loader reads the process '
+            'namespace',
+      );
+    }
 
     // Write files.
     final pkgDir = p.join(packagesDir, pkg);

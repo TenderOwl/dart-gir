@@ -18,7 +18,7 @@ Phases are ordered by what unblocks the most users, not by what is most fun. Eve
 | --- | --- | --- | --- |
 | 0 | Generator foundation | done | Loader, parser, resolver, emitters, 13 packages, skip reports |
 | 1 | Ergonomics layer | done | Typed props, typed signals, interface mirroring, async overloads |
-| 2 | Prove it at runtime | in progress | CI that makes real native GTK calls; a loading failure says why |
+| 2 | Prove it at runtime | done | CI that makes real native GTK calls; a loading failure says why |
 | 3 | Arrays and collections | next | Array-typed parameters, properties and returns are emitted |
 | 4 | Cross-platform | planned | Linux, macOS and Windows loaders; a macOS CI job |
 | 5 | Subclassing & composite templates | done | Both halves on `main`; the prototype branch is retired |
@@ -51,28 +51,60 @@ Turning "technically bound" into "pleasant to use". This is what separates dart-
 - A non-trivial consumer app in `example/` that compiles and runs against the output
 :::
 
-:::{phase status=wip} Phase 2 — Prove it at runtime
-The most important phase remaining, because right now the project's central claim — that the generated bindings are correct — is verified by a linter and generator unit tests, not by running against GTK.
+:::{phase status=done} Phase 2 — Prove it at runtime
+The phase that turned the project's central claim — that the generated bindings are correct — from something a linter and generator unit tests checked into something CI proves by running against GTK.
 
-#### The concrete problem
+#### The problem it solved
 
-Each package's generated loader lists only Linux shared-object names:
+Each package's generated loader listed only Linux shared-object names:
 
-```dart title="adw/lib/src/lib.dart (generated)"
+```dart title="adw/lib/src/lib.dart (before)"
 for (final name in const ['libadwaita-1.so.0']) { ... }
 if (libs.isEmpty) libs.add(ffi.DynamicLibrary.process());
 ```
 
-On any other platform every name fails to open, the loader silently falls back to the current process, and the first symbol lookup fails with *"None of the loaded modules contained the requested symbol"* — a message that points at the bindings when the real cause is a missing native library. It also means `HeapAnchor`'s finalizer path and the `g_free` binding have no working non-Linux behaviour to fall back on.
+On any other platform every name failed to open, the loader silently fell back to the current process, and the first symbol lookup failed with *"None of the loaded modules contained the requested symbol"* — a message that points at the bindings when the real cause is a missing native library.
+
+#### What it looks like now
+
+The names are **tabulated** in the generator, one row per native library, and emitted per package. They cannot be derived from the Linux soname: GTK 4 on Windows is `libgtk-4.dll`, with no version suffix at all.
+
+```dart title="adw/lib/src/lib.dart (generated)"
+final adwLibs = openLibrary(
+  package: 'adw',
+  library: 'Adw 1',
+  linux: const ['libadwaita-1.so.0'],
+  windows: const ['libadwaita-1-0.dll'],
+  macos: const ['libadwaita-1.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libadwaita-1-dev',
+    fedora: 'libadwaita-devel',
+    homebrew: 'libadwaita',
+    arch: 'libadwaita',
+  ),
+);
+```
+
+When none of the names opens, the loader throws instead of falling back — and the error says what to do:
+
+```
+Could not load libgtk-4.so.1 (Gtk 4.0), needed by package gtk4.
+Install it with:
+  sudo apt install libgtk-4-dev
+  sudo dnf install gtk4-devel
+  sudo pacman -S gtk4
+```
+
+CI now makes real native calls too: a second job installs GTK 4, libadwaita and GtkSourceView and runs the native suites — the ownership rules, the byte-array rules and the template stack — against the real libraries, under a virtual display.
 
 #### What "done" means
 
 :::{checklist}
-[ ] Platform-aware library name tables per namespace — `.dll`, `.dylib`, `.so.N` — emitted by the generator instead of hardcoded Linux sonames.
-[ ] A dedicated, actionable exception when a native library is missing, naming the library, the package and the platform-specific install command.
-[ ] A CI job that installs GTK 4 / libadwaita and actually runs `packages/gtk4/test` and `packages/glib/test` — currently CI never makes a native call.
-[ ] Heap and lifetime tests run under CI, not only on a maintainer's desktop.
-[ ] Every remaining `g_free` / `DynamicLibrary.process()` assumption reviewed for non-Linux correctness.
+[x] Platform-aware library name tables per namespace — `.dll`, `.dylib`, `.so.N` — emitted by the generator instead of hardcoded Linux sonames. *`generator/lib/src/resolve/platform_libraries.dart` holds the table; a library that is not in it degrades to a derived name plus a `platform-library` line in the skip report, so a new namespace warns instead of breaking.*
+[x] A dedicated, actionable exception when a native library is missing, naming the library, the package and the platform-specific install command. *`NativeLibraryNotFound` in `package:gir_ffi`, pinned by `packages/gir_ffi/test/loader_test.dart`.*
+[x] A CI job that installs GTK 4 / libadwaita and actually runs the native suites — `packages/gtk4/test`, `packages/glib/test` and the rest. *The `native` job in `.github/workflows/ci.yml`.*
+[x] Heap and lifetime tests run under CI, not only on a maintainer's desktop. *The same job: the ownership and byte-array suites are part of it.*
+[x] Every remaining `g_free` / `DynamicLibrary.process()` assumption reviewed for non-Linux correctness. *The allocator's own lookup used `DynamicLibrary.executable()`, which throws `UnsupportedError` on Windows; it reads the process's global symbol namespace now.*
 :::
 :::
 
@@ -97,7 +129,7 @@ It spans four different positions in a signature, each with its own lifetime rul
 :::
 
 :::{note}
-**Why this phase is not already done:** it needs the ownership and lifetime model settled before the code is written, not after. The earlier `HeapAnchor` work established that a buffer's lifetime must be tied to the Dart wrapper that exposes it — and for arrays the question "who frees this, and when" has more wrong answers than the OUT-struct case did.
+**Why this phase is not already done:** it needed the ownership and lifetime model settled before the code was written, not after. That model is on `main` now, and phase 2's CI job is the harness an array's lifetime can be tested in — an array is the first binding shape whose *correctness* cannot be shown by a type signature alone. What is left is the mapping layer itself, which is still the biggest remaining functional gap.
 :::
 :::
 
@@ -129,13 +161,13 @@ The capability that most clearly decides whether this project is a set of bindin
 
 :::{checklist}
 [x] Dart-level subclassing is on `main`, with `dart analyze` clean and the regenerated packages included in the same change.
-[x] The regenerated packages are covered by CI: `dart analyze` runs over the whole workspace and the generator tests assert the emitted shape. The *native* runtime tests still wait for phase 2's GTK-enabled job.
+[x] The regenerated packages are covered by CI: `dart analyze` runs over the whole workspace and the generator tests assert the emitted shape. The *native* runtime tests now run as well, in phase 2's GTK-enabled job.
 [x] Subclass registration is documented as supported, with its own lifetime rules written down, rather than left as a pattern the reader has to infer from an example.
 [x] The `composite-templates` ref is deleted. Its condition — the last remaining capability being on `main` — was met, and the ref is gone: the local branch first, then the remote one. The branch's tip survives as a commit id in the object store, so the comparison in `docs/branch-state.md` can still be reproduced.
 :::
 
 :::{note}
-**Sequencing note:** this phase was listed after the runtime phase on purpose — shipping generated output that no CI job has ever executed would trade a visible gap for an invisible one. The template half did not wait for it, because it is pure Dart: CI builds and analyzes `example/todo` today. The subclassing half changed the generated packages, and it landed before phase 2's GTK-enabled job existed; that gap is tracked by phase 2, not here.
+**Sequencing note:** this phase was listed after the runtime phase on purpose — shipping generated output that no CI job has ever executed would trade a visible gap for an invisible one. The template half did not wait for it, because it is pure Dart: CI builds and analyzes `example/todo` today. The subclassing half changed the generated packages, and it landed before phase 2's GTK-enabled job existed; that gap was tracked by phase 2, and phase 2 has since closed it — the native suites run against the generated packages on every push.
 :::
 :::
 
@@ -184,7 +216,7 @@ A use-after-free in an OUT-parameter buffer is a bug, not a missing feature. The
 
 ### Runtime before polish
 
-Static analysis is necessary and not sufficient. The current gap — that no continuously-running test makes a native GTK call — is the single thing standing between this project and a credible stability claim, which is why it is phase 2 and not phase 6.
+Static analysis is necessary and not sufficient. The gap that used to stand here — that no continuously-running test made a native GTK call — is closed: phase 2's CI job installs GTK 4 and runs the native suites. A binding that only a linter has seen is a *reviewed* binding; one that CI drives through a real GObject is a *verified* one.
 :::
 
 ## Contributing

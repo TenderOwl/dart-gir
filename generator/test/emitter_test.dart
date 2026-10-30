@@ -3778,4 +3778,106 @@ void main() {
       );
     });
   });
+
+  group('the native library loader', () {
+    // The loader is the one place that decides whether a native library
+    // is there. The GIR gives only the Linux soname, so the Windows and
+    // macOS names come from the generator's table — and the loader calls
+    // the runtime helper that throws an actionable error when none of
+    // the names opens.
+
+    test('carries the names of every platform', () {
+      final code = libDartFor(
+        GirNamespace(
+          name: 'Gtk',
+          version: '4.0',
+          sharedLibrary: 'libgtk-4.so.1',
+        ),
+        'gtk4',
+      );
+
+      expect(code, contains("linux: const ['libgtk-4.so.1']"));
+      // GTK 4 on Windows carries **no** version suffix — the row that
+      // proves the names cannot be derived from the soname.
+      expect(code, contains("windows: const ['libgtk-4.dll']"));
+      expect(code, contains("macos: const ['libgtk-4.0.dylib']"));
+
+      // The loader calls the runtime helper, which throws when the
+      // library is missing. It does not open the library itself, and it
+      // does not fall back to the process namespace.
+      expect(code, contains('openLibrary('));
+      expect(code, isNot(contains('ffi.DynamicLibrary.open')));
+      expect(code, isNot(contains('ffi.DynamicLibrary.process()]\n')));
+
+      // The install packages travel with the loader: they are what the
+      // error tells the user to run.
+      expect(code, contains("debian: 'libgtk-4-dev'"));
+      expect(code, contains("fedora: 'gtk4-devel'"));
+      expect(code, contains("homebrew: 'gtk4'"));
+      expect(code, contains("arch: 'gtk4'"));
+    });
+
+    test("the names of a namespace run parallel to the GIR's list", () {
+      final code = libDartFor(
+        GirNamespace(
+          name: 'GLib',
+          version: '2.0',
+          sharedLibrary: 'libgobject-2.0.so.0,libglib-2.0.so.0',
+        ),
+        'glib',
+      );
+
+      expect(
+        code,
+        contains("linux: const ['libgobject-2.0.so.0', 'libglib-2.0.so.0']"),
+      );
+      expect(
+        code,
+        contains(
+          "windows: const ['libgobject-2.0-0.dll', 'libglib-2.0-0.dll']",
+        ),
+      );
+      expect(
+        code,
+        contains(
+          "macos: const ['libgobject-2.0.0.dylib', 'libglib-2.0.0.dylib']",
+        ),
+      );
+    });
+
+    test('a library that is not in the table is derived and reported', () {
+      final tmp = Directory.systemTemp.createTempSync('loader_test_');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+
+      // `libdemo-1.0.so.0` is not in the platform table.
+      final ns = GirNamespace(
+        name: 'Demo',
+        version: '1.0',
+        sharedLibrary: 'libdemo-1.0.so.0',
+      );
+      final report = PackageEmitter(
+        namespace: ns,
+        allNamespaces: [ns],
+        packagesDir: tmp.path,
+        emittedPackages: const {'demo1'},
+      ).emit();
+
+      final code = File('${tmp.path}/demo1/lib/src/lib.dart')
+          .readAsStringSync();
+      // The names are derived mechanically: `libdemo-1.0.so.0` →
+      // `libdemo-1.0-0.dll` and `libdemo-1.0.0.dylib`.
+      expect(code, contains("windows: const ['libdemo-1.0-0.dll']"));
+      expect(code, contains("macos: const ['libdemo-1.0.0.dylib']"));
+
+      // And the gap is in the skip report, so it can be tabulated.
+      final skipReport = File('${tmp.path}/demo1/skip_report.txt')
+          .readAsStringSync();
+      expect(skipReport, contains('libdemo-1.0.so.0'));
+      expect(skipReport, contains('platform-library'));
+      expect(
+        report.entries.any((e) => e.category == 'platform-library'),
+        isTrue,
+      );
+    });
+  });
 }

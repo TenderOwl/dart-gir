@@ -216,6 +216,12 @@ class EmitContext {
   /// Names the generated library itself occupies: runtime helpers from
   /// `package:ffi`/`gir_ffi` and emitted support declarations. GIR symbols
   /// mapping to these (e.g. `g_malloc` → `malloc`) get a `Fn` suffix.
+  ///
+  /// The `gir_ffi` names are here because the loader calls
+  /// `openLibrary` and builds an `InstallPackages` — the whole
+  /// `package:gir_ffi/gir_ffi.dart` namespace is in scope in every
+  /// generated package, so a GIR symbol mapping onto one of these names
+  /// would collide with it.
   static const reservedNames = {
     'malloc',
     'calloc',
@@ -228,7 +234,21 @@ class EmitContext {
     'stringFromNative',
     'stringToNative',
     'withNativeString',
+    'withNativeStringList',
+    'withNativeBytes',
+    'bytesFromNative',
+    'gFree',
+    'gMalloc',
+    'castTo',
+    'HeapAnchor',
+    'keepAlive',
+    'cachedObject',
+    'cachedObjectCount',
+    'registerDartObject',
     'openLibrary',
+    'namesForCurrentPlatform',
+    'InstallPackages',
+    'NativeLibraryNotFound',
     'GlibException',
     'gobjectFinalizer',
     'gObjectRefSink',

@@ -2,22 +2,26 @@
 part of '../graphene.dart';
 
 /// Loaded native libraries for the Graphene namespace.
-final grapheneLibs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libgraphene-1.0.so.0']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libgraphene-1.0.so.0 on Linux, libgraphene-1.0-0.dll on Windows, libgraphene-1.0.0.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final grapheneLibs = openLibrary(
+  package: 'graphene',
+  library: 'Graphene 1.0',
+  linux: const ['libgraphene-1.0.so.0'],
+  windows: const ['libgraphene-1.0-0.dll'],
+  macos: const ['libgraphene-1.0.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libgraphene-1.0-dev',
+    fedora: 'graphene-devel',
+    homebrew: 'graphene',
+    arch: 'graphene',
+  ),
+);
 
 /// Looks up [symbol] in each of the Graphene libraries.
 ffi.Pointer<T> grapheneLookup<T extends ffi.NativeType>(String symbol) {

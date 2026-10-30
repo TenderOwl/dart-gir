@@ -948,3 +948,91 @@ Every emitter that resolves a cross-package type calls
 `import 'package:<name>/<name>.dart';` for each entry when emitting the
 barrel. `pubspecFor` mirrors this in `pubspec.yaml` as path-deps. The
 filter excludes `gir_ffi` (already hard-coded in the barrel + pubspec).
+
+## The native library loader — `generator/lib/src/emit/library_emitter.dart`
+
+`libDartFor` writes `lib/src/lib.dart`: the library handles and the
+symbol lookup that goes with them.
+
+### The names come from a table, not from the GIR
+
+The GIR's `<namespace shared-library="…">` gives **only** the Linux
+soname — `libgtk-4.so.1`, `libadwaita-1.so.0`, `libglib-2.0.so.0`. The
+other platforms' file names cannot be derived from it: GTK 4 on Windows
+ships `libgtk-4.dll`, with no version suffix at all, and on macOS the
+same library is `libgtk-4.0.dylib`.
+
+So the names are **tabulated** in
+`generator/lib/src/resolve/platform_libraries.dart`, one row per native
+library, and the generator emits the row into the package:
+
+```dart
+final adwLibs = openLibrary(
+  package: 'adw',
+  library: 'Adw 1',
+  linux: const ['libadwaita-1.so.0'],
+  windows: const ['libadwaita-1-0.dll'],
+  macos: const ['libadwaita-1.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libadwaita-1-dev',
+    fedora: 'libadwaita-devel',
+    homebrew: 'libadwaita',
+    arch: 'libadwaita',
+  ),
+);
+```
+
+The Windows and macOS lists run **parallel** to the GIR's
+`shared-library` list: a namespace that lists two shared libraries (GLib
+lists `libgobject-2.0.so.0` and `libglib-2.0.so.0`) gets two names per
+platform.
+
+A library that is **not** in the table degrades instead of breaking: the
+names are derived mechanically (`libfoo-1.0.so.0` → `libfoo-1.0-0.dll`
+and `libfoo-1.0.0.dylib`) and the generator writes a
+`platform-library` line into the package's `skip_report.txt`. The row in
+the table is the fix.
+
+### The mechanism lives in `gir_ffi`
+
+`packages/gir_ffi/lib/gir_ffi.dart` holds `openLibrary`, the
+`InstallPackages` value type and the `NativeLibraryNotFound` exception.
+The **data** is the generator's; the **mechanism** is the runtime's.
+
+`openLibrary` opens every name of the current platform it can and
+returns the handles. When none of them opens, it throws
+`NativeLibraryNotFound`:
+
+```
+Could not load libgtk-4.so.1 (Gtk 4.0), needed by package gtk4.
+Install it with:
+  sudo apt install libgtk-4-dev
+  sudo dnf install gtk4-devel
+  sudo pacman -S gtk4
+```
+
+The message names the library, the package, every name that was tried
+and the command that installs it. Linux does not name its distribution,
+so every common package manager is listed; macOS gets `brew install`,
+Windows a `PATH` hint.
+
+### Two fallbacks, and the one that is gone
+
+* **The library open does not fall back.** It used to: a library that
+  could not be opened fell back to `ffi.DynamicLibrary.process()`, and
+  the *symbol* lookup then failed with *"None of the loaded modules
+  contained the requested symbol"* — an error that points at the
+  bindings instead of at the missing library. That silence is gone.
+* **The symbol lookup keeps its fallback.** A symbol may legitimately
+  live in another library of the process, so `<pkg>Lookup` still ends
+  with `ffi.DynamicLibrary.process().lookup<T>(symbol)`.
+
+### The allocator's own lookup
+
+`gir_ffi` finds `g_free` in two steps: the process's global symbol
+namespace first (`DynamicLibrary.process()` — supported on every
+platform, unlike `DynamicLibrary.executable()`, which throws
+`UnsupportedError` on Windows), and an explicitly opened GLib second.
+Both symbols come from the *same* handle: a buffer handed to a callee
+that takes ownership has to be allocated by the allocator that callee
+releases it with.

@@ -2,22 +2,26 @@
 part of '../gi_repository3.dart';
 
 /// Loaded native libraries for the GIRepository namespace.
-final giRepository3Libs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libgirepository-2.0.so.0']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libgirepository-2.0.so.0 on Linux, libgirepository-2.0-0.dll on Windows, libgirepository-2.0.0.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final giRepository3Libs = openLibrary(
+  package: 'gi_repository3',
+  library: 'GIRepository 3.0',
+  linux: const ['libgirepository-2.0.so.0'],
+  windows: const ['libgirepository-2.0-0.dll'],
+  macos: const ['libgirepository-2.0.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libglib2.0-dev',
+    fedora: 'glib2-devel',
+    homebrew: 'glib',
+    arch: 'glib',
+  ),
+);
 
 /// Looks up [symbol] in each of the GIRepository libraries.
 ffi.Pointer<T> giRepository3Lookup<T extends ffi.NativeType>(String symbol) {

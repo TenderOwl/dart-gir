@@ -2,22 +2,26 @@
 part of '../gsk4.dart';
 
 /// Loaded native libraries for the Gsk namespace.
-final gsk4Libs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libgtk-4.so.1']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libgtk-4.so.1 on Linux, libgtk-4.dll on Windows, libgtk-4.0.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final gsk4Libs = openLibrary(
+  package: 'gsk4',
+  library: 'Gsk 4.0',
+  linux: const ['libgtk-4.so.1'],
+  windows: const ['libgtk-4.dll'],
+  macos: const ['libgtk-4.0.dylib'],
+  install: const InstallPackages(
+    debian: 'libgtk-4-dev',
+    fedora: 'gtk4-devel',
+    homebrew: 'gtk4',
+    arch: 'gtk4',
+  ),
+);
 
 /// Looks up [symbol] in each of the Gsk libraries.
 ffi.Pointer<T> gsk4Lookup<T extends ffi.NativeType>(String symbol) {

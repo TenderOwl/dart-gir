@@ -222,6 +222,39 @@ that this contract is committed on `main` — not pending on the
 `composite-templates` branch — is in
 [docs/branch-state.md](docs/branch-state.md).
 
+## The native library loader
+
+Every generated package opens its native library through
+`package:gir_ffi`'s `openLibrary`, and the **names it tries are
+generator data**: `generator/lib/src/resolve/platform_libraries.dart`
+holds one row per native library — the Windows file name, the macOS file
+name and the distribution packages that ship it.
+
+**Rule: the names are tabulated, not derived.** The GIR carries only
+the Linux soname (`libgtk-4.so.1`), and the other platforms' names do
+not follow from it — GTK 4 on Windows is `libgtk-4.dll`, with no
+version suffix. A library that is not in the table degrades to a
+mechanically derived name (`libfoo-1.0.so.0` → `libfoo-1.0-0.dll`) plus
+a `platform-library` line in the package's `skip_report.txt`; it never
+fails the generation. Add the row instead of deriving.
+
+**Rule: a missing library is an error, not a fallback.** The loader
+opens every name of the current platform it can; when none of them
+opens it throws `NativeLibraryNotFound`, which names the library, the
+package, every name that was tried and the command that installs it.
+Do not reintroduce the silent `DynamicLibrary.process()` fallback for
+the *library* open — it turned a missing library into a misleading
+*"None of the loaded modules contained the requested symbol"* much
+later. The *symbol* lookup keeps its process fallback: a symbol may
+live in another library.
+
+`packages/gir_ffi` owns the mechanism (`openLibrary`,
+`InstallPackages`, `NativeLibraryNotFound`); the generator owns the
+data. The rules are in
+[docs/emission.md](docs/emission.md#the-native-library-loader) and
+pinned by the *the native library loader* group in
+`generator/test/emitter_test.dart` plus `packages/gir_ffi/test/loader_test.dart`.
+
 ## The site
 
 `site/` is generated. The sources live in `site_src/`, the output is
@@ -275,14 +308,14 @@ The full design is in [docs/site.md](docs/site.md).
 
 - **All tests, one command** (from the workspace root):
   `dart test generator example/gtk4_examples example/notepad example/todo packages/dart_gobject packages/gdk4 packages/gio packages/gir_ffi packages/glib packages/gobject packages/gtk4 packages/gtk_source5 packages/gtk_templates packages/gtk_templates_builder test`
-  — 488 passed, 1 skipped (the skip is the native GTK suite without a display — see below).
+  — 532 passed, 1 skipped. The skip is a generator test that needs a resolved `ParamSpec` type; the native GTK suites skip themselves when the machine has no display (see below).
 - **Why the explicit list?** `dart test` with no argument runs only the *root* package's own `test/` directory, which now holds the site generator's suite. The generator tests, the template-package tests and the per-package smoke tests live in their own packages' `test/` directories, so they have to be named. `dart pub workspace run` does not exist in this Dart SDK — `dart pub workspace` only offers `list`.
 - **Per package:** `cd <package> && dart test` works for any workspace member.
 - **Generator tests** live in `generator/test/` and also run as part of the all-tests command.
 - **Generated packages** carry a smoke test (e.g. `packages/glib/test/glib_smoke_test.dart`) — run per-package with `cd packages/<lib> && dart test`
 - **Generated code must type-check.** `packages/gtk_templates_builder/test/generated_code_test.dart` resolves the generated part file with the real analyzer and asserts zero diagnostics; `builder_output_test.dart` does the same for the `build_runner` output. A parse-only check is not enough.
 - **The committed site must match its sources.** `test/site/site_output_test.dart` renders every page from `site_src/` in memory and compares the result with the committed `site/`, and it walks the generated HTML checking that every internal link resolves and every rail anchor exists. Run it after any change under `site_src/` — or just run `dart run tool/build_site.dart` and commit the result.
-- **Native GTK tests skip themselves without a display.** `example/todo/test/todo_widget_test.dart` builds the real window and asserts that the template is on screen. GTK needs a display, so the suite skips when there is none (CI is headless). Run it locally with `xvfb-run -a dart test example/todo`. Its teardown disconnects the Dart signal handlers and then **destroys the window while the isolate is alive** — three rules make that safe, and all three are properties of the bindings' object lifecycle, not of the template stack:
+- **Native GTK tests skip themselves without a display.** `example/todo/test/todo_widget_test.dart` builds the real window and asserts that the template is on screen. GTK needs a display, so the suite skips when there is none. Run it locally with `xvfb-run -a dart test example/todo` — CI does the same in the `native` job. Its teardown disconnects the Dart signal handlers and then **destroys the window while the isolate is alive** — three rules make that safe, and all three are properties of the bindings' object lifecycle, not of the template stack:
   - A `GObject` finalized *while the isolate shuts down* destroys its signal handlers, and the destroy-notify GObject call is a Dart callback — the VM refuses to run a callback while it is shutting down and aborts. So the handlers are disconnected *before* the window goes away.
   - `gtk_window_destroy` frees the window, so the wrapper's finalizer must not release it a second time: `gobjectFinalizer.detach(window)` comes first. The VM runs the native finalizers of *every* attached object at shutdown, in an order that is not the reachability order — so GTK's selection models, which dispose the model they wrap, must not find the model already released. The suite detaches the store's and the selection's finalizers for that reason.
   - A window that is only freed at shutdown stays in GTK's global toplevel list, and GTK walks that list on every main-loop iteration. The gio suite drives the default main context in parallel, so a window left behind would be walked after it was gone. Destroying the window during the teardown — and taking it out of the application's window list with `setApplication(null)` — keeps it off that list.
@@ -296,7 +329,7 @@ The full design is in [docs/site.md](docs/site.md).
 - The workspace is a git repository. `main` is the trunk; `array-types`, `notepad` and `props` are already merged and their local branches are deleted — do not recreate them. `gasync` is superseded — do not build on it. `composite-templates` held an unmerged prototype and has been **retired**: it was never to be merged, and both the composite-template stack and the Dart-level subclassing contract are on `main` (see [The composite-template stack](#the-composite-template-stack) and [Generated classes are extendable](#generated-classes-are-extendable)); the verified record is [docs/branch-state.md](docs/branch-state.md). Its Blueprint/GResource support, Meson/gettext packaging and program-lifetime `NativeCallable` trampoline are out of scope.
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:` — generator changes get a `feat(generator):` or `fix(generator):` prefix; regenerated packages go under `chore(gen):` or `feat(gen <lib>):`
 - One PR per logical change. Generator changes must include the regenerated `packages/<lib>/` output and the matching `skip_report.txt` updates in the same PR — reviewers must see the effect on a generated package
-- CI is checked in at `.github/workflows/ci.yml`: analyze, the generator tests, the template packages' pure-Dart tests, and a build + analyze gate over `example/todo`. Native GTK runtime tests are deliberately out of CI (they need a display and the native GTK 4 stack); keep them out until a CI image provides one. When you add a CI step, add it to that workflow in the same PR
+- CI is checked in at `.github/workflows/ci.yml`: two jobs. The `build` job analyzes, runs the generator tests, the template packages' pure-Dart tests and a build + analyze gate over `example/todo`. The `native` job installs GTK 4, libadwaita and GtkSourceView and runs the **native** suites — the ownership rules, the byte-array rules and the template stack — against the real libraries under `xvfb-run`. Both jobs are pinned to `ubuntu-26.04`: `ubuntu-latest` moves between Ubuntu 24.04 and 26.04 during the 2026 migration, and the native job's result depends on the GTK version. When you add a CI step, add it to that workflow in the same PR
 - **Callback typedefs** follow the GIR `c:type` (e.g. `GCompareDataFunc`). User-supplied callbacks must be **top-level or static Dart functions** with parameter and return types matching the typedef's signature; closures and instance methods are accepted at runtime only through the wrapping `NativeCallable.isolateLocal` that the generator emits at every call site. The wrapper allocates the NativeCallable before the call and `.close()`-s it in a `finally` block — long-lived callbacks must therefore be passed as top-level functions so the temporary `NativeCallable` doesn't outlive the wrapper
 
 ## Security

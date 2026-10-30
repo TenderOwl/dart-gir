@@ -2,22 +2,26 @@
 part of '../cairo.dart';
 
 /// Loaded native libraries for the cairo namespace.
-final cairoLibs = _openLibs();
-
-List<ffi.DynamicLibrary> _openLibs() {
-  final libs = <ffi.DynamicLibrary>[];
-  for (final name in const ['libcairo-gobject.so.2']) {
-    try {
-      libs.add(ffi.DynamicLibrary.open(name));
-    } on ArgumentError {
-      // Library not present; try the next one.
-    }
-  }
-  if (libs.isEmpty) {
-    libs.add(ffi.DynamicLibrary.process());
-  }
-  return libs;
-}
+///
+/// The names are the file names the library has on each platform:
+/// libcairo-gobject.so.2 on Linux, libcairo-gobject-2.dll on Windows, libcairo-gobject.2.dylib on macOS.
+///
+/// The loader tries the names of the platform the process runs on and
+/// throws `NativeLibraryNotFound` when none of them is there — the
+/// error names the package and the command that installs the library.
+final cairoLibs = openLibrary(
+  package: 'cairo',
+  library: 'cairo 1.0',
+  linux: const ['libcairo-gobject.so.2'],
+  windows: const ['libcairo-gobject-2.dll'],
+  macos: const ['libcairo-gobject.2.dylib'],
+  install: const InstallPackages(
+    debian: 'libcairo2-dev',
+    fedora: 'cairo-gobject-devel',
+    homebrew: 'cairo',
+    arch: 'cairo',
+  ),
+);
 
 /// Looks up [symbol] in each of the cairo libraries.
 ffi.Pointer<T> cairoLookup<T extends ffi.NativeType>(String symbol) {

@@ -24,6 +24,9 @@ discoverable from `git ls-files` and easy to link from PRs.
   `packages/<lib>/skip_report.txt` for the symbol, then read the
   matching reason in [skip-categories.md](./skip-categories.md).
 * **Debugging a typed-signal issue** — read [signals.md](./signals.md).
+* **A native library does not load** — read
+  [emission.md](./emission.md#the-native-library-loader); the error
+  names the library, the package and the command that installs it.
 * **Using a GTK composite template in Dart** — read
   [templates.md](./templates.md).
 * **Extending a generated wrapper** — read
