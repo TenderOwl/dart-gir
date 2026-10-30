@@ -3,7 +3,7 @@
 A GTK4 task list built on two features of this workspace:
 
 * the **composite-template stack** — the window's and the row's
-  templates live in `data/*.ui`, and `gtk_templates_builder` writes
+  templates live in `data/*.ui`, and `gir_gtk_templates_builder` writes
   the mixins that bind their children;
 * a **Dart class with a native type** — `TaskObject` is a Dart class
   that registers a GType with GLib, so a `GListStore` can hold it and

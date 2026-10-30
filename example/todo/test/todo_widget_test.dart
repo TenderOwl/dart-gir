@@ -40,10 +40,11 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
-import 'package:adw/adw.dart' as adw;
-import 'package:glib/glib.dart';
-import 'package:gobject/gobject.dart';
-import 'package:gtk4/gtk4.dart';
+import 'package:gir_ffi/gir_ffi.dart';
+import 'package:gir_adw/gir_adw.dart' as adw;
+import 'package:gir_glib/gir_glib.dart';
+import 'package:gir_gobject/gir_gobject.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
 import 'package:test/test.dart';
 
 import 'package:todo/task_object.dart';
@@ -99,7 +100,7 @@ void main() {
 
   setUpAll(() {
     if (!_hasDisplay) return;
-    adw.init();
+    withInitializationLock(adw.init);
     app = adw.AdwApplication('com.tenderowl.examples.todo.test', .defaultFlags);
     // Register the application so GTK stops complaining that the
     // windows are added before `GApplication::startup`.

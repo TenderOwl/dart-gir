@@ -1,0 +1,30 @@
+name: gir_gdk_pixbuf
+description: "Generated Dart FFI bindings for GdkPixbuf 2.0 — image loading, pixel-buffer manipulation and PNG / JPEG / ICO I/O. Produced by gir_generator."
+homepage: "https://dartgir.tenderowl.com"
+repository: "https://github.com/TenderOwl/dart-gir"
+issue_tracker: "https://github.com/TenderOwl/dart-gir/issues"
+topics:
+  - ffi
+  - gdk-pixbuf
+  - image
+  - bindings
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  ffi: ^2.1.3
+  gir_ffi:
+    path: ../gir_ffi
+  gir_gio:
+    path: ../gir_gio
+  gir_glib:
+    path: ../gir_glib
+  gir_gobject:
+    path: ../gir_gobject
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

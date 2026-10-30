@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:adw/adw.dart';
-import 'package:gio/gio.dart';
-import 'package:glib/glib.dart';
+import 'package:gir_adw/gir_adw.dart';
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_glib/gir_glib.dart';
 import 'package:notepad/notepad_window.dart';
 
 class NotepadApp {

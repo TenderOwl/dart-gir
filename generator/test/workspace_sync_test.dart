@@ -62,8 +62,8 @@ dev_dependencies:
 
   test('every package in the tree is listed', () {
     _makePackage(root, 'generator');
-    _makePackage(root, 'packages/glib');
-    _makePackage(root, 'packages/gtk4');
+    _makePackage(root, 'packages/gir_glib');
+    _makePackage(root, 'packages/gir_gtk4');
     _makePackage(root, 'example/notepad');
     _makePackage(root, 'example/todo');
 
@@ -71,7 +71,7 @@ dev_dependencies:
 
     expect(
       workspaceEntries(),
-      containsAll(['generator', 'packages/glib', 'packages/gtk4']),
+      containsAll(['generator', 'packages/gir_glib', 'packages/gir_gtk4']),
     );
     expect(workspaceEntries(), contains('example/notepad'));
     expect(workspaceEntries(), contains('example/todo'));
@@ -90,25 +90,25 @@ dev_dependencies:
   test('a package nested inside another package is not listed', () {
     // Dart's workspace refuses a member nested inside another
     // member's directory — listing both would break `dart pub get`.
-    _makePackage(root, 'packages/glib');
-    _makePackage(root, 'packages/glib/nested');
+    _makePackage(root, 'packages/gir_glib');
+    _makePackage(root, 'packages/gir_glib/nested');
 
     syncRootPubspec(root.path);
 
-    expect(workspaceEntries(), contains('packages/glib'));
-    expect(workspaceEntries(), isNot(contains('packages/glib/nested')));
+    expect(workspaceEntries(), contains('packages/gir_glib'));
+    expect(workspaceEntries(), isNot(contains('packages/gir_glib/nested')));
   });
 
   test('hidden directories are not packages', () {
     // `.dart_tool/pub/packages/…` is pub's own cache of the
     // workspace — it mirrors the real package layout.
-    _makePackage(root, 'packages/glib');
-    _makePackage(root, '.dart_tool/pub/packages/glib');
+    _makePackage(root, 'packages/gir_glib');
+    _makePackage(root, '.dart_tool/pub/packages/gir_glib');
     _makePackage(root, '.git/somewhere');
 
     syncRootPubspec(root.path);
 
-    expect(workspaceEntries(), contains('packages/glib'));
+    expect(workspaceEntries(), contains('packages/gir_glib'));
     expect(workspaceEntries().where((e) => e.contains('.dart_tool')), isEmpty);
     expect(workspaceEntries().where((e) => e.contains('.git')), isEmpty);
   });

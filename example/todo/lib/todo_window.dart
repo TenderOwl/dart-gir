@@ -10,9 +10,9 @@
 // `bind` callback below gets the very Dart object the window created,
 // because the wrapper cache maps the native pointer back to it.
 
-import 'package:gio/gio.dart';
-import 'package:gtk4/gtk4.dart';
-import 'package:gtk_templates/gtk_templates.dart';
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
+import 'package:gir_gtk_templates/gir_gtk_templates.dart';
 import 'package:todo/task_object.dart';
 import 'package:todo/task_row.dart';
 

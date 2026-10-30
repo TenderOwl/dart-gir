@@ -58,7 +58,7 @@ class TypeMapping {
   /// True when values of this type cross the FFI boundary as a pointer.
   final bool isPointer;
 
-  /// Package that must be imported to use [dartType], e.g. `gtk4`.
+  /// Package that must be imported to use [dartType], e.g. `gir_gtk4`.
   /// Null for built-ins and types declared in the current namespace.
   final String? requiredImport;
 
@@ -81,27 +81,31 @@ class TypeMapping {
 ///
 /// The core GNOME stack has an explicit mapping; everything else falls back
 /// to `snake_case(name) + major version` (when a version is present).
+///
+/// Every name carries the `gir_` prefix: the bare names (`glib`, `gio`,
+/// `cairo`, `graphene`) are taken on pub.dev by other publishers, so the
+/// prefix is what makes the whole set publishable.
 String packageNameFor(GirNamespace namespace) {
   const core = {
-    'GLib': 'glib',
-    'GObject': 'gobject',
-    'Gio': 'gio',
-    'GdkPixbuf': 'gdk_pixbuf',
-    'cairo': 'cairo',
-    'Pango': 'pango',
-    'Gdk': 'gdk4',
-    'Gtk': 'gtk4',
-    'Adw': 'adw',
-    'Graphene': 'graphene',
-    'Gsk': 'gsk4',
+    'GLib': 'gir_glib',
+    'GObject': 'gir_gobject',
+    'Gio': 'gir_gio',
+    'GdkPixbuf': 'gir_gdk_pixbuf',
+    'cairo': 'gir_cairo',
+    'Pango': 'gir_pango',
+    'Gdk': 'gir_gdk4',
+    'Gtk': 'gir_gtk4',
+    'Adw': 'gir_adw',
+    'Graphene': 'gir_graphene',
+    'Gsk': 'gir_gsk4',
   };
   final known = core[namespace.name];
   if (known != null) return known;
 
   final base = _snakeCase(namespace.name).toLowerCase();
   final major = namespace.version.split('.').first;
-  if (major.isEmpty || major == '0') return base;
-  return '$base$major';
+  if (major.isEmpty || major == '0') return 'gir_$base';
+  return 'gir_$base$major';
 }
 
 String _snakeCase(String input) {
@@ -747,6 +751,38 @@ class TypeResolver {
     if (type is GirRecord) return type.freeFunction;
     if (type is GirUnion) return type.freeFunction;
     return null;
+  }
+
+  /// The C function that takes a reference of its own, when [type] uses
+  /// *floating* references.
+  ///
+  /// A type uses floating references when the GIR's `copy-function` is a
+  /// *sink* function — `g_variant_ref_sink` for `GVariant`. A floating
+  /// reference belongs to nobody: the value a constructor hands over is
+  /// floating, and a value somebody else owns can only be reached
+  /// through a reference of your own. The GIR names the sink as the
+  /// type's copy function, because that is the function that does both
+  /// — it sinks a floating reference and adds one to a reference that is
+  /// already owned.
+  ///
+  /// The sink must be a method of the type: the bindings call it
+  /// through the wrapper. A type that does not declare it keeps the
+  /// plain reference semantics — the bindings never guess a symbol name.
+  static String? floatingReferenceCopyFunction(GirRegisteredType type) {
+    final copy = switch (type) {
+      GirRecord r => r.copyFunction,
+      GirUnion u => u.copyFunction,
+      _ => null,
+    };
+    if (copy == null || !copy.endsWith('_ref_sink')) return null;
+    final methods = switch (type) {
+      GirRecord r => r.methods,
+      GirUnion u => u.methods,
+      _ => const <GirMethod>[],
+    };
+    final declared = {for (final m in methods) m.cIdentifier};
+    if (!declared.contains(copy)) return null;
+    return copy;
   }
 
   /// Maps a bound-length array whose element is an int-sized primitive

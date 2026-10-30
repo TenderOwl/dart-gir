@@ -49,7 +49,7 @@ Everything below is emitted from GIR. There is no hand-written binding layer in 
 
 ```dart title=props.dart
 // Every GObject-rooted class gets a PyGObject-style typed accessor.
-import 'package:gtk4/gtk4.dart' as gtk show init;
+import 'package:gir_gtk4/gir_gtk4.dart' as gtk show init;
 
 void main() {
   gtk.init();
@@ -163,7 +163,7 @@ This is a coverage list, not a limit. Each row is one `.gir` file; the generator
 :::{packages}
 :::
 
-"Skipped" is the number of entries in that package's `skip_report.txt` — see [coverage & honest gaps](features.html#coverage-and-the-honest-gaps) for what they are. Because these are coverage counts rather than difficulty counts, `gtk4` legitimately has the most: it is by far the largest API.
+"Skipped" is the number of entries in that package's `skip_report.txt` — see [coverage & honest gaps](features.html#coverage-and-the-honest-gaps) for what they are. Because these are coverage counts rather than difficulty counts, `gir_gtk4` legitimately has the most: it is by far the largest API.
 
 ## How the project is verified
 
@@ -174,12 +174,13 @@ A project site that overstates its own maturity is worse than no site, so here i
 | Static analysis, whole workspace | `dart analyze` | Every package, the generator, the examples and the site tooling. |
 | Generator unit tests | `dart test generator/` | The loader, the parser, the resolver, the naming rules and the emitters. |
 | Runtime helper tests | `cd packages/gir_ffi && dart test` | String marshalling and the `HeapAnchor` lifetime contract. |
-| Composite-template tests | `dart test packages/gtk_templates packages/gtk_templates_builder` | The runtime helpers, the AST scanner, the codegen, and an analyzer-resolution check of the generated part file. |
+| Composite-template tests | `dart test packages/gir_gtk_templates packages/gir_gtk_templates_builder` | The runtime helpers, the AST scanner, the codegen, and an analyzer-resolution check of the generated part file. |
 | Whole workspace | `dart test` with every package directory named | All of the above, plus the per-package smoke tests. |
 | Generated template code type-checks | `cd example/todo && dart run build_runner build && dart analyze` | A real consumer app against the generated output. |
 | The site matches its sources | `dart run tool/build_site.dart --check` | The committed `site/` matches `site_src/`, and the facts match the repository. |
-| GLib / GTK4 runtime tests | `cd packages/gtk4 && dart test` | Verified in CI — the `native` job installs GTK 4, libadwaita and GtkSourceView and runs the native suites under a virtual display. |
-| Continuous integration | `.github/workflows/ci.yml` | Analysis, the generator tests, the template tests, a build + analyze gate over `example/todo`, and the native runtime suites, on Ubuntu. |
+| GLib / GTK4 runtime tests | `cd packages/gir_gtk4 && dart test` | Verified in CI — the `native` job installs GTK 4, libadwaita and GtkSourceView and runs the native suites under a virtual display. |
+| Publishability gate | `dart run tool/release.dart check` | Every package passes the structural rules pub.dev would run — the name, the version, the description's length, the links, the topics, the required files, no path dependencies. The real `dart pub publish --dry-run` runs for the packages whose dependencies are already on pub.dev. |
+| Continuous integration | `.github/workflows/ci.yml` | Analysis, the generator tests, the template tests, a build + analyze gate over `example/todo`, the publishability gate, and the native runtime suites, on Ubuntu. |
 
 :::{note variant=warn}
 **What is still the honest gap.** The native runtime tests now run in CI — a second job installs GTK 4, libadwaita and GtkSourceView and drives the bindings against the real libraries under a virtual display. A missing native library is no longer a mystery either: the loader throws an error that names the library, the package and the command that installs it, instead of falling back to the process and failing later with *"None of the loaded modules contained the requested symbol"*.
@@ -214,9 +215,13 @@ The `example/notepad/` app is a real `AdwApplicationWindow` text editor — open
 ## Status and honesty
 
 :::{cols}
-### Pre-1.0, by design
+### 1.0, on pub.dev
 
-The generated API surface changes when the generator improves, and packages are currently `publish_to: none` and pinned to the workspace version. Nothing here is on pub.dev yet. Expect breakage between iterations — the stability promise is aimed at 1.0, and the [roadmap](roadmap.html) says which parts land when.
+All seventeen packages are published on pub.dev under the `gir_` prefix, and they move together: one generator, one changelog, one version. Within 1.x the emitted API only grows — a name changes when the upstream GIR renames it, and a symbol disappears only when the upstream GIR removes it. The ownership and lifetime rules are stable within 1.x too; changing them is a breaking change.
+
+What is *not* promised is the set of bound symbols: the [skip report](features.html#coverage-and-the-honest-gaps) states what is bound, and it is regenerated with every release. The known gaps — the array residue, the exotic OUT buffers, the `inout` parameters — are documented rather than hidden.
+
+The versioning policy is in `docs/release.md`; the [roadmap](roadmap.html) says what comes next.
 
 ### Built with AI assistance
 

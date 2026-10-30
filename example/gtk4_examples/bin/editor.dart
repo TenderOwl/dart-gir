@@ -1,10 +1,10 @@
 import 'dart:io' show File, exit;
 
-import 'package:adw/adw.dart';
-import 'package:gio/gio.dart';
-import 'package:gobject/gobject.dart';
-import 'package:gtk4/gtk4.dart' hide init;
-import 'package:glib/glib.dart';
+import 'package:gir_adw/gir_adw.dart';
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_gobject/gir_gobject.dart';
+import 'package:gir_gtk4/gir_gtk4.dart' hide init;
+import 'package:gir_glib/gir_glib.dart';
 import 'package:path/path.dart' as p;
 
 void main(List<String> args) {

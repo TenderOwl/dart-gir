@@ -20,8 +20,8 @@
 //   holding a `NativeCallable` open without a `finally` block to
 //   close it. Keeping the factory form for those cases preserves the
 //   lifetime invariants the runtime tests assert.
-import 'package:adw/adw.dart';
-import 'package:gtk4/gtk4.dart';
+import 'package:gir_adw/gir_adw.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
 
 class MyAdwWindow extends AdwWindow {
   MyAdwWindow() : super();

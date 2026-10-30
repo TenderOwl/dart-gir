@@ -69,8 +69,8 @@ Every capability claimed on this site links to the code, the tests or the report
 | The code is written | It is committed. `dart analyze` reports no issues across the workspace. |
 | The generator behaves as documented | `dart test generator/` — the generator's own unit tests. These run in CI on every push. |
 | The runtime helpers manage memory correctly | `cd packages/gir_ffi && dart test` — including the `HeapAnchor` lifetime contract. |
-| The generated template code type-checks | `dart test packages/gtk_templates_builder` — including a `build_runner` gate and an analyzer-resolution check of the generated part file. `cd example/todo && dart run build_runner build && dart analyze` does the same on a real consumer app. Both run in CI. |
-| The generated wrappers can be subclassed in Dart | `dart test packages/gtk4` — the `gtk4_subclass_test.dart` suite subclasses a generated class, narrows a return type covariantly and extends the generated props companion. The rules are written down in `docs/subclassing.md`. |
+| The generated template code type-checks | `dart test packages/gir_gtk_templates_builder` — including a `build_runner` gate and an analyzer-resolution check of the generated part file. `cd example/todo && dart run build_runner build && dart analyze` does the same on a real consumer app. Both run in CI. |
+| The generated wrappers can be subclassed in Dart | `dart test packages/gir_gtk4` — the `gtk4_subclass_test.dart` suite subclasses a generated class, narrows a return type covariantly and extends the generated props companion. The rules are written down in `docs/subclassing.md`. |
 | The generated bindings work against real GTK | **Not currently verified continuously.** CI never makes a native call. The GTK4/GLib tests require a real native installation and were last run by hand. This gap is the first item on the [roadmap](roadmap.html). |
 | Symbols that could not be emitted | `packages/<lib>/skip_report.txt` — every one, with a reason. {{facts.total_skipped}} entries today. |
 | The numbers on this site | `dart run tool/collect_facts.dart` — every figure on this site is derived from the repository, and CI fails if the committed facts drift. |
@@ -103,9 +103,11 @@ This site has a page of what does not work yet, and the skip report names every 
 
 Most hand-written FFI bugs are lifetime bugs. The project's own OUT-parameter work produced a heap corruption and a use-after-free before it produced a correct implementation, and both are documented in the changelog with the tests that now prevent them.
 
-### Pre-1.0, honestly
+### 1.0, honestly
 
-Packages are `publish_to: none` and pinned to a single workspace version. The generated API will change when the generator improves. That is stated on the [home page](index.html) rather than discovered by a consumer.
+The seventeen packages are published on pub.dev under the `gir_` prefix, and they carry one version — the set moves together. Within 1.x the emitted API only grows: a name changes when the upstream GIR renames it, a symbol goes away only when the upstream GIR removes it, and the ownership rules are stable.
+
+What 1.0 does *not* promise is the set of bound symbols. What is bound is stated by the [skip report](features.html#coverage-and-the-honest-gaps), regenerated with every release, and the known gaps are named rather than discovered by a consumer.
 :::
 
 ## Get involved

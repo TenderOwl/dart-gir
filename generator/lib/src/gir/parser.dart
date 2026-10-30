@@ -223,6 +223,7 @@ class GirParser {
     glibTypeName: _glibAttr(e, 'type-name'),
     disguised: _bool(e, 'disguised'),
     freeFunction: e.getAttribute('free-function'),
+    copyFunction: e.getAttribute('copy-function'),
     fields: _coreChildren(e, 'field').map(_parseField).toList(),
     constructors: _coreChildren(
       e,
@@ -240,6 +241,7 @@ class GirParser {
     cType: _cAttr(e, 'type'),
     glibTypeName: _glibAttr(e, 'type-name'),
     freeFunction: e.getAttribute('free-function'),
+    copyFunction: e.getAttribute('copy-function'),
     fields: _coreChildren(e, 'field').map(_parseField).toList(),
     constructors: _coreChildren(
       e,

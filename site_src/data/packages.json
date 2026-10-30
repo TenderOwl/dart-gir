@@ -1,7 +1,7 @@
 {
   "packages": [
     {
-      "name": "glib",
+      "name": "gir_glib",
       "namespace": "GLib 2.0",
       "native": "libglib-2.0",
       "role": "Foundation: types, strings, main loop, sources",
@@ -9,7 +9,7 @@
       "generated": true
     },
     {
-      "name": "gobject",
+      "name": "gir_gobject",
       "namespace": "GObject 2.0",
       "native": "libgobject-2.0",
       "role": "The object system everything else builds on",
@@ -17,7 +17,7 @@
       "generated": true
     },
     {
-      "name": "gio",
+      "name": "gir_gio",
       "namespace": "Gio 2.0",
       "native": "libgio-2.0",
       "role": "Files, async, D-Bus, networking, applications",
@@ -25,7 +25,7 @@
       "generated": true
     },
     {
-      "name": "gdk_pixbuf",
+      "name": "gir_gdk_pixbuf",
       "namespace": "GdkPixbuf 2.0",
       "native": "libgdk_pixbuf-2.0",
       "role": "Image loading and pixel formats",
@@ -33,7 +33,7 @@
       "generated": true
     },
     {
-      "name": "cairo",
+      "name": "gir_cairo",
       "namespace": "cairo 1.0",
       "native": "libcairo",
       "role": "2D vector drawing",
@@ -41,7 +41,7 @@
       "generated": true
     },
     {
-      "name": "pango",
+      "name": "gir_pango",
       "namespace": "Pango 1.0",
       "native": "libpango-1.0",
       "role": "Text shaping, fonts, layout",
@@ -49,7 +49,7 @@
       "generated": true
     },
     {
-      "name": "gdk4",
+      "name": "gir_gdk4",
       "namespace": "Gdk 4.0",
       "native": "libgtk-4",
       "role": "Display, input, GL/Vulkan contexts",
@@ -57,7 +57,7 @@
       "generated": true
     },
     {
-      "name": "graphene",
+      "name": "gir_graphene",
       "namespace": "Graphene 1.0",
       "native": "libgraphene-1.0",
       "role": "Vec2/Vec3/Matrix primitives",
@@ -65,7 +65,7 @@
       "generated": true
     },
     {
-      "name": "gsk4",
+      "name": "gir_gsk4",
       "namespace": "Gsk 4.0",
       "native": "libgtk-4",
       "role": "Render nodes and effects",
@@ -73,7 +73,7 @@
       "generated": true
     },
     {
-      "name": "gtk4",
+      "name": "gir_gtk4",
       "namespace": "Gtk 4.0",
       "native": "libgtk-4",
       "role": "Widgets, dialogs, actions, settings",
@@ -81,7 +81,7 @@
       "generated": true
     },
     {
-      "name": "adw",
+      "name": "gir_adw",
       "namespace": "Adw 1",
       "native": "libadwaita-1",
       "role": "Application framework: header bars, toasts, styles",
@@ -89,7 +89,7 @@
       "generated": true
     },
     {
-      "name": "gtk_source5",
+      "name": "gir_gtk_source5",
       "namespace": "GtkSource 5",
       "native": "libgtksourceview-5",
       "role": "The code editor component",
@@ -97,7 +97,7 @@
       "generated": true
     },
     {
-      "name": "gi_repository3",
+      "name": "gir_gi_repository3",
       "namespace": "GIRepository 3.0",
       "native": "libgirepository-3.0",
       "role": "Runtime introspection metadata",
@@ -114,7 +114,7 @@
       "generated": false
     },
     {
-      "name": "dart_gobject",
+      "name": "gir_dart_gobject",
       "namespace": "",
       "native": "",
       "role": "Dart classes with a native type",
@@ -123,7 +123,7 @@
       "generated": false
     },
     {
-      "name": "gtk_templates",
+      "name": "gir_gtk_templates",
       "namespace": "",
       "native": "",
       "role": "Composite-template host classes",
@@ -132,12 +132,12 @@
       "generated": false
     },
     {
-      "name": "gtk_templates_builder",
+      "name": "gir_gtk_templates_builder",
       "namespace": "",
       "native": "",
       "role": "Generates the template mixins",
       "description": "Hand-written build_runner builder — scanner, codegen, CLI",
-      "blurb": "`build_runner` builder for the `@GtkTemplate` annotation pipeline (see also `gtk_templates`).",
+      "blurb": "`build_runner` builder for the `@GtkTemplate` annotation pipeline (see also `gir_gtk_templates`).",
       "generated": false
     }
   ]

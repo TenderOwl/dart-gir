@@ -96,7 +96,7 @@ side by side under it.
 Each `PackageEmitter` runs once per target namespace. The set of target
 namespaces determines which packages end up in `packages/`. Calling the
 generator with `GLib-2.0 GObject-2.0 Gio-2.0 ...` emits all 11. Calling
-it with just `GtkSource-5` emits only `packages/gtk_source5/`; the
+it with just `GtkSource-5` emits only `packages/gir_gtk_source5/`; the
 generator will reuse any pre-existing packages on disk so cross-package
 type lookups (`GObject.Type` referenced from Gtk) keep working.
 
@@ -116,7 +116,7 @@ type lookups (`GObject.Type` referenced from Gtk) keep working.
 | `usesFfiString` | Whether `package:ffi/ffi.dart` is needed (any `Utf8` usage) |
 | `usesMalloc` | Whether `package:ffi`'s `calloc`/`malloc` is needed |
 | `usesGirFfi` | Whether `package:gir_ffi/gir_ffi.dart` is needed |
-| `usesGlibException` | Whether `package:glib/glib.dart` is needed (for `GlibException`) |
+| `usesGlibException` | Whether `package:gir_glib/gir_glib.dart` is needed (for `GlibException`) |
 
 `bridgeFor(GirTypeRef?)` is the workhorse: returns a `TypeBridge` whose
 `toNative` / `fromNative` strings drive emission, or `null` plus a reason
@@ -141,7 +141,7 @@ classifications of declarations from the GIR.
 ## Package layout in `packages/<lib>/`
 
 ```
-packages/gtk4/
+packages/gir_gtk4/
 ├── pubspec.yaml              path-deps on gdk4, pango, glib, gobject, gir_ffi
 ├── analysis_options.yaml     core.yaml + per-package FFI lint suppressions
 ├── lib/

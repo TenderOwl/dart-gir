@@ -169,7 +169,7 @@ class PackageEntry {
     required this.generated,
   });
 
-  /// The package's directory name, e.g. `gtk4`.
+  /// The package's directory name, e.g. `gir_gtk4`.
   final String name;
 
   /// The GIR namespace, e.g. `Gtk 4.0`. Empty for hand-written packages.

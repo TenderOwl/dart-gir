@@ -90,22 +90,22 @@ jobs:
       # `test/` directory. The suites live in their own packages, so
       # they have to be named. These are the ones that do
       # not need a native GTK stack:
-      #   - `generator`                    — the generator's own unit tests
-      #   - `packages/gir_ffi`             — the runtime helpers (pure Dart)
-      #   - `packages/dart_gobject`        — the Dart-type registry (GLib
-      #                                     only — no GTK, no display)
-      #   - `packages/gtk_templates`       — the template runtime
-      #   - `packages/gtk_templates_builder` — the scanner, the codegen
-      #   - `example/todo`                 — the part-file contract, plus
-      #                                     the native widget test (which
-      #                                     skips itself without a
-      #                                     display)
-      #   - `test`                         — the site generator's tests,
-      #                                     including the drift check
-      #                                     that the committed `site/`
-      #                                     matches `site_src/`
+      #   - `generator`                          — the generator's own unit tests
+      #   - `packages/gir_ffi`                   — the runtime helpers (pure Dart)
+      #   - `packages/gir_dart_gobject`          — the Dart-type registry (GLib
+      #                                         only — no GTK, no display)
+      #   - `packages/gir_gtk_templates`         — the template runtime
+      #   - `packages/gir_gtk_templates_builder` — the scanner, the codegen
+      #   - `example/todo`                       — the part-file contract, plus
+      #                                         the native widget test (which
+      #                                         skips itself without a
+      #                                         display)
+      #   - `test`                               — the site generator's tests,
+      #                                         including the drift check
+      #                                         that the committed `site/`
+      #                                         matches `site_src/`
       #
-      # `packages/gtk_templates_builder/test/generated_code_test.dart`
+      # `packages/gir_gtk_templates_builder/test/generated_code_test.dart`
       # and `test/builder_output_test.dart` are the gate that was
       # missing when four codegen bugs shipped: they resolve the
       # generated part file with the real analyzer and assert zero
@@ -118,7 +118,7 @@ jobs:
       # checking that every internal link resolves. It replaces the
       # ad-hoc Python link check this workflow used to carry.
       - name: dart test
-        run: dart test generator example/todo packages/dart_gobject packages/gir_ffi packages/gtk_templates packages/gtk_templates_builder test
+        run: dart test generator example/todo packages/gir_dart_gobject packages/gir_ffi packages/gir_gtk_templates packages/gir_gtk_templates_builder test
 
       # NB: we deliberately do NOT re-run the generator against the
       # system's `/usr/share/gir-1.0/` here. The GIR files shipped
@@ -136,6 +136,21 @@ jobs:
       #
       # The *native* runtime suites — the ones that drive GObject and
       # GTK through Dart FFI — run in the `native` job below.
+
+      # The publishability gate. Every package that will be uploaded has
+      # to pass pub.dev's structural rules *before* the release, not
+      # during it: the name, the version, the description's length, the
+      # links, the topics, the required files, no path dependencies and no
+      # `publish_to: none`.
+      #
+      # The real `dart pub publish --dry-run` runs for the packages whose
+      # dependencies are already on pub.dev; before the first upload there
+      # are none, so the rest are reported as *structurally checked only*.
+      #
+      # The gate writes the publication copies outside the repository —
+      # the working tree stays the source of truth.
+      - name: Publishability gate
+        run: dart run tool/release.dart check
 
       # The published API reference is generated from the committed
       # `packages/<lib>/lib/src/*.dart` (see the comment above). We
@@ -197,7 +212,7 @@ jobs:
       #   * `libgtk-4-dev`        — GTK 4 (and libadwaita's dependency)
       #   * `libadwaita-1-dev`    — libadwaita 1 (`example/todo`)
       #   * `libgtksourceview-5-dev` — GtkSourceView 5
-      #                             (`packages/gtk_source5`)
+      #                             (`packages/gir_gtk_source5`)
       #   * `xvfb`                — the virtual display
       #   * `libgl1-mesa-dri`     — Mesa's software GL, for the
       #                             renderer's benefit
@@ -226,20 +241,35 @@ jobs:
         working-directory: example/todo
         run: dart run build_runner build
 
+      # The suites run **serially** (`--concurrency=1`).
+      #
+      # Each test file runs in its own isolate, but the isolates share
+      # one process — and therefore one GLib, one GTK and one heap. Two
+      # suites that initialise GTK at the same time (`packages/gir_gtk4`
+      # and `example/notepad` both call `gtk_init()` in their `setUpAll`)
+      # race inside GTK's initialisation, and the process aborts with a
+      # heap corruption. The failure is timing-dependent: it needs the
+      # two initialisations to overlap, so it shows up on a loaded
+      # machine with many cores and not on a quiet one.
+      #
+      # This is a property of the *test setup*, not of the bindings: the
+      # suites do not share a GObject, a main context or a buffer — they
+      # share GTK's global state. Running them one after another removes
+      # the overlap.
       - name: Native runtime suites
         env:
           GDK_BACKEND: x11
           GSK_RENDERER: cairo
         run: |
-          xvfb-run -a dart test \
-            packages/dart_gobject \
-            packages/gdk4 \
-            packages/gio \
+          xvfb-run -a dart test --concurrency=1 \
+            packages/gir_dart_gobject \
+            packages/gir_gdk4 \
+            packages/gir_gio \
             packages/gir_ffi \
-            packages/glib \
-            packages/gobject \
-            packages/gtk4 \
-            packages/gtk_source5 \
+            packages/gir_glib \
+            packages/gir_gobject \
+            packages/gir_gtk4 \
+            packages/gir_gtk_source5 \
             example/gtk4_examples \
             example/notepad \
             example/todo

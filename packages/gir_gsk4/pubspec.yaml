@@ -1,0 +1,36 @@
+name: gir_gsk4
+description: "Generated Dart FFI bindings for Gsk 4.0 — the scene-graph kit: render nodes, renderers, shaders and transforms. Produced by gir_generator."
+homepage: "https://dartgir.tenderowl.com"
+repository: "https://github.com/TenderOwl/dart-gir"
+issue_tracker: "https://github.com/TenderOwl/dart-gir/issues"
+topics:
+  - ffi
+  - gtk4
+  - rendering
+  - bindings
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  ffi: ^2.1.3
+  gir_ffi:
+    path: ../gir_ffi
+  gir_cairo:
+    path: ../gir_cairo
+  gir_gdk4:
+    path: ../gir_gdk4
+  gir_glib:
+    path: ../gir_glib
+  gir_gobject:
+    path: ../gir_gobject
+  gir_graphene:
+    path: ../gir_graphene
+  gir_pango:
+    path: ../gir_pango
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

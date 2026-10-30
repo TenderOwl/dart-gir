@@ -49,12 +49,12 @@ Both packages ship it, and `main` carries the whole stack:
 
 | Piece | Path on `main` |
 | --- | --- |
-| Annotations, runtime helpers | `packages/gtk_templates/lib/src/{annotations,bytes,runtime}.dart` |
-| Runtime tests | `packages/gtk_templates/test/runtime_test.dart` |
-| Scanner plan, codegen | `packages/gtk_templates_builder/lib/{builder_plan,codegen}.dart` |
-| `build_runner` builder | `packages/gtk_templates_builder/lib/builder.dart` |
-| Standalone CLI | `packages/gtk_templates_builder/bin/gtk_templates_builder.dart` |
-| Codegen tests | `packages/gtk_templates_builder/test/{codegen_test,e2e_test,builder_output_test,generated_code_test}.dart` |
+| Annotations, runtime helpers | `packages/gir_gtk_templates/lib/src/{annotations,bytes,runtime}.dart` |
+| Runtime tests | `packages/gir_gtk_templates/test/runtime_test.dart` |
+| Scanner plan, codegen | `packages/gir_gtk_templates_builder/lib/{builder_plan,codegen}.dart` |
+| `build_runner` builder | `packages/gir_gtk_templates_builder/lib/builder.dart` |
+| Standalone CLI | `packages/gir_gtk_templates_builder/bin/gtk_templates_builder.dart` |
+| Codegen tests | `packages/gir_gtk_templates_builder/test/{codegen_test,e2e_test,builder_output_test,generated_code_test}.dart` |
 | Worked example | `example/todo/` — `lib/todo_window.dart` plus the generated `lib/todo_window.g.dart` |
 | Native example test | `example/todo/test/todo_widget_test.dart` |
 | Design reference | `docs/templates.md` |
@@ -63,7 +63,7 @@ The landed shape is **one part file per source file** (`<source>.g.dart`,
 beside the source), the `json_serializable` convention, with the template
 installed by the mixin's override of `GtkWidget.initTemplate()`. CI builds
 `example/todo` with `build_runner` and analyzes the result on every push,
-and `packages/gtk_templates_builder/test/generated_code_test.dart` resolves
+and `packages/gir_gtk_templates_builder/test/generated_code_test.dart` resolves
 the generated part file with the real analyzer.
 
 ## 2. The subclassing half is on `main`
@@ -76,7 +76,7 @@ test:
 | Generated classes are `class`, not `final class` | `generator/lib/src/emit/class_emitter.dart` |
 | Props companions are public and extendable | the same emitter, the `*Props` companion |
 | The contract is asserted | `generator/test/emitter_test.dart`, group *Dart-level subclassing contract* |
-| It is exercised against real GTK types | `packages/gtk4/test/gtk4_subclass_test.dart` |
+| It is exercised against real GTK types | `packages/gir_gtk4/test/gtk4_subclass_test.dart` |
 | The rules are written down | `docs/subclassing.md` |
 
 ## 3. What the branch added on top
@@ -111,8 +111,8 @@ Every path the branch added is packaging or an older internal layout:
 | `example/todo/po/` | gettext catalogues | Translation infrastructure is not a binding concern |
 | `example/todo/data/*.desktop.in.in`, `*.service.in`, `*.gschema.xml.in` | Desktop/service/schema files | Packaging again |
 | `example/todo/lib/todo_window.gtk_templates.dart` | One part file **per class** | The landed convention is one part file per source file; two conventions would have to be supported forever |
-| `packages/gtk_templates/lib/src/gtk_template.dart`, `template_callback.dart`, `template_child.dart`, `template_lookup.dart` | The pre-refactor internal layout | Folded into `annotations.dart` and `runtime.dart` on `main` |
-| `packages/gtk_templates_builder/lib/src/{emitter,generator,model,naming,visitors}.dart` | The pre-refactor internal layout | Replaced by `builder_plan.dart` + `codegen.dart` on `main` |
+| `packages/gir_gtk_templates/lib/src/gtk_template.dart`, `template_callback.dart`, `template_child.dart`, `template_lookup.dart` | The pre-refactor internal layout | Folded into `annotations.dart` and `runtime.dart` on `main` |
+| `packages/gir_gtk_templates_builder/lib/src/{emitter,generator,model,naming,visitors}.dart` | The pre-refactor internal layout | Replaced by `builder_plan.dart` + `codegen.dart` on `main` |
 | `example/bin/**`, `example/pubspec.yaml` | The pre-`example/`-split layout | `main` splits it into `example/gtk4_examples`, `example/notepad`, `example/todo` |
 
 The branch also used **program-lifetime `NativeCallable`** trampolines for
@@ -121,7 +121,7 @@ long as the widget. The per-instance closure is the smaller surface and the
 one that is documented.
 
 `main` additionally has, and the branch did not: `docs/templates.md`,
-`docs/subclassing.md`, `docs/site.md`, `packages/gtk4/test/gtk4_subclass_test.dart`,
+`docs/subclassing.md`, `docs/site.md`, `packages/gir_gtk4/test/gtk4_subclass_test.dart`,
 the analyzer-resolved codegen tests, the native example test, and the
 generated site.
 

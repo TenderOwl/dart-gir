@@ -41,7 +41,7 @@ The BSD-3-Clause licence covers this project's own code — the generator, the h
 {{facts.license_text}}
 ```
 
-The authoritative copy is the [LICENSE file in the repository](https://github.com/TenderOwl/dart-gir/blob/main/LICENSE). No warranty is provided — the `AS IS` disclaimer above is part of the licence, not a formality. The project is pre-1.0 and its API is still moving.
+The authoritative copy is the [LICENSE file in the repository](https://github.com/TenderOwl/dart-gir/blob/main/LICENSE). No warranty is provided — the `AS IS` disclaimer above is part of the licence, not a formality. The project is at 1.0: within 1.x the emitted API only grows, and the versioning policy is written down in `docs/release.md`.
 
 ## Attribution
 

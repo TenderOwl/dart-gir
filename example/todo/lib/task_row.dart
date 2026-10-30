@@ -4,8 +4,8 @@
 // check button and the label, and the generated `_$TaskRowTemplate`
 // mixin binds them.
 
-import 'package:gtk4/gtk4.dart';
-import 'package:gtk_templates/gtk_templates.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
+import 'package:gir_gtk_templates/gir_gtk_templates.dart';
 import 'package:todo/task_object.dart';
 
 part 'task_row.g.dart';

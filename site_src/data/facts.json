@@ -3,15 +3,15 @@
   "sdk_constraint": "^3.13.4",
   "license": "BSD-3-Clause",
   "license_text": "Copyright 2026, Andrey Maksimov.\n\nRedistribution and use in source and binary forms, with or without modification,\nare permitted provided that the following conditions are met:\n\n1. Redistributions of source code must retain the above copyright notice, this\n   list of conditions and the following disclaimer.\n\n2. Redistributions in binary form must reproduce the above copyright notice,\n   this list of conditions and the following disclaimer in the documentation\n   and/or other materials provided with the distribution.\n\n3. Neither the name of the copyright holder nor the names of its contributors\n   may be used to endorse or promote products derived from this software without\n   specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND\nANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\nWARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR\nANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\nLOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON\nANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS\nSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
-  "total_skipped": 3235,
+  "total_skipped": 2937,
   "packages": [
     {
-      "name": "glib",
+      "name": "gir_glib",
       "namespace": "GLib 2.0",
-      "skipped": 349,
+      "skipped": 323,
       "by_category": {
         "alias": 13,
-        "callable": 330,
+        "callable": 304,
         "callback": 2,
         "constant": 2,
         "constructor": 1,
@@ -198,11 +198,9 @@
         "parameter stamp: unknown type: time_t": 2,
         "parameter string: array of TypeKind.string (later phase)": 6,
         "parameter strv: array of TypeKind.string (later phase)": 3,
-        "parameter terminator_pos: nullable scalar parameter (gsize)": 1,
         "parameter timet: unknown type: time_t": 1,
         "parameter visited: unknown type: time_t": 1,
         "return: array of TypeKind.string (later phase)": 6,
-        "return: string list return type (null)": 25,
         "return: unknown type: time_t": 3,
         "unparseable int value: 18446744073709551615": 1,
         "unsupported out parameter buf (ffi.Pointer<ffi.Uint8>)": 1,
@@ -213,7 +211,7 @@
       }
     },
     {
-      "name": "gobject",
+      "name": "gir_gobject",
       "namespace": "GObject 2.0",
       "skipped": 98,
       "by_category": {
@@ -285,13 +283,13 @@
       }
     },
     {
-      "name": "gio",
+      "name": "gir_gio",
       "namespace": "Gio 2.0",
-      "skipped": 339,
+      "skipped": 304,
       "by_category": {
-        "callable": 134,
+        "callable": 100,
         "callback": 1,
-        "method": 25,
+        "method": 24,
         "property": 159,
         "renamed": 14,
         "signal": 6
@@ -300,13 +298,19 @@
         "array of TypeKind.record (later phase)": 1,
         "brought to GResource as resourcesRegister": 1,
         "brought to GResource as resourcesUnregister": 1,
-        "construct-only or no public setter; emitting getter only": 81,
+        "construct-only or no public setter; emitting getter only": 84,
+        "getter get_data was renamed; call the renamed method directly": 1,
+        "getter get_dns_names has an unsupported return type": 1,
+        "getter get_ip_addresses has an unsupported return type": 1,
         "introspectable=0": 3,
         "missing getter get_abstract": 1,
         "missing getter get_address": 1,
+        "missing getter get_advertised-protocols": 1,
         "missing getter get_authentication-observer": 1,
         "missing getter get_backend": 1,
         "missing getter get_base-io-stream": 1,
+        "missing getter get_bytes": 1,
+        "missing getter get_certificate": 1,
         "missing getter get_certificate-pem": 1,
         "missing getter get_connectable": 1,
         "missing getter get_connection": 1,
@@ -324,7 +328,11 @@
         "missing getter get_g-name": 1,
         "missing getter get_g-name-owner": 1,
         "missing getter get_g-object-path": 3,
+        "missing getter get_get-proxy-type-destroy-notify": 1,
+        "missing getter get_get-proxy-type-func": 1,
+        "missing getter get_get-proxy-type-user-data": 1,
         "missing getter get_gicon": 1,
+        "missing getter get_ignore-hosts": 1,
         "missing getter get_input-stream": 1,
         "missing getter get_invert-boolean": 1,
         "missing getter get_item-type": 1,
@@ -337,7 +345,9 @@
         "missing getter get_output-stream": 1,
         "missing getter get_parameter-type": 2,
         "missing getter get_path": 1,
+        "missing getter get_path-as-array": 1,
         "missing getter get_pkcs11-uri": 1,
+        "missing getter get_private-key": 1,
         "missing getter get_private-key-pem": 1,
         "missing getter get_private-key-pkcs11-uri": 1,
         "missing getter get_proxy-resolver": 1,
@@ -436,11 +446,9 @@
         "parameter iconnames: array of TypeKind.string (later phase)": 1,
         "parameter keys: array of TypeKind.string (later phase)": 1,
         "parameter non_relocatable: array of TypeKind.string (later phase)": 1,
-        "parameter out_serial: nullable scalar parameter (guint32)": 1,
         "parameter uid: unknown type: uid_t": 1,
         "return: array of TypeKind.classType (later phase)": 1,
         "return: array of TypeKind.record (later phase)": 1,
-        "return: string list return type (null)": 34,
         "return: unknown type: pid_t": 1,
         "return: unknown type: uid_t": 1,
         "shadowed by bus_own_name_on_connection_with_closures": 1,
@@ -456,19 +464,15 @@
         "unsupported arg type at index 3: ?": 1,
         "unsupported out parameter buffer (ffi.Pointer<ffi.Uint8>)": 10,
         "unsupported out parameter data (ffi.Pointer<ffi.Uint8>)": 2,
-        "unsupported out parameter messages (ffi.Pointer<ffi.Void>)": 1,
-        "unsupported type GLib.ByteArray": 4,
-        "unsupported type GLib.PtrArray": 2,
-        "unsupported type gpointer": 5,
-        "unsupported type null": 4
+        "unsupported out parameter messages (ffi.Pointer<ffi.Void>)": 1
       }
     },
     {
-      "name": "gdk_pixbuf",
+      "name": "gir_gdk_pixbuf",
       "namespace": "GdkPixbuf 2.0",
-      "skipped": 21,
+      "skipped": 19,
       "by_category": {
-        "callable": 6,
+        "callable": 4,
         "callback": 5,
         "method": 1,
         "property": 9
@@ -476,30 +480,29 @@
       "by_reason": {
         "array parameter in callback signature": 5,
         "construct-only or no public setter; emitting getter only": 7,
+        "getter get_pixels is not emitted (shadowed by get_pixels_with_length)": 1,
         "missing getter get_pixel-bytes": 1,
         "moved to PixbufError.quark": 1,
         "name collision": 1,
         "parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature": 1,
         "parameter save_func: callback PixbufSaveFunc has unsupported signature": 1,
-        "return: string list return type (null)": 2,
-        "shadowed by get_pixels_with_length": 1,
-        "unsupported type gpointer": 1
+        "shadowed by get_pixels_with_length": 1
       }
     },
     {
-      "name": "cairo",
+      "name": "gir_cairo",
       "namespace": "cairo 1.0",
       "skipped": 0,
       "by_category": {},
       "by_reason": {}
     },
     {
-      "name": "pango",
+      "name": "gir_pango",
       "namespace": "Pango 1.0",
-      "skipped": 66,
+      "skipped": 65,
       "by_category": {
         "alias": 3,
-        "callable": 53,
+        "callable": 52,
         "method": 5,
         "property": 4,
         "renamed": 1
@@ -542,7 +545,6 @@
         "override-incompatible with ancestor; renamed to refCoverage": 1,
         "parameter log_attrs: array of TypeKind.record (later phase)": 1,
         "return: array of TypeKind.record (later phase)": 2,
-        "return: string list return type (null)": 1,
         "unsupported out parameter attrs (ffi.Pointer<ffi.Void>)": 6,
         "unsupported out parameter faces (ffi.Pointer<ffi.Void>)": 1,
         "unsupported out parameter families (ffi.Pointer<ffi.Void>)": 2,
@@ -554,14 +556,14 @@
       }
     },
     {
-      "name": "gdk4",
+      "name": "gir_gdk4",
       "namespace": "Gdk 4.0",
-      "skipped": 430,
+      "skipped": 426,
       "by_category": {
-        "callable": 29,
+        "callable": 27,
         "constant": 334,
         "method": 8,
-        "property": 58,
+        "property": 56,
         "renamed": 1
       },
       "by_reason": {
@@ -926,16 +928,13 @@
         "name collision": 8,
         "override-incompatible with ancestor; renamed to getDisplayAppLaunchContext": 1,
         "parameter mime_types: array of TypeKind.string (later phase)": 1,
-        "return: string list return type (null)": 2,
         "unsupported out parameter axes (ffi.Pointer<ffi.Double>)": 1,
         "unsupported out parameter keys (ffi.Pointer<ffi.Void>)": 2,
-        "unsupported out parameter out_offsets (ffi.Pointer<ffi.Size>)": 1,
-        "unsupported type gpointer": 1,
-        "unsupported type null": 1
+        "unsupported out parameter out_offsets (ffi.Pointer<ffi.Size>)": 1
       }
     },
     {
-      "name": "graphene",
+      "name": "gir_graphene",
       "namespace": "Graphene 1.0",
       "skipped": 34,
       "by_category": {
@@ -976,7 +975,7 @@
       }
     },
     {
-      "name": "gsk4",
+      "name": "gir_gsk4",
       "namespace": "Gsk 4.0",
       "skipped": 16,
       "by_category": {
@@ -1001,22 +1000,22 @@
       }
     },
     {
-      "name": "gtk4",
+      "name": "gir_gtk4",
       "namespace": "Gtk 4.0",
-      "skipped": 1317,
+      "skipped": 1189,
       "by_category": {
         "alias": 1,
-        "callable": 64,
+        "callable": 47,
         "callback": 1,
         "method": 16,
-        "property": 1211,
+        "property": 1100,
         "renamed": 11,
         "signal": 13
       },
       "by_reason": {
         "aliases are resolved to their target": 1,
         "array parameter in callback signature": 1,
-        "construct-only or no public setter; emitting getter only": 218,
+        "construct-only or no public setter; emitting getter only": 222,
         "getter get_alignment takes 2 args; props layer only supports 0": 4,
         "getter get_direction was renamed; call the renamed method directly": 1,
         "getter get_pointing_to takes 1 args; props layer only supports 0": 3,
@@ -1148,6 +1147,7 @@
         "missing getter get_icon-name": 1,
         "missing getter get_icon-set": 1,
         "missing getter get_icon-size": 1,
+        "missing getter get_icons": 2,
         "missing getter get_im-module": 3,
         "missing getter get_inconsistent": 1,
         "missing getter get_indent": 1,
@@ -1373,7 +1373,6 @@
         "parameter lines: array of TypeKind.string (later phase)": 1,
         "parameter marshal: callback GObject.ClosureMarshal has unsupported signature": 1,
         "return: array of TypeKind.string (later phase)": 1,
-        "return: string list return type (null)": 17,
         "setter set_text takes 2 args; props layer only supports 1": 2,
         "unsupported arg type at index 0: gpointer": 1,
         "unsupported arg type at index 1: ?": 1,
@@ -1386,18 +1385,17 @@
         "unsupported return type: Gdk.DragAction": 4,
         "unsupported return type: Gdk.GLContext": 1,
         "unsupported return type: Notebook": 1,
-        "unsupported return type: utf8": 2,
-        "unsupported type null": 117
+        "unsupported return type: utf8": 2
       }
     },
     {
-      "name": "adw",
+      "name": "gir_adw",
       "namespace": "Adw 1",
-      "skipped": 305,
+      "skipped": 233,
       "by_category": {
-        "callable": 24,
+        "callable": 14,
         "method": 1,
-        "property": 266,
+        "property": 204,
         "renamed": 6,
         "signal": 8
       },
@@ -1428,24 +1426,22 @@
         "override-incompatible with ancestor; renamed to setDirectionSplitButton": 1,
         "override-incompatible with ancestor; renamed to setNamePreferencesPage": 1,
         "parameter tags: array of TypeKind.string (later phase)": 1,
-        "return: string list return type (null)": 10,
         "setter set_visible_page parameter type does not match property type; skipping": 1,
         "unsupported arg type at index 0: gpointer": 1,
         "unsupported return type: Gdk.DragAction": 4,
         "unsupported return type: NavigationPage": 1,
         "unsupported return type: TabPage": 1,
-        "unsupported return type: TabView": 1,
-        "unsupported type null": 62
+        "unsupported return type: TabView": 1
       }
     },
     {
-      "name": "gtk_source5",
+      "name": "gir_gtk_source5",
       "namespace": "GtkSource 5",
-      "skipped": 246,
+      "skipped": 219,
       "by_category": {
-        "callable": 27,
+        "callable": 16,
         "method": 2,
-        "property": 211,
+        "property": 195,
         "renamed": 4,
         "signal": 2
       },
@@ -1589,17 +1585,15 @@
         "override-incompatible with ancestor; renamed to insertAfterHoverDisplay": 1,
         "override-incompatible with ancestor; renamed to measureGutterRendererText": 1,
         "return: array of TypeKind.interface (later phase)": 3,
-        "return: string list return type (null)": 11,
-        "unsupported return type: utf8": 2,
-        "unsupported type null": 16
+        "unsupported return type: utf8": 2
       }
     },
     {
-      "name": "gi_repository3",
+      "name": "gir_gi_repository3",
       "namespace": "GIRepository 3.0",
-      "skipped": 14,
+      "skipped": 11,
       "by_category": {
-        "callable": 12,
+        "callable": 9,
         "renamed": 2
       },
       "by_reason": {
@@ -1609,61 +1603,60 @@
         "override-incompatible with ancestor; renamed to getTypeNameObjectInfo": 1,
         "parameter in_args: array of TypeKind.union (later phase)": 1,
         "return: array of TypeKind.string (later phase)": 4,
-        "return: string list return type (null)": 3,
         "unsupported out parameter interfaces_out (ffi.Pointer<ffi.Void>)": 1
       }
     }
   ],
   "skips": {
-    "missing_getter": 1218,
+    "missing_getter": 1229,
     "array_types": 64,
-    "construct_only": 478,
+    "construct_only": 485,
     "duplicate_constant": 335,
     "name_collision": 63,
-    "unsupported_type": 213,
+    "unsupported_type": 0,
     "c_macro": 150,
-    "unnamed_return": 110,
+    "unnamed_return": 5,
     "unsupported_out_buffer": 48,
     "override_incompatible": 41,
     "inout_parameter": 39,
     "alias_resolved": 20,
     "unsupported_return_type": 19,
     "unsupported_argument_type": 10,
-    "nullable_scalar_parameter": 2,
+    "nullable_scalar_parameter": 0,
     "duplicate_declaration": 1,
-    "other": 424
+    "other": 428
   },
   "package_skips": {
-    "glib": 349,
-    "gobject": 98,
-    "gio": 339,
-    "gdk_pixbuf": 21,
-    "cairo": 0,
-    "pango": 66,
-    "gdk4": 430,
-    "graphene": 34,
-    "gsk4": 16,
-    "gtk4": 1317,
-    "adw": 305,
-    "gtk_source5": 246,
-    "gi_repository3": 14
+    "gir_glib": 323,
+    "gir_gobject": 98,
+    "gir_gio": 304,
+    "gir_gdk_pixbuf": 19,
+    "gir_cairo": 0,
+    "gir_pango": 65,
+    "gir_gdk4": 426,
+    "gir_graphene": 34,
+    "gir_gsk4": 16,
+    "gir_gtk4": 1189,
+    "gir_adw": 233,
+    "gir_gtk_source5": 219,
+    "gir_gi_repository3": 11
   },
   "categories": {
     "alias": 20,
     "bitfield": 1,
-    "callable": 800,
+    "callable": 694,
     "callback": 16,
     "constant": 336,
     "constructor": 1,
-    "method": 63,
-    "property": 1928,
+    "method": 62,
+    "property": 1737,
     "renamed": 41,
     "signal": 29
   },
   "docs": [
     {
       "name": "README.md",
-      "lines": 42
+      "lines": 45
     },
     {
       "name": "architecture.md",
@@ -1679,11 +1672,15 @@
     },
     {
       "name": "dart-gobjects.md",
-      "lines": 260
+      "lines": 277
     },
     {
       "name": "emission.md",
-      "lines": 1038
+      "lines": 1243
+    },
+    {
+      "name": "release.md",
+      "lines": 156
     },
     {
       "name": "signals.md",
@@ -1695,7 +1692,7 @@
     },
     {
       "name": "skip-categories.md",
-      "lines": 247
+      "lines": 270
     },
     {
       "name": "subclassing.md",
@@ -1711,14 +1708,14 @@
     }
   ],
   "features": {
-    "props_classes": 418,
-    "props_accessors": 14395,
+    "props_classes": 422,
+    "props_accessors": 14773,
     "typed_signals": 3902,
-    "async_callbacks": 164
+    "async_callbacks": 165
   },
-  "skip_report_example": "# Skip report for package glib (GLib 2.0)\nTotal skipped: 349\n\n## By category\ncallable: 330\nalias: 13\nconstant: 2\ncallback: 2\nmethod: 1\nconstructor: 1\n\n## By reason\nintrospectable=0: 98\nreturn: string list return type (null): 25\naliases are resolved to their target: 13\nintrospectable=0 (C macro; use child_watch_add_full): 1",
-  "generated_files": 1444,
-  "generated_lines": 604453,
-  "generator_files": 21,
-  "generator_lines": 10150
+  "skip_report_example": "# Skip report for package gir_glib (GLib 2.0)\nTotal skipped: 323\n\n## By category\ncallable: 304\nalias: 13\nconstant: 2\ncallback: 2\nmethod: 1\nconstructor: 1\n\n## By reason\nintrospectable=0: 98\naliases are resolved to their target: 13\nreturn: array of TypeKind.string (later phase): 6\nintrospectable=0 (C macro; use child_watch_add_full): 1",
+  "generated_files": 1449,
+  "generated_lines": 611598,
+  "generator_files": 22,
+  "generator_lines": 10804
 }

@@ -1,4 +1,4 @@
-import 'package:adw/adw.dart';
+import 'package:gir_adw/gir_adw.dart';
 import 'package:notepad/app.dart';
 
 void main(List<String> arguments) {

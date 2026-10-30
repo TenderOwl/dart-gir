@@ -32,9 +32,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:gio/gio.dart';
-import 'package:glib/glib.dart';
-import 'package:gtk4/gtk4.dart';
+import 'package:gir_ffi/gir_ffi.dart';
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_glib/gir_glib.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
 import 'package:notepad/notepad.dart';
 import 'package:test/test.dart';
 
@@ -128,7 +129,7 @@ void main() {
 
     setUpAll(() {
       if (!_hasDisplay) return;
-      init();
+      withInitializationLock(init);
     });
 
     setUp(() {

@@ -1,5 +1,5 @@
-import 'package:adw/adw.dart';
-import 'package:gtk4/gtk4.dart';
+import 'package:gir_adw/gir_adw.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
 import 'package:notepad/tab_page.dart';
 import 'package:path/path.dart' as path;
 

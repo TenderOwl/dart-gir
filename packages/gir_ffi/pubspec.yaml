@@ -1,5 +1,13 @@
 name: gir_ffi
-description: Shared runtime helpers for GIR-generated Dart FFI bindings.
+description: >-
+  Shared runtime helpers for GIR-generated Dart FFI bindings — string marshalling, the wrapper cache, HeapAnchor and the native library loader.
+homepage: https://dartgir.tenderowl.com
+repository: https://github.com/TenderOwl/dart-gir
+issue_tracker: https://github.com/TenderOwl/dart-gir/issues
+topics:
+  - ffi
+  - bindings
+  - runtime
 publish_to: none
 resolution: workspace
 

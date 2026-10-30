@@ -13,21 +13,27 @@ is the only API surface; raw FFI is the escape hatch.
 
 | Package | Namespace | Native lib |
 | --- | --- | --- |
-| `package:glib` | `GLib 2.0` | `libglib-2.0` |
-| `package:gobject` | `GObject 2.0` | `libgobject-2.0` |
-| `package:gio` | `Gio 2.0` | `libgio-2.0` |
-| `package:gdk_pixbuf` | `GdkPixbuf 2.0` | `libgdk_pixbuf-2.0` |
-| `package:cairo` | `cairo 1.0` | `libcairo` |
-| `package:pango` | `Pango 1.0` | `libpango-1.0` |
-| `package:gdk4` | `Gdk 4.0` | `libgtk-4` |
-| `package:graphene` | `Graphene 1.0` | `libgraphene-1.0` |
-| `package:gsk4` | `Gsk 4.0` | `libgtk-4` |
-| `package:gtk4` | `Gtk 4.0` | `libgtk-4` |
-| `package:adw` | `Adw 1` | `libadwaita-1` |
-| `package:gtk_source5` | `GtkSource 5` | `libgtksourceview-5` |
+| `package:gir_glib` | `GLib 2.0` | `libglib-2.0` |
+| `package:gir_gobject` | `GObject 2.0` | `libgobject-2.0` |
+| `package:gir_gio` | `Gio 2.0` | `libgio-2.0` |
+| `package:gir_gdk_pixbuf` | `GdkPixbuf 2.0` | `libgdk_pixbuf-2.0` |
+| `package:gir_cairo` | `cairo 1.0` | `libcairo` |
+| `package:gir_pango` | `Pango 1.0` | `libpango-1.0` |
+| `package:gir_gdk4` | `Gdk 4.0` | `libgtk-4` |
+| `package:gir_graphene` | `Graphene 1.0` | `libgraphene-1.0` |
+| `package:gir_gsk4` | `Gsk 4.0` | `libgtk-4` |
+| `package:gir_gtk4` | `Gtk 4.0` | `libgtk-4` |
+| `package:gir_adw` | `Adw 1` | `libadwaita-1` |
+| `package:gir_gtk_source5` | `GtkSource 5` | `libgtksourceview-5` |
 | `package:gir_ffi` | runtime helpers | — |
 
-All packages are `publish_to: none` and pinned to the workspace version.
+All seventeen packages are published on pub.dev under the `gir_` prefix and
+move together — one generator, one changelog, one version. Within 1.x the
+emitted API only grows; what is *not* promised is the set of bound symbols,
+which the per-package `skip_report.txt` states.
+
+**Support: Linux only.** The loader knows the Windows and macOS file names
+of every native library, but only Linux is executed and tested.
 
 ## Features
 
@@ -37,8 +43,8 @@ existing typed `get<Name>` / `set<Name>` methods — no GValue boxing, no
 extra FFI lookups, full Dart static type checking:
 
 ```dart
-import 'package:gtk4/gtk4.dart' as gtk show init;
-import 'package:gtk4/gtk4.dart';
+import 'package:gir_gtk4/gir_gtk4.dart' as gtk show init;
+import 'package:gir_gtk4/gir_gtk4.dart';
 
 void main() {
   gtk.init();
@@ -75,7 +81,8 @@ Other highlights:
   the resolver — `Adw` classes can use `GtkWidget`, `GdkCursor`,
   `GObject`, etc. without manual wiring.
 
-See [`docs/`](./docs/) for the full design reference and
+See [`docs/`](./docs/) for the full design reference,
+[`docs/release.md`](./docs/release.md) for the versioning policy, and
 [`CHANGELOG.md`](./CHANGELOG.md) for the release history.
 
 ## Quick start
@@ -92,6 +99,9 @@ dart run generator/bin/generate.dart --gir-dir /path/to/gir-1.0 \
 # Build / lint / test.
 dart analyze
 dart test            # generator + per-package tests
+
+# Check that every package would pass pub.dev's rules.
+dart run tool/release.dart check
 ```
 
 Per-package iteration: `cd packages/<name> && dart test`.
@@ -108,12 +118,12 @@ generator/             the GIR → Dart generator
   test/                generator unit tests
 packages/
   gir_ffi/             handwritten runtime helpers shared by every package
-  glib  gobject  gio   GLib stack
-  cairo  pango         text + 2D rendering
-  gdk4  graphene  gsk4
-  gtk4  adw  gtk_source5
-  gtk_templates/       composite-template runtime (annotations + helpers)
-  gtk_templates_builder/  the build_runner builder that generates the mixins
+  gir_glib  gir_gobject  gir_gio     GLib stack
+  gir_cairo  gir_pango           text + 2D rendering
+  gir_gdk4  gir_graphene  gir_gsk4
+  gir_gtk4  gir_adw  gir_gtk_source5
+  gir_gtk_templates/       composite-template runtime (annotations + helpers)
+  gir_gtk_templates_builder/  the build_runner builder that generates the mixins
 example/
   gtk4_examples/       small GTK4 demos
   notepad/             consumer app (Gtk4 editor)

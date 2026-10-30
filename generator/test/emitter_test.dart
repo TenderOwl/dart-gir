@@ -123,7 +123,7 @@ void main() {
       final ctx = _ctx(ns, [ns], report);
       final code = FunctionEmitter(ctx).emitFunction(fn)!;
       expect(code, contains('_gUtf8Strlen'));
-      expect(code, contains("glibLookup<"));
+      expect(code, contains("girGlibLookup<"));
       expect(code, contains("'g_utf8_strlen'"));
       expect(code, contains('int utf8Strlen(String str, int max)'));
       expect(code, contains('withNativeString(str, (nativeStr)'));
@@ -751,42 +751,53 @@ void main() {
       );
     });
 
-    test('nullable primitive IN (allow-none + optional) is still rejected — '
-        'FFI cannot express `int?` over a primitive pointer', () {
-      // GIR: `<parameter name="value" direction="in" optional="1"
-      //   allow-none="1"><type name="gint" c:type="gint"/></parameter>`
-      // — a plain nullable in scalar. The C function accepts NULL but
-      // Dart FFI cannot pass an `int?` through a primitive pointer,
-      // so the bridge is rejected with the original skip reason.
-      final report = GenerationReport();
-      final fn = GirFunction(
-        name: 'process_int',
-        cIdentifier: 'g_process_int',
-        returnType: const GirTypeRef(name: 'none'),
-        parameters: const [
-          GirParameter(
-            name: 'value',
-            direction: GirParameterDirection.in_,
-            optional: true,
-            nullable: true,
-            type: GirTypeRef(name: 'gint', cType: 'gint'),
+    test(
+      'nullable primitive IN (allow-none + optional) is passed by pointer',
+      () {
+        // GIR: `<parameter name="terminator_pos" direction="in" nullable="1"
+        //   allow-none="1"><type name="gsize" c:type="gsize*"/></parameter>`
+        // — a nullable in scalar the C function may receive as NULL. Dart
+        // FFI cannot express `int?` over a primitive slot, so the wrapper
+        // allocates a one-slot buffer: the caller's value goes in, the
+        // callee's value comes back out.
+        final report = GenerationReport();
+        final fn = GirFunction(
+          name: 'process_int',
+          cIdentifier: 'g_process_int',
+          returnType: const GirTypeRef(name: 'gint', cType: 'gint'),
+          parameters: const [
+            GirParameter(
+              name: 'terminator_pos',
+              direction: GirParameterDirection.in_,
+              optional: true,
+              nullable: true,
+              type: GirTypeRef(name: 'gsize', cType: 'gsize*'),
+            ),
+          ],
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn);
+        expect(
+          code,
+          isNotNull,
+          reason: 'nullable in scalar must not skip the callable',
+        );
+        expect(report.totalSkipped, 0);
+        expect(code, contains('int? terminatorPos'));
+        expect(
+          code,
+          contains(
+            'final _out0 = terminatorPos == null ? ffi.nullptr : '
+            'malloc<ffi.Size>();',
           ),
-        ],
-      );
-      final ns = _glibNs(functions: [fn]);
-      final ctx = _ctx(ns, [ns], report);
-      final code = FunctionEmitter(ctx).emitFunction(fn);
-      expect(
-        code,
-        isNull,
-        reason: 'nullable in scalar must still skip the callable',
-      );
-      expect(report.entries, hasLength(1));
-      expect(
-        report.entries.single.reason,
-        'parameter value: nullable scalar parameter (gint)',
-      );
-    });
+        );
+        expect(code, contains('if (terminatorPos != null) _out0.value ='));
+        expect(code, contains('if (_out0 != ffi.nullptr) malloc.free(_out0);'));
+        // The value the callee wrote is the wrapper's second return value.
+        expect(code, contains('_out0 == ffi.nullptr ? null : _out0.value'));
+      },
+    );
 
     test('nullable boolean OUT is accepted (TypeKind.boolean lift mirrors primitive)', () {
       // GIR: `<parameter name="result" direction="out" optional="1"
@@ -1532,7 +1543,7 @@ void main() {
         ],
       );
       final ctx = _ctx(gobject, [gobject], report);
-      final emitter = ClassEmitter(ctx, emittedPackages: {'gobject'});
+      final emitter = ClassEmitter(ctx, emittedPackages: {'gir_gobject'});
 
       final code = emitter.emitClass(gobject.classes.first)!;
       // The accessor names the native type, so user code can write
@@ -1541,7 +1552,7 @@ void main() {
       expect(
         code,
         contains(
-          "gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>('g_object_get_type')",
+          "girGobjectLookup<ffi.NativeFunction<ffi.Size Function()>>('g_object_get_type')",
         ),
       );
     });
@@ -1557,7 +1568,7 @@ void main() {
         classes: [GirClass(name: 'Object', cType: 'GObject')],
       );
       final ctx = _ctx(gobject, [gobject], report);
-      final emitter = ClassEmitter(ctx, emittedPackages: {'gobject'});
+      final emitter = ClassEmitter(ctx, emittedPackages: {'gir_gobject'});
 
       final code = emitter.emitClass(gobject.classes.first)!;
       expect(code, isNot(contains('static int get GType')));
@@ -1596,7 +1607,7 @@ void main() {
         ],
       );
       final ctx = _ctx(gobject, [gobject], report);
-      final emitter = ClassEmitter(ctx, emittedPackages: {'gobject'});
+      final emitter = ClassEmitter(ctx, emittedPackages: {'gir_gobject'});
 
       final objectCode = emitter.emitClass(gobject.classes[0])!;
       expect(
@@ -1732,7 +1743,7 @@ void main() {
         final ctx = _ctx(ns, [ns], report);
         final code = ClassEmitter(
           ctx,
-          emittedPackages: const {'gtk4'},
+          emittedPackages: const {'gir_gtk4'},
         ).emitClass(button)!;
         expect(code, isNotNull);
         expect(report.totalSkipped, 0);
@@ -1788,7 +1799,7 @@ void main() {
       final ctx = _ctx(ns, [ns], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4'},
+        emittedPackages: const {'gir_gtk4'},
       ).emitClass(button)!;
       expect(code, contains('String getActionName()'));
       expect(code, contains('String getBuildableId()'));
@@ -1842,7 +1853,7 @@ void main() {
       final ctx = _ctx(ns, [ns], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4'},
+        emittedPackages: const {'gir_gtk4'},
       ).emitClass(button)!;
       expect(code, contains('void activateButton()'));
       // Original parent's `activate` is preserved (the rename only
@@ -1876,7 +1887,7 @@ void main() {
       final ctx = _ctx(ns, [ns], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4'},
+        emittedPackages: const {'gir_gtk4'},
       ).emitClass(button)!;
       expect(code, isNotNull);
       expect(
@@ -1926,7 +1937,7 @@ void main() {
       final ctx = _ctx(gtk, [gtk, other], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4'},
+        emittedPackages: const {'gir_gtk4'},
       ).emitClass(gtk.classes[2])!;
       expect(code, isNotNull);
       expect(
@@ -1945,7 +1956,7 @@ void main() {
       // method must reference a wrapper type whose `requiredImport`
       // is the interface's own package. We use `Gtk.Widget` here —
       // Buildable.getInternalChild returns a GtkWidget, whose Dart
-      // wrapper type comes from the `gtk4` package.
+      // wrapper type comes from the `gir_gtk4` package.
       final buildable = GirInterface(
         name: 'Buildable',
         cType: 'GtkBuildable',
@@ -1973,7 +1984,7 @@ void main() {
         interfaces: [buildable],
       );
       // A separate "Foo" namespace whose class implements Buildable.
-      // Emitting the mirror must add `gtk4` to the Foo package's
+      // Emitting the mirror must add `gir_gtk4` to the Foo package's
       // import list (because the emitted method body uses GtkWidget).
       final foo = GirNamespace(
         name: 'Foo',
@@ -1993,9 +2004,9 @@ void main() {
       final ctx = _ctx(foo, [gtk, foo], report);
       ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'foo'},
+        emittedPackages: const {'gir_gtk4', 'foo'},
       ).emitClass(foo.classes[0]);
-      expect(ctx.imports.contains('gtk4'), isTrue);
+      expect(ctx.imports.contains('gir_gtk4'), isTrue);
     });
 
     test('async interface method emits *Callback overload alongside', () {
@@ -2086,7 +2097,7 @@ void main() {
       final ctx = _ctx(nsWithCallbacks, [nsWithCallbacks], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'glib'},
+        emittedPackages: const {'gir_glib'},
       ).emitClass(obj)!;
       expect(code, isNotNull);
       // Base wrapper for the mirrored async method.
@@ -2164,7 +2175,7 @@ void main() {
         interfaces: [iface],
       );
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
-      final emitter = ClassEmitter(ctx, emittedPackages: const {'gtk4'});
+      final emitter = ClassEmitter(ctx, emittedPackages: const {'gir_gtk4'});
       final code = emitter.emitClass(cls)!;
       expect(code, isNotNull);
       expect(report.totalSkipped, 0);
@@ -2221,7 +2232,7 @@ void main() {
         classes: [obj, cls],
       );
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
-      final emitter = ClassEmitter(ctx, emittedPackages: const {'gtk4'});
+      final emitter = ClassEmitter(ctx, emittedPackages: const {'gir_gtk4'});
       final code = emitter.emitClass(cls)!;
       expect(code, isNotNull);
       // The props class is still emitted — read-only properties are
@@ -2230,6 +2241,115 @@ void main() {
       final propsCode = emitter.pendingPropsClass!;
       expect(propsCode, contains('String get value'));
       expect(propsCode, isNot(contains('set value(')));
+    });
+
+    test('a property whose GIR type does not map takes the getter type', () {
+      // `AdwAboutDialog.artists` and friends: the GIR spells the
+      // property's type as an `<array>` without a `c:type`, so the
+      // resolver cannot map it. The getter still says what the value
+      // is, and the accessor is emitted from it.
+      final report = GenerationReport();
+      final cls = GirClass(
+        name: 'AboutDialog',
+        cType: 'TestAboutDialog',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_artists',
+            cIdentifier: 'test_get_artists',
+            returnType: const GirTypeRef(
+              cType: 'gchar**',
+              array: GirArrayInfo(
+                lengthParameterIndex: 0,
+                zeroTerminated: true,
+                elementType: GirTypeRef(name: 'utf8', cType: 'gchar*'),
+              ),
+            ),
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'artists',
+            // The GIR's `<array>` without a `c:type` — unmappable.
+            type: GirTypeRef(
+              array: GirArrayInfo(
+                zeroTerminated: true,
+                elementType: GirTypeRef(name: 'utf8'),
+              ),
+            ),
+            getter: 'get_artists',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, cls],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      final emitter = ClassEmitter(
+        ctx,
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
+      );
+      emitter.emitClass(cls);
+
+      // The accessor is emitted, with the type the *getter* carries.
+      final propsCode = emitter.pendingPropsClass!;
+      expect(propsCode, contains('List<String> get artists'));
+      expect(propsCode, contains('=> _self.getArtists();'));
+      expect(report.totalSkipped, 0);
+    });
+
+    test('a property whose getter is not emitted is skipped', () {
+      // `gdk_pixbuf_get_pixels` is shadowed by
+      // `gdk_pixbuf_get_pixels_with_length`, so the callable emitter
+      // skips it — and the props accessor must not call a method that
+      // does not exist.
+      final report = GenerationReport();
+      final cls = GirClass(
+        name: 'Pixbuf',
+        cType: 'TestPixbuf',
+        parent: 'GObject.Object',
+        methods: [
+          GirMethod(
+            name: 'get_pixels',
+            cIdentifier: 'test_get_pixels',
+            returnType: GirTypeRef(name: 'guchar'),
+            shadowedBy: 'get_pixels_with_length',
+          ),
+        ],
+        properties: const [
+          GirProperty(
+            name: 'pixels',
+            type: GirTypeRef(name: 'guchar'),
+            getter: 'get_pixels',
+          ),
+        ],
+      );
+      final obj = GirClass(name: 'Object', cType: 'GObject');
+      final ns = GirNamespace(
+        name: 'Gtk',
+        version: '4.0',
+        sharedLibrary: 'libgtk-4.0.so.0',
+        cIdentifierPrefixes: const ['Gtk', 'gtk'],
+        cSymbolPrefixes: const ['gtk'],
+        classes: [obj, cls],
+      );
+      final ctx = _ctx(ns, [ns, gobjectNs()], report);
+      final emitter = ClassEmitter(ctx, emittedPackages: const {'gir_gtk4'});
+      emitter.emitClass(cls);
+
+      expect(emitter.pendingPropsClass, isNull);
+      expect(
+        report.entries.any(
+          (e) => e.reason.contains('getter get_pixels is not emitted'),
+        ),
+        isTrue,
+      );
     });
 
     test('property whose getter has extra args is skipped', () {
@@ -2274,7 +2394,7 @@ void main() {
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
       ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'gobject'},
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
       ).emitClass(cls);
       // The property accessor is skipped; no props class is
       // emitted because every property failed.
@@ -2323,7 +2443,7 @@ void main() {
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
       final emitter = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'gobject'},
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
       );
       emitter.emitClass(leaf);
       final propsCode = emitter.pendingPropsClass!;
@@ -2383,7 +2503,7 @@ void main() {
       final ctx = _ctx(ns, [ns, gobjectNs()], report);
       ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'gobject'},
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
       ).emitClass(cls);
       expect(
         report.entries.any(
@@ -2447,7 +2567,7 @@ void main() {
         final ctx = _ctx(ns, [ns, gobjectNs()], report);
         ClassEmitter(
           ctx,
-          emittedPackages: const {'gtk4', 'gobject'},
+          emittedPackages: const {'gir_gtk4', 'gir_gobject'},
         ).emitClass(cls);
         expect(
           report.entries.any(
@@ -2513,7 +2633,7 @@ void main() {
       final ctx = _ctx(ns, [ns, _gobjectNs()], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'gobject'},
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
       ).emitClass(cls)!;
 
       expect(code, contains('class GtkButton extends GtkWidget'));
@@ -2544,7 +2664,7 @@ void main() {
       final ctx = _ctx(ns, [ns, _gobjectNs()], report);
       final emitter = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'gobject'},
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
       );
       emitter.emitClass(cls);
       final propsCode = emitter.pendingPropsClass!;
@@ -2586,7 +2706,7 @@ void main() {
       final ctx = _ctx(ns, [ns, _gobjectNs()], report);
       final emitter = ClassEmitter(
         ctx,
-        emittedPackages: const {'gtk4', 'gobject'},
+        emittedPackages: const {'gir_gtk4', 'gir_gobject'},
       );
       emitter.emitClass(parent);
       emitter.emitClass(child);
@@ -2761,6 +2881,75 @@ void main() {
       );
       expect(code, isNull);
     });
+
+    test('keeps an OUT parameter in the native call', () {
+      // The C function still takes the OUT argument — dropping it would
+      // shift every argument after it into the wrong slot. The overload
+      // returns `void`, so the value is discarded, but the slot has to
+      // be there.
+      final report = GenerationReport();
+      final cb = asyncReadyCallback();
+      final fn = GirFunction(
+        name: 'send_with_reply',
+        cIdentifier: 'g_dbus_connection_send_message_with_reply',
+        parameters: const [
+          GirParameter(
+            name: 'timeout_msec',
+            type: GirTypeRef(name: 'gint', cType: 'int'),
+          ),
+          GirParameter(
+            name: 'out_serial',
+            direction: GirParameterDirection.out,
+            nullable: true,
+            type: GirTypeRef(name: 'guint32', cType: 'guint32*'),
+          ),
+          GirParameter(
+            name: 'cancellable',
+            nullable: true,
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+          ),
+          GirParameter(
+            name: 'callback',
+            nullable: true,
+            scope: 'async',
+            type: GirTypeRef(
+              name: 'AsyncReadyCallback',
+              cType: 'GAsyncReadyCallback',
+            ),
+          ),
+          GirParameter(
+            name: 'user_data',
+            nullable: true,
+            type: GirTypeRef(name: 'gpointer', cType: 'gpointer'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn], callbacks: [cb]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = AsyncCallbackEmitter(ctx).emitFunctionOverload(
+        fn,
+        dartName: 'sendWithReply',
+        ownerName: 'GLib',
+        nativeBindingName: '_gDbusConnectionSendMessageWithReply',
+      );
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The OUT parameter is not part of the Dart signature — the
+      // overload returns `void`, so there is nowhere to put the value.
+      expect(code, isNot(contains('outSerial')));
+      // The slot exists and is released after the call.
+      expect(code, contains('final _out0 = malloc<ffi.Uint32>();'));
+      expect(code, contains('malloc.free(_out0);'));
+      // The slot sits in its own argument position: the arguments after
+      // it did not shift.
+      expect(
+        code,
+        contains(
+          '_gDbusConnectionSendMessageWithReply('
+          'timeoutMsec, _out0, cancellable ?? ffi.nullptr, ',
+        ),
+      );
+    });
   });
 
   group('PackageEmitter file layout', () {
@@ -2837,19 +3026,19 @@ void main() {
         namespace: gobject,
         allNamespaces: [gobject],
         packagesDir: tmp.path,
-        emittedPackages: const {'gobject'},
+        emittedPackages: const {'gir_gobject'},
       );
       gobjectEmitter.emit();
       final gtkEmitter = PackageEmitter(
         namespace: gtk,
         allNamespaces: [gobject, gtk],
         packagesDir: tmp.path,
-        emittedPackages: const {'gobject', 'gtk4'},
+        emittedPackages: const {'gir_gobject', 'gir_gtk4'},
       );
       gtkEmitter.emit();
 
       // Per-class files exist with the right names.
-      final gtkSrc = Directory('${tmp.path}/gtk4/lib/src');
+      final gtkSrc = Directory('${tmp.path}/gir_gtk4/lib/src');
       expect(gtkSrc.existsSync(), isTrue);
       expect(
         File('${gtkSrc.path}/gtkbutton.dart').existsSync(),
@@ -2895,7 +3084,8 @@ void main() {
       // The barrel lists per-class files in declaration order — host
       // class first, then its props companion — so IDE jump-to-source
       // visits them in GIR declaration order.
-      final barrel = File('${tmp.path}/gtk4/lib/gtk4.dart').readAsStringSync();
+      final barrel = File('${tmp.path}/gir_gtk4/lib/gir_gtk4.dart')
+          .readAsStringSync();
       final hostIdx = barrel.indexOf("part 'src/gtkbutton.dart';");
       final propsIdx = barrel.indexOf("part 'src/gtkbutton_props.dart';");
       expect(hostIdx, greaterThanOrEqualTo(0));
@@ -2958,7 +3148,7 @@ void main() {
       final ctx = _ctx(pkg, [gio, pkg], report);
       final code = ClassEmitter(
         ctx,
-        emittedPackages: const {'gio', 'pkg'},
+        emittedPackages: const {'gir_gio', 'pkg'},
       ).emitClass(pkg.classes[0])!;
       // Implements clause is emitted with the interface's Dart name.
       // For Gio's `Action` interface the Dart name is `GAction`
@@ -2968,7 +3158,7 @@ void main() {
       // The foreign package must be added to the imports — without
       // it the implements identifier wouldn't resolve at compile time.
       expect(
-        ctx.imports.contains('gio'),
+        ctx.imports.contains('gir_gio'),
         isTrue,
         reason: 'foreign interface package must be imported',
       );
@@ -3141,7 +3331,7 @@ void main() {
       // `this.handle`. Records are emitted into the chunked
       // `records.dart` file (one per file is reserved for classes
       // via `classFiles`; see `PackageEmitter.emit`).
-      final recordSrc = File('${tmp.path}/demo1/lib/src/records.dart')
+      final recordSrc = File('${tmp.path}/gir_demo1/lib/src/records.dart')
           .readAsStringSync();
       // The parameter name (`arg`) and method name (`bar`) come from
       // the GIR; the parameter type resolves to `DemoFoo` because
@@ -3168,7 +3358,9 @@ void main() {
 
       // The functions chunk does NOT contain a top-level `bar` —
       // the skip report mentions the move instead.
-      final functionsFile = File('${tmp.path}/demo1/lib/src/functions.dart');
+      final functionsFile = File(
+        '${tmp.path}/gir_demo1/lib/src/functions.dart',
+      );
       if (functionsFile.existsSync()) {
         final functionsSrc = functionsFile.readAsStringSync();
         expect(
@@ -3556,6 +3748,123 @@ void main() {
     });
   });
 
+  group('Floating references', () {
+    // A type whose GIR `copy-function` is a *sink* (`g_variant_ref_sink`)
+    // uses floating references: the value a constructor hands over belongs
+    // to nobody. The bindings take a reference of their own through that
+    // copy function and own it — otherwise a consumer that assumes
+    // ownership owns the very reference the wrapper's `unref()` releases.
+
+    /// A namespace with the `Variant` record, a floating-reference type.
+    GirNamespace variantNs({
+      GirTransferOwnership transfer = GirTransferOwnership.none,
+    }) {
+      return GirNamespace(
+        name: 'GLib',
+        version: '2.0',
+        sharedLibrary: 'libglib-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['glib', 'g'],
+        records: [
+          GirRecord(
+            name: 'Variant',
+            cType: 'GVariant',
+            copyFunction: 'g_variant_ref_sink',
+            freeFunction: 'g_variant_unref',
+            methods: [
+              GirMethod(name: 'unref', cIdentifier: 'g_variant_unref'),
+              GirMethod(name: 'ref_sink', cIdentifier: 'g_variant_ref_sink'),
+            ],
+            constructors: [
+              GirConstructor(
+                name: 'new_string',
+                cIdentifier: 'g_variant_new_string',
+                returnTransfer: transfer,
+                returnType: GirTypeRef(name: 'Variant', cType: 'GVariant*'),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    test('a constructor takes a reference of its own', () {
+      final report = GenerationReport();
+      final ns = variantNs();
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      // The copy function is looked up and called: the reference the
+      // constructor hands over is floating, and the wrapper takes one of
+      // its own.
+      expect(code, contains("'g_variant_ref_sink',"));
+      expect(code, contains('static GVariant copyReference('));
+      expect(code, contains('GVariant.copyReference(_gVariantNewString('));
+    });
+
+    test('the copy function is exposed for the other packages', () {
+      final report = GenerationReport();
+      final ns = variantNs();
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      // Another package that returns a `GVariant` needs the copy: the
+      // method is public, and it takes the reference the wrapper owns.
+      expect(
+        code,
+        contains(
+          'return GVariant.fromPointer(_gVariantCopyFunction(handle), '
+          'owned: true);',
+        ),
+      );
+    });
+
+    test('a transfer-full return is not copied', () {
+      final report = GenerationReport();
+      // `g_variant_parse` hands over a reference the caller owns: the
+      // wrapper claims it as it is, and no copy is made.
+      final ns = variantNs(transfer: GirTransferOwnership.full);
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      expect(
+        code,
+        isNot(contains('GVariant.copyReference(_gVariantNewString(')),
+      );
+      expect(code, contains('owned: true'));
+    });
+
+    test('a type without the copy function keeps the plain semantics', () {
+      final report = GenerationReport();
+      // The copy function has to be one of the type's own methods: the
+      // bindings never guess a symbol name.
+      final ns = GirNamespace(
+        name: 'GLib',
+        version: '2.0',
+        sharedLibrary: 'libglib-2.0.so.0',
+        cIdentifierPrefixes: const ['G'],
+        cSymbolPrefixes: const ['glib', 'g'],
+        records: [
+          GirRecord(
+            name: 'Variant',
+            cType: 'GVariant',
+            copyFunction: 'g_variant_ref_sink',
+            methods: [GirMethod(name: 'unref', cIdentifier: 'g_variant_unref')],
+            constructors: [
+              GirConstructor(
+                name: 'new_string',
+                cIdentifier: 'g_variant_new_string',
+                returnTransfer: GirTransferOwnership.none,
+                returnType: GirTypeRef(name: 'Variant', cType: 'GVariant*'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = RecordEmitter(ctx).emitRecord(ns.records.first)!;
+      expect(code, isNot(contains('copyReference')));
+      expect(code, isNot(contains('owned: true')));
+    });
+  });
+
   group('Byte arrays', () {
     /// A namespace with the `Bytes` record, so a `GBytes` parameter
     /// resolves and the `GBytes` sibling of a byte-array callable is
@@ -3862,7 +4171,7 @@ void main() {
         emittedPackages: const {'demo1'},
       ).emit();
 
-      final code = File('${tmp.path}/demo1/lib/src/lib.dart')
+      final code = File('${tmp.path}/gir_demo1/lib/src/lib.dart')
           .readAsStringSync();
       // The names are derived mechanically: `libdemo-1.0.so.0` →
       // `libdemo-1.0-0.dll` and `libdemo-1.0.0.dylib`.
@@ -3870,7 +4179,7 @@ void main() {
       expect(code, contains("macos: const ['libdemo-1.0.0.dylib']"));
 
       // And the gap is in the skip report, so it can be tabulated.
-      final skipReport = File('${tmp.path}/demo1/skip_report.txt')
+      final skipReport = File('${tmp.path}/gir_demo1/skip_report.txt')
           .readAsStringSync();
       expect(skipReport, contains('libdemo-1.0.so.0'));
       expect(skipReport, contains('platform-library'));
@@ -3878,6 +4187,119 @@ void main() {
         report.entries.any((e) => e.category == 'platform-library'),
         isTrue,
       );
+    });
+  });
+
+  group('string-list returns', () {
+    // A `char **` return: GLib hands over a NULL-terminated array of
+    // strings. The GIR's `transfer-ownership` decides who releases it —
+    // a static table stays GLib's, an allocated array is the caller's.
+
+    GirFunction strvReturn({
+      GirTransferOwnership transfer = GirTransferOwnership.none,
+    }) => GirFunction(
+      name: 'get_names',
+      cIdentifier: 'g_get_names',
+      returnType: const GirTypeRef(
+        cType: 'gchar**',
+        array: GirArrayInfo(
+          lengthParameterIndex: 0,
+          zeroTerminated: true,
+          elementType: GirTypeRef(name: 'utf8', cType: 'gchar*'),
+        ),
+      ),
+      returnTransfer: transfer,
+    );
+
+    test('a transfer-none array is copied, not freed', () {
+      final report = GenerationReport();
+      final ns = _glibNs();
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(strvReturn())!;
+
+      expect(code, contains('stringListFromNative('));
+      expect(code, contains('free: false'));
+      expect(report.totalSkipped, 0);
+    });
+
+    test('a transfer-full array is released with g_strfreev', () {
+      final report = GenerationReport();
+      final ns = _glibNs();
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx)
+          .emitFunction(strvReturn(transfer: GirTransferOwnership.full))!;
+
+      expect(code, contains('stringListFromNative('));
+      expect(code, contains('free: true'));
+      expect(report.totalSkipped, 0);
+    });
+  });
+
+  group('nullable scalar parameters', () {
+    // The C API takes a `gint *` that may be NULL (`allow-none="1"`).
+    // FFI cannot express `int?` over a primitive slot, so the wrapper
+    // allocates a one-slot buffer: the caller's value goes in, the
+    // callee's value comes back out.
+
+    GirFunction nullableScalar() => GirFunction(
+      name: 'read_line_string',
+      cIdentifier: 'g_io_channel_read_line_string',
+      returnType: const GirTypeRef(name: 'gint', cType: 'int'),
+      parameters: const [
+        GirParameter(
+          name: 'terminator_pos',
+          nullable: true,
+          type: GirTypeRef(name: 'gsize', cType: 'gsize*'),
+        ),
+      ],
+    );
+
+    test('is passed by pointer and read back', () {
+      final report = GenerationReport();
+      final ns = _glibNs(functions: [nullableScalar()]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(nullableScalar())!;
+
+      expect(report.totalSkipped, 0);
+      // The Dart signature takes the nullable scalar.
+      expect(code, contains('int? terminatorPos'));
+      // The native signature takes a pointer to it.
+      expect(code, contains('ffi.Pointer<ffi.Size>'));
+      // The slot exists only when the caller supplied a value; otherwise
+      // the C side sees NULL, which `allow-none="1"` promises it accepts.
+      expect(
+        code,
+        contains(
+          'final _out0 = terminatorPos == null ? ffi.nullptr : '
+          'malloc<ffi.Size>();',
+        ),
+      );
+      expect(code, contains('if (terminatorPos != null) _out0.value ='));
+      // The slot is released after the call.
+      expect(code, contains('if (_out0 != ffi.nullptr) malloc.free(_out0);'));
+      // The value the callee wrote is the wrapper's second return value.
+      expect(code, contains('_out0 == ffi.nullptr ? null : _out0.value'));
+    });
+
+    test('a non-nullable scalar keeps the plain by-value shape', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'strlen',
+        cIdentifier: 'g_strlen',
+        returnType: const GirTypeRef(name: 'gsize', cType: 'gsize'),
+        parameters: const [
+          GirParameter(
+            name: 'str',
+            type: GirTypeRef(name: 'utf8'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+
+      expect(code, isNot(contains('ffi.nullptr ?')));
+      expect(report.totalSkipped, 0);
     });
   });
 }

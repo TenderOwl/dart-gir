@@ -15,6 +15,7 @@ discoverable from `git ls-files` and easy to link from PRs.
 | [dart-gobjects.md](./dart-gobjects.md) | Dart classes with a native type: `registerDartType`, the `GType` accessor, the `ffi.Struct` type-system records, the wrapper cache, and the lifetime rules |
 | [branch-state.md](./branch-state.md) | What is committed on `main` and what is not: the verified branch comparison, the composite-template and subclassing inventories, and how to re-check them |
 | [skip-categories.md](./skip-categories.md) | Every category and reason that shows up in `packages/<lib>/skip_report.txt`, alphabetised |
+| [release.md](./release.md) | The release policy: lockstep versioning, what 1.0 promises and does not promise, the prepare → check → publish process, and the migration-note rule |
 | [site.md](./site.md) | The site pipeline: the Markdown subset, the block directives, the facts layer, the design system and the drift checks |
 
 ## Where to start
@@ -37,6 +38,8 @@ discoverable from `git ls-files` and easy to link from PRs.
   [branch-state.md](./branch-state.md).
 * **Modifying the generator** — read [emission.md](./emission.md) and
   [type-system.md](./type-system.md) end to end.
+* **Cutting a release** — read [release.md](./release.md); `tool/release.dart`
+  is the only thing that writes a version into a package's pubspec.
 * **Changing the project site** — read [site.md](./site.md). The site's
   sources live in `site_src/`; the output in `site/` is generated and
   must not be edited by hand.

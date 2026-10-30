@@ -38,7 +38,7 @@ export 'signals_emitter.dart' show isKeptSignal;
 /// is in [ctx], or `null` if no class or interface has a kept signal.
 ///
 /// Side effects: the helper needs `package:ffi` (calloc/Utf8), `dart:ffi`,
-/// `gobjectLookup` from `package:gobject` (for `g_signal_connect_data`),
+/// `girGobjectLookup` from `package:gobject` (for `g_signal_connect_data`),
 /// and `gFree` from `package:gir_ffi` (for `transfer-none` strings).
 String? emitSignalsHelper(EmitContext ctx) {
   final kept = _allSignals(ctx)
@@ -52,14 +52,14 @@ String? emitSignalsHelper(EmitContext ctx) {
   ctx.usesMalloc = true; // calloc
   ctx.usesFfiString = true; // Utf8 / toNativeUtf8
   final pkg = ctx.pkg;
-  if (pkg != 'gobject') ctx.imports.add('gobject');
+  if (pkg != 'gir_gobject') ctx.imports.add('gir_gobject');
   if (pkg != 'gir_ffi') ctx.imports.add('gir_ffi');
 
   final b = StringBuffer()..writeln(generatedHeader);
   b.writeln("part of '../$pkg.dart';");
   b.writeln();
   b.writeln('/// `g_signal_connect_data` is `introspectable="0"` in the GIR,');
-  b.writeln('/// so it is looked up via [gobjectLookup] at runtime.');
+  b.writeln('/// so it is looked up via [girGobjectLookup] at runtime.');
   b.writeln(_gSignalConnectDataBinding);
   b.writeln();
 
@@ -216,7 +216,7 @@ Iterable<({GirSignal signal, GirNamespace? ns})> _signalsIncludingAncestors(
 /// trampoline with `(Pointer<Void>, Pointer<Void>, ...)` first two args
 /// is assignable to this signature via `cast`.
 const _gSignalConnectDataBinding = r'''
-final _gSignalConnectData = gobjectLookup<
+final _gSignalConnectData = girGobjectLookup<
       ffi.NativeFunction<
         ffi.Uint64 Function(
           ffi.Pointer<ffi.Void>,

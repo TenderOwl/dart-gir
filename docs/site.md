@@ -158,7 +158,7 @@ never render as an empty string.
 | `features.props_accessors` | the number of generated property accessors |
 | `features.typed_signals` | the number of generated `onSignalName` helpers |
 | `features.async_callbacks` | the number of generated `*Callback` overloads |
-| `skip_report_example` | an excerpt of `packages/glib/skip_report.txt`, generated at build time |
+| `skip_report_example` | an excerpt of `packages/gir_glib/skip_report.txt`, generated at build time |
 | `sdk_constraint` | the root `pubspec.yaml`'s `environment: sdk:` |
 | `license` | detected from the `LICENSE` file |
 | `license_text` | the `LICENSE` file itself |

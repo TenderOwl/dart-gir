@@ -110,10 +110,10 @@ environment:
 
 workspace:
   - example/todo
-  - packages/glib
-  - packages/gtk4
+  - packages/gir_glib
+  - packages/gir_gtk4
 ''';
-      expect(parseWorkspaceList(pubspec), <String>{'glib', 'gtk4'});
+      expect(parseWorkspaceList(pubspec), <String>{'gir_glib', 'gir_gtk4'});
     });
 
     test('the SDK constraint is read out of the pubspec', () {
@@ -142,7 +142,16 @@ workspace:
       expect(facts.lookup('license'), 'BSD-3-Clause');
       expect(facts.lookup('sdk_constraint'), '^3.13.4');
       expect(facts.lookup('features.typed_signals'), isNotNull);
-      expect(facts.lookup('package_skips.glib'), '349');
+      // The per-package skip count is derived from the skip report, not
+      // typed into the test: the number moves whenever the generator
+      // changes, and a stale literal would only ever be a trap.
+      final glibSkips = File('$root/packages/gir_glib/skip_report.txt')
+          .readAsLinesSync()
+          .firstWhere((line) => line.startsWith('Total skipped: '))
+          .split(': ')
+          .last
+          .trim();
+      expect(facts.lookup('package_skips.gir_glib'), glibSkips);
     });
   });
 

@@ -505,6 +505,7 @@ class GirRecord extends GirRegisteredType {
     this.glibTypeName,
     this.disguised = false,
     this.freeFunction,
+    this.copyFunction,
     List<GirField>? fields,
     List<GirConstructor>? constructors,
     List<GirMethod>? methods,
@@ -529,6 +530,15 @@ class GirRecord extends GirRegisteredType {
   /// `unref` / `destroy` method. It is the destructor the bindings use to
   /// release a reference the caller owns.
   final String? freeFunction;
+
+  /// The C function that copies the record, from the GIR's
+  /// `copy-function` attribute — e.g. `g_variant_ref_sink` for `GVariant`.
+  ///
+  /// It is the function a caller uses to take a reference of its own. For
+  /// a type that uses *floating* references the copy function is the
+  /// *sink* (`g_variant_ref_sink`): the reference a constructor hands
+  /// over is floating, and the sink turns it into a full one.
+  final String? copyFunction;
   final List<GirField> fields;
   final List<GirConstructor> constructors;
   final List<GirMethod> methods;
@@ -543,6 +553,7 @@ class GirUnion extends GirRegisteredType {
     super.cType,
     this.glibTypeName,
     this.freeFunction,
+    this.copyFunction,
     List<GirField>? fields,
     List<GirConstructor>? constructors,
     List<GirMethod>? methods,
@@ -560,6 +571,11 @@ class GirUnion extends GirRegisteredType {
   /// The C function that releases the union, from the GIR's
   /// `free-function` attribute.
   final String? freeFunction;
+
+  /// The C function that copies the union, from the GIR's
+  /// `copy-function` attribute. For a union that uses *floating*
+  /// references it is the *sink* — see [GirRecord.copyFunction].
+  final String? copyFunction;
   final List<GirField> fields;
   final List<GirConstructor> constructors;
   final List<GirMethod> methods;

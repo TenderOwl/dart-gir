@@ -1,6 +1,6 @@
 # The composite-template stack
 
-`packages/gtk_templates` + `packages/gtk_templates_builder` let a
+`packages/gir_gtk_templates` + `packages/gir_gtk_templates_builder` let a
 Dart class host a GTK composite template: a `.ui` document that
 describes a widget tree, whose children become fields on your Dart
 class and whose `<signal>` handlers become calls into your methods.
@@ -11,8 +11,8 @@ package READMEs.
 
 | Piece | Where |
 |---|---|
-| Annotations + runtime helpers | `packages/gtk_templates/lib/` |
-| AST scanner, codegen, `build_runner` builder, CLI | `packages/gtk_templates_builder/lib/`, `bin/` |
+| Annotations + runtime helpers | `packages/gir_gtk_templates/lib/` |
+| AST scanner, codegen, `build_runner` builder, CLI | `packages/gir_gtk_templates_builder/lib/`, `bin/` |
 | Worked example | `example/todo/` |
 
 > **Status: on `main`.** This is the landed design. The
@@ -158,7 +158,7 @@ the annotation records intent.
 ## 2. The scanner plan
 
 `scanSource(String source, {String? filePath})` in
-`packages/gtk_templates_builder/lib/builder.dart` parses the source
+`packages/gir_gtk_templates_builder/lib/builder.dart` parses the source
 with `package:analyzer`'s `parseString` (`throwIfDiagnostics: false`
 — the scanner tolerates diagnostics so fixtures need not be
 compilable Dart) and returns a `BuilderPlan`:
@@ -177,7 +177,7 @@ The scanner walks only **top-level** classes. A `@GtkTemplate` class
 nested inside another class is not picked up.
 
 `BuilderPlan` and its members live in
-`packages/gtk_templates_builder/lib/builder_plan.dart`. The scanner
+`packages/gir_gtk_templates_builder/lib/builder_plan.dart`. The scanner
 is a pure function over a string — it does no I/O, does not resolve
 the `GtkTemplateFile` contents, and does not read the XML. Those are
 the builder's job.
@@ -230,8 +230,8 @@ part of 'todo_window.dart';
 Because it is a `part of`:
 
 - It **inherits the user's library's imports** and cannot declare its
-  own. The library must import `package:gtk4/gtk4.dart`,
-  `package:gtk_templates/gtk_templates.dart`, and the package that
+  own. The library must import `package:gir_gtk4/gir_gtk4.dart`,
+  `package:gir_gtk_templates/gir_gtk_templates.dart`, and the package that
   declares the parent type and every child type.
 - It shares a scope with the user's class, which is what lets the
   signal trampoline reach the user's instance methods.
@@ -242,12 +242,12 @@ Because it is a `part of`:
 
 `build_to: source` is a property of the **builder definition**, so it
 belongs in the **provider** package's `build.yaml`
-(`packages/gtk_templates_builder/build.yaml`):
+(`packages/gir_gtk_templates_builder/build.yaml`):
 
 ```yaml
 builders:
   gtk_templates_builder:
-    import: "package:gtk_templates_builder/builder.dart"
+    import: "package:gir_gtk_templates_builder/builder.dart"
     builder_factories: ["gtkTemplatesBuilder"]
     build_extensions: {".dart": [".g.dart"]}
     auto_apply: dependents
@@ -582,16 +582,16 @@ share it.
 ```
 gtk_templates: lib/todo_window.dart is missing the imports the
 generated mixin needs:
-  import 'package:gtk_templates/gtk_templates.dart';
+  import 'package:gir_gtk_templates/gir_gtk_templates.dart';
 The generated file is a `part of` this library and inherits its
 imports, so add the lines above to this file.
 ```
 
 `checkRequiredImports(source, typeNames)` checks for
-`package:gtk4/gtk4.dart`, `package:gtk_templates/gtk_templates.dart`,
+`package:gir_gtk4/gir_gtk4.dart`, `package:gir_gtk_templates/gir_gtk_templates.dart`,
 and — via `packageForType` — the package that declares the parent type
-and every child type. `Adw*` maps to `package:adw/adw.dart`;
-everything else maps to `package:gtk4/gtk4.dart`.
+and every child type. `Adw*` maps to `package:gir_adw/gir_adw.dart`;
+everything else maps to `package:gir_gtk4/gir_gtk4.dart`.
 
 ### Missing template file
 
@@ -618,7 +618,7 @@ additional_public_assets:
 
 ### CLI
 
-`packages/gtk_templates_builder/bin/gtk_templates_builder.dart` runs
+`packages/gir_gtk_templates_builder/bin/gtk_templates_builder.dart` runs
 the same scanner and codegen outside `build_runner`:
 
 ```console
@@ -711,12 +711,12 @@ byte-identical output to the `build_runner` path. Exit codes:
 
 | File | Covers |
 |---|---|
-| `packages/gtk_templates_builder/test/codegen_test.dart` | Pure codegen output shapes |
-| `packages/gtk_templates_builder/test/builder_test.dart` | The scanner's plan output |
-| `packages/gtk_templates_builder/test/e2e_test.dart` | Scanner → codegen → expected source; XML extractors |
-| `packages/gtk_templates_builder/test/generated_code_test.dart` | The on-disk fixture resolves with **zero** analyzer diagnostics, plus four mutation regressions |
-| `packages/gtk_templates_builder/test/builder_output_test.dart` | The `build_runner` output resolves with zero diagnostics, satisfies the part-file contract, reads a template **file** through the build, and fails when that file is missing |
-| `packages/gtk_templates/test/runtime_test.dart` | `snakeCase`, `getWidgetClass`, `gbytesFromString`, the XML rewrites, the template claim |
+| `packages/gir_gtk_templates_builder/test/codegen_test.dart` | Pure codegen output shapes |
+| `packages/gir_gtk_templates_builder/test/builder_test.dart` | The scanner's plan output |
+| `packages/gir_gtk_templates_builder/test/e2e_test.dart` | Scanner → codegen → expected source; XML extractors |
+| `packages/gir_gtk_templates_builder/test/generated_code_test.dart` | The on-disk fixture resolves with **zero** analyzer diagnostics, plus four mutation regressions |
+| `packages/gir_gtk_templates_builder/test/builder_output_test.dart` | The `build_runner` output resolves with zero diagnostics, satisfies the part-file contract, reads a template **file** through the build, and fails when that file is missing |
+| `packages/gir_gtk_templates/test/runtime_test.dart` | `snakeCase`, `getWidgetClass`, `gbytesFromString`, the XML rewrites, the template claim |
 | `example/todo/test/todo_widget_test.dart` | The window really is built from the template (native; needs a display) |
 | `example/todo/test/todo_test.dart` | The file contract: the part directive, the generated file next to its source, the template coming from the `.ui` file |
 

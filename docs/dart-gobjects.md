@@ -21,7 +21,7 @@ Four generator features and one hand-written runtime package:
 | `ffi.Struct` for the type-system records | the generator | `GTypeInfo`, `GTypeQuery`, `GTypeFundamentalInfo` and `GInterfaceInfo` carry the C layout, so they can be passed *by value* |
 | the wrapper cache | `packages/gir_ffi` | `fromPointer` is a **factory**: the same native pointer always yields the same Dart object |
 | `GObject(int objectType)` | the generator | a Dart subclass can instantiate a native type |
-| `registerDartType` | `packages/dart_gobject` | registers a native type for a Dart class |
+| `registerDartType` | `packages/gir_dart_gobject` | registers a native type for a Dart class |
 
 ```dart
 class TaskObject extends GObject {
@@ -178,11 +178,11 @@ application still holds.
 
 * **The type name is global.** GLib's type names live in one namespace
   per process. `registerDartType` is idempotent per name, and the
-  registry lives in `packages/dart_gobject`.
+  registry lives in `packages/gir_dart_gobject`.
 * **`GType` is not `lowerCamelCase`.** The generator emits
   `static int get GType` for every class, and a Dart subclass uses the
   same name. The `non_constant_identifier_names` lint fires on it; the
-  generated packages, `packages/dart_gobject` and `example/todo` turn
+  generated packages, `packages/gir_dart_gobject` and `example/todo` turn
   that lint off. A user package that declares a Dart GObject has to do
   the same, or suppress the lint on the declaration.
 * **A Dart GObject has no native fields.** The type inherits the
@@ -194,6 +194,23 @@ application still holds.
   below.
 
 ## Lifecycle notes
+
+### The native suites run one after another
+
+`dart test` runs the test *files* in parallel, and each file gets its
+own isolate — but the isolates share one process, and therefore one
+GLib, one GTK and one heap. Two suites that initialise GTK at the same
+time race inside GTK's initialisation, and the process aborts with a
+heap corruption.
+
+The suites that initialise GTK are `packages/gir_gtk4` (which calls
+`gtk_init()` in its `setUpAll`) and `example/notepad` (which calls
+`init()`). Run the native suites with `--concurrency=1`; CI does.
+
+This is a property of the *test setup*, not of the bindings: the suites
+share GTK's global state, not a GObject, a main context or a buffer.
+
+### The wrapper's lifetime
 
 The bindings release a native object when the Dart wrapper that owns it
 is collected. GTK frees widgets when their parent goes away. The two do
@@ -256,5 +273,5 @@ class without one (a GIR-only record) does not get the accessor.
 | `generator/lib/src/emit/record_emitter.dart` | the accessor, the `ffi.Struct` records |
 | `generator/lib/src/resolve/types.dart` | `TypeResolver.structRecords` — the four type-system records |
 | `packages/gir_ffi/lib/gir_ffi.dart` | the wrapper cache |
-| `packages/dart_gobject/lib/src/gtype_registry.dart` | `registerDartType` |
+| `packages/gir_dart_gobject/lib/src/gtype_registry.dart` | `registerDartType` |
 | `example/todo/lib/task_object.dart` | the worked example |

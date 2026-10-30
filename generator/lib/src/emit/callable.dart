@@ -55,6 +55,11 @@ class _OutParam {
   /// but the count is not a separate element of the returned record: the
   /// buffer is copied into a `Uint8List` that knows its own length.
   bool absorbed = false;
+
+  /// The Dart parameter whose value seeds the slot — a nullable scalar
+  /// the caller passes by pointer. `null` for a plain OUT parameter,
+  /// which the callee fills from scratch.
+  String? slotParam;
 }
 
 /// A `GDestroyNotify`-style parameter whose callback the callee calls
@@ -113,6 +118,8 @@ class CallableEmitter {
   /// [selfArgExpr]: expression passed as first native argument for methods.
   /// [factoryClass]: when non-null, emits a factory constructor returning
   /// this class. [sinkFloating]: call `gObjectRefSink` on ctor results.
+  /// [factoryCopy]: take a reference of the factory's own through the
+  /// type's copy function — the shape a *floating* reference needs.
   /// [bodyPrelude]: lines emitted at the top of the body — the destructor of
   /// an owned wrapper uses it to hand the release from the collector to the
   /// caller.
@@ -126,6 +133,7 @@ class CallableEmitter {
     String? factoryClass,
     bool factoryOwned = true,
     bool sinkFloating = false,
+    bool factoryCopy = false,
     GirNamespace? relativeTo,
     List<String> bodyPrelude = const [],
   }) {
@@ -226,6 +234,17 @@ class CallableEmitter {
           final inParam = _InParam(paramName, bridge, paramIndex: i)
             ..absorbed = absorbedInIndices.contains(i);
           ins.add(inParam);
+          if (bridge.isNullableScalarPointer) {
+            // A nullable scalar the caller passes by pointer: the
+            // wrapper allocates the slot, seeds it with the caller's
+            // value (or passes NULL), and reads it back after the
+            // call. The slot rides the OUT machinery — the read-back
+            // is the wrapper's return value.
+            outs.add(
+              _OutParam('_out${outs.length}', p.name, bridge, paramIndex: i)
+                ..slotParam = paramName,
+            );
+          }
           if (_isCallbackBridge(bridge)) {
             if (TypeResolver.isDestroyNotify(p) && hasByteArray) {
               // The callee takes over the buffer and calls the notify
@@ -351,6 +370,9 @@ class CallableEmitter {
           // wrapped pointer we get out of `withNativeStringList` is typed
           // as `Pointer<Pointer<Utf8>>` already — no cast needed here.
           argExprs.add(inP.nativeVar);
+        } else if (bridge.isNullableScalarPointer) {
+          // The slot the emitter allocated for this nullable scalar.
+          argExprs.add(outs.firstWhere((o) => o.name == p.name).varName);
         } else if (bridge.isByteArrayIn) {
           // The native buffer the `withNativeBytes` helper allocated for
           // this byte array.
@@ -533,6 +555,8 @@ class CallableEmitter {
     final hasByteArrayInSet = ins.any((p) => p.bridge.isByteArrayIn);
     // A parameter the callee takes over needs the handover code — and a
     // generative constructor has no body to host it either.
+    // A *floating* reference needs the copy function — and a generative
+    // constructor has no body to host that either.
     if (factoryClass != null &&
         !fn.throws &&
         outs.isEmpty &&
@@ -541,6 +565,7 @@ class CallableEmitter {
         !hasDestroyNotify &&
         !hasStructInSet &&
         !hasByteArrayInSet &&
+        !factoryCopy &&
         handovers.isEmpty) {
       final ownedArg = factoryOwned ? ', owned: true' : '';
       // `this.fromPointer` is always valid — every generated class
@@ -551,7 +576,7 @@ class CallableEmitter {
       // but Dart rejects `super.fromPointer` on a class with no
       // declared parent (`final_not_initialized_constructor`,
       // `undefined_constructor_in_initializer` — see
-      // `packages/gobject/lib/src/gobject.dart` for `GObject.newv`).
+      // `packages/gir_gobject/lib/src/gobject.dart` for `GObject.newv`).
       // Routing every generative constructor through the same class's
       // `fromPointer` works for both shapes — the call delegates up
       // to the parent automatically because `fromPointer` forwards to
@@ -594,9 +619,15 @@ class CallableEmitter {
       final String converted;
       if (factoryClass != null) {
         final ownedArg = factoryOwned ? ', owned: true' : '';
-        converted = sinkFloating
-            ? '$factoryClass.fromPointer(gObjectRefSink($raw)$ownedArg)'
-            : '$factoryClass.fromPointer($raw$ownedArg)';
+        if (factoryCopy) {
+          // A *floating* reference: the type's copy function turns it into
+          // a reference the wrapper owns.
+          converted = '$factoryClass.copyReference($raw)';
+        } else {
+          converted = sinkFloating
+              ? '$factoryClass.fromPointer(gObjectRefSink($raw)$ownedArg)'
+              : '$factoryClass.fromPointer($raw$ownedArg)';
+        }
       } else {
         converted = retBridge.fromNative(raw);
       }
@@ -641,7 +672,21 @@ class CallableEmitter {
         // GTK's "iter lives until you drop it" semantics. Primitive
         // OUT params allocate one slot of the pointee and free it
         // manually in the finally block.
-        if (o.bridge.outAllocSize != null) {
+        if (o.bridge.isNullableScalarPointer) {
+          // A nullable scalar the caller passes by pointer: the slot
+          // exists only when the caller supplied a value — otherwise
+          // the C side sees NULL, which is what `allow-none="1"`
+          // promises it accepts.
+          final slot = o.slotParam!;
+          core.add(
+            'final ${o.varName} = $slot == null ? ffi.nullptr : '
+            'malloc<${o.bridge.outPointee}>();',
+          );
+          core.add(
+            'if ($slot != null) ${o.varName}.value = '
+            '${o.bridge.toNative(slot)};',
+          );
+        } else if (o.bridge.outAllocSize != null) {
           ctx.usesGirFfi = true;
           core.add(
             'final ${o.varName}Anchor = HeapAnchor.allocate(${o.bridge.outAllocSize});',
@@ -678,6 +723,12 @@ class CallableEmitter {
           // The returned struct owns the buffer: `refWithFinalizer`
           // frees it when the struct is collected. Freeing it here would
           // leave the struct pointing at released memory.
+        } else if (o.bridge.isNullableScalarPointer) {
+          // The slot is NULL when the caller passed no value — there is
+          // nothing to release then.
+          cleanup.add(
+            '  if (${o.varName} != ffi.nullptr) malloc.free(${o.varName});',
+          );
         } else {
           cleanup.add('  malloc.free(${o.varName});');
         }

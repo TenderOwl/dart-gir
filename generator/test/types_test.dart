@@ -155,7 +155,7 @@ void main() {
       );
       expect(m.kind, TypeKind.classType);
       expect(m.dartType, 'Object');
-      expect(m.requiredImport, 'gobject');
+      expect(m.requiredImport, 'gir_gobject');
     });
 
     test('unqualified name falls back to other namespaces', () {
@@ -165,7 +165,7 @@ void main() {
       );
       expect(m.kind, TypeKind.enumeration);
       expect(m.dartType, 'FileTest');
-      expect(m.requiredImport, 'glib');
+      expect(m.requiredImport, 'gir_glib');
     });
 
     test('current namespace wins over others for unqualified names', () {
@@ -488,35 +488,58 @@ void main() {
 
   group('packageNameFor', () {
     test('core stack explicit mapping', () {
-      expect(packageNameFor(glib), 'glib');
-      expect(packageNameFor(gobject), 'gobject');
-      expect(packageNameFor(GirNamespace(name: 'Gio', version: '2.0')), 'gio');
+      expect(packageNameFor(glib), 'gir_glib');
+      expect(packageNameFor(gobject), 'gir_gobject');
+      expect(
+        packageNameFor(GirNamespace(name: 'Gio', version: '2.0')),
+        'gir_gio',
+      );
       expect(
         packageNameFor(GirNamespace(name: 'GdkPixbuf', version: '2.0')),
-        'gdk_pixbuf',
+        'gir_gdk_pixbuf',
       );
       expect(
         packageNameFor(GirNamespace(name: 'cairo', version: '1.0')),
-        'cairo',
+        'gir_cairo',
       );
       expect(
         packageNameFor(GirNamespace(name: 'Pango', version: '1.0')),
-        'pango',
+        'gir_pango',
       );
-      expect(packageNameFor(GirNamespace(name: 'Gdk', version: '4.0')), 'gdk4');
-      expect(packageNameFor(gtk), 'gtk4');
-      expect(packageNameFor(GirNamespace(name: 'Adw', version: '1')), 'adw');
+      expect(
+        packageNameFor(GirNamespace(name: 'Gdk', version: '4.0')),
+        'gir_gdk4',
+      );
+      expect(packageNameFor(gtk), 'gir_gtk4');
+      expect(
+        packageNameFor(GirNamespace(name: 'Adw', version: '1')),
+        'gir_adw',
+      );
+    });
+
+    test('every name carries the gir_ prefix', () {
+      // The bare names are taken on pub.dev by other publishers, so the
+      // prefix is what makes the whole set publishable.
+      for (final ns in [
+        GirNamespace(name: 'GtkSource', version: '5'),
+        GirNamespace(name: 'GIRepository', version: '3.0'),
+      ]) {
+        expect(packageNameFor(ns), startsWith('gir_'));
+      }
     });
 
     test('generic fallback appends major version', () {
-      expect(packageNameFor(GirNamespace(name: 'Gst', version: '1.0')), 'gst1');
+      expect(
+        packageNameFor(GirNamespace(name: 'Gst', version: '1.0')),
+        'gir_gst1',
+      );
       expect(
         packageNameFor(GirNamespace(name: 'Soup', version: '3.0')),
-        'soup3',
+        'gir_soup3',
       );
       expect(
         packageNameFor(GirNamespace(name: 'MyLib', version: '')),
-        'my_lib',
+        'gir_my_lib',
       );
     });
   });

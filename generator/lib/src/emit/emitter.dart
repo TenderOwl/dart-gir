@@ -236,8 +236,8 @@ class PackageEmitter {
     if (isGLib) {
       ctx.usesFfiString = true; // _GErrorStruct uses Utf8
     }
-    if (ctx.usesGlibException && pkg != 'glib') {
-      ctx.imports.add('glib');
+    if (ctx.usesGlibException && pkg != 'gir_glib') {
+      ctx.imports.add('gir_glib');
     }
     ctx.imports.remove(pkg);
 
@@ -332,7 +332,7 @@ class PackageEmitter {
       ),
     );
     File(p.join(pkgDir, 'pubspec.yaml'))
-        .writeAsStringSync(pubspecFor(pkg, ctx.imports));
+        .writeAsStringSync(pubspecFor(pkg, ctx.imports, namespace: namespace));
     File(p.join(pkgDir, 'analysis_options.yaml'))
         .writeAsStringSync(analysisOptionsFor());
     File(p.join(pkgDir, 'skip_report.txt')).writeAsStringSync(

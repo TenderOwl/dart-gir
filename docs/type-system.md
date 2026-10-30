@@ -151,7 +151,7 @@ The same `relativeTo` plumbing drives the interface-mirror path:
 `CallableEmitter.emit` accepts a `relativeTo` namespace and the
 `ClassEmitter` interface mirror thread the interface's namespace
 through to it. Without this, `GdkPaintable.snapshot(GdkSnapshot, …)`
-would re-resolve `Snapshot` against `gtk4` when mirrored onto
+would re-resolve `Snapshot` against `gir_gtk4` when mirrored onto
 `GtkIconPaintable`, returning `GtkSnapshot` and breaking the
 `implements GdkPaintable` structural check with `invalid_override`
 (typed-different `class GdkSnapshot` vs `class GtkSnapshot` even though

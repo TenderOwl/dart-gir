@@ -6,7 +6,7 @@ gives you, what it costs, and — just as importantly — what it does
 **not** give you.
 
 The worked example lives in
-[`packages/gtk4/test/gtk4_subclass_test.dart`](../packages/gtk4/test/gtk4_subclass_test.dart);
+[`packages/gir_gtk4/test/gtk4_subclass_test.dart`](../packages/gir_gtk4/test/gtk4_subclass_test.dart);
 every claim below is exercised there.
 
 > **Status: on `main`.** The contract described here is committed — the

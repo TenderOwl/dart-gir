@@ -1,16 +1,154 @@
 # Changelog
 
 Reverse-chronological record of user-facing changes to the workspace.
-Per-package versions stay pinned to the workspace version — `publish_to:
-none` keeps everything in lockstep.
+Every package carries the same version — the set is released in lockstep,
+and `tool/release.dart` is the only thing that writes a version into a
+package's pubspec.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 with `Added`, `Changed`, `Fixed`, `Removed`, `Deprecated`, `Security`
 sections. Dates are ISO-8601 (YYYY-MM-DD).
 
-## Unreleased
+## 1.0.0 — 2026-10-30
+
+**The first published release.** All seventeen packages are on pub.dev:
+`gir_ffi`, `gir_glib`, `gir_cairo`, `gir_graphene`, `gir_gobject`,
+`gir_gio`, `gir_gdk_pixbuf`, `gir_pango`, `gir_dart_gobject`, `gir_gdk4`,
+`gir_gsk4`, `gir_gtk4`, `gir_adw`, `gir_gi_repository3`,
+`gir_gtk_source5`, `gir_gtk_templates` and `gir_gtk_templates_builder`.
+
+**Support: Linux only.** The loader knows the Windows and macOS file
+names of every native library, but only Linux is executed and tested. On
+macOS the loader also needs the library directory on the loader path
+(Homebrew's `lib` is not on it by default).
+
+The versioning policy — what 1.x may and may not change — is in
+[docs/release.md](docs/release.md).
+
+### Migration
+Everything below changed the *shape* of the emitted API since 0.1.0.
+The rename is listed under **Changed**; the rest is here.
+
+- **The ownership model is new.** Every generated wrapper carries a
+  public `bool owned` field: `true` while the wrapper holds the reference
+  the GIR handed over, `false` once the reference has been released or
+  handed to the callee. A `transfer="full"` **return** is now claimed by
+  the wrapper and released by a `NativeFinalizer`; a `transfer="full"`
+  **parameter** is handed to the callee — the call site detaches the
+  finalizer and clears the flag.
+
+  ```dart
+  final file = GFile.newForPath('/tmp/notes');
+  expect(file.owned, isTrue);
+  file.unref();
+  expect(file.owned, isFalse);
+  ```
+
+- **`gir_ffi`'s `openLibrary` takes the platform names.** It used to take
+  a list of file names and fall back to the process namespace when none of
+  them opened. It now takes the package, the library's name and the names
+  of each platform, and throws `NativeLibraryNotFound` when none of them
+  opens. The message names the library, the package, every name that was
+  tried and the command that installs it.
+
+- **The wrappers that take a caller-provided byte buffer now take a
+  `Uint8List`.** `GBytes(Uint8List)`, `GFile.replaceContents(Uint8List, …)`,
+  `GOutputStream.write(Uint8List, …)`, `GSocket.send(Uint8List, …)`,
+  `base64Encode(Uint8List)` and about thirty more take a Dart list
+  instead of a raw pointer plus a separate length.
+
+- **A `char **` return is a `List<String>`.** GLib's `GStrv` is copied
+  into a Dart list, and released with `g_strfreev` when the GIR says the
+  caller owns it.
+
+- **A nullable scalar parameter is passed by pointer.** A `gint *` the C
+  function may receive as NULL now gets a one-slot buffer: the caller's
+  value goes in, the callee's value comes back out as the wrapper's next
+  return element.
+
+- **The generated classes are extendable.** They are emitted as `class`,
+  not `final class`, and their `<ClassName>Props` companions are public
+  and extendable — so `class MyButton extends GtkButton` compiles, and a
+  return type may be narrowed covariantly.
+
+- **The composite-template stack is new.** `@GtkTemplate`,
+  `@GtkTemplateChild` and `@GtkTemplateCallback`, the `_$ClassTemplate`
+  mixin, and the `build_runner` builder that generates it.
+
+- **`registerDartType` is new.** A Dart class can now have a native
+  identity: `registerDartType('TaskObject', GObject.GType)` registers a
+  `GType` with GLib, so a Dart subclass of `GObject` can be stored in a
+  `GListStore` and found again after a round trip through native code.
 
 ### Added
+- **The packages can be published.** `tool/release.dart` assembles the
+  publication copies — the library verbatim, a rewritten pubspec (the
+  version, hosted dependencies, the pub.dev metadata) and the `README.md`,
+  `CHANGELOG.md` and `LICENSE` copies — and publishes them in dependency
+  order. `tool/release.dart check` runs the structural checks pub.dev
+  would run, and it is a CI gate on every pull request.
+
+  The copies are written *outside* the repository: pub reads the ignore
+  rules of the package it publishes, and a package inside a git
+  repository with git-ignored files packs as an empty archive.
+
+  The versioning policy — lockstep versions, what 1.x may and may not
+  change, the migration-note rule — is written down in
+  [docs/release.md](docs/release.md).
+
+- **A `char **` return is a Dart list of strings.** GLib's `GStrv` — a
+  NULL-terminated array of strings — was skipped by the generator. The
+  wrapper now copies it into a `List<String>` and, when the GIR says the
+  callee handed the array over, releases it with `g_strfreev`.
+
+  ```dart
+  List<String> getLanguageNames();   // free: false — a static table
+  List<String> getEnviron();          // free: true  — the caller owns it
+  ```
+
+  The `free` flag follows the GIR's `transfer-ownership` exactly. The
+  helper is `stringListFromNative` in `package:gir_ffi`.
+
+- **A property without a `<type>` takes the type from its getter.** Some
+  GIR `<property>` elements declare no type at all — the type lives in
+  the typed method the `getter=` attribute names. `AdwAboutDialog.artists`
+  is one: the property carries no `<type>`, and its getter returns a
+  `GStrv`. The accessor is now emitted as `List<String>? get artists`
+  instead of being skipped.
+
+- **A nullable scalar parameter is passed by pointer.** The C API takes a
+  `gint *` that may be NULL (`allow-none="1"`) — the shape of
+  `g_io_channel_read_line_string`'s `terminator_pos`. Dart FFI cannot
+  express `int?` over a primitive slot, so the wrapper allocates a
+  one-slot buffer: the caller's value goes in, or NULL when the caller
+  passed none, and the value the callee wrote comes back as the
+  wrapper's next return value.
+
+  ```dart
+  (GIOStatus, int?) readLineString(GString buffer, [int? terminatorPos]);
+  ```
+
+  The four scalar kinds with a pointer shape in C — `primitive`,
+  `boolean`, `enumeration`, `bitfield` — all use this bridge.
+
+- **The async convenience overload keeps an OUT parameter's argument
+  slot.** The overload returns `void`, so it has nowhere to put the
+  value an OUT parameter carries — but the C function still takes the
+  argument, and the C ABI has no notion of an omitted argument. The
+  overload allocates the slot, passes it and releases it after the call;
+  the value the callee wrote is discarded, and the base wrapper (which
+  returns it) is still there.
+
+  ```dart
+  void sendMessageWithReplyCallback(
+    GDBusMessage message,
+    GDBusSendMessageFlags flags,
+    int timeoutMsec,
+    GCancellable? cancellable,
+    void Function(GObject?, GAsyncResult) callback,
+  );
+  ```
+
 - **CI now makes native calls.** A second job in
   `.github/workflows/ci.yml` installs GTK 4, libadwaita and
   GtkSourceView and runs the native suites — the ownership rules, the
@@ -149,7 +287,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
     same native pointer always yields the same Dart object, so a Dart
     subclass survives the trip out of native code;
   - `GObject(int objectType)` instantiates a native type;
-  - the new `packages/dart_gobject` package provides
+  - the new `packages/gir_dart_gobject` package provides
     `registerDartType(name, parentType)`, which registers a GType with
     GLib for a Dart class.
 
@@ -178,6 +316,39 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   would be freed while the parent still uses it.
 
 ### Changed
+- **Every package carries the `gir_` prefix.** The bare names are taken on
+  pub.dev by other publishers — `glib`, `gio`, `cairo` and `graphene` among
+  them — so the set could not be published as it stood. All 17 packages
+  are renamed, and the directory names follow:
+
+  | before | after | before | after |
+  | --- | --- | --- | --- |
+  | `glib` | `gir_glib` | `gtk4` | `gir_gtk4` |
+  | `gobject` | `gir_gobject` | `adw` | `gir_adw` |
+  | `gio` | `gir_gio` | `gtk_source5` | `gir_gtk_source5` |
+  | `gdk_pixbuf` | `gir_gdk_pixbuf` | `gi_repository3` | `gir_gi_repository3` |
+  | `cairo` | `gir_cairo` | `gir_ffi` | `gir_ffi` (unchanged) |
+  | `pango` | `gir_pango` | `dart_gobject` | `gir_dart_gobject` |
+  | `gdk4` | `gir_gdk4` | `gtk_templates` | `gir_gtk_templates` |
+  | `graphene` | `gir_graphene` | `gtk_templates_builder` | `gir_gtk_templates_builder` |
+  | `gsk4` | `gir_gsk4` | | |
+
+  Three things move with the name:
+
+  1. **The import path** — the library file is named after the package, so
+     `import 'package:glib/glib.dart';` becomes
+     `import 'package:gir_glib/gir_glib.dart';`.
+  2. **The lookup helper** — the generated `<pkg>Lookup<T>()` symbol follows
+     the package name: `glibLookup` is now `girGlibLookup`, `gobjectLookup`
+     is now `girGobjectLookup`.
+  3. **The template builder's key** — a consumer's `build.yaml` writes
+     `builders: gir_gtk_templates_builder:` instead of
+     `builders: gtk_templates_builder:`.
+
+  The package *contents* are unchanged: the same classes, the same
+  methods, the same ownership rules. The rename is a naming change, not an
+  API change.
+
 - **`gir_ffi`'s `openLibrary` takes the platform names.** The helper used
   to take a list of file names and fall back to the process namespace
   when none of them opened. It now takes the package, the library's name
@@ -257,6 +428,36 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   have failed outright there. The process's global symbol namespace
   (`DynamicLibrary.process()`) is supported everywhere and is used
   instead.
+
+- **A floating reference is no longer released twice.** `GVariant` uses
+  *floating* references: the value a constructor hands over belongs to
+  nobody, and the first consumer either sinks it or takes it over. The
+  wrapper took the floating reference as it was and did not own it — so
+  a consumer that assumed ownership (`gtk_actionable_set_action_target_value`,
+  `g_variant_new_variant`) ended up owning the very reference the
+  wrapper's `unref()` released. The reference count underflowed, the
+  value was freed while the consumer still pointed at it, and the heap
+  was corrupted.
+
+  The GIR names the function that takes a reference of your own in the
+  record's `copy-function` attribute — `g_variant_ref_sink` for
+  `GVariant`, which sinks a floating reference and adds one to a
+  reference somebody else owns. The wrapper now takes a reference of its
+  own through it and owns it:
+
+  ```dart
+  final variant = GVariant.string('json');
+  variant.owned;        // true — the wrapper took a reference of its own
+  variant.isFloating(); // false — the constructor sank it
+  ```
+
+  A `transfer="none"` return of such a type is the same shape: the
+  wrapper takes a reference of its own, so it cannot outlive the owner
+  (`GValue.getVariant()`, `GDBusMessage.getBody()`,
+  `GtkActionable.getActionTargetValue()`) with a dangling pointer. The
+  copy is exposed as `GVariant.copyReference(handle)` for the packages
+  that need it. See
+  [`docs/emission.md`](docs/emission.md#floating-references).
 
 ### Fixed
 - **The notepad example's dark-mode menu entry is no longer dead.** A
@@ -623,7 +824,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   next to its host class. All per-class files are still `part of
   '<pkg>.dart'` of the same library, so forward references resolve
   naturally and the public surface is unchanged —
-  `import 'package:gtk4/gtk4.dart';` exposes the same names as
+  `import 'package:gir_gtk4/gir_gtk4.dart';` exposes the same names as
   before. Other categories (`enums`, `records`, `functions`,
   `constants`, `callbacks`) keep the existing ~400-line chunking.
   IDE `Ctrl+Click` on a class name now lands in a file that's
@@ -687,13 +888,13 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   [emission](./docs/emission.md), [type-system](./docs/type-system.md),
   [signals](./docs/signals.md), [skip-categories](./docs/skip-categories.md).
 - **Runtime tests** for the typed-signal pipeline:
-  [`packages/gobject/test/signal_helpers_test.dart`](./packages/gobject/test/signal_helpers_test.dart)
+  [`packages/gir_gobject/test/signal_helpers_test.dart`](./packages/gir_gobject/test/signal_helpers_test.dart)
   (3 trampoline tests: connect/emit/disconnect, closure capture, parallel
   connections) and
-  [`packages/gobject/test/typed_signal_test.dart`](./packages/gobject/test/typed_signal_test.dart)
+  [`packages/gir_gobject/test/typed_signal_test.dart`](./packages/gir_gobject/test/typed_signal_test.dart)
   (smoke test verifying the public `connectSignal` is reachable).
 - **Runtime tests for namespace functions and nullable callbacks**:
-  [`packages/glib/test/namespace_functions_smoke_test.dart`](./packages/glib/test/namespace_functions_smoke_test.dart)
+  [`packages/gir_glib/test/namespace_functions_smoke_test.dart`](./packages/gir_glib/test/namespace_functions_smoke_test.dart)
   exercises `g_get_user_data_dir`, `g_get_user_name`, `g_get_real_name`
   at runtime and verifies that the `idleAddFull` / `timeoutAddFull`
   wrappers accept a top-level Dart callback plus nullable
@@ -739,7 +940,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   layer can emit setters without requiring GIR to spell out
   `writable="1"`.
 - **Runtime test for the props accessor**:
-  [`packages/gtk4/test/gtk4_props_test.dart`](./packages/gtk4/test/gtk4_props_test.dart)
+  [`packages/gir_gtk4/test/gtk4_props_test.dart`](./packages/gir_gtk4/test/gtk4_props_test.dart)
   exercises `GtkButton.props.label` round-trip through the typed
   `getLabel` / `setLabel`, `props.canShrink = true` round-trip,
   inherited `canFocus` reachability via `extends GtkWidgetProps`,
@@ -783,8 +984,8 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   the natural parameter iteration so the C side always sees the
   matching `nProperties` / `nColors` slot. Across the regenerated
   packages the "array types are handled in a later phase" reason
-  dropped from 946 skips to 0; the `gtk4` package's total skip count
-  fell from 1767 to 1380 and `glib` from 447 to 391. Remaining
+  dropped from 946 skips to 0; the `gir_gtk4` package's total skip count
+  fell from 1767 to 1380 and `gir_glib` from 447 to 391. Remaining
   array skips carry informative reasons (`array of TypeKind.X (later
   phase)`, `array element of unsupported kind`, `array of unknown
   element`) so the gaps are explicit. See
@@ -822,7 +1023,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   forwards to its super when one exists. Fixes the pre-existing
   `final_not_initialized_constructor` /
   `undefined_constructor_in_initializer` errors on
-  `packages/gobject/lib/src/gobject.dart` (`GObject.newv`, etc.) that
+  `packages/gir_gobject/lib/src/gobject.dart` (`GObject.newv`, etc.) that
   fired the moment `dart analyze` first ran.
 - **Type resolution prefers namespace lookup over c-type primitive**
   for `<type name="…" c:type="gpointer"/>` style declarations. Many GLib
@@ -915,7 +1116,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 - **`Gtk*Paintable.snapshot(GtkSnapshot, …)` no longer claims to override
   `GdkPaintable.snapshot(GdkSnapshot, …)`**. The two classes are
   typedef'd to the same C type but live in different namespaces
-  (`gtk4` vs `gdk4`); the type resolver now threads the interface's
+  (`gir_gtk4` vs `gir_gdk4`); the type resolver now threads the interface's
   namespace into the mirror's `bridgeFor` call so the parameter type
   resolves to `GdkSnapshot` (matching the interface) rather than the
   local `GtkSnapshot`.
@@ -979,7 +1180,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `T.fromPointer(_buffer)` (`_buffer` is the anchor's `Pointer<Uint8>`
   field, which the returned wrapper captures as its `handle`); drop
   the wrapper and GC frees the buffer. End-to-end covered by
-  [`packages/gtk4/test/gtk4_text_iter_test.dart`](./packages/gtk4/test/gtk4_text_iter_test.dart)
+  [`packages/gir_gtk4/test/gtk4_text_iter_test.dart`](./packages/gir_gtk4/test/gtk4_text_iter_test.dart)
   and [`example/test/editor_savefile_test.dart`](./example/gtk4_examples/test/editor_savefile_test.dart).
 - **Inheritance walker stop-at-local-name**: `Adw.Application` →
   `Gtk.Application` previously stopped at `Adw.Application` because both
@@ -1048,7 +1249,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   to predict a generated filename.
 
   `build_to: source` lives in the **provider** package's `build.yaml`
-  (`packages/gtk_templates_builder/build.yaml`); a consumer's
+  (`packages/gir_gtk_templates_builder/build.yaml`); a consumer's
   `build.yaml` only sets `generate_for`. The builder fails with an
   actionable message — naming the exact `part` line, or the exact
   `import` lines, to add — when the user's library is missing either.
@@ -1083,7 +1284,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   *source file* name: one source file with several `@GtkTemplate`
   classes produces one part file holding every mixin. The migration
   diff is in
-  [`packages/gtk_templates_builder/CHANGELOG.md`](./packages/gtk_templates_builder/CHANGELOG.md).
+  [`packages/gir_gtk_templates_builder/CHANGELOG.md`](./packages/gir_gtk_templates_builder/CHANGELOG.md).
 
 - **Dart-level subclassing of the generated wrappers is now a documented,
   tested contract.** Generated GObject classes are emitted as `class`
@@ -1095,7 +1296,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   lifetime rules are written down in
   [docs/subclassing.md](./docs/subclassing.md), with a worked example
   in
-  [`packages/gtk4/test/gtk4_subclass_test.dart`](./packages/gtk4/test/gtk4_subclass_test.dart).
+  [`packages/gir_gtk4/test/gtk4_subclass_test.dart`](./packages/gir_gtk4/test/gtk4_subclass_test.dart).
   The capability itself was already present; what was missing was the
   documentation, the regression test and the example.
 
@@ -1106,14 +1307,14 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `name collision: <name>`, which said nothing about what happened.
   They now read
   `duplicate constant: <A> and <B> both map to <name>` and name both
-  GIR symbols. 335 entries across `gdk4` and `glib` change their
+  GIR symbols. 335 entries across `gir_gdk4` and `gir_glib` change their
   reason. See
   [skip-categories.md](./docs/skip-categories.md#duplicate-constant-a-and-b-both-map-to-name).
 
 - **The generated packages are regenerated.** `packages/adw`,
   `packages/gi_repository3`, `packages/gdk_pixbuf`, `packages/cairo`
   and parts of `packages/glib` had been committed from an older
-  generator and did not match the current one — `adw` was missing
+  generator and did not match the current one — `gir_adw` was missing
   225 array-typed methods that the generator now emits. They are
   regenerated here, and the corpus-wide skip count drops from 3,472
   to 3,242.
@@ -1152,7 +1353,28 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
   `example/notepad/data/notepad_window.ui` and from the part file the
   builder regenerates from it.
 
-## 1.0.0 — 2026-09-28
+### Known limitations
+- **`inout` parameters are skipped** (39 callables in the current
+  corpus). The C function reads *and* writes through the pointer, and
+  the GIR's ownership annotations for these parameters are wrong —
+  `gtk_source_buffer_forward_iter_to_source_mark`'s `iter` is marked
+  `transfer-ownership="full"`, but GTK does not take ownership of the
+  iterator. A generator that followed the annotation would release
+  memory it does not own, so the callable is skipped rather than bound
+  with a wrong lifetime rule. See
+  [docs/skip-categories.md](docs/skip-categories.md#inout-parameter-x).
+- Arrays other than string lists are skipped ("array types are handled
+  in a later phase").
+- An OUT parameter whose shape is an exotic buffer — a struct the
+  callee fills in place, or a byte buffer the callee allocates — is
+  skipped.
+
+## 0.1.0 — 2026-09-28
+
+*Never published.* This heading was an in-repo marker for the first
+working workspace; it is renumbered here so that the real 1.0.0 entry
+above does not collide with it. The package names in this section are the
+ones the workspace had then — they were renamed for 1.0.0.
 
 ### Added
 - Initial workspace: 11 generated packages (glib, gobject, gio,
@@ -1176,7 +1398,7 @@ sections. Dates are ISO-8601 (YYYY-MM-DD).
 - Generator unit tests (`loader_test`, `parser_test`, `naming_test`,
   `types_test`, `emitter_test`, `signals_emitter_test`,
   `signals_helper_test`).
-- Runtime smoke test in `packages/glib/test/glib_smoke_test.dart`
+- Runtime smoke test in `packages/gir_glib/test/glib_smoke_test.dart`
   exercising constant lookup and async-queue callbacks.
 
 ### Known limitations

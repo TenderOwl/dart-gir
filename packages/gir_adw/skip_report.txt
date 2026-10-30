@@ -1,0 +1,95 @@
+# Skip report for package gir_adw (Adw 1)
+Total skipped: 233
+
+## By category
+property: 204
+callable: 14
+signal: 8
+renamed: 6
+method: 1
+
+## By reason
+construct-only or no public setter; emitting getter only: 76
+missing getter get_height-request: 58
+missing getter get_width-request: 58
+introspectable=0: 4
+unsupported return type: Gdk.DragAction: 4
+inout parameter position: 3
+missing getter get_item-type: 3
+missing getter get_n-items: 3
+moved to AccentColor.to_rgba: 1
+moved to AccentColor.to_standalone_rgba: 1
+moved to BreakpointCondition.parse: 1
+moved to Easing.ease: 1
+moved to LengthUnit.from_px: 1
+moved to LengthUnit.to_px: 1
+name collision: 1
+override-incompatible with ancestor; renamed to activateActionRow: 1
+unsupported arg type at index 0: gpointer: 1
+override-incompatible with ancestor; renamed to getSizeAvatar: 1
+getter get_size was renamed; call the renamed method directly: 1
+missing getter get_default-height: 1
+missing getter get_default-width: 1
+parameter tags: array of TypeKind.string (later phase): 1
+unsupported return type: NavigationPage: 1
+setter set_visible_page parameter type does not match property type; skipping: 1
+override-incompatible with ancestor; renamed to getNamePreferencesPage: 1
+override-incompatible with ancestor; renamed to setNamePreferencesPage: 1
+getter get_name was renamed; call the renamed method directly: 1
+override-incompatible with ancestor; renamed to getDirectionSplitButton: 1
+override-incompatible with ancestor; renamed to setDirectionSplitButton: 1
+getter get_direction was renamed; call the renamed method directly: 1
+unsupported return type: TabPage: 1
+unsupported return type: TabView: 1
+
+## First 50 entries
+[callable] Adw.accentColorToRgba — moved to AccentColor.to_rgba
+[callable] Adw.accentColorToStandaloneRgba — moved to AccentColor.to_standalone_rgba
+[callable] Adw.breakpointConditionParse — moved to BreakpointCondition.parse
+[callable] Adw.easingEase — moved to Easing.ease
+[callable] Adw.lengthUnitFromPx — moved to LengthUnit.from_px
+[callable] Adw.lengthUnitToPx — moved to LengthUnit.to_px
+[callable] Adw.showAboutDialog — introspectable=0
+[callable] Adw.showAboutDialogFromAppdata — introspectable=0
+[callable] Adw.showAboutWindow — introspectable=0
+[callable] Adw.showAboutWindowFromAppdata — introspectable=0
+[method] AdwBreakpointCondition.toString — name collision
+[property] AdwAboutDialog.appdata-resource-path — construct-only or no public setter; emitting getter only
+[property] AdwAboutDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwAboutDialog.height-request — missing getter get_height-request
+[property] AdwAboutDialog.width-request — missing getter get_width-request
+[renamed] AdwActionRow.activate — override-incompatible with ancestor; renamed to activateActionRow
+[property] AdwActionRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwActionRow.height-request — missing getter get_height-request
+[property] AdwActionRow.width-request — missing getter get_width-request
+[property] AdwAlertDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwAlertDialog.height-request — missing getter get_height-request
+[property] AdwAlertDialog.width-request — missing getter get_width-request
+[property] AdwAnimation.widget — construct-only or no public setter; emitting getter only
+[signal] AdwApplication.open — unsupported arg type at index 0: gpointer
+[renamed] AdwAvatar.getSize — override-incompatible with ancestor; renamed to getSizeAvatar
+[property] AdwAvatar.size — getter get_size was renamed; call the renamed method directly
+[property] AdwAvatar.css-name — construct-only or no public setter; emitting getter only
+[property] AdwAvatar.height-request — missing getter get_height-request
+[property] AdwAvatar.width-request — missing getter get_width-request
+[property] AdwBanner.css-name — construct-only or no public setter; emitting getter only
+[property] AdwBanner.height-request — missing getter get_height-request
+[property] AdwBanner.width-request — missing getter get_width-request
+[property] AdwBin.css-name — construct-only or no public setter; emitting getter only
+[property] AdwBin.height-request — missing getter get_height-request
+[property] AdwBin.width-request — missing getter get_width-request
+[property] AdwBottomSheet.css-name — construct-only or no public setter; emitting getter only
+[property] AdwBottomSheet.height-request — missing getter get_height-request
+[property] AdwBottomSheet.width-request — missing getter get_width-request
+[property] AdwBreakpointBin.css-name — construct-only or no public setter; emitting getter only
+[property] AdwBreakpointBin.height-request — missing getter get_height-request
+[property] AdwBreakpointBin.width-request — missing getter get_width-request
+[property] AdwButtonContent.css-name — construct-only or no public setter; emitting getter only
+[property] AdwButtonContent.height-request — missing getter get_height-request
+[property] AdwButtonContent.width-request — missing getter get_width-request
+[property] AdwButtonRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwButtonRow.height-request — missing getter get_height-request
+[property] AdwButtonRow.width-request — missing getter get_width-request
+[property] AdwCarousel.css-name — construct-only or no public setter; emitting getter only
+[property] AdwCarousel.height-request — missing getter get_height-request
+[property] AdwCarousel.width-request — missing getter get_width-request

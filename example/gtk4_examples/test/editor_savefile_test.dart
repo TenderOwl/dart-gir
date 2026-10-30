@@ -17,7 +17,7 @@
 
 import 'dart:io';
 
-import 'package:gtk4/gtk4.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -17,8 +17,8 @@
 // *this* Dart object, so the list factory's `bind` gets the very
 // `TaskObject` the window created.
 
-import 'package:dart_gobject/dart_gobject.dart';
-import 'package:gobject/gobject.dart';
+import 'package:gir_dart_gobject/gir_dart_gobject.dart';
+import 'package:gir_gobject/gir_gobject.dart';
 
 class TaskObject extends GObject {
   /// The native `GType` of this class.

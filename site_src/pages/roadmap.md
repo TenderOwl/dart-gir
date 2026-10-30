@@ -102,7 +102,7 @@ CI now makes real native calls too: a second job installs GTK 4, libadwaita and 
 :::{checklist}
 [x] Platform-aware library name tables per namespace — `.dll`, `.dylib`, `.so.N` — emitted by the generator instead of hardcoded Linux sonames. *`generator/lib/src/resolve/platform_libraries.dart` holds the table; a library that is not in it degrades to a derived name plus a `platform-library` line in the skip report, so a new namespace warns instead of breaking.*
 [x] A dedicated, actionable exception when a native library is missing, naming the library, the package and the platform-specific install command. *`NativeLibraryNotFound` in `package:gir_ffi`, pinned by `packages/gir_ffi/test/loader_test.dart`.*
-[x] A CI job that installs GTK 4 / libadwaita and actually runs the native suites — `packages/gtk4/test`, `packages/glib/test` and the rest. *The `native` job in `.github/workflows/ci.yml`.*
+[x] A CI job that installs GTK 4 / libadwaita and actually runs the native suites — `packages/gir_gtk4/test`, `packages/gir_glib/test` and the rest. *The `native` job in `.github/workflows/ci.yml`.*
 [x] Heap and lifetime tests run under CI, not only on a maintainer's desktop. *The same job: the ownership and byte-array suites are part of it.*
 [x] Every remaining `g_free` / `DynamicLibrary.process()` assumption reviewed for non-Linux correctness. *The allocator's own lookup used `DynamicLibrary.executable()`, which throws `UnsupportedError` on Windows; it reads the process's global symbol namespace now.*
 :::
@@ -110,6 +110,8 @@ CI now makes real native calls too: a second job installs GTK 4, libadwaita and 
 
 :::{phase status=next} Phase 3 — Arrays and collections
 **{{facts.skips.array_types}} recorded skips** — a small fraction of the report's {{facts.total_skipped}} entries — carry an array-type reason. This was 946 skips before the `array-types` branch landed; what is left is the residue that branch did not cover. It is still the biggest remaining *functional* gap, even though the count is now a small fraction of what it was.
+
+**The bounded part of this phase landed with 1.0.** A `char **` return — GLib's `GStrv` — is now a `List<String>`, released with `g_strfreev` when the GIR says the caller owns it; and a nullable scalar parameter is passed through a one-slot buffer, so the C function's NULL is representable. What is left is the residue: the counted string arrays (a bound-length array is not a NULL-terminated list), the arrays of records and interfaces, and the arrays that arrive through a callback.
 
 It spans four different positions in a signature, each with its own lifetime rules:
 
@@ -134,7 +136,7 @@ It spans four different positions in a signature, each with its own lifetime rul
 :::
 
 :::{phase status=future} Phase 4 — Cross-platform support
-Linux is the only platform that has ever run this. macOS is the next target because a large share of GTK application development happens there, and the loader problem from phase 2 has to be solved first.
+Linux is the only platform that has ever run this, and **1.0 says so**: the loader knows the Windows and macOS file names of every native library, but only Linux is executed and tested, and on macOS the library directory also has to be on the loader path. macOS is the next target because a large share of GTK application development happens there, and the loader problem from phase 2 has to be solved first.
 
 :::{checklist}
 [ ] macOS library names and Homebrew paths; a macOS CI job with GTK from Homebrew
@@ -146,9 +148,9 @@ Linux is the only platform that has ever run this. macOS is the next target beca
 :::{phase status=done} Phase 5 — Subclassing and composite templates
 The capability that most clearly decides whether this project is a set of bindings or a toolkit for building real GTK applications. It splits in two — and both halves have now been checked against the committed trees, not against a working copy.
 
-**The composite-template half is on `main`.** Two packages ship it: `packages/gtk_templates` (the annotations and runtime helpers) and `packages/gtk_templates_builder` (the AST scanner, the codegen, the `build_runner` builder and a standalone CLI). The builder writes one part file per source file beside the source, and the design is written down in `docs/templates.md`. A worked example lives in `example/todo/`, and CI builds it and analyzes the result on every push.
+**The composite-template half is on `main`.** Two packages ship it: `packages/gir_gtk_templates` (the annotations and runtime helpers) and `packages/gir_gtk_templates_builder` (the AST scanner, the codegen, the `build_runner` builder and a standalone CLI). The builder writes one part file per source file beside the source, and the design is written down in `docs/templates.md`. A worked example lives in `example/todo/`, and CI builds it and analyzes the result on every push.
 
-**The subclassing half is on `main` too.** The generated classes are emitted as `class`, not `final class`, and the props companions are public and extendable — so a user-side subclass, a covariant return-type override and a subclassed props companion all compile. The contract is pinned by the *Dart-level subclassing contract* group in the generator's tests, exercised against real GTK types in `packages/gtk4/test/gtk4_subclass_test.dart`, and its ownership and lifetime rules are written down in `docs/subclassing.md`.
+**The subclassing half is on `main` too.** The generated classes are emitted as `class`, not `final class`, and the props companions are public and extendable — so a user-side subclass, a covariant return-type override and a subclassed props companion all compile. The contract is pinned by the *Dart-level subclassing contract* group in the generator's tests, exercised against real GTK types in `packages/gir_gtk4/test/gtk4_subclass_test.dart`, and its ownership and lifetime rules are written down in `docs/subclassing.md`.
 
 **The `composite-templates` branch has nothing left to merge.** Its merge-base with `main` is `ed5ce0f7` — *"feat: add subclasssing"* — which is the subclassing commit itself, so that capability was already on `main` before the branch started and was never the branch's to deliver. The branch adds two commits on top of that point, and everything they contain is packaging or an older internal layout: Blueprint and GResource templates, Meson and gettext scaffolding, one part file per class instead of one per source file, program-lifetime `NativeCallable` trampolines. The landed design uses one `<source>.g.dart` part file per source file and per-instance closures. `docs/branch-state.md` has the item-by-item comparison and the four commands that reproduce it.
 
@@ -171,15 +173,16 @@ The capability that most clearly decides whether this project is a set of bindin
 :::
 :::
 
-:::{phase status=future} Phase 6 — Distributing the packages
-Everything is currently `publish_to: none` and pinned to the workspace version, which means nobody can depend on it. Publication is what turns this from a repository into a usable dependency.
+:::{phase status=done} Phase 6 — Distributing the packages
+All seventeen packages are published on pub.dev under the `gir_` prefix. The set moves in lockstep — one generator, one changelog, one version — and the working tree stays a Dart workspace with path dependencies; `tool/release.dart` assembles the publication copies and is the only thing that writes a version into a package's pubspec.
 
 :::{checklist}
-[ ] A versioning policy: which packages move together, and what constitutes a breaking change for each
-[ ] Per-package versions that follow semver, replacing the workspace pin
-[ ] Publication to pub.dev, once phases 2–5 have stopped moving the API
-[ ] A stated stability level per package — "generated, not hand-curated" is a real and acceptable answer, as long as it is written down
-[ ] Migration notes for the generated API when an emitter changes
+[x] A versioning policy: which packages move together, and what constitutes a breaking change for each — *`docs/release.md`: lockstep versions, the API may only grow within 1.x, and the ownership rules are stable within 1.x.*
+[x] Per-package versions that follow semver, replacing the workspace pin — *one version for the whole set, stamped by `tool/release.dart`.*
+[x] Publication to pub.dev — *all seventeen packages, uploaded in dependency order by `tool/release.dart publish`.*
+[x] A stated stability level per package — *1.0: the emitted API only grows within 1.x; the set of bound symbols is stated by the skip report, not by the version number.*
+[x] Migration notes for the generated API when an emitter changes — *the 1.0.0 changelog entry carries a Migration section for every shape change since 0.1.0.*
+[x] A publishability gate in CI — *`tool/release.dart check` runs the structural checks on every pull request, and the real `dart pub publish --dry-run` for the packages whose dependencies are already on pub.dev.*
 :::
 :::
 

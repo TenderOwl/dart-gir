@@ -19,9 +19,9 @@
 
 import 'dart:io' show stderr, exit;
 
-import 'package:adw/adw.dart';
-import 'package:gio/gio.dart';
-import 'package:gtk4/gtk4.dart' hide init;
+import 'package:gir_adw/gir_adw.dart';
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_gtk4/gir_gtk4.dart' hide init;
 
 int main(List<String> args) {
   final app = AdwApplication(

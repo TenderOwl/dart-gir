@@ -54,6 +54,7 @@ class TypeBridge {
     this.isByteArrayIn = false,
     this.byteArrayLengthIndex,
     this.byteArrayOwnedByCallee = false,
+    this.isNullableScalarPointer = false,
     this.ownershipFinalizer,
   });
 
@@ -159,6 +160,17 @@ class TypeBridge {
   /// This is the shape of `g_bytes_new`'s `data` and of
   /// `g_file_replace_contents`' `contents`.
   final bool isByteArrayIn;
+
+  /// `true` when a nullable scalar is passed to the callee **by
+  /// pointer**.
+  ///
+  /// FFI cannot express `int?` over a primitive slot, and the C API
+  /// takes a `gint *` that may be NULL. The wrapper therefore allocates
+  /// a one-slot buffer, writes the caller's value into it (or passes
+  /// NULL when the caller passed none), and reads the slot back after
+  /// the call: the value the callee wrote becomes the wrapper's return
+  /// value, next to the function's own.
+  final bool isNullableScalarPointer;
 
   /// For a caller-provided byte array, the 0-based index of the sibling
   /// parameter that carries the byte count.
@@ -555,12 +567,24 @@ class EmitContext {
     required bool nullable,
     required GirTransferOwnership transfer,
     String? ownershipFinalizer,
+    bool floatingReference = false,
   }) {
     // `transfer="full"` hands the reference to the caller, so the
     // wrapper owns it and releases it when it is collected.
+    //
+    // A type that uses *floating* references is the exception: the GIR
+    // marks such a return `transfer="none"` because the reference
+    // belongs to nobody — the value is floating, or somebody else owns
+    // it. The type's copy function is what turns it into a reference
+    // the caller owns, so the wrapper takes that reference and owns it.
+    final copies = floatingReference && transfer != GirTransferOwnership.full;
     final ownedArg = transfer == GirTransferOwnership.full
         ? ', owned: true'
         : '';
+    String wrap(String e) => copies
+        ? '$dartType.copyReference($e)'
+        : '$dartType.fromPointer($e$ownedArg)';
+    String wrapNullable(String e) => '($e) == ffi.nullptr ? null : ${wrap(e)}';
     if (_pointerDepth(cType) >= 2) {
       return TypeBridge(
         wrapperType: nullable ? '$dartType?' : dartType,
@@ -569,18 +593,12 @@ class EmitContext {
         toNative: nullable
             ? (e) => '$e?.handle ?? ffi.nullptr'
             : (e) => '$e.handle',
-        fromNative: nullable
-            ? (e) =>
-                  '($e) == ffi.nullptr ? null : $dartType.fromPointer($e$ownedArg)'
-            : (e) => '$dartType.fromPointer($e$ownedArg)',
+        fromNative: nullable ? wrapNullable : wrap,
         evaluatesArgTwice: nullable,
         outPointee: 'ffi.Pointer<ffi.Void>',
         outExtract: nullable
-            ? (v) =>
-                  '($v.value) == ffi.nullptr ? null : '
-                  '$dartType.fromPointer($v.value.cast<ffi.Void>()$ownedArg)'
-            : (v) =>
-                  '$dartType.fromPointer($v.value.cast<ffi.Void>()$ownedArg)',
+            ? (v) => wrapNullable('$v.value.cast<ffi.Void>()')
+            : (v) => wrap('$v.value.cast<ffi.Void>()'),
         ownershipFinalizer: ownershipFinalizer,
       );
     }
@@ -591,10 +609,7 @@ class EmitContext {
       toNative: nullable
           ? (e) => '$e?.handle ?? ffi.nullptr'
           : (e) => '$e.handle',
-      fromNative: nullable
-          ? (e) =>
-                '($e) == ffi.nullptr ? null : $dartType.fromPointer($e$ownedArg)'
-          : (e) => '$dartType.fromPointer($e$ownedArg)',
+      fromNative: nullable ? wrapNullable : wrap,
       evaluatesArgTwice: nullable,
       // The C function writes the whole struct (~24 bytes for
       // GtkTextIter, ~72 for GtkTreeIter) into the buffer the wrapper
@@ -607,13 +622,23 @@ class EmitContext {
       outExtract: nullable
           ? (v) =>
                 '($v) == ffi.nullptr ? null : '
-                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()$ownedArg), '
+                'keepAlive(${wrap('$v.cast<ffi.Void>()')}, '
                 '${v}Anchor)'
           : (v) =>
-                'keepAlive($dartType.fromPointer($v.cast<ffi.Void>()$ownedArg), '
+                'keepAlive(${wrap('$v.cast<ffi.Void>()')}, '
                 '${v}Anchor)',
       ownershipFinalizer: ownershipFinalizer,
     );
+  }
+
+  /// Whether [ref] names a type that uses *floating* references.
+  ///
+  /// Such a type hands over a reference nobody owns; the type's copy
+  /// function is what turns it into one the caller owns.
+  bool _isFloatingReference(GirTypeRef ref, GirNamespace? relativeTo) {
+    final decl = findDeclaration(ref.name, relativeTo: relativeTo)?.$2;
+    if (decl is! GirRegisteredType) return false;
+    return TypeResolver.floatingReferenceCopyFunction(decl) != null;
   }
 
   /// The number of trailing `*` in [cType] — its pointer depth.
@@ -644,6 +669,42 @@ class EmitContext {
   /// (the caller owns the buffer, a sibling carries the byte count). The
   /// caller decides — the rule lives in [TypeResolver.isByteArrayIn],
   /// because it needs the callable's parameter list.
+  /// The bridge for a nullable scalar the caller passes **by pointer**.
+  ///
+  /// The C API takes a `gint *` that may be NULL, and FFI cannot
+  /// express `int?` over a primitive slot. The wrapper therefore
+  /// allocates a one-slot buffer, writes the caller's value into it —
+  /// or passes NULL when the caller passed none — and reads the slot
+  /// back after the call: the value the callee wrote becomes the
+  /// wrapper's return value, next to the function's own.
+  (TypeBridge?, String?) _nullableScalarBridge(
+    TypeMapping m, {
+    String? dartType,
+    String? nativeType,
+    String Function(String)? toNative,
+    String Function(String)? outExtract,
+  }) {
+    final dart = dartType ?? m.dartType;
+    final native = nativeType ?? m.nativeType;
+    return (
+      TypeBridge(
+        wrapperType: '$dart?',
+        nativeType: 'ffi.Pointer<$native>',
+        dartFfiType: 'ffi.Pointer<$native>',
+        toNative: toNative ?? _id,
+        fromNative: _id,
+        outPointee: native,
+        // The slot is NULL when the caller passed no value — the
+        // callee then wrote nothing, so the read-back is null too.
+        outExtract: outExtract == null
+            ? (v) => '$v == ffi.nullptr ? null : $v.value'
+            : (v) => '$v == ffi.nullptr ? null : ${outExtract(v)}',
+        isNullableScalarPointer: true,
+      ),
+      null,
+    );
+  }
+
   (TypeBridge?, String?) bridgeFor(
     GirTypeRef? ref, {
     bool nullable = false,
@@ -687,10 +748,8 @@ class EmitContext {
         // buffer and reads the result with `outExtract`; the C
         // function's `allow-none="1"` only says the caller *may*
         // pass NULL — passing a valid pointer is always accepted.
-        // IN parameters are rejected because FFI can't express
-        // `int?` over a primitive pointer.
         if (nullable && !forReturn && direction == GirParameterDirection.in_) {
-          return (null, 'nullable scalar parameter (${ref.name})');
+          return _nullableScalarBridge(m);
         }
         return (
           TypeBridge(
@@ -706,7 +765,12 @@ class EmitContext {
         );
       case TypeKind.boolean:
         if (nullable && !forReturn && direction == GirParameterDirection.in_) {
-          return (null, 'nullable scalar parameter (${ref.name})');
+          return _nullableScalarBridge(
+            m,
+            dartType: 'bool',
+            nativeType: 'ffi.Int32',
+            toNative: (e) => '$e ? 1 : 0',
+          );
         }
         return (
           TypeBridge(
@@ -751,11 +815,31 @@ class EmitContext {
           null,
         );
       case TypeKind.stringList:
-        if (forReturn) {
-          return (null, 'string list return type (${ref.name})');
-        }
         usesFfiString = true;
         usesGirFfi = true;
+        if (forReturn) {
+          // A `char **` return: GLib hands over a NULL-terminated array
+          // of strings. The GIR's `transfer-ownership` decides who
+          // releases it — `g_strfreev` for a full transfer (the array
+          // *and* its strings), nothing for a static table such as
+          // `g_get_language_names`, which stays owned by GLib.
+          String fromNative(String e) {
+            final read =
+                'stringListFromNative($e, free: ${transfer == GirTransferOwnership.full})';
+            return nullable ? read : '$read!';
+          }
+
+          return (
+            TypeBridge(
+              wrapperType: nullable ? 'List<String>?' : 'List<String>',
+              nativeType: 'ffi.Pointer<ffi.Pointer<Utf8>>',
+              dartFfiType: 'ffi.Pointer<ffi.Pointer<Utf8>>',
+              toNative: _id,
+              fromNative: fromNative,
+            ),
+            null,
+          );
+        }
         return (
           TypeBridge(
             wrapperType: 'List<String?>?',
@@ -794,7 +878,12 @@ class EmitContext {
         );
       case TypeKind.enumeration:
         if (nullable && !forReturn && direction == GirParameterDirection.in_) {
-          return (null, 'nullable scalar parameter (${ref.name})');
+          return _nullableScalarBridge(
+            m,
+            nativeType: 'ffi.Int32',
+            toNative: (e) => '$e.value',
+            outExtract: (v) => '${m.dartType}.fromValue($v.value)',
+          );
         }
         return (
           TypeBridge(
@@ -810,7 +899,12 @@ class EmitContext {
         );
       case TypeKind.bitfield:
         if (nullable && !forReturn && direction == GirParameterDirection.in_) {
-          return (null, 'nullable scalar parameter (${ref.name})');
+          return _nullableScalarBridge(
+            m,
+            nativeType: 'ffi.Uint32',
+            toNative: (e) => '$e.value',
+            outExtract: (v) => '${m.dartType}($v.value)',
+          );
         }
         return (
           TypeBridge(
@@ -844,6 +938,9 @@ class EmitContext {
                 ref.name,
                 relativeTo: relativeTo,
               ),
+              floatingReference:
+                  decl is GirRecord &&
+                  TypeResolver.floatingReferenceCopyFunction(decl) != null,
             ),
             null,
           );
@@ -893,6 +990,7 @@ class EmitContext {
               ref.name,
               relativeTo: relativeTo,
             ),
+            floatingReference: _isFloatingReference(ref, relativeTo),
           ),
           null,
         );

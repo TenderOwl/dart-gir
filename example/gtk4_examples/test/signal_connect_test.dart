@@ -20,7 +20,7 @@
 import 'dart:ffi' as ffi;
 
 import 'package:ffi/ffi.dart';
-import 'package:gobject/gobject.dart' show gobjectLookup;
+import 'package:gir_gobject/gir_gobject.dart' show girGobjectLookup;
 import 'package:test/test.dart';
 
 // ---------- raw FFI lookups for symbols that aren't in the generator
@@ -33,7 +33,7 @@ typedef _GObjectNewDart = ffi.Pointer<ffi.Void> Function(
   ffi.Pointer<ffi.Void>,
 );
 
-final _gObjectNew = gobjectLookup<ffi.NativeFunction<_GObjectNewDart>>(
+final _gObjectNew = girGobjectLookup<ffi.NativeFunction<_GObjectNewDart>>(
   'g_object_new',
 ).asFunction<_GObjectNewDart>();
 
@@ -45,7 +45,7 @@ typedef _GSignalEmitByNameDart = void Function(
 );
 
 final _gSignalEmitByName =
-    gobjectLookup<
+    girGobjectLookup<
           ffi.NativeFunction<
             ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>)
           >
@@ -67,7 +67,7 @@ typedef _GSignalNewDart = int Function(
 );
 
 final _gSignalNew =
-    gobjectLookup<
+    girGobjectLookup<
           ffi.NativeFunction<
             ffi.Uint64 Function(
               ffi.Pointer<Utf8>,
@@ -87,16 +87,17 @@ final _gSignalNew =
 // g_object_get_type() — returns G_TYPE_OBJECT.
 typedef _GObjectGetTypeDart = int Function();
 
-final _gObjectGetType = gobjectLookup<ffi.NativeFunction<ffi.Size Function()>>(
-  'g_object_get_type',
-).asFunction<_GObjectGetTypeDart>();
+final _gObjectGetType =
+    girGobjectLookup<ffi.NativeFunction<ffi.Size Function()>>(
+      'g_object_get_type',
+    ).asFunction<_GObjectGetTypeDart>();
 
 // g_type_from_name("gboolean") — returns the GType for gboolean so we can
 // pass it as the return type when registering our void(void) signal.
 typedef _GTypeFromNameDart = int Function(ffi.Pointer<Utf8>);
 
 final _gTypeFromName =
-    gobjectLookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<Utf8>)>>(
+    girGobjectLookup<ffi.NativeFunction<ffi.Size Function(ffi.Pointer<Utf8>)>>(
       'g_type_from_name',
     ).asFunction<_GTypeFromNameDart>();
 
@@ -109,7 +110,7 @@ final _gTypeFromName =
 // (user_data).
 
 final _gSignalConnectData =
-    gobjectLookup<
+    girGobjectLookup<
           ffi.NativeFunction<
             ffi.Uint64 Function(
               ffi.Pointer<ffi.Void>,

@@ -181,10 +181,16 @@ class AsyncCallbackEmitter {
       }
       // Skip userData — the convenience overload always passes null.
       if (userData != null && identical(p, userData)) continue;
+      // An OUT parameter has no place in the overload's Dart signature:
+      // the overload returns `void`, so there is nowhere to put the value.
+      // The native call still takes the argument — the slot is allocated
+      // in the method body (see [_outSlot]).
+      if (p.direction == GirParameterDirection.out) continue;
       final (bridge, reason) = ctx.bridgeFor(
         p.type,
         nullable: p.nullable,
         transfer: p.transferOwnership,
+        direction: p.direction,
       );
       if (bridge == null) {
         ctx.report.skip(
@@ -243,6 +249,7 @@ class AsyncCallbackEmitter {
     // below, matching the lifecycle `CallableEmitter` already uses
     // for ordinary callbacks.
     final callbackAllocs = <_CallbackAlloc>[];
+    final outSlots = <_OutSlot>[];
     final nativeArgs = <String>[selfArgExpr];
     for (var i = 0; i < m.parameters.length; i++) {
       final p = m.parameters[i];
@@ -254,18 +261,35 @@ class AsyncCallbackEmitter {
         nativeArgs.add('_data.cast<ffi.Void>()');
         continue;
       }
-      final overloadParam = overloadParams.firstWhere(
-        (x) => x.name == toLowerCamel(p.name),
-      );
       final (bridge, _) = ctx.bridgeFor(
         p.type,
         nullable: p.nullable,
         transfer: p.transferOwnership,
+        direction: p.direction,
       );
       if (bridge == null) return null;
       if (p.direction == GirParameterDirection.out) {
+        // The native call still takes the OUT argument. Dropping it would
+        // shift every argument after it into the wrong slot — the C ABI
+        // has no notion of "optional argument". The overload returns
+        // `void`, so the value the callee wrote is discarded; the slot is
+        // allocated before the call and released after it.
+        final slot = _outSlot(bridge, p, outSlots.length);
+        if (slot == null) {
+          ctx.report.skip(
+            'method',
+            '$className.$methodName',
+            'out parameter ${p.name}: the async overload cannot return it',
+          );
+          return null;
+        }
+        outSlots.add(slot);
+        nativeArgs.add(slot.varName);
         continue;
       }
+      final overloadParam = overloadParams.firstWhere(
+        (x) => x.name == toLowerCamel(p.name),
+      );
       if (bridge.isString) {
         nativeArgs.add('${overloadParam.name}.cast<Utf8>()');
       } else if (_isCallbackBridge(bridge)) {
@@ -355,13 +379,18 @@ class AsyncCallbackEmitter {
     for (final c in callbackAllocs) {
       b.writeln('  final ${c.varName} = ${c.bridge.toNative(c.paramName)};');
     }
+    // The OUT slots the native call needs. Their values are discarded —
+    // the overload returns `void` — but the arguments have to be there.
+    for (final s in outSlots) {
+      b.writeln('  final ${s.varName} = ${s.allocExpr};');
+    }
     b.writeln('  final id = ++$seqName;');
     b.writeln(
       '  $registryName'
       '[id] = ${toLowerCamel(cb.name)};',
     );
     b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
-    if (callbackAllocs.isNotEmpty) {
+    if (callbackAllocs.isNotEmpty || outSlots.isNotEmpty) {
       b.writeln('  try {');
       if (stringIns.isNotEmpty || listIns.isNotEmpty) {
         var body = '    $callExpr;';
@@ -387,6 +416,9 @@ class AsyncCallbackEmitter {
             ? '${c.varName}?.close()'
             : '${c.varName}.close()';
         b.writeln('    $closeExpr;');
+      }
+      for (final s in outSlots) {
+        b.writeln('    ${s.freeExpr};');
       }
       b.writeln('  }');
     } else if (stringIns.isNotEmpty || listIns.isNotEmpty) {
@@ -445,10 +477,16 @@ class AsyncCallbackEmitter {
         continue;
       }
       if (userData != null && identical(p, userData)) continue;
+      // An OUT parameter has no place in the overload's Dart signature:
+      // the overload returns `void`, so there is nowhere to put the value.
+      // The native call still takes the argument — the slot is allocated
+      // in the method body (see [_outSlot]).
+      if (p.direction == GirParameterDirection.out) continue;
       final (bridge, reason) = ctx.bridgeFor(
         p.type,
         nullable: p.nullable,
         transfer: p.transferOwnership,
+        direction: p.direction,
       );
       if (bridge == null) {
         ctx.report.skip(
@@ -491,6 +529,7 @@ class AsyncCallbackEmitter {
     final stringIns = <GirParameter>[];
     final listIns = <GirParameter>[];
     final callbackAllocs = <_CallbackAlloc>[];
+    final outSlots = <_OutSlot>[];
     for (final p in fn.parameters) {
       if (identical(p, cb)) {
         nativeArgs.add(ptrName);
@@ -500,18 +539,32 @@ class AsyncCallbackEmitter {
         nativeArgs.add('_data.cast<ffi.Void>()');
         continue;
       }
-      final overloadParam = overloadParams.firstWhere(
-        (x) => x.name == toLowerCamel(p.name),
-      );
       final (bridge, _) = ctx.bridgeFor(
         p.type,
         nullable: p.nullable,
         transfer: p.transferOwnership,
+        direction: p.direction,
       );
       if (bridge == null) return null;
       if (p.direction == GirParameterDirection.out) {
+        // The native call still takes the OUT argument — dropping it
+        // would shift every argument after it into the wrong slot.
+        final slot = _outSlot(bridge, p, outSlots.length);
+        if (slot == null) {
+          ctx.report.skip(
+            'function',
+            '$ownerName.$methodName',
+            'out parameter ${p.name}: the async overload cannot return it',
+          );
+          return null;
+        }
+        outSlots.add(slot);
+        nativeArgs.add(slot.varName);
         continue;
       }
+      final overloadParam = overloadParams.firstWhere(
+        (x) => x.name == toLowerCamel(p.name),
+      );
       if (bridge.isString) {
         stringIns.add(p);
         nativeArgs.add('${overloadParam.name}.cast<Utf8>()');
@@ -574,10 +627,15 @@ class AsyncCallbackEmitter {
     for (final c in callbackAllocs) {
       b.writeln('  final ${c.varName} = ${c.bridge.toNative(c.paramName)};');
     }
+    // The OUT slots the native call needs. Their values are discarded —
+    // the overload returns `void` — but the arguments have to be there.
+    for (final s in outSlots) {
+      b.writeln('  final ${s.varName} = ${s.allocExpr};');
+    }
     b.writeln('  final id = ++$seqName;');
     b.writeln('  $registryName[id] = ${toLowerCamel(cb.name)};');
     b.writeln('  final _data = malloc<ffi.IntPtr>()..value = id;');
-    if (callbackAllocs.isNotEmpty) {
+    if (callbackAllocs.isNotEmpty || outSlots.isNotEmpty) {
       b.writeln('  try {');
       if (stringIns.isNotEmpty || listIns.isNotEmpty) {
         var body = '    $callExpr;';
@@ -605,6 +663,9 @@ class AsyncCallbackEmitter {
             : '${c.varName}.close()';
         b.writeln('    $closeExpr;');
       }
+      for (final s in outSlots) {
+        b.writeln('    ${s.freeExpr};');
+      }
       b.writeln('  }');
     } else if (stringIns.isNotEmpty || listIns.isNotEmpty) {
       var body = '$callExpr;';
@@ -631,6 +692,7 @@ class AsyncCallbackEmitter {
       p.type,
       nullable: p.nullable,
       transfer: p.transferOwnership,
+      direction: p.direction,
     );
     return bridge?.isString ?? false;
   }
@@ -640,6 +702,7 @@ class AsyncCallbackEmitter {
       p.type,
       nullable: p.nullable,
       transfer: p.transferOwnership,
+      direction: p.direction,
     );
     return bridge?.isStringList ?? false;
   }
@@ -652,6 +715,54 @@ class AsyncCallbackEmitter {
     final n = bridge.nativeType;
     return n.startsWith('ffi.Pointer<ffi.NativeFunction<');
   }
+
+  /// The slot for an OUT parameter of an async method.
+  ///
+  /// The native call still takes the argument — the C ABI has no notion
+  /// of an omitted argument, so dropping it would shift every argument
+  /// after it into the wrong slot. The overload returns `void`, so there
+  /// is nowhere to put the value the callee wrote: the slot is allocated
+  /// before the call and released after it, and the value is discarded.
+  ///
+  /// Returns null for a shape the slot cannot represent — a struct the
+  /// callee fills in place (`outAllocSize`) or a byte buffer the callee
+  /// allocates (`outExtractBytes`). Both own memory the overload would
+  /// have to hand back, so the overload is not emitted for them.
+  static _OutSlot? _outSlot(TypeBridge bridge, GirParameter p, int index) {
+    final pointee = bridge.outPointee;
+    if (pointee == null) return null;
+    if (bridge.outAllocSize != null) return null;
+    if (bridge.outExtractBytes != null) return null;
+    final isPointerSlot = pointee.startsWith('ffi.Pointer<');
+    return _OutSlot('_out$index', pointee, isPointerSlot);
+  }
+}
+
+/// An OUT parameter's slot in an async method's native call.
+///
+/// The slot holds the value the callee writes. The async overload returns
+/// `void`, so the value is discarded — the slot exists to keep the native
+/// argument list aligned with the C function's.
+class _OutSlot {
+  _OutSlot(this.varName, this.pointee, this.isPointerSlot);
+
+  /// Name of the local holding the slot.
+  final String varName;
+
+  /// The pointee type the slot is allocated with.
+  final String pointee;
+
+  /// `true` for a pointer-sized slot — zeroed, because the C function is
+  /// allowed to leave an OUT parameter untouched.
+  final bool isPointerSlot;
+
+  /// The allocation expression for the slot.
+  String get allocExpr =>
+      isPointerSlot ? 'calloc<$pointee>()' : 'malloc<$pointee>()';
+
+  /// The expression that releases the slot.
+  String get freeExpr =>
+      isPointerSlot ? 'calloc.free($varName)' : 'malloc.free($varName)';
 }
 
 class _CallbackAlloc {

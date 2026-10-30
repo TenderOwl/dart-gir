@@ -137,7 +137,7 @@ GLib's root-level functions are surfaced as real Dart wrappers (`g_get_user_data
 
 - **One Dart class per file, named after the class.** `class GtkButton` lives in `lib/src/gtkbutton.dart`, its props companion in `lib/src/gtkbutton_props.dart`. `Ctrl+Click` on a class name lands in a file that is recognisably that class. All files stay `part of` the same library, so the public barrel is unchanged and forward references still resolve.
 - **Per-package `signals.dart`** with one trampoline and typed registry per shape bucket, plus a shared destroy-notify.
-- **Handwritten runtime helpers** in `package:gir_ffi` — string marshalling, `withNativeStringList` (NULL-terminated argv, distinguishing `null` from empty), `gFree`, `HeapAnchor`.
+- **Handwritten runtime helpers** in `package:gir_ffi` — string marshalling, `withNativeStringList` (NULL-terminated argv, distinguishing `null` from empty), `stringListFromNative` (a `char **` return copied into a Dart `List<String>`), `gFree`, `HeapAnchor`.
 - **Per-namespace library loading.** Each package gets a generated `<ns>Libs` list and a `<ns>Lookup<T>(symbol)` helper that tries each candidate library in turn, then the running process — so symbols that live in a sibling library are still reachable.
 - **Analyzer-aware emission.** Generated packages carry a curated set of lint suppressions for genuine FFI false positives, and keep the doc-comment HTML suppression the GIR docs require.
 - **Immutable GIR data model** covering class, interface, record, union, enumeration, bitfield, callback, function, constant, alias, signal, property, method, constructor, parameter — with transitive include resolution.
@@ -156,19 +156,24 @@ Every symbol the generator cannot emit is written to `packages/<lib>/skip_report
 | Name collision | {{facts.skips.name_collision}} | An enum, class, record or function already holds the Dart name. |
 | Unsupported type | {{facts.skips.unsupported_type}} | Real — the C type has no Dart equivalent yet. |
 | C macro (`introspectable="0"`) | {{facts.skips.c_macro}} | None. A macro has no symbol to bind. The report names the `_full` wrapper to call instead. |
-| Return type could not be named | {{facts.skips.unnamed_return}} | Real — mostly string-list and array returns. |
+| Return type could not be named | {{facts.skips.unnamed_return}} | Real — mostly array returns. |
 | Unsupported OUT buffer | {{facts.skips.unsupported_out_buffer}} | Real — the buffer type has no Dart mapping. |
 | Override-incompatible — emitted under a renamed method | {{facts.skips.override_incompatible}} | Largely handled: the entry names the renamed method to call. |
-| inout parameter | {{facts.skips.inout_parameter}} | Real. The read-only-out direction has no emission path yet. |
+| inout parameter | {{facts.skips.inout_parameter}} | Real, and deliberately so. The GIR's ownership annotations for these parameters are wrong — GTK does not take ownership of the iterator that `gtk_source_buffer_forward_iter_to_source_mark` writes into — so binding them would mean releasing memory the generator does not own. Use the `_get` / `_set` sibling instead. |
 | Alias resolved to its target | {{facts.skips.alias_resolved}} | Benign. The symbol exists, just under its target name. |
-| Unsupported return type | {{facts.skips.unsupported_return_type}} | Real — mostly string-list and array returns. |
+| Unsupported return type | {{facts.skips.unsupported_return_type}} | Real — mostly array returns. |
 | Unsupported argument type | {{facts.skips.unsupported_argument_type}} | Real. The parameter's C type has no Dart equivalent yet. |
-| Nullable scalar parameter (`glong*`, `gint*`, …) | {{facts.skips.nullable_scalar_parameter}} | Real but mechanical — needs an explicit nullable-scalar mapping in the resolver. |
 | Duplicate declaration owned by an earlier namespace | {{facts.skips.duplicate_declaration}} | Benign. The symbol exists, just in the package that owns it. |
 | Everything else (props-layer arity, moved or renamed members, array parameters in callback signatures) | {{facts.skips.other}} | A long tail, individually listed with a precise reason. |
 | **Total entries across all generated packages** | **{{facts.total_skipped}}** | |
 
 Aggregated from the `## By reason` section of every `skip_report.txt` on the current `main` branch — the table above is generated from `site_src/data/facts.json`, which is itself derived from the repository. The two dominant categories — missing getters and construct-only properties — account for over 40% of all entries and neither is a functional hole.
+
+Three gaps that used to be in that table are now closed, and they are no longer counted:
+
+- **A `char **` return is a `List<String>`.** GLib's `GStrv` — a NULL-terminated array of strings — is copied into a Dart list, and released with `g_strfreev` when the GIR says the caller owns it.
+- **A nullable scalar parameter is passed by pointer.** A `gint *` the C function may receive as NULL now gets a one-slot buffer: the caller's value goes in, the callee's value comes back out.
+- **A property with no GIR `<type>` takes the type from its getter**, so the accessor is emitted instead of skipped.
 
 :::{note}
 **How to use the report:** if a symbol you expect is missing, grep `packages/<lib>/skip_report.txt` for it. Every line states the reason, and the reason names the category documented in `docs/skip-categories.md`. That is the intended workflow — not "open an issue and wait".
@@ -181,11 +186,11 @@ Stated up front so nobody has to discover it by hitting it:
 :::{checklist}
 [ ] Array and collection returns / parameters are the biggest remaining hole ({{facts.skips.array_types}} recorded skips, down from 946 before the `array-types` work landed).
 [ ] Dart-level subclassing of generated wrappers is on `main` — but it is a Dart-side contract only: a subclass does not register a `GType` of its own, so it cannot be used as a template parent. See the [roadmap](roadmap.html) and `docs/subclassing.md`.
-[ ] Composite templates are on `main`: `packages/gtk_templates` and `packages/gtk_templates_builder`, with a worked example in `example/todo/` and the design written up in `docs/templates.md`. Blueprint and GResource templates, and Meson/gettext packaging, belong to the application rather than to the bindings, and stay out of scope.
+[ ] Composite templates are on `main`: `packages/gir_gtk_templates` and `packages/gir_gtk_templates_builder`, with a worked example in `example/todo/` and the design written up in `docs/templates.md`. Blueprint and GResource templates, and Meson/gettext packaging, belong to the application rather than to the bindings, and stay out of scope.
 [ ] Unions and bitfields are parsed but not emitted as first-class Dart types.
-[ ] No pub.dev publication; packages are `publish_to: none`.
-[ ] Linux is the only platform the runtime is exercised on. Windows and macOS library resolution is unhandled and produces poor error messages.
-[ ] CI does not run any test that makes a native call.
+[x] All seventeen packages are published on pub.dev under the `gir_` prefix, released in lockstep. The working tree stays a workspace; `tool/release.dart` assembles the publication copies.
+[ ] Linux is the only platform the runtime is exercised on. The loader knows the Windows and macOS file names, but only Linux is executed and tested — and on macOS the library directory also has to be on the loader path.
+[x] CI runs the native suites: a second job installs GTK 4, libadwaita and GtkSourceView and drives the bindings against the real libraries under a virtual display.
 :::
 
 - [See when each of these lands](roadmap.html) →

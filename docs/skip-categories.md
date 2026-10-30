@@ -179,11 +179,34 @@ See the message for the colliding name. A collision between two
 *constants* gets its own reason — see
 `duplicate constant: <A> and <B> both map to <name>`.
 
-### `nullable scalar parameter (<X>)`
+### `inout parameter <X>`
 
-A `nullable="1"` scalar (`int?`, `bool?`, etc.) — the FFI signature can't
-represent a nullable scalar through a pointer. Open a generator issue
-with the GIR excerpt if you hit one in the wild.
+A `direction="inout"` parameter — the C function reads *and* writes
+through the pointer. This is a documented limitation, not a bug.
+
+The corpus's inouts are pointer-shaped (`GtkTextIter*`, `GskPathPoint*`,
+`GIAttributeIter*`, `PangoRectangle*`, `int*`, `const char**`), and the
+GIR's ownership annotations for them are demonstrably wrong:
+`gtk_source_buffer_forward_iter_to_source_mark`'s `iter` is marked
+`transfer-ownership="full"`, but GTK does not take ownership of the
+iterator — it writes into the caller's struct. A generator that followed
+the annotation would release memory it does not own.
+
+Shipping a wrong lifetime rule is worse than shipping no binding, so
+`inout` stays skipped. 39 callables are affected in the current corpus.
+Work around them with the sibling the API offers: most of these
+functions have a `_get` / `_set` pair (`Pango.scanInt` →
+`PangoLayout` / `PangoAttrList`), or the value is reachable through the
+property accessors.
+
+### `nullable scalar parameter (<X>)` — no longer emitted
+
+A `nullable="1"` scalar (`int?`, `bool?`, …) used to be skipped: FFI
+cannot represent `int?` over a primitive slot. The generator now
+allocates a one-slot buffer for such a parameter — the caller's value
+goes in, or NULL when the caller passed none — and reads the slot back
+after the call. See
+[emission.md](./emission.md#nullable-scalar-parameters).
 
 ### `override-incompatible with ancestor; renamed to <X>`
 

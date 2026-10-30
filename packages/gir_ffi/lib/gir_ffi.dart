@@ -1,8 +1,45 @@
 import 'dart:ffi';
-import 'dart:io' show Platform;
+import 'dart:io' show Directory, File, FileLock, FileMode, Platform;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+
+/// Runs [body] while holding the process-wide initialisation lock.
+///
+/// GTK's initialisation is **not thread-safe**: `gtk_init()` opens the
+/// display, builds the settings and loads the theme's CSS, and none of
+/// that is guarded. Two isolates that call it at the same time leave the
+/// display half-initialised — the second one walks into the CSS
+/// provider while the first one is still loading it, and the process
+/// dies with a segmentation fault inside GTK.
+///
+/// The lock is an exclusive lock on a file in the temporary directory.
+/// An advisory file lock belongs to the *open file*, not to the
+/// process, so two isolates — in the same process or in different ones —
+/// contend for the same lock. (Windows' byte-range locks are
+/// per-process and do not; the lock is therefore reliable on Linux and
+/// macOS.)
+///
+/// ```dart
+/// withInitializationLock(gtk.init);
+/// ```
+///
+/// The file is never deleted: a lock is tied to the file it is taken
+/// on, and a new file would be a new lock.
+void withInitializationLock(void Function() body) {
+  final lockFile = File('${Directory.systemTemp.path}/gir-initialization.lock');
+  final handle = lockFile.openSync(mode: FileMode.append);
+  try {
+    handle.lockSync(FileLock.exclusive);
+    try {
+      body();
+    } finally {
+      handle.unlockSync();
+    }
+  } finally {
+    handle.closeSync();
+  }
+}
 
 /// The distribution packages that ship a native library.
 ///
@@ -66,7 +103,7 @@ class NativeLibraryNotFound implements Exception {
     required this.install,
   });
 
-  /// The Dart package that needs the library (`gtk4`).
+  /// The Dart package that needs the library (`gir_gtk4`).
   final String package;
 
   /// The library's name in the GIR (`Gtk 4.0`).
@@ -234,12 +271,61 @@ final _gFreeNative = _glibLib
 final _gMallocNative = _glibLib
     .lookup<NativeFunction<Pointer<Void> Function(Size)>>('g_malloc');
 
+/// The `g_strfreev` implementation.
+///
+/// `g_strfreev(gchar **str_array)` — frees a NULL-terminated array of
+/// strings *and* the strings in it. It is the deallocator GLib pairs
+/// with every `gchar **` it hands over.
+final _gStrfreevNative = _glibLib
+    .lookup<NativeFunction<Void Function(Pointer<Pointer<Utf8>>)>>(
+      'g_strfreev',
+    );
+
 /// Releases memory GLib allocated (`g_malloc`, `g_strdup`, …).
 ///
 /// GLib documents `g_free` as the deallocator for its own allocations.
 void gFree(Pointer<Void> ptr) {
   if (ptr == nullptr) return;
   _gFreeNative.asFunction<void Function(Pointer<Void>)>().call(ptr);
+}
+
+/// Releases a NULL-terminated array of strings GLib allocated.
+///
+/// This is `g_strfreev`: it frees the array *and* every string in it. A
+/// callee that handed the array over (`transfer-ownership="full"`)
+/// expects exactly this call.
+void gStrfreev(Pointer<Pointer<Utf8>> list) {
+  if (list == nullptr) return;
+  _gStrfreevNative.asFunction<void Function(Pointer<Pointer<Utf8>>)>().call(
+    list,
+  );
+}
+
+/// Copies a NULL-terminated `char **` into a Dart list.
+///
+/// The strings are copied, so the native array may be released
+/// afterwards — pass `free: true` when the GIR says the callee handed
+/// the array over (`transfer-ownership="full"`), which is the case for
+/// `g_strfreev` and friends. A `transfer-none` array (`g_get_language_names`
+/// and the other static tables) must *not* be freed: `free` stays false.
+///
+/// A NULL array is a Dart `null`, not an empty list — GLib uses NULL to
+/// mean "no list at all".
+List<String>? stringListFromNative(
+  Pointer<Pointer<Utf8>> list, {
+  bool free = false,
+}) {
+  if (list == nullptr) return null;
+  final out = <String>[];
+  var i = 0;
+  while (true) {
+    final element = list[i];
+    if (element == nullptr) break;
+    out.add(element.toDartString());
+    i++;
+  }
+  if (free) gStrfreev(list);
+  return out;
 }
 
 /// Allocates [size] bytes with GLib's allocator (`g_malloc`).

@@ -18,10 +18,11 @@
 
 import 'dart:io';
 
-import 'package:adw/adw.dart' show init;
-import 'package:gio/gio.dart';
-import 'package:glib/glib.dart';
-import 'package:gobject/gobject.dart'
+import 'package:gir_ffi/gir_ffi.dart';
+import 'package:gir_adw/gir_adw.dart' show init;
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_glib/gir_glib.dart';
+import 'package:gir_gobject/gir_gobject.dart'
     show gobjectFinalizer, signalHandlerDisconnect;
 import 'package:notepad/app.dart';
 import 'package:test/test.dart';
@@ -95,7 +96,7 @@ void main() {
 
     setUpAll(() {
       if (!_hasDisplay) return;
-      init();
+      withInitializationLock(init);
     });
 
     test('is stateful and has no parameter type', () {

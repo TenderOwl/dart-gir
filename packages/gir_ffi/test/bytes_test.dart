@@ -11,7 +11,7 @@
 // The buffer here is allocated with `dart:ffi`'s `calloc`, which uses the
 // same system allocator as GLib's `g_malloc`, so `g_free` releases it
 // correctly. The pairing of `g_malloc` with `g_free` itself is covered
-// by `packages/glib/test/glib_smoke_test.dart`.
+// by `packages/gir_glib/test/glib_smoke_test.dart`.
 
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';

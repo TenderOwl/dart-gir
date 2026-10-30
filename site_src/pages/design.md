@@ -157,6 +157,33 @@ A boxed type with a destructor the GIR names gets a finalizer of its own;
 a type the GIR gives no release function for keeps the borrowed
 behaviour, because there is nothing to call.
 
+### A floating reference is taken through the copy function
+
+One type in the corpus uses *floating* references: `GVariant`. The value
+a constructor hands over belongs to nobody, and the first consumer either
+sinks it or takes it over. The GIR marks such a return
+`transfer-ownership="none"` — because the reference belongs to nobody —
+and names the function that takes a reference of your own in the record's
+`copy-function` attribute.
+
+For `GVariant` that function is `g_variant_ref_sink`, and it does both
+jobs: it sinks a floating reference, and it adds one to a reference
+somebody else owns. So the wrapper takes a reference of its own through
+it, and owns it.
+
+```dart
+final variant = GVariant.string('json');
+variant.owned;        // true — the wrapper took a reference of its own
+variant.isFloating(); // false — the constructor sank it
+```
+
+The alternative — handing the floating reference over as it was — is a
+memory bug, not a style question. A consumer that assumes ownership
+(`gtk_actionable_set_action_target_value`, `g_variant_new_variant`) then
+owns the very reference the wrapper's `unref()` releases: the count
+underflows, the value is freed while the consumer still points at it, and
+the heap is corrupted.
+
 ### Namespace resolution needs an explicit anchor
 
 The subtlest bug class in this project is unqualified type names resolving against the wrong namespace. Emitting `Adw` that inherits from `Gtk` means `<type name="Application"/>` has two plausible answers. The resolver therefore takes a `relativeTo` parameter, and inherited properties, inherited signals and interface mirrors all pass the namespace that actually declared the symbol.
@@ -257,7 +284,7 @@ Every symbol the generator declines to emit produces a line in `packages/<lib>/s
 
 Note the last entry. A C macro has no symbol to bind, so the reason does not just say "introspectable" — it names the `_full` wrapper to call instead. A skip entry that tells the user what to do instead is worth ten that just say no. The same applies to the override-incompatible reasons elsewhere in the reports, which name the method that *was* emitted under a new name.
 
-The excerpt above is generated from `packages/glib/skip_report.txt` at build time, so it can never quote a number the repository does not hold.
+The excerpt above is generated from `packages/gir_glib/skip_report.txt` at build time, so it can never quote a number the repository does not hold.
 
 All categories and reasons are documented alphabetically in `docs/skip-categories.md`.
 
@@ -265,7 +292,7 @@ All categories and reasons are documented alphabetically in `docs/skip-categorie
 
 One class per file, named after the class, with its props companion alongside:
 
-```text title="packages/gtk4/lib/"
+```text title="packages/gir_gtk4/lib/"
 gtk4.dart                     // barrel: exports every part file in declaration order
 src/
   lib.dart                    // library list + gtlLookup()
@@ -281,7 +308,7 @@ src/
 skip_report.txt
 ```
 
-All per-class files are `part of` the same library, so forward references resolve naturally and the public surface is unchanged — `import 'package:gtk4/gtk4.dart'` exposes the same names as before. The practical benefit is navigational: `Ctrl+Click` on `GtkButton` lands in `gtkbutton.dart` instead of `classes_27.dart`.
+All per-class files are `part of` the same library, so forward references resolve naturally and the public surface is unchanged — `import 'package:gir_gtk4/gir_gtk4.dart'` exposes the same names as before. The practical benefit is navigational: `Ctrl+Click` on `GtkButton` lands in `gtkbutton.dart` instead of `classes_27.dart`.
 
 ## Contributing conventions
 
@@ -312,5 +339,6 @@ Other conventions worth knowing before opening a pull request:
 | [subclassing.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/subclassing.md) | What a Dart-level subclass of a generated wrapper is, and what it is not |
 | [branch-state.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/branch-state.md) | What is committed on `main` and what is not: the verified branch comparison and how to reproduce it |
 | [skip-categories.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/skip-categories.md) | Every category and reason that appears in a skip report, alphabetised |
+| [release.md](https://github.com/TenderOwl/dart-gir/blob/main/docs/release.md) | The release policy: lockstep versioning, what 1.0 promises and does not promise, the prepare → check → publish process |
 
 - [See what the design still needs](roadmap.html) →

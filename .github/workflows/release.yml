@@ -1,0 +1,85 @@
+name: release
+
+# The upload is the owner's action: this workflow is the button that
+# performs it, and it needs the pub.dev token from the repository
+# secrets. The policy it implements is in `docs/release.md`.
+#
+# Before running it, the repository must be clean and the version in the
+# root `pubspec.yaml` must be the version to publish — the release tool
+# reads it from there and stamps it into every package.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version to publish (e.g. 1.0.0). Defaults to the root pubspec.'
+        required: false
+        type: string
+      skip_validation:
+        description: 'Publish with --skip-validation (for pub.dev''s indexing lag).'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v2
+        with:
+          sdk: ^3.13.4
+
+      - name: dart pub get
+        run: dart pub get
+
+      # The version: the input, or the root pubspec's. One place decides
+      # it, and the release tool reads the same one.
+      - name: Resolve the version
+        id: version
+        run: |
+          version="${{ inputs.version }}"
+          if [ -z "$version" ]; then
+            version=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | head -1)
+          fi
+          if [ -z "$version" ]; then
+            echo "no version: the root pubspec declares none" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # The structural checks first: a package pub.dev would reject must
+      # fail here, not half-way through the upload.
+      - name: Publishability gate
+        run: dart run tool/release.dart check --version "${{ steps.version.outputs.version }}"
+
+      # The upload, in dependency order. `tool/release.dart` waits between
+      # packages because pub.dev indexes asynchronously and the next
+      # package's dependency may not resolve yet.
+      - name: Publish
+        env:
+          PUB_HOSTED_URL: ${{ secrets.PUB_HOSTED_URL || 'https://pub.dev' }}
+          PUB_TOKEN: ${{ secrets.PUB_TOKEN }}
+        run: >-
+          dart run tool/release.dart publish
+          --version "${{ steps.version.outputs.version }}"
+          ${{ inputs.skip_validation && '--skip-validation' || '' }}
+
+      # The tag is the release's identity: the version, on the branch it
+      # was published from.
+      - name: Tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "tag $VERSION already exists — nothing to do"
+          else
+            git tag -a "$VERSION" -m "Release $VERSION"
+            git push origin "refs/tags/$VERSION"
+          fi

@@ -1,0 +1,42 @@
+name: gir_gtk4
+description: "Generated Dart FFI bindings for Gtk 4.0 — the widget toolkit: widgets, layout containers, dialogs, actions and accessibility. Produced by gir_generator."
+homepage: "https://dartgir.tenderowl.com"
+repository: "https://github.com/TenderOwl/dart-gir"
+issue_tracker: "https://github.com/TenderOwl/dart-gir/issues"
+topics:
+  - ffi
+  - gtk4
+  - gui
+  - bindings
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  ffi: ^2.1.3
+  gir_ffi:
+    path: ../gir_ffi
+  gir_cairo:
+    path: ../gir_cairo
+  gir_gdk4:
+    path: ../gir_gdk4
+  gir_gdk_pixbuf:
+    path: ../gir_gdk_pixbuf
+  gir_gio:
+    path: ../gir_gio
+  gir_glib:
+    path: ../gir_glib
+  gir_gobject:
+    path: ../gir_gobject
+  gir_graphene:
+    path: ../gir_graphene
+  gir_gsk4:
+    path: ../gir_gsk4
+  gir_pango:
+    path: ../gir_pango
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

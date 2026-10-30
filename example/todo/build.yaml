@@ -1,4 +1,4 @@
-# Wires `gtk_templates_builder` into `build_runner` so the
+# Wires `gir_gtk_templates_builder` into `build_runner` so the
 # `_$TodoWindowTemplate` mixin is regenerated on every
 # `dart run build_runner build`. The builder scans every
 # `.dart` file under `lib/`, finds `@GtkTemplate`-annotated
@@ -9,7 +9,7 @@
 #
 # `build_to: source` is **not** set here: it belongs to the
 # provider package's `build.yaml`
-# (`packages/gtk_templates_builder/build.yaml`), where it
+# (`packages/gir_gtk_templates_builder/build.yaml`), where it
 # makes the generated file land next to the source instead of
 # in `.dart_tool/build/generated/`. Dart requires a part file to
 # sit in the same directory as its library, so this is what
@@ -29,6 +29,6 @@ additional_public_assets:
 targets:
   $default:
     builders:
-      gtk_templates_builder:
+      gir_gtk_templates_builder:
         generate_for:
           - lib/**.dart

@@ -223,7 +223,7 @@ signal coexist via the per-id registry slot; disconnect via
 `g_signal_handler_disconnect` and the destroy-notify clears the slot.
 
 The runtime tests under
-[`packages/gobject/test/signal_helpers_test.dart`](../packages/gobject/test/signal_helpers_test.dart)
+[`packages/gir_gobject/test/signal_helpers_test.dart`](../packages/gir_gobject/test/signal_helpers_test.dart)
 exercise the trampoline path end-to-end: register a custom
 `void(void)` signal via `g_signal_new`, connect with `connectSignal`,
 emit, disconnect, verify the registry slot was cleared.

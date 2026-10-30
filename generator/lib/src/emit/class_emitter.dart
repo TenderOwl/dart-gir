@@ -121,8 +121,8 @@ class ClassEmitter {
     final sink = rooted && ctx.sinksFloatingRefs(cls);
     // The wrapper cache lives in `package:gir_ffi`.
     ctx.usesGirFfi = true;
-    if (rooted && packageNameFor(ctx.namespace) != 'gobject') {
-      ctx.imports.add('gobject');
+    if (rooted && packageNameFor(ctx.namespace) != 'gir_gobject') {
+      ctx.imports.add('gir_gobject');
     }
 
     // Build the set of interfaces the class can structurally satisfy
@@ -622,23 +622,21 @@ class ClassEmitter {
     String dartName,
     GirClass leaf,
   ) {
-    // Resolve the property's Dart type for skip-reason reporting only
-    // (e.g. unsupported array types). The accessor signatures below
-    // are derived from the typed method's bridge, not from this, so
-    // nullability propagates correctly: `<type name="utf8"/>` declared
-    // on the property is `String`, but `gtk_button_get_label` returns
-    // `String?` because the C function's `transfer-ownership="none"`
-    // gchar* is nullable — and the props getter must mirror that.
+    // Resolve the property's declared type — for the skip-reason
+    // reporting and as a fallback for the accessor's Dart type. The
+    // accessor signatures below are derived from the typed method's
+    // bridge, not from this, so nullability propagates correctly:
+    // `<type name="utf8"/>` declared on the property is `String`, but
+    // `gtk_button_get_label` returns `String?` because the C
+    // function's `transfer-ownership="none"` gchar* is nullable — and
+    // the props getter must mirror that.
+    //
+    // A property whose GIR element carries no `<type>` at all (e.g.
+    // `AdwAboutDialog.artists`, whose type the GIR leaves to the
+    // getter) is **not** skipped for it: the getter's own bridge
+    // carries the type, and the accessor is emitted from it.
     final ownerNs = _namespaceOfClass(owner) ?? ctx.namespace;
     final propertyType = _resolvePropertyType(prop, ownerNs);
-    if (propertyType == null) {
-      ctx.report.skip(
-        'property',
-        '$dartName.${prop.name}',
-        'unsupported type ${prop.type?.name ?? prop.type?.cType}',
-      );
-      return null;
-    }
     // Find the backing typed methods. Match by GIR name (the
     // `<method name="…">` element), not by C identifier — the
     // generator's normalizer already turned `gtk_button_get_label`
@@ -690,6 +688,18 @@ class ClassEmitter {
         );
         return null;
       }
+      // The props layer may only call a typed method that *exists*.
+      // A method the callable emitter skips (a C macro, a moved
+      // symbol, a shadowed one) has no Dart wrapper to call.
+      final getterSkipped = _typedMethodSkipReason(m);
+      if (getterSkipped != null) {
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'getter $effectiveGetterName is not emitted ($getterSkipped)',
+        );
+        return null;
+      }
       // Resolve the typed method's return type via `bridgeFor` so
       // the props getter inherits the correct nullability (e.g.
       // `String?` for gchar* transfer-none). Fall back to the
@@ -713,6 +723,17 @@ class ClassEmitter {
       );
       getterDartType = bridge?.wrapperType ?? propertyType;
       getterCall = _getterName(m);
+      if (getterDartType == null) {
+        // Neither the property nor the getter says what the value is —
+        // the getter's return type has no Dart mapping. The user can
+        // still call the typed method directly.
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'getter $effectiveGetterName has an unsupported return type',
+        );
+        return null;
+      }
     }
     if (writable) {
       final effectiveSetterName = prop.setter ?? 'set_${prop.name}';
@@ -748,6 +769,15 @@ class ClassEmitter {
           'setter $effectiveSetterName was renamed; '
               'call the renamed method directly',
         );
+      } else if (_typedMethodSkipReason(m) != null) {
+        // The typed setter is not emitted (a C macro, a moved symbol, a
+        // shadowed one) — fall back to the read-only accessor.
+        ctx.report.skip(
+          'property',
+          '$dartName.${prop.name}',
+          'setter $effectiveSetterName is not emitted '
+              '(${_typedMethodSkipReason(m)})',
+        );
       } else if (m.parameters.isNotEmpty &&
           !_matchesPropertyType(m.parameters.first.type, prop.type, owner)) {
         // The typed setter's parameter type is narrower than the
@@ -782,6 +812,16 @@ class ClassEmitter {
         );
         setterDartType = bridge?.wrapperType ?? propertyType;
         setterCall = _setterName(m);
+        if (setterDartType == null) {
+          // Neither the property nor the setter says what the value is —
+          // the setter's parameter type has no Dart mapping.
+          ctx.report.skip(
+            'property',
+            '$dartName.${prop.name}',
+            'setter $effectiveSetterName has an unsupported parameter type',
+          );
+          return null;
+        }
       }
     }
     if (getterCall == null && setterCall == null) return null;
@@ -878,6 +918,27 @@ class ClassEmitter {
     return null;
   }
 
+  /// The reason the callable emitter would skip [m], or `null` when it
+  /// emits the method.
+  ///
+  /// The props layer may only call a typed method that exists: a
+  /// method the emitter skips — a C macro, a moved symbol, a shadowed
+  /// one — has no Dart wrapper to call, and the accessor would not
+  /// compile. The rules mirror `CallableEmitter`'s own skip list.
+  String? _typedMethodSkipReason(GirMethod m) {
+    if (!m.introspectable) {
+      final sibling = m.shadows ?? m.shadowedBy;
+      return sibling != null
+          ? 'introspectable=0 (C macro; use $sibling)'
+          : 'introspectable=0';
+    }
+    if (m.cIdentifier == null) return 'no c:identifier';
+    if (m.movedTo != null) return 'moved to ${m.movedTo}';
+    if (m.shadowedBy != null) return 'shadowed by ${m.shadowedBy}';
+    if (m.isVarargs) return 'varargs';
+    return null;
+  }
+
   /// Looks up a method on [owner] (or its parent chain) by GIR name.
   /// Used to find the typed `get<Name>` / `set<Name>` instance methods
   /// that back each property.
@@ -923,6 +984,16 @@ class ClassEmitter {
     final ownerNs = _namespaceOfClass(owner) ?? ctx.namespace;
     final m = ctx.resolver.resolve(mType, currentNamespace: ownerNs);
     final p = ctx.resolver.resolve(propType, currentNamespace: ownerNs);
+    // The property's own `<type>` may not map to a Dart type at all —
+    // an `<array>` of strings without a `c:type` attribute, for
+    // instance, which the GIR spells loosely and the resolver cannot
+    // identify. Then there is nothing to mismatch against: the typed
+    // setter's parameter is the only statement about the value.
+    if (p.dartType.isEmpty ||
+        p.dartType == 'unsupported' ||
+        p.kind.toString().contains('unsupported')) {
+      return true;
+    }
     return m.dartType == p.dartType;
   }
 
@@ -1252,8 +1323,8 @@ class ClassEmitter {
   /// `unused_import` warnings when the interface only takes / returns
   /// primitives, `Pointer<Void>`, or types from a *different* package
   /// that the emitting package already imports (e.g. `GObject` lives
-  /// in `gobject`, not in `gio`, so mirroring `Gio.ListModel.getItem`
-  /// onto a Pango class needs `gobject`, not `gio`).
+  /// in `gir_gobject`, not in `gir_gio`, so mirroring `Gio.ListModel.getItem`
+  /// onto a Pango class needs `gir_gobject`, not `gir_gio`).
   bool _interfaceNeedsImport(
     GirInterface iface,
     GirNamespace ifaceNs,
@@ -1269,7 +1340,7 @@ class ClassEmitter {
         final mapping = ctx.resolver.resolve(t, currentNamespace: ifaceNs);
         // Only count types whose required import is the interface's
         // own package. A `requiredImport` of any other value (e.g.
-        // `gobject`) means the emitting package already imports it
+        // `gir_gobject`) means the emitting package already imports it
         // (or will import it via its own class emission).
         if (mapping.requiredImport == ifacePkg) return true;
       }

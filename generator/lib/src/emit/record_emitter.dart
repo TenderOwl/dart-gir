@@ -98,6 +98,16 @@ class RecordEmitter {
         ? null
         : TypeResolver.destructorOf(type, ctx.namespace.name);
     final finalizerMember = isInterface ? null : boxedFinalizerName(type.name);
+    // The copy function of a type that uses *floating* references
+    // (`g_variant_ref_sink` for `GVariant`). The GIR's `copy-function`
+    // names it: it is the function that turns the reference a callee
+    // hands over into a reference the caller owns.
+    final copyFunction = isInterface
+        ? null
+        : TypeResolver.floatingReferenceCopyFunction(type);
+    final copyLookup = copyFunction == null
+        ? null
+        : '_${toLowerCamel(dartName)}CopyFunction';
     // The `NativeFinalizer` that releases the reference, and the
     // expressions that release a surplus reference the cache handed back
     // and adopt a reference the cached wrapper does not own yet.
@@ -121,9 +131,9 @@ class RecordEmitter {
       releaseExpr = null;
       adoptExpr = null;
     }
-    if (isInterface && packageNameFor(ctx.namespace) != 'gobject') {
-      // `gobjectFinalizer` and `gObjectUnref` live in `package:gobject`.
-      ctx.imports.add('gobject');
+    if (isInterface && packageNameFor(ctx.namespace) != 'gir_gobject') {
+      // `gobjectFinalizer` and `gObjectUnref` live in `package:gir_gobject`.
+      ctx.imports.add('gir_gobject');
     }
     // Interfaces must NOT be `final class`: the implements-clause plan
     // (T2) requires other classes to be able to `implements <Name>`.
@@ -202,6 +212,51 @@ class RecordEmitter {
       memberNames.add(finalizerMember);
       memberNames.add(release);
     }
+    if (copyLookup != null) {
+      b.writeln();
+      b.writeln(
+        '/// The C function that takes a reference of its own — the copy',
+      );
+      b.writeln('/// function the GIR names for this type.');
+      b.writeln('static final $copyLookup =');
+      b.writeln(
+        '    ${ctx.pkgIdent}Lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> '
+        'Function(ffi.Pointer<ffi.Void>)>>(',
+      );
+      b.writeln("      '$copyFunction',");
+      b.writeln(
+        '    ).asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();',
+      );
+      b.writeln();
+      b.writeln('/// Takes a reference of its own to the value at [handle].');
+      b.writeln('///');
+      b.writeln(
+        '/// A `$dartName` reference is *floating*: the value a constructor',
+      );
+      b.writeln(
+        '/// hands over belongs to nobody until it is sunk, and a value',
+      );
+      b.writeln(
+        '/// somebody else owns can only be reached through a reference of',
+      );
+      b.writeln(
+        '/// your own. The copy function the GIR names for this type does',
+      );
+      b.writeln('/// both — it sinks a floating reference and adds one to a');
+      b.writeln('/// reference that is already owned.');
+      b.writeln('///');
+      b.writeln(
+        '/// The wrapper owns the reference it gets back, so the reference',
+      );
+      b.writeln('/// is released when the wrapper is collected.');
+      b.writeln(
+        'static $dartName copyReference(ffi.Pointer<ffi.Void> handle) {',
+      );
+      b.writeln(
+        '  return $dartName.fromPointer($copyLookup(handle), owned: true);',
+      );
+      b.writeln('}');
+    }
     // `cast<T>(factory)` lets the user recover the destination class's
     // methods from a borrowed wrapper (e.g. `GObject` from
     // `GListModel.getObject`, `GtkWidget` from `AdwTabPage.getChild`).
@@ -251,16 +306,24 @@ class RecordEmitter {
         ctx.report.skip('constructor', '$dartName.$name', 'name collision');
         continue;
       }
+      // A boxed constructor hands the caller a reference the GIR marks
+      // `transfer-ownership="full"` — the wrapper owns it and releases
+      // it when it is collected.
+      //
+      // A constructor of a type that uses *floating* references hands
+      // over a reference nobody owns: the GIR's `copy-function` names
+      // the sink that turns it into one the caller owns. The wrapper
+      // takes that reference and owns it.
+      final copyReturn =
+          copyFunction != null && c.returnTransfer != GirTransferOwnership.full;
       final code = callables.emit(
         c,
         dartName: name,
         ownerName: dartName,
         classMember: true,
         factoryClass: dartName,
-        // A boxed constructor hands the caller a reference the GIR marks
-        // `transfer-ownership="full"` — the wrapper owns it and releases
-        // it when it is collected.
         factoryOwned: c.returnTransfer == GirTransferOwnership.full,
+        factoryCopy: copyReturn,
       );
       if (code != null) b.writeln(_indent(code));
     }

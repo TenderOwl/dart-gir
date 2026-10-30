@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:adw/adw.dart';
-import 'package:gio/gio.dart';
-import 'package:glib/glib.dart';
-import 'package:gobject/gobject.dart';
-import 'package:gtk4/gtk4.dart';
-import 'package:gtk_templates/gtk_templates.dart';
+import 'package:gir_adw/gir_adw.dart';
+import 'package:gir_gio/gir_gio.dart';
+import 'package:gir_glib/gir_glib.dart';
+import 'package:gir_gobject/gir_gobject.dart';
+import 'package:gir_gtk4/gir_gtk4.dart';
+import 'package:gir_gtk_templates/gir_gtk_templates.dart';
 
 part 'notepad_window.g.dart';
 

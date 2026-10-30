@@ -1,0 +1,40 @@
+# Skip report for package gir_gdk_pixbuf (GdkPixbuf 2.0)
+Total skipped: 19
+
+## By category
+property: 9
+callback: 5
+callable: 4
+method: 1
+
+## By reason
+construct-only or no public setter; emitting getter only: 7
+array parameter in callback signature: 5
+moved to PixbufError.quark: 1
+parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature: 1
+shadowed by get_pixels_with_length: 1
+parameter save_func: callback PixbufSaveFunc has unsupported signature: 1
+name collision: 1
+missing getter get_pixel-bytes: 1
+getter get_pixels is not emitted (shadowed by get_pixels_with_length): 1
+
+## First 50 entries
+[callable] GdkPixbuf.pixbufErrorQuark — moved to PixbufError.quark
+[callback] GdkPixbufDestroyNotify parameter pixels — array parameter in callback signature
+[callable] GdkPixbuf.fromData — parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature
+[callable] GdkPixbuf.getPixels — shadowed by get_pixels_with_length
+[callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature
+[callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
+[method] GdkPixbuf.toString — name collision
+[property] GdkPixbuf.bits-per-sample — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.colorspace — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.has-alpha — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.height — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.n-channels — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.pixel-bytes — missing getter get_pixel-bytes
+[property] GdkPixbuf.pixels — getter get_pixels is not emitted (shadowed by get_pixels_with_length)
+[property] GdkPixbuf.rowstride — construct-only or no public setter; emitting getter only
+[property] GdkPixbuf.width — construct-only or no public setter; emitting getter only
+[callback] GdkPixbufDestroyNotify parameter pixels — array parameter in callback signature
+[callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array parameter in callback signature
+[callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature

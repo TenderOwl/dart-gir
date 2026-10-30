@@ -191,6 +191,21 @@ follow the same rule — the props class is intentionally `class`
 (not `final class`) and uses public names (no leading underscore) so
 the extends clause resolves across package boundaries.
 
+**A property without a `<type>`** takes the type from its getter. Some
+GIR `<property>` elements declare no type at all — the type lives in the
+typed method the `getter=` attribute names. `AdwAboutDialog.artists` is
+one: the property carries no `<type>`, and its getter returns a
+`GStrv`. The props accessor takes the **getter's** return type, so the
+accessor is emitted as `List<String>? get artists`.
+
+**The props layer only calls methods that exist.** The accessor
+delegates to the typed `get<Name>()` / `set<Name>(value)` methods, so
+the props emitter has to know which of those were actually emitted. It
+mirrors the callable emitter's skip list: a property whose getter was
+skipped (moved, introspectable, unsupported) is skipped too, rather than
+emitting an accessor that calls a method the package does not have.
+The reason names the property and the method.
+
 **Nullability** is propagated from the typed method's bridge, not the
 property's declared `<type>`. A property declared as `<type name="utf8"/>`
 maps to a non-nullable `String` if the typed `get<Name>` returns
@@ -213,6 +228,10 @@ a no-arg getter / single-arg setter are recorded in the skip report
 with a precise reason and dropped silently:
 
 * `unsupported type <name>` — array of complex struct, etc.
+* `getter <name> has an unsupported return type` / `setter <name> has an
+  unsupported parameter type` — the typed method's own signature has no
+  marshalling shape. The property's declared `<type>` (when it has one)
+  is not consulted for this decision.
 * `missing getter <name>` — the property's `getter=` attribute names a
   C function that isn't in the GIR `<method>` set.
 * `getter <name> takes N args` — typed getter has extra non-self args
@@ -330,10 +349,10 @@ package (e.g. `PangoFontFamily implements Gio.ListModel`), the
 emitter scans each mirrored method's parameter and return types via
 the resolver. If a type's `requiredImport` is the interface's own
 package — meaning the emitted Dart code references a wrapper class
-that lives in that package (e.g. `GtkWidget` from `gtk4`) — the
+that lives in that package (e.g. `GtkWidget` from `gir_gtk4`) — the
 import is added to the package barrel. If the only types referenced
 are primitives, `Pointer<Void>`, or types from other already-imported
-packages (e.g. `GObject` from `gobject`), the import is suppressed
+packages (e.g. `GObject` from `gir_gobject`), the import is suppressed
 to avoid `unused_import` warnings.
 
 **Namespace-relative type resolution**. The mirror's
@@ -439,6 +458,67 @@ thread-affine keep the caller's explicit release:
 They get no `NativeFinalizer`, and the generator test group *Ownership
 transfer* pins that.
 
+### Floating references
+
+One type in the corpus uses **floating references**: `GVariant`. A
+floating reference belongs to nobody — the value a constructor hands over
+is floating, and the first consumer either sinks it or takes it over.
+
+The GIR marks such a return `transfer-ownership="none"`, because the
+reference belongs to nobody — but the GIR also names the function that
+takes a reference of your own in the record's `copy-function` attribute.
+For `GVariant` that is `g_variant_ref_sink`, and GLib's own words are
+precise about what it does:
+
+> Calling `g_variant_ref_sink()` on a `GVariant` with a floating
+> reference will convert the floating reference into a full reference.
+> Calling `g_variant_ref_sink()` on a non-floating `GVariant` results in
+> an additional normal reference being added.
+
+So the copy function does both jobs: it sinks a floating reference and
+adds one to a reference somebody else owns. The generator therefore
+takes a reference of its own through it — and owns it:
+
+```dart
+final variant = GVariant.string('json');
+variant.owned;        // true — the wrapper took a reference of its own
+variant.isFloating(); // false — the constructor sank it
+```
+
+The rule the generator follows:
+
+* A type whose `copy-function` ends in `_ref_sink` uses floating
+  references. The copy function must be one of the type's own methods —
+  the bindings never guess a symbol name.
+* A **constructor** of such a type hands over a reference nobody owns.
+  The wrapper takes its own through the copy function and owns it. The
+  constructor is emitted as a factory, because the generative form has
+  no body to host the call.
+* A **return** the GIR marks `transfer-ownership="none"` is the same
+  shape: the wrapper takes a reference of its own through the copy
+  function and owns it. A value somebody else owns (`g_value_get_variant`,
+  `g_dbus_message_get_body`, `gtk_actionable_get_action_target_value`)
+  gets a reference of its own, so the wrapper cannot outlive the owner
+  with a dangling pointer.
+* A return the GIR marks `transfer-ownership="full"` is already the
+  caller's reference: the wrapper owns it as it is, and no copy is made.
+
+The generated wrapper exposes the copy as a public static, because other
+packages need it:
+
+```dart
+static GVariant copyReference(ffi.Pointer<ffi.Void> handle) {
+  return GVariant.fromPointer(_gVariantCopyFunction(handle), owned: true);
+}
+```
+
+**Why this matters.** Without the copy, a consumer that assumes ownership
+— GTK's `gtk_actionable_set_action_target_value`, GLib's
+`g_variant_new_variant` — ends up owning the very reference the wrapper's
+`unref()` releases. The reference count underflows, the value is freed
+while the consumer still points at it, and the heap is corrupted. The
+regression test is `packages/gir_glib/test/variant_test.dart`.
+
 ## CallableEmitter — `generator/lib/src/emit/callable.dart`
 
 Used by every emitter that produces a function-shaped wrapper (methods,
@@ -465,6 +545,7 @@ Each `<parameter>` is classified:
 | enum / bitfield | wrapper class | `Int32` / `Uint32` | `.value` ↔ `Wrapper.fromValue(...)` |
 | callback | inline Dart signature (nullable for `nullable="1"`) | `Pointer<NativeFunction>` | `NativeCallable.isolateLocal` wrap + `.close()` in `finally` (conditional on null for nullable callbacks) |
 | out / inout | wrapper type | `Pointer<...>` | `calloc<...>` + `.value` extraction |
+| nullable scalar IN (`nullable="1"` on a `gint*`-shaped parameter) | `int?` / `bool?` / `Enum?` | `Pointer<Int32>` / `Pointer<Uint32>` | One-slot buffer seeded with the caller's value (or NULL when the caller passed none); the value the callee wrote is read back as the wrapper's next return value — see [Nullable scalar parameters](#nullable-scalar-parameters). |
 | bound-length array of primitive/enum/bitfield/bool | `ffi.Pointer<ffi.Int32>` (or `Uint32` for bitfields) | same | Direct (user `calloc<Int32>(n)`); the GIR's `<array length="N">` resolves to a sibling `int` parameter at index `N` that the natural parameter iteration adds to the signature |
 | bound-length array of class/interface/record | `ffi.Pointer<ffi.Void>` | same | Direct (user passes `Pointer<ffi.Void>`); `<array length="N">` binds to a sibling `int` parameter. Typed `asTypedList(n)` iteration is deferred until generated records become real `StructBase` subclasses. |
 | unbound primitive/enum/bitfield array (`<array c:type="…">` with no `<array length>`) | `ffi.Pointer<ffi.Int32>` (or `Uint32`) | same | Direct; the user provides length via a sibling `get_n_items` accessor. |
@@ -515,7 +596,7 @@ try {
 ```
 
 This pattern is only safe for callbacks invoked **synchronously** inside
-the call — see `g_async_queue_sort` in `packages/glib/test/glib_smoke_test.dart`
+the call — see `g_async_queue_sort` in `packages/gir_glib/test/glib_smoke_test.dart`
 for a working example. Long-lived callbacks (idle sources, timeout
 sources, signal handlers, …) register a C function pointer that GLib
 later invokes from the main loop; the wrapping `NativeCallable` would
@@ -734,6 +815,94 @@ The last two exclusions are the interesting ones:
   that works asynchronously — GIO holds a reference to the bytes "for
   the duration of the call" without copying them.
 
+### Nullable scalar parameters
+
+A `nullable="1"` scalar that the C function takes **by pointer** — the
+shape of `g_io_channel_read_line_string`'s `terminator_pos`
+(`<type name="gsize" c:type="gsize*"/>`, `nullable="1" allow-none="1"`).
+The C API accepts NULL there; Dart FFI cannot express `int?` over a
+primitive slot.
+
+The wrapper allocates a one-slot buffer, seeds it with the caller's
+value, and reads it back after the call:
+
+```dart
+(GIOStatus, int?) readLineString(GString buffer, [int? terminatorPos]) {
+  final _out0 = terminatorPos == null ? ffi.nullptr : malloc<ffi.Size>();
+  if (terminatorPos != null) _out0.value = terminatorPos;
+  try {
+    final _ret = _gIoChannelReadLineString(this.handle, buffer.handle, _out0, _error);
+    return (GIOStatus.fromValue(_ret), _out0 == ffi.nullptr ? null : _out0.value);
+  } finally {
+    if (_out0 != ffi.nullptr) malloc.free(_out0);
+  }
+}
+```
+
+Three rules make it correct:
+
+* **NULL means NULL.** When the caller passes no value, the wrapper
+  passes `ffi.nullptr` — the C side sees exactly what `allow-none="1"`
+  promises it accepts. The slot is not allocated at all, so there is
+  nothing to free.
+* **The read-back is a return value, not a parameter.** The slot rides
+  the OUT machinery: the value the callee wrote becomes the wrapper's
+  next return element, next to the function's own. The parameter stays
+  in the Dart signature (it is an IN parameter in the GIR) and the
+  wrapper returns `(ret, value)`.
+* **The pointer type is the pointee's.** The native signature declares
+  `ffi.Pointer<ffi.Size>`, not `ffi.Size` — the C function takes the
+  address either way.
+
+The four scalar kinds that have a pointer shape in C — `primitive`,
+`boolean`, `enumeration`, `bitfield` — all use this bridge. An
+enumeration's slot holds the raw `Int32` value and is converted back
+with `Enum.fromValue`.
+
+### String-list returns
+
+A `char **` return — GLib's `GStrv`, a NULL-terminated array of strings.
+The wrapper copies the strings into a Dart `List<String>` and, when the
+GIR says the callee handed the array over (`transfer-ownership="full"`),
+releases it with `g_strfreev`:
+
+```dart
+List<String> getLanguageNames() =>
+    stringListFromNative(_gGetLanguageNames(), free: false);
+
+List<String> getEnviron() =>
+    stringListFromNative(_gGetEnviron(), free: true);
+```
+
+`stringListFromNative` (in `package:gir_ffi`) walks the array until the
+NULL terminator and copies each entry. `free: true` calls `g_strfreev`
+on the array — **not** on the individual strings, which the array owns.
+The `free` flag follows the GIR's `transfer-ownership` exactly: a static
+table (`g_get_language_names`) stays GLib's, an allocated array
+(`g_get_environ`) is the caller's.
+
+A `char **` **parameter** keeps the `withNativeStringList` shape it
+always had — the array is the caller's.
+
+### `inout` parameters
+
+`direction="inout"` stays a **documented limitation**. The C function
+reads *and* writes through the pointer, and the corpus's inouts are
+pointer-shaped (`GtkTextIter*`, `GskPathPoint*`, `GIAttributeIter*`,
+`PangoRectangle*`, `int*`, `const char**`).
+
+The reason is not the shape — it is that the GIR's ownership
+annotations for these parameters are wrong. `gtk_source_buffer_forward_iter_to_source_mark`'s
+`iter` is marked `transfer-ownership="full"`, but GTK does not take
+ownership of the iterator: it writes into the caller's struct. A
+generator that followed the annotation would release memory it does not
+own.
+
+Shipping a wrong lifetime rule is worse than shipping no binding, so
+the generator skips the callable with the reason `inout parameter <X>`
+(39 callables in the current corpus). See
+[skip-categories.md](./skip-categories.md#inout-parameter-x).
+
 ### The lifetime note on a raw byte array
 
 A byte array that stays a raw pointer has a lifetime the *caller* has to
@@ -907,6 +1076,42 @@ Methods with multiple `scope="async"` callback parameters (e.g.
 `g_file_copy_async` with its progress callback) target the
 `GAsyncReadyCallback` specifically; the other async callbacks keep
 their existing emission.
+
+**An OUT parameter keeps its argument slot.** The convenience overload
+returns `void`, so it has nowhere to put the value an OUT parameter
+carries — but the C function still takes the argument, and the C ABI
+has no notion of an omitted argument. Dropping it would shift every
+argument after it into the wrong slot, so the overload allocates the
+slot, passes it, and releases it after the call. The value the callee
+wrote is discarded; the base wrapper (which returns it) is still there.
+
+```dart
+void sendMessageWithReplyCallback(
+  GDBusMessage message,
+  GDBusSendMessageFlags flags,
+  int timeoutMsec,
+  GCancellable? cancellable,
+  void Function(GObject?, GAsyncResult) callback,
+) {
+  final _out0 = malloc<ffi.Uint32>();
+  final id = ++_sendMessageWithReplyCallbackSeq;
+  _sendMessageWithReplyCallbackRegistry[id] = callback;
+  final _data = malloc<ffi.IntPtr>()..value = id;
+  try {
+    _gDbusConnectionSendMessageWithReply(
+      this.handle, message.handle, flags.value, timeoutMsec,
+      _out0, cancellable?.handle ?? ffi.nullptr,
+      _sendMessageWithReplyCallbackPtr, _data.cast<ffi.Void>(),
+    );
+  } finally {
+    malloc.free(_out0);
+  }
+}
+```
+
+An OUT parameter whose shape the slot cannot represent — a struct the
+callee fills in place, or a byte buffer the callee allocates — has no
+overload: the value owns memory the overload would have to hand back.
 
 See [async.md](./async.md) for the user-facing guide and
 [signals.md](./signals.md) for the related signal-helper pattern.
