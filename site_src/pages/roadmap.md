@@ -21,7 +21,7 @@ Phases are ordered by what unblocks the most users, not by what is most fun. Eve
 | 2 | Prove it at runtime | in progress | CI that makes real native GTK calls; a loading failure says why |
 | 3 | Arrays and collections | next | Array-typed parameters, properties and returns are emitted |
 | 4 | Cross-platform | planned | Linux, macOS and Windows loaders; a macOS CI job |
-| 5 | Subclassing & composite templates | landed | Both halves on `main`; the prototype branch is ready to be retired |
+| 5 | Subclassing & composite templates | done | Both halves on `main`; the prototype branch is retired |
 | 6 | Distribute | planned | Semver policy, pub.dev packages, documented stability level |
 | 7 | More namespaces | exploratory | Only after phases 2–5; driven by real demand |
 
@@ -111,7 +111,7 @@ Linux is the only platform that has ever run this. macOS is the next target beca
 :::
 :::
 
-:::{phase status=wip} Phase 5 — Subclassing and composite templates
+:::{phase status=done} Phase 5 — Subclassing and composite templates
 The capability that most clearly decides whether this project is a set of bindings or a toolkit for building real GTK applications. It splits in two — and both halves have now been checked against the committed trees, not against a working copy.
 
 **The composite-template half is on `main`.** Two packages ship it: `packages/gtk_templates` (the annotations and runtime helpers) and `packages/gtk_templates_builder` (the AST scanner, the codegen, the `build_runner` builder and a standalone CLI). The builder writes one part file per source file beside the source, and the design is written down in `docs/templates.md`. A worked example lives in `example/todo/`, and CI builds it and analyzes the result on every push.
@@ -131,7 +131,7 @@ The capability that most clearly decides whether this project is a set of bindin
 [x] Dart-level subclassing is on `main`, with `dart analyze` clean and the regenerated packages included in the same change.
 [x] The regenerated packages are covered by CI: `dart analyze` runs over the whole workspace and the generator tests assert the emitted shape. The *native* runtime tests still wait for phase 2's GTK-enabled job.
 [x] Subclass registration is documented as supported, with its own lifetime rules written down, rather than left as a pattern the reader has to infer from an example.
-[ ] The `composite-templates` ref is deleted. Its condition — the last remaining capability being on `main` — is met; deleting the ref is the last mechanical step, and it is the only thing this phase is still waiting for.
+[x] The `composite-templates` ref is deleted. Its condition — the last remaining capability being on `main` — was met, and the ref is gone: the local branch first, then the remote one. The branch's tip survives as a commit id in the object store, so the comparison in `docs/branch-state.md` can still be reproduced.
 :::
 
 :::{note}

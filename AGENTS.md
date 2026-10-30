@@ -91,8 +91,8 @@ A skipped class leaves the previous part file in place, and the
 stale template keeps running as if the edit had never happened.
 
 The full design is in [docs/templates.md](docs/templates.md). The stack
-is committed on `main`; the `composite-templates` branch's variant of it
-is a superseded prototype — see
+is committed on `main`; the retired `composite-templates` branch's variant
+of it was a superseded prototype — see
 [docs/branch-state.md](docs/branch-state.md).
 
 **Rule: generated code must type-check.** The builder's output
@@ -293,7 +293,7 @@ The full design is in [docs/site.md](docs/site.md).
 
 ## PR & commit conventions
 
-- The workspace is a git repository. `main` is the trunk; `array-types`, `notepad` and `props` are already merged. `gasync` is superseded — do not build on it. `composite-templates` holds an unmerged prototype: it is **not** to be merged, and its retirement condition is now met — both the composite-template stack and the Dart-level subclassing contract are on `main` (see [The composite-template stack](#the-composite-template-stack) and [Generated classes are extendable](#generated-classes-are-extendable)); the verified record is [docs/branch-state.md](docs/branch-state.md). Its Blueprint/GResource support, Meson/gettext packaging and program-lifetime `NativeCallable` trampoline are out of scope.
+- The workspace is a git repository. `main` is the trunk; `array-types`, `notepad` and `props` are already merged and their local branches are deleted — do not recreate them. `gasync` is superseded — do not build on it. `composite-templates` held an unmerged prototype and has been **retired**: it was never to be merged, and both the composite-template stack and the Dart-level subclassing contract are on `main` (see [The composite-template stack](#the-composite-template-stack) and [Generated classes are extendable](#generated-classes-are-extendable)); the verified record is [docs/branch-state.md](docs/branch-state.md). Its Blueprint/GResource support, Meson/gettext packaging and program-lifetime `NativeCallable` trampoline are out of scope.
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:` — generator changes get a `feat(generator):` or `fix(generator):` prefix; regenerated packages go under `chore(gen):` or `feat(gen <lib>):`
 - One PR per logical change. Generator changes must include the regenerated `packages/<lib>/` output and the matching `skip_report.txt` updates in the same PR — reviewers must see the effect on a generated package
 - CI is checked in at `.github/workflows/ci.yml`: analyze, the generator tests, the template packages' pure-Dart tests, and a build + analyze gate over `example/todo`. Native GTK runtime tests are deliberately out of CI (they need a display and the native GTK 4 stack); keep them out until a CI image provides one. When you add a CI step, add it to that workflow in the same PR
