@@ -3,18 +3,27 @@ import 'dart:io';
 import 'package:gir_generator/src/gir/gir.dart';
 import 'package:test/test.dart';
 
-const String girDir = '/usr/share/gir-1.0';
+/// The directory the `.gir` files live in.
+///
+/// `GIR_DIR` points the test at another corpus — a machine that has
+/// only some of the files, or a fixture directory.
+final String girDir = Platform.environment['GIR_DIR'] ?? '/usr/share/gir-1.0';
+
+/// Whether the `.gir` file of [namespace] is installed.
+///
+/// The directory is not all-or-nothing: the packages that ship the
+/// files are separate (`gir1.2-glib-2.0`, `gir1.2-gtk-4.0`, …), so a
+/// machine can have GLib's files and not GTK's. The check is
+/// therefore per file — a test skips when *its* input is missing, and
+/// the others still run.
+bool haveGir(String namespace) => File('$girDir/$namespace.gir').existsSync();
+
+/// The reason a test cannot run, or `null` when it can.
+String? missingGir(String namespace) =>
+    haveGir(namespace) ? null : '$namespace.gir is not installed at $girDir';
 
 void main() {
-  // The directory may exist (other `-dev` packages create it for
-  // their own `.typelib` files) without containing any `.gir` files.
-  // Skip when there are no CGC-side GIR sources to load, since the
-  // loader's job is to read those.
-  final available =
-      Directory(girDir).existsSync() &&
-      Directory(girDir).listSync().any((e) => e.path.endsWith('.gir'));
-
-  group('GirLoader', skip: available ? null : 'no .gir files at $girDir', () {
+  group('GirLoader', () {
     late GirLoader loader;
 
     setUp(() => loader = GirLoader(girDir));
@@ -24,16 +33,25 @@ void main() {
       expect(repo.namespace.name, 'GLib');
       expect(repo.namespace.version, '2.0');
       expect(repo.namespace.sharedLibraries, isNotEmpty);
-    });
+    }, skip: missingGir('GLib-2.0'));
 
     test('caches repositories', () {
       final a = loader.load('GLib-2.0');
       final b = loader.load('GLib-2.0');
       expect(identical(a, b), isTrue);
-    });
+    }, skip: missingGir('GLib-2.0'));
 
     test('include closure of Gtk-4.0 is in dependency order', () {
-      final repos = loader.loadWithDependencies('Gtk-4.0');
+      // The closure is the file *and* everything it includes, so the
+      // test skips when any of them is missing — not only when
+      // `Gtk-4.0.gir` itself is.
+      final List<GirRepository> repos;
+      try {
+        repos = loader.loadWithDependencies('Gtk-4.0');
+      } on FileSystemException catch (error) {
+        markTestSkipped('the GIR files are not installed: ${error.message}');
+        return;
+      }
       final names = repos.map((r) => r.namespace.name).toList();
 
       expect(names.last, 'Gtk');
@@ -69,7 +87,7 @@ void main() {
       expect(button!.parent, anyOf('Widget', 'Gtk.Widget'));
       expect(button.cType, 'GtkButton');
       expect(button.methods, isNotEmpty);
-    });
+    }, skip: missingGir('Gtk-4.0'));
 
     test('missing GIR file throws FileSystemException', () {
       expect(

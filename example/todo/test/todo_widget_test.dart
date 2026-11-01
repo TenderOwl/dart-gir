@@ -88,7 +88,9 @@ void _pumpMainLoop() {
 final List<Object> _kept = <Object>[];
 
 void main() {
-  late adw.AdwApplication app;
+  // The application is created in `setUpAll` — which needs a display.
+  // Without one it stays `null`, and every test that needs it skips.
+  adw.AdwApplication? app;
   final windows = <TodoWindow>[];
   final rows = <TaskRow>[];
   // The list items the list view built, in the order it built them.
@@ -101,11 +103,15 @@ void main() {
   setUpAll(() {
     if (!_hasDisplay) return;
     withInitializationLock(adw.init);
-    app = adw.AdwApplication('com.tenderowl.examples.todo.test', .defaultFlags);
+    final application = adw.AdwApplication(
+      'com.tenderowl.examples.todo.test',
+      .defaultFlags,
+    );
     // Register the application so GTK stops complaining that the
     // windows are added before `GApplication::startup`.
-    app.register();
-    _kept.add(app);
+    application.register();
+    app = application;
+    _kept.add(application);
   });
 
   tearDown(() {
@@ -145,11 +151,20 @@ void main() {
       window.destroy();
     }
     windows.clear();
-    _disconnect(app, 'activate', 'AdwApplication');
+    // The application is `null` when the suite had no display — there
+    // is nothing to disconnect from then.
+    final application = app;
+    if (application != null) {
+      _disconnect(application, 'activate', 'AdwApplication');
+    }
   });
 
   TodoWindow newWindow() {
-    final window = TodoWindow(app);
+    final application = app;
+    if (application == null) {
+      throw StateError('the suite has no application — GTK needs a display');
+    }
+    final window = TodoWindow(application);
     windows.add(window);
     _kept.add(window);
     // The store has to outlive the selection model that wraps it.
@@ -283,7 +298,7 @@ void main() {
       // And the list item holds the very Dart object the store was
       // given.
       expect(listItems.first.getItem(), same(window.tasks.getObject(0)));
-    });
+    }, skip: skip);
 
     test('the row is an instance of its own native type', () {
       final window = newWindow();
@@ -300,7 +315,7 @@ void main() {
       expect(_nativeTypeName(row), isNot('GtkBox'));
       // …and it is still a `GtkBox`: the registered type derives from it.
       expect(typeIsA(TaskRow.GType, GtkBox.GType), isTrue);
-    });
+    }, skip: skip);
 
     test('a row is built for every task', () {
       final window = newWindow();
@@ -320,7 +335,7 @@ void main() {
             .toList(),
         ['first', 'second'],
       );
-    });
+    }, skip: skip);
   });
 
   group('a row', () {

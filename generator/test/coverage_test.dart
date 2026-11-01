@@ -31,7 +31,11 @@ import 'package:gir_generator/src/resolve/types.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
-const _girDir = '/usr/share/gir-1.0';
+/// The directory the `.gir` files live in.
+///
+/// `GIR_DIR` points the test at another corpus — a machine that has
+/// only some of the files, or a fixture directory.
+final String _girDir = Platform.environment['GIR_DIR'] ?? '/usr/share/gir-1.0';
 
 /// The namespaces the repository generates bindings for.
 const _targets = [
@@ -52,12 +56,24 @@ const _targets = [
 
 void main() {
   test('every declaration is either emitted or reported', () {
-    if (!Directory(_girDir).existsSync()) {
-      markTestSkipped('the GIR files are not installed');
+    // The corpus this machine has: the namespaces whose `.gir` file is
+    // installed. The packages that ship them are separate — a runner
+    // can have GLib's files and not GTK's — so the invariant is
+    // checked over what is there, and the test skips only when there
+    // is nothing at all to check.
+    final available = _targets.where(_girInstalled).toList();
+    if (available.isEmpty) {
+      markTestSkipped('the GIR files are not installed at $_girDir');
       return;
     }
     final loader = GirLoader(_girDir);
-    final repos = loader.loadAllWithDependencies(_targets);
+    final List<GirRepository> repos;
+    try {
+      repos = loader.loadAllWithDependencies(available);
+    } on FileSystemException catch (error) {
+      markTestSkipped('the GIR files are incomplete: ${error.message}');
+      return;
+    }
     final allNamespaces = [for (final r in repos) r.namespace];
     final targetKeys = _targets.toSet();
     final targetNamespaces = [
@@ -87,6 +103,10 @@ void main() {
     }
   });
 }
+
+/// Whether the `.gir` file of [nameVersion] is installed.
+bool _girInstalled(String nameVersion) =>
+    File(p.join(_girDir, '$nameVersion.gir')).existsSync();
 
 /// Checks the invariant for one namespace.
 void _checkNamespace(

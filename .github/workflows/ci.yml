@@ -21,15 +21,25 @@ jobs:
 
       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
-      # libgirepository1.0-dev ships the upstream `.gir` files under
-      # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
-      # in `generator/test/loader_test.dart`. That test now skips
-      # cleanly when the directory has no `.gir` files, so the
-      # workflow stays green even if a future Ubuntu point release
-      # drops the package. Other `-dev` packages create the directory
-      # for their own `.typelib` files but leave it empty of `.gir`,
-      # which is why the loader test's skip condition has to look at
-      # the actual files.
+      # The upstream `.gir` files under `/usr/share/gir-1.0/` are the
+      # generator's input — needed by `generator/test/loader_test.dart`
+      # and by the coverage test that proves every declaration is
+      # either emitted or reported.
+      #
+      # `libgirepository1.0-dev` pulls in the GLib family, so the
+      # directory holds *some* `.gir` files — but the packages that
+      # ship the others are separate (`gir1.2-gtk-4.0`,
+      # `gir1.2-adw-1`, `gir1.2-gtksourceview-5`, …), and the GTK
+      # ones are not in `main`. The tests therefore check **per file**:
+      # a test whose `.gir` input is missing skips itself, and the
+      # ones whose input is there run. The coverage test checks the
+      # invariant over whatever corpus the machine has, and skips only
+      # when it has none — so the workflow stays green on a machine
+      # without the GTK files, and still checks the invariant over the
+      # GLib ones.
+      #
+      # `GIR_DIR` points the tests at another corpus — a fuller one,
+      # or a fixture directory.
       - name: Install system deps
         run: |
           sudo apt-get update
