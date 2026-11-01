@@ -19,9 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v2
-        with:
-          sdk: ^3.13.4
+      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
       # libgirepository1.0-dev ships the upstream `.gir` files under
       # `/usr/share/gir-1.0/` — only needed by the `GirLoader` test
@@ -203,10 +201,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v2
-        with:
-          sdk: ^3.13.4
-
+      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+        
       # The native stack the suites drive:
       #
       #   * `libgtk-4-dev`        — GTK 4 (and libadwaita's dependency)
