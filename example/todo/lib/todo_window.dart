@@ -12,7 +12,6 @@
 
 import 'package:gir_gio/gir_gio.dart';
 import 'package:gir_gtk4/gir_gtk4.dart';
-import 'package:gir_dart_gobject/gir_dart_gobject.dart';
 import 'package:gir_gtk_templates/gir_gtk_templates.dart';
 import 'package:todo/task_object.dart';
 import 'package:todo/task_row.dart';
