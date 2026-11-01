@@ -279,6 +279,42 @@ class PangoContext extends GObject {
     return _pangoContextGetSerial(this.handle);
   }
 
+  /// List all families for a context.
+  static final _pangoContextListFamilies =
+      girPangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Void>>>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_context_list_families')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Void>>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  List<PangoFontFamily> listFamilies() {
+    final _out0 = calloc<ffi.Pointer<ffi.Pointer<ffi.Void>>>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoContextListFamilies(this.handle, _out0, _out1);
+      final _list_out0 = (_out0.value == ffi.nullptr
+          ? <PangoFontFamily>[]
+          : <PangoFontFamily>[
+              for (var i = 0; i < _out1.value; i++)
+                PangoFontFamily.fromPointer(_out0.value[i]),
+            ]);
+      return _list_out0;
+    } finally {
+      gFree(_out0.value.cast());
+      malloc.free(_out1);
+    }
+  }
+
   /// Loads the font in one of the fontmaps in the context
   /// that is the closest match for @desc.
   static final _pangoContextLoadFont =

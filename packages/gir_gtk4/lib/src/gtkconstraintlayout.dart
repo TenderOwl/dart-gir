@@ -258,6 +258,136 @@ class GtkConstraintLayout extends GtkLayoutManager implements GtkBuildable {
     _gtkConstraintLayoutAddConstraint(this.handle, constraint.handle);
   }
 
+  /// Creates a list of constraints from a VFL description.
+  ///
+  /// The Visual Format Language, VFL, is based on Apple's AutoLayout [VFL](https://developer.apple.com/library/content/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html).
+  ///
+  /// The `views` dictionary is used to match [iface@Gtk.ConstraintTarget]
+  /// instances to the symbolic view name inside the VFL.
+  ///
+  /// The VFL grammar is:
+  ///
+  /// ```
+  /// <visualFormatString> = (<orientation>)?
+  /// (<superview><connection>)?
+  /// <view>(<connection><view>)*
+  /// (<connection><superview>)?
+  /// <orientation> = 'H' | 'V'
+  /// <superview> = '|'
+  /// <connection> = '' | '-' <predicateList> '-' | '-'
+  /// <predicateList> = <simplePredicate> | <predicateListWithParens>
+  /// <simplePredicate> = <metricName> | <positiveNumber>
+  /// <predicateListWithParens> = '(' <predicate> (',' <predicate>)* ')'
+  /// <predicate> = (<relation>)? <objectOfPredicate> (<operatorList>)? ('@' <priority>)?
+  /// <relation> = '==' | '<=' | '>='
+  /// <objectOfPredicate> = <constant> | <viewName> | ('.' <attributeName>)?
+  /// <priority> = <positiveNumber> | 'required' | 'strong' | 'medium' | 'weak'
+  /// <constant> = <number>
+  /// <operatorList> = (<multiplyOperator>)? (<addOperator>)?
+  /// <multiplyOperator> = [ '*' | '/' ] <positiveNumber>
+  /// <addOperator> = [ '+' | '-' ] <positiveNumber>
+  /// <viewName> = [A-Za-z_]([A-Za-z0-9_]*) // A C identifier
+  /// <metricName> = [A-Za-z_]([A-Za-z0-9_]*) // A C identifier
+  /// <attributeName> = 'top' | 'bottom' | 'left' | 'right' | 'width' | 'height' |
+  /// 'start' | 'end' | 'centerX' | 'centerY' | 'baseline'
+  /// <positiveNumber> // A positive real number parseable by g_ascii_strtod()
+  /// <number> // A real number parseable by g_ascii_strtod()
+  /// ```
+  ///
+  /// **Note**: The VFL grammar used by GTK is slightly different than the one
+  /// defined by Apple, as it can use symbolic values for the constraint's
+  /// strength instead of numeric values; additionally, GTK allows adding
+  /// simple arithmetic operations inside predicates.
+  ///
+  /// Examples of VFL descriptions are:
+  ///
+  /// ```
+  /// // Default spacing
+  /// [button]-[textField]
+  ///
+  /// // Width constraint
+  /// [button(>=50)]
+  ///
+  /// // Connection to super view
+  /// |-50-[purpleBox]-50-|
+  ///
+  /// // Vertical layout
+  /// V:[topField]-10-[bottomField]
+  ///
+  /// // Flush views
+  /// [maroonView][blueView]
+  ///
+  /// // Priority
+  /// [button(100@strong)]
+  ///
+  /// // Equal widths
+  /// [button1(==button2)]
+  ///
+  /// // Multiple predicates
+  /// [flexibleButton(>=70,<=100)]
+  ///
+  /// // A complete line of layout
+  /// |-[find]-[findNext]-[findField(>=20)]-|
+  ///
+  /// // Operators
+  /// [button1(button2 / 3 + 50)]
+  ///
+  /// // Named attributes
+  /// [button1(==button2.height)]
+  /// ```
+  static final _gtkConstraintLayoutAddConstraintsFromDescriptionv =
+      girGtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Size,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gtk_constraint_layout_add_constraints_from_descriptionv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  GList addConstraintsFromDescriptionv(
+    List<String?>? lines,
+    int hspacing,
+    int vspacing,
+    GHashTable views,
+  ) {
+    return withNativeStringList(lines, (nativeLines, nativeLinesLen) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gtkConstraintLayoutAddConstraintsFromDescriptionv(
+          this.handle,
+          nativeLines,
+          nativeLinesLen,
+          hspacing,
+          vspacing,
+          views.handle,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return GList.fromPointer(_ret);
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Adds a guide to `layout`.
   ///
   /// A guide can be used as the source or target of constraints,

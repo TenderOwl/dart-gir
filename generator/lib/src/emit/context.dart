@@ -40,6 +40,7 @@ class TypeBridge {
     required this.fromNative,
     this.isString = false,
     this.isStringList = false,
+    this.isCountedString = false,
     this.isVoid = false,
     this.isNullableCallback = false,
     this.outPointee,
@@ -55,6 +56,20 @@ class TypeBridge {
     this.byteArrayLengthIndex,
     this.byteArrayOwnedByCallee = false,
     this.isNullableScalarPointer = false,
+    this.isInoutScalar = false,
+    this.isOutArray = false,
+    this.outArrayElementType,
+    this.outArrayElementNativeType,
+    this.outArrayElementIsHandle = false,
+    this.outArrayElementOwned = false,
+    this.outArrayFixedCount,
+    this.outArrayCountIndex,
+    this.outArrayCountIsInput = false,
+    this.outArrayCallerAllocated = false,
+    this.outIsNulTerminatedString = false,
+    this.callbackParams,
+    this.callbackFfiSignature,
+    this.outExtractArray,
     this.ownershipFinalizer,
   });
 
@@ -80,6 +95,13 @@ class TypeBridge {
   /// `withNativeStringList` nesting. The wrapper signature takes
   /// `List<String?>?`; the native call gets `Pointer<Pointer<Utf8>>`.
   final bool isStringList;
+
+  /// A single string whose **byte** length a sibling parameter carries.
+  ///
+  /// The string is marshalled via `withNativeStringBytes`, which reports
+  /// the byte length; the sibling parameter is absorbed and the count the
+  /// C side reads is the length of the string the caller passed.
+  final bool isCountedString;
 
   /// `void` return.
   final bool isVoid;
@@ -172,6 +194,22 @@ class TypeBridge {
   /// value, next to the function's own.
   final bool isNullableScalarPointer;
 
+  /// `true` when an **inout** scalar or enum is passed to the callee by
+  /// pointer.
+  ///
+  /// The C function reads the value through the pointer and may write
+  /// through it — `gtk_editable_insert_text`'s `position`,
+  /// `pango_matrix_transform_point`'s `x` and `y`. The wrapper
+  /// allocates the slot, seeds it with the caller's value, and reads the
+  /// updated value back after the call; the read-back rides the OUT
+  /// machinery and becomes part of the wrapper's return value.
+  ///
+  /// The GIR's ownership annotation for an inout parameter is ignored:
+  /// it is demonstrably wrong (`gtk_source_buffer_forward_iter_to_source_mark`'s
+  /// `iter` is marked `transfer-ownership="full"`, but GTK does not take
+  /// ownership of the iterator). The caller keeps the storage.
+  final bool isInoutScalar;
+
   /// For a caller-provided byte array, the 0-based index of the sibling
   /// parameter that carries the byte count.
   ///
@@ -199,6 +237,105 @@ class TypeBridge {
   /// the callee takes the reference over, so the Dart side has to give
   /// up its claim instead of releasing it twice.
   final String? ownershipFinalizer;
+
+  /// `true` when the parameter is an **OUT array** the wrapper reads back
+  /// into a Dart list.
+  ///
+  /// Two shapes, told apart by `caller-allocates`:
+  ///
+  /// * **The callee allocates** (`caller-allocates="0"`): the C function
+  ///   allocates the array and writes its address into the caller's slot;
+  ///   a sibling OUT parameter carries the element count. The wrapper
+  ///   passes a slot, reads the array and the count back, copies the
+  ///   elements into a Dart list and releases the array with `g_free`.
+  /// * **The caller allocates** (`caller-allocates="1"`): the array has a
+  ///   fixed size (`fixed-size="4"`), so the wrapper allocates the buffer
+  ///   itself, passes it and copies the elements out after the call.
+  final bool isOutArray;
+
+  /// The Dart type of one element of an OUT array — `int`, `double`, or
+  /// the wrapper class of a handle.
+  final String? outArrayElementType;
+
+  /// The FFI type of one element of an OUT array — `ffi.Int32`,
+  /// `ffi.Double`, `ffi.Pointer<ffi.Void>`.
+  final String? outArrayElementNativeType;
+
+  /// `true` when the element of an OUT array is a *handle* — an object or
+  /// a record the wrapper wraps rather than copies.
+  final bool outArrayElementIsHandle;
+
+  /// `true` when the elements of an OUT array are owned by the caller.
+  ///
+  /// `transfer-ownership="full"` on a pointer element means the callee
+  /// hands every element over as well (`g_socket_receive_message`'s
+  /// control messages); `container` and `none` hand over the array alone.
+  final bool outArrayElementOwned;
+
+  /// The number of elements of a caller-allocated OUT array, when the GIR
+  /// states it (`fixed-size="4"`).
+  ///
+  /// A callee-allocated array has no fixed size — its count comes from a
+  /// sibling OUT parameter ([outArrayCountIndex]).
+  final int? outArrayFixedCount;
+
+  /// The 0-based index of the sibling OUT parameter that carries the
+  /// element count of a callee-allocated OUT array.
+  final int? outArrayCountIndex;
+
+  /// `true` when the element count of an OUT array comes from an **in**
+  /// parameter — the capacity the caller passes for a caller-allocated
+  /// array — rather than from an out slot the callee fills.
+  final bool outArrayCountIsInput;
+
+  /// `true` when the **caller** allocates the array's buffer.
+  ///
+  /// The wrapper then allocates the buffer itself, passes it and copies
+  /// the elements out after the call. When the callee allocates the
+  /// array, the wrapper passes a slot and the callee writes the array
+  /// pointer into it.
+  final bool outArrayCallerAllocated;
+
+  /// The user-facing parameter list of a callback-typed parameter: the
+  /// type and the name of each parameter.
+  ///
+  /// A destroy-notify trampoline is built over the callback's *own*
+  /// signature — `GdkPixbufDestroyNotify` takes the pixel buffer and the
+  /// data, `GDestroyNotify` only the data — so the trampoline needs the
+  /// parameter list, not just the signature.
+  final List<({String type, String ffiType, String name})>? callbackParams;
+
+  /// The **FFI** signature of a callback-typed parameter — the type the
+  /// C function pointer has to carry.
+  ///
+  /// It differs from the user-facing signature in the return type
+  /// (`ffi.Void` against `void`) and in the boolean parameters
+  /// (`ffi.Bool` against the `int` the convention uses).
+  final String? callbackFfiSignature;
+
+  /// `true` when the parameter holds a **NUL-terminated** buffer the
+  /// callee allocates — `g_spawn_sync`'s `standard_output`.
+  ///
+  /// The wrapper copies the text into a Dart `String` and releases the
+  /// native buffer with GLib's allocator.
+  final bool outIsNulTerminatedString;
+
+  /// `true` when the OUT slot is allocated with `calloc` rather than
+  /// `malloc`.
+  ///
+  /// A pointer-sized slot is zeroed: the C function is allowed to leave
+  /// the out parameter untouched, and an uninitialized pointer would be
+  /// a wild read.
+  bool get outSlotIsCalloc =>
+      outPointee == 'ffi.Pointer<ffi.Void>' ||
+      outExtractBytes != null ||
+      outIsNulTerminatedString;
+
+  /// Reads an OUT array into a Dart list.
+  ///
+  /// [arrayVar] is the local holding the array pointer, [countExpr] the
+  /// expression that yields the element count.
+  final String Function(String arrayVar, String countExpr)? outExtractArray;
 }
 
 /// Per-package emission state shared by all emitters.
@@ -218,6 +355,27 @@ class EmitContext {
   /// Package names generated in this run; types in other packages are
   /// treated as unsupported (their members get skipped).
   final Set<String> emittedPackages;
+
+  /// Reports the virtual methods of a class or an interface.
+  ///
+  /// A virtual method is a slot in the class's C vtable, not a symbol the
+  /// caller can invoke: overriding one needs the *layout* of the class
+  /// struct, and the GIR does not carry it — it lists a class's virtual
+  /// methods alphabetically, while the C struct declares them in
+  /// declaration order. The methods are therefore not emitted.
+  ///
+  /// They are still reported, because the project's rule is that a symbol
+  /// never disappears silently: an omission that surfaces as a mystery at
+  /// the call site is worse than one the report names.
+  void reportVirtualMethods(List<GirMethod> virtualMethods, String dartName) {
+    for (final v in virtualMethods) {
+      report.skip(
+        'virtual',
+        '$dartName.${v.name}',
+        'virtual method; the class struct layout is not in the GIR',
+      );
+    }
+  }
 
   /// Namespaces loaded before [namespace] in dependency order.
   List<GirNamespace> get priorNamespaces {
@@ -545,6 +703,54 @@ class EmitContext {
     }
   }
 
+  /// The bridge for an **inout** scalar or enum.
+  ///
+  /// The C function takes a pointer to the value and may write through
+  /// it. The wrapper allocates the slot, seeds it with the caller's
+  /// value, passes the slot and reads the updated value back after the
+  /// call.
+  ///
+  /// The seed expression and the read-back expression are the ordinary
+  /// scalar conversions: a `gdouble` is seeded with the caller's `double`
+  /// and read back as one, an enum is seeded with `.value` and read back
+  /// through `fromValue`.
+  TypeBridge _inoutScalarBridge(TypeMapping m) {
+    final String nativeType;
+    final String Function(String) seed;
+    final String Function(String) read;
+    switch (m.kind) {
+      case TypeKind.primitive:
+        nativeType = m.nativeType;
+        seed = _id;
+        read = (v) => '$v.value';
+      case TypeKind.boolean:
+        nativeType = 'ffi.Int32';
+        seed = (e) => '$e ? 1 : 0';
+        read = (v) => '$v.value != 0';
+      case TypeKind.enumeration:
+        nativeType = 'ffi.Int32';
+        seed = (e) => '$e.value';
+        read = (v) => '${m.dartType}.fromValue($v.value)';
+      case TypeKind.bitfield:
+        nativeType = 'ffi.Uint32';
+        seed = (e) => '$e.value';
+        read = (v) => '${m.dartType}($v.value)';
+      default:
+        throw StateError('not a scalar: ${m.kind}');
+    }
+    return TypeBridge(
+      wrapperType: m.dartType,
+      // The C parameter is a pointer to the value.
+      nativeType: 'ffi.Pointer<$nativeType>',
+      dartFfiType: 'ffi.Pointer<$nativeType>',
+      toNative: seed,
+      fromNative: _id,
+      outPointee: nativeType,
+      outExtract: read,
+      isInoutScalar: true,
+    );
+  }
+
   /// The bridge for an OUT parameter whose value is a wrapper of type
   /// [dartType].
   ///
@@ -705,6 +911,176 @@ class EmitContext {
     );
   }
 
+  /// The bridge for an **OUT array** parameter.
+  ///
+  /// The array is read back into a Dart list: a `List<int>` for a scalar
+  /// element, a `List<T>` for a handle element.
+  ///
+  /// The elements can only be read out when the generator knows what they
+  /// are. A scalar is known; a handle — a pointer to an object or a
+  /// record — is wrapped rather than copied. A *struct* the generator
+  /// does not emit as an `ffi.Struct` cannot be read out of a native
+  /// array at all: its layout is unknown, so the parameter stays skipped
+  /// with a reason that names the struct.
+  ///
+  /// The count comes with the array:
+  ///
+  /// * a **callee-allocated** array (`caller-allocates="0"`) is counted
+  ///   by a sibling OUT parameter — the GIR's `<array length="N">`;
+  /// * a **caller-allocated** array (`caller-allocates="1"`) has a fixed
+  ///   size (`fixed-size="4"`), so the wrapper allocates the buffer
+  ///   itself.
+  (TypeBridge?, String?) _outArrayBridge(
+    GirTypeRef ref, {
+    required GirTransferOwnership transfer,
+    required bool callerAllocates,
+    List<GirParameter>? siblings,
+  }) {
+    final shape = TypeResolver.arrayElementShape(
+      ref,
+      callerAllocates: callerAllocates,
+    );
+    if (shape == null) {
+      return (null, 'the array element carries no C type');
+    }
+    final array = ref.array!;
+    final elemMap = resolve(array.elementType);
+    if (elemMap.requiredImport != null) imports.add(elemMap.requiredImport!);
+
+    // The count.
+    //
+    // * A **callee-allocated** array is counted by a sibling *out*
+    //   parameter — the GIR's `<array length="N">`.
+    // * A **caller-allocated** array is sized either by a fixed size
+    //   (`fixed-size="4"`) or by a sibling *in* parameter — the capacity
+    //   the caller passes.
+    int? countIndex;
+    int? fixedCount;
+    var countIsInput = false;
+    if (callerAllocates) {
+      fixedCount = array.fixedSize;
+      if (fixedCount == null) {
+        final idx = array.lengthParameterIndex;
+        if (idx == null || siblings == null || idx >= siblings.length) {
+          return (null, 'the array carries no element count');
+        }
+        if (siblings[idx].direction != GirParameterDirection.in_) {
+          return (null, 'the element count is not an in parameter');
+        }
+        countIndex = idx;
+        countIsInput = true;
+      }
+    } else {
+      final idx = array.lengthParameterIndex;
+      if (idx == null || siblings == null || idx >= siblings.length) {
+        return (null, 'the array carries no element count');
+      }
+      if (siblings[idx].direction != GirParameterDirection.out) {
+        return (null, 'the element count is not an out parameter');
+      }
+      countIndex = idx;
+    }
+
+    // The element: a scalar the wrapper copies, or a handle it wraps.
+    final isHandle = shape.isHandle;
+    late final String elementDartType;
+    late final String elementNativeType;
+    late final String Function(String) readElement;
+    if (isHandle) {
+      switch (elemMap.kind) {
+        case TypeKind.classType:
+        case TypeKind.interface:
+        case TypeKind.record:
+          elementDartType = elemMap.dartType;
+          elementNativeType = 'ffi.Pointer<ffi.Void>';
+          // `transfer-ownership="full"` on a pointer element hands every
+          // element over as well (`g_socket_receive_message`'s control
+          // messages); `container` and `none` hand over the array alone —
+          // the elements belong to whoever created them. A record has no
+          // reference of its own to hand over.
+          final owned =
+              transfer == GirTransferOwnership.full &&
+              elemMap.kind != TypeKind.record;
+          readElement = (expr) => owned
+              ? '$elementDartType.fromPointer($expr, owned: true)'
+              : '$elementDartType.fromPointer($expr)';
+        default:
+          return (
+            null,
+            elemMap.kind == TypeKind.unsupported
+                ? 'array of ${shape.name}: ${elemMap.reason}'
+                : 'array of ${shape.name}: the element is not a handle',
+          );
+      }
+    } else {
+      switch (elemMap.kind) {
+        case TypeKind.primitive:
+          elementDartType = elemMap.dartType;
+          elementNativeType = elemMap.nativeType;
+          readElement = (expr) => expr;
+        case TypeKind.boolean:
+          elementDartType = elemMap.dartType;
+          elementNativeType = elemMap.nativeType;
+          readElement = (expr) => '$expr != 0';
+        case TypeKind.enumeration:
+          elementDartType = elemMap.dartType;
+          elementNativeType = elemMap.nativeType;
+          readElement = (expr) => '$elementDartType.fromValue($expr)';
+        case TypeKind.bitfield:
+          elementDartType = elemMap.dartType;
+          elementNativeType = elemMap.nativeType;
+          readElement = (expr) => '$elementDartType($expr)';
+        default:
+          return (
+            null,
+            elemMap.kind == TypeKind.unsupported
+                ? 'array of ${shape.name}: ${elemMap.reason}'
+                : 'array of ${shape.name}: the layout of the element is not '
+                      'emitted, so the elements cannot be read out of the array',
+          );
+      }
+    }
+
+    // The array pointer: `T *` for a scalar element, `T **` for a handle.
+    final arrayPointerType = isHandle
+        ? 'ffi.Pointer<ffi.Pointer<ffi.Void>>'
+        : 'ffi.Pointer<$elementNativeType>';
+    // The C parameter: the callee-allocated shape takes a slot
+    // (`T **`), the caller-allocated shape takes the buffer (`T *`).
+    final nativeType = callerAllocates
+        ? arrayPointerType
+        : 'ffi.Pointer<$arrayPointerType>';
+
+    final read = readElement;
+    return (
+      TypeBridge(
+        wrapperType: 'List<$elementDartType>',
+        nativeType: nativeType,
+        dartFfiType: nativeType,
+        toNative: _id,
+        fromNative: _id,
+        isOutArray: true,
+        outArrayElementType: elementDartType,
+        outArrayElementNativeType: isHandle
+            ? 'ffi.Pointer<ffi.Void>'
+            : elementNativeType,
+        outArrayElementIsHandle: isHandle,
+        outArrayElementOwned:
+            isHandle &&
+            transfer == GirTransferOwnership.full &&
+            elemMap.kind != TypeKind.record,
+        outArrayFixedCount: fixedCount,
+        outArrayCountIndex: countIndex,
+        outArrayCountIsInput: countIsInput,
+        outArrayCallerAllocated: callerAllocates,
+        outExtractArray: (arrayVar, countExpr) =>
+            '<$elementDartType>[for (var i = 0; i < $countExpr; i++) '
+            '${read('$arrayVar[i]')}]',
+      ),
+      null,
+    );
+  }
+
   (TypeBridge?, String?) bridgeFor(
     GirTypeRef? ref, {
     bool nullable = false,
@@ -714,6 +1090,16 @@ class EmitContext {
     bool callerAllocates = true,
     bool byteArrayIn = false,
     GirNamespace? relativeTo,
+
+    /// The expression that yields the element count of a `char **` return
+    /// — the OUT slot the callee filled. `null` when the array carries no
+    /// count, and the wrapper reads it until its NULL terminator.
+    String? stringListCountExpr,
+
+    /// The callable's parameter list, for the shapes whose behaviour
+    /// depends on a sibling parameter — the element count of an OUT
+    /// array, for instance.
+    List<GirParameter>? siblings,
   }) {
     if (ref == null) {
       return (
@@ -730,6 +1116,140 @@ class EmitContext {
     }
     final m = resolve(ref, relativeTo: relativeTo);
     if (m.requiredImport != null) imports.add(m.requiredImport!);
+
+    // The **caller-allocated rule** for inout parameters.
+    //
+    // The GIR's ownership annotations for an inout parameter are
+    // demonstrably wrong — `gtk_source_buffer_forward_iter_to_source_mark`'s
+    // `iter` is marked `transfer-ownership="full"`, but GTK does not take
+    // ownership of the iterator — so the annotation is ignored and the
+    // caller keeps the storage.
+    //
+    // Two shapes:
+    //
+    // * a **scalar or enum** the callee reads and writes through the
+    //   pointer. The wrapper allocates the slot, seeds it with the
+    //   caller's value and reads the updated value back after the call.
+    // * a **handle** — a class, a record, an interface. The caller
+    //   passes the object and the callee writes through the pointer in
+    //   place. The Dart object *is* the memory, so the caller sees the
+    //   change.
+    //
+    // A pointer to a *pointer* stays skipped: the callee allocates the
+    // pointee there, and a wrapper would have to release memory it did
+    // not allocate.
+    if (direction == GirParameterDirection.inout && !forReturn) {
+      switch (m.kind) {
+        case TypeKind.primitive:
+        case TypeKind.boolean:
+        case TypeKind.enumeration:
+        case TypeKind.bitfield:
+          return (_inoutScalarBridge(m), null);
+        case TypeKind.classType:
+        case TypeKind.interface:
+        case TypeKind.record:
+        case TypeKind.union:
+          // A handle: the ordinary bridge does the job — only the
+          // ownership annotation is ignored.
+          break;
+        case TypeKind.primitiveArray:
+        case TypeKind.recordArray:
+          // An inout *buffer*: the callee writes through the caller's
+          // memory. How much it wrote is only known after the call, so
+          // the wrapper cannot copy the result back into the caller's
+          // list — the shape stays skipped.
+          return (
+            null,
+            'inout buffer: the callee writes through the caller\'s memory, '
+                'and the length it produced is only known after the call',
+          );
+        case TypeKind.pointer:
+        case TypeKind.string:
+        case TypeKind.stringList:
+        case TypeKind.stringArrayPointer:
+          return (
+            null,
+            'inout parameter of a pointer to a pointer: the callee '
+                'allocates the pointee',
+          );
+        default:
+          return (
+            null,
+            'inout parameter of a shape the wrapper cannot seed: '
+                '${m.kind}',
+          );
+      }
+    }
+
+    // A **NUL-terminated** buffer the callee allocates: the C function
+    // allocates the buffer, terminates it with a NUL and writes its
+    // address into the caller's slot. No length is stated anywhere, so
+    // the wrapper measures the buffer with `strlen`.
+    //
+    // This is the shape of `g_spawn_sync`'s `standard_output`.
+    if (direction == GirParameterDirection.out &&
+        TypeResolver.isNulTerminatedByteBufferOut(
+          ref,
+          transfer: transfer,
+          direction: direction,
+          callerAllocates: callerAllocates,
+        )) {
+      usesGirFfi = true;
+      return (
+        TypeBridge(
+          wrapperType: 'String?',
+          nativeType: 'ffi.Pointer<ffi.Pointer<ffi.Uint8>>',
+          dartFfiType: 'ffi.Pointer<ffi.Pointer<ffi.Uint8>>',
+          toNative: _id,
+          fromNative: (e) => e,
+          // The slot the callee writes the buffer pointer into.
+          outPointee: 'ffi.Pointer<ffi.Uint8>',
+          outExtract: (slotVar) =>
+              'nulTerminatedStringFromNative('
+              '$slotVar.value.cast<ffi.Uint8>())',
+          outIsNulTerminatedString: true,
+        ),
+        null,
+      );
+    }
+    // A byte buffer the callee allocates, with no length anywhere in
+    // the signature: the wrapper cannot copy the buffer out, because it
+    // does not know how long the buffer is.
+    if (direction == GirParameterDirection.out &&
+        !forReturn &&
+        !byteArrayIn &&
+        TypeResolver.isByteArrayElement(ref) &&
+        ref.array!.lengthParameterIndex == null &&
+        ref.array!.fixedSize == null) {
+      return (
+        null,
+        'a byte buffer with no length binding: the signature does not '
+            'state how long the buffer is',
+      );
+    }
+
+    // An **OUT array**: the wrapper reads the elements back into a Dart
+    // list. The shape is recognised before the ordinary array handling,
+    // which covers the arrays the *caller* fills.
+    //
+    // A byte array is left alone: the byte-buffer machinery below knows
+    // how to copy a buffer out of the callee and how to release it.
+    if (direction == GirParameterDirection.out &&
+        !forReturn &&
+        !byteArrayIn &&
+        !TypeResolver.isByteArrayElement(ref) &&
+        (m.kind == TypeKind.primitiveArray || m.kind == TypeKind.recordArray)) {
+      final outArray = _outArrayBridge(
+        ref,
+        transfer: transfer,
+        callerAllocates: callerAllocates,
+        siblings: siblings,
+      );
+      if (outArray.$1 != null || outArray.$2 != null) return outArray;
+      // The shape is not an OUT array after all — the ordinary array
+      // handling takes over.
+    }
+
     switch (m.kind) {
       case TypeKind.voidType:
         return (
@@ -824,8 +1344,15 @@ class EmitContext {
           // *and* its strings), nothing for a static table such as
           // `g_get_language_names`, which stays owned by GLib.
           String fromNative(String e) {
+            // The GIR binds a callee-allocated string array to the
+            // parameter that holds its count. When that count is known,
+            // the array is read for exactly that many elements — a
+            // `gchar **` is not always NULL-terminated
+            // (`g_bookmark_file_get_applications`).
+            final count = stringListCountExpr;
+            final len = count == null ? '' : ', length: $count';
             final read =
-                'stringListFromNative($e, free: ${transfer == GirTransferOwnership.full})';
+                'stringListFromNative($e, free: ${transfer == GirTransferOwnership.full}$len)';
             return nullable ? read : '$read!';
           }
 
@@ -848,6 +1375,32 @@ class EmitContext {
             toNative: _id, // handled via withNativeStringList
             fromNative: (e) => e, // never returned by GLib in the corpus
             isStringList: true,
+            // The GIR's length binding: the 0-based index of the sibling
+            // parameter that carries the count. The emitter checks it
+            // against the parameter list — GLib's GIR writes a binding
+            // for arrays that carry no count at all.
+            arrayLengthParameter: m.arrayLengthParameter,
+          ),
+          null,
+        );
+      case TypeKind.countedString:
+        // A single string whose **byte** length a sibling parameter
+        // carries — GLib's `(string, length)` pair. The string is
+        // marshalled through `withNativeStringBytes`, which reports the
+        // byte length, and the sibling parameter is absorbed: the count
+        // the C side reads is the length of the string the caller passed.
+        usesFfiString = true;
+        usesGirFfi = true;
+        return (
+          TypeBridge(
+            wrapperType: nullable ? 'String?' : 'String',
+            nativeType: 'ffi.Pointer<Utf8>',
+            dartFfiType: 'ffi.Pointer<Utf8>',
+            toNative: _id, // handled via withNativeStringBytes
+            fromNative: (e) => e, // never returned by GLib in the corpus
+            isString: true,
+            isCountedString: true,
+            arrayLengthParameter: m.arrayLengthParameter,
           ),
           null,
         );
@@ -1001,13 +1554,20 @@ class EmitContext {
         // the byte count. This is the shape of `g_bytes_new`'s `data` and
         // of `g_file_replace_contents`' `contents`.
         //
+        // The same shape appears with the roles swapped: the GIR marks
+        // `g_input_stream_read`'s `buffer` `direction="out"` because the
+        // callee *fills* it, but `caller-allocates="1"` says the storage
+        // is the caller's. The Dart side is the same — the caller hands
+        // over a `Uint8List` and the callee writes into it.
+        //
         // The wrapper takes a Dart `Uint8List` and mirrors it into a
         // GLib-allocated native buffer for the call (`withNativeBytes`),
         // so the user never handles a raw pointer. The byte count is the
         // list's length — the length parameter is absorbed from the Dart
         // signature and stays in the native one.
-        if (direction == GirParameterDirection.in_ &&
-            byteArrayIn &&
+        if (byteArrayIn &&
+            (direction == GirParameterDirection.in_ ||
+                direction == GirParameterDirection.out) &&
             TypeResolver.isByteArrayElement(ref)) {
           usesGirFfi = true;
           usesTypedData = true;
@@ -1060,6 +1620,60 @@ class EmitContext {
             null,
           );
         }
+        // A byte buffer the *caller* provides and the callee fills: the
+        // GIR marks the parameter as an out parameter, but the C
+        // signature takes a buffer the caller owns — the bytes arrive
+        // with the result, so there is nothing to read back here.
+        //
+        // This is the shape of `g_input_stream_read_all_async`'s
+        // `buffer`.
+        if (direction == GirParameterDirection.out &&
+            callerAllocates &&
+            TypeResolver.isByteArrayElement(ref) &&
+            ref.array!.lengthParameterIndex != null) {
+          return (
+            null,
+            'a caller-provided byte buffer: the C signature takes a buffer '
+                'the caller owns, and the bytes arrive with the result',
+          );
+        }
+        // The GIR models a **boxed object** as a byte array — the `data`
+        // of `g_tls_connection_get_channel_binding_data` is a
+        // `GByteArray *` the callee allocates, spelled
+        // `<array name="GLib.ByteArray" c:type="GByteArray*">`. The
+        // object belongs to the connection, so there is no buffer to copy
+        // and nothing to release here.
+        if (direction == GirParameterDirection.out &&
+            ref.array != null &&
+            (ref.name ?? '').isNotEmpty &&
+            TypeResolver.isByteArrayElement(ref)) {
+          return (
+            null,
+            'the GIR models the ${ref.name} as a byte array; the C '
+                'signature hands over a boxed object the callee allocates',
+          );
+        }
+        // The GIR declares an allocated byte buffer, but the C signature
+        // writes a pointer *into* the input string. There is nothing to
+        // copy and nothing to release.
+        if (direction == GirParameterDirection.out &&
+            TypeResolver.isBorrowedEndPointer(ref, transfer)) {
+          return (
+            null,
+            'the GIR declares an allocated byte buffer; the C signature '
+                'writes a pointer into the input string',
+          );
+        }
+        // The GIR declares a callee-allocated buffer, but the C signature
+        // takes a buffer the caller provides — and states no size.
+        if (direction == GirParameterDirection.out &&
+            TypeResolver.isCallerProvidedBufferOut(ref, transfer)) {
+          return (
+            null,
+            'the GIR declares a callee-allocated buffer; the C signature '
+                'takes a caller-provided buffer and states no size',
+          );
+        }
         // Both array shapes expose a typed `Pointer<T>` on the Dart
         // side. The user `calloc<T>(n)` directly (or in PRIMITIVE
         // cases `calloc<Int32>(n)` and casts at the buffer level),
@@ -1077,6 +1691,46 @@ class EmitContext {
             toNative: _id,
             fromNative: (e) => e,
             arrayLengthParameter: m.arrayLengthParameter,
+          ),
+          null,
+        );
+      case TypeKind.stringArrayPointer:
+        // A string array the *callee* allocates: the C function allocates
+        // the `gchar **` and writes its address into the caller's slot.
+        // This is the shape of `g_shell_parse_argv`'s `argvp` and of
+        // `g_settings_schema_source_list_schemas`' `non_relocatable`.
+        //
+        // The wrapper reads the array out of the slot after the call and
+        // releases it the way the GIR's transfer annotation says:
+        // `transfer-ownership="full"` hands the array *and* its strings
+        // over (`g_strfreev`), `transfer-ownership="container"` hands
+        // over the array alone (`g_free`).
+        if (direction != GirParameterDirection.out &&
+            direction != GirParameterDirection.inout) {
+          return (
+            null,
+            'a string array the callee allocates (gchar ***) cannot be an '
+                'input parameter',
+          );
+        }
+        usesGirFfi = true;
+        final freeArgs = switch (transfer) {
+          GirTransferOwnership.full => 'free: true',
+          GirTransferOwnership.container => 'freeArray: true',
+          _ => '',
+        };
+        return (
+          TypeBridge(
+            wrapperType: 'List<String>?',
+            nativeType: 'ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>',
+            dartFfiType: 'ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>',
+            toNative: _id,
+            fromNative: (e) => e,
+            // The slot the callee writes the array pointer into. The
+            // native parameter is a pointer to it (`gchar ***`), so the
+            // emitter allocates one pointer-sized cell.
+            outPointee: 'ffi.Pointer<ffi.Pointer<Utf8>>',
+            outExtract: (v) => 'stringListFromNative($v.value, $freeArgs)',
           ),
           null,
         );
@@ -1163,6 +1817,10 @@ class EmitContext {
     if (userSig == null) {
       return (null, 'callback ${ref.name} has unsupported signature');
     }
+    // The parameter list, for the destroy-notify trampoline. The
+    // signature builder already reported the skip, so this one does not
+    // report again.
+    final cbParams = emitter.userParams(declObj, label: cbName, report: false);
     final retSig = emitter.ffiSignature(
       declObj,
       label: '${declNs.name}.${ref.name} (return)',
@@ -1188,6 +1846,8 @@ class EmitContext {
         toNative: toNative,
         fromNative: (e) => e, // callbacks are never returned by GLib
         isNullableCallback: nullable,
+        callbackParams: cbParams,
+        callbackFfiSignature: sig,
       ),
       null,
     );

@@ -313,7 +313,7 @@ class GtkAlertDialog extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setButtons([List<String?>? labels]) {
-    withNativeStringList(labels, (nativeLabels) {
+    withNativeStringList(labels, (nativeLabels, nativeLabelsLen) {
       _gtkAlertDialogSetButtons(this.handle, nativeLabels);
     });
   }

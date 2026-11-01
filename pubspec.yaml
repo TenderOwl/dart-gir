@@ -3,7 +3,7 @@ publish_to: none
 # The workspace version. Every published package carries it — the set is
 # released in lockstep, and `tool/release.dart` is the only thing that
 # writes a version into a package's pubspec.
-version: 1.0.0
+version: 1.2.0
 description: GIR-based Dart FFI bindings for GObject libraries (GLib, GTK4, Libadwaita, etc.).
 
 environment:
@@ -17,11 +17,11 @@ workspace:
   - packages/gir_adw
   - packages/gir_cairo
   - packages/gir_dart_gobject
+  - packages/gir_ffi
   - packages/gir_gdk4
   - packages/gir_gdk_pixbuf
   - packages/gir_gi_repository3
   - packages/gir_gio
-  - packages/gir_ffi
   - packages/gir_glib
   - packages/gir_gobject
   - packages/gir_graphene

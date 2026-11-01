@@ -22,6 +22,9 @@ Four generator features and one hand-written runtime package:
 | the wrapper cache | `packages/gir_ffi` | `fromPointer` is a **factory**: the same native pointer always yields the same Dart object |
 | `GObject(int objectType)` | the generator | a Dart subclass can instantiate a native type |
 | `registerDartType` | `packages/gir_dart_gobject` | registers a native type for a Dart class |
+| `DartSignal` / `DartProperty` | `packages/gir_dart_gobject` | signals and properties a Dart type declares natively |
+| `VfuncOverride` | `packages/gir_dart_gobject` | the virtual functions a Dart type answers |
+| `newDartInstance` | `packages/gir_dart_gobject` | an instance of a Dart type, with its construct properties |
 
 ```dart
 class TaskObject extends GObject {
@@ -273,5 +276,326 @@ class without one (a GIR-only record) does not get the accessor.
 | `generator/lib/src/emit/record_emitter.dart` | the accessor, the `ffi.Struct` records |
 | `generator/lib/src/resolve/types.dart` | `TypeResolver.structRecords` — the four type-system records |
 | `packages/gir_ffi/lib/gir_ffi.dart` | the wrapper cache |
-| `packages/gir_dart_gobject/lib/src/gtype_registry.dart` | `registerDartType` |
+| `packages/gir_dart_gobject/lib/src/gtype_registry.dart` | `registerDartType` — the type, its class initializer, its interfaces |
+| `packages/gir_dart_gobject/lib/src/signals.dart` | `DartSignal`, `emitDartSignal`, `connectDartSignal` |
+| `packages/gir_dart_gobject/lib/src/properties.dart` | `DartProperty`, `getDartProperty`, `setDartProperty` |
+| `packages/gir_dart_gobject/lib/src/vtable.dart` | `GObjectVtable` — the GObject class struct's offsets |
+| `packages/gir_dart_gobject/lib/src/widget_vfuncs.dart` | `GtkWidgetVtable` — the GtkWidget class struct's offsets |
+| `packages/gir_dart_gobject/lib/src/construction.dart` | `newDartInstance` — an instance of a Dart type |
+| `packages/gir_gtk_templates/lib/src/runtime.dart` | `requireOwnType` — the template's own-type check |
 | `example/todo/lib/task_object.dart` | the worked example |
+| `example/todo/lib/task_row.dart` | a template on a Dart class's own type |
+
+## Answering GObject's virtual calls
+
+A Dart class with a native type is a real GObject as far as GLib is
+concerned — but GObject's *virtual* functions still point at the C
+implementation. A Dart class that wants to answer `dispose` has nowhere
+to put its answer: the class struct is C memory, and the GIR does not
+describe it.
+
+`packages/gir_dart_gobject` closes that gap for a curated slice of
+`GObjectClass`:
+
+| Slot | Dart entry point |
+|---|---|
+| `constructed` | `dartConstructed()` |
+| `dispose` | `dartDispose()` |
+| `finalize` | `dartFinalize()` |
+
+```dart
+class TaskObject extends DartGObject {
+  static int get GType =>
+      registerDartType('TaskObject', GObject.GType, vfuncs: true);
+
+  TaskObject() : super(GType);
+
+  @override
+  void dartDispose() {
+    // release what this object owns …
+  }
+}
+```
+
+### The ABI table is hand-written
+
+The slot offsets cannot be derived from the introspection data. The GIR
+lists a class's virtual methods **alphabetically**; the C class struct
+declares them in the order the vtable uses. `GObjectClass` is
+
+```c
+struct _GObjectClass {
+  GTypeClass   g_type_class;              //  0
+  GSList      *construct_properties;      //  8
+  GObject*   (*constructor)         (...);// 16
+  void       (*set_property)        (...);// 24
+  void       (*get_property)        (...);// 32
+  void       (*dispose)             (...);// 40
+  void       (*finalize)            (...);// 48
+  void       (*dispatch_properties_changed) (...); // 56
+  void       (*notify)              (...);// 64
+  void       (*constructed)         (...);// 72
+  ...
+};
+```
+
+so `dispose` is at byte 40 and `finalize` at byte 48 on a 64-bit Linux
+build. Those numbers live in `GObjectVtable`, and
+`packages/gir_dart_gobject/test/vtable_layout_test.dart` reads the
+installed header and checks them — the test skips when the headers are
+not installed, so the suite still runs without them.
+
+### How the call reaches Dart
+
+`installGObjectVfuncs(type)` takes the class struct of the type
+(`g_type_class_ref`), saves the inherited implementation of every slot it
+patches and writes a permanent trampoline over it. The trampoline calls
+the Dart object, then the saved implementation — the C convention, in
+which the subclass runs first and chains up afterwards.
+
+The trampolines are permanent: GObject calls them for the life of the
+type, and a closed `NativeCallable` would leave a dangling C function
+pointer.
+
+`constructed` is the odd one out. GObject calls it from `g_object_new`,
+*before* the Dart wrapper exists, so the call is recorded and delivered
+by `DartGObject`'s constructor — the first point at which the object
+does.
+
+### The lifecycle rule
+
+The wiring is **opt-in**, and it has to be. A GObject that carries a Dart
+callback must not be finalized while the isolate shuts down: GObject
+would call back into a VM that is already tearing itself down, and the
+VM aborts the process. This is the same rule the signal handlers follow
+(see [docs/templates.md](templates.md) for the template stack's version
+of it), and it is why `registerDartType` does not wire the virtual
+functions unless it is asked to.
+
+A type that opts in has to release its objects before the isolate ends:
+
+```dart
+final object = TaskObject();
+// … use it …
+object.unref(); // releases the reference the wrapper owns
+```
+
+## Signals on a Dart type
+
+A Dart type can declare a **signal of its own**. The signal is a real
+GLib signal: `g_signal_lookup` finds it, `g_signal_emit` reaches it, and
+a C caller can connect to it.
+
+```dart
+class TaskObject extends DartGObject {
+  static int get GType => registerDartType(
+    'TaskObject',
+    GObject.GType,
+    signals: {
+      'completed': DartSignal.withoutArgument((self) {
+        (self! as TaskObject).onCompleted();
+      }),
+      'progress': DartSignal.withArgument(
+        DartSignalArgument.integer,
+        (self, value) => (self! as TaskObject).onProgress(value! as int),
+      ),
+    },
+  );
+}
+```
+
+The signal is declared while the type's **class** is initialized, the way
+a native class declares its own: `registerDartType` installs a
+`class_init` trampoline, and the trampoline calls
+`g_signal_newv` with a class closure over the Dart handler.
+
+Three details make that work:
+
+* **The class closure is a `GClosure`, not a callback.** GLib needs a
+  `GClosure` to marshal the signal's arguments. The runtime creates one
+  with `g_cclosure_new` and the generic marshaller, and the closure's
+  user data is the *installation id* as a pointer value — so the
+  trampoline can find the Dart handler without allocating anything and
+  without a destroy notify.
+* **`g_signal_newv` sinks the closure.** It consumes the caller's
+  initial reference, so the runtime must **not** unref it: an unref
+  leaves a dangling closure, and the Dart handler never runs.
+* **The signal's argument has one type.** `DartSignalArgument` picks it:
+  `integer`, `boolean`, `real`, `string` or `object`. The generic
+  marshaller carries those, so the argument arrives in Dart with its
+  type intact.
+
+A Dart type's signal is emitted from Dart with `emitDartSignal`:
+
+```dart
+emitDartSignal(task, 'completed');
+emitDartSignal(task, 'progress', 42);
+```
+
+and connected to from Dart with `connectDartSignal`:
+
+```dart
+connectDartSignal(task, 'completed', (self, args) {
+  print('${(self! as TaskObject).content} is done');
+});
+```
+
+## Properties on a Dart type
+
+A Dart type can declare **properties of its own**, and the native side
+sees them: `g_object_get_property`, `g_object_set_property` and
+`g_object_notify` all work on them.
+
+```dart
+class TaskObject extends DartGObject {
+  static int get GType => registerDartType(
+    'TaskObject',
+    GObject.GType,
+    properties: {
+      'content': DartProperty.string(
+        getter: (self) => (self! as TaskObject).content,
+        setter: (self, value) => (self! as TaskObject).content = value!,
+      ),
+      'done': DartProperty.boolean(
+        getter: (self) => (self! as TaskObject).done,
+        setter: (self, value) => (self! as TaskObject).done = value,
+      ),
+    },
+  );
+}
+```
+
+The property is a real `GParamSpec`, installed with
+`g_object_class_install_property` while the class is initialized.
+
+**The property's virtual functions are patched before the property is
+installed.** `g_object_base_class_init` *resets* `set_property` and
+`get_property` to `NULL` in the derived class struct, and GLib refuses a
+writable property whose class has no `set_property` — so the runtime
+writes the two slots first and installs the property afterwards.
+
+Writing a property notifies: `g_object_notify_by_pspec` runs after the
+Dart setter, so a native observer of `notify` sees the change.
+
+From Dart, `getDartProperty` and `setDartProperty` read and write the
+property by name.
+
+## Interfaces on a Dart type
+
+A Dart type can implement a **GObject interface**:
+
+```dart
+static int get GType => registerDartType(
+  'TaskObject',
+  GObject.GType,
+  interfaces: [GInitable.GType],
+);
+```
+
+The interface is added with `g_type_add_interface_static`, which has to
+happen **after** `g_type_register_static` and **before** the class is
+initialized — GLib refuses the call from inside `class_init`. The
+runtime therefore adds the interfaces first and forces the class
+initialization afterwards.
+
+`addDartInterface(type, interfaceType)` does the same for a type that is
+already registered.
+
+## The GTK widget virtual functions
+
+`GtkWidget` has three virtual functions that matter to a custom widget:
+`snapshot`, `measure` and `size_allocate`. A Dart class that registers a
+type of its own can answer them:
+
+```dart
+class MyBox extends GtkBox {
+  static int get GType => registerDartType(
+    'MyBox',
+    GtkBox.GType,
+    overrides: [sizeAllocateOverride((widget, width, height, baseline) {
+      // the Dart answer …
+    })],
+  );
+}
+```
+
+Each override **chains up**: the runtime saves the inherited
+implementation and calls it after the Dart handler, the way a C subclass
+does.
+
+The slot offsets cannot be derived from the introspection data — the GIR
+lists a class's virtual methods alphabetically, the C class struct
+declares them in vtable order. `GtkWidgetVtable` holds the numbers, and
+`packages/gir_dart_gobject/test/vtable_layout_test.dart` reads the
+installed `gtkwidget.h` and checks them against it. The test skips when
+the headers are not installed.
+
+`sizeof(GObjectClass)` is 136 on a 64-bit build, so `GtkWidgetClass`'s
+slots start there: `size_allocate` is at 200, `snapshot` at 320.
+
+The ABI table lives in the **runtime** package, not in the generator:
+the generated packages cannot depend on `gir_dart_gobject` — the
+dependency runs the other way — and the table describes the *runtime's*
+patching, not the GIR.
+
+## A template on the Dart class's own type
+
+GTK keeps a widget's template on the **native class** and allows exactly
+one per class. A Dart class without a type of its own shares its
+parent's class, so two Dart classes with the same parent could not both
+have a template.
+
+A Dart class that registers a type of its own gets a class of its own to
+put the template on:
+
+```dart
+@GtkTemplate(source: GtkTemplateFile('data/task_row.ui'))
+class TaskRow extends GtkBox with _$TaskRowTemplate {
+  static int get GType => registerDartType('TaskRow', GtkBox.GType);
+
+  TaskRow()
+      : super.rawFromPointer(
+          newDartInstance(
+            GType,
+            constructProperties: {'orientation': GtkOrientation.horizontal.value},
+          ),
+          owned: true,
+        ) {
+    initTemplate();
+  }
+}
+```
+
+Two things have to line up:
+
+* **The widget is an instance of the type.** `newDartInstance` creates one
+  — with the construct properties the type needs, because GLib refuses to
+  set a construct-only property afterwards. The generated mixin checks it
+  and says what is wrong when it is not:
+  *"`TaskRow` was created as `GtkBox`, not as `TaskRow`."*
+* **The template is claimed on that type.** The builder's scanner sees
+  the `GType` accessor and emits the own-type path: the mixin claims
+  `TaskRow.GType` instead of the type the instance happens to have.
+
+`newDartInstance` is the general form: `g_object_newv` with the type's
+construct properties. The value types it fills are objects, strings,
+integers, booleans, doubles and enumerations.
+
+## What is still not in the slice
+
+- **`GObject.constructed` as a normal override.** It is delivered, but
+  it runs before the subclass's own constructor body — the Dart object
+  exists, the subclass's fields do not.
+- **A signal with more than one argument.** The generic marshaller
+  carries one argument; a signal with two would need its own marshaller.
+- **A signal with a return value.** `g_signal_newv` declares the
+  return type, but the runtime does not marshal one back.
+- **A property of a boxed, variant or pointer type.** The property's
+  value type comes from the declaration, and only the five kinds above
+  are wired.
+- **The GTK widget virtual functions beyond the three.** `GtkWidget`'s
+  other slots — `get_request_mode`, `get_preferred_width`, and the rest
+  of the class struct — are not in the table.
+- **A type with native fields.** The type inherits the parent's class and
+  instance sizes; anything the object needs beyond that lives on the
+  Dart side.

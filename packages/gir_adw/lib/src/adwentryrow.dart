@@ -1392,6 +1392,49 @@ class AdwEntryRow extends AdwPreferencesRow
     _gtkEditableInitDelegate(this.handle);
   }
 
+  /// Inserts @length bytes of @text into the contents of the
+  /// widget, at position @position.
+  ///
+  /// Note that the position is in characters, not in bytes.
+  /// The function updates @position to point after the newly
+  /// inserted text.
+  static final _gtkEditableInsertText =
+      girAdwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('gtk_editable_insert_text')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  int insertText(String text, int length, int position) {
+    return withNativeString(text, (nativeText) {
+      final _out0 = malloc<ffi.Int32>();
+      _out0.value = position;
+      try {
+        _gtkEditableInsertText(
+          this.handle,
+          nativeText.cast<Utf8>(),
+          length,
+          _out0,
+        );
+        return _out0.value;
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
   /// Selects a region of text.
   ///
   /// The characters that are selected are those characters at positions

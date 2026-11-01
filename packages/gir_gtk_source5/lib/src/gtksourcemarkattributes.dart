@@ -312,6 +312,26 @@ class GtkSourceMarkAttributes extends GObject {
     _gtkSourceMarkAttributesSetPixbuf(this.handle, pixbuf.handle);
   }
 
+  /// The code should connect to this signal to provide a tooltip for given
+  /// @mark. The tooltip can contain a markup.
+  int onQueryTooltipMarkup(String? Function(GtkSourceMark mark) callback) {
+    return _connectSignal_s_1_o_gtksourcemark(
+      this.handle,
+      'query-tooltip-markup',
+      callback,
+    );
+  }
+
+  /// The code should connect to this signal to provide a tooltip for given
+  /// @mark. The tooltip should be just a plain text.
+  int onQueryTooltipText(String? Function(GtkSourceMark mark) callback) {
+    return _connectSignal_s_1_o_gtksourcemark(
+      this.handle,
+      'query-tooltip-text',
+      callback,
+    );
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

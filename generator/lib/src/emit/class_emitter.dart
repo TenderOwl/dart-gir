@@ -298,6 +298,7 @@ class ClassEmitter {
       );
       if (code != null) b.writeln(_indent(code));
     }
+    ctx.reportVirtualMethods(cls.virtualMethods, dartName);
     for (final m in cls.methods) {
       var name = CallableEmitter.safeMemberName(
         escapeKeyword(toLowerCamel(m.name)),

@@ -21,6 +21,8 @@ file when triaging "why is `<X>` missing from package `<Y>`?".
 | `signal` | `signals_emitter.signalSkipReason` | `arity N exceeds supported max (5)`, `unsupported arg type`, `unsupported return type`, `weak-ref`, `detailed signal names`, `name collision` |
 | `alias` | (always) | `aliases are resolved to their target` |
 | `renamed` | `ClassEmitter` | `override-incompatible with ancestor; renamed to <X>` |
+| `virtual` | `ClassEmitter` | `virtual method; the class struct layout is not in the GIR` |
+| `bitfield` | `RecordEmitter._emit` | `duplicate declaration owned by an earlier namespace` |
 
 ## Common reasons (alphabetical)
 
@@ -258,6 +260,26 @@ The **callee-allocated** byte buffer — a `char**` / `guchar**` with a
 sibling length parameter — *is* supported: the wrapper copies the bytes
 into a `Uint8List` and releases the native buffer. See
 [emission.md](./emission.md#out-parameters).
+
+### `virtual method; the class struct layout is not in the GIR`
+
+Every virtual method of a class is a slot in the class struct — the
+`GObjectClass`, the `GtkWidgetClass`, and so on. The GIR does not
+describe those structs: it lists a class's virtual methods
+*alphabetically*, while the C struct declares them in the order the
+vtable uses, and it says nothing about the fields in between. The
+offsets therefore cannot be derived from the introspection data, and a
+virtual method cannot be emitted as a call.
+
+The method is still **reported** — every one of them has a line in its
+package's `skip_report.txt`, so nothing disappears silently.
+
+A *curated slice* of them is wired by hand in
+`packages/gir_dart_gobject`: `GObject.constructed`, `GObject.dispose`,
+`GObject.finalize`, and `GtkWidget.snapshot`, `GtkWidget.measure` and
+`GtkWidget.size_allocate`. Their offsets live in a hand-written ABI
+table that is cross-checked against the installed C headers — see
+[dart-gobjects.md](./dart-gobjects.md).
 
 ### `varargs`
 

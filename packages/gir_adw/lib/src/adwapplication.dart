@@ -276,6 +276,19 @@ class AdwApplication extends GtkApplication
     return _connectSignal_b_0(this.handle, 'name-lost', callback);
   }
 
+  /// The ::open signal is emitted on the primary instance when there are
+  /// files to open. See g_application_open() for more information.
+  int onOpen(
+    void Function(ffi.Pointer<ffi.Void> files, int nFiles, String hint)
+    callback,
+  ) {
+    return _connectSignal_v_3_o_i_s_ffipointerffivoid_int_string(
+      this.handle,
+      'open',
+      callback,
+    );
+  }
+
   /// The ::shutdown signal is emitted only on the registered primary instance
   /// immediately after the main loop terminates.
   int onShutdown(void Function() callback) {

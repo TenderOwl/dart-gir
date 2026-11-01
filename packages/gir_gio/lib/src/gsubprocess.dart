@@ -141,7 +141,7 @@ class GSubprocess extends GObject implements GInitable {
             )
           >();
   factory GSubprocess.newv(List<String?>? argv, GSubprocessFlags flags) {
-    return withNativeStringList(argv, (nativeArgv) {
+    return withNativeStringList(argv, (nativeArgv, nativeArgvLen) {
       final _error = calloc<ffi.Pointer<ffi.Void>>();
       try {
         final _ret = _gSubprocessNewv(nativeArgv, flags.value, _error);

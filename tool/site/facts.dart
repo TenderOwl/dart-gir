@@ -408,6 +408,11 @@ const List<SkipGroup> skipGroups = <SkipGroup>[
     'Duplicate declaration owned by an earlier namespace',
     prefixes: <String>['duplicate declaration'],
   ),
+  SkipGroup(
+    'virtual_method',
+    'Virtual method — the class struct layout is not in the GIR',
+    prefixes: <String>['virtual method'],
+  ),
   SkipGroup('other', 'Everything else'),
 ];
 

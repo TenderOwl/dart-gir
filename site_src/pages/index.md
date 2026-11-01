@@ -174,7 +174,8 @@ A project site that overstates its own maturity is worse than no site, so here i
 | Static analysis, whole workspace | `dart analyze` | Every package, the generator, the examples and the site tooling. |
 | Generator unit tests | `dart test generator/` | The loader, the parser, the resolver, the naming rules and the emitters. |
 | Runtime helper tests | `cd packages/gir_ffi && dart test` | String marshalling and the `HeapAnchor` lifetime contract. |
-| Composite-template tests | `dart test packages/gir_gtk_templates packages/gir_gtk_templates_builder` | The runtime helpers, the AST scanner, the codegen, and an analyzer-resolution check of the generated part file. |
+| Composite-template tests | `dart test packages/gir_gtk_templates packages/gir_gtk_templates_builder` | The runtime helpers, the AST scanner, the codegen, and an analyzer-resolution check of the generated part file — of both the plain fixture and the one whose class registers a native type of its own. |
+| Dart-object-model tests | `dart test packages/gir_dart_gobject` | The native type, its signals, its properties, its interfaces, the virtual functions it answers, and the ABI table checked against the installed C headers. |
 | Whole workspace | `dart test` with every package directory named | All of the above, plus the per-package smoke tests. |
 | Generated template code type-checks | `cd example/todo && dart run build_runner build && dart analyze` | A real consumer app against the generated output. |
 | The site matches its sources | `dart run tool/build_site.dart --check` | The committed `site/` matches `site_src/`, and the facts match the repository. |
@@ -215,11 +216,11 @@ The `example/notepad/` app is a real `AdwApplicationWindow` text editor — open
 ## Status and honesty
 
 :::{cols}
-### 1.0, on pub.dev
+### 1.x, on pub.dev
 
 All seventeen packages are published on pub.dev under the `gir_` prefix, and they move together: one generator, one changelog, one version. Within 1.x the emitted API only grows — a name changes when the upstream GIR renames it, and a symbol disappears only when the upstream GIR removes it. The ownership and lifetime rules are stable within 1.x too; changing them is a breaking change.
 
-What is *not* promised is the set of bound symbols: the [skip report](features.html#coverage-and-the-honest-gaps) states what is bound, and it is regenerated with every release. The known gaps — the array residue, the exotic OUT buffers, the `inout` parameters — are documented rather than hidden.
+What is *not* promised is the set of bound symbols: the [skip report](features.html#coverage-and-the-honest-gaps) states what is bound, and it is regenerated with every release. The known gaps — the virtual methods, whose class-struct layout the GIR does not carry, and the `inout` parameters, whose ownership annotations are demonstrably wrong — are documented rather than hidden.
 
 The versioning policy is in `docs/release.md`; the [roadmap](roadmap.html) says what comes next.
 

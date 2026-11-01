@@ -794,7 +794,7 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
             )
           >();
   int run(int argc, [List<String?>? argv]) {
-    return withNativeStringList(argv, (nativeArgv) {
+    return withNativeStringList(argv, (nativeArgv, nativeArgvLen) {
       return _gApplicationRun(this.handle, argc, nativeArgv);
     });
   }
@@ -1306,6 +1306,19 @@ class GApplication extends GObject implements GActionGroup, GActionMap {
   /// The default handler for this signal calls g_application_quit().
   int onNameLost(bool Function() callback) {
     return _connectSignal_b_0(this.handle, 'name-lost', callback);
+  }
+
+  /// The ::open signal is emitted on the primary instance when there are
+  /// files to open. See g_application_open() for more information.
+  int onOpen(
+    void Function(ffi.Pointer<ffi.Void> files, int nFiles, String hint)
+    callback,
+  ) {
+    return _connectSignal_v_3_o_i_s_ffipointerffivoid_int_string(
+      this.handle,
+      'open',
+      callback,
+    );
   }
 
   /// The ::shutdown signal is emitted only on the registered primary instance

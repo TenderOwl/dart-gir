@@ -681,7 +681,10 @@ class GtkBuilder extends GObject {
             )
           >();
   bool addObjectsFromFile(String filename, [List<String?>? objectIds]) {
-    return withNativeStringList(objectIds, (nativeObjectIds) {
+    return withNativeStringList(objectIds, (
+      nativeObjectIds,
+      nativeObjectIdsLen,
+    ) {
       return withNativeString(filename, (nativeFilename) {
         final _error = calloc<ffi.Pointer<ffi.Void>>();
         try {
@@ -733,7 +736,10 @@ class GtkBuilder extends GObject {
             )
           >();
   bool addObjectsFromResource(String resourcePath, [List<String?>? objectIds]) {
-    return withNativeStringList(objectIds, (nativeObjectIds) {
+    return withNativeStringList(objectIds, (
+      nativeObjectIds,
+      nativeObjectIdsLen,
+    ) {
       return withNativeString(resourcePath, (nativeResourcePath) {
         final _error = calloc<ffi.Pointer<ffi.Void>>();
         try {
@@ -790,7 +796,10 @@ class GtkBuilder extends GObject {
     int length, [
     List<String?>? objectIds,
   ]) {
-    return withNativeStringList(objectIds, (nativeObjectIds) {
+    return withNativeStringList(objectIds, (
+      nativeObjectIds,
+      nativeObjectIdsLen,
+    ) {
       return withNativeString(buffer, (nativeBuffer) {
         final _error = calloc<ffi.Pointer<ffi.Void>>();
         try {

@@ -2999,7 +2999,7 @@ class GtkWidget extends GInitiallyUnowned
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setCssClasses([List<String?>? classes]) {
-    withNativeStringList(classes, (nativeClasses) {
+    withNativeStringList(classes, (nativeClasses, nativeClassesLen) {
       _gtkWidgetSetCssClasses(this.handle, nativeClasses);
     });
   }

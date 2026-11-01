@@ -26,5 +26,9 @@ dependencies:
     path: ../gir_gtk4
 
 dev_dependencies:
+  gir_dart_gobject:
+    path: ../gir_dart_gobject
+  gir_ffi:
+    path: ../gir_ffi
   lints: ^6.0.0
   test: ^1.25.6

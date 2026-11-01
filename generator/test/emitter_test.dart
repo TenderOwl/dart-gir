@@ -11,6 +11,7 @@ GirNamespace _glibNs({
   List<GirEnum>? enums,
   List<GirFunction>? functions,
   List<GirClass>? classes,
+  List<GirRecord>? records,
   List<GirConstant>? constants,
   List<GirCallback>? callbacks,
 }) => GirNamespace(
@@ -22,6 +23,7 @@ GirNamespace _glibNs({
   enumerations: enums,
   functions: functions,
   classes: classes,
+  records: records,
   constants: constants,
   callbacks: callbacks,
 );
@@ -102,6 +104,94 @@ void main() {
   });
 
   group('CallableEmitter', () {
+    test('seeds an inout scalar slot and reads it back', () {
+      // The caller-allocated rule: the caller owns the storage, the
+      // callee writes through the pointer, and the updated value comes
+      // back as the wrapper's return value.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'insert_text',
+        cIdentifier: 'g_editable_insert_text',
+        returnType: const GirTypeRef(name: 'none', cType: 'void'),
+        parameters: [
+          const GirParameter(
+            name: 'position',
+            direction: GirParameterDirection.inout,
+            type: GirTypeRef(name: 'gint', cType: 'int*'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The slot is allocated and seeded with the caller's value ...
+      expect(code, contains('final _out0 = malloc<ffi.Int32>();'));
+      expect(code, contains('_out0.value = position;'));
+      // ... the callee gets the pointer ...
+      expect(code, contains('_out0'));
+      // ... and the updated value is read back.
+      expect(code, contains('_out0.value'));
+      expect(code, contains('malloc.free(_out0);'));
+    });
+
+    test('passes an inout handle by pointer so the callee writes in place', () {
+      // The Dart object *is* the memory, so the caller sees the change.
+      final report = GenerationReport();
+      final ns = _glibNs(
+        classes: [
+          GirClass(
+            name: 'TextIter',
+            cType: 'GtkTextIter',
+            glibTypeName: 'GtkTextIter',
+          ),
+        ],
+        functions: [
+          GirFunction(
+            name: 'forward_iter',
+            cIdentifier: 'g_buffer_forward_iter',
+            returnType: const GirTypeRef(name: 'none', cType: 'void'),
+            parameters: [
+              const GirParameter(
+                name: 'iter',
+                direction: GirParameterDirection.inout,
+                type: GirTypeRef(name: 'TextIter', cType: 'GtkTextIter*'),
+              ),
+            ],
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final fn = ns.functions.single;
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      expect(code, contains('iter.handle'));
+    });
+
+    test('skips an inout pointer to a pointer with a precise reason', () {
+      // The callee allocates the pointee there — a wrapper would have to
+      // release memory it did not allocate.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'scan_int',
+        cIdentifier: 'g_scan_int',
+        parameters: [
+          const GirParameter(
+            name: 'pos',
+            direction: GirParameterDirection.inout,
+            type: GirTypeRef(name: 'utf8', cType: 'const char**'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNull);
+      expect(report.entries.single.reason, contains('pointer to a pointer'));
+    });
+
     test('emits function with string param via withNativeString', () {
       final report = GenerationReport();
       final fn = GirFunction(
@@ -183,7 +273,10 @@ void main() {
         final ns = _glibNs(functions: [fn]);
         final ctx = _ctx(ns, [ns], report);
         final code = FunctionEmitter(ctx).emitFunction(fn)!;
-        expect(code, contains('withNativeStringList(argv, (nativeArgv)'));
+        expect(
+          code,
+          contains('withNativeStringList(argv, (nativeArgv, nativeArgvLen)'),
+        );
         expect(code, contains('List<String?>? argv'));
         expect(code, contains('ffi.Pointer<ffi.Pointer<Utf8>>'));
         expect(report.totalSkipped, 0);
@@ -191,7 +284,11 @@ void main() {
       },
     );
 
-    test('skips function whose argv-style array has bound length', () {
+    test('absorbs the count of a bound argv-style array', () {
+      // The GIR binds the array to the sibling that carries its count:
+      // the C side reads exactly that many slots. The count is the
+      // length of the list the caller passed, so it disappears from the
+      // Dart signature and stays in the native one.
       final report = GenerationReport();
       final fn = GirFunction(
         name: 'weird_run',
@@ -216,8 +313,51 @@ void main() {
       final ns = _glibNs(functions: [fn]);
       final ctx = _ctx(ns, [ns], report);
       final code = FunctionEmitter(ctx).emitFunction(fn);
-      expect(code, isNull);
-      expect(report.entries.single.reason, contains('array'));
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      // The count is gone from the Dart signature ...
+      expect(code, isNot(contains('int argc')));
+      // ... and the native call passes the list's own length.
+      expect(code, contains('nativeArgvLen'));
+    });
+
+    test('emits a counted string through withNativeStringBytes', () {
+      // GLib's `(string, string_len)` pair: the C side reads
+      // `string_len` *bytes*, so the count is part of the contract.
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'match_full',
+        cIdentifier: 'g_regex_match_full',
+        parameters: [
+          const GirParameter(
+            name: 'string',
+            type: GirTypeRef(
+              cType: 'const gchar*',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(name: 'utf8'),
+              ),
+            ),
+          ),
+          const GirParameter(
+            name: 'string_len',
+            type: GirTypeRef(name: 'gssize'),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn);
+      expect(code, isNotNull);
+      expect(report.totalSkipped, 0);
+      expect(
+        code,
+        contains(
+          'withNativeStringBytes(string, (nativeString, nativeStringLen)',
+        ),
+      );
+      // The byte count is gone from the Dart signature.
+      expect(code, isNot(contains('int stringLen')));
     });
 
     test('skips introspectable="0" function naming the canonical sibling', () {
@@ -855,6 +995,7 @@ void main() {
     GirFunction byteBufferFn({
       required int? lengthIndex,
       required bool callerAllocates,
+      String cType = 'char**',
     }) => GirFunction(
       name: 'load_contents',
       cIdentifier: 'g_file_load_contents',
@@ -867,7 +1008,7 @@ void main() {
           callerAllocates: callerAllocates,
           type: GirTypeRef(
             name: 'guint8',
-            cType: 'char**',
+            cType: cType,
             array: GirArrayInfo(
               lengthParameterIndex: lengthIndex,
               elementType: GirTypeRef(name: 'guint8'),
@@ -922,17 +1063,52 @@ void main() {
       expect(code, contains('malloc.free(_out1);'));
     });
 
-    test('a byte buffer without a length binding is still skipped', () {
-      // Without `<array length="N">` the size of the buffer is unknown,
-      // so the wrapper could not copy it.
-      final report = GenerationReport();
-      final fn = byteBufferFn(lengthIndex: null, callerAllocates: false);
-      final ns = _glibNs(functions: [fn]);
-      final ctx = _ctx(ns, [ns], report);
-      final code = FunctionEmitter(ctx).emitFunction(fn);
-      expect(code, isNull);
-      expect(report.totalSkipped, 1);
-    });
+    test(
+      'a NUL-terminated byte buffer without a length binding becomes a string',
+      () {
+        // `g_spawn_sync`'s `standard_output`: the callee allocates the
+        // buffer and terminates it with a NUL, and nothing in the
+        // signature states its size. The wrapper measures the buffer
+        // with `strlen` and hands the caller a `String`.
+        final report = GenerationReport();
+        final fn = byteBufferFn(lengthIndex: null, callerAllocates: false);
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn);
+        expect(code, isNotNull);
+        expect(report.totalSkipped, 0);
+        // The public shape is a nullable string, not a raw pointer.
+        expect(code, contains('String?'));
+        // The buffer is measured, not copied by a stated length.
+        expect(
+          code,
+          contains(
+            'nulTerminatedStringFromNative(_out0.value.cast<ffi.Uint8>())',
+          ),
+        );
+      },
+    );
+
+    test(
+      'a byte buffer with no length binding and no NUL is still skipped',
+      () {
+        // `guchar**`: not a C string, and the signature does not state
+        // how long the buffer is — so the wrapper could not copy it out
+        // and could not measure it either.
+        final report = GenerationReport();
+        final fn = byteBufferFn(
+          lengthIndex: null,
+          callerAllocates: false,
+          cType: 'guchar**',
+        );
+        final ns = _glibNs(functions: [fn]);
+        final ctx = _ctx(ns, [ns], report);
+        final code = FunctionEmitter(ctx).emitFunction(fn);
+        expect(code, isNull);
+        expect(report.totalSkipped, 1);
+        expect(report.entries.single.reason, contains('no length binding'));
+      },
+    );
 
     test('a caller-allocated byte array is not a callee-allocated buffer', () {
       // `caller-allocates="1"`: the caller owns the memory, the callee
@@ -1236,15 +1412,34 @@ void main() {
       expect(code, contains(r"const probe = 'C:\\Users\\foo';"));
     });
 
-    test('skips non-primitive, non-string constant types', () {
+    test('emits a time_t constant (the resolver knows the type now)', () {
       final report = GenerationReport();
-      // `time_t` resolves to unsupported — should be skipped with reason.
+      // `time_t` is a signed 64-bit count of seconds on LP64 Linux — the
+      // resolver maps it, so the constant is emitted rather than skipped.
       final ns = _glibNs(
         constants: [
           mkConst(
             'WHEN',
             '1234',
             const GirTypeRef(name: 'time_t', cType: 'time_t'),
+          ),
+        ],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitConstant(ns.constants.single);
+      expect(code, contains('1234'));
+      expect(report.totalSkipped, 0);
+    });
+
+    test('skips non-primitive, non-string constant types', () {
+      final report = GenerationReport();
+      // `va_list` resolves to unsupported — should be skipped with reason.
+      final ns = _glibNs(
+        constants: [
+          mkConst(
+            'WHEN',
+            '1234',
+            const GirTypeRef(name: 'va_list', cType: 'va_list'),
           ),
         ],
       );
@@ -1473,7 +1668,7 @@ void main() {
       },
     );
 
-    test('skips when an unsupported parameter type is referenced', () {
+    test('an array parameter is a pointer to the first element', () {
       final report = GenerationReport();
       final ns = _glibNs(
         callbacks: [
@@ -1483,7 +1678,6 @@ void main() {
             parameters: const [
               GirParameter(
                 name: 'data',
-                // `array types are handled in a later phase` — must skip.
                 type: GirTypeRef(
                   name: 'gint',
                   array: GirArrayInfo(elementType: GirTypeRef(name: 'gint')),
@@ -1495,9 +1689,11 @@ void main() {
       );
       final ctx = _ctx(ns, [ns], report);
       final code = CallbackEmitter(ctx).emit(ns.callbacks.single);
-      expect(code, isNull);
-      expect(report.entries.single.category, 'callback');
-      expect(report.entries.single.reason, contains('array'));
+      // The element count is not part of the signature: the callback
+      // receives the pointer to the first element.
+      expect(code, contains('typedef GWithArray'));
+      expect(code, contains('ffi.Pointer<ffi.Int32>'));
+      expect(report.totalSkipped, 0);
     });
 
     test('skips a callback declared in a non-emitted package', () {
@@ -4300,6 +4496,194 @@ void main() {
 
       expect(code, isNot(contains('ffi.nullptr ?')));
       expect(report.totalSkipped, 0);
+    });
+  });
+
+  group('OUT array parameters', () {
+    // An OUT array is read back into a Dart list. Two shapes:
+    //
+    // * the **callee** allocates the array and a sibling OUT parameter
+    //   carries the element count (`gdk_event_get_axes`' `axes`);
+    // * the **caller** allocates the buffer and the length is known up
+    //   front — a fixed size (`graphene_vec2_to_float`' `dest`) or the
+    //   capacity the caller passes (`pango_attr_break`' `attrs_len`).
+
+    GirFunction calleeAllocated() => GirFunction(
+      name: 'get_axes',
+      cIdentifier: 'gdk_event_get_axes',
+      returnType: const GirTypeRef(name: 'gboolean', cType: 'gboolean'),
+      parameters: const [
+        GirParameter(
+          name: 'axes',
+          direction: GirParameterDirection.out,
+          callerAllocates: false,
+          type: GirTypeRef(
+            name: 'gdouble',
+            cType: 'double**',
+            array: GirArrayInfo(
+              lengthParameterIndex: 1,
+              elementType: GirTypeRef(name: 'gdouble', cType: 'double*'),
+            ),
+          ),
+        ),
+        GirParameter(
+          name: 'n_axes',
+          direction: GirParameterDirection.out,
+          callerAllocates: false,
+          type: GirTypeRef(name: 'guint', cType: 'guint'),
+        ),
+      ],
+    );
+
+    test('a callee-allocated array becomes a list', () {
+      final report = GenerationReport();
+      final fn = calleeAllocated();
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+
+      expect(report.totalSkipped, 0);
+      // The wrapper returns the list next to the function's own value.
+      expect(code, contains('List<double>'));
+      // The C parameter is a slot the callee writes the array pointer
+      // into — a `double **`.
+      expect(code, contains('ffi.Pointer<ffi.Pointer<ffi.Double>>'));
+      // The slot is allocated and the array is read back out of it.
+      expect(code, contains('calloc<ffi.Pointer<ffi.Double>>()'));
+      expect(code, contains('_out0.value[i]'));
+      // The count comes from the sibling OUT slot, and it is absorbed:
+      // the list knows its own length.
+      expect(code, contains('_out1.value'));
+      expect(code, isNot(contains('int nAxes')));
+      // The caller owns the array and releases it with GLib's allocator.
+      expect(code, contains('gFree(_out0.value.cast());'));
+    });
+
+    test('a caller-allocated array of a fixed size is allocated here', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'to_float',
+        cIdentifier: 'graphene_vec2_to_float',
+        returnType: const GirTypeRef(name: 'none', cType: 'void'),
+        parameters: const [
+          GirParameter(
+            name: 'dest',
+            direction: GirParameterDirection.out,
+            type: GirTypeRef(
+              name: 'gfloat',
+              cType: 'float*',
+              array: GirArrayInfo(
+                fixedSize: 2,
+                elementType: GirTypeRef(name: 'gfloat', cType: 'float'),
+              ),
+            ),
+          ),
+        ],
+      );
+      final ns = _glibNs(functions: [fn]);
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+
+      expect(report.totalSkipped, 0);
+      expect(code, contains('List<double>'));
+      // The wrapper allocates the buffer — two floats — and frees it.
+      expect(code, contains('calloc<ffi.Float>(2)'));
+      expect(code, contains('calloc.free(_out0);'));
+      // The C parameter is the buffer itself.
+      expect(code, contains('ffi.Pointer<ffi.Float>'));
+    });
+
+    test('a handle element is wrapped, not copied', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'list_families',
+        cIdentifier: 'pango_context_list_families',
+        returnType: const GirTypeRef(name: 'none', cType: 'void'),
+        parameters: const [
+          GirParameter(
+            name: 'families',
+            direction: GirParameterDirection.out,
+            callerAllocates: false,
+            transferOwnership: GirTransferOwnership.container,
+            type: GirTypeRef(
+              name: 'FontFamily',
+              cType: 'PangoFontFamily***',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(
+                  name: 'FontFamily',
+                  cType: 'PangoFontFamily**',
+                ),
+              ),
+            ),
+          ),
+          GirParameter(
+            name: 'n_families',
+            direction: GirParameterDirection.out,
+            callerAllocates: false,
+            type: GirTypeRef(name: 'gint', cType: 'int'),
+          ),
+        ],
+      );
+      final ns = _glibNs(
+        functions: [fn],
+        classes: [GirClass(name: 'FontFamily', cType: 'PangoFontFamily')],
+      );
+      final ctx = _ctx(ns, [ns], report);
+      final code = FunctionEmitter(ctx).emitFunction(fn)!;
+
+      expect(report.totalSkipped, 0);
+      expect(code, contains('List<GFontFamily>'));
+      // The elements are borrowed: `transfer-ownership="container"` hands
+      // over the array alone.
+      expect(code, contains('GFontFamily.fromPointer('));
+      expect(code, isNot(contains('owned: true')));
+    });
+
+    test('a struct element the generator cannot copy is skipped', () {
+      final report = GenerationReport();
+      final fn = GirFunction(
+        name: 'get_log_attrs',
+        cIdentifier: 'pango_layout_get_log_attrs',
+        returnType: const GirTypeRef(name: 'none', cType: 'void'),
+        parameters: const [
+          GirParameter(
+            name: 'attrs',
+            direction: GirParameterDirection.out,
+            callerAllocates: false,
+            type: GirTypeRef(
+              name: 'LogAttr',
+              cType: 'PangoLogAttr**',
+              array: GirArrayInfo(
+                lengthParameterIndex: 1,
+                elementType: GirTypeRef(
+                  name: 'LogAttr',
+                  cType: 'PangoLogAttr*',
+                ),
+              ),
+            ),
+          ),
+          GirParameter(
+            name: 'n_attrs',
+            direction: GirParameterDirection.out,
+            callerAllocates: false,
+            type: GirTypeRef(name: 'gint', cType: 'int'),
+          ),
+        ],
+      );
+      final ns = _glibNs(
+        functions: [fn],
+        records: [GirRecord(name: 'LogAttr', cType: 'PangoLogAttr')],
+      );
+      final ctx = _ctx(ns, [ns], report);
+
+      expect(FunctionEmitter(ctx).emitFunction(fn), isNull);
+      expect(report.totalSkipped, 1);
+      // The reason names the struct and says why it cannot be read out.
+      expect(
+        report.entries.single.reason,
+        contains('the layout of the element is not emitted'),
+      );
     });
   });
 }

@@ -539,6 +539,28 @@ final class GDate implements ffi.Finalizable {
     _gDateSetTime(this.handle, time);
   }
 
+  /// Sets the value of a date to the date corresponding to a time
+  /// specified as a time_t. The time to date conversion is done using
+  /// the user's current timezone.
+  ///
+  /// To set the value of a date to the current day, you could write:
+  /// |[<!-- language="C" -->
+  /// time_t now = time (NULL);
+  /// if (now == (time_t) -1)
+  /// // handle the error
+  /// g_date_set_time_t (date, now);
+  /// ]|
+  static final _gDateSetTimeT =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int64)
+            >
+          >('g_date_set_time_t')
+          .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  void setTimeT(int timet) {
+    _gDateSetTimeT(this.handle, timet);
+  }
+
   /// Sets the value of a date from a #GTimeVal value.  Note that the
   /// @tv_usec member is ignored, because #GDate can't make use of the
   /// additional precision.

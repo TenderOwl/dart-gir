@@ -481,6 +481,17 @@ class AdwTabOverview extends GtkWidget
     );
   }
 
+  /// Emitted when a tab needs to be created.
+  ///
+  /// This can happen after the new tab button has been pressed, see
+  /// [property@TabOverview:enable-new-tab].
+  ///
+  /// The signal handler is expected to create a new page in the corresponding
+  /// [class@TabView] and return it.
+  int onCreateTab(AdwTabPage? Function() callback) {
+    return _connectSignal_o_0_adwtabpage(this.handle, 'create-tab', callback);
+  }
+
   /// Emitted when content is dropped onto a tab.
   ///
   /// The content must be of one of the types set up via
@@ -491,6 +502,25 @@ class AdwTabOverview extends GtkWidget
     return _connectSignal_b_2_o_o_adwtabpage_gvalue(
       this.handle,
       'extra-drag-drop',
+      callback,
+    );
+  }
+
+  /// Emitted when the dropped content is preloaded.
+  ///
+  /// In order for data to be preloaded, [property@TabOverview:extra-drag-preload]
+  /// must be set to `TRUE`.
+  ///
+  /// The content must be of one of the types set up via
+  /// [method@TabOverview.setup_extra_drop_target].
+  ///
+  /// See [property@Gtk.DropTarget:value].
+  int onExtraDragValue(
+    GdkDragAction Function(AdwTabPage page, GValue? value) callback,
+  ) {
+    return _connectSignal_f_2_o_o_gdkdragaction_adwtabpage_gvalue(
+      this.handle,
+      'extra-drag-value',
       callback,
     );
   }

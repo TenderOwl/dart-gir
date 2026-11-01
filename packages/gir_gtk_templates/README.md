@@ -141,8 +141,10 @@ callers should treat `null` as "class init didn't run".
 ### `widgetTypeOf(GtkWidget)`
 
 The native `GType` of a widget instance. A Dart subclass of a widget
-type does **not** get a `GType` of its own — the native instance is an
-instance of the *superclass's* type, and this is the type GTK sees.
+type does **not** get a `GType` of its own — unless it registers one
+with `registerDartType` (see `package:gir_dart_gobject`) — and then the
+native instance is an instance of the *superclass's* type, and this is
+the type GTK sees.
 
 It is the type the template is installed on, and the type
 `getTemplateChild()` expects as its `widget_type` argument (the type
@@ -166,13 +168,32 @@ The underlying pieces are available separately:
 `rewriteTemplateTypes(String, String, [String?])` (pure) and
 `stripTemplateSignals(String)` (pure).
 
+### `requireOwnType(GtkWidget, int, String)`
+
+Checks that a widget is an instance of the type its Dart class
+registered, and throws a `StateError` naming both types when it is
+not:
+
+```
+gir_gtk_templates: `TaskRow` was created as `GtkBox`, not as `TaskRow`.
+A widget that carries a template of its own has to be created from its
+own type — construct it with `TaskRow() : super.rawFromPointer(
+newDartInstance(TaskRow.GType), owned: true)`.
+```
+
+The generated mixin calls it when the class declares a `GType` of its
+own: the template then belongs to *that* type, and a widget created
+through the parent's constructor would put it on the parent's class —
+where another Dart class may already have put one.
+
 ### `claimTemplateType(int, String)`
 
 GTK stores the template on the **native class** and allows exactly one
 per class (`gtk_widget_class_set_template()` asserts
 `widget_class->priv->template == NULL`). A Dart subclass has no
 `GType` of its own, so two Dart template classes cannot share one
-native widget type.
+native widget type — unless each of them registers a type of its own,
+in which case the template lives on *that* type.
 
 `claimTemplateType(gtype, owner)` returns `true` when the caller is
 the first to claim the type (and therefore has to install the
@@ -237,6 +258,9 @@ file contains:
     `super.initTemplate()` and wires the signals. The host widget
     calls it from its constructor — GTK builds a widget's template in
     the instance initializer and Dart has no equivalent.
+  - When the class declares a `GType` of its own, the mixin claims
+    *that* type instead of the type the instance happens to have, and
+    checks that the widget really is an instance of it.
   - A per-instance `_ensureInstanceInit()` that falls back to
     `initTemplate()` when the host never called it.
   - A `late final <Type> <id>` per child, populated by

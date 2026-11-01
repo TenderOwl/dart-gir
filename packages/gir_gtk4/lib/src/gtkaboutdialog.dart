@@ -145,7 +145,7 @@ class GtkAboutDialog extends GtkWindow
             )
           >();
   void addCreditSection(String sectionName, [List<String?>? people]) {
-    withNativeStringList(people, (nativePeople) {
+    withNativeStringList(people, (nativePeople, nativePeopleLen) {
       withNativeString(sectionName, (nativeSectionName) {
         _gtkAboutDialogAddCreditSection(
           this.handle,
@@ -410,7 +410,7 @@ class GtkAboutDialog extends GtkWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setArtists([List<String?>? artists]) {
-    withNativeStringList(artists, (nativeArtists) {
+    withNativeStringList(artists, (nativeArtists, nativeArtistsLen) {
       _gtkAboutDialogSetArtists(this.handle, nativeArtists);
     });
   }
@@ -430,7 +430,7 @@ class GtkAboutDialog extends GtkWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setAuthors([List<String?>? authors]) {
-    withNativeStringList(authors, (nativeAuthors) {
+    withNativeStringList(authors, (nativeAuthors, nativeAuthorsLen) {
       _gtkAboutDialogSetAuthors(this.handle, nativeAuthors);
     });
   }
@@ -486,7 +486,10 @@ class GtkAboutDialog extends GtkWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDocumenters([List<String?>? documenters]) {
-    withNativeStringList(documenters, (nativeDocumenters) {
+    withNativeStringList(documenters, (
+      nativeDocumenters,
+      nativeDocumentersLen,
+    ) {
       _gtkAboutDialogSetDocumenters(this.handle, nativeDocumenters);
     });
   }

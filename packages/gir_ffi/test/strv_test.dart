@@ -17,7 +17,7 @@ void main() {
   group('withNativeStringList', () {
     test('null input leaves argv as NULL and frees nothing', () {
       ffi.Pointer<ffi.Pointer<Utf8>>? receivedArgv;
-      final result = withNativeStringList<int?>(null, (argv) {
+      final result = withNativeStringList<int?>(null, (argv, argc) {
         expect(argv, equals(ffi.nullptr));
         receivedArgv = argv;
         return 42;
@@ -28,14 +28,14 @@ void main() {
     });
 
     test('empty list allocates {NULL} (argc=0, non-null argv)', () {
-      withNativeStringList<void>(const <String?>[], (argv) {
+      withNativeStringList<void>(const <String?>[], (argv, argc) {
         expect(argv, isNot(equals(ffi.nullptr)));
         expect(argv[0], equals(ffi.nullptr));
       });
     });
 
     test('populated list yields argc+1 slots with a NULL terminator', () {
-      withNativeStringList<void>(<String?>['a', 'b', null, 'd'], (argv) {
+      withNativeStringList<void>(<String?>['a', 'b', null, 'd'], (argv, argc) {
         expect(argv, isNot(equals(ffi.nullptr)));
         expect(argv[0].cast<Utf8>().toDartString(), 'a');
         expect(argv[1].cast<Utf8>().toDartString(), 'b');
@@ -46,7 +46,7 @@ void main() {
     });
 
     test('non-null elements survive past the body (no premature free)', () {
-      withNativeStringList<void>(<String?>['one', 'two'], (argv) {
+      withNativeStringList<void>(<String?>['one', 'two'], (argv, argc) {
         // Touch each string — if any were freed early we'd crash here.
         expect(argv[0].cast<Utf8>().toDartString(), 'one');
         expect(argv[1].cast<Utf8>().toDartString(), 'two');
@@ -56,7 +56,7 @@ void main() {
     test('body return value is propagated unchanged', () {
       final s = withNativeStringList<String>(<String?>[
         'hello',
-      ], (argv) => argv[0].cast<Utf8>().toDartString());
+      ], (argv, argc) => argv[0].cast<Utf8>().toDartString());
       expect(s, 'hello');
     });
   });

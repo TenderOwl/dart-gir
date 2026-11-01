@@ -1361,6 +1361,32 @@ class GDBusProxy extends GObject
     });
   }
 
+  /// Emitted when one or more D-Bus properties on @proxy changes. The
+  /// local cache has already been updated when this signal fires. Note
+  /// that both @changed_properties and @invalidated_properties are
+  /// guaranteed to never be %NULL (either may be empty though).
+  ///
+  /// If the proxy has the flag
+  /// %G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES set, then
+  /// @invalidated_properties will always be empty.
+  ///
+  /// This signal corresponds to the
+  /// `PropertiesChanged` D-Bus signal on the
+  /// `org.freedesktop.DBus.Properties` interface.
+  int onGPropertiesChanged(
+    void Function(
+      GVariant changedProperties,
+      List<String>? invalidatedProperties,
+    )
+    callback,
+  ) {
+    return _connectSignal_v_2_o_o_gvariant_liststring(
+      this.handle,
+      'g-properties-changed',
+      callback,
+    );
+  }
+
   /// Emitted when a signal from the remote object and interface that @proxy is for, has been received.
   ///
   /// Since 2.72 this signal supports detailed connections. You can connect to

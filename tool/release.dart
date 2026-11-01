@@ -785,9 +785,11 @@ Future<void> _check(List<String> args) async {
   final version = _versionArgument(args) ?? _workspaceVersion();
   final packages = _releasePackages();
 
-  if (!Directory(releaseDir).existsSync()) {
-    await _prepare(args);
-  }
+  // The copies are a build output of the working tree, so they are
+  // rebuilt before they are checked. A copy left over from an earlier
+  // version would otherwise be validated — and the check would report
+  // the *old* version's metadata against the *new* workspace version.
+  await _prepare(args);
 
   final failures = <CheckFailure>[];
   for (final pkg in packages) {

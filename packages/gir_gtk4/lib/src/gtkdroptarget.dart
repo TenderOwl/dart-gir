@@ -345,12 +345,32 @@ class GtkDropTarget extends GtkEventController {
     );
   }
 
+  /// Emitted on the drop site when the pointer enters the widget.
+  ///
+  /// It can be used to set up custom highlighting.
+  int onEnter(GdkDragAction Function(double x, double y) callback) {
+    return _connectSignal_f_2_d_d_gdkdragaction_double_double(
+      this.handle,
+      'enter',
+      callback,
+    );
+  }
+
   /// Emitted on the drop site when the pointer leaves the widget.
   ///
   /// Its main purpose it to undo things done in
   /// [signal@Gtk.DropTarget::enter].
   int onLeave(void Function() callback) {
     return _connectSignal_v_0(this.handle, 'leave', callback);
+  }
+
+  /// Emitted while the pointer is moving over the drop target.
+  int onMotion(GdkDragAction Function(double x, double y) callback) {
+    return _connectSignal_f_2_d_d_gdkdragaction_double_double(
+      this.handle,
+      'motion',
+      callback,
+    );
   }
 
   /// The notify signal is emitted on an object when one of its properties has

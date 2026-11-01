@@ -9,6 +9,264 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 with `Added`, `Changed`, `Fixed`, `Removed`, `Deprecated`, `Security`
 sections. Dates are ISO-8601 (YYYY-MM-DD).
 
+## 1.2.0 — 2026-10-31
+
+**A Dart class is a first-class GObject.** Until now a Dart class could
+extend a generated wrapper, but the native side only ever saw the
+*parent's* type: no signals of its own, no properties of its own, no
+interfaces, no virtual functions, and — because GTK keeps one template
+per native class — no template of its own either. This release gives the
+Dart class a native identity it can carry all of that.
+
+The additions are additive: the emitted API grows, nothing that worked
+before changes shape.
+
+### Added
+
+- **A Dart type can declare signals of its own.** The signal is a real
+  GLib signal — `g_signal_lookup` finds it and `g_signal_emit` reaches
+  it — declared while the type's class is initialized, the way a native
+  class declares its own.
+
+  ```dart
+  static int get GType => registerDartType(
+    'TaskObject',
+    GObject.GType,
+    signals: {
+      'completed': DartSignal.withoutArgument((self) { … }),
+      'progress': DartSignal.withArgument(
+        DartSignalArgument.integer,
+        (self, value) { … },
+      ),
+    },
+  );
+  ```
+
+  The argument's type is one of `integer`, `boolean`, `real`, `string`
+  or `object`. `emitDartSignal` and `connectDartSignal` reach the
+  signal from Dart.
+
+- **A Dart type can declare properties of its own.** The property is a
+  real `GParamSpec`, installed with `g_object_class_install_property`,
+  and `g_object_get_property`, `g_object_set_property` and
+  `g_object_notify` all work on it.
+
+  ```dart
+  properties: {
+    'content': DartProperty.string(
+      getter: (self) => (self! as TaskObject).content,
+      setter: (self, value) => (self! as TaskObject).content = value!,
+    ),
+  },
+  ```
+
+  A write notifies: `g_object_notify_by_pspec` runs after the Dart
+  setter.
+
+- **A Dart type can implement a GObject interface.** The interfaces are
+  added with `g_type_add_interface_static`, before the class is
+  initialized — GLib refuses the call from inside `class_init`.
+
+- **A Dart type can answer the GTK widget virtual functions.**
+  `GtkWidget.snapshot`, `GtkWidget.measure` and `GtkWidget.size_allocate`
+  can be overridden, and each override chains up to the inherited
+  implementation.
+
+  ```dart
+  static int get GType => registerDartType(
+    'MyBox',
+    GtkBox.GType,
+    overrides: [sizeAllocateOverride((widget, width, height, baseline) { … })],
+  );
+  ```
+
+  The slot offsets live in a hand-written ABI table
+  (`GtkWidgetVtable`), cross-checked against the installed `gtkwidget.h`
+  by `packages/gir_dart_gobject/test/vtable_layout_test.dart`.
+
+- **A template can live on the Dart class's own type.** GTK keeps a
+  widget's template on the *native class* and allows exactly one per
+  class, so two Dart classes extending the same native widget type
+  could not both have a template. A class that registers a type of its
+  own gets a class of its own to put the template on.
+
+  ```dart
+  @GtkTemplate(source: GtkTemplateFile('data/task_row.ui'))
+  class TaskRow extends GtkBox with _$TaskRowTemplate {
+    static int get GType => registerDartType('TaskRow', GtkBox.GType);
+
+    TaskRow()
+        : super.rawFromPointer(
+            newDartInstance(GType, constructProperties: {
+              'orientation': GtkOrientation.horizontal.value,
+            }),
+            owned: true,
+          ) {
+      initTemplate();
+    }
+  }
+  ```
+
+  The builder's scanner recognizes the `GType` accessor and emits the
+  own-type path: the mixin claims `TaskRow.GType` instead of the type
+  the instance happens to have, and refuses an instance that is not one
+  of it — with the exact constructor to use instead.
+
+- **`newDartInstance` creates an instance of a Dart type, with its
+  construct properties.** It is `g_object_newv` with the type's own
+  `GParameter` array: objects, strings, integers, booleans, doubles and
+  enumerations. Construct-only properties — `GtkApplicationWindow`'s
+  `application`, for instance — can only be set while the object is
+  constructed, so this is the only way to set them.
+
+  ```dart
+  final handle = newDartInstance(
+    TaskRow.GType,
+    constructProperties: {'orientation': GtkOrientation.horizontal.value},
+  );
+  ```
+
+### Changed
+
+- **The vtable ABI table lives in the runtime package, not in the
+  generator.** The generated packages cannot depend on
+  `gir_dart_gobject` — the dependency runs the other way — and the
+  table describes the runtime's patching of the class struct, not
+  anything the GIR carries. It is therefore hand-written in
+  `packages/gir_dart_gobject/lib/src/` and checked against the
+  installed C headers by a test.
+
+## 1.1.0 — 2026-10-31
+
+**Nothing disappears silently, and the gaps that could be closed are
+closed.** This release is additive: the emitted API grows, nothing that
+worked before changes shape.
+
+### Added
+
+- **Every virtual method is now reported.** 981 virtual methods were
+  parsed from the GIR, never emitted and never reported — a hole nobody
+  could find, because the skip report is the only place a missing symbol
+  shows up. Each one now has a line in its package's `skip_report.txt`
+  with the reason it cannot be emitted: *the class struct layout is not
+  in the GIR*.
+
+  ```text
+  [virtual] GAppLaunchContext.get_display — virtual method; the class struct layout is not in the GIR
+  ```
+
+- **The skip report lists every entry.** The report used to print the
+  first fifty and count the rest; it now prints all of them, under
+  `## All N entries`.
+
+- **An "emitted or reported" invariant test.** `generator/test/coverage_test.dart`
+  drives the same emitters the CLI drives and checks that every callable
+  and every virtual method of the GIR either appears in the generated
+  code or in the skip report. It skips when the GIR files are not
+  installed.
+
+- **A counted string is a `String` with its byte length absorbed.**
+  `GRegex.matchFull('a€b', 0, flags)` used to be skipped: the C side
+  reads `string_len` *bytes*, so a string of three characters can be five
+  UTF-8 bytes, and the count could not be expressed. The wrapper now
+  derives the byte count from the string and keeps the count parameter
+  out of the Dart signature. The same applies to `matchAllFull`,
+  `replace`, `replaceEval`, `replaceLiteral` and `splitFull`.
+
+- **A string array with a count is a `List<String>`.** GLib's
+  `(list, length)` pairs — `GKeyFile.setStringList`, `setLocaleStringList`
+  and their siblings — are now emitted. The count is the length of the
+  list the caller passed, so it stays in the native call and disappears
+  from the Dart signature. The count of a *callee-allocated* string array
+  — `GKeyFile.getStringList`'s `gsize *length` — is read out of the OUT
+  slot and used to read exactly that many elements, because a `gchar **`
+  is not always NULL-terminated.
+
+- **A string array the callee allocates is a `List<String>`.** The
+  `gchar ***` shape — `GSettingsSchemaSource.listSchemas`' `nonRelocatable`
+  and `relocatable` — is emitted, and the array is released the way the
+  GIR's transfer annotation says: `g_strfreev` for `transfer="full"`,
+  `g_free` for `transfer="container"`.
+
+- **A caller-provided byte buffer the callee fills is a `Uint8List`.**
+  `GInputStream.read`, `GInputStream.readAll`, `GSocket.receive` and
+  `GIOChannel.readChars` take the buffer as a Dart list, the byte count
+  is the list's length, and what the callee wrote comes back into the
+  list.
+
+- **`inout` parameters follow the caller-allocated rule.** The GIR's
+  ownership annotations for an `inout` parameter are demonstrably wrong —
+  `gtk_source_buffer_forward_iter_to_source_mark`'s `iter` is marked
+  `transfer-ownership="full"`, but GTK does not take ownership of the
+  iterator — so the annotation is ignored and the caller keeps the
+  storage. A **scalar** the callee reads and writes through the pointer
+  (`GtkEditable.insertText`'s `position`, `PangoMatrix.transformPoint`'s
+  `x` and `y`, `GTimeZone.adjustTime`'s `time`) is seeded with the
+  caller's value and read back afterwards; the updated value is part of
+  the wrapper's return value. A **handle** — a class, a record, an
+  interface — is passed as it is, and the callee writes through it in
+  place.
+
+- **`time_t`, `pid_t` and `uid_t` are known types.** They resolve to
+  `ffi.Int64`, `ffi.Int32` and `ffi.Uint32` on LP64 Linux instead of
+  being skipped.
+
+- **A Dart class can answer GObject's virtual calls.**
+  `packages/gir_dart_gobject` gained `DartGObject`, `installGObjectVfuncs`
+  and the `GObjectVtable` ABI table. A Dart class registered with
+  `registerDartType(name, parentType, vfuncs: true)` gets GObject's
+  `constructed`, `dispose` and `finalize` wired to Dart:
+
+  ```dart
+  class TaskObject extends DartGObject {
+    static int get GType =>
+        registerDartType('TaskObject', GObject.GType, vfuncs: true);
+
+    TaskObject() : super(GType);
+
+    @override
+    void dartDispose() {
+      // release what this object owns …
+    }
+  }
+  ```
+
+  The Dart override runs first and the inherited implementation runs
+  after it, so the parent's resources are still released. The vtable
+  offsets are hand-authored — the class struct layout is not in the GIR —
+  and `packages/gir_dart_gobject/test/vtable_layout_test.dart`
+  cross-checks them against the installed header.
+
+  The wiring is **opt-in** because a GObject that carries a Dart callback
+  must not be finalized while the isolate shuts down: GObject would call
+  back into a VM that is already tearing itself down, and the VM aborts.
+  A type that opts in has to release its objects before the isolate ends.
+
+- **`gir_ffi` gained `withNativeStringBytes`** — the companion of
+  `withNativeString` for the C APIs that take a string *and* its byte
+  length — and `cachedObjects`, which returns every wrapper registered
+  for an address rather than the first one.
+
+### Changed
+
+- **The generator no longer walks into build output.** The workspace
+  member list is derived from the packages under the repository root; a
+  Flutter application built in place leaves a `build` tree behind, and
+  the Dart SDK it vendored carries a `pubspec.yaml` of its own. That
+  directory is not a workspace member and is no longer listed as one.
+
+- **A signal's skip reason names the shape.** *unsupported return type:
+  Gdk.DragAction — the signal marshaller carries bool, int, uint and
+  double returns* says what the marshaller does carry, not just what it
+  does not.
+
+### Fixed
+
+- **The generated packages are the ones the generator produces.** The
+  regeneration that shipped the virtual-method report also rewrote the
+  root `pubspec.yaml`'s workspace list with a build artifact in it; the
+  generator no longer does that.
+
 ## 1.0.0 — 2026-10-30
 
 **The first published release.** All seventeen packages are on pub.dev:

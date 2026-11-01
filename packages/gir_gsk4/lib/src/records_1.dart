@@ -133,6 +133,87 @@ final class GskPath implements ffi.Finalizable {
     return (_gskPathEqual(this.handle, path2.handle)) != 0;
   }
 
+  /// Calls @func for every operation of the path.
+  ///
+  /// Note that this may only approximate @self, because paths can contain
+  /// optimizations for various specialized contours, and depending on the
+  /// @flags, the path may be decomposed into simpler curves than the ones
+  /// that it contained originally.
+  ///
+  /// This function serves two purposes:
+  ///
+  /// - When the @flags allow everything, it provides access to the raw,
+  /// unmodified data of the path.
+  /// - When the @flags disallow certain operations, it provides
+  /// an approximation of the path using just the allowed operations.
+  static final _gskPathForeach =
+      girGsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Int32,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Size,
+                      ffi.Float,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gsk_path_foreach')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Int32,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Size,
+                    ffi.Float,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  bool foreach(
+    GskPathForeachFlags flags,
+    int Function(int, ffi.Pointer<ffi.Void>, int, double, ffi.Pointer<ffi.Void>)
+    func, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
+    final _nc2 =
+        ffi.NativeCallable<
+          ffi.Int32 Function(
+            ffi.Int32,
+            ffi.Pointer<ffi.Void>,
+            ffi.Size,
+            ffi.Float,
+            ffi.Pointer<ffi.Void>,
+          )
+        >.isolateLocal(func, exceptionalReturn: 0);
+    try {
+      final _ret = _gskPathForeach(
+        this.handle,
+        flags.value,
+        _nc2.nativeFunction,
+        userData ?? ffi.nullptr,
+      );
+      return (_ret) != 0;
+    } finally {
+      _nc2.close();
+    }
+  }
+
   /// Finds intersections between two paths.
   ///
   /// This function finds intersections between @path1 and @path2,
@@ -334,6 +415,40 @@ final class GskPath implements ffi.Finalizable {
       (_ret) != 0,
       keepAlive(GskPathPoint.fromPointer(_out0.cast<ffi.Void>()), _out0Anchor),
     );
+  }
+
+  /// Moves @point to the next vertex.
+  ///
+  /// An empty path has no points, so false
+  /// is returned in this case.
+  static final _gskPathGetNext =
+      girGsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_path_get_next')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  bool getNext(GskPathPoint point) {
+    return (_gskPathGetNext(this.handle, point.handle)) != 0;
+  }
+
+  /// Moves @point to the previous vertex.
+  ///
+  /// An empty path has no points, so false
+  /// is returned in this case.
+  static final _gskPathGetPrevious =
+      girGsk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+            >
+          >('gsk_path_get_previous')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
+  bool getPrevious(GskPathPoint point) {
+    return (_gskPathGetPrevious(this.handle, point.handle)) != 0;
   }
 
   /// Gets the start point of the path.

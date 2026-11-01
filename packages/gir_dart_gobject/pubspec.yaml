@@ -23,5 +23,9 @@ dependencies:
     path: ../gir_gobject
 
 dev_dependencies:
+  gir_gio:
+    path: ../gir_gio
+  gir_gtk4:
+    path: ../gir_gtk4
   lints: ^6.0.0
   test: ^1.32.0

@@ -1,16 +1,16 @@
 # Skip report for package gir_gtk4 (Gtk 4.0)
-Total skipped: 1189
+Total skipped: 1484
 
 ## By category
 property: 1100
-callable: 47
+virtual: 318
+callable: 38
 method: 16
-signal: 13
 renamed: 11
-callback: 1
 alias: 1
 
 ## By reason
+virtual method; the class struct layout is not in the GIR: 318
 construct-only or no public setter; emitting getter only: 222
 missing getter get_height-request: 104
 missing getter get_width-request: 104
@@ -33,62 +33,60 @@ missing getter get_yalign: 9
 missing getter get_ypad: 9
 missing getter get_size: 8
 introspectable=0: 7
-inout parameter position: 7
-missing getter get_scale: 6
 missing getter get_text: 6
-missing getter get_underline: 5
-missing getter get_placeholder-text: 5
-missing getter get_editable: 5
+missing getter get_scale: 6
 missing getter get_editable-set: 5
-missing getter get_wrap-mode: 5
-missing getter get_weight-set: 5
+missing getter get_background-rgba: 5
+missing getter get_background-set: 5
+missing getter get_editable: 5
+missing getter get_variant-set: 5
+missing getter get_variant: 5
+missing getter get_underline-set: 5
 missing getter get_family: 5
 missing getter get_family-set: 5
-missing getter get_scale-set: 5
+missing getter get_font: 5
 missing getter get_font-desc: 5
 missing getter get_foreground-rgba: 5
 missing getter get_foreground-set: 5
 missing getter get_language: 5
 missing getter get_language-set: 5
-missing getter get_variant-set: 5
-missing getter get_background-set: 5
+missing getter get_wrap-mode: 5
+missing getter get_placeholder-text: 5
 missing getter get_rise: 5
 missing getter get_rise-set: 5
-missing getter get_font: 5
-missing getter get_variant: 5
-missing getter get_underline-set: 5
-missing getter get_strikethrough-set: 5
+missing getter get_weight-set: 5
+missing getter get_scale-set: 5
+missing getter get_style-set: 5
+missing getter get_weight: 5
 missing getter get_size-points: 5
 missing getter get_size-set: 5
 missing getter get_stretch: 5
 missing getter get_stretch-set: 5
 missing getter get_strikethrough: 5
-missing getter get_background-rgba: 5
+missing getter get_strikethrough-set: 5
 missing getter get_style: 5
-missing getter get_weight: 5
-missing getter get_style-set: 5
-missing getter get_align-set: 4
-missing getter get_single-paragraph-mode: 4
-unsupported return type: Gdk.DragAction: 4
+missing getter get_underline: 5
 missing getter get_max-width-chars: 4
-getter get_alignment takes 2 args; props layer only supports 0: 4
 missing getter get_ellipsize-set: 4
-missing getter get_width-chars: 4
 missing getter get_ellipsize: 4
+missing getter get_attributes: 4
+getter get_alignment takes 2 args; props layer only supports 0: 4
+missing getter get_width-chars: 4
+missing getter get_align-set: 4
 missing getter get_wrap-width: 4
 missing getter get_cell-area: 4
-missing getter get_attributes: 4
 missing getter get_title: 4
-missing getter get_input-purpose: 3
+missing getter get_single-paragraph-mode: 4
 missing getter get_show-editor: 3
 missing getter get_default-widget: 3
 getter get_pointing_to takes 1 args; props layer only supports 0: 3
 missing getter get_im-module: 3
 missing getter get_orientation: 3
 missing getter get_input-hints: 3
+missing getter get_input-purpose: 3
+missing getter get_section-name: 2
 missing getter get_view-name: 2
 missing getter get_pulse: 2
-unsupported return type: utf8: 2
 missing getter get_has-frame: 2
 missing getter get_popup-shown: 2
 missing getter get_max-height: 2
@@ -100,16 +98,11 @@ missing getter get_accept-unpaired-release: 2
 missing getter get_resource: 2
 missing getter get_activates-default: 2
 missing getter get_icons: 2
-missing getter get_section-name: 2
-missing getter get_secondary-icon-storage-type: 1
-parameter marshal: callback GObject.ClosureMarshal has unsupported signature: 1
-override-incompatible with ancestor; renamed to packEndCellAreaBox: 1
-override-incompatible with ancestor; renamed to packStartCellAreaBox: 1
+missing getter get_text-yalign: 1
 missing getter get_minimum-height: 1
 missing getter get_minimum-width: 1
 missing getter get_natural-height: 1
 missing getter get_natural-width: 1
-moved to Editable.install_properties: 1
 moved to FileChooserError.quark: 1
 moved to IconThemeError.quark: 1
 moved to Native.get_for_surface: 1
@@ -119,8 +112,12 @@ moved to PaperSize.get_paper_sizes: 1
 moved to PrintError.quark: 1
 moved to RecentManagerError.quark: 1
 moved to SvgError.get_attribute: 1
+moved to SvgError.get_element: 1
 missing getter get_accel-key: 1
 missing getter get_accel-mode: 1
+missing getter get_accel-mods: 1
+missing getter get_keycode: 1
+moved to SvgError.get_end: 1
 missing getter get_has-entry: 1
 missing getter get_model: 1
 missing getter get_text-column: 1
@@ -131,35 +128,30 @@ missing getter get_pixbuf-expander-closed: 1
 missing getter get_pixbuf-expander-open: 1
 missing getter get_texture: 1
 missing getter get_inverted: 1
-moved to SvgError.quark: 1
+moved to SvgError.get_start: 1
 missing getter get_text-xalign: 1
-missing getter get_text-yalign: 1
+parameter accelerator_codes: the array carries no element count: 1
 missing getter get_value: 1
-unsupported out parameter accelerator_codes (ffi.Pointer<ffi.Uint32>): 1
+missing getter get_adjustment: 1
 missing getter get_climb-rate: 1
 missing getter get_digits: 1
 missing getter get_active: 1
 missing getter get_inconsistent: 1
-missing getter get_accel-mods: 1
+moved to SvgError.quark: 1
 missing getter get_cell-area-context: 1
 moved to TreeRowReference.deleted: 1
 moved to TreeRowReference.inserted: 1
-return: array of TypeKind.string (later phase): 1
+return: array of GPtrArray*: a GLib container, not a C array: 1
 moved to AccessibleRelation.init_value: 1
-moved to AccessibleState.init_value: 1
 missing getter get_max-width: 1
 missing getter get_min-height: 1
 missing getter get_min-width: 1
 missing getter get_nat-height: 1
 missing getter get_nat-width: 1
-parameter lines: array of TypeKind.string (later phase): 1
 missing getter get_prefers-color-scheme: 1
 missing getter get_prefers-contrast: 1
 missing getter get_prefers-reduced-motion: 1
-unsupported return type: Gdk.ContentProvider: 1
-missing getter get_keycode: 1
-moved to SvgError.get_element: 1
-moved to SvgError.get_end: 1
+moved to AccessibleState.init_value: 1
 missing getter get_display: 1
 missing getter get_realized: 1
 missing getter get_enable-emoji-completion: 1
@@ -181,7 +173,7 @@ missing getter get_secondary-icon-gicon: 1
 missing getter get_secondary-icon-name: 1
 missing getter get_secondary-icon-paintable: 1
 missing getter get_secondary-icon-sensitive: 1
-moved to SvgError.get_start: 1
+missing getter get_secondary-icon-storage-type: 1
 missing getter get_secondary-icon-tooltip-markup: 1
 missing getter get_secondary-icon-tooltip-text: 1
 missing getter get_show-emoji-icon: 1
@@ -192,16 +184,15 @@ missing getter get_show-time: 1
 moved to ConstraintVflParserError.quark: 1
 moved to DialogError.quark: 1
 missing getter get_tweak-action: 1
-unsupported return type: Gdk.GLContext: 1
-unsupported out parameter values (ffi.Pointer<ffi.Double>): 1
-unsupported out parameter backlog (ffi.Pointer<ffi.Void>): 1
-missing getter get_gfile: 1
+parameter values: the array carries no element count: 1
+parameter backlog: array of Gdk.TimeCoord: the layout of the element is not emitted, so the elements cannot be read out of the array: 1
 moved to Editable.delegate_get_property: 1
-missing getter get_adjustment: 1
+missing getter get_gfile: 1
+moved to Editable.delegate_set_property: 1
 override-incompatible with ancestor; renamed to getCursorIconView: 1
 override-incompatible with ancestor; renamed to setCursorIconView: 1
 missing getter get_file: 1
-unsupported arg type at index 0: gpointer: 1
+missing getter get_complete: 1
 missing getter get_use-fallback: 1
 missing getter get_text-lock: 1
 missing getter get_text-unlock: 1
@@ -215,9 +206,6 @@ missing getter get_message-type: 1
 missing getter get_secondary-text: 1
 missing getter get_secondary-use-markup: 1
 missing getter get_use-markup: 1
-unsupported arg type at index 1: ?: 1
-unsupported arg type at index 1: GLib.Array: 1
-unsupported return type: Notebook: 1
 missing getter get_enable-popup: 1
 missing getter get_detachable: 1
 missing getter get_menu: 1
@@ -233,10 +221,9 @@ missing getter get_pad: 1
 missing getter get_max-position: 1
 missing getter get_min-position: 1
 missing getter get_position-set: 1
-missing getter get_complete: 1
+missing getter get_page-type: 1
 missing getter get_visible-submenu: 1
 missing getter get_page-setup: 1
-unsupported return type: GObject.Object: 1
 missing getter get_allow-async: 1
 missing getter get_current-page: 1
 missing getter get_custom-tab-label: 1
@@ -250,7 +237,7 @@ missing getter get_use-full-page: 1
 override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog: 1
 getter get_settings was renamed; call the renamed method directly: 1
 missing getter get_filename: 1
-missing getter get_page-type: 1
+moved to Editable.install_properties: 1
 missing getter get_hscrollbar-policy: 1
 missing getter get_vscrollbar-policy: 1
 missing getter get_gtk-alternative-button-order: 1
@@ -259,11 +246,11 @@ missing getter get_gtk-application-prefer-dark-theme: 1
 missing getter get_gtk-cursor-aspect-ratio: 1
 missing getter get_gtk-cursor-blink: 1
 missing getter get_gtk-cursor-blink-time: 1
-aliases are resolved to their target: 1
+missing getter get_gtk-cursor-blink-timeout: 1
 missing getter get_gtk-cursor-theme-name: 1
 missing getter get_gtk-cursor-theme-size: 1
 missing getter get_gtk-decoration-layout: 1
-missing getter get_gtk-dialogs-use-header: 1
+aliases are resolved to their target: 1
 missing getter get_gtk-dnd-drag-threshold: 1
 missing getter get_gtk-double-click-distance: 1
 missing getter get_gtk-double-click-time: 1
@@ -281,7 +268,7 @@ missing getter get_gtk-fontconfig-timestamp: 1
 missing getter get_gtk-hint-font-metrics: 1
 missing getter get_gtk-icon-theme-name: 1
 missing getter get_gtk-im-module: 1
-missing getter get_use-symbolic: 1
+missing getter get_gtk-interface-color-scheme: 1
 missing getter get_gtk-interface-contrast: 1
 missing getter get_gtk-interface-reduced-motion: 1
 missing getter get_gtk-keynav-use-caret: 1
@@ -309,15 +296,15 @@ missing getter get_gtk-xft-hinting: 1
 missing getter get_gtk-xft-hintstyle: 1
 missing getter get_gtk-xft-rgba: 1
 missing getter get_view: 1
-moved to Editable.delegate_set_property: 1
-array parameter in callback signature: 1
+override-incompatible with ancestor; renamed to packEndCellAreaBox: 1
+override-incompatible with ancestor; renamed to packStartCellAreaBox: 1
 missing getter get_accelerator: 1
 missing getter get_action-name: 1
 missing getter get_icon: 1
 missing getter get_icon-set: 1
 missing getter get_shortcut-type: 1
 missing getter get_subtitle-set: 1
-parameter border_color: array of TypeKind.record (later phase): 1
+parameter border_color: unbound array of TypeKind.record: the signature carries no length: 1
 missing getter get_playing: 1
 missing getter get_cursor-position: 1
 getter get_text takes 3 args; props layer only supports 0: 1
@@ -382,11 +369,11 @@ override-incompatible with ancestor; renamed to setCursorTreeView: 1
 missing getter get_enable-grid-lines: 1
 override-incompatible with interface; renamed to setCellDataFuncTreeViewColumn: 1
 override-incompatible with ancestor; renamed to setCellDataFuncTreeViewColumn: 1
-missing getter get_gtk-interface-color-scheme: 1
-missing getter get_gtk-cursor-blink-timeout: 1
+missing getter get_use-symbolic: 1
+missing getter get_gtk-dialogs-use-header: 1
 
-## First 50 entries
-[callable] Gtk.acceleratorParseWithKeycode — unsupported out parameter accelerator_codes (ffi.Pointer<ffi.Uint32>)
+## All 1484 entries
+[callable] Gtk.acceleratorParseWithKeycode — parameter accelerator_codes: the array carries no element count
 [callable] Gtk.accessiblePropertyInitValue — moved to AccessibleProperty.init_value
 [callable] Gtk.accessibleRelationInitValue — moved to AccessibleRelation.init_value
 [callable] Gtk.accessibleStateInitValue — moved to AccessibleState.init_value
@@ -420,7 +407,7 @@ missing getter get_gtk-cursor-blink-timeout: 1
 [callable] Gtk.treeRowReferenceDeleted — moved to TreeRowReference.deleted
 [callable] Gtk.treeRowReferenceInserted — moved to TreeRowReference.inserted
 [callable] Gtk.treeRowReferenceReordered — introspectable=0
-[callable] GtkBuildableParseContext.getElementStack — return: array of TypeKind.string (later phase)
+[callable] GtkBuildableParseContext.getElementStack — return: array of GPtrArray*: a GLib container, not a C array
 [method] GtkCssSection.toString — name collision
 [method] GtkTreePath.toString — name collision
 [property] GtkATContext.accessible — construct-only or no public setter; emitting getter only
@@ -436,3 +423,1437 @@ missing getter get_gtk-cursor-blink-timeout: 1
 [property] GtkAboutDialog.width-request — missing getter get_width-request
 [property] GtkActionBar.css-name — construct-only or no public setter; emitting getter only
 [property] GtkActionBar.height-request — missing getter get_height-request
+[property] GtkActionBar.width-request — missing getter get_width-request
+[virtual] GtkAdjustment.changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAdjustment.value_changed — virtual method; the class struct layout is not in the GIR
+[property] GtkAlternativeTrigger.first — construct-only or no public setter; emitting getter only
+[property] GtkAlternativeTrigger.second — construct-only or no public setter; emitting getter only
+[property] GtkAnyFilter.item-type — missing getter get_item-type
+[property] GtkAnyFilter.n-items — missing getter get_n-items
+[property] GtkAppChooserButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkAppChooserButton.height-request — missing getter get_height-request
+[property] GtkAppChooserButton.width-request — missing getter get_width-request
+[property] GtkAppChooserDialog.gfile — missing getter get_gfile
+[property] GtkAppChooserDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkAppChooserDialog.default-height — missing getter get_default-height
+[property] GtkAppChooserDialog.default-width — missing getter get_default-width
+[property] GtkAppChooserDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkAppChooserDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkAppChooserDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkAppChooserDialog.height-request — missing getter get_height-request
+[property] GtkAppChooserDialog.width-request — missing getter get_width-request
+[property] GtkAppChooserWidget.css-name — construct-only or no public setter; emitting getter only
+[property] GtkAppChooserWidget.height-request — missing getter get_height-request
+[property] GtkAppChooserWidget.width-request — missing getter get_width-request
+[virtual] GtkApplication.window_added — virtual method; the class struct layout is not in the GIR
+[virtual] GtkApplication.window_removed — virtual method; the class struct layout is not in the GIR
+[property] GtkApplicationWindow.default-height — missing getter get_default-height
+[property] GtkApplicationWindow.default-width — missing getter get_default-width
+[property] GtkApplicationWindow.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkApplicationWindow.maximized — construct-only or no public setter; emitting getter only
+[property] GtkApplicationWindow.css-name — construct-only or no public setter; emitting getter only
+[property] GtkApplicationWindow.height-request — missing getter get_height-request
+[property] GtkApplicationWindow.width-request — missing getter get_width-request
+[property] GtkAspectFrame.css-name — construct-only or no public setter; emitting getter only
+[property] GtkAspectFrame.height-request — missing getter get_height-request
+[property] GtkAspectFrame.width-request — missing getter get_width-request
+[property] GtkAssistant.use-header-bar — missing getter get_use-header-bar
+[property] GtkAssistant.default-height — missing getter get_default-height
+[property] GtkAssistant.default-width — missing getter get_default-width
+[property] GtkAssistant.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkAssistant.maximized — construct-only or no public setter; emitting getter only
+[property] GtkAssistant.css-name — construct-only or no public setter; emitting getter only
+[property] GtkAssistant.height-request — missing getter get_height-request
+[property] GtkAssistant.width-request — missing getter get_width-request
+[property] GtkAssistantPage.child — construct-only or no public setter; emitting getter only
+[property] GtkAssistantPage.complete — missing getter get_complete
+[property] GtkAssistantPage.page-type — missing getter get_page-type
+[property] GtkAssistantPage.title — missing getter get_title
+[property] GtkBookmarkList.filename — construct-only or no public setter; emitting getter only
+[property] GtkBookmarkList.item-type — missing getter get_item-type
+[property] GtkBookmarkList.n-items — missing getter get_n-items
+[property] GtkBox.css-name — construct-only or no public setter; emitting getter only
+[property] GtkBox.height-request — missing getter get_height-request
+[property] GtkBox.width-request — missing getter get_width-request
+[property] GtkBuilderListItemFactory.bytes — construct-only or no public setter; emitting getter only
+[property] GtkBuilderListItemFactory.resource — construct-only or no public setter; emitting getter only
+[property] GtkBuilderListItemFactory.scope — construct-only or no public setter; emitting getter only
+[virtual] GtkButton.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkButton.clicked — virtual method; the class struct layout is not in the GIR
+[property] GtkButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkButton.height-request — missing getter get_height-request
+[property] GtkButton.width-request — missing getter get_width-request
+[property] GtkCalendar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkCalendar.height-request — missing getter get_height-request
+[property] GtkCalendar.width-request — missing getter get_width-request
+[virtual] GtkCellArea.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.add — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.apply_attributes — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.copy_context — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.create_context — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.event — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.focus — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.foreach — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.foreach_alloc — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.get_cell_property — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.get_preferred_height — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.get_preferred_height_for_width — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.get_preferred_width — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.get_preferred_width_for_height — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.get_request_mode — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.is_activatable — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.remove — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.set_cell_property — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellArea.snapshot — virtual method; the class struct layout is not in the GIR
+[renamed] GtkCellAreaBox.packEnd — override-incompatible with ancestor; renamed to packEndCellAreaBox
+[renamed] GtkCellAreaBox.packStart — override-incompatible with ancestor; renamed to packStartCellAreaBox
+[virtual] GtkCellAreaContext.allocate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellAreaContext.get_preferred_height_for_width — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellAreaContext.get_preferred_width_for_height — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellAreaContext.reset — virtual method; the class struct layout is not in the GIR
+[property] GtkCellAreaContext.area — construct-only or no public setter; emitting getter only
+[property] GtkCellAreaContext.minimum-height — missing getter get_minimum-height
+[property] GtkCellAreaContext.minimum-width — missing getter get_minimum-width
+[property] GtkCellAreaContext.natural-height — missing getter get_natural-height
+[property] GtkCellAreaContext.natural-width — missing getter get_natural-width
+[virtual] GtkCellRenderer.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.editing_canceled — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.editing_started — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.get_aligned_area — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.get_preferred_height — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.get_preferred_height_for_width — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.get_preferred_width — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.get_preferred_width_for_height — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.get_request_mode — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.snapshot — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellRenderer.start_editing — virtual method; the class struct layout is not in the GIR
+[property] GtkCellRenderer.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRenderer.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRenderer.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRenderer.editing — missing getter get_editing
+[property] GtkCellRenderer.height — missing getter get_height
+[property] GtkCellRenderer.mode — missing getter get_mode
+[property] GtkCellRenderer.width — missing getter get_width
+[property] GtkCellRenderer.xalign — missing getter get_xalign
+[property] GtkCellRenderer.xpad — missing getter get_xpad
+[property] GtkCellRenderer.yalign — missing getter get_yalign
+[property] GtkCellRenderer.ypad — missing getter get_ypad
+[property] GtkCellRendererAccel.accel-key — missing getter get_accel-key
+[property] GtkCellRendererAccel.accel-mode — missing getter get_accel-mode
+[property] GtkCellRendererAccel.accel-mods — missing getter get_accel-mods
+[property] GtkCellRendererAccel.keycode — missing getter get_keycode
+[property] GtkCellRendererAccel.align-set — missing getter get_align-set
+[property] GtkCellRendererAccel.alignment — getter get_alignment takes 2 args; props layer only supports 0
+[property] GtkCellRendererAccel.attributes — missing getter get_attributes
+[property] GtkCellRendererAccel.background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererAccel.background-rgba — missing getter get_background-rgba
+[property] GtkCellRendererAccel.background-set — missing getter get_background-set
+[property] GtkCellRendererAccel.editable — missing getter get_editable
+[property] GtkCellRendererAccel.editable-set — missing getter get_editable-set
+[property] GtkCellRendererAccel.ellipsize — missing getter get_ellipsize
+[property] GtkCellRendererAccel.ellipsize-set — missing getter get_ellipsize-set
+[property] GtkCellRendererAccel.family — missing getter get_family
+[property] GtkCellRendererAccel.family-set — missing getter get_family-set
+[property] GtkCellRendererAccel.font — missing getter get_font
+[property] GtkCellRendererAccel.font-desc — missing getter get_font-desc
+[property] GtkCellRendererAccel.foreground — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererAccel.foreground-rgba — missing getter get_foreground-rgba
+[property] GtkCellRendererAccel.foreground-set — missing getter get_foreground-set
+[property] GtkCellRendererAccel.language — missing getter get_language
+[property] GtkCellRendererAccel.language-set — missing getter get_language-set
+[property] GtkCellRendererAccel.markup — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererAccel.max-width-chars — missing getter get_max-width-chars
+[property] GtkCellRendererAccel.placeholder-text — missing getter get_placeholder-text
+[property] GtkCellRendererAccel.rise — missing getter get_rise
+[property] GtkCellRendererAccel.rise-set — missing getter get_rise-set
+[property] GtkCellRendererAccel.scale — missing getter get_scale
+[property] GtkCellRendererAccel.scale-set — missing getter get_scale-set
+[property] GtkCellRendererAccel.single-paragraph-mode — missing getter get_single-paragraph-mode
+[property] GtkCellRendererAccel.size — missing getter get_size
+[property] GtkCellRendererAccel.size-points — missing getter get_size-points
+[property] GtkCellRendererAccel.size-set — missing getter get_size-set
+[property] GtkCellRendererAccel.stretch — missing getter get_stretch
+[property] GtkCellRendererAccel.stretch-set — missing getter get_stretch-set
+[property] GtkCellRendererAccel.strikethrough — missing getter get_strikethrough
+[property] GtkCellRendererAccel.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkCellRendererAccel.style — missing getter get_style
+[property] GtkCellRendererAccel.style-set — missing getter get_style-set
+[property] GtkCellRendererAccel.text — missing getter get_text
+[property] GtkCellRendererAccel.underline — missing getter get_underline
+[property] GtkCellRendererAccel.underline-set — missing getter get_underline-set
+[property] GtkCellRendererAccel.variant — missing getter get_variant
+[property] GtkCellRendererAccel.variant-set — missing getter get_variant-set
+[property] GtkCellRendererAccel.weight — missing getter get_weight
+[property] GtkCellRendererAccel.weight-set — missing getter get_weight-set
+[property] GtkCellRendererAccel.width-chars — missing getter get_width-chars
+[property] GtkCellRendererAccel.wrap-mode — missing getter get_wrap-mode
+[property] GtkCellRendererAccel.wrap-width — missing getter get_wrap-width
+[property] GtkCellRendererAccel.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererAccel.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererAccel.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererAccel.editing — missing getter get_editing
+[property] GtkCellRendererAccel.height — missing getter get_height
+[property] GtkCellRendererAccel.mode — missing getter get_mode
+[property] GtkCellRendererAccel.width — missing getter get_width
+[property] GtkCellRendererAccel.xalign — missing getter get_xalign
+[property] GtkCellRendererAccel.xpad — missing getter get_xpad
+[property] GtkCellRendererAccel.yalign — missing getter get_yalign
+[property] GtkCellRendererAccel.ypad — missing getter get_ypad
+[property] GtkCellRendererCombo.has-entry — missing getter get_has-entry
+[property] GtkCellRendererCombo.model — missing getter get_model
+[property] GtkCellRendererCombo.text-column — missing getter get_text-column
+[property] GtkCellRendererCombo.align-set — missing getter get_align-set
+[property] GtkCellRendererCombo.alignment — getter get_alignment takes 2 args; props layer only supports 0
+[property] GtkCellRendererCombo.attributes — missing getter get_attributes
+[property] GtkCellRendererCombo.background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererCombo.background-rgba — missing getter get_background-rgba
+[property] GtkCellRendererCombo.background-set — missing getter get_background-set
+[property] GtkCellRendererCombo.editable — missing getter get_editable
+[property] GtkCellRendererCombo.editable-set — missing getter get_editable-set
+[property] GtkCellRendererCombo.ellipsize — missing getter get_ellipsize
+[property] GtkCellRendererCombo.ellipsize-set — missing getter get_ellipsize-set
+[property] GtkCellRendererCombo.family — missing getter get_family
+[property] GtkCellRendererCombo.family-set — missing getter get_family-set
+[property] GtkCellRendererCombo.font — missing getter get_font
+[property] GtkCellRendererCombo.font-desc — missing getter get_font-desc
+[property] GtkCellRendererCombo.foreground — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererCombo.foreground-rgba — missing getter get_foreground-rgba
+[property] GtkCellRendererCombo.foreground-set — missing getter get_foreground-set
+[property] GtkCellRendererCombo.language — missing getter get_language
+[property] GtkCellRendererCombo.language-set — missing getter get_language-set
+[property] GtkCellRendererCombo.markup — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererCombo.max-width-chars — missing getter get_max-width-chars
+[property] GtkCellRendererCombo.placeholder-text — missing getter get_placeholder-text
+[property] GtkCellRendererCombo.rise — missing getter get_rise
+[property] GtkCellRendererCombo.rise-set — missing getter get_rise-set
+[property] GtkCellRendererCombo.scale — missing getter get_scale
+[property] GtkCellRendererCombo.scale-set — missing getter get_scale-set
+[property] GtkCellRendererCombo.single-paragraph-mode — missing getter get_single-paragraph-mode
+[property] GtkCellRendererCombo.size — missing getter get_size
+[property] GtkCellRendererCombo.size-points — missing getter get_size-points
+[property] GtkCellRendererCombo.size-set — missing getter get_size-set
+[property] GtkCellRendererCombo.stretch — missing getter get_stretch
+[property] GtkCellRendererCombo.stretch-set — missing getter get_stretch-set
+[property] GtkCellRendererCombo.strikethrough — missing getter get_strikethrough
+[property] GtkCellRendererCombo.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkCellRendererCombo.style — missing getter get_style
+[property] GtkCellRendererCombo.style-set — missing getter get_style-set
+[property] GtkCellRendererCombo.text — missing getter get_text
+[property] GtkCellRendererCombo.underline — missing getter get_underline
+[property] GtkCellRendererCombo.underline-set — missing getter get_underline-set
+[property] GtkCellRendererCombo.variant — missing getter get_variant
+[property] GtkCellRendererCombo.variant-set — missing getter get_variant-set
+[property] GtkCellRendererCombo.weight — missing getter get_weight
+[property] GtkCellRendererCombo.weight-set — missing getter get_weight-set
+[property] GtkCellRendererCombo.width-chars — missing getter get_width-chars
+[property] GtkCellRendererCombo.wrap-mode — missing getter get_wrap-mode
+[property] GtkCellRendererCombo.wrap-width — missing getter get_wrap-width
+[property] GtkCellRendererCombo.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererCombo.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererCombo.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererCombo.editing — missing getter get_editing
+[property] GtkCellRendererCombo.height — missing getter get_height
+[property] GtkCellRendererCombo.mode — missing getter get_mode
+[property] GtkCellRendererCombo.width — missing getter get_width
+[property] GtkCellRendererCombo.xalign — missing getter get_xalign
+[property] GtkCellRendererCombo.xpad — missing getter get_xpad
+[property] GtkCellRendererCombo.yalign — missing getter get_yalign
+[property] GtkCellRendererCombo.ypad — missing getter get_ypad
+[property] GtkCellRendererPixbuf.gicon — missing getter get_gicon
+[property] GtkCellRendererPixbuf.icon-name — missing getter get_icon-name
+[property] GtkCellRendererPixbuf.icon-size — missing getter get_icon-size
+[property] GtkCellRendererPixbuf.pixbuf — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererPixbuf.pixbuf-expander-closed — missing getter get_pixbuf-expander-closed
+[property] GtkCellRendererPixbuf.pixbuf-expander-open — missing getter get_pixbuf-expander-open
+[property] GtkCellRendererPixbuf.texture — missing getter get_texture
+[property] GtkCellRendererPixbuf.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererPixbuf.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererPixbuf.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererPixbuf.editing — missing getter get_editing
+[property] GtkCellRendererPixbuf.height — missing getter get_height
+[property] GtkCellRendererPixbuf.mode — missing getter get_mode
+[property] GtkCellRendererPixbuf.width — missing getter get_width
+[property] GtkCellRendererPixbuf.xalign — missing getter get_xalign
+[property] GtkCellRendererPixbuf.xpad — missing getter get_xpad
+[property] GtkCellRendererPixbuf.yalign — missing getter get_yalign
+[property] GtkCellRendererPixbuf.ypad — missing getter get_ypad
+[property] GtkCellRendererProgress.inverted — missing getter get_inverted
+[property] GtkCellRendererProgress.pulse — missing getter get_pulse
+[property] GtkCellRendererProgress.text — missing getter get_text
+[property] GtkCellRendererProgress.text-xalign — missing getter get_text-xalign
+[property] GtkCellRendererProgress.text-yalign — missing getter get_text-yalign
+[property] GtkCellRendererProgress.value — missing getter get_value
+[property] GtkCellRendererProgress.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererProgress.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererProgress.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererProgress.editing — missing getter get_editing
+[property] GtkCellRendererProgress.height — missing getter get_height
+[property] GtkCellRendererProgress.mode — missing getter get_mode
+[property] GtkCellRendererProgress.width — missing getter get_width
+[property] GtkCellRendererProgress.xalign — missing getter get_xalign
+[property] GtkCellRendererProgress.xpad — missing getter get_xpad
+[property] GtkCellRendererProgress.yalign — missing getter get_yalign
+[property] GtkCellRendererProgress.ypad — missing getter get_ypad
+[property] GtkCellRendererSpin.adjustment — missing getter get_adjustment
+[property] GtkCellRendererSpin.climb-rate — missing getter get_climb-rate
+[property] GtkCellRendererSpin.digits — missing getter get_digits
+[property] GtkCellRendererSpin.align-set — missing getter get_align-set
+[property] GtkCellRendererSpin.alignment — getter get_alignment takes 2 args; props layer only supports 0
+[property] GtkCellRendererSpin.attributes — missing getter get_attributes
+[property] GtkCellRendererSpin.background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererSpin.background-rgba — missing getter get_background-rgba
+[property] GtkCellRendererSpin.background-set — missing getter get_background-set
+[property] GtkCellRendererSpin.editable — missing getter get_editable
+[property] GtkCellRendererSpin.editable-set — missing getter get_editable-set
+[property] GtkCellRendererSpin.ellipsize — missing getter get_ellipsize
+[property] GtkCellRendererSpin.ellipsize-set — missing getter get_ellipsize-set
+[property] GtkCellRendererSpin.family — missing getter get_family
+[property] GtkCellRendererSpin.family-set — missing getter get_family-set
+[property] GtkCellRendererSpin.font — missing getter get_font
+[property] GtkCellRendererSpin.font-desc — missing getter get_font-desc
+[property] GtkCellRendererSpin.foreground — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererSpin.foreground-rgba — missing getter get_foreground-rgba
+[property] GtkCellRendererSpin.foreground-set — missing getter get_foreground-set
+[property] GtkCellRendererSpin.language — missing getter get_language
+[property] GtkCellRendererSpin.language-set — missing getter get_language-set
+[property] GtkCellRendererSpin.markup — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererSpin.max-width-chars — missing getter get_max-width-chars
+[property] GtkCellRendererSpin.placeholder-text — missing getter get_placeholder-text
+[property] GtkCellRendererSpin.rise — missing getter get_rise
+[property] GtkCellRendererSpin.rise-set — missing getter get_rise-set
+[property] GtkCellRendererSpin.scale — missing getter get_scale
+[property] GtkCellRendererSpin.scale-set — missing getter get_scale-set
+[property] GtkCellRendererSpin.single-paragraph-mode — missing getter get_single-paragraph-mode
+[property] GtkCellRendererSpin.size — missing getter get_size
+[property] GtkCellRendererSpin.size-points — missing getter get_size-points
+[property] GtkCellRendererSpin.size-set — missing getter get_size-set
+[property] GtkCellRendererSpin.stretch — missing getter get_stretch
+[property] GtkCellRendererSpin.stretch-set — missing getter get_stretch-set
+[property] GtkCellRendererSpin.strikethrough — missing getter get_strikethrough
+[property] GtkCellRendererSpin.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkCellRendererSpin.style — missing getter get_style
+[property] GtkCellRendererSpin.style-set — missing getter get_style-set
+[property] GtkCellRendererSpin.text — missing getter get_text
+[property] GtkCellRendererSpin.underline — missing getter get_underline
+[property] GtkCellRendererSpin.underline-set — missing getter get_underline-set
+[property] GtkCellRendererSpin.variant — missing getter get_variant
+[property] GtkCellRendererSpin.variant-set — missing getter get_variant-set
+[property] GtkCellRendererSpin.weight — missing getter get_weight
+[property] GtkCellRendererSpin.weight-set — missing getter get_weight-set
+[property] GtkCellRendererSpin.width-chars — missing getter get_width-chars
+[property] GtkCellRendererSpin.wrap-mode — missing getter get_wrap-mode
+[property] GtkCellRendererSpin.wrap-width — missing getter get_wrap-width
+[property] GtkCellRendererSpin.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererSpin.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererSpin.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererSpin.editing — missing getter get_editing
+[property] GtkCellRendererSpin.height — missing getter get_height
+[property] GtkCellRendererSpin.mode — missing getter get_mode
+[property] GtkCellRendererSpin.width — missing getter get_width
+[property] GtkCellRendererSpin.xalign — missing getter get_xalign
+[property] GtkCellRendererSpin.xpad — missing getter get_xpad
+[property] GtkCellRendererSpin.yalign — missing getter get_yalign
+[property] GtkCellRendererSpin.ypad — missing getter get_ypad
+[property] GtkCellRendererSpinner.active — missing getter get_active
+[property] GtkCellRendererSpinner.pulse — missing getter get_pulse
+[property] GtkCellRendererSpinner.size — missing getter get_size
+[property] GtkCellRendererSpinner.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererSpinner.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererSpinner.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererSpinner.editing — missing getter get_editing
+[property] GtkCellRendererSpinner.height — missing getter get_height
+[property] GtkCellRendererSpinner.mode — missing getter get_mode
+[property] GtkCellRendererSpinner.width — missing getter get_width
+[property] GtkCellRendererSpinner.xalign — missing getter get_xalign
+[property] GtkCellRendererSpinner.xpad — missing getter get_xpad
+[property] GtkCellRendererSpinner.yalign — missing getter get_yalign
+[property] GtkCellRendererSpinner.ypad — missing getter get_ypad
+[virtual] GtkCellRendererText.edited — virtual method; the class struct layout is not in the GIR
+[property] GtkCellRendererText.align-set — missing getter get_align-set
+[property] GtkCellRendererText.alignment — getter get_alignment takes 2 args; props layer only supports 0
+[property] GtkCellRendererText.attributes — missing getter get_attributes
+[property] GtkCellRendererText.background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererText.background-rgba — missing getter get_background-rgba
+[property] GtkCellRendererText.background-set — missing getter get_background-set
+[property] GtkCellRendererText.editable — missing getter get_editable
+[property] GtkCellRendererText.editable-set — missing getter get_editable-set
+[property] GtkCellRendererText.ellipsize — missing getter get_ellipsize
+[property] GtkCellRendererText.ellipsize-set — missing getter get_ellipsize-set
+[property] GtkCellRendererText.family — missing getter get_family
+[property] GtkCellRendererText.family-set — missing getter get_family-set
+[property] GtkCellRendererText.font — missing getter get_font
+[property] GtkCellRendererText.font-desc — missing getter get_font-desc
+[property] GtkCellRendererText.foreground — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererText.foreground-rgba — missing getter get_foreground-rgba
+[property] GtkCellRendererText.foreground-set — missing getter get_foreground-set
+[property] GtkCellRendererText.language — missing getter get_language
+[property] GtkCellRendererText.language-set — missing getter get_language-set
+[property] GtkCellRendererText.markup — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererText.max-width-chars — missing getter get_max-width-chars
+[property] GtkCellRendererText.placeholder-text — missing getter get_placeholder-text
+[property] GtkCellRendererText.rise — missing getter get_rise
+[property] GtkCellRendererText.rise-set — missing getter get_rise-set
+[property] GtkCellRendererText.scale — missing getter get_scale
+[property] GtkCellRendererText.scale-set — missing getter get_scale-set
+[property] GtkCellRendererText.single-paragraph-mode — missing getter get_single-paragraph-mode
+[property] GtkCellRendererText.size — missing getter get_size
+[property] GtkCellRendererText.size-points — missing getter get_size-points
+[property] GtkCellRendererText.size-set — missing getter get_size-set
+[property] GtkCellRendererText.stretch — missing getter get_stretch
+[property] GtkCellRendererText.stretch-set — missing getter get_stretch-set
+[property] GtkCellRendererText.strikethrough — missing getter get_strikethrough
+[property] GtkCellRendererText.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkCellRendererText.style — missing getter get_style
+[property] GtkCellRendererText.style-set — missing getter get_style-set
+[property] GtkCellRendererText.text — missing getter get_text
+[property] GtkCellRendererText.underline — missing getter get_underline
+[property] GtkCellRendererText.underline-set — missing getter get_underline-set
+[property] GtkCellRendererText.variant — missing getter get_variant
+[property] GtkCellRendererText.variant-set — missing getter get_variant-set
+[property] GtkCellRendererText.weight — missing getter get_weight
+[property] GtkCellRendererText.weight-set — missing getter get_weight-set
+[property] GtkCellRendererText.width-chars — missing getter get_width-chars
+[property] GtkCellRendererText.wrap-mode — missing getter get_wrap-mode
+[property] GtkCellRendererText.wrap-width — missing getter get_wrap-width
+[property] GtkCellRendererText.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererText.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererText.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererText.editing — missing getter get_editing
+[property] GtkCellRendererText.height — missing getter get_height
+[property] GtkCellRendererText.mode — missing getter get_mode
+[property] GtkCellRendererText.width — missing getter get_width
+[property] GtkCellRendererText.xalign — missing getter get_xalign
+[property] GtkCellRendererText.xpad — missing getter get_xpad
+[property] GtkCellRendererText.yalign — missing getter get_yalign
+[property] GtkCellRendererText.ypad — missing getter get_ypad
+[property] GtkCellRendererToggle.inconsistent — missing getter get_inconsistent
+[property] GtkCellRendererToggle.cell-background — construct-only or no public setter; emitting getter only
+[property] GtkCellRendererToggle.cell-background-rgba — missing getter get_cell-background-rgba
+[property] GtkCellRendererToggle.cell-background-set — missing getter get_cell-background-set
+[property] GtkCellRendererToggle.editing — missing getter get_editing
+[property] GtkCellRendererToggle.height — missing getter get_height
+[property] GtkCellRendererToggle.mode — missing getter get_mode
+[property] GtkCellRendererToggle.width — missing getter get_width
+[property] GtkCellRendererToggle.xalign — missing getter get_xalign
+[property] GtkCellRendererToggle.xpad — missing getter get_xpad
+[property] GtkCellRendererToggle.yalign — missing getter get_yalign
+[property] GtkCellRendererToggle.ypad — missing getter get_ypad
+[property] GtkCellView.cell-area — missing getter get_cell-area
+[property] GtkCellView.cell-area-context — missing getter get_cell-area-context
+[property] GtkCellView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkCellView.height-request — missing getter get_height-request
+[property] GtkCellView.width-request — missing getter get_width-request
+[property] GtkCenterBox.css-name — construct-only or no public setter; emitting getter only
+[property] GtkCenterBox.height-request — missing getter get_height-request
+[property] GtkCenterBox.width-request — missing getter get_width-request
+[virtual] GtkCheckButton.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCheckButton.toggled — virtual method; the class struct layout is not in the GIR
+[property] GtkCheckButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkCheckButton.height-request — missing getter get_height-request
+[property] GtkCheckButton.width-request — missing getter get_width-request
+[property] GtkColorButton.show-editor — missing getter get_show-editor
+[property] GtkColorButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkColorButton.height-request — missing getter get_height-request
+[property] GtkColorButton.width-request — missing getter get_width-request
+[property] GtkColorChooserDialog.show-editor — missing getter get_show-editor
+[property] GtkColorChooserDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkColorChooserDialog.default-height — missing getter get_default-height
+[property] GtkColorChooserDialog.default-width — missing getter get_default-width
+[property] GtkColorChooserDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkColorChooserDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkColorChooserDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkColorChooserDialog.height-request — missing getter get_height-request
+[property] GtkColorChooserDialog.width-request — missing getter get_width-request
+[property] GtkColorChooserWidget.show-editor — missing getter get_show-editor
+[property] GtkColorChooserWidget.css-name — construct-only or no public setter; emitting getter only
+[property] GtkColorChooserWidget.height-request — missing getter get_height-request
+[property] GtkColorChooserWidget.width-request — missing getter get_width-request
+[property] GtkColorDialogButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkColorDialogButton.height-request — missing getter get_height-request
+[property] GtkColorDialogButton.width-request — missing getter get_width-request
+[property] GtkColumnView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkColumnView.height-request — missing getter get_height-request
+[property] GtkColumnView.width-request — missing getter get_width-request
+[virtual] GtkComboBox.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkComboBox.changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkComboBox.format_entry_text — virtual method; the class struct layout is not in the GIR
+[property] GtkComboBox.has-entry — construct-only or no public setter; emitting getter only
+[property] GtkComboBox.has-frame — missing getter get_has-frame
+[property] GtkComboBox.popup-shown — missing getter get_popup-shown
+[property] GtkComboBox.css-name — construct-only or no public setter; emitting getter only
+[property] GtkComboBox.height-request — missing getter get_height-request
+[property] GtkComboBox.width-request — missing getter get_width-request
+[property] GtkComboBoxText.has-entry — construct-only or no public setter; emitting getter only
+[property] GtkComboBoxText.has-frame — missing getter get_has-frame
+[property] GtkComboBoxText.popup-shown — missing getter get_popup-shown
+[property] GtkComboBoxText.css-name — construct-only or no public setter; emitting getter only
+[property] GtkComboBoxText.height-request — missing getter get_height-request
+[property] GtkComboBoxText.width-request — missing getter get_width-request
+[property] GtkConstraint.constant — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.multiplier — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.relation — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.source — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.source-attribute — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.strength — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.target — construct-only or no public setter; emitting getter only
+[property] GtkConstraint.target-attribute — construct-only or no public setter; emitting getter only
+[property] GtkConstraintGuide.max-height — missing getter get_max-height
+[property] GtkConstraintGuide.max-width — missing getter get_max-width
+[property] GtkConstraintGuide.min-height — missing getter get_min-height
+[property] GtkConstraintGuide.min-width — missing getter get_min-width
+[property] GtkConstraintGuide.nat-height — missing getter get_nat-height
+[property] GtkConstraintGuide.nat-width — missing getter get_nat-width
+[property] GtkConstraintLayoutChild.child-widget — construct-only or no public setter; emitting getter only
+[property] GtkConstraintLayoutChild.layout-manager — construct-only or no public setter; emitting getter only
+[method] GtkCssProvider.toString — name collision
+[property] GtkCssProvider.prefers-color-scheme — missing getter get_prefers-color-scheme
+[property] GtkCssProvider.prefers-contrast — missing getter get_prefers-contrast
+[property] GtkCssProvider.prefers-reduced-motion — missing getter get_prefers-reduced-motion
+[virtual] GtkDialog.close — virtual method; the class struct layout is not in the GIR
+[virtual] GtkDialog.response — virtual method; the class struct layout is not in the GIR
+[property] GtkDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkDialog.default-height — missing getter get_default-height
+[property] GtkDialog.default-width — missing getter get_default-width
+[property] GtkDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkDialog.height-request — missing getter get_height-request
+[property] GtkDialog.width-request — missing getter get_width-request
+[property] GtkDirectoryList.item-type — missing getter get_item-type
+[property] GtkDirectoryList.n-items — missing getter get_n-items
+[property] GtkDragIcon.css-name — construct-only or no public setter; emitting getter only
+[property] GtkDragIcon.height-request — missing getter get_height-request
+[property] GtkDragIcon.width-request — missing getter get_width-request
+[property] GtkDragSource.n-points — missing getter get_n-points
+[virtual] GtkDrawingArea.resize — virtual method; the class struct layout is not in the GIR
+[property] GtkDrawingArea.css-name — construct-only or no public setter; emitting getter only
+[property] GtkDrawingArea.height-request — missing getter get_height-request
+[property] GtkDrawingArea.width-request — missing getter get_width-request
+[property] GtkDropDown.css-name — construct-only or no public setter; emitting getter only
+[property] GtkDropDown.height-request — missing getter get_height-request
+[property] GtkDropDown.width-request — missing getter get_width-request
+[property] GtkDropTarget.formats — construct-only or no public setter; emitting getter only
+[property] GtkEditableLabel.editing — construct-only or no public setter; emitting getter only
+[property] GtkEditableLabel.css-name — construct-only or no public setter; emitting getter only
+[property] GtkEditableLabel.height-request — missing getter get_height-request
+[property] GtkEditableLabel.width-request — missing getter get_width-request
+[property] GtkEmojiChooser.default-widget — missing getter get_default-widget
+[property] GtkEmojiChooser.pointing-to — getter get_pointing_to takes 1 args; props layer only supports 0
+[property] GtkEmojiChooser.css-name — construct-only or no public setter; emitting getter only
+[property] GtkEmojiChooser.height-request — missing getter get_height-request
+[property] GtkEmojiChooser.width-request — missing getter get_width-request
+[virtual] GtkEntry.activate — virtual method; the class struct layout is not in the GIR
+[method] GtkEntry.getAlignment — name collision
+[method] GtkEntry.setAlignment — name collision
+[property] GtkEntry.enable-emoji-completion — missing getter get_enable-emoji-completion
+[property] GtkEntry.im-module — missing getter get_im-module
+[property] GtkEntry.invisible-char-set — missing getter get_invisible-char-set
+[property] GtkEntry.menu-entry-icon-primary-text — missing getter get_menu-entry-icon-primary-text
+[property] GtkEntry.menu-entry-icon-secondary-text — missing getter get_menu-entry-icon-secondary-text
+[property] GtkEntry.primary-icon-activatable — missing getter get_primary-icon-activatable
+[property] GtkEntry.primary-icon-gicon — missing getter get_primary-icon-gicon
+[property] GtkEntry.primary-icon-name — missing getter get_primary-icon-name
+[property] GtkEntry.primary-icon-paintable — missing getter get_primary-icon-paintable
+[property] GtkEntry.primary-icon-sensitive — missing getter get_primary-icon-sensitive
+[property] GtkEntry.primary-icon-storage-type — missing getter get_primary-icon-storage-type
+[property] GtkEntry.primary-icon-tooltip-markup — missing getter get_primary-icon-tooltip-markup
+[property] GtkEntry.primary-icon-tooltip-text — missing getter get_primary-icon-tooltip-text
+[property] GtkEntry.scroll-offset — missing getter get_scroll-offset
+[property] GtkEntry.secondary-icon-activatable — missing getter get_secondary-icon-activatable
+[property] GtkEntry.secondary-icon-gicon — missing getter get_secondary-icon-gicon
+[property] GtkEntry.secondary-icon-name — missing getter get_secondary-icon-name
+[property] GtkEntry.secondary-icon-paintable — missing getter get_secondary-icon-paintable
+[property] GtkEntry.secondary-icon-sensitive — missing getter get_secondary-icon-sensitive
+[property] GtkEntry.secondary-icon-storage-type — missing getter get_secondary-icon-storage-type
+[property] GtkEntry.secondary-icon-tooltip-markup — missing getter get_secondary-icon-tooltip-markup
+[property] GtkEntry.secondary-icon-tooltip-text — missing getter get_secondary-icon-tooltip-text
+[property] GtkEntry.show-emoji-icon — missing getter get_show-emoji-icon
+[property] GtkEntry.truncate-multiline — missing getter get_truncate-multiline
+[property] GtkEntry.css-name — construct-only or no public setter; emitting getter only
+[property] GtkEntry.height-request — missing getter get_height-request
+[property] GtkEntry.width-request — missing getter get_width-request
+[virtual] GtkEntryBuffer.delete_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEntryBuffer.deleted_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEntryBuffer.get_length — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEntryBuffer.get_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEntryBuffer.insert_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEntryBuffer.inserted_text — virtual method; the class struct layout is not in the GIR
+[property] GtkEntryBuffer.text — setter set_text takes 2 args; props layer only supports 1
+[property] GtkEntryCompletion.cell-area — missing getter get_cell-area
+[property] GtkEveryFilter.item-type — missing getter get_item-type
+[property] GtkEveryFilter.n-items — missing getter get_n-items
+[property] GtkExpander.css-name — construct-only or no public setter; emitting getter only
+[property] GtkExpander.height-request — missing getter get_height-request
+[property] GtkExpander.width-request — missing getter get_width-request
+[property] GtkFileChooserDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkFileChooserDialog.default-height — missing getter get_default-height
+[property] GtkFileChooserDialog.default-width — missing getter get_default-width
+[property] GtkFileChooserDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkFileChooserDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkFileChooserDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFileChooserDialog.height-request — missing getter get_height-request
+[property] GtkFileChooserDialog.width-request — missing getter get_width-request
+[property] GtkFileChooserNative.visible — construct-only or no public setter; emitting getter only
+[property] GtkFileChooserWidget.search-mode — missing getter get_search-mode
+[property] GtkFileChooserWidget.show-time — missing getter get_show-time
+[property] GtkFileChooserWidget.subtitle — missing getter get_subtitle
+[property] GtkFileChooserWidget.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFileChooserWidget.height-request — missing getter get_height-request
+[property] GtkFileChooserWidget.width-request — missing getter get_width-request
+[property] GtkFileFilter.mime-types — construct-only or no public setter; emitting getter only
+[property] GtkFileFilter.patterns — construct-only or no public setter; emitting getter only
+[property] GtkFileFilter.suffixes — construct-only or no public setter; emitting getter only
+[virtual] GtkFilter.get_strictness — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFilter.match — virtual method; the class struct layout is not in the GIR
+[property] GtkFilterListModel.item-type — missing getter get_item-type
+[property] GtkFilterListModel.n-items — missing getter get_n-items
+[property] GtkFixed.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFixed.height-request — missing getter get_height-request
+[property] GtkFixed.width-request — missing getter get_width-request
+[property] GtkFixedLayoutChild.child-widget — construct-only or no public setter; emitting getter only
+[property] GtkFixedLayoutChild.layout-manager — construct-only or no public setter; emitting getter only
+[property] GtkFlattenListModel.item-type — missing getter get_item-type
+[property] GtkFlattenListModel.n-items — missing getter get_n-items
+[property] GtkFlowBox.accept-unpaired-release — missing getter get_accept-unpaired-release
+[property] GtkFlowBox.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFlowBox.height-request — missing getter get_height-request
+[property] GtkFlowBox.width-request — missing getter get_width-request
+[virtual] GtkFlowBoxChild.activate — virtual method; the class struct layout is not in the GIR
+[property] GtkFlowBoxChild.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFlowBoxChild.height-request — missing getter get_height-request
+[property] GtkFlowBoxChild.width-request — missing getter get_width-request
+[property] GtkFontButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFontButton.height-request — missing getter get_height-request
+[property] GtkFontButton.width-request — missing getter get_width-request
+[property] GtkFontChooserDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkFontChooserDialog.default-height — missing getter get_default-height
+[property] GtkFontChooserDialog.default-width — missing getter get_default-width
+[property] GtkFontChooserDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkFontChooserDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkFontChooserDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFontChooserDialog.height-request — missing getter get_height-request
+[property] GtkFontChooserDialog.width-request — missing getter get_width-request
+[property] GtkFontChooserWidget.tweak-action — missing getter get_tweak-action
+[property] GtkFontChooserWidget.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFontChooserWidget.height-request — missing getter get_height-request
+[property] GtkFontChooserWidget.width-request — missing getter get_width-request
+[property] GtkFontDialogButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFontDialogButton.height-request — missing getter get_height-request
+[property] GtkFontDialogButton.width-request — missing getter get_width-request
+[virtual] GtkFrame.compute_child_allocation — virtual method; the class struct layout is not in the GIR
+[property] GtkFrame.css-name — construct-only or no public setter; emitting getter only
+[property] GtkFrame.height-request — missing getter get_height-request
+[property] GtkFrame.width-request — missing getter get_width-request
+[virtual] GtkGLArea.render — virtual method; the class struct layout is not in the GIR
+[virtual] GtkGLArea.resize — virtual method; the class struct layout is not in the GIR
+[property] GtkGLArea.css-name — construct-only or no public setter; emitting getter only
+[property] GtkGLArea.height-request — missing getter get_height-request
+[property] GtkGLArea.width-request — missing getter get_width-request
+[property] GtkGesture.n-points — missing getter get_n-points
+[property] GtkGestureClick.n-points — missing getter get_n-points
+[property] GtkGestureDrag.n-points — missing getter get_n-points
+[property] GtkGestureLongPress.n-points — missing getter get_n-points
+[property] GtkGesturePan.n-points — missing getter get_n-points
+[property] GtkGestureRotate.n-points — missing getter get_n-points
+[property] GtkGestureSingle.n-points — missing getter get_n-points
+[callable] GtkGestureStylus.getAxes — parameter values: the array carries no element count
+[callable] GtkGestureStylus.getBacklog — parameter backlog: array of Gdk.TimeCoord: the layout of the element is not emitted, so the elements cannot be read out of the array
+[property] GtkGestureStylus.n-points — missing getter get_n-points
+[property] GtkGestureSwipe.n-points — missing getter get_n-points
+[property] GtkGestureZoom.n-points — missing getter get_n-points
+[property] GtkGraphicsOffload.css-name — construct-only or no public setter; emitting getter only
+[property] GtkGraphicsOffload.height-request — missing getter get_height-request
+[property] GtkGraphicsOffload.width-request — missing getter get_width-request
+[property] GtkGrid.css-name — construct-only or no public setter; emitting getter only
+[property] GtkGrid.height-request — missing getter get_height-request
+[property] GtkGrid.width-request — missing getter get_width-request
+[property] GtkGridLayoutChild.child-widget — construct-only or no public setter; emitting getter only
+[property] GtkGridLayoutChild.layout-manager — construct-only or no public setter; emitting getter only
+[property] GtkGridView.orientation — missing getter get_orientation
+[property] GtkGridView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkGridView.height-request — missing getter get_height-request
+[property] GtkGridView.width-request — missing getter get_width-request
+[property] GtkHeaderBar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkHeaderBar.height-request — missing getter get_height-request
+[property] GtkHeaderBar.width-request — missing getter get_width-request
+[virtual] GtkIMContext.activate_osk — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.activate_osk_with_event — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.commit — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.delete_surrounding — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.filter_keypress — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.focus_in — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.focus_out — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.get_preedit_string — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.get_surrounding — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.get_surrounding_with_selection — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.invalid_composition — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.preedit_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.preedit_end — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.preedit_start — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.reset — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.retrieve_surrounding — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.set_client_widget — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.set_cursor_location — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.set_surrounding — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.set_surrounding_with_selection — virtual method; the class struct layout is not in the GIR
+[virtual] GtkIMContext.set_use_preedit — virtual method; the class struct layout is not in the GIR
+[property] GtkIMContext.input-hints — missing getter get_input-hints
+[property] GtkIMContext.input-purpose — missing getter get_input-purpose
+[property] GtkIMContextSimple.input-hints — missing getter get_input-hints
+[property] GtkIMContextSimple.input-purpose — missing getter get_input-purpose
+[property] GtkIMMulticontext.input-hints — missing getter get_input-hints
+[property] GtkIMMulticontext.input-purpose — missing getter get_input-purpose
+[property] GtkIconPaintable.file — construct-only or no public setter; emitting getter only
+[property] GtkIconPaintable.icon-name — construct-only or no public setter; emitting getter only
+[property] GtkIconPaintable.is-symbolic — construct-only or no public setter; emitting getter only
+[property] GtkIconPaintable.scale — missing getter get_scale
+[property] GtkIconPaintable.size — missing getter get_size
+[property] GtkIconTheme.display — construct-only or no public setter; emitting getter only
+[renamed] GtkIconView.getCursor — override-incompatible with ancestor; renamed to getCursorIconView
+[renamed] GtkIconView.setCursor — override-incompatible with ancestor; renamed to setCursorIconView
+[property] GtkIconView.cell-area — missing getter get_cell-area
+[property] GtkIconView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkIconView.height-request — missing getter get_height-request
+[property] GtkIconView.width-request — missing getter get_width-request
+[property] GtkImage.file — missing getter get_file
+[property] GtkImage.resource — missing getter get_resource
+[property] GtkImage.use-fallback — missing getter get_use-fallback
+[property] GtkImage.css-name — construct-only or no public setter; emitting getter only
+[property] GtkImage.height-request — missing getter get_height-request
+[property] GtkImage.width-request — missing getter get_width-request
+[property] GtkInfoBar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkInfoBar.height-request — missing getter get_height-request
+[property] GtkInfoBar.width-request — missing getter get_width-request
+[property] GtkInscription.css-name — construct-only or no public setter; emitting getter only
+[property] GtkInscription.height-request — missing getter get_height-request
+[property] GtkInscription.width-request — missing getter get_width-request
+[property] GtkKeyvalTrigger.keyval — construct-only or no public setter; emitting getter only
+[property] GtkKeyvalTrigger.modifiers — construct-only or no public setter; emitting getter only
+[property] GtkLabel.css-name — construct-only or no public setter; emitting getter only
+[property] GtkLabel.height-request — missing getter get_height-request
+[property] GtkLabel.width-request — missing getter get_width-request
+[property] GtkLayoutChild.child-widget — construct-only or no public setter; emitting getter only
+[property] GtkLayoutChild.layout-manager — construct-only or no public setter; emitting getter only
+[virtual] GtkLayoutManager.allocate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkLayoutManager.create_layout_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkLayoutManager.get_request_mode — virtual method; the class struct layout is not in the GIR
+[virtual] GtkLayoutManager.measure — virtual method; the class struct layout is not in the GIR
+[virtual] GtkLayoutManager.root — virtual method; the class struct layout is not in the GIR
+[virtual] GtkLayoutManager.unroot — virtual method; the class struct layout is not in the GIR
+[property] GtkLevelBar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkLevelBar.height-request — missing getter get_height-request
+[property] GtkLevelBar.width-request — missing getter get_width-request
+[property] GtkLinkButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkLinkButton.height-request — missing getter get_height-request
+[property] GtkLinkButton.width-request — missing getter get_width-request
+[property] GtkListBase.orientation — missing getter get_orientation
+[property] GtkListBase.css-name — construct-only or no public setter; emitting getter only
+[property] GtkListBase.height-request — missing getter get_height-request
+[property] GtkListBase.width-request — missing getter get_width-request
+[property] GtkListBox.accept-unpaired-release — missing getter get_accept-unpaired-release
+[property] GtkListBox.css-name — construct-only or no public setter; emitting getter only
+[property] GtkListBox.height-request — missing getter get_height-request
+[property] GtkListBox.width-request — missing getter get_width-request
+[virtual] GtkListBoxRow.activate — virtual method; the class struct layout is not in the GIR
+[property] GtkListBoxRow.css-name — construct-only or no public setter; emitting getter only
+[property] GtkListBoxRow.height-request — missing getter get_height-request
+[property] GtkListBoxRow.width-request — missing getter get_width-request
+[property] GtkListView.orientation — missing getter get_orientation
+[property] GtkListView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkListView.height-request — missing getter get_height-request
+[property] GtkListView.width-request — missing getter get_width-request
+[property] GtkLockButton.text-lock — missing getter get_text-lock
+[property] GtkLockButton.text-unlock — missing getter get_text-unlock
+[property] GtkLockButton.tooltip-lock — missing getter get_tooltip-lock
+[property] GtkLockButton.tooltip-not-authorized — missing getter get_tooltip-not-authorized
+[property] GtkLockButton.tooltip-unlock — missing getter get_tooltip-unlock
+[property] GtkLockButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkLockButton.height-request — missing getter get_height-request
+[property] GtkLockButton.width-request — missing getter get_width-request
+[property] GtkMapListModel.item-type — missing getter get_item-type
+[property] GtkMapListModel.n-items — missing getter get_n-items
+[property] GtkMediaControls.css-name — construct-only or no public setter; emitting getter only
+[property] GtkMediaControls.height-request — missing getter get_height-request
+[property] GtkMediaControls.width-request — missing getter get_width-request
+[virtual] GtkMediaFile.close — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaFile.open — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaStream.pause — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaStream.play — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaStream.realize — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaStream.seek — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaStream.unrealize — virtual method; the class struct layout is not in the GIR
+[virtual] GtkMediaStream.update_audio — virtual method; the class struct layout is not in the GIR
+[renamed] GtkMenuButton.getDirection — override-incompatible with ancestor; renamed to getDirectionMenuButton
+[renamed] GtkMenuButton.setDirection — override-incompatible with ancestor; renamed to setDirectionMenuButton
+[property] GtkMenuButton.direction — getter get_direction was renamed; call the renamed method directly
+[property] GtkMenuButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkMenuButton.height-request — missing getter get_height-request
+[property] GtkMenuButton.width-request — missing getter get_width-request
+[property] GtkMessageDialog.buttons — construct-only or no public setter; emitting getter only
+[property] GtkMessageDialog.message-type — missing getter get_message-type
+[property] GtkMessageDialog.secondary-text — missing getter get_secondary-text
+[property] GtkMessageDialog.secondary-use-markup — missing getter get_secondary-use-markup
+[property] GtkMessageDialog.text — missing getter get_text
+[property] GtkMessageDialog.use-markup — missing getter get_use-markup
+[property] GtkMessageDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkMessageDialog.default-height — missing getter get_default-height
+[property] GtkMessageDialog.default-width — missing getter get_default-width
+[property] GtkMessageDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkMessageDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkMessageDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkMessageDialog.height-request — missing getter get_height-request
+[property] GtkMessageDialog.width-request — missing getter get_width-request
+[property] GtkMnemonicTrigger.keyval — construct-only or no public setter; emitting getter only
+[property] GtkMultiFilter.item-type — missing getter get_item-type
+[property] GtkMultiFilter.n-items — missing getter get_n-items
+[property] GtkMultiSelection.item-type — missing getter get_item-type
+[property] GtkMultiSelection.n-items — missing getter get_n-items
+[property] GtkMultiSorter.item-type — missing getter get_item-type
+[property] GtkMultiSorter.n-items — missing getter get_n-items
+[property] GtkNamedAction.action-name — construct-only or no public setter; emitting getter only
+[virtual] GtkNativeDialog.hide — virtual method; the class struct layout is not in the GIR
+[virtual] GtkNativeDialog.response — virtual method; the class struct layout is not in the GIR
+[virtual] GtkNativeDialog.show — virtual method; the class struct layout is not in the GIR
+[property] GtkNativeDialog.visible — construct-only or no public setter; emitting getter only
+[property] GtkNoSelection.item-type — missing getter get_item-type
+[property] GtkNoSelection.n-items — missing getter get_n-items
+[property] GtkNotebook.enable-popup — missing getter get_enable-popup
+[property] GtkNotebook.css-name — construct-only or no public setter; emitting getter only
+[property] GtkNotebook.height-request — missing getter get_height-request
+[property] GtkNotebook.width-request — missing getter get_width-request
+[property] GtkNotebookPage.child — construct-only or no public setter; emitting getter only
+[property] GtkNotebookPage.detachable — missing getter get_detachable
+[property] GtkNotebookPage.menu — missing getter get_menu
+[property] GtkNotebookPage.menu-label — missing getter get_menu-label
+[property] GtkNotebookPage.position — missing getter get_position
+[property] GtkNotebookPage.reorderable — missing getter get_reorderable
+[property] GtkNotebookPage.tab — missing getter get_tab
+[property] GtkNotebookPage.tab-expand — missing getter get_tab-expand
+[property] GtkNotebookPage.tab-fill — missing getter get_tab-fill
+[property] GtkNotebookPage.tab-label — missing getter get_tab-label
+[property] GtkOverlay.css-name — construct-only or no public setter; emitting getter only
+[property] GtkOverlay.height-request — missing getter get_height-request
+[property] GtkOverlay.width-request — missing getter get_width-request
+[property] GtkOverlayLayoutChild.child-widget — construct-only or no public setter; emitting getter only
+[property] GtkOverlayLayoutChild.layout-manager — construct-only or no public setter; emitting getter only
+[property] GtkPadController.action-group — missing getter get_action-group
+[property] GtkPadController.pad — missing getter get_pad
+[property] GtkPageSetupUnixDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkPageSetupUnixDialog.default-height — missing getter get_default-height
+[property] GtkPageSetupUnixDialog.default-width — missing getter get_default-width
+[property] GtkPageSetupUnixDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkPageSetupUnixDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkPageSetupUnixDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPageSetupUnixDialog.height-request — missing getter get_height-request
+[property] GtkPageSetupUnixDialog.width-request — missing getter get_width-request
+[property] GtkPaned.max-position — missing getter get_max-position
+[property] GtkPaned.min-position — missing getter get_min-position
+[property] GtkPaned.position-set — missing getter get_position-set
+[property] GtkPaned.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPaned.height-request — missing getter get_height-request
+[property] GtkPaned.width-request — missing getter get_width-request
+[property] GtkPasswordEntry.activates-default — missing getter get_activates-default
+[property] GtkPasswordEntry.placeholder-text — missing getter get_placeholder-text
+[property] GtkPasswordEntry.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPasswordEntry.height-request — missing getter get_height-request
+[property] GtkPasswordEntry.width-request — missing getter get_width-request
+[property] GtkPasswordEntryBuffer.text — setter set_text takes 2 args; props layer only supports 1
+[property] GtkPicture.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPicture.height-request — missing getter get_height-request
+[property] GtkPicture.width-request — missing getter get_width-request
+[virtual] GtkPopover.activate_default — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPopover.closed — virtual method; the class struct layout is not in the GIR
+[property] GtkPopover.default-widget — missing getter get_default-widget
+[property] GtkPopover.pointing-to — getter get_pointing_to takes 1 args; props layer only supports 0
+[property] GtkPopover.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPopover.height-request — missing getter get_height-request
+[property] GtkPopover.width-request — missing getter get_width-request
+[property] GtkPopoverBin.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPopoverBin.height-request — missing getter get_height-request
+[property] GtkPopoverBin.width-request — missing getter get_width-request
+[property] GtkPopoverMenu.visible-submenu — missing getter get_visible-submenu
+[property] GtkPopoverMenu.default-widget — missing getter get_default-widget
+[property] GtkPopoverMenu.pointing-to — getter get_pointing_to takes 1 args; props layer only supports 0
+[property] GtkPopoverMenu.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPopoverMenu.height-request — missing getter get_height-request
+[property] GtkPopoverMenu.width-request — missing getter get_width-request
+[property] GtkPopoverMenuBar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPopoverMenuBar.height-request — missing getter get_height-request
+[property] GtkPopoverMenuBar.width-request — missing getter get_width-request
+[property] GtkPrintJob.page-setup — missing getter get_page-setup
+[property] GtkPrintJob.printer — construct-only or no public setter; emitting getter only
+[property] GtkPrintJob.settings — construct-only or no public setter; emitting getter only
+[property] GtkPrintJob.title — construct-only or no public setter; emitting getter only
+[virtual] GtkPrintOperation.begin_print — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.custom_widget_apply — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.done — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.draw_page — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.end_print — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.paginate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.preview — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.request_page_setup — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.status_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperation.update_custom_widget — virtual method; the class struct layout is not in the GIR
+[property] GtkPrintOperation.allow-async — missing getter get_allow-async
+[property] GtkPrintOperation.current-page — missing getter get_current-page
+[property] GtkPrintOperation.custom-tab-label — missing getter get_custom-tab-label
+[property] GtkPrintOperation.export-filename — missing getter get_export-filename
+[property] GtkPrintOperation.job-name — missing getter get_job-name
+[property] GtkPrintOperation.n-pages — missing getter get_n-pages
+[property] GtkPrintOperation.show-progress — missing getter get_show-progress
+[property] GtkPrintOperation.track-print-status — missing getter get_track-print-status
+[property] GtkPrintOperation.unit — missing getter get_unit
+[property] GtkPrintOperation.use-full-page — missing getter get_use-full-page
+[renamed] GtkPrintUnixDialog.getSettings — override-incompatible with ancestor; renamed to getSettingsPrintUnixDialog
+[property] GtkPrintUnixDialog.print-settings — getter get_settings was renamed; call the renamed method directly
+[property] GtkPrintUnixDialog.use-header-bar — missing getter get_use-header-bar
+[property] GtkPrintUnixDialog.default-height — missing getter get_default-height
+[property] GtkPrintUnixDialog.default-width — missing getter get_default-width
+[property] GtkPrintUnixDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkPrintUnixDialog.maximized — construct-only or no public setter; emitting getter only
+[property] GtkPrintUnixDialog.css-name — construct-only or no public setter; emitting getter only
+[property] GtkPrintUnixDialog.height-request — missing getter get_height-request
+[property] GtkPrintUnixDialog.width-request — missing getter get_width-request
+[property] GtkPrinter.accepts-pdf — construct-only or no public setter; emitting getter only
+[property] GtkPrinter.accepts-ps — construct-only or no public setter; emitting getter only
+[property] GtkPrinter.is-virtual — construct-only or no public setter; emitting getter only
+[property] GtkPrinter.name — construct-only or no public setter; emitting getter only
+[property] GtkProgressBar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkProgressBar.height-request — missing getter get_height-request
+[property] GtkProgressBar.width-request — missing getter get_width-request
+[virtual] GtkRange.adjust_bounds — virtual method; the class struct layout is not in the GIR
+[virtual] GtkRange.change_value — virtual method; the class struct layout is not in the GIR
+[virtual] GtkRange.get_range_border — virtual method; the class struct layout is not in the GIR
+[virtual] GtkRange.move_slider — virtual method; the class struct layout is not in the GIR
+[virtual] GtkRange.value_changed — virtual method; the class struct layout is not in the GIR
+[property] GtkRange.css-name — construct-only or no public setter; emitting getter only
+[property] GtkRange.height-request — missing getter get_height-request
+[property] GtkRange.width-request — missing getter get_width-request
+[virtual] GtkRecentManager.changed — virtual method; the class struct layout is not in the GIR
+[property] GtkRecentManager.filename — missing getter get_filename
+[property] GtkRecentManager.size — missing getter get_size
+[property] GtkRevealer.css-name — construct-only or no public setter; emitting getter only
+[property] GtkRevealer.height-request — missing getter get_height-request
+[property] GtkRevealer.width-request — missing getter get_width-request
+[virtual] GtkScale.get_layout_offsets — virtual method; the class struct layout is not in the GIR
+[property] GtkScale.css-name — construct-only or no public setter; emitting getter only
+[property] GtkScale.height-request — missing getter get_height-request
+[property] GtkScale.width-request — missing getter get_width-request
+[virtual] GtkScaleButton.value_changed — virtual method; the class struct layout is not in the GIR
+[property] GtkScaleButton.icons — missing getter get_icons
+[property] GtkScaleButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkScaleButton.height-request — missing getter get_height-request
+[property] GtkScaleButton.width-request — missing getter get_width-request
+[property] GtkScrollbar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkScrollbar.height-request — missing getter get_height-request
+[property] GtkScrollbar.width-request — missing getter get_width-request
+[property] GtkScrolledWindow.hscrollbar-policy — missing getter get_hscrollbar-policy
+[property] GtkScrolledWindow.vscrollbar-policy — missing getter get_vscrollbar-policy
+[property] GtkScrolledWindow.css-name — construct-only or no public setter; emitting getter only
+[property] GtkScrolledWindow.height-request — missing getter get_height-request
+[property] GtkScrolledWindow.width-request — missing getter get_width-request
+[property] GtkSearchBar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSearchBar.height-request — missing getter get_height-request
+[property] GtkSearchBar.width-request — missing getter get_width-request
+[property] GtkSearchEntry.activates-default — missing getter get_activates-default
+[property] GtkSearchEntry.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSearchEntry.height-request — missing getter get_height-request
+[property] GtkSearchEntry.width-request — missing getter get_width-request
+[property] GtkSelectionFilterModel.item-type — missing getter get_item-type
+[property] GtkSelectionFilterModel.n-items — missing getter get_n-items
+[property] GtkSeparator.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSeparator.height-request — missing getter get_height-request
+[property] GtkSeparator.width-request — missing getter get_width-request
+[property] GtkSettings.gtk-alternative-button-order — missing getter get_gtk-alternative-button-order
+[property] GtkSettings.gtk-alternative-sort-arrows — missing getter get_gtk-alternative-sort-arrows
+[property] GtkSettings.gtk-application-prefer-dark-theme — missing getter get_gtk-application-prefer-dark-theme
+[property] GtkSettings.gtk-cursor-aspect-ratio — missing getter get_gtk-cursor-aspect-ratio
+[property] GtkSettings.gtk-cursor-blink — missing getter get_gtk-cursor-blink
+[property] GtkSettings.gtk-cursor-blink-time — missing getter get_gtk-cursor-blink-time
+[property] GtkSettings.gtk-cursor-blink-timeout — missing getter get_gtk-cursor-blink-timeout
+[property] GtkSettings.gtk-cursor-theme-name — missing getter get_gtk-cursor-theme-name
+[property] GtkSettings.gtk-cursor-theme-size — missing getter get_gtk-cursor-theme-size
+[property] GtkSettings.gtk-decoration-layout — missing getter get_gtk-decoration-layout
+[property] GtkSettings.gtk-dialogs-use-header — missing getter get_gtk-dialogs-use-header
+[property] GtkSettings.gtk-dnd-drag-threshold — missing getter get_gtk-dnd-drag-threshold
+[property] GtkSettings.gtk-double-click-distance — missing getter get_gtk-double-click-distance
+[property] GtkSettings.gtk-double-click-time — missing getter get_gtk-double-click-time
+[property] GtkSettings.gtk-enable-accels — missing getter get_gtk-enable-accels
+[property] GtkSettings.gtk-enable-animations — missing getter get_gtk-enable-animations
+[property] GtkSettings.gtk-enable-event-sounds — missing getter get_gtk-enable-event-sounds
+[property] GtkSettings.gtk-enable-input-feedback-sounds — missing getter get_gtk-enable-input-feedback-sounds
+[property] GtkSettings.gtk-enable-primary-paste — missing getter get_gtk-enable-primary-paste
+[property] GtkSettings.gtk-entry-password-hint-timeout — missing getter get_gtk-entry-password-hint-timeout
+[property] GtkSettings.gtk-entry-select-on-focus — missing getter get_gtk-entry-select-on-focus
+[property] GtkSettings.gtk-error-bell — missing getter get_gtk-error-bell
+[property] GtkSettings.gtk-font-name — missing getter get_gtk-font-name
+[property] GtkSettings.gtk-font-rendering — missing getter get_gtk-font-rendering
+[property] GtkSettings.gtk-fontconfig-timestamp — missing getter get_gtk-fontconfig-timestamp
+[property] GtkSettings.gtk-hint-font-metrics — missing getter get_gtk-hint-font-metrics
+[property] GtkSettings.gtk-icon-theme-name — missing getter get_gtk-icon-theme-name
+[property] GtkSettings.gtk-im-module — missing getter get_gtk-im-module
+[property] GtkSettings.gtk-interface-color-scheme — missing getter get_gtk-interface-color-scheme
+[property] GtkSettings.gtk-interface-contrast — missing getter get_gtk-interface-contrast
+[property] GtkSettings.gtk-interface-reduced-motion — missing getter get_gtk-interface-reduced-motion
+[property] GtkSettings.gtk-keynav-use-caret — missing getter get_gtk-keynav-use-caret
+[property] GtkSettings.gtk-label-select-on-focus — missing getter get_gtk-label-select-on-focus
+[property] GtkSettings.gtk-long-press-time — missing getter get_gtk-long-press-time
+[property] GtkSettings.gtk-overlay-scrolling — missing getter get_gtk-overlay-scrolling
+[property] GtkSettings.gtk-primary-button-warps-slider — missing getter get_gtk-primary-button-warps-slider
+[property] GtkSettings.gtk-print-backends — missing getter get_gtk-print-backends
+[property] GtkSettings.gtk-print-preview-command — missing getter get_gtk-print-preview-command
+[property] GtkSettings.gtk-recent-files-enabled — missing getter get_gtk-recent-files-enabled
+[property] GtkSettings.gtk-recent-files-max-age — missing getter get_gtk-recent-files-max-age
+[property] GtkSettings.gtk-shell-shows-app-menu — missing getter get_gtk-shell-shows-app-menu
+[property] GtkSettings.gtk-shell-shows-desktop — missing getter get_gtk-shell-shows-desktop
+[property] GtkSettings.gtk-shell-shows-menubar — missing getter get_gtk-shell-shows-menubar
+[property] GtkSettings.gtk-show-status-shapes — missing getter get_gtk-show-status-shapes
+[property] GtkSettings.gtk-sound-theme-name — missing getter get_gtk-sound-theme-name
+[property] GtkSettings.gtk-split-cursor — missing getter get_gtk-split-cursor
+[property] GtkSettings.gtk-theme-name — missing getter get_gtk-theme-name
+[property] GtkSettings.gtk-titlebar-double-click — missing getter get_gtk-titlebar-double-click
+[property] GtkSettings.gtk-titlebar-middle-click — missing getter get_gtk-titlebar-middle-click
+[property] GtkSettings.gtk-titlebar-right-click — missing getter get_gtk-titlebar-right-click
+[property] GtkSettings.gtk-xft-antialias — missing getter get_gtk-xft-antialias
+[property] GtkSettings.gtk-xft-dpi — missing getter get_gtk-xft-dpi
+[property] GtkSettings.gtk-xft-hinting — missing getter get_gtk-xft-hinting
+[property] GtkSettings.gtk-xft-hintstyle — missing getter get_gtk-xft-hintstyle
+[property] GtkSettings.gtk-xft-rgba — missing getter get_gtk-xft-rgba
+[method] GtkShortcutAction.toString — name collision
+[property] GtkShortcutController.item-type — missing getter get_item-type
+[property] GtkShortcutController.model — construct-only or no public setter; emitting getter only
+[property] GtkShortcutController.n-items — missing getter get_n-items
+[property] GtkShortcutLabel.css-name — construct-only or no public setter; emitting getter only
+[property] GtkShortcutLabel.height-request — missing getter get_height-request
+[property] GtkShortcutLabel.width-request — missing getter get_width-request
+[method] GtkShortcutTrigger.toString — name collision
+[property] GtkShortcutsGroup.accel-size-group — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsGroup.title — missing getter get_title
+[property] GtkShortcutsGroup.title-size-group — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsGroup.view — missing getter get_view
+[property] GtkShortcutsGroup.css-name — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsGroup.height-request — missing getter get_height-request
+[property] GtkShortcutsGroup.width-request — missing getter get_width-request
+[property] GtkShortcutsSection.max-height — missing getter get_max-height
+[property] GtkShortcutsSection.section-name — missing getter get_section-name
+[property] GtkShortcutsSection.title — missing getter get_title
+[property] GtkShortcutsSection.view-name — missing getter get_view-name
+[property] GtkShortcutsSection.css-name — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsSection.height-request — missing getter get_height-request
+[property] GtkShortcutsSection.width-request — missing getter get_width-request
+[property] GtkShortcutsShortcut.accel-size-group — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsShortcut.accelerator — missing getter get_accelerator
+[property] GtkShortcutsShortcut.action-name — missing getter get_action-name
+[property] GtkShortcutsShortcut.icon — missing getter get_icon
+[property] GtkShortcutsShortcut.icon-set — missing getter get_icon-set
+[property] GtkShortcutsShortcut.shortcut-type — missing getter get_shortcut-type
+[property] GtkShortcutsShortcut.subtitle — missing getter get_subtitle
+[property] GtkShortcutsShortcut.subtitle-set — missing getter get_subtitle-set
+[property] GtkShortcutsShortcut.title — missing getter get_title
+[property] GtkShortcutsShortcut.title-size-group — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsShortcut.css-name — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsShortcut.height-request — missing getter get_height-request
+[property] GtkShortcutsShortcut.width-request — missing getter get_width-request
+[property] GtkShortcutsWindow.section-name — missing getter get_section-name
+[property] GtkShortcutsWindow.view-name — missing getter get_view-name
+[property] GtkShortcutsWindow.default-height — missing getter get_default-height
+[property] GtkShortcutsWindow.default-width — missing getter get_default-width
+[property] GtkShortcutsWindow.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsWindow.maximized — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsWindow.css-name — construct-only or no public setter; emitting getter only
+[property] GtkShortcutsWindow.height-request — missing getter get_height-request
+[property] GtkShortcutsWindow.width-request — missing getter get_width-request
+[property] GtkSignalAction.signal-name — construct-only or no public setter; emitting getter only
+[property] GtkSingleSelection.item-type — missing getter get_item-type
+[property] GtkSingleSelection.n-items — missing getter get_n-items
+[property] GtkSliceListModel.item-type — missing getter get_item-type
+[property] GtkSliceListModel.n-items — missing getter get_n-items
+[callable] GtkSnapshot.appendBorder — parameter border_color: unbound array of TypeKind.record: the signature carries no length
+[property] GtkSortListModel.item-type — missing getter get_item-type
+[property] GtkSortListModel.n-items — missing getter get_n-items
+[virtual] GtkSorter.compare — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSorter.get_order — virtual method; the class struct layout is not in the GIR
+[property] GtkSpinButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSpinButton.height-request — missing getter get_height-request
+[property] GtkSpinButton.width-request — missing getter get_width-request
+[property] GtkSpinner.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSpinner.height-request — missing getter get_height-request
+[property] GtkSpinner.width-request — missing getter get_width-request
+[property] GtkStack.css-name — construct-only or no public setter; emitting getter only
+[property] GtkStack.height-request — missing getter get_height-request
+[property] GtkStack.width-request — missing getter get_width-request
+[property] GtkStackPage.child — construct-only or no public setter; emitting getter only
+[property] GtkStackSidebar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkStackSidebar.height-request — missing getter get_height-request
+[property] GtkStackSidebar.width-request — missing getter get_width-request
+[property] GtkStackSwitcher.css-name — construct-only or no public setter; emitting getter only
+[property] GtkStackSwitcher.height-request — missing getter get_height-request
+[property] GtkStackSwitcher.width-request — missing getter get_width-request
+[property] GtkStatusbar.css-name — construct-only or no public setter; emitting getter only
+[property] GtkStatusbar.height-request — missing getter get_height-request
+[property] GtkStatusbar.width-request — missing getter get_width-request
+[property] GtkStringList.item-type — missing getter get_item-type
+[property] GtkStringList.n-items — missing getter get_n-items
+[property] GtkStringList.strings — construct-only or no public setter; emitting getter only
+[virtual] GtkStyleContext.changed — virtual method; the class struct layout is not in the GIR
+[method] GtkStyleContext.toString — name collision
+[property] GtkSvg.playing — missing getter get_playing
+[property] GtkSvg.resource — missing getter get_resource
+[property] GtkSwitch.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSwitch.height-request — missing getter get_height-request
+[property] GtkSwitch.width-request — missing getter get_width-request
+[property] GtkText.im-module — missing getter get_im-module
+[property] GtkText.invisible-char-set — missing getter get_invisible-char-set
+[property] GtkText.scroll-offset — missing getter get_scroll-offset
+[property] GtkText.css-name — construct-only or no public setter; emitting getter only
+[property] GtkText.height-request — missing getter get_height-request
+[property] GtkText.width-request — missing getter get_width-request
+[virtual] GtkTextBuffer.apply_tag — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.begin_user_action — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.delete_range — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.end_user_action — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.insert_child_anchor — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.insert_paintable — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.insert_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.mark_deleted — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.mark_set — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.modified_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.paste_done — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.redo — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.remove_tag — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextBuffer.undo — virtual method; the class struct layout is not in the GIR
+[property] GtkTextBuffer.cursor-position — missing getter get_cursor-position
+[property] GtkTextBuffer.tag-table — construct-only or no public setter; emitting getter only
+[property] GtkTextBuffer.text — getter get_text takes 3 args; props layer only supports 0
+[property] GtkTextMark.left-gravity — construct-only or no public setter; emitting getter only
+[property] GtkTextMark.name — construct-only or no public setter; emitting getter only
+[property] GtkTextTag.accumulative-margin — missing getter get_accumulative-margin
+[property] GtkTextTag.allow-breaks — missing getter get_allow-breaks
+[property] GtkTextTag.allow-breaks-set — missing getter get_allow-breaks-set
+[property] GtkTextTag.background — construct-only or no public setter; emitting getter only
+[property] GtkTextTag.background-full-height — missing getter get_background-full-height
+[property] GtkTextTag.background-full-height-set — missing getter get_background-full-height-set
+[property] GtkTextTag.background-rgba — missing getter get_background-rgba
+[property] GtkTextTag.background-set — missing getter get_background-set
+[property] GtkTextTag.direction — missing getter get_direction
+[property] GtkTextTag.editable — missing getter get_editable
+[property] GtkTextTag.editable-set — missing getter get_editable-set
+[property] GtkTextTag.fallback — missing getter get_fallback
+[property] GtkTextTag.fallback-set — missing getter get_fallback-set
+[property] GtkTextTag.family — missing getter get_family
+[property] GtkTextTag.family-set — missing getter get_family-set
+[property] GtkTextTag.font — missing getter get_font
+[property] GtkTextTag.font-desc — missing getter get_font-desc
+[property] GtkTextTag.font-features — missing getter get_font-features
+[property] GtkTextTag.font-features-set — missing getter get_font-features-set
+[property] GtkTextTag.foreground — construct-only or no public setter; emitting getter only
+[property] GtkTextTag.foreground-rgba — missing getter get_foreground-rgba
+[property] GtkTextTag.foreground-set — missing getter get_foreground-set
+[property] GtkTextTag.indent — missing getter get_indent
+[property] GtkTextTag.indent-set — missing getter get_indent-set
+[property] GtkTextTag.insert-hyphens — missing getter get_insert-hyphens
+[property] GtkTextTag.insert-hyphens-set — missing getter get_insert-hyphens-set
+[property] GtkTextTag.invisible — missing getter get_invisible
+[property] GtkTextTag.invisible-set — missing getter get_invisible-set
+[property] GtkTextTag.justification — missing getter get_justification
+[property] GtkTextTag.justification-set — missing getter get_justification-set
+[property] GtkTextTag.language — missing getter get_language
+[property] GtkTextTag.language-set — missing getter get_language-set
+[property] GtkTextTag.left-margin — missing getter get_left-margin
+[property] GtkTextTag.left-margin-set — missing getter get_left-margin-set
+[property] GtkTextTag.letter-spacing — missing getter get_letter-spacing
+[property] GtkTextTag.letter-spacing-set — missing getter get_letter-spacing-set
+[property] GtkTextTag.line-height — missing getter get_line-height
+[property] GtkTextTag.line-height-set — missing getter get_line-height-set
+[property] GtkTextTag.name — missing getter get_name
+[property] GtkTextTag.overline — missing getter get_overline
+[property] GtkTextTag.overline-rgba — missing getter get_overline-rgba
+[property] GtkTextTag.overline-rgba-set — missing getter get_overline-rgba-set
+[property] GtkTextTag.overline-set — missing getter get_overline-set
+[property] GtkTextTag.paragraph-background — construct-only or no public setter; emitting getter only
+[property] GtkTextTag.paragraph-background-rgba — missing getter get_paragraph-background-rgba
+[property] GtkTextTag.paragraph-background-set — missing getter get_paragraph-background-set
+[property] GtkTextTag.pixels-above-lines — missing getter get_pixels-above-lines
+[property] GtkTextTag.pixels-above-lines-set — missing getter get_pixels-above-lines-set
+[property] GtkTextTag.pixels-below-lines — missing getter get_pixels-below-lines
+[property] GtkTextTag.pixels-below-lines-set — missing getter get_pixels-below-lines-set
+[property] GtkTextTag.pixels-inside-wrap — missing getter get_pixels-inside-wrap
+[property] GtkTextTag.pixels-inside-wrap-set — missing getter get_pixels-inside-wrap-set
+[property] GtkTextTag.right-margin — missing getter get_right-margin
+[property] GtkTextTag.right-margin-set — missing getter get_right-margin-set
+[property] GtkTextTag.rise — missing getter get_rise
+[property] GtkTextTag.rise-set — missing getter get_rise-set
+[property] GtkTextTag.scale — missing getter get_scale
+[property] GtkTextTag.scale-set — missing getter get_scale-set
+[property] GtkTextTag.sentence — missing getter get_sentence
+[property] GtkTextTag.sentence-set — missing getter get_sentence-set
+[property] GtkTextTag.show-spaces — missing getter get_show-spaces
+[property] GtkTextTag.show-spaces-set — missing getter get_show-spaces-set
+[property] GtkTextTag.size — missing getter get_size
+[property] GtkTextTag.size-points — missing getter get_size-points
+[property] GtkTextTag.size-set — missing getter get_size-set
+[property] GtkTextTag.stretch — missing getter get_stretch
+[property] GtkTextTag.stretch-set — missing getter get_stretch-set
+[property] GtkTextTag.strikethrough — missing getter get_strikethrough
+[property] GtkTextTag.strikethrough-rgba — missing getter get_strikethrough-rgba
+[property] GtkTextTag.strikethrough-rgba-set — missing getter get_strikethrough-rgba-set
+[property] GtkTextTag.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkTextTag.style — missing getter get_style
+[property] GtkTextTag.style-set — missing getter get_style-set
+[property] GtkTextTag.tabs — missing getter get_tabs
+[property] GtkTextTag.tabs-set — missing getter get_tabs-set
+[property] GtkTextTag.text-transform — missing getter get_text-transform
+[property] GtkTextTag.text-transform-set — missing getter get_text-transform-set
+[property] GtkTextTag.underline — missing getter get_underline
+[property] GtkTextTag.underline-rgba — missing getter get_underline-rgba
+[property] GtkTextTag.underline-rgba-set — missing getter get_underline-rgba-set
+[property] GtkTextTag.underline-set — missing getter get_underline-set
+[property] GtkTextTag.variant — missing getter get_variant
+[property] GtkTextTag.variant-set — missing getter get_variant-set
+[property] GtkTextTag.weight — missing getter get_weight
+[property] GtkTextTag.weight-set — missing getter get_weight-set
+[property] GtkTextTag.word — missing getter get_word
+[property] GtkTextTag.word-set — missing getter get_word-set
+[property] GtkTextTag.wrap-mode — missing getter get_wrap-mode
+[property] GtkTextTag.wrap-mode-set — missing getter get_wrap-mode-set
+[virtual] GtkTextView.backspace — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.copy_clipboard — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.cut_clipboard — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.delete_from_cursor — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.extend_selection — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.insert_at_cursor — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.insert_emoji — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.move_cursor — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.paste_clipboard — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.set_anchor — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.snapshot_layer — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTextView.toggle_overwrite — virtual method; the class struct layout is not in the GIR
+[property] GtkTextView.im-module — missing getter get_im-module
+[property] GtkTextView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkTextView.height-request — missing getter get_height-request
+[property] GtkTextView.width-request — missing getter get_width-request
+[virtual] GtkToggleButton.toggled — virtual method; the class struct layout is not in the GIR
+[property] GtkToggleButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkToggleButton.height-request — missing getter get_height-request
+[property] GtkToggleButton.width-request — missing getter get_width-request
+[property] GtkTreeExpander.css-name — construct-only or no public setter; emitting getter only
+[property] GtkTreeExpander.height-request — missing getter get_height-request
+[property] GtkTreeExpander.width-request — missing getter get_width-request
+[property] GtkTreeListModel.item-type — missing getter get_item-type
+[property] GtkTreeListModel.n-items — missing getter get_n-items
+[property] GtkTreeListModel.passthrough — construct-only or no public setter; emitting getter only
+[virtual] GtkTreeModelFilter.modify — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModelFilter.visible — virtual method; the class struct layout is not in the GIR
+[property] GtkTreeModelFilter.child-model — missing getter get_child-model
+[property] GtkTreeModelFilter.virtual-root — missing getter get_virtual-root
+[property] GtkTreeModelSort.model — construct-only or no public setter; emitting getter only
+[virtual] GtkTreeView.columns_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.cursor_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.expand_collapse_cursor_row — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.move_cursor — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.row_activated — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.row_collapsed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.row_expanded — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.select_all — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.select_cursor_parent — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.select_cursor_row — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.start_interactive_search — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.test_collapse_row — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.test_expand_row — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.toggle_cursor_row — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeView.unselect_all — virtual method; the class struct layout is not in the GIR
+[renamed] GtkTreeView.getCursor — override-incompatible with ancestor; renamed to getCursorTreeView
+[renamed] GtkTreeView.setCursor — override-incompatible with ancestor; renamed to setCursorTreeView
+[property] GtkTreeView.enable-grid-lines — missing getter get_enable-grid-lines
+[property] GtkTreeView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkTreeView.height-request — missing getter get_height-request
+[property] GtkTreeView.width-request — missing getter get_width-request
+[renamed] GtkTreeViewColumn.setCellDataFunc — override-incompatible with interface; renamed to setCellDataFuncTreeViewColumn
+[method] GtkTreeViewColumn.addAttribute — name collision
+[method] GtkTreeViewColumn.clear — name collision
+[method] GtkTreeViewColumn.clearAttributes — name collision
+[method] GtkTreeViewColumn.packEnd — name collision
+[method] GtkTreeViewColumn.packStart — name collision
+[renamed] GtkTreeViewColumn.setCellDataFunc — override-incompatible with ancestor; renamed to setCellDataFuncTreeViewColumn
+[method] GtkTreeViewColumn.setCellDataFuncTreeViewColumn — name collision
+[property] GtkTreeViewColumn.cell-area — missing getter get_cell-area
+[property] GtkVideo.css-name — construct-only or no public setter; emitting getter only
+[property] GtkVideo.height-request — missing getter get_height-request
+[property] GtkVideo.width-request — missing getter get_width-request
+[property] GtkViewport.css-name — construct-only or no public setter; emitting getter only
+[property] GtkViewport.height-request — missing getter get_height-request
+[property] GtkViewport.width-request — missing getter get_width-request
+[property] GtkVolumeButton.use-symbolic — missing getter get_use-symbolic
+[property] GtkVolumeButton.icons — missing getter get_icons
+[property] GtkVolumeButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkVolumeButton.height-request — missing getter get_height-request
+[property] GtkVolumeButton.width-request — missing getter get_width-request
+[virtual] GtkWidget.compute_expand — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.contains — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.css_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.direction_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.focus — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.get_request_mode — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.grab_focus — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.hide — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.keynav_failed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.map — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.measure — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.mnemonic_activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.move_focus — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.query_tooltip — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.realize — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.root — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.set_focus_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.show — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.size_allocate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.snapshot — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.state_flags_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.system_setting_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.unmap — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.unrealize — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWidget.unroot — virtual method; the class struct layout is not in the GIR
+[property] GtkWidget.css-name — construct-only or no public setter; emitting getter only
+[property] GtkWidget.height-request — missing getter get_height-request
+[property] GtkWidget.width-request — missing getter get_width-request
+[virtual] GtkWindow.activate_default — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWindow.activate_focus — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWindow.close_request — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWindow.enable_debugging — virtual method; the class struct layout is not in the GIR
+[virtual] GtkWindow.keys_changed — virtual method; the class struct layout is not in the GIR
+[method] GtkWindow.getFocus — name collision
+[method] GtkWindow.setFocus — name collision
+[property] GtkWindow.default-height — missing getter get_default-height
+[property] GtkWindow.default-width — missing getter get_default-width
+[property] GtkWindow.fullscreened — construct-only or no public setter; emitting getter only
+[property] GtkWindow.maximized — construct-only or no public setter; emitting getter only
+[property] GtkWindow.css-name — construct-only or no public setter; emitting getter only
+[property] GtkWindow.height-request — missing getter get_height-request
+[property] GtkWindow.width-request — missing getter get_width-request
+[property] GtkWindowControls.css-name — construct-only or no public setter; emitting getter only
+[property] GtkWindowControls.height-request — missing getter get_height-request
+[property] GtkWindowControls.width-request — missing getter get_width-request
+[property] GtkWindowHandle.css-name — construct-only or no public setter; emitting getter only
+[property] GtkWindowHandle.height-request — missing getter get_height-request
+[property] GtkWindowHandle.width-request — missing getter get_width-request
+[virtual] GtkAccessible.get_accessible_id — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessible.get_accessible_parent — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessible.get_at_context — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessible.get_bounds — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessible.get_first_accessible_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessible.get_next_accessible_sibling — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessible.get_platform_state — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleHypertext.get_link — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleHypertext.get_link_at — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleHypertext.get_n_links — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleRange.set_current_value — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_attributes — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_caret_position — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_contents — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_contents_at — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_default_attributes — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_extents — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_offset — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.get_selection — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.set_caret_position — virtual method; the class struct layout is not in the GIR
+[virtual] GtkAccessibleText.set_selection — virtual method; the class struct layout is not in the GIR
+[virtual] GtkActionable.get_action_name — virtual method; the class struct layout is not in the GIR
+[virtual] GtkActionable.get_action_target_value — virtual method; the class struct layout is not in the GIR
+[virtual] GtkActionable.set_action_name — virtual method; the class struct layout is not in the GIR
+[virtual] GtkActionable.set_action_target_value — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.add_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.custom_finished — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.custom_tag_end — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.custom_tag_start — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.get_id — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.get_internal_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.parser_finished — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.set_buildable_property — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuildable.set_id — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuilderScope.create_closure — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuilderScope.get_type_from_function — virtual method; the class struct layout is not in the GIR
+[virtual] GtkBuilderScope.get_type_from_name — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellEditable.editing_done — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellEditable.remove_widget — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellEditable.start_editing — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.add_attribute — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.clear — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.clear_attributes — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.get_area — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.get_cells — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.pack_end — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.pack_start — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.reorder — virtual method; the class struct layout is not in the GIR
+[virtual] GtkCellLayout.set_cell_data_func — virtual method; the class struct layout is not in the GIR
+[virtual] GtkColorChooser.add_palette — virtual method; the class struct layout is not in the GIR
+[virtual] GtkColorChooser.color_activated — virtual method; the class struct layout is not in the GIR
+[virtual] GtkColorChooser.get_rgba — virtual method; the class struct layout is not in the GIR
+[virtual] GtkColorChooser.set_rgba — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.delete_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.do_delete_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.do_insert_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.get_delegate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.get_selection_bounds — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.get_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.insert_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkEditable.set_selection_bounds — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.font_activated — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.get_font_face — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.get_font_family — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.get_font_map — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.get_font_size — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.set_filter_func — virtual method; the class struct layout is not in the GIR
+[virtual] GtkFontChooser.set_font_map — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperationPreview.end_preview — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperationPreview.got_page_size — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperationPreview.is_selected — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperationPreview.ready — virtual method; the class struct layout is not in the GIR
+[virtual] GtkPrintOperationPreview.render_page — virtual method; the class struct layout is not in the GIR
+[virtual] GtkScrollable.get_border — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSectionModel.get_section — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.get_selection_in_range — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.is_selected — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.select_all — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.select_item — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.select_range — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.set_selection — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.unselect_all — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.unselect_item — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSelectionModel.unselect_range — virtual method; the class struct layout is not in the GIR
+[virtual] GtkShortcutManager.add_controller — virtual method; the class struct layout is not in the GIR
+[virtual] GtkShortcutManager.remove_controller — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSymbolicPaintable.snapshot_symbolic — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSymbolicPaintable.snapshot_with_weight — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeDragDest.drag_data_received — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeDragDest.row_drop_possible — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeDragSource.drag_data_delete — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeDragSource.drag_data_get — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeDragSource.row_draggable — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.get_column_type — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.get_flags — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.get_iter — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.get_n_columns — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.get_path — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.get_value — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_children — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_has_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_n_children — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_next — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_nth_child — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_parent — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.iter_previous — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.ref_node — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.row_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.row_deleted — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.row_has_child_toggled — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.row_inserted — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeModel.unref_node — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeSortable.get_sort_column_id — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeSortable.has_default_sort_func — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeSortable.set_default_sort_func — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeSortable.set_sort_column_id — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeSortable.set_sort_func — virtual method; the class struct layout is not in the GIR
+[virtual] GtkTreeSortable.sort_column_changed — virtual method; the class struct layout is not in the GIR
+[alias] Allocation — aliases are resolved to their target

@@ -1,24 +1,25 @@
 # Skip report for package gir_gobject (GObject 2.0)
-Total skipped: 98
+Total skipped: 108
 
 ## By category
-callable: 77
+callable: 76
+virtual: 14
 property: 8
-callback: 5
 alias: 3
 renamed: 2
 method: 2
+callback: 2
 bitfield: 1
 
 ## By reason
 introspectable=0: 28
+virtual method; the class struct layout is not in the GIR: 14
 construct-only or no public setter; emitting getter only: 5
-parameter const_static_values: array of TypeKind.record (later phase): 4
-array parameter in callback signature: 3
+parameter const_static_values: unbound array of TypeKind.record: the signature carries no length: 4
 aliases are resolved to their target: 3
-array of TypeKind.union (later phase): 2
-parameter const_values: array of TypeKind.record (later phase): 2
-parameter instance_and_params: array of TypeKind.record (later phase): 2
+array of unions: the union layout is not emitted: 2
+parameter instance_and_params: unbound array of TypeKind.record: the signature carries no length: 2
+parameter const_values: unbound array of TypeKind.record: the signature carries no length: 2
 name collision: 2
 moved to CClosure.marshal_VOID__UINT: 1
 moved to CClosure.marshal_VOID__FLOAT: 1
@@ -39,26 +40,25 @@ moved to CClosure.marshal_BOOLEAN__FLAGS: 1
 moved to CClosure.marshal_STRING__OBJECT_POINTER: 1
 moved to CClosure.marshal_VOID__BOOLEAN: 1
 moved to CClosure.marshal_VOID__FLAGS: 1
-parameter hook_func: callback SignalEmissionHook has unsupported signature: 1
-moved to CClosure.marshal_VOID__BOXED: 1
 moved to Source.set_closure: 1
 moved to Source.set_dummy_callback: 1
 moved to TypeClass.adjust_private_offset: 1
 moved to TypeClass.get: 1
 moved to TypeClass.peek: 1
 moved to TypeClass.peek_static: 1
-moved to CClosure.marshal_VOID__CHAR: 1
+moved to TypeClass.ref: 1
 moved to TypeInterface.add_prerequisite: 1
-moved to TypeInterface.get_plugin: 1
+moved to CClosure.marshal_VOID__BOXED: 1
 moved to TypeInterface.instantiatable_prerequisite: 1
 moved to TypeInterface.peek: 1
 moved to TypeInterface.prerequisites: 1
 moved to Value.type_compatible: 1
 moved to Value.type_transformable: 1
 shadowed by sort_with_data: 1
-moved to CClosure.marshal_VOID__DOUBLE: 1
+moved to CClosure.marshal_VOID__CHAR: 1
 shadowed by bind_with_closures: 1
 missing getter get_source: 1
+moved to CClosure.marshal_VOID__DOUBLE: 1
 shadowed by bind_property_with_closures: 1
 missing getter get_target: 1
 missing getter get_target-type: 1
@@ -66,9 +66,9 @@ override-incompatible with interface; renamed to useTypeModule: 1
 moved to CClosure.marshal_VOID__ENUM: 1
 override-incompatible with ancestor; renamed to useTypeModule: 1
 moved to CClosure.marshal_BOOLEAN__BOXED_BOXED: 1
-moved to TypeClass.ref: 1
+moved to TypeInterface.get_plugin: 1
 
-## First 50 entries
+## All 108 entries
 [bitfield] GIOCondition — duplicate declaration owned by an earlier namespace
 [callable] GObject.cclosureMarshalBooleanBoxedBoxed — moved to CClosure.marshal_BOOLEAN__BOXED_BOXED
 [callable] GObject.cclosureMarshalBooleanFlags — moved to CClosure.marshal_BOOLEAN__FLAGS
@@ -98,24 +98,82 @@ moved to TypeClass.ref: 1
 [callable] GObject.cclosureNewObjectSwap — introspectable=0
 [callable] GObject.cclosureNewSwap — introspectable=0
 [callable] GObject.clearObject — introspectable=0
-[callable] GObject.enumCompleteTypeInfo — parameter const_values: array of TypeKind.record (later phase)
-[callable] GObject.enumRegisterStatic — parameter const_static_values: array of TypeKind.record (later phase)
-[callable] GObject.flagsCompleteTypeInfo — parameter const_values: array of TypeKind.record (later phase)
-[callable] GObject.flagsRegisterStatic — parameter const_static_values: array of TypeKind.record (later phase)
+[callable] GObject.enumCompleteTypeInfo — parameter const_values: unbound array of TypeKind.record: the signature carries no length
+[callable] GObject.enumRegisterStatic — parameter const_static_values: unbound array of TypeKind.record: the signature carries no length
+[callable] GObject.flagsCompleteTypeInfo — parameter const_values: unbound array of TypeKind.record: the signature carries no length
+[callable] GObject.flagsRegisterStatic — parameter const_static_values: unbound array of TypeKind.record: the signature carries no length
 [callable] GObject.paramSpecOverride — introspectable=0
 [callable] GObject.paramSpecValueArray — introspectable=0
-[callback] GSignalEmissionHook parameter param_values — array parameter in callback signature
-[callable] GObject.signalAddEmissionHook — parameter hook_func: callback SignalEmissionHook has unsupported signature
-[callable] GObject.signalChainFromOverridden — parameter instance_and_params: array of TypeKind.record (later phase)
+[callable] GObject.signalChainFromOverridden — parameter instance_and_params: unbound array of TypeKind.record: the signature carries no length
 [callable] GObject.signalChainFromOverriddenHandler — introspectable=0
 [callable] GObject.signalConnectData — introspectable=0
 [callable] GObject.signalConnectObject — introspectable=0
 [callable] GObject.signalEmit — introspectable=0
 [callable] GObject.signalEmitByName — introspectable=0
 [callable] GObject.signalEmitValist — introspectable=0
-[callable] GObject.signalEmitv — parameter instance_and_params: array of TypeKind.record (later phase)
+[callable] GObject.signalEmitv — parameter instance_and_params: unbound array of TypeKind.record: the signature carries no length
 [callable] GObject.signalNew — introspectable=0
 [callable] GObject.signalNewClassHandler — introspectable=0
 [callable] GObject.signalNewValist — introspectable=0
 [callable] GObject.signalNewv — introspectable=0
 [callable] GObject.signalSetVaMarshaller — introspectable=0
+[callable] GObject.sourceSetClosure — moved to Source.set_closure
+[callable] GObject.sourceSetDummyCallback — moved to Source.set_dummy_callback
+[callable] GObject.typeAddClassCacheFunc — introspectable=0
+[callable] GObject.typeAddInterfaceCheck — introspectable=0
+[callable] GObject.typeCheckClassCast — introspectable=0
+[callable] GObject.typeCheckInstanceCast — introspectable=0
+[callable] GObject.typeClassAdjustPrivateOffset — moved to TypeClass.adjust_private_offset
+[callable] GObject.typeClassGet — moved to TypeClass.get
+[callable] GObject.typeClassPeek — moved to TypeClass.peek
+[callable] GObject.typeClassPeekStatic — moved to TypeClass.peek_static
+[callable] GObject.typeClassRef — moved to TypeClass.ref
+[callable] GObject.typeCreateInstance — introspectable=0
+[callable] GObject.typeInterfaceAddPrerequisite — moved to TypeInterface.add_prerequisite
+[callable] GObject.typeInterfaceGetPlugin — moved to TypeInterface.get_plugin
+[callable] GObject.typeInterfaceInstantiatablePrerequisite — moved to TypeInterface.instantiatable_prerequisite
+[callable] GObject.typeInterfacePeek — moved to TypeInterface.peek
+[callable] GObject.typeInterfacePrerequisites — moved to TypeInterface.prerequisites
+[callable] GObject.typeRegisterStaticSimple — introspectable=0
+[callable] GObject.typeRemoveClassCacheFunc — introspectable=0
+[callable] GObject.typeRemoveInterfaceCheck — introspectable=0
+[callable] GObject.typeValueTablePeek — introspectable=0
+[callable] GObject.valueRegisterTransformFunc — introspectable=0
+[callable] GObject.valueTypeCompatible — moved to Value.type_compatible
+[callable] GObject.valueTypeTransformable — moved to Value.type_transformable
+[callable] GValueArray.sort — shadowed by sort_with_data
+[property] GBinding.flags — construct-only or no public setter; emitting getter only
+[property] GBinding.source — construct-only or no public setter; emitting getter only
+[property] GBinding.source-property — construct-only or no public setter; emitting getter only
+[property] GBinding.target — construct-only or no public setter; emitting getter only
+[property] GBinding.target-property — construct-only or no public setter; emitting getter only
+[callable] GBindingGroup.bindFull — shadowed by bind_with_closures
+[property] GBindingGroup.source — missing getter get_source
+[virtual] GObject.constructed — virtual method; the class struct layout is not in the GIR
+[virtual] GObject.dispatch_properties_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GObject.dispose — virtual method; the class struct layout is not in the GIR
+[virtual] GObject.finalize — virtual method; the class struct layout is not in the GIR
+[virtual] GObject.get_property — virtual method; the class struct layout is not in the GIR
+[virtual] GObject.notify — virtual method; the class struct layout is not in the GIR
+[virtual] GObject.set_property — virtual method; the class struct layout is not in the GIR
+[callable] GObject.bindPropertyFull — shadowed by bind_property_with_closures
+[virtual] GParamSpec.finalize — virtual method; the class struct layout is not in the GIR
+[virtual] GParamSpec.value_is_valid — virtual method; the class struct layout is not in the GIR
+[virtual] GParamSpec.value_set_default — virtual method; the class struct layout is not in the GIR
+[virtual] GParamSpec.value_validate — virtual method; the class struct layout is not in the GIR
+[virtual] GParamSpec.values_cmp — virtual method; the class struct layout is not in the GIR
+[property] GSignalGroup.target — missing getter get_target
+[property] GSignalGroup.target-type — missing getter get_target-type
+[virtual] GTypeModule.load — virtual method; the class struct layout is not in the GIR
+[virtual] GTypeModule.unload — virtual method; the class struct layout is not in the GIR
+[callable] GTypeModule.registerEnum — parameter const_static_values: unbound array of TypeKind.record: the signature carries no length
+[callable] GTypeModule.registerFlags — parameter const_static_values: unbound array of TypeKind.record: the signature carries no length
+[renamed] GTypeModule.use — override-incompatible with interface; renamed to useTypeModule
+[method] GTypeModule.unuse — name collision
+[renamed] GTypeModule.use — override-incompatible with ancestor; renamed to useTypeModule
+[method] GTypeModule.useTypeModule — name collision
+[callback] GTypeValueCollectFunc parameter collect_values — array of unions: the union layout is not emitted
+[callback] GTypeValueLCopyFunc parameter collect_values — array of unions: the union layout is not emitted
+[alias] SignalCMarshaller — aliases are resolved to their target
+[alias] SignalCVaMarshaller — aliases are resolved to their target
+[alias] Type — aliases are resolved to their target

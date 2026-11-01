@@ -607,6 +607,52 @@ class GdkSurface extends GObject {
     _gdkSurfaceSetOpaqueRegion(this.handle, region?.handle ?? ffi.nullptr);
   }
 
+  /// Translates coordinates between two surfaces.
+  ///
+  /// Note that this only works if @to and @from are popups or
+  /// transient-for to the same toplevel (directly or indirectly).
+  static final _gdkSurfaceTranslateCoordinates =
+      girGdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Double>,
+                ffi.Pointer<ffi.Double>,
+              )
+            >
+          >('gdk_surface_translate_coordinates')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+  (bool, double, double) translateCoordinates(
+    GdkSurface to,
+    double x,
+    double y,
+  ) {
+    final _out0 = malloc<ffi.Double>();
+    _out0.value = x;
+    final _out1 = malloc<ffi.Double>();
+    _out1.value = y;
+    try {
+      final _ret = _gdkSurfaceTranslateCoordinates(
+        this.handle,
+        to.handle,
+        _out0,
+        _out1,
+      );
+      return ((_ret) != 0, _out0.value, _out1.value);
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Emitted when @surface starts being present on the monitor.
   int onEnterMonitor(void Function(GdkMonitor monitor) callback) {
     return _connectSignal_v_1_o_gdkmonitor(

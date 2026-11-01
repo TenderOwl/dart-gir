@@ -236,6 +236,46 @@ final class GTimeZone implements ffi.Finalizable {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GTimeZone.utc() : this.rawFromPointer(_gTimeZoneNewUtc(), owned: true);
 
+  /// Finds an interval within @tz that corresponds to the given @time_,
+  /// possibly adjusting @time_ if required to fit into an interval.
+  /// The meaning of @time_ depends on @type.
+  ///
+  /// This function is similar to g_time_zone_find_interval(), with the
+  /// difference that it always succeeds (by making the adjustments
+  /// described below).
+  ///
+  /// In any of the cases where g_time_zone_find_interval() succeeds then
+  /// this function returns the same value, without modifying @time_.
+  ///
+  /// This function may, however, modify @time_ in order to deal with
+  /// non-existent times.  If the non-existent local @time_ of 02:30 were
+  /// requested on March 14th 2010 in Toronto then this function would
+  /// adjust @time_ to be 03:00 and return the interval containing the
+  /// adjusted time.
+  static final _gTimeZoneAdjustTime =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Int64>,
+              )
+            >
+          >('g_time_zone_adjust_time')
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Void>, int, ffi.Pointer<ffi.Int64>)
+          >();
+  (int, int) adjustTime(GTimeType type_, int time) {
+    final _out0 = malloc<ffi.Int64>();
+    _out0.value = time;
+    try {
+      final _ret = _gTimeZoneAdjustTime(this.handle, type_.value, _out0);
+      return (_ret, _out0.value);
+    } finally {
+      malloc.free(_out0);
+    }
+  }
+
   /// Finds an interval within @tz that corresponds to the given @time_.
   /// The meaning of @time_ depends on @type.
   ///

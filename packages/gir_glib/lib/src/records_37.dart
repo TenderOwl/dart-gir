@@ -343,9 +343,25 @@ final class GStrvBuilder implements ffi.Finalizable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void addv([List<String?>? value]) {
-    withNativeStringList(value, (nativeValue) {
+    withNativeStringList(value, (nativeValue, nativeValueLen) {
       _gStrvBuilderAddv(this.handle, nativeValue);
     });
+  }
+
+  /// Ends the builder process and returns the constructed NULL-terminated string
+  /// array. The returned value should be freed with g_strfreev() when no longer
+  /// needed.
+  static final _gStrvBuilderEnd =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_strv_builder_end')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(ffi.Pointer<ffi.Void>)
+          >();
+  List<String> end() {
+    return stringListFromNative(_gStrvBuilderEnd(this.handle), free: true)!;
   }
 
   /// Atomically increments the reference count of @builder by one.
@@ -396,6 +412,39 @@ final class GStrvBuilder implements ffi.Finalizable {
       owned = false;
     }
     _gStrvBuilderUnref(this.handle);
+  }
+
+  /// Decreases the reference count on the string vector builder, and returns
+  /// its contents as a `NULL`-terminated string array.
+  ///
+  /// This function is especially useful for cases where it's not possible
+  /// to use `g_autoptr()`.
+  ///
+  /// ```c
+  /// GStrvBuilder *builder = g_strv_builder_new ();
+  /// g_strv_builder_add (builder, "hello");
+  /// g_strv_builder_add (builder, "world");
+  ///
+  /// GStrv array = g_strv_builder_unref_to_strv (builder);
+  ///
+  /// g_assert_true (g_strv_equal (array, (const char *[]) { "hello", "world", NULL }));
+  ///
+  /// g_strfreev (array);
+  /// ```
+  static final _gStrvBuilderUnrefToStrv =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(ffi.Pointer<ffi.Void>)
+            >
+          >('g_strv_builder_unref_to_strv')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(ffi.Pointer<ffi.Void>)
+          >();
+  List<String> unrefToStrv() {
+    return stringListFromNative(
+      _gStrvBuilderUnrefToStrv(this.handle),
+      free: true,
+    )!;
   }
 }
 
@@ -476,38 +525,5 @@ final class GTestCase implements ffi.Finalizable {
       owned = false;
     }
     _gTestCaseFree(this.handle);
-  }
-}
-
-final class GTestConfig {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GTestConfig.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GTestConfig>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GTestConfig.rawFromPointer(handle, owned: owned);
-  }
-  GTestConfig.rawFromPointer(this.handle, {this.owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  bool owned;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

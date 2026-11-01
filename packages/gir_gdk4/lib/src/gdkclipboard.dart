@@ -185,7 +185,7 @@ class GdkClipboard extends GObject {
     callback,
     ffi.Pointer<ffi.Void>? userData,
   ]) {
-    withNativeStringList(mimeTypes, (nativeMimeTypes) {
+    withNativeStringList(mimeTypes, (nativeMimeTypes, nativeMimeTypesLen) {
       final _nc4 = callback == null
           ? null
           : ffi.NativeCallable<
@@ -249,7 +249,7 @@ class GdkClipboard extends GObject {
     final id = ++_readAsyncCallbackSeq;
     _readAsyncCallbackRegistry[id] = callback;
     final _data = malloc<ffi.IntPtr>()..value = id;
-    withNativeStringList(mimeTypes, (mimeTypes) {
+    withNativeStringList(mimeTypes, (mimeTypes, mimeTypesLen) {
       _gdkClipboardReadAsync(
         this.handle,
         mimeTypes,

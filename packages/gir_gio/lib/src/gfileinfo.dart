@@ -1231,7 +1231,7 @@ class GFileInfo extends GObject {
             )
           >();
   void setAttributeStringv(String attribute, [List<String?>? attrValue]) {
-    withNativeStringList(attrValue, (nativeAttrValue) {
+    withNativeStringList(attrValue, (nativeAttrValue, nativeAttrValueLen) {
       withNativeString(attribute, (nativeAttribute) {
         _gFileInfoSetAttributeStringv(
           this.handle,

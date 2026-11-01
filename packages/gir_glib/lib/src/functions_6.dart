@@ -241,6 +241,49 @@ List<String> getEnviron() {
   return stringListFromNative(_gGetEnviron(), free: true)!;
 }
 
+/// Determines the preferred character sets used for filenames.
+/// The first character set from the @charsets is the filename encoding, the
+/// subsequent character sets are used when trying to generate a displayable
+/// representation of a filename, see g_filename_display_name().
+///
+/// On Unix, the character sets are determined by consulting the
+/// environment variables `G_FILENAME_ENCODING` and `G_BROKEN_FILENAMES`.
+/// On Windows, the character set used in the GLib API is always UTF-8
+/// and said environment variables have no effect.
+///
+/// `G_FILENAME_ENCODING` may be set to a comma-separated list of
+/// character set names. The special token `@locale` is taken to mean the
+/// character set for the [current locale](running.html#locale).
+/// If `G_FILENAME_ENCODING` is not set, but `G_BROKEN_FILENAMES` is,
+/// the character set of the current locale is taken as the filename
+/// encoding. If neither environment variable  is set, UTF-8 is taken
+/// as the filename encoding, but the character set of the current locale
+/// is also put in the list of encodings.
+///
+/// The returned @charsets belong to GLib and must not be freed.
+///
+/// Note that on Unix, regardless of the locale character set or
+/// `G_FILENAME_ENCODING` value, the actual file names present
+/// on a system might be in any random encoding or just gibberish.
+final _gGetFilenameCharsets =
+    girGlibLookup<
+          ffi.NativeFunction<
+            ffi.Int32 Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>)
+          >
+        >('g_get_filename_charsets')
+        .asFunction<
+          int Function(ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>)
+        >();
+(bool, List<String>?) getFilenameCharsets() {
+  final _out0 = malloc<ffi.Pointer<ffi.Pointer<Utf8>>>();
+  try {
+    final _ret = _gGetFilenameCharsets(_out0);
+    return ((_ret) != 0, stringListFromNative(_out0.value));
+  } finally {
+    malloc.free(_out0);
+  }
+}
+
 /// Gets the current user's home directory.
 ///
 /// As with most UNIX tools, this function will return the value of the
@@ -465,32 +508,4 @@ final _gGetPrgname =
     ).asFunction<ffi.Pointer<Utf8> Function()>();
 String? getPrgname() {
   return stringFromNative((_gGetPrgname()).cast(), free: false);
-}
-
-/// Gets the real name of the user. This usually comes from the user's
-/// entry in the `passwd` file. The encoding of the returned string is
-/// system-defined. (On Windows, it is, however, always UTF-8.) If the
-/// real user name cannot be determined, the string "Unknown" is
-/// returned.
-final _gGetRealName =
-    girGlibLookup<ffi.NativeFunction<ffi.Pointer<Utf8> Function()>>(
-      'g_get_real_name',
-    ).asFunction<ffi.Pointer<Utf8> Function()>();
-String getRealName() {
-  return stringFromNative((_gGetRealName()).cast(), free: false)!;
-}
-
-/// Queries the system wall-clock time.
-///
-/// This is equivalent to the UNIX [`gettimeofday()`](man:gettimeofday(2))
-/// function, but portable.
-///
-/// You should only use this call if you are actually interested in the real
-/// wall-clock time. [func@GLib.get_monotonic_time] is probably more useful for
-/// measuring intervals.
-final _gGetRealTime = girGlibLookup<ffi.NativeFunction<ffi.Int64 Function()>>(
-  'g_get_real_time',
-).asFunction<int Function()>();
-int getRealTime() {
-  return _gGetRealTime();
 }

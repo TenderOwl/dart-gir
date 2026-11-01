@@ -35,5 +35,7 @@ dev_dependencies:
   # generated file's inherited imports) resolve against.
   gir_adw:
     path: ../gir_adw
+  gir_dart_gobject:
+    path: ../gir_dart_gobject
   gir_gtk4:
     path: ../gir_gtk4

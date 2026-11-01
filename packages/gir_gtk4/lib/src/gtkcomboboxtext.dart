@@ -370,6 +370,45 @@ class GtkComboBoxText extends GtkComboBox
     return _connectSignal_v_0(this.handle, 'changed', callback);
   }
 
+  /// Emitted to allow changing how the text in a combo box's entry is displayed.
+  ///
+  /// See [property@Gtk.ComboBox:has-entry].
+  ///
+  /// Connect a signal handler which returns an allocated string representing
+  /// @path. That string will then be used to set the text in the combo box's
+  /// entry. The default signal handler uses the text from the
+  /// [property@Gtk.ComboBox:entry-text-column] model column.
+  ///
+  /// Here's an example signal handler which fetches data from the model and
+  /// displays it in the entry.
+  /// ```c
+  /// static char *
+  /// format_entry_text_callback (GtkComboBox *combo,
+  /// const char *path,
+  /// gpointer     user_data)
+  /// {
+  /// GtkTreeIter iter;
+  /// GtkTreeModel model;
+  /// double       value;
+  ///
+  /// model = gtk_combo_box_get_model (combo);
+  ///
+  /// gtk_tree_model_get_iter_from_string (model, &iter, path);
+  /// gtk_tree_model_get (model, &iter,
+  /// THE_DOUBLE_VALUE_COLUMN, &value,
+  /// -1);
+  ///
+  /// return g_strdup_printf ("%g", value);
+  /// }
+  /// ```
+  int onFormatEntryText(String? Function(String path) callback) {
+    return _connectSignal_s_1_s_string(
+      this.handle,
+      'format-entry-text',
+      callback,
+    );
+  }
+
   /// Emitted to move the active selection.
   ///
   /// This is an [keybinding signal](class.SignalAction.html).

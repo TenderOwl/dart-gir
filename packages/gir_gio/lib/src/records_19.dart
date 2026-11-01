@@ -405,6 +405,57 @@ final class GSettingsSchemaSource implements ffi.Finalizable {
     });
   }
 
+  /// Lists the schemas in a given source.
+  ///
+  /// If @recursive is %TRUE then include parent sources.  If %FALSE then
+  /// only include the schemas from one source (ie: one directory).  You
+  /// probably want %TRUE.
+  ///
+  /// Non-relocatable schemas are those for which you can call
+  /// g_settings_new().  Relocatable schemas are those for which you must
+  /// use g_settings_new_with_path().
+  ///
+  /// Do not call this function from normal programs.  This is designed for
+  /// use by database editors, commandline tools, etc.
+  static final _gSettingsSchemaSourceListSchemas =
+      girGioLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>,
+                ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>,
+              )
+            >
+          >('g_settings_schema_source_list_schemas')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>,
+              ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>,
+            )
+          >();
+  (List<String>?, List<String>?) listSchemas(bool recursive) {
+    final _out0 = malloc<ffi.Pointer<ffi.Pointer<Utf8>>>();
+    final _out1 = malloc<ffi.Pointer<ffi.Pointer<Utf8>>>();
+    try {
+      _gSettingsSchemaSourceListSchemas(
+        this.handle,
+        recursive ? 1 : 0,
+        _out0,
+        _out1,
+      );
+      return (
+        stringListFromNative(_out0.value, free: true),
+        stringListFromNative(_out1.value, free: true),
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Looks up a schema with the identifier @schema_id in @source.
   ///
   /// This function is not required for normal uses of #GSettings but it
@@ -497,38 +548,5 @@ final class GSettingsSchemaSource implements ffi.Finalizable {
     return (_ret) == ffi.nullptr
         ? null
         : GSettingsSchemaSource.fromPointer(_ret);
-  }
-}
-
-final class GSimpleActionGroupClass {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GSimpleActionGroupClass.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GSimpleActionGroupClass>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GSimpleActionGroupClass.rawFromPointer(handle, owned: owned);
-  }
-  GSimpleActionGroupClass.rawFromPointer(this.handle, {this.owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  bool owned;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

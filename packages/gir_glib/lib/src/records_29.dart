@@ -477,6 +477,219 @@ final class GRegex implements ffi.Finalizable {
     });
   }
 
+  /// Using the standard algorithm for regular expression matching only
+  /// the longest match in the @string is retrieved, it is not possible
+  /// to obtain all the available matches. For instance matching
+  /// `"<a> <b> <c>"` against the pattern `"<.*>"`
+  /// you get `"<a> <b> <c>"`.
+  ///
+  /// This function uses a different algorithm (called DFA, i.e. deterministic
+  /// finite automaton), so it can retrieve all the possible matches, all
+  /// starting at the same point in the string. For instance matching
+  /// `"<a> <b> <c>"` against the pattern `"<.*>"`
+  /// you would obtain three matches: `"<a> <b> <c>"`,
+  /// `"<a> <b>"` and `"<a>"`.
+  ///
+  /// The number of matched strings is retrieved using
+  /// g_match_info_get_match_count(). To obtain the matched strings and
+  /// their position you can use, respectively, g_match_info_fetch() and
+  /// g_match_info_fetch_pos(). Note that the strings are returned in
+  /// reverse order of length; that is, the longest matching string is
+  /// given first.
+  ///
+  /// Note that the DFA algorithm is slower than the standard one and it
+  /// is not able to capture substrings, so backreferences do not work.
+  ///
+  /// Setting @start_position differs from just passing over a shortened
+  /// string and setting %G_REGEX_MATCH_NOTBOL in the case of a pattern
+  /// that begins with any kind of lookbehind assertion, such as "\b".
+  ///
+  /// Unless %G_REGEX_RAW is specified in the options, @string must be valid UTF-8.
+  ///
+  /// A #GMatchInfo structure, used to get information on the match, is
+  /// stored in @match_info if not %NULL. Note that if @match_info is
+  /// not %NULL then it is created even if the function returns %FALSE,
+  /// i.e. you must free it regardless if regular expression actually
+  /// matched.
+  ///
+  /// @string is not copied and is used in #GMatchInfo internally. If
+  /// you use any #GMatchInfo method (except g_match_info_free()) after
+  /// freeing or modifying @string then the behaviour is undefined.
+  static final _gRegexMatchAllFull =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_regex_match_all_full')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GMatchInfo?) matchAllFull(
+    String string,
+    int startPosition,
+    GRegexMatchFlags matchOptions,
+  ) {
+    return withNativeStringBytes(string, (nativeString, nativeStringLen) {
+      final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gRegexMatchAllFull(
+          this.handle,
+          nativeString,
+          nativeStringLen,
+          startPosition,
+          matchOptions.value,
+          _out0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (
+          (_ret) != 0,
+          (_out0.value.cast<ffi.Void>()) == ffi.nullptr
+              ? null
+              : GMatchInfo.fromPointer(
+                  _out0.value.cast<ffi.Void>(),
+                  owned: true,
+                ),
+        );
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Scans for a match in @string for the pattern in @regex.
+  /// The @match_options are combined with the match options specified
+  /// when the @regex structure was created, letting you have more
+  /// flexibility in reusing #GRegex structures.
+  ///
+  /// Setting @start_position differs from just passing over a shortened
+  /// string and setting %G_REGEX_MATCH_NOTBOL in the case of a pattern
+  /// that begins with any kind of lookbehind assertion, such as "\b".
+  ///
+  /// Unless %G_REGEX_RAW is specified in the options, @string must be valid UTF-8.
+  ///
+  /// A #GMatchInfo structure, used to get information on the match, is
+  /// stored in @match_info if not %NULL. Note that if @match_info is
+  /// not %NULL then it is created even if the function returns %FALSE,
+  /// i.e. you must free it regardless if regular expression actually
+  /// matched.
+  ///
+  /// @string is not copied and is used in #GMatchInfo internally. If
+  /// you use any #GMatchInfo method (except g_match_info_free()) after
+  /// freeing or modifying @string then the behaviour is undefined.
+  ///
+  /// To retrieve all the non-overlapping matches of the pattern in
+  /// string you can use g_match_info_next().
+  ///
+  /// |[<!-- language="C" -->
+  /// static void
+  /// print_uppercase_words (const gchar *string)
+  /// {
+  /// // Print all uppercase-only words.
+  /// GRegex *regex;
+  /// GMatchInfo *match_info;
+  /// GError *error = NULL;
+  ///
+  /// regex = g_regex_new ("[A-Z]+", G_REGEX_DEFAULT, G_REGEX_MATCH_DEFAULT, NULL);
+  /// g_regex_match_full (regex, string, -1, 0, 0, &match_info, &error);
+  /// while (g_match_info_matches (match_info))
+  /// {
+  /// gchar *word = g_match_info_fetch (match_info, 0);
+  /// g_print ("Found: %s\n", word);
+  /// g_free (word);
+  /// g_match_info_next (match_info, &error);
+  /// }
+  /// g_match_info_free (match_info);
+  /// g_regex_unref (regex);
+  /// if (error != NULL)
+  /// {
+  /// g_printerr ("Error while matching: %s\n", error->message);
+  /// g_error_free (error);
+  /// }
+  /// }
+  /// ]|
+  static final _gRegexMatchFull =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_regex_match_full')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, GMatchInfo?) matchFull(
+    String string,
+    int startPosition,
+    GRegexMatchFlags matchOptions,
+  ) {
+    return withNativeStringBytes(string, (nativeString, nativeStringLen) {
+      final _out0 = calloc<ffi.Pointer<ffi.Void>>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gRegexMatchFull(
+          this.handle,
+          nativeString,
+          nativeStringLen,
+          startPosition,
+          matchOptions.value,
+          _out0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (
+          (_ret) != 0,
+          (_out0.value.cast<ffi.Void>()) == ffi.nullptr
+              ? null
+              : GMatchInfo.fromPointer(
+                  _out0.value.cast<ffi.Void>(),
+                  owned: true,
+                ),
+        );
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Increases reference count of @regex by 1.
   static final _gRegexRef =
       girGlibLookup<
@@ -487,6 +700,282 @@ final class GRegex implements ffi.Finalizable {
           .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
   GRegex ref() {
     return GRegex.fromPointer(_gRegexRef(this.handle), owned: true);
+  }
+
+  /// Replaces all occurrences of the pattern in @regex with the
+  /// replacement text. Backreferences of the form `\number` or
+  /// `\g<number>` in the replacement text are interpolated by the
+  /// number-th captured subexpression of the match, `\g<name>` refers
+  /// to the captured subexpression with the given name. `\0` refers
+  /// to the complete match, but `\0` followed by a number is the octal
+  /// representation of a character. To include a literal `\` in the
+  /// replacement, write `\\\\`.
+  ///
+  /// There are also escapes that changes the case of the following text:
+  ///
+  /// - \l: Convert to lower case the next character
+  /// - \u: Convert to upper case the next character
+  /// - \L: Convert to lower case till \E
+  /// - \U: Convert to upper case till \E
+  /// - \E: End case modification
+  ///
+  /// If you do not need to use backreferences use g_regex_replace_literal().
+  ///
+  /// The @replacement string must be UTF-8 encoded even if %G_REGEX_RAW was
+  /// passed to g_regex_new(). If you want to use not UTF-8 encoded strings
+  /// you can use g_regex_replace_literal().
+  ///
+  /// Setting @start_position differs from just passing over a shortened
+  /// string and setting %G_REGEX_MATCH_NOTBOL in the case of a pattern that
+  /// begins with any kind of lookbehind assertion, such as "\b".
+  static final _gRegexReplace =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_regex_replace')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  String replace(
+    String string,
+    int startPosition,
+    String replacement,
+    GRegexMatchFlags matchOptions,
+  ) {
+    return withNativeStringBytes(string, (nativeString, nativeStringLen) {
+      return withNativeString(replacement, (nativeReplacement) {
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gRegexReplace(
+            this.handle,
+            nativeString,
+            nativeStringLen,
+            startPosition,
+            nativeReplacement.cast<Utf8>(),
+            matchOptions.value,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return stringFromNative((_ret).cast(), free: true)!;
+        } finally {
+          calloc.free(_error);
+        }
+      });
+    });
+  }
+
+  /// Replaces occurrences of the pattern in regex with the output of
+  /// @eval for that occurrence.
+  ///
+  /// Setting @start_position differs from just passing over a shortened
+  /// string and setting %G_REGEX_MATCH_NOTBOL in the case of a pattern
+  /// that begins with any kind of lookbehind assertion, such as "\b".
+  ///
+  /// The following example uses g_regex_replace_eval() to replace multiple
+  /// strings at once:
+  /// |[<!-- language="C" -->
+  /// static gboolean
+  /// eval_cb (const GMatchInfo *info,
+  /// GString          *res,
+  /// gpointer          data)
+  /// {
+  /// gchar *match;
+  /// gchar *r;
+  ///
+  /// match = g_match_info_fetch (info, 0);
+  /// r = g_hash_table_lookup ((GHashTable *)data, match);
+  /// g_string_append (res, r);
+  /// g_free (match);
+  ///
+  /// return FALSE;
+  /// }
+  ///
+  /// ...
+  ///
+  /// GRegex *reg;
+  /// GHashTable *h;
+  /// gchar *res;
+  ///
+  /// h = g_hash_table_new (g_str_hash, g_str_equal);
+  ///
+  /// g_hash_table_insert (h, "1", "ONE");
+  /// g_hash_table_insert (h, "2", "TWO");
+  /// g_hash_table_insert (h, "3", "THREE");
+  /// g_hash_table_insert (h, "4", "FOUR");
+  ///
+  /// reg = g_regex_new ("1|2|3|4", G_REGEX_DEFAULT, G_REGEX_MATCH_DEFAULT, NULL);
+  /// res = g_regex_replace_eval (reg, text, -1, 0, 0, eval_cb, h, NULL);
+  /// g_hash_table_destroy (h);
+  ///
+  /// ...
+  /// ]|
+  static final _gRegexReplaceEval =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_regex_replace_eval')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  String replaceEval(
+    String string,
+    int startPosition,
+    GRegexMatchFlags matchOptions,
+    int Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )
+    eval, [
+    ffi.Pointer<ffi.Void>? userData,
+  ]) {
+    return withNativeStringBytes(string, (nativeString, nativeStringLen) {
+      final _nc5 =
+          ffi.NativeCallable<
+            ffi.Int32 Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(eval, exceptionalReturn: 0);
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gRegexReplaceEval(
+          this.handle,
+          nativeString,
+          nativeStringLen,
+          startPosition,
+          matchOptions.value,
+          _nc5.nativeFunction,
+          userData ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return stringFromNative((_ret).cast(), free: true)!;
+      } finally {
+        calloc.free(_error);
+        _nc5.close();
+      }
+    });
+  }
+
+  /// Replaces all occurrences of the pattern in @regex with the
+  /// replacement text. @replacement is replaced literally, to
+  /// include backreferences use g_regex_replace().
+  ///
+  /// Setting @start_position differs from just passing over a
+  /// shortened string and setting %G_REGEX_MATCH_NOTBOL in the
+  /// case of a pattern that begins with any kind of lookbehind
+  /// assertion, such as "\b".
+  static final _gRegexReplaceLiteral =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<Utf8> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Pointer<Utf8>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_regex_replace_literal')
+          .asFunction<
+            ffi.Pointer<Utf8> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<Utf8>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  String replaceLiteral(
+    String string,
+    int startPosition,
+    String replacement,
+    GRegexMatchFlags matchOptions,
+  ) {
+    return withNativeStringBytes(string, (nativeString, nativeStringLen) {
+      return withNativeString(replacement, (nativeReplacement) {
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gRegexReplaceLiteral(
+            this.handle,
+            nativeString,
+            nativeStringLen,
+            startPosition,
+            nativeReplacement.cast<Utf8>(),
+            matchOptions.value,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return stringFromNative((_ret).cast(), free: true)!;
+        } finally {
+          calloc.free(_error);
+        }
+      });
+    });
   }
 
   /// Breaks the string on the pattern, and returns an array of the tokens.
@@ -533,6 +1022,80 @@ final class GRegex implements ffi.Finalizable {
         ),
         free: true,
       )!;
+    });
+  }
+
+  /// Breaks the string on the pattern, and returns an array of the tokens.
+  /// If the pattern contains capturing parentheses, then the text for each
+  /// of the substrings will also be returned. If the pattern does not match
+  /// anywhere in the string, then the whole string is returned as the first
+  /// token.
+  ///
+  /// As a special case, the result of splitting the empty string "" is an
+  /// empty vector, not a vector containing a single string. The reason for
+  /// this special case is that being able to represent an empty vector is
+  /// typically more useful than consistent handling of empty elements. If
+  /// you do need to represent empty elements, you'll need to check for the
+  /// empty string before calling this function.
+  ///
+  /// A pattern that can match empty strings splits @string into separate
+  /// characters wherever it matches the empty string between characters.
+  /// For example splitting "ab c" using as a separator "\s*", you will get
+  /// "a", "b" and "c".
+  ///
+  /// Setting @start_position differs from just passing over a shortened
+  /// string and setting %G_REGEX_MATCH_NOTBOL in the case of a pattern
+  /// that begins with any kind of lookbehind assertion, such as "\b".
+  static final _gRegexSplitFull =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.IntPtr,
+                ffi.Int32,
+                ffi.Uint32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_regex_split_full')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  List<String> splitFull(
+    String string,
+    int startPosition,
+    GRegexMatchFlags matchOptions,
+    int maxTokens,
+  ) {
+    return withNativeStringBytes(string, (nativeString, nativeStringLen) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gRegexSplitFull(
+          this.handle,
+          nativeString,
+          nativeStringLen,
+          startPosition,
+          matchOptions.value,
+          maxTokens,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return stringListFromNative(_ret, free: true)!;
+      } finally {
+        calloc.free(_error);
+      }
     });
   }
 

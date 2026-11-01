@@ -1,28 +1,18 @@
 # Skip report for package gir_gi_repository3 (GIRepository 3.0)
-Total skipped: 11
+Total skipped: 4
 
 ## By category
-callable: 9
+callable: 2
 renamed: 2
 
 ## By reason
-return: array of TypeKind.string (later phase): 4
-inout parameter iterator: 2
 introspectable=0: 1
-parameter in_args: array of TypeKind.union (later phase): 1
+parameter in_args: array of unions: the union layout is not emitted: 1
 override-incompatible with ancestor; renamed to getTypeInitFunctionNameObjectInfo: 1
 override-incompatible with ancestor; renamed to getTypeNameObjectInfo: 1
-unsupported out parameter interfaces_out (ffi.Pointer<ffi.Void>): 1
 
-## First 50 entries
+## All 4 entries
 [callable] GIRepository.cclosureMarshalGeneric — introspectable=0
-[callable] GIBaseInfo.iterateAttributes — inout parameter iterator
-[callable] GICallableInfo.invoke — parameter in_args: array of TypeKind.union (later phase)
-[callable] GICallableInfo.iterateReturnAttributes — inout parameter iterator
+[callable] GICallableInfo.invoke — parameter in_args: array of unions: the union layout is not emitted
 [renamed] GIObjectInfo.getTypeInitFunctionName — override-incompatible with ancestor; renamed to getTypeInitFunctionNameObjectInfo
 [renamed] GIObjectInfo.getTypeName — override-incompatible with ancestor; renamed to getTypeNameObjectInfo
-[callable] GIRepository.enumerateVersions — return: array of TypeKind.string (later phase)
-[callable] GIRepository.getDependencies — return: array of TypeKind.string (later phase)
-[callable] GIRepository.getImmediateDependencies — return: array of TypeKind.string (later phase)
-[callable] GIRepository.getObjectGtypeInterfaces — unsupported out parameter interfaces_out (ffi.Pointer<ffi.Void>)
-[callable] GIRepository.getSharedLibraries — return: array of TypeKind.string (later phase)

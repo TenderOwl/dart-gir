@@ -237,6 +237,56 @@ class GICallableInfo extends GIBaseInfo {
     return (_giCallableInfoIsMethod(this.handle)) != 0;
   }
 
+  /// Iterate over all attributes associated with the return value.
+  ///
+  /// The iterator structure is typically stack allocated, and must have its
+  /// first member initialized to `NULL`.
+  ///
+  /// Both the @name and @value should be treated as constants
+  /// and must not be freed.
+  ///
+  /// See [method@GIRepository.BaseInfo.iterate_attributes] for an example of how
+  /// to use a similar API.
+  static final _giCallableInfoIterateReturnAttributes =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gi_callable_info_iterate_return_attributes')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  (bool, String, String) iterateReturnAttributes(GIAttributeIter iterator) {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _out1 = malloc<ffi.Pointer<Utf8>>();
+    try {
+      final _ret = _giCallableInfoIterateReturnAttributes(
+        this.handle,
+        iterator.handle,
+        _out0,
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out1.value.cast(), free: true)!,
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Obtain information about a particular argument of this callable; this
   /// function is a variant of [method@GIRepository.CallableInfo.get_arg] designed
   /// for stack allocation.

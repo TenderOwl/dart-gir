@@ -61,7 +61,34 @@ extension FfiShapeExt on FfiShape {
 
 /// Return shape of the signal — affects the trampoline's return type and
 /// the user's callback return type.
-enum ReturnShape { void_, int, uint, bool_, double_ }
+///
+/// The shapes are the ones GLib's generic marshaller
+/// (`g_cclosure_marshal_generic`, the default for every signal registered
+/// without an explicit marshaller) carries: it maps a GValue onto an
+/// `ffi_type` and back. `value_to_ffi_type` and `value_from_ffi_type` in
+/// `gobject/gclosure.c` decide what passes:
+///
+/// | GValue type | ffi type | ownership of the returned value |
+/// |---|---|---|
+/// | `G_TYPE_BOOLEAN` | `sint` | — |
+/// | `G_TYPE_INT` / `G_TYPE_UINT` | `sint` / `uint` | — |
+/// | `G_TYPE_INT64` / `G_TYPE_UINT64` | `sint64` / `uint64` | — |
+/// | `G_TYPE_FLOAT` / `G_TYPE_DOUBLE` | `float` / `double` | — |
+/// | `G_TYPE_ENUM` | `sint` | — |
+/// | `G_TYPE_FLAGS` | `uint` | — |
+/// | `G_TYPE_STRING` | `pointer` | the GValue **takes** the string (`g_value_take_string`) — the callback's buffer is released with `g_free` |
+/// | `G_TYPE_OBJECT` | `pointer` | the GValue **takes** the reference (`g_value_take_object`) — the reference belongs to the GValue |
+enum ReturnShape {
+  void_,
+  int,
+  uint,
+  bool_,
+  double_,
+  string,
+  object,
+  flags,
+  enum_,
+}
 
 extension ReturnShapeExt on ReturnShape {
   String get code => switch (this) {
@@ -70,6 +97,10 @@ extension ReturnShapeExt on ReturnShape {
     ReturnShape.uint => 'u',
     ReturnShape.bool_ => 'b',
     ReturnShape.double_ => 'd',
+    ReturnShape.string => 's',
+    ReturnShape.object => 'o',
+    ReturnShape.flags => 'f',
+    ReturnShape.enum_ => 'e',
   };
 
   /// Dart-side return type for the trampoline function. `NativeCallable<T>`
@@ -82,6 +113,35 @@ extension ReturnShapeExt on ReturnShape {
     ReturnShape.uint => 'int',
     ReturnShape.bool_ => 'bool',
     ReturnShape.double_ => 'double',
+    ReturnShape.string => 'ffi.Pointer<Utf8>',
+    ReturnShape.object => 'ffi.Pointer<ffi.Void>',
+    ReturnShape.flags => 'int',
+    ReturnShape.enum_ => 'int',
+  };
+
+  /// The FFI type the trampoline returns.
+  String get ffiReturnType => switch (this) {
+    ReturnShape.void_ => 'ffi.Void',
+    ReturnShape.int => 'ffi.Int32',
+    ReturnShape.uint => 'ffi.Uint32',
+    ReturnShape.bool_ => 'ffi.Bool',
+    ReturnShape.double_ => 'ffi.Double',
+    ReturnShape.string => 'ffi.Pointer<Utf8>',
+    ReturnShape.object => 'ffi.Pointer<ffi.Void>',
+    ReturnShape.flags => 'ffi.Uint32',
+    ReturnShape.enum_ => 'ffi.Int32',
+  };
+
+  /// The value a `NativeCallable` hands back when the trampoline throws.
+  String get exceptionalReturn => switch (this) {
+    ReturnShape.void_ => '',
+    ReturnShape.int || ReturnShape.uint => ', exceptionalReturn: 0',
+    ReturnShape.bool_ => ', exceptionalReturn: false',
+    ReturnShape.double_ => ', exceptionalReturn: 0.0',
+    // A pointer return takes no exceptional return value: Dart's
+    // `NativeCallable` rejects one for a pointer-typed return.
+    ReturnShape.string || ReturnShape.object => '',
+    ReturnShape.flags || ReturnShape.enum_ => ', exceptionalReturn: 0',
   };
 }
 
@@ -95,6 +155,8 @@ class SignalSignature {
     required this.dartReturnType,
     required this.trampolineFfiType,
     required this.callbackType,
+    required this.callbackReturnType,
+    required this.returnMarshal,
     required this.argNames,
     required this.argMarshals,
   });
@@ -121,6 +183,21 @@ class SignalSignature {
   /// Dart type users write in their callback, e.g.
   /// `'void Function(GParamSpec pspec)'`.
   final String callbackType;
+
+  /// The return type the **user's** callback writes — `void`, `int`,
+  /// `bool`, `double`, `String?`, a wrapper class or a flags class.
+  ///
+  /// It differs from [dartReturnType], which is the trampoline's own
+  /// return type: a signal that returns an object hands the marshaller a
+  /// pointer, while the callback returns the wrapper.
+  final String callbackReturnType;
+
+  /// The expression that turns the callback's return value into the
+  /// trampoline's return value.
+  ///
+  /// The parameter is the name of the local holding the callback's
+  /// result.
+  final String Function(String resultVar) returnMarshal;
 
   /// Per-arg lowerCamel'd parameter names used in both the trampoline's
   /// FFI signature and the callback's Dart signature.
@@ -229,13 +306,26 @@ String? signalSkipReason(
     final p = sig.parameters[i];
     final shape = _ffiShapeFor(p.type, ctx, relativeTo: relativeTo);
     if (shape == null) {
-      return 'unsupported arg type at index $i: ${_typeName(p.type)}';
+      final m = ctx.resolve(p.type!, relativeTo: relativeTo);
+      final why = m.reason != null ? ' (${m.reason})' : '';
+      // An array with no C type is ambiguous: the GIR does not say
+      // whether the signal's argument is a `gchar **` (a strv) or a
+      // `gchar *` (a string), and the two are carried differently.
+      if (p.type!.array != null && p.type!.cType == null) {
+        return 'unsupported arg type at index $i: the GIR declares an array '
+            'with no C type — the signal\'s argument is either a '
+            '`gchar **` (a strv) or a `gchar *` (a string), and the GIR '
+            'does not say which';
+      }
+      return 'unsupported arg type at index $i: ${_typeName(p.type)}$why';
     }
   }
   // Return type check: classify the return shape.
-  final retShape = _returnShapeFor(sig.returnType);
+  final retShape = _returnShapeFor(sig.returnType, ctx, relativeTo: relativeTo);
   if (retShape == null) {
-    return 'unsupported return type: ${_typeName(sig.returnType)}';
+    return 'unsupported return type: ${_typeName(sig.returnType)} — '
+        'the signal marshaller carries bool, int, uint, double, string, '
+        'flags, enum and object returns';
   }
   return null;
 }
@@ -270,12 +360,74 @@ SignalBuckets buildSignalBuckets(
 
 // ─── shape classification ──────────────────────────────────────────────
 
+/// The shape of a signal argument the marshaller carries as a plain
+/// pointer (`G_TYPE_POINTER`).
+///
+/// Two GIR shapes land here:
+///
+/// * an array whose `c:type` is `gpointer` — `GApplication::open`'s
+///   `files` is a `GFile **` the GIR spells generically;
+/// * an array with a **name** — `GMountOperation::show-processes`'s
+///   `processes` is a `GArray *`.
+///
+/// The marshaller carries both as an opaque pointer, so the callback
+/// receives one.
+({FfiShape shape, String dartType, String marshal})? _pointerArg(
+  GirTypeRef? ref,
+  EmitContext ctx, {
+  GirNamespace? relativeTo,
+}) {
+  if (ref?.array == null) return null;
+  final array = ref!.array!;
+  if (ref.cType == 'gpointer') {
+    return (
+      shape: FfiShape.pointer,
+      dartType: 'ffi.Pointer<ffi.Void>',
+      marshal: r'$r',
+    );
+  }
+  final name = ref.name;
+  if (name != null && name.isNotEmpty) {
+    // The array's name says what the pointer refers to.
+    final m = ctx.resolve(GirTypeRef(name: name), relativeTo: relativeTo);
+    if (m.kind == TypeKind.record ||
+        m.kind == TypeKind.classType ||
+        m.kind == TypeKind.interface) {
+      return (
+        shape: FfiShape.pointer,
+        dartType: m.dartType,
+        marshal: '${m.dartType}.fromPointer(\$r)',
+      );
+    }
+  }
+  // An array with no C type whose element is a string: the signal's
+  // argument is a `GStrv` — a NULL-terminated `gchar **`. Every such
+  // argument in the corpus is registered with `G_TYPE_STRV`
+  // (`GMountOperation::ask-question`, `GMountOperation::show-processes`,
+  // `GDBusProxy::g-properties-changed` and
+  // `GDBusObjectManagerClient::interface-proxy-properties-changed`).
+  //
+  // The GValue owns the array, so the trampoline copies it and leaves it
+  // alone.
+  if (ref.cType == null && array.elementType.name == 'utf8') {
+    return (
+      shape: FfiShape.pointer,
+      dartType: 'List<String>?',
+      marshal: r'stringListFromNative($r.cast<ffi.Pointer<Utf8>>())',
+    );
+  }
+  return null;
+}
+
 FfiShape? _ffiShapeFor(
   GirTypeRef? ref,
   EmitContext ctx, {
   GirNamespace? relativeTo,
 }) {
   if (ref == null) return null;
+  if (_pointerArg(ref, ctx, relativeTo: relativeTo) != null) {
+    return FfiShape.pointer;
+  }
   final m = ctx.resolve(ref, relativeTo: relativeTo);
   switch (m.kind) {
     case TypeKind.classType:
@@ -298,6 +450,7 @@ FfiShape? _ffiShapeFor(
       // Other primitives are not used by signals today.
       return null;
     case TypeKind.string:
+    case TypeKind.countedString:
       return FfiShape.string;
     case TypeKind.pointer:
       return FfiShape.pointer;
@@ -306,6 +459,7 @@ FfiShape? _ffiShapeFor(
     case TypeKind.callback:
     case TypeKind.opaque:
     case TypeKind.stringList:
+    case TypeKind.stringArrayPointer:
     case TypeKind.unsupported:
       return null;
     case TypeKind.primitiveArray:
@@ -316,7 +470,11 @@ FfiShape? _ffiShapeFor(
   }
 }
 
-ReturnShape? _returnShapeFor(GirTypeRef? ref) {
+ReturnShape? _returnShapeFor(
+  GirTypeRef? ref,
+  EmitContext ctx, {
+  GirNamespace? relativeTo,
+}) {
   if (ref == null) return ReturnShape.void_;
   final name = ref.name;
   if (name == null || name == 'none' || name == 'void') {
@@ -344,6 +502,7 @@ ReturnShape? _returnShapeFor(GirTypeRef? ref) {
     return ReturnShape.uint;
   }
   if (c == 'gdouble' || c == 'gfloat') return ReturnShape.double_;
+  if (c == 'gchar*' || c == 'const gchar*') return ReturnShape.string;
   // Fallback to the name field.
   switch (name) {
     case 'gboolean':
@@ -359,8 +518,28 @@ ReturnShape? _returnShapeFor(GirTypeRef? ref) {
     case 'gdouble':
     case 'gfloat':
       return ReturnShape.double_;
+    case 'utf8':
+      return ReturnShape.string;
   }
-  return null;
+  // A class, an enumeration or a flags class: the marshaller carries it
+  // as a pointer, a signed int or an unsigned int.
+  final m = ctx.resolve(ref, relativeTo: relativeTo);
+  switch (m.kind) {
+    case TypeKind.classType:
+    case TypeKind.interface:
+      return ReturnShape.object;
+    case TypeKind.enumeration:
+      return ReturnShape.enum_;
+    case TypeKind.bitfield:
+      return ReturnShape.flags;
+    case TypeKind.record:
+    case TypeKind.union:
+      // A boxed value: the marshaller carries it as a pointer, but the
+      // wrapper cannot own it without a copy function of its own.
+      return null;
+    default:
+      return null;
+  }
 }
 
 // ─── signature construction ─────────────────────────────────────────────
@@ -378,23 +557,46 @@ SignalSignature _signatureFor(
     final p = sig.parameters[i];
     final shape = _ffiShapeFor(p.type, ctx, relativeTo: relativeTo)!;
     shapes.add(shape);
+    final pname = escapeKeyword(toLowerCamel(p.name));
+    argNames.add(pname);
+    // A pointer the marshaller carries opaquely: the callback receives
+    // the pointer itself, not a wrapper around it.
+    final pointer = _pointerArg(p.type, ctx, relativeTo: relativeTo);
+    if (pointer != null) {
+      argTypes.add(pointer.dartType);
+      argMarshals.add(pointer.marshal.replaceAll(r'$r', pname));
+      continue;
+    }
     final bridge = ctx
         .bridgeFor(p.type, nullable: p.nullable, relativeTo: relativeTo)
         .$1!;
     argTypes.add(bridge.wrapperType);
-    final pname = escapeKeyword(toLowerCamel(p.name));
-    argNames.add(pname);
     // Build the per-arg conversion: most primitives pass through; class
     // pointers wrap into the wrapper type; strings read + free.
     argMarshals.add(_argMarshal(pname, shape, bridge, p.nullable));
   }
-  final retShape = _returnShapeFor(sig.returnType)!;
+  final retShape = _returnShapeFor(
+    sig.returnType,
+    ctx,
+    relativeTo: relativeTo,
+  )!;
   final marshallerReturn = retShape;
+  // The type the **user's** callback returns, and the expression that
+  // turns it into the trampoline's return value.
+  final (callbackReturnType, returnMarshal) = _returnContract(
+    retShape,
+    sig.returnType,
+    ctx,
+    relativeTo: relativeTo,
+  );
   // Bucket id: short structured name derived from FFI shapes plus a
   // Dart-type suffix. The suffix is required — the registry is typed as
   // `Map<int, T>` where T is the Dart callback signature, so two signals
   // sharing FFI shape but having different wrapper types (e.g. two
   // distinct enum classes both encoded as `int32`) cannot share a bucket.
+  // The **return** type is part of the suffix for the same reason: two
+  // signals with the same arguments but different return classes carry a
+  // different callback type.
   final idParts = <String>[marshallerReturn.code, shapes.length.toString()];
   for (final s in shapes) {
     idParts.add(s.code);
@@ -404,9 +606,19 @@ SignalSignature _signatureFor(
   final cbArgs = <String>[
     for (var i = 0; i < shapes.length; i++) '${argTypes[i]} ${argNames[i]}',
   ];
-  final cbReturn = marshallerReturn.dartReturnType;
-  final callbackType = '$cbReturn Function(${cbArgs.join(', ')})';
-  final dartSuffix = argTypes
+  final callbackType = '$callbackReturnType Function(${cbArgs.join(', ')})';
+  // The return type joins the suffix only when the *class* matters — an
+  // object, a flags or an enum return. The FFI code already tells a
+  // string return from a void one, and a plain `int` from a `bool` is
+  // the same Dart type either way.
+  final returnSuffix = switch (marshallerReturn) {
+    ReturnShape.object ||
+    ReturnShape.flags ||
+    ReturnShape.enum_ => callbackReturnType,
+    _ => '',
+  };
+  final dartSuffix = [returnSuffix, ...argTypes]
+      .where((s) => s.isNotEmpty)
       .map((t) => t.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').toLowerCase())
       .join('_');
   final bucketId = dartSuffix.isEmpty
@@ -434,9 +646,52 @@ SignalSignature _signatureFor(
     dartReturnType: retShape.dartReturnType,
     trampolineFfiType: trampolineFfiType,
     callbackType: callbackType,
+    callbackReturnType: callbackReturnType,
+    returnMarshal: returnMarshal,
     argNames: argNames,
     argMarshals: argMarshals,
   );
+}
+
+/// The type the user's callback returns, and the expression that turns
+/// that value into the trampoline's return value.
+///
+/// The two differ wherever the marshaller takes ownership of what the
+/// callback produced:
+///
+/// * a **string** return: the GValue takes the buffer
+///   (`g_value_take_string`), so the trampoline hands over a
+///   **GLib-allocated** copy — the GValue releases it with `g_free`;
+/// * an **object** return: the GValue takes a reference
+///   (`g_value_take_object`), and `g_object_ref_sink` inside it gives
+///   the GValue a reference of its own. The trampoline therefore hands
+///   over the pointer unchanged.
+(String, String Function(String)) _returnContract(
+  ReturnShape shape,
+  GirTypeRef? ref,
+  EmitContext ctx, {
+  GirNamespace? relativeTo,
+}) {
+  switch (shape) {
+    case ReturnShape.void_:
+      return ('void', (_) => '');
+    case ReturnShape.int:
+    case ReturnShape.uint:
+      return ('int', (v) => v);
+    case ReturnShape.bool_:
+      return ('bool', (v) => v);
+    case ReturnShape.double_:
+      return ('double', (v) => v);
+    case ReturnShape.string:
+      return ('String?', (v) => '$v == null ? ffi.nullptr : gStrdupLike($v)');
+    case ReturnShape.object:
+      final m = ctx.resolve(ref!, relativeTo: relativeTo);
+      return ('${m.dartType}?', (v) => '$v?.handle ?? ffi.nullptr');
+    case ReturnShape.flags:
+    case ReturnShape.enum_:
+      final m = ctx.resolve(ref!, relativeTo: relativeTo);
+      return (m.dartType, (v) => '$v.value');
+  }
 }
 
 /// Builds the trampoline's expression for passing arg [pname] to the
@@ -493,13 +748,7 @@ String _stringLiteral(String value) {
 /// `NativeCallable<T>` type parameter. `NativeCallable<T>` requires
 /// `T` to be a Dart function type with all FFI native types
 /// (Dart 3.13.x behavior).
-String _ffiReturnType(ReturnShape shape) => switch (shape) {
-  ReturnShape.void_ => 'ffi.Void',
-  ReturnShape.int => 'ffi.Int32',
-  ReturnShape.uint => 'ffi.Uint32',
-  ReturnShape.bool_ => 'ffi.Bool',
-  ReturnShape.double_ => 'ffi.Double',
-};
+String _ffiReturnType(ReturnShape shape) => shape.ffiReturnType;
 
 /// Returns the inherited signals from [cls]'s parent chain, in declaration
 /// order (deepest ancestor first, then each closer ancestor). Signals

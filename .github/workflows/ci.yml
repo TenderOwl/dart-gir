@@ -241,6 +241,11 @@ jobs:
         working-directory: example/todo
         run: dart run build_runner build
 
+      # `packages/gir_gtk_templates` is in this list because its
+      # own-type suite needs a display: it builds a widget's template
+      # against a real GTK, which is the only way to prove that a
+      # template lives on the Dart class's *own* native type.
+      #
       # The suites run **serially** (`--concurrency=1`).
       #
       # Each test file runs in its own isolate, but the isolates share
@@ -268,8 +273,10 @@ jobs:
             packages/gir_ffi \
             packages/gir_glib \
             packages/gir_gobject \
+            packages/gir_graphene \
             packages/gir_gtk4 \
             packages/gir_gtk_source5 \
+            packages/gir_gtk_templates \
             example/gtk4_examples \
             example/notepad \
             example/todo

@@ -217,6 +217,41 @@ void main() {
       expect(src, contains('super.initTemplate();'));
     });
 
+    test('claims the class\'s own type when it declares one', () {
+      const input = CodegenInput(
+        className: 'Sample',
+        parentType: 'GtkBox',
+        xmlString: '<interface/>',
+        children: [],
+        callbacks: [],
+        signals: [],
+        hasOwnType: true,
+      );
+      final src = codegenMixin(input);
+      // The class registers a native type of its own, so the template
+      // belongs to *that* type — and the widget has to be an instance
+      // of it.
+      expect(src, contains('final ownType = Sample.GType;'));
+      expect(src, contains("requireOwnType(widget, ownType, 'Sample')"));
+      expect(src, contains('final widgetType = ownType;'));
+      // … and not on the type the instance happens to have.
+      expect(src, isNot(contains('final widgetType = widgetTypeOf(widget);')));
+    });
+
+    test('falls back to the instance\'s type when there is none', () {
+      const input = CodegenInput(
+        className: 'Sample',
+        parentType: 'GtkBox',
+        xmlString: '<interface/>',
+        children: [],
+        callbacks: [],
+        signals: [],
+      );
+      final src = codegenMixin(input);
+      expect(src, contains('final widgetType = widgetTypeOf(widget);'));
+      expect(src, isNot(contains('requireOwnType')));
+    });
+
     test('installs the template on the native class only once', () {
       const input = CodegenInput(
         className: 'Sample',

@@ -100,6 +100,78 @@ class GCredentials extends GObject {
       ).asFunction<ffi.Pointer<ffi.Void> Function()>();
   GCredentials() : this.rawFromPointer(_gCredentialsNew(), owned: true);
 
+  /// Tries to get the UNIX process identifier from @credentials. This
+  /// method is only available on UNIX platforms.
+  ///
+  /// This operation can fail if #GCredentials is not supported on the
+  /// OS or if the native credentials type does not contain information
+  /// about the UNIX process ID.
+  static final _gCredentialsGetUnixPid =
+      girGioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_credentials_get_unix_pid')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int getUnixPid() {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gCredentialsGetUnixPid(this.handle, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
+  /// Tries to get the UNIX user identifier from @credentials. This
+  /// method is only available on UNIX platforms.
+  ///
+  /// This operation can fail if #GCredentials is not supported on the
+  /// OS or if the native credentials type does not contain information
+  /// about the UNIX user.
+  ///
+  /// As the signedness of `uid_t` is not specified by POSIX, it is recommended to
+  /// check @error for failure rather than trying to check the return value,
+  /// particularly in language bindings.
+  static final _gCredentialsGetUnixUser =
+      girGioLookup<
+            ffi.NativeFunction<
+              ffi.Uint32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_credentials_get_unix_user')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int getUnixUser() {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gCredentialsGetUnixUser(this.handle, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return _ret;
+    } finally {
+      calloc.free(_error);
+    }
+  }
+
   /// Checks if @credentials and @other_credentials is the same user.
   ///
   /// This operation can fail if #GCredentials is not supported on the
@@ -159,6 +231,43 @@ class GCredentials extends GObject {
           >();
   void setNative(GCredentialsType nativeType, ffi.Pointer<ffi.Void> native) {
     _gCredentialsSetNative(this.handle, nativeType.value, native);
+  }
+
+  /// Tries to set the UNIX user identifier on @credentials. This method
+  /// is only available on UNIX platforms.
+  ///
+  /// This operation can fail if #GCredentials is not supported on the
+  /// OS or if the native credentials type does not contain information
+  /// about the UNIX user. It can also fail if the OS does not allow the
+  /// use of "spoofed" credentials.
+  static final _gCredentialsSetUnixUser =
+      girGioLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_credentials_set_unix_user')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool setUnixUser(int uid) {
+    final _error = calloc<ffi.Pointer<ffi.Void>>();
+    try {
+      final _ret = _gCredentialsSetUnixUser(this.handle, uid, _error);
+      if (_error.value != ffi.nullptr) {
+        throw GlibException.fromError(_error.value);
+      }
+      return (_ret) != 0;
+    } finally {
+      calloc.free(_error);
+    }
   }
 
   /// The notify signal is emitted on an object when one of its properties has

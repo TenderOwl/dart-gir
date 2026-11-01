@@ -662,6 +662,27 @@ final class GrapheneVec3 implements ffi.Finalizable {
     );
   }
 
+  /// Copies the components of a #graphene_vec3_t into the given array.
+  static final _grapheneVec3ToFloat =
+      girGrapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+            >
+          >('graphene_vec3_to_float')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+          >();
+  List<double> toFloat() {
+    final _out0 = calloc<ffi.Float>(3);
+    try {
+      _grapheneVec3ToFloat(this.handle, _out0);
+      final _list_out0 = <double>[for (var i = 0; i < 3; i++) _out0[i]];
+      return _list_out0;
+    } finally {
+      calloc.free(_out0);
+    }
+  }
+
   /// Provides a constant pointer to a vector with three components,
   /// all sets to 1.
   static final _grapheneVec3One =

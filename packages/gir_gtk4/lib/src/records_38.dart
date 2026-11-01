@@ -141,8 +141,11 @@ class GtkFileChooser implements ffi.Finalizable {
     List<String?>? options,
     List<String?>? optionLabels,
   ]) {
-    withNativeStringList(options, (nativeOptions) {
-      withNativeStringList(optionLabels, (nativeOptionLabels) {
+    withNativeStringList(options, (nativeOptions, nativeOptionsLen) {
+      withNativeStringList(optionLabels, (
+        nativeOptionLabels,
+        nativeOptionLabelsLen,
+      ) {
         withNativeString(id, (nativeId) {
           withNativeString(label, (nativeLabel) {
             _gtkFileChooserAddChoice(

@@ -43,4 +43,125 @@ class GtkCClosureExpression extends GtkExpression {
       girGtk4Lookup<ffi.NativeFunction<ffi.Size Function()>>(
         'gtk_cclosure_expression_get_type',
       ).asFunction<int Function()>()();
+
+  /// Creates a `GtkExpression` that calls `callback_func` when it is evaluated.
+  ///
+  /// This function is a variant of [ctor@Gtk.ClosureExpression.new] that
+  /// creates a `GClosure` by calling g_cclosure_new() with the given
+  /// `callback_func`, `user_data` and `user_destroy`.
+  static final _gtkCclosureExpressionNew =
+      girGtk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Size,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Uint32,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Uint32,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+              )
+            >
+          >('gtk_cclosure_expression_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Uint32,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+            )
+          >();
+  factory GtkCClosureExpression(
+    int valueType,
+    void Function(
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      int,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )?
+    marshal,
+    int nParams,
+    ffi.Pointer<ffi.Void> params,
+    void Function() callbackFunc, [
+    ffi.Pointer<ffi.Void>? userData,
+    void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)? userDestroy,
+  ]) {
+    final _nc2 = marshal == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Uint32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >.isolateLocal(marshal);
+    final _nc5 = ffi.NativeCallable<ffi.Void Function()>.isolateLocal(
+      callbackFunc,
+    );
+    final _nc7 = userDestroy == null
+        ? null
+        : ffi.NativeCallable<
+            ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >.isolateLocal(userDestroy);
+    try {
+      final _ret = _gtkCclosureExpressionNew(
+        valueType,
+        _nc2?.nativeFunction ?? ffi.nullptr,
+        nParams,
+        params,
+        _nc5.nativeFunction,
+        userData ?? ffi.nullptr,
+        _nc7?.nativeFunction ?? ffi.nullptr,
+      );
+      return GtkCClosureExpression.fromPointer(_ret, owned: true);
+    } finally {
+      _nc2?.close();
+      _nc5.close();
+      _nc7?.close();
+    }
+  }
 }

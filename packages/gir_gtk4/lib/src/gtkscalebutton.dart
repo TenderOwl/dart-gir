@@ -114,7 +114,7 @@ class GtkScaleButton extends GtkWidget
     double step, [
     List<String?>? icons,
   ]) {
-    return withNativeStringList(icons, (nativeIcons) {
+    return withNativeStringList(icons, (nativeIcons, nativeIconsLen) {
       return GtkScaleButton.fromPointer(
         gObjectRefSink(_gtkScaleButtonNew(min, max, step, nativeIcons)),
         owned: true,
@@ -248,7 +248,7 @@ class GtkScaleButton extends GtkWidget
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setIcons([List<String?>? icons]) {
-    withNativeStringList(icons, (nativeIcons) {
+    withNativeStringList(icons, (nativeIcons, nativeIconsLen) {
       _gtkScaleButtonSetIcons(this.handle, nativeIcons);
     });
   }

@@ -871,6 +871,20 @@ class AdwTabView extends GtkWidget
     return _connectSignal_b_1_o_adwtabpage(this.handle, 'close-page', callback);
   }
 
+  /// Emitted when a tab should be transferred into a new window.
+  ///
+  /// This can happen after a tab has been dropped on desktop.
+  ///
+  /// The signal handler is expected to create a new window, position it as
+  /// needed and return its `AdwTabView` that the page will be transferred into.
+  int onCreateWindow(AdwTabView? Function() callback) {
+    return _connectSignal_o_0_adwtabview(
+      this.handle,
+      'create-window',
+      callback,
+    );
+  }
+
   /// Emitted after the indicator icon on @page has been activated.
   ///
   /// See [property@TabPage:indicator-icon] and

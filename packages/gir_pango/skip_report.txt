@@ -1,62 +1,54 @@
 # Skip report for package gir_pango (Pango 1.0)
-Total skipped: 65
+Total skipped: 92
 
 ## By category
-callable: 52
+callable: 40
+virtual: 39
 method: 5
 property: 4
 alias: 3
 renamed: 1
 
 ## By reason
-unsupported out parameter attrs (ffi.Pointer<ffi.Void>): 6
+virtual method; the class struct layout is not in the GIR: 39
+parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array: 6
 name collision: 5
-inout parameter pos: 4
+parameter pos: inout parameter of a pointer to a pointer: the callee allocates the pointee: 4
 aliases are resolved to their target: 3
-unsupported out parameter families (ffi.Pointer<ffi.Void>): 2
-unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>): 2
-missing getter get_item-type: 2
 missing getter get_n-items: 2
-inout parameter rect: 2
-return: array of TypeKind.record (later phase): 2
-moved to AttrType.register: 1
+parameter logical_widths: the array carries no element count: 2
+return: unbound array of TypeKind.record: the signature carries no length: 2
+missing getter get_item-type: 2
 moved to BidiType.for_unichar: 1
-inout parameter inclusive: 1
+moved to AttrType.register: 1
+moved to AttrFontDesc.new: 1
 moved to FontDescription.from_string: 1
 moved to Gravity.get_for_matrix: 1
-moved to AttrFontDesc.new: 1
+moved to Gravity.get_for_script: 1
 moved to Gravity.get_for_script_and_width: 1
 moved to Gravity.to_rotation: 1
 moved to Language.from_string: 1
 moved to Language.get_default: 1
 moved to Language.get_preferred: 1
 moved to LayoutDeserializeError.quark: 1
-inout parameter pbase_dir: 1
-inout parameter thickness: 1
 moved to AttrFontFeatures.new: 1
 moved to Script.for_unichar: 1
-moved to Script.get_sample_language: 1
-moved to TabArray.from_string: 1
 moved to AttrLanguage.new: 1
+moved to TabArray.from_string: 1
 moved to AttrList.from_string: 1
-parameter log_attrs: array of TypeKind.record (later phase): 1
-moved to AttrType.get_name: 1
-unsupported out parameter ranges (ffi.Pointer<ffi.Int32>): 1
-inout parameter dx: 1
-moved to AttrSize.new_absolute: 1
-inout parameter x: 1
-unsupported out parameter locations (ffi.Pointer<ffi.Int32>): 1
-moved to Gravity.get_for_script: 1
-override-incompatible with ancestor; renamed to refCoverage: 1
-unsupported out parameter features (ffi.Pointer<ffi.Void>): 1
-unsupported out parameter sizes (ffi.Pointer<ffi.Int32>): 1
-unsupported out parameter faces (ffi.Pointer<ffi.Void>): 1
-moved to AttrShape.new_with_data: 1
 moved to AttrShape.new: 1
+parameter log_attrs: unbound array of TypeKind.record: the signature carries no length: 1
+moved to AttrShape.new_with_data: 1
+parameter locations: the array carries no element count: 1
+override-incompatible with ancestor; renamed to refCoverage: 1
 moved to AttrSize.new: 1
+parameter features: array of HarfBuzz.feature_t: type HarfBuzz.feature_t is in non-generated package gir_harf_buzz: 1
+moved to AttrSize.new_absolute: 1
+moved to AttrType.get_name: 1
+moved to Script.get_sample_language: 1
 
-## First 50 entries
-[callable] Pango.attrBreak — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
+## All 92 entries
+[callable] Pango.attrBreak — parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array
 [callable] Pango.attrFontDescNew — moved to AttrFontDesc.new
 [callable] Pango.attrFontFeaturesNew — moved to AttrFontFeatures.new
 [callable] Pango.attrLanguageNew — moved to AttrLanguage.new
@@ -68,11 +60,10 @@ moved to AttrSize.new: 1
 [callable] Pango.attrTypeGetName — moved to AttrType.get_name
 [callable] Pango.attrTypeRegister — moved to AttrType.register
 [callable] Pango.bidiTypeForUnichar — moved to BidiType.for_unichar
-[callable] Pango.break_ — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
-[callable] Pango.defaultBreak — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
-[callable] Pango.extentsToPixels — inout parameter inclusive
+[callable] Pango.break_ — parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array
+[callable] Pango.defaultBreak — parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array
 [callable] Pango.fontDescriptionFromString — moved to FontDescription.from_string
-[callable] Pango.getLogAttrs — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
+[callable] Pango.getLogAttrs — parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array
 [callable] Pango.gravityGetForMatrix — moved to Gravity.get_for_matrix
 [callable] Pango.gravityGetForScript — moved to Gravity.get_for_script
 [callable] Pango.gravityGetForScriptAndWidth — moved to Gravity.get_for_script_and_width
@@ -81,28 +72,71 @@ moved to AttrSize.new: 1
 [callable] Pango.languageGetDefault — moved to Language.get_default
 [callable] Pango.languageGetPreferred — moved to Language.get_preferred
 [callable] Pango.layoutDeserializeErrorQuark — moved to LayoutDeserializeError.quark
-[callable] Pango.log2visGetEmbeddingLevels — inout parameter pbase_dir
-[callable] Pango.quantizeLineGeometry — inout parameter thickness
-[callable] Pango.scanInt — inout parameter pos
-[callable] Pango.scanString — inout parameter pos
-[callable] Pango.scanWord — inout parameter pos
+[callable] Pango.scanInt — parameter pos: inout parameter of a pointer to a pointer: the callee allocates the pointee
+[callable] Pango.scanString — parameter pos: inout parameter of a pointer to a pointer: the callee allocates the pointee
+[callable] Pango.scanWord — parameter pos: inout parameter of a pointer to a pointer: the callee allocates the pointee
 [callable] Pango.scriptForUnichar — moved to Script.for_unichar
 [callable] Pango.scriptGetSampleLanguage — moved to Script.get_sample_language
-[callable] Pango.skipSpace — inout parameter pos
+[callable] Pango.skipSpace — parameter pos: inout parameter of a pointer to a pointer: the callee allocates the pointee
 [callable] Pango.tabArrayFromString — moved to TabArray.from_string
-[callable] Pango.tailorBreak — unsupported out parameter attrs (ffi.Pointer<ffi.Void>)
+[callable] Pango.tailorBreak — parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array
 [method] PangoAttrList.toString — name collision
 [method] PangoColor.toString — name collision
 [method] PangoFontDescription.toString — name collision
-[callable] PangoGlyphItem.getLogicalWidths — unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>)
-[callable] PangoGlyphItem.letterSpace — parameter log_attrs: array of TypeKind.record (later phase)
-[callable] PangoGlyphString.getLogicalWidths — unsupported out parameter logical_widths (ffi.Pointer<ffi.Int32>)
+[callable] PangoGlyphItem.getLogicalWidths — parameter logical_widths: the array carries no element count
+[callable] PangoGlyphItem.letterSpace — parameter log_attrs: unbound array of TypeKind.record: the signature carries no length
+[callable] PangoGlyphString.getLogicalWidths — parameter logical_widths: the array carries no element count
 [method] PangoLanguage.toString — name collision
-[callable] PangoLanguage.getPreferred — return: array of TypeKind.record (later phase)
-[callable] PangoLayoutLine.getXRanges — unsupported out parameter ranges (ffi.Pointer<ffi.Int32>)
-[callable] PangoMatrix.transformDistance — inout parameter dx
-[callable] PangoMatrix.transformPixelRectangle — inout parameter rect
-[callable] PangoMatrix.transformPoint — inout parameter x
-[callable] PangoMatrix.transformRectangle — inout parameter rect
-[callable] PangoTabArray.getTabs — unsupported out parameter locations (ffi.Pointer<ffi.Int32>)
+[callable] PangoLanguage.getPreferred — return: unbound array of TypeKind.record: the signature carries no length
+[callable] PangoTabArray.getTabs — parameter locations: the array carries no element count
 [method] PangoTabArray.toString — name collision
+[renamed] PangoCoverage.ref — override-incompatible with ancestor; renamed to refCoverage
+[virtual] PangoFont.create_hb_font — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.describe — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.describe_absolute — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.get_coverage — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.get_features — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.get_font_map — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.get_glyph_extents — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFont.get_metrics — virtual method; the class struct layout is not in the GIR
+[callable] PangoFont.getFeatures — parameter features: array of HarfBuzz.feature_t: type HarfBuzz.feature_t is in non-generated package gir_harf_buzz
+[callable] PangoFont.getLanguages — return: unbound array of TypeKind.record: the signature carries no length
+[virtual] PangoFontFace.describe — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFace.get_face_name — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFace.get_family — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFace.is_synthesized — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFace.list_sizes — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFamily.get_face — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFamily.get_name — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFamily.is_monospace — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFamily.is_variable — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontFamily.list_faces — virtual method; the class struct layout is not in the GIR
+[property] PangoFontFamily.item-type — missing getter get_item-type
+[property] PangoFontFamily.n-items — missing getter get_n-items
+[virtual] PangoFontMap.changed — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontMap.get_family — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontMap.get_serial — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontMap.list_families — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontMap.load_font — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontMap.load_fontset — virtual method; the class struct layout is not in the GIR
+[property] PangoFontMap.item-type — missing getter get_item-type
+[property] PangoFontMap.n-items — missing getter get_n-items
+[virtual] PangoFontset.foreach — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontset.get_font — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontset.get_language — virtual method; the class struct layout is not in the GIR
+[virtual] PangoFontset.get_metrics — virtual method; the class struct layout is not in the GIR
+[callable] PangoLayout.getLogAttrs — parameter attrs: array of LogAttr: the layout of the element is not emitted, so the elements cannot be read out of the array
+[virtual] PangoRenderer.begin — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_error_underline — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_glyph — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_glyph_item — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_glyphs — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_rectangle — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_shape — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.draw_trapezoid — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.end — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.part_changed — virtual method; the class struct layout is not in the GIR
+[virtual] PangoRenderer.prepare_run — virtual method; the class struct layout is not in the GIR
+[alias] Glyph — aliases are resolved to their target
+[alias] GlyphUnit — aliases are resolved to their target
+[alias] LayoutRun — aliases are resolved to their target

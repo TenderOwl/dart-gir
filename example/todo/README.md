@@ -62,6 +62,48 @@ wrapper cache in `package:gir_ffi` maps the native pointer back to it
 The design is in
 [docs/dart-gobjects.md](../../docs/dart-gobjects.md).
 
+## The row's own native type
+
+`lib/task_row.dart` registers a GType of its own:
+
+```dart
+class TaskRow extends GtkBox with _$TaskRowTemplate {
+  static int get GType => registerDartType('TaskRow', GtkBox.GType);
+
+  TaskRow()
+      : super.rawFromPointer(
+          newDartInstance(
+            GType,
+            constructProperties: {
+              'orientation': GtkOrientation.horizontal.value,
+            },
+          ),
+          owned: true,
+        ) {
+    initTemplate();
+  }
+}
+```
+
+Two reasons.
+
+**The template needs a class of its own.** GTK keeps a widget's
+template on the *native class* and allows exactly one per class. A Dart
+class without a GType of its own shares its parent's class — so two
+Dart rows extending `GtkBox` could not both have a template. The row
+registers `TaskRow`, and the template lives on it.
+
+**The instance has to be one.** `newDartInstance` creates the instance
+of the registered type, with the row's construct property — the
+orientation. GLib refuses to set a construct-only property after the
+fact, so it has to be handed over while the object is constructed. The
+generated mixin checks that the widget really is an instance of the
+type, and says what to do when it is not:
+
+```
+gir_gtk_templates: `TaskRow` was created as `GtkBox`, not as `TaskRow`.
+```
+
 ## The templates
 
 The window's template lives in `data/window.ui`; `lib/todo_window.dart`
@@ -89,10 +131,11 @@ The mixin:
 
 Two details of the XML are worth knowing:
 
-- The `<template class="…" parent="…">` attributes are advisory. A
-  Dart subclass has no `GType` of its own, so the mixin rewrites
-  them to the instance's real native type before GTK sees them —
-  GTK checks both and rejects a mismatch.
+- The `<template class="…" parent="…">` attributes are advisory. The
+  mixin rewrites them to the instance's real native type before GTK
+  sees them — GTK checks both and rejects a mismatch. For the window
+  that is `GtkApplicationWindow`, the parent type it inherits; for the
+  row it is `TaskRow`, the type the row registers for itself.
 - The `<signal>` element is read by the *builder* (it tells the
   codegen what to wire) and removed before GTK sees the XML:
   GtkBuilder would resolve the handler as a C symbol, which a Dart

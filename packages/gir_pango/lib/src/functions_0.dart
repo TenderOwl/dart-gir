@@ -458,6 +458,36 @@ PangoAttribute attrWordNew() {
   return PangoAttribute.fromPointer(_pangoAttrWordNew(), owned: true);
 }
 
+/// Converts extents from Pango units to device units.
+///
+/// The conversion is done by dividing by the %PANGO_SCALE factor and
+/// performing rounding.
+///
+/// The @inclusive rectangle is converted by flooring the x/y coordinates
+/// and extending width/height, such that the final rectangle completely
+/// includes the original rectangle.
+///
+/// The @nearest rectangle is converted by rounding the coordinates
+/// of the rectangle to the nearest device unit (pixel).
+///
+/// The rule to which argument to use is: if you want the resulting device-space
+/// rectangle to completely contain the original rectangle, pass it in as
+/// @inclusive. If you want two touching-but-not-overlapping rectangles stay
+/// touching-but-not-overlapping after rounding to device units, pass them in
+/// as @nearest.
+final _pangoExtentsToPixels =
+    girPangoLookup<
+          ffi.NativeFunction<
+            ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >
+        >('pango_extents_to_pixels')
+        .asFunction<
+          void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+        >();
+void extentsToPixels(PangoRectangle inclusive, PangoRectangle nearest) {
+  _pangoExtentsToPixels(inclusive.handle, nearest.handle);
+}
+
 /// Searches a string the first character that has a strong
 /// direction, according to the Unicode bidirectional algorithm.
 final _pangoFindBaseDir =
@@ -672,97 +702,47 @@ GList itemizeWithBaseDir(
   });
 }
 
-/// Finishes parsing markup.
+/// Return the bidirectional embedding levels of the input paragraph.
 ///
-/// After feeding a Pango markup parser some data with [method@GLib.MarkupParseContext.parse],
-/// use this function to get the list of attributes and text out of the
-/// markup. This function will not free @context, use [method@GLib.MarkupParseContext.free]
-/// to do so.
-final _pangoMarkupParserFinish =
+/// The bidirectional embedding levels are defined by the [Unicode Bidirectional
+/// Algorithm](http://www.unicode.org/reports/tr9/).
+///
+/// If the input base direction is a weak direction, the direction of the
+/// characters in the text will determine the final resolved direction.
+final _pangoLog2visGetEmbeddingLevels =
     girPangoLookup<
           ffi.NativeFunction<
-            ffi.Int32 Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
-              ffi.Pointer<ffi.Pointer<Utf8>>,
-              ffi.Pointer<ffi.Uint32>,
-              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            ffi.Pointer<ffi.Uint8> Function(
+              ffi.Pointer<Utf8>,
+              ffi.Int32,
+              ffi.Pointer<ffi.Int32>,
             )
           >
-        >('pango_markup_parser_finish')
+        >('pango_log2vis_get_embedding_levels')
         .asFunction<
-          int Function(
-            ffi.Pointer<ffi.Void>,
-            ffi.Pointer<ffi.Pointer<ffi.Void>>,
-            ffi.Pointer<ffi.Pointer<Utf8>>,
-            ffi.Pointer<ffi.Uint32>,
-            ffi.Pointer<ffi.Pointer<ffi.Void>>,
+          ffi.Pointer<ffi.Uint8> Function(
+            ffi.Pointer<Utf8>,
+            int,
+            ffi.Pointer<ffi.Int32>,
           )
         >();
-(bool, PangoAttrList?, String?, int) markupParserFinish(
-  GMarkupParseContext context,
+(ffi.Pointer<ffi.Uint8>, PangoDirection) log2visGetEmbeddingLevels(
+  String text,
+  int length,
+  PangoDirection pbaseDir,
 ) {
-  final _out0 = calloc<ffi.Pointer<ffi.Void>>();
-  final _out1 = malloc<ffi.Pointer<Utf8>>();
-  final _out2 = malloc<ffi.Uint32>();
-  final _error = calloc<ffi.Pointer<ffi.Void>>();
-  try {
-    final _ret = _pangoMarkupParserFinish(
-      context.handle,
-      _out0,
-      _out1,
-      _out2,
-      _error,
-    );
-    if (_error.value != ffi.nullptr) {
-      throw GlibException.fromError(_error.value);
+  return withNativeString(text, (nativeText) {
+    final _out0 = malloc<ffi.Int32>();
+    _out0.value = pbaseDir.value;
+    try {
+      final _ret = _pangoLog2visGetEmbeddingLevels(
+        nativeText.cast<Utf8>(),
+        length,
+        _out0,
+      );
+      return (_ret, PangoDirection.fromValue(_out0.value));
+    } finally {
+      malloc.free(_out0);
     }
-    return (
-      (_ret) != 0,
-      (_out0.value.cast<ffi.Void>()) == ffi.nullptr
-          ? null
-          : PangoAttrList.fromPointer(
-              _out0.value.cast<ffi.Void>(),
-              owned: true,
-            ),
-      stringFromNative(_out1.value.cast(), free: true),
-      _out2.value,
-    );
-  } finally {
-    malloc.free(_out0);
-    malloc.free(_out1);
-    malloc.free(_out2);
-    calloc.free(_error);
-  }
-}
-
-/// Incrementally parses marked-up text to create a plain-text string
-/// and an attribute list.
-///
-/// See the [Pango Markup](pango_markup.html) docs for details about the
-/// supported markup.
-///
-/// If @accel_marker is nonzero, the given character will mark the
-/// character following it as an accelerator. For example, @accel_marker
-/// might be an ampersand or underscore. All characters marked
-/// as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
-/// and the first character so marked will be returned in @accel_char,
-/// when calling [func@markup_parser_finish]. Two @accel_marker characters
-/// following each other produce a single literal @accel_marker character.
-///
-/// To feed markup to the parser, use [method@GLib.MarkupParseContext.parse]
-/// on the returned [struct@GLib.MarkupParseContext]. When done with feeding markup
-/// to the parser, use [func@markup_parser_finish] to get the data out
-/// of it, and then use [method@GLib.MarkupParseContext.free] to free it.
-///
-/// This function is designed for applications that read Pango markup
-/// from streams. To simply parse a string containing Pango markup,
-/// the [func@Pango.parse_markup] API is recommended instead.
-final _pangoMarkupParserNew =
-    girPangoLookup<
-          ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Uint32)>
-        >('pango_markup_parser_new')
-        .asFunction<ffi.Pointer<ffi.Void> Function(int)>();
-GMarkupParseContext markupParserNew(int accelMarker) {
-  return GMarkupParseContext.fromPointer(_pangoMarkupParserNew(accelMarker));
+  });
 }

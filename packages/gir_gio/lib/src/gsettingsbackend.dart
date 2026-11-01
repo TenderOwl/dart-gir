@@ -202,7 +202,7 @@ class GSettingsBackend extends GObject {
     List<String?>? items,
     ffi.Pointer<ffi.Void>? originTag,
   ]) {
-    withNativeStringList(items, (nativeItems) {
+    withNativeStringList(items, (nativeItems, nativeItemsLen) {
       withNativeString(path, (nativePath) {
         _gSettingsBackendKeysChanged(
           this.handle,

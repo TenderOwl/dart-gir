@@ -61,6 +61,7 @@ library;
 
 import '../gir/gir.dart';
 import '../resolve/naming.dart';
+import '../resolve/types.dart';
 import 'context.dart';
 
 class AsyncCallbackEmitter {
@@ -268,6 +269,22 @@ class AsyncCallbackEmitter {
         direction: p.direction,
       );
       if (bridge == null) return null;
+      if (TypeResolver.stringCountBinding(p, m.parameters) != null) {
+        // A string array or a counted string whose length a sibling
+        // parameter carries: the ordinary wrapper absorbs the count and
+        // derives it from the value the caller passed. The async
+        // overload cannot do that — its parameter list is built from the
+        // GIR, not from the ordinary wrapper's — so the overload is
+        // skipped rather than emitted with a count the caller would have
+        // to keep in sync by hand.
+        ctx.report.skip(
+          'method',
+          '$className.$methodName',
+          'parameter ${p.name}: the async overload cannot supply the '
+              'array length',
+        );
+        return null;
+      }
       if (p.direction == GirParameterDirection.out) {
         // The native call still takes the OUT argument. Dropping it would
         // shift every argument after it into the wrong slot — the C ABI
@@ -404,7 +421,7 @@ class AsyncCallbackEmitter {
           final p = listIns[i];
           final paramName = toLowerCamel(p.name);
           body =
-              '    withNativeStringList($paramName, ($paramName) {\n  $body\n});';
+              '    withNativeStringList($paramName, ($paramName, ${paramName}Len) {\n  $body\n});';
         }
         b.writeln(body);
       } else {
@@ -432,7 +449,8 @@ class AsyncCallbackEmitter {
       for (var i = listIns.length - 1; i >= 0; i--) {
         final p = listIns[i];
         final paramName = toLowerCamel(p.name);
-        body = 'withNativeStringList($paramName, ($paramName) {\n  $body\n});';
+        body =
+            'withNativeStringList($paramName, ($paramName, ${paramName}Len) {\n  $body\n});';
       }
       b.writeln('  $body');
     } else {
@@ -493,6 +511,15 @@ class AsyncCallbackEmitter {
           'function',
           '$ownerName.$methodName',
           'parameter ${p.name}: $reason',
+        );
+        return null;
+      }
+      if (TypeResolver.stringCountBinding(p, fn.parameters) != null) {
+        ctx.report.skip(
+          'function',
+          '$ownerName.$methodName',
+          'parameter ${p.name}: the async overload cannot supply the '
+              'array length',
         );
         return null;
       }
@@ -649,7 +676,7 @@ class AsyncCallbackEmitter {
           final p = listIns[i];
           final paramName = toLowerCamel(p.name);
           body =
-              '    withNativeStringList($paramName, ($paramName) {\n'
+              '    withNativeStringList($paramName, ($paramName, ${paramName}Len) {\n'
               '  $body\n});';
         }
         b.writeln(body);
@@ -677,7 +704,8 @@ class AsyncCallbackEmitter {
       for (var i = listIns.length - 1; i >= 0; i--) {
         final p = listIns[i];
         final paramName = toLowerCamel(p.name);
-        body = 'withNativeStringList($paramName, ($paramName) {\n  $body\n});';
+        body =
+            'withNativeStringList($paramName, ($paramName, ${paramName}Len) {\n  $body\n});';
       }
       b.writeln('  $body');
     } else {

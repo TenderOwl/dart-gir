@@ -393,6 +393,46 @@ final class GdkTextureDownloader implements ffi.Finalizable {
     }
   }
 
+  /// Downloads the given texture pixels into a `GBytes`. The offsets and
+  /// strides of the resulting buffer will be stored in the respective values.
+  ///
+  /// If the format does have less than 4 planes, the remaining offsets and strides will be
+  /// set to `0`.
+  static final _gdkTextureDownloaderDownloadBytesWithPlanes =
+      girGdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gdk_texture_downloader_download_bytes_with_planes')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  (GBytes, List<int>, List<int>) downloadBytesWithPlanes() {
+    final _out0 = calloc<ffi.Size>(4);
+    final _out1 = calloc<ffi.Size>(4);
+    try {
+      final _ret = _gdkTextureDownloaderDownloadBytesWithPlanes(
+        this.handle,
+        _out0,
+        _out1,
+      );
+      final _list_out0 = <int>[for (var i = 0; i < 4; i++) _out0[i]];
+      final _list_out1 = <int>[for (var i = 0; i < 4; i++) _out1[i]];
+      return (GBytes.fromPointer(_ret, owned: true), _list_out0, _list_out1);
+    } finally {
+      calloc.free(_out0);
+      calloc.free(_out1);
+    }
+  }
+
   /// Downloads the @texture into local memory.
   ///
   /// This function cannot be used with a multiplanar format.
@@ -510,44 +550,5 @@ final class GdkTextureDownloader implements ffi.Finalizable {
           >();
   void setTexture(GdkTexture texture) {
     _gdkTextureDownloaderSetTexture(this.handle, texture.handle);
-  }
-}
-
-/// Stores a single event in a motion history.
-///
-/// To check whether an axis is present, check whether the corresponding
-/// flag from the [flags@Gdk.AxisFlags] enumeration is set in the @flags
-/// To access individual axis values, use the values of the values of
-/// the [enum@Gdk.AxisUse] enumerations as indices.
-final class GdkTimeCoord {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory GdkTimeCoord.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<GdkTimeCoord>(handle.address);
-    if (cached != null) {
-      return cached;
-    }
-    return GdkTimeCoord.rawFromPointer(handle, owned: owned);
-  }
-  GdkTimeCoord.rawFromPointer(this.handle, {this.owned = false}) {
-    registerDartObject(this, handle.address);
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  bool owned;
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
   }
 }

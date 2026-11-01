@@ -157,6 +157,43 @@ void main() {
       }
     });
 
+    test('the on-disk own-type fixture resolves with no errors', () async {
+      final root = await packageRoot();
+      final libraryPath = p.join(
+        root.path,
+        'test',
+        'fixtures',
+        'own_type_window.dart',
+      );
+      final partPath = p.join(
+        root.path,
+        'test',
+        'fixtures',
+        'own_type_window.g.dart',
+      );
+
+      final collection = AnalysisContextCollection(
+        includedPaths: <String>[root.path],
+      );
+      try {
+        final errors = await diagnosticsForLibrary(
+          collection,
+          libraryPath,
+          partPath,
+        );
+        expect(
+          errors,
+          isEmpty,
+          reason:
+              'the generated mixin for a class with a native type of its '
+              'own must resolve cleanly, but the analyzer reported:\n'
+              '${formatDiagnostics(errors)}',
+        );
+      } finally {
+        collection.dispose();
+      }
+    });
+
     test(
       'the generated part file declares itself a part of the library',
       () async {

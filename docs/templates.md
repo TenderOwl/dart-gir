@@ -170,8 +170,15 @@ BuilderPlan
     ├── parentType     — simple name of the `extends` clause (default: GtkWidget)
     ├── templateSource — GtkTemplateXml | GtkTemplateFile
     ├── children       — List<WidgetBinding>  (fieldName → childName)
-    └── callbacks      — List<CallbackBinding> (methodName → callbackName)
+    ├── callbacks      — List<CallbackBinding> (methodName → callbackName)
+    ├── methodParameters — Map<String, List<String>> (method → parameter names)
+    └── hasOwnType     — whether the class declares a `GType` of its own
 ```
+
+`hasOwnType` is the scanner's answer to "does this class register a
+native type?". It looks for a static member called `GType` — a getter or
+a field — on the class itself. A class that inherits one does not count:
+the type has to be *its*.
 
 The scanner walks only **top-level** classes. A `@GtkTemplate` class
 nested inside another class is not picked up.
@@ -395,7 +402,9 @@ net, not the supported way to use a template.
 
 `initTemplate()`, run at most once per instance:
 
-1. `widgetTypeOf(widget)` — the instance's native `GType`.
+1. `widgetTypeOf(widget)` — the instance's native `GType`. When the class
+   declares a type of its own, the mixin uses *that* type instead and
+   checks that the widget really is an instance of it (see §5.1).
 2. `getWidgetClass(widget)` — walks `handle` → `GTypeInstance*` → type
    name → `GType` → `TypeClass*` → `GtkWidgetClass.fromPointer`. Returns
    `null` if the lookup fails; the mixin throws a `StateError` in that
@@ -460,6 +469,71 @@ XML reaches GTK:
    and skip the connection. The `<signal>` element is still what the
    **builder** reads to generate the trampoline; it is only removed
    from the copy of the XML that is handed to GTK.
+
+### 5.1 A template on the Dart class's own type
+
+GTK stores a widget's template on the **native class** and allows exactly
+one per class (`gtk_widget_class_set_template()` asserts
+`widget_class->priv->template == NULL`). A Dart class without a `GType`
+of its own shares its parent's class — so two Dart template classes that
+extend the *same* native widget type collide, and the second one is
+rejected.
+
+A Dart class that registers a type of its own gets a class of its own to
+put the template on:
+
+```dart
+@GtkTemplate(source: GtkTemplateFile('data/task_row.ui'))
+class TaskRow extends GtkBox with _$TaskRowTemplate {
+  static int get GType => registerDartType('TaskRow', GtkBox.GType);
+
+  TaskRow()
+      : super.rawFromPointer(
+          newDartInstance(
+            GType,
+            constructProperties: {
+              'orientation': GtkOrientation.horizontal.value,
+            },
+          ),
+          owned: true,
+        ) {
+    initTemplate();
+  }
+}
+```
+
+Two things have to line up.
+
+**The widget is an instance of the type.** `newDartInstance` creates one —
+`g_object_newv` with the type's *construct* properties, because GLib
+refuses to set a construct-only property after the fact. The generated
+mixin checks it and says what is wrong when it is not:
+
+```
+gir_gtk_templates: `TaskRow` was created as `GtkBox`, not as `TaskRow`.
+A widget that carries a template of its own has to be created from its
+own type — construct it with `TaskRow() : super.rawFromPointer(
+newDartInstance(TaskRow.GType), owned: true)`.
+```
+
+**The template is claimed on that type.** The scanner sees the `GType`
+accessor (`hasOwnType`) and the codegen emits a different path:
+
+```dart
+final ownType = TaskRow.GType;
+requireOwnType(widget, ownType, 'TaskRow');
+final widgetType = ownType;
+```
+
+The claim is therefore *per Dart class* instead of per native class, and
+two Dart classes with the same parent each have a template of their own.
+
+The user's library needs `package:gir_dart_gobject/gir_dart_gobject.dart`
+for `registerDartType` and `newDartInstance`; the builder checks for it
+and names the exact import line when it is missing (see §7).
+
+`example/todo`'s `TaskRow` is the worked example: it registers
+`TaskRow` as its own type, and its template lives on it.
 
 ---
 
@@ -587,11 +661,15 @@ The generated file is a `part of` this library and inherits its
 imports, so add the lines above to this file.
 ```
 
-`checkRequiredImports(source, typeNames)` checks for
+`checkRequiredImports(source, typeNames, extra: …)` checks for
 `package:gir_gtk4/gir_gtk4.dart`, `package:gir_gtk_templates/gir_gtk_templates.dart`,
 and — via `packageForType` — the package that declares the parent type
 and every child type. `Adw*` maps to `package:gir_adw/gir_adw.dart`;
 everything else maps to `package:gir_gtk4/gir_gtk4.dart`.
+
+A class that declares a `GType` of its own adds one more: the *user's*
+code calls `registerDartType` and `newDartInstance`, so the library has
+to import `package:gir_dart_gobject/gir_dart_gobject.dart`.
 
 ### Missing template file
 
@@ -676,13 +754,12 @@ byte-identical output to the `build_runner` path. Exit codes:
   copies the template — but it does mean the XML string is retained
   for the life of the process.
 - **One template per native class.** GTK stores the template on the
-  native class, and a Dart subclass does not register a `GType` of its
-  own. Two Dart template classes that extend the *same* native widget
-  type therefore collide: the second one is rejected with a
-  `StateError` (`claimTemplateType`) instead of tripping GTK's
-  `widget_class->priv->template == NULL` assertion. Sharing a native
-  type between two template classes needs a real `GType` — which means
-  a C extension, not a Dart mixin.
+  native class. A Dart subclass that does **not** register a `GType` of
+  its own shares its parent's class, so two Dart template classes that
+  extend the *same* native widget type collide: the second one is
+  rejected with a `StateError` (`claimTemplateType`) instead of tripping
+  GTK's `widget_class->priv->template == NULL` assertion. A class that
+  registers a type of its own does not collide — see §5.1.
 
   The ownership registry behind that check lives in the **type system** —
   the owner's name is kept in the native type's `qdata`, under a quark
@@ -714,9 +791,10 @@ byte-identical output to the `build_runner` path. Exit codes:
 | `packages/gir_gtk_templates_builder/test/codegen_test.dart` | Pure codegen output shapes |
 | `packages/gir_gtk_templates_builder/test/builder_test.dart` | The scanner's plan output |
 | `packages/gir_gtk_templates_builder/test/e2e_test.dart` | Scanner → codegen → expected source; XML extractors |
-| `packages/gir_gtk_templates_builder/test/generated_code_test.dart` | The on-disk fixture resolves with **zero** analyzer diagnostics, plus four mutation regressions |
+| `packages/gir_gtk_templates_builder/test/generated_code_test.dart` | The on-disk fixtures — the plain one and the own-type one — resolve with **zero** analyzer diagnostics, plus four mutation regressions |
 | `packages/gir_gtk_templates_builder/test/builder_output_test.dart` | The `build_runner` output resolves with zero diagnostics, satisfies the part-file contract, reads a template **file** through the build, and fails when that file is missing |
 | `packages/gir_gtk_templates/test/runtime_test.dart` | `snakeCase`, `getWidgetClass`, `gbytesFromString`, the XML rewrites, the template claim |
+| `packages/gir_gtk_templates/test/own_type_test.dart` | A template on the Dart class's own type; two Dart classes with the same parent each have one (native; needs a display) |
 | `example/todo/test/todo_widget_test.dart` | The window really is built from the template (native; needs a display) |
 | `example/todo/test/todo_test.dart` | The file contract: the part directive, the generated file next to its source, the template coming from the `.ui` file |
 

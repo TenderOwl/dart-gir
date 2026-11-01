@@ -326,6 +326,45 @@ class GtkSourceIndenter implements ffi.Finalizable {
         'gtk_source_indenter_get_type',
       ).asFunction<int Function()>()();
 
+  /// This function should be implemented to alter the indentation of text
+  /// within the view.
+  ///
+  /// @view is provided so that the indenter may retrieve settings such as indentation and tab widths.
+  ///
+  /// @iter is the location where the indentation was requested. This typically
+  /// is after having just inserted a newline (\n) character but can be other
+  /// situations such as a manually requested indentation or reformatting.
+  ///
+  /// See [vfunc@GtkSource.Indenter.is_trigger] for how to trigger indentation on
+  /// various characters inserted into the buffer.
+  ///
+  /// The implementor of this function is expected to keep @iter valid across
+  /// calls to the function and should contain the location of the insert mark
+  /// after calling this function.
+  ///
+  /// The default implementation for this virtual function will copy the
+  /// indentation of the previous line.
+  static final _gtkSourceIndenterIndent =
+      girGtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gtk_source_indenter_indent')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+  void indent(GtkSourceView view, GtkTextIter iter) {
+    _gtkSourceIndenterIndent(this.handle, view.handle, iter.handle);
+  }
+
   /// This function is used to determine if a key pressed should cause the
   /// indenter to automatically indent.
   ///

@@ -303,6 +303,20 @@ class GtkDragSource extends GtkGestureSingle {
     );
   }
 
+  /// Emitted when a drag is about to be initiated.
+  ///
+  /// It returns the `GdkContentProvider` to use for the drag that is about
+  /// to start. The default handler for this signal returns the value of
+  /// the [property@Gtk.DragSource:content] property, so if you set up that
+  /// property ahead of time, you don't need to connect to this signal.
+  int onPrepare(GdkContentProvider? Function(double x, double y) callback) {
+    return _connectSignal_o_2_d_d_gdkcontentprovider_double_double(
+      this.handle,
+      'prepare',
+      callback,
+    );
+  }
+
   /// Emitted when the gesture is recognized.
   ///
   /// This means the number of touch sequences matches

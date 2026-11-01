@@ -10,9 +10,9 @@ discoverable from `git ls-files` and easy to link from PRs.
 | [type-system.md](./type-system.md) | GIR-to-Dart type mapping rules, transfer ownership, nullable handling, cross-namespace resolution, the `relativeTo` plumbing for inherited signals |
 | [signals.md](./signals.md) | Typed `onSignalName` design: bucket partitioning, what counts as "kept", the `connectSignal` escape hatch, transfer-none strings + `g_free`, destroy-notify, the inheritance walk |
 | [async.md](./async.md) | The GLib `*_async` + `*_finish` pattern: the two wrapper shapes, the callback signature, and how to pair them |
-| [templates.md](./templates.md) | The composite-template stack: annotation surface, scanner plan, the one-part-file-per-source convention, codegen output contract, runtime init order, the callback trampoline, known limits |
+| [templates.md](./templates.md) | The composite-template stack: annotation surface, scanner plan, the one-part-file-per-source convention, codegen output contract, runtime init order, a template on the Dart class's own type, the callback trampoline, known limits |
 | [subclassing.md](./subclassing.md) | Dart-level subclassing of the generated wrappers: the extendable contract, ownership and lifetime rules, what a covariant override promises, and what a Dart subclass is not |
-| [dart-gobjects.md](./dart-gobjects.md) | Dart classes with a native type: `registerDartType`, the `GType` accessor, the `ffi.Struct` type-system records, the wrapper cache, and the lifetime rules |
+| [dart-gobjects.md](./dart-gobjects.md) | Dart classes with a native type: `registerDartType`, the `GType` accessor, the `ffi.Struct` type-system records, the wrapper cache, signals, properties, interfaces, the virtual functions, and the lifetime rules |
 | [branch-state.md](./branch-state.md) | What is committed on `main` and what is not: the verified branch comparison, the composite-template and subclassing inventories, and how to re-check them |
 | [skip-categories.md](./skip-categories.md) | Every category and reason that shows up in `packages/<lib>/skip_report.txt`, alphabetised |
 | [release.md](./release.md) | The release policy: lockstep versioning, what 1.0 promises and does not promise, the prepare → check → publish process, and the migration-note rule |
@@ -33,7 +33,8 @@ discoverable from `git ls-files` and easy to link from PRs.
 * **Extending a generated wrapper** — read
   [subclassing.md](./subclassing.md).
 * **Giving a Dart class a native type** — read
-  [dart-gobjects.md](./dart-gobjects.md).
+  [dart-gobjects.md](./dart-gobjects.md): the type itself, its signals,
+  its properties, its interfaces and its virtual functions.
 * **Checking what is on `main` and what is still on a branch** — read
   [branch-state.md](./branch-state.md).
 * **Modifying the generator** — read [emission.md](./emission.md) and

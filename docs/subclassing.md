@@ -61,25 +61,37 @@ why those assertions exist.
 
 ---
 
-## 2. What this is **not**
+## 2. What a plain Dart subclass is **not**
 
-**A Dart subclass is not a GObject subclass.**
+**A plain Dart subclass is not a GObject subclass.**
 
-Your subclass does not register a `GType`. GTK has no idea it
-exists:
+A subclass that does nothing but extend the generated class does not
+register a `GType`. GTK has no idea it exists:
 
 - You cannot ask GTK to instantiate your class. `gtk_button_new()`
   returns a `GtkButton`; nothing in the native world can produce a
   `TitledButton`.
-- You cannot use your class where GTK expects a custom widget type
-  (`GtkBuildable`, `gtk_widget_init_template`, a `GType` in a
-  `GtkBuilder` XML file).
 - The native type of the object is unchanged. `typeNameFromInstance`
   still reports `GtkButton`.
 
-Registering a real native subclass means registering a `GType`,
-installing a `GObjectClass`, and handling the vtable — a different
-project. This document is about the Dart-level capability only.
+**A subclass that registers a type of its own *is* one.** The two
+levels are separate, and it is worth keeping them apart:
+
+| | plain subclass | a subclass with `registerDartType` |
+|---|---|---|
+| native type | the parent's | **its own** |
+| `typeNameFromInstance` | `GtkButton` | `TitledButton` |
+| instantiable by the native side | no | yes — `newDartInstance` |
+| a `GType` in a `GtkBuilder` XML file | no | yes |
+| a template of its own | no (it shares the parent's) | yes |
+| answers virtual functions | no | yes, for the curated slice |
+| declares signals and properties | no | yes |
+
+The second column is a different package —
+[`packages/gir_dart_gobject`](../packages/gir_dart_gobject) — and it is
+documented in [dart-gobjects.md](./dart-gobjects.md). This document is
+about the Dart-level capability; the native one is *in addition to* it,
+not instead of it.
 
 ---
 
@@ -299,7 +311,8 @@ generated package, never the other way round.
 
   `example/gtk4_examples/bin/subclass_smoke.dart` exercises the working case.
 
-- **No native subclassing.** See §2.
+- **No native subclassing** without `registerDartType`. See §2 — the
+  native type of a plain subclass is its parent's.
 - **The narrowed type is not verified by the toolchain.** See §4.
 - **The props companion's `_self` is private.** A user-side companion
   needs its own reference to the widget. See §3.

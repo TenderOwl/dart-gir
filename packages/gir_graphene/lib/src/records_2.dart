@@ -1282,6 +1282,28 @@ final class GrapheneMatrix implements ffi.Finalizable {
     }
   }
 
+  /// Converts a #graphene_matrix_t to an array of floating point
+  /// values.
+  static final _grapheneMatrixToFloat =
+      girGrapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+            >
+          >('graphene_matrix_to_float')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+          >();
+  List<double> toFloat() {
+    final _out0 = calloc<ffi.Float>(16);
+    try {
+      _grapheneMatrixToFloat(this.handle, _out0);
+      final _list_out0 = <double>[for (var i = 0; i < 16; i++) _out0[i]];
+      return _list_out0;
+    } finally {
+      calloc.free(_out0);
+    }
+  }
+
   /// Transforms each corner of a #graphene_rect_t using the given matrix @m.
   ///
   /// The result is the axis aligned bounding rectangle containing the coplanar

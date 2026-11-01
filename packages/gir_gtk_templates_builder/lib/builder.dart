@@ -118,11 +118,23 @@ class GtkTemplatesBuilder implements Builder {
       for (final input in inputs) input.parentType,
       for (final input in inputs) ...input.children.map((c) => c.typeName),
     ];
-    final missingImports = checkRequiredImports(source, typeNames);
+    // A class that declares a native type of its own registers it
+    // with `registerDartType` and creates its instances with
+    // `newDartInstance` — both live in the Dart-object runtime, and
+    // the *user's* file is the one that calls them.
+    final extraImports = <String>[
+      for (final input in inputs)
+        if (input.hasOwnType) 'package:gir_dart_gobject/gir_dart_gobject.dart',
+    ];
+    final missingImports = checkRequiredImports(
+      source,
+      typeNames,
+      extra: extraImports,
+    );
     if (missingImports.isNotEmpty) {
       final message =
           'gir_gtk_templates: ${buildStep.inputId.path} is missing the '
-          'imports the generated mixin needs:\n'
+          'imports this template widget needs:\n'
           '${missingImports.map((p) => "  import '$p';").join('\n')}\n'
           'The generated file is a `part of` this library and inherits its '
           'imports, so add the lines above to this file.';
@@ -293,9 +305,15 @@ ClassTemplatePlan? _scanClass(ClassDeclaration decl) {
   // The parameter names of every method, so the codegen can forward
   // a signal's arguments to the user's method.
   final methodParameters = <String, List<String>>{};
+  // Whether the class declares a native type of its own.
+  var hasOwnType = false;
 
   for (final member in _membersOf(decl)) {
     if (member is FieldDeclaration) {
+      if (member.isStatic &&
+          member.fields.variables.any((v) => v.name.lexeme == 'GType')) {
+        hasOwnType = true;
+      }
       final ann = _firstAnnotation(member.metadata, 'GtkTemplateChild');
       if (ann != null) {
         final explicitName = _findNamedStringArg(ann, 'name');
@@ -309,6 +327,9 @@ ClassTemplatePlan? _scanClass(ClassDeclaration decl) {
         }
       }
     } else if (member is MethodDeclaration) {
+      if (member.isStatic && member.isGetter && member.name.lexeme == 'GType') {
+        hasOwnType = true;
+      }
       methodParameters[member.name.lexeme] = _parameterNames(member);
       final ann = _firstAnnotation(member.metadata, 'GtkTemplateCallback');
       if (ann != null) {
@@ -329,6 +350,7 @@ ClassTemplatePlan? _scanClass(ClassDeclaration decl) {
     children: children,
     callbacks: callbacks,
     methodParameters: methodParameters,
+    hasOwnType: hasOwnType,
   );
 }
 

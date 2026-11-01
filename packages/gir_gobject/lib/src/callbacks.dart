@@ -180,6 +180,17 @@ typedef GClassInitFunc = void Function(
   ffi.Pointer<ffi.Void>,
 );
 
+/// The type used for marshaller functions.
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GClosureMarshal = void Function(
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Void>,
+  int,
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Void>,
+);
+
 /// The type used for the various notification callbacks which can be registered
 /// on closures.
 /// Pass a top-level or static Dart function. Closures are not supported.
@@ -265,6 +276,20 @@ typedef GObjectSetPropertyFunc = void Function(
 typedef GSignalAccumulator = int Function(
   ffi.Pointer<ffi.Void>,
   ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Void>,
+  ffi.Pointer<ffi.Void>,
+);
+
+/// A simple function pointer to get invoked when the signal is emitted.
+///
+/// Emission hooks allow you to tie a hook to the signal type, so that it will
+/// trap all emissions of that signal, from any object.
+///
+/// You may not attach these to signals created with the %G_SIGNAL_NO_HOOKS flag.
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GSignalEmissionHook = int Function(
+  ffi.Pointer<ffi.Void>,
+  int,
   ffi.Pointer<ffi.Void>,
   ffi.Pointer<ffi.Void>,
 );

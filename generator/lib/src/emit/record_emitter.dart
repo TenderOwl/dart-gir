@@ -46,6 +46,7 @@ class RecordEmitter {
     signals: i.signals,
     isInterface: true,
     getType: i.glibGetType,
+    virtualMethods: i.virtualMethods,
   );
 
   String? _emit(
@@ -57,6 +58,7 @@ class RecordEmitter {
     List<GirSignal> signals = const [],
     bool isInterface = false,
     String? getType,
+    List<GirMethod> virtualMethods = const [],
   }) {
     final dartName = ctx.dartTypeName(ctx.namespace.name, type.name);
     if (ctx.isDuplicateType(type)) {
@@ -71,6 +73,7 @@ class RecordEmitter {
       ctx.report.skip('record', dartName, 'name collision');
       return null;
     }
+    ctx.reportVirtualMethods(virtualMethods, dartName);
     final callables = CallableEmitter(ctx);
     final memberNames = <String>{
       'handle',

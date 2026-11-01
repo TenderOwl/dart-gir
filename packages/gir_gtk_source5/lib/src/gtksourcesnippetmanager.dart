@@ -236,7 +236,7 @@ class GtkSourceSnippetManager extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setSearchPath([List<String?>? dirs]) {
-    withNativeStringList(dirs, (nativeDirs) {
+    withNativeStringList(dirs, (nativeDirs, nativeDirsLen) {
       _gtkSourceSnippetManagerSetSearchPath(this.handle, nativeDirs);
     });
   }

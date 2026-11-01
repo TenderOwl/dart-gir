@@ -326,7 +326,7 @@ class AdwAboutDialog extends AdwDialog
             )
           >();
   void addAcknowledgementSection([String? name, List<String?>? people]) {
-    withNativeStringList(people, (nativePeople) {
+    withNativeStringList(people, (nativePeople, nativePeopleLen) {
       withNativeString(name, (nativeName) {
         _adwAboutDialogAddAcknowledgementSection(
           this.handle,
@@ -370,7 +370,7 @@ class AdwAboutDialog extends AdwDialog
             )
           >();
   void addCreditSection([String? name, List<String?>? people]) {
-    withNativeStringList(people, (nativePeople) {
+    withNativeStringList(people, (nativePeople, nativePeopleLen) {
       withNativeString(name, (nativeName) {
         _adwAboutDialogAddCreditSection(
           this.handle,
@@ -938,7 +938,7 @@ class AdwAboutDialog extends AdwDialog
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setArtists([List<String?>? artists]) {
-    withNativeStringList(artists, (nativeArtists) {
+    withNativeStringList(artists, (nativeArtists, nativeArtistsLen) {
       _adwAboutDialogSetArtists(this.handle, nativeArtists);
     });
   }
@@ -1067,7 +1067,7 @@ class AdwAboutDialog extends AdwDialog
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDesigners([List<String?>? designers]) {
-    withNativeStringList(designers, (nativeDesigners) {
+    withNativeStringList(designers, (nativeDesigners, nativeDesignersLen) {
       _adwAboutDialogSetDesigners(this.handle, nativeDesigners);
     });
   }
@@ -1126,7 +1126,7 @@ class AdwAboutDialog extends AdwDialog
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDevelopers([List<String?>? developers]) {
-    withNativeStringList(developers, (nativeDevelopers) {
+    withNativeStringList(developers, (nativeDevelopers, nativeDevelopersLen) {
       _adwAboutDialogSetDevelopers(this.handle, nativeDevelopers);
     });
   }
@@ -1159,7 +1159,10 @@ class AdwAboutDialog extends AdwDialog
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDocumenters([List<String?>? documenters]) {
-    withNativeStringList(documenters, (nativeDocumenters) {
+    withNativeStringList(documenters, (
+      nativeDocumenters,
+      nativeDocumentersLen,
+    ) {
       _adwAboutDialogSetDocumenters(this.handle, nativeDocumenters);
     });
   }

@@ -233,6 +233,46 @@ final class GBookmarkFile implements ffi.Finalizable {
 
   /// Gets the time the bookmark for @uri was added to @bookmark
   ///
+  /// In the event the URI cannot be found, -1 is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
+  static final _gBookmarkFileGetAdded =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int64 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_added')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int getAdded(String uri) {
+    return withNativeString(uri, (nativeUri) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gBookmarkFileGetAdded(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Gets the time the bookmark for @uri was added to @bookmark
+  ///
   /// In the event the URI cannot be found, %NULL is returned and
   /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
   static final _gBookmarkFileGetAddedDateTime =
@@ -268,6 +308,80 @@ final class GBookmarkFile implements ffi.Finalizable {
       } finally {
         calloc.free(_error);
       }
+    });
+  }
+
+  /// Gets the registration information of @app_name for the bookmark for
+  /// @uri.  See g_bookmark_file_set_application_info() for more information about
+  /// the returned data.
+  ///
+  /// The string returned in @app_exec must be freed.
+  ///
+  /// In the event the URI cannot be found, %FALSE is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.  In the
+  /// event that no application with name @app_name has registered a bookmark
+  /// for @uri,  %FALSE is returned and error is set to
+  /// %G_BOOKMARK_FILE_ERROR_APP_NOT_REGISTERED. In the event that unquoting
+  /// the command line fails, an error of the %G_SHELL_ERROR domain is
+  /// set and %FALSE is returned.
+  static final _gBookmarkFileGetAppInfo =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Uint32>,
+                ffi.Pointer<ffi.Int64>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_app_info')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Int64>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (bool, String?, int, int) getAppInfo(String uri, String name) {
+    return withNativeString(uri, (nativeUri) {
+      return withNativeString(name, (nativeName) {
+        final _out0 = malloc<ffi.Pointer<Utf8>>();
+        final _out1 = malloc<ffi.Uint32>();
+        final _out2 = malloc<ffi.Int64>();
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gBookmarkFileGetAppInfo(
+            this.handle,
+            nativeUri.cast<Utf8>(),
+            nativeName.cast<Utf8>(),
+            _out0,
+            _out1,
+            _out2,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return (
+            (_ret) != 0,
+            stringFromNative(_out0.value.cast(), free: true),
+            _out1.value,
+            _out2.value,
+          );
+        } finally {
+          malloc.free(_out0);
+          malloc.free(_out1);
+          malloc.free(_out2);
+          calloc.free(_error);
+        }
+      });
     });
   }
 
@@ -347,6 +461,52 @@ final class GBookmarkFile implements ffi.Finalizable {
     });
   }
 
+  /// Retrieves the names of the applications that have registered the
+  /// bookmark for @uri.
+  ///
+  /// In the event the URI cannot be found, %NULL is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
+  static final _gBookmarkFileGetApplications =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_applications')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  List<String> getApplications(String uri) {
+    return withNativeString(uri, (nativeUri) {
+      final _out0 = malloc<ffi.Size>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gBookmarkFileGetApplications(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          _out0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return stringListFromNative(_ret, free: true, length: _out0.value)!;
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Retrieves the description of the bookmark for @uri.
   ///
   /// In the event the URI cannot be found, %NULL is returned and
@@ -382,6 +542,54 @@ final class GBookmarkFile implements ffi.Finalizable {
         }
         return stringFromNative((_ret).cast(), free: true)!;
       } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Retrieves the list of group names of the bookmark for @uri.
+  ///
+  /// In the event the URI cannot be found, %NULL is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
+  ///
+  /// The returned array is %NULL terminated, so @length may optionally
+  /// be %NULL.
+  static final _gBookmarkFileGetGroups =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_groups')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  List<String> getGroups(String uri) {
+    return withNativeString(uri, (nativeUri) {
+      final _out0 = malloc<ffi.Size>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gBookmarkFileGetGroups(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          _out0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return stringListFromNative(_ret, free: true, length: _out0.value)!;
+      } finally {
+        malloc.free(_out0);
         calloc.free(_error);
       }
     });
@@ -527,6 +735,46 @@ final class GBookmarkFile implements ffi.Finalizable {
 
   /// Gets the time when the bookmark for @uri was last modified.
   ///
+  /// In the event the URI cannot be found, -1 is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
+  static final _gBookmarkFileGetModified =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int64 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_modified')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int getModified(String uri) {
+    return withNativeString(uri, (nativeUri) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gBookmarkFileGetModified(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
+  /// Gets the time when the bookmark for @uri was last modified.
+  ///
   /// In the event the URI cannot be found, %NULL is returned and
   /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
   static final _gBookmarkFileGetModifiedDateTime =
@@ -643,6 +891,46 @@ final class GBookmarkFile implements ffi.Finalizable {
     } finally {
       malloc.free(_out0);
     }
+  }
+
+  /// Gets the time the bookmark for @uri was last visited.
+  ///
+  /// In the event the URI cannot be found, -1 is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND.
+  static final _gBookmarkFileGetVisited =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int64 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_get_visited')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int getVisited(String uri) {
+    return withNativeString(uri, (nativeUri) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gBookmarkFileGetVisited(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+      }
+    });
   }
 
   /// Gets the time the bookmark for @uri was last visited.
@@ -1102,6 +1390,28 @@ final class GBookmarkFile implements ffi.Finalizable {
   /// Sets the time the bookmark for @uri was added into @bookmark.
   ///
   /// If no bookmark for @uri is found then it is created.
+  static final _gBookmarkFileSetAdded =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int64,
+              )
+            >
+          >('g_bookmark_file_set_added')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void setAdded(String uri, int added) {
+    withNativeString(uri, (nativeUri) {
+      _gBookmarkFileSetAdded(this.handle, nativeUri.cast<Utf8>(), added);
+    });
+  }
+
+  /// Sets the time the bookmark for @uri was added into @bookmark.
+  ///
+  /// If no bookmark for @uri is found then it is created.
   static final _gBookmarkFileSetAddedDateTime =
       girGlibLookup<
             ffi.NativeFunction<
@@ -1126,6 +1436,86 @@ final class GBookmarkFile implements ffi.Finalizable {
         nativeUri.cast<Utf8>(),
         added.handle,
       );
+    });
+  }
+
+  /// Sets the meta-data of application @name inside the list of
+  /// applications that have registered a bookmark for @uri inside
+  /// @bookmark.
+  ///
+  /// You should rarely use this function; use g_bookmark_file_add_application()
+  /// and g_bookmark_file_remove_application() instead.
+  ///
+  /// @name can be any UTF-8 encoded string used to identify an
+  /// application.
+  /// @exec can have one of these two modifiers: "\%f", which will
+  /// be expanded as the local file name retrieved from the bookmark's
+  /// URI; "\%u", which will be expanded as the bookmark's URI.
+  /// The expansion is done automatically when retrieving the stored
+  /// command line using the g_bookmark_file_get_application_info() function.
+  /// @count is the number of times the application has registered the
+  /// bookmark; if is < 0, the current registration count will be increased
+  /// by one, if is 0, the application with @name will be removed from
+  /// the list of registered applications.
+  /// @stamp is the Unix time of the last registration; if it is -1, the
+  /// current time will be used.
+  ///
+  /// If you try to remove an application by setting its registration count to
+  /// zero, and no bookmark for @uri is found, %FALSE is returned and
+  /// @error is set to %G_BOOKMARK_FILE_ERROR_URI_NOT_FOUND; similarly,
+  /// in the event that no application @name has registered a bookmark
+  /// for @uri,  %FALSE is returned and error is set to
+  /// %G_BOOKMARK_FILE_ERROR_APP_NOT_REGISTERED.  Otherwise, if no bookmark
+  /// for @uri is found, one is created.
+  static final _gBookmarkFileSetAppInfo =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Int32,
+                ffi.Int64,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_bookmark_file_set_app_info')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool setAppInfo(String uri, String name, String exec, int count, int stamp) {
+    return withNativeString(uri, (nativeUri) {
+      return withNativeString(name, (nativeName) {
+        return withNativeString(exec, (nativeExec) {
+          final _error = calloc<ffi.Pointer<ffi.Void>>();
+          try {
+            final _ret = _gBookmarkFileSetAppInfo(
+              this.handle,
+              nativeUri.cast<Utf8>(),
+              nativeName.cast<Utf8>(),
+              nativeExec.cast<Utf8>(),
+              count,
+              stamp,
+              _error,
+            );
+            if (_error.value != ffi.nullptr) {
+              throw GlibException.fromError(_error.value);
+            }
+            return (_ret) != 0;
+          } finally {
+            calloc.free(_error);
+          }
+        });
+      });
     });
   }
 
@@ -1248,6 +1638,42 @@ final class GBookmarkFile implements ffi.Finalizable {
     });
   }
 
+  /// Sets a list of group names for the item with URI @uri.  Each previously
+  /// set group name list is removed.
+  ///
+  /// If @uri cannot be found then an item for it is created.
+  static final _gBookmarkFileSetGroups =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Size,
+              )
+            >
+          >('g_bookmark_file_set_groups')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+            )
+          >();
+  void setGroups(String uri, [List<String?>? groups]) {
+    withNativeStringList(groups, (nativeGroups, nativeGroupsLen) {
+      withNativeString(uri, (nativeUri) {
+        _gBookmarkFileSetGroups(
+          this.handle,
+          nativeUri.cast<Utf8>(),
+          nativeGroups,
+          nativeGroupsLen,
+        );
+      });
+    });
+  }
+
   /// Sets the icon for the bookmark for @uri. If @href is %NULL, unsets
   /// the currently set icon. @href can either be a full URL for the icon
   /// file or the icon name following the Icon Naming specification.
@@ -1353,6 +1779,33 @@ final class GBookmarkFile implements ffi.Finalizable {
   /// was actually changed.  Every function of #GBookmarkFile that
   /// modifies a bookmark also changes the modification time, except for
   /// g_bookmark_file_set_visited_date_time().
+  static final _gBookmarkFileSetModified =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int64,
+              )
+            >
+          >('g_bookmark_file_set_modified')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void setModified(String uri, int modified) {
+    withNativeString(uri, (nativeUri) {
+      _gBookmarkFileSetModified(this.handle, nativeUri.cast<Utf8>(), modified);
+    });
+  }
+
+  /// Sets the last time the bookmark for @uri was last modified.
+  ///
+  /// If no bookmark for @uri is found then it is created.
+  ///
+  /// The "modified" time should only be set when the bookmark's meta-data
+  /// was actually changed.  Every function of #GBookmarkFile that
+  /// modifies a bookmark also changes the modification time, except for
+  /// g_bookmark_file_set_visited_date_time().
   static final _gBookmarkFileSetModifiedDateTime =
       girGlibLookup<
             ffi.NativeFunction<
@@ -1412,6 +1865,34 @@ final class GBookmarkFile implements ffi.Finalizable {
           nativeTitle.cast<Utf8>(),
         );
       });
+    });
+  }
+
+  /// Sets the time the bookmark for @uri was last visited.
+  ///
+  /// If no bookmark for @uri is found then it is created.
+  ///
+  /// The "visited" time should only be set if the bookmark was launched,
+  /// either using the command line retrieved by g_bookmark_file_get_application_info()
+  /// or by the default application for the bookmark's MIME type, retrieved
+  /// using g_bookmark_file_get_mime_type().  Changing the "visited" time
+  /// does not affect the "modified" time.
+  static final _gBookmarkFileSetVisited =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Int64,
+              )
+            >
+          >('g_bookmark_file_set_visited')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<Utf8>, int)
+          >();
+  void setVisited(String uri, int visited) {
+    withNativeString(uri, (nativeUri) {
+      _gBookmarkFileSetVisited(this.handle, nativeUri.cast<Utf8>(), visited);
     });
   }
 

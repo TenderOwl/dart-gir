@@ -519,7 +519,7 @@ final _gBuildFilenamev =
           ffi.Pointer<Utf8> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
         >();
 String buildFilenamev([List<String?>? args]) {
-  return withNativeStringList(args, (nativeArgs) {
+  return withNativeStringList(args, (nativeArgs, nativeArgsLen) {
     return stringFromNative((_gBuildFilenamev(nativeArgs)).cast(), free: true)!;
   });
 }
@@ -544,7 +544,7 @@ final _gBuildPathv =
           )
         >();
 String buildPathv(String separator, [List<String?>? args]) {
-  return withNativeStringList(args, (nativeArgs) {
+  return withNativeStringList(args, (nativeArgs, nativeArgsLen) {
     return withNativeString(separator, (nativeSeparator) {
       return stringFromNative(
         (_gBuildPathv(nativeSeparator.cast<Utf8>(), nativeArgs)).cast(),

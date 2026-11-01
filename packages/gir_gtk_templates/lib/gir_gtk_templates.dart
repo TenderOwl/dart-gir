@@ -40,6 +40,7 @@ export 'src/runtime.dart'
         claimTemplateType,
         getWidgetClass,
         prepareTemplateXml,
+        requireOwnType,
         rewriteTemplateTypes,
         snakeCase,
         stripTemplateSignals,

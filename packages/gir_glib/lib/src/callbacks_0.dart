@@ -311,6 +311,32 @@ typedef GLogFunc = void Function(
   ffi.Pointer<ffi.Void>,
 );
 
+/// Writer function for log entries. A log entry is a collection of one or more
+/// #GLogFields, using the standard [field names from journal
+/// specification](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html).
+/// See g_log_structured() for more information.
+///
+/// Writer functions must ignore fields which they do not recognise, unless they
+/// can write arbitrary binary output, as field values may be arbitrary binary.
+///
+/// @log_level is guaranteed to be included in @fields as the `PRIORITY` field,
+/// but is provided separately for convenience of deciding whether or where to
+/// output the log entry.
+///
+/// Writer functions should return %G_LOG_WRITER_HANDLED if they handled the log
+/// message successfully or if they deliberately ignored it. If there was an
+/// error handling the message (for example, if the writer function is meant to
+/// send messages to a remote logging server and there is a network error), it
+/// should return %G_LOG_WRITER_UNHANDLED. This allows writer functions to be
+/// chained and fall back to simpler handlers in case of failure.
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GLogWriterFunc = int Function(
+  int,
+  ffi.Pointer<ffi.Void>,
+  int,
+  ffi.Pointer<ffi.Void>,
+);
+
 /// Specifies the type of function passed to g_node_children_foreach().
 /// The function is called with each child node, together with the user
 /// data passed to g_node_children_foreach().

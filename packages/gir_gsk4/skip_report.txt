@@ -1,15 +1,12 @@
 # Skip report for package gir_gsk4 (Gsk 4.0)
-Total skipped: 16
+Total skipped: 11
 
 ## By category
-callable: 10
-callback: 2
+callable: 7
 method: 2
 property: 2
 
 ## By reason
-array parameter in callback signature: 2
-inout parameter point: 2
 name collision: 2
 construct-only or no public setter; emitting getter only: 2
 moved to ComponentTransfer.equal: 1
@@ -17,24 +14,18 @@ moved to Path.parse: 1
 moved to SerializationError.quark: 1
 moved to Stroke.equal: 1
 moved to Transform.parse: 1
-parameter func: callback PathForeachFunc has unsupported signature: 1
-parameter border_color: array of TypeKind.record (later phase): 1
-return: array of TypeKind.record (later phase): 1
+parameter border_color: unbound array of TypeKind.record: the signature carries no length: 1
+return: unbound array of TypeKind.record: the signature carries no length: 1
 
-## First 50 entries
+## All 11 entries
 [callable] Gsk.componentTransferEqual — moved to ComponentTransfer.equal
 [callable] Gsk.pathParse — moved to Path.parse
 [callable] Gsk.serializationErrorQuark — moved to SerializationError.quark
 [callable] Gsk.strokeEqual — moved to Stroke.equal
 [callable] Gsk.transformParse — moved to Transform.parse
-[callback] GskPathForeachFunc parameter pts — array parameter in callback signature
-[callable] GskPath.foreach — parameter func: callback PathForeachFunc has unsupported signature
-[callable] GskPath.getNext — inout parameter point
-[callable] GskPath.getPrevious — inout parameter point
 [method] GskPath.toString — name collision
 [method] GskTransform.toString — name collision
-[callable] GskBorderNode. — parameter border_color: array of TypeKind.record (later phase)
-[callable] GskBorderNode.getColors — return: array of TypeKind.record (later phase)
+[callable] GskBorderNode. — parameter border_color: unbound array of TypeKind.record: the signature carries no length
+[callable] GskBorderNode.getColors — return: unbound array of TypeKind.record: the signature carries no length
 [property] GskGLShader.resource — construct-only or no public setter; emitting getter only
 [property] GskGLShader.source — construct-only or no public setter; emitting getter only
-[callback] GskPathForeachFunc parameter pts — array parameter in callback signature

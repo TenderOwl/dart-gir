@@ -66,6 +66,32 @@ void main() {
       expect(cls.callbacks[1].callbackName, 'hello_button_clicked');
     });
 
+    test('detects a class that declares a native type of its own', () {
+      const source = r'''
+        @GtkTemplate(source: GtkTemplateXml('<interface/>'))
+        class WithOwnType extends GtkBox {
+          static int get GType => registerDartType('WithOwnType', GtkBox.GType);
+
+          WithOwnType();
+        }
+      ''';
+      final plan = scanSource(source);
+
+      expect(plan.classes.single.hasOwnType, isTrue);
+    });
+
+    test('a class without a native type of its own is not flagged', () {
+      const source = r'''
+        @GtkTemplate(source: GtkTemplateXml('<interface/>'))
+        class WithoutOwnType extends GtkBox {
+          WithoutOwnType();
+        }
+      ''';
+      final plan = scanSource(source);
+
+      expect(plan.classes.single.hasOwnType, isFalse);
+    });
+
     test('extracts GtkTemplateFile path verbatim', () {
       const source = '''
         @GtkTemplate(source: GtkTemplateFile('lib/myapp/window.ui'))

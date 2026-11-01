@@ -709,6 +709,39 @@ class AdwSidebar extends GtkWidget
     );
   }
 
+  /// Emitted when the pointer enters the item at @index.
+  ///
+  /// Applications can use this to set their default drop action even when
+  /// [property@Sidebar:drop-preload] is set to `FALSE`.
+  ///
+  /// See [signal@Gtk.DropTarget::enter].
+  int onDropEnter(GdkDragAction Function(int index) callback) {
+    return _connectSignal_f_1_i_gdkdragaction_int(
+      this.handle,
+      'drop-enter',
+      callback,
+    );
+  }
+
+  /// Emitted when the dropped content is preloaded for the item at @index.
+  ///
+  /// In order for data to be preloaded, [property@Sidebar:drop-preload]
+  /// must be set to `TRUE`.
+  ///
+  /// The content must be of one of the types set up via
+  /// [method@Sidebar.setup_drop_target].
+  ///
+  /// See [property@Gtk.DropTarget:value].
+  int onDropValueLoaded(
+    GdkDragAction Function(int index, GValue value) callback,
+  ) {
+    return _connectSignal_f_2_i_o_gdkdragaction_int_gvalue(
+      this.handle,
+      'drop-value-loaded',
+      callback,
+    );
+  }
+
   /// Emitted when a context menu is opened or closed for @item.
   ///
   /// If the menu has been closed, @item will be set to `NULL`.

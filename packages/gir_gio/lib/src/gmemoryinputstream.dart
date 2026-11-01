@@ -328,6 +328,62 @@ class GMemoryInputStream extends GInputStream
     return (_gPollableInputStreamIsReadable(this.handle)) != 0;
   }
 
+  /// Attempts to read up to @count bytes from @stream into @buffer, as
+  /// with g_input_stream_read(). If @stream is not currently readable,
+  /// this will immediately return %G_IO_ERROR_WOULD_BLOCK, and you can
+  /// use g_pollable_input_stream_create_source() to create a #GSource
+  /// that will be triggered when @stream is readable.
+  ///
+  /// Note that since this method never blocks, you cannot actually
+  /// use @cancellable to cancel it. However, it will return an error
+  /// if @cancellable has already been cancelled when you call, which
+  /// may happen if you call this method after a source triggers due
+  /// to having been cancelled.
+  ///
+  /// The behaviour of this method is undefined if
+  /// g_pollable_input_stream_can_poll() returns %FALSE for @stream.
+  static final _gPollableInputStreamReadNonblocking =
+      girGioLookup<
+            ffi.NativeFunction<
+              ffi.IntPtr Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_pollable_input_stream_read_nonblocking')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  int readNonblocking(Uint8List buffer, [GCancellable? cancellable]) {
+    return withNativeBytes(buffer, (_bytesBuf0, _bytesLen0) {
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gPollableInputStreamReadNonblocking(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          cancellable?.handle ?? ffi.nullptr,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return _ret;
+      } finally {
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Tests if the stream supports the #GSeekableIface.
   static final _gSeekableCanSeek =
       girGioLookup<

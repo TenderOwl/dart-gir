@@ -178,7 +178,7 @@ class GSubprocessLauncher extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setEnviron([List<String?>? env]) {
-    withNativeStringList(env, (nativeEnv) {
+    withNativeStringList(env, (nativeEnv, nativeEnvLen) {
       _gSubprocessLauncherSetEnviron(this.handle, nativeEnv);
     });
   }
@@ -352,7 +352,7 @@ class GSubprocessLauncher extends GObject {
             )
           >();
   GSubprocess spawnv([List<String?>? argv]) {
-    return withNativeStringList(argv, (nativeArgv) {
+    return withNativeStringList(argv, (nativeArgv, nativeArgvLen) {
       final _error = calloc<ffi.Pointer<ffi.Void>>();
       try {
         final _ret = _gSubprocessLauncherSpawnv(

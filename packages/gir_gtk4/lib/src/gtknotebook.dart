@@ -1077,6 +1077,22 @@ class GtkNotebook extends GtkWidget
     );
   }
 
+  /// The ::create-window signal is emitted when a detachable
+  /// tab is dropped on the root window.
+  ///
+  /// A handler for this signal can create a window containing
+  /// a notebook where the tab will be attached. It is also
+  /// responsible for moving/resizing the window and adding the
+  /// necessary properties to the notebook (e.g. the
+  /// `GtkNotebook`:group-name ).
+  int onCreateWindow(GtkNotebook? Function(GtkWidget page) callback) {
+    return _connectSignal_o_1_o_gtknotebook_gtkwidget(
+      this.handle,
+      'create-window',
+      callback,
+    );
+  }
+
   /// Emitted when a tab should be focused.
   int onFocusTab(bool Function(GtkNotebookTab tab) callback) {
     return _connectSignal_b_1_i_gtknotebooktab(

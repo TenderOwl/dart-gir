@@ -28,6 +28,7 @@ class PackageEmitter {
     required this.packagesDir,
     required this.emittedPackages,
     Set<String>? emittedPropsClassNames,
+    this.format = true,
   }) : emittedPropsClassNames = emittedPropsClassNames ?? <String>{};
 
   final GirNamespace namespace;
@@ -38,6 +39,12 @@ class PackageEmitter {
 
   /// Package names generated in this run.
   final Set<String> emittedPackages;
+
+  /// Whether to run `dart format` over the generated package.
+  ///
+  /// The CLI formats; a test that only inspects the output does not need
+  /// to pay for it.
+  final bool format;
 
   /// Tracks props class names emitted across the entire workspace run.
   /// Shared between `PackageEmitter` instances so a child class can
@@ -339,7 +346,7 @@ class PackageEmitter {
       report.format('package $pkg (${namespace.name} ${namespace.version})'),
     );
 
-    Process.runSync('dart', ['format', pkgDir]);
+    if (format) Process.runSync('dart', ['format', pkgDir]);
     return report;
   }
 

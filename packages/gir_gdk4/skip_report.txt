@@ -1,20 +1,21 @@
 # Skip report for package gir_gdk4 (Gdk 4.0)
-Total skipped: 426
+Total skipped: 436
 
 ## By category
 constant: 334
 property: 56
-callable: 27
+callable: 23
+virtual: 14
 method: 8
 renamed: 1
 
 ## By reason
 construct-only or no public setter; emitting getter only: 54
+virtual method; the class struct layout is not in the GIR: 14
 name collision: 8
-unsupported out parameter keys (ffi.Pointer<ffi.Void>): 2
+parameter keys: array of KeymapKey: the layout of the element is not emitted, so the elements cannot be read out of the array: 2
 introspectable=0: 2
-duplicate constant: Gdk.KEY_Macedonia_kje and Gdk.KEY_Macedonia_KJE both map to keyMacedoniaKje: 1
-duplicate constant: Gdk.KEY_Armenian_dza and Gdk.KEY_Armenian_DZA both map to keyArmenianDza: 1
+duplicate constant: Gdk.KEY_Macedonia_gje and Gdk.KEY_Macedonia_GJE both map to keyMacedoniaGje: 1
 duplicate constant: Gdk.KEY_Armenian_e and Gdk.KEY_Armenian_E both map to keyArmenianE: 1
 duplicate constant: Gdk.KEY_Armenian_fe and Gdk.KEY_Armenian_FE both map to keyArmenianFe: 1
 duplicate constant: Gdk.KEY_Armenian_ghat and Gdk.KEY_Armenian_GHAT both map to keyArmenianGhat: 1
@@ -129,8 +130,8 @@ duplicate constant: Gdk.KEY_Greek_upsilon and Gdk.KEY_Greek_UPSILON both map to 
 duplicate constant: Gdk.KEY_Greek_xi and Gdk.KEY_Greek_XI both map to keyGreekXi: 1
 duplicate constant: Gdk.KEY_Greek_zeta and Gdk.KEY_Greek_ZETA both map to keyGreekZeta: 1
 duplicate constant: Gdk.KEY_Macedonia_dse and Gdk.KEY_Macedonia_DSE both map to keyMacedoniaDse: 1
-duplicate constant: Gdk.KEY_Macedonia_gje and Gdk.KEY_Macedonia_GJE both map to keyMacedoniaGje: 1
 duplicate constant: Gdk.KEY_Armenian_at and Gdk.KEY_Armenian_AT both map to keyArmenianAt: 1
+duplicate constant: Gdk.KEY_Macedonia_kje and Gdk.KEY_Macedonia_KJE both map to keyMacedoniaKje: 1
 duplicate constant: Gdk.KEY_Serbian_dje and Gdk.KEY_Serbian_DJE both map to keySerbianDje: 1
 duplicate constant: Gdk.KEY_Serbian_dze and Gdk.KEY_Serbian_DZE both map to keySerbianDze: 1
 duplicate constant: Gdk.KEY_Serbian_je and Gdk.KEY_Serbian_JE both map to keySerbianJe: 1
@@ -249,8 +250,8 @@ duplicate constant: Gdk.KEY_lacute and Gdk.KEY_Lacute both map to keyLacute: 1
 duplicate constant: Gdk.KEY_lbelowdot and Gdk.KEY_Lbelowdot both map to keyLbelowdot: 1
 duplicate constant: Gdk.KEY_lcaron and Gdk.KEY_Lcaron both map to keyLcaron: 1
 duplicate constant: Gdk.KEY_lcedilla and Gdk.KEY_Lcedilla both map to keyLcedilla: 1
-duplicate constant: Gdk.KEY_lstroke and Gdk.KEY_Lstroke both map to keyLstroke: 1
-inout parameter x: 1
+getter get_geometry takes 1 args; props layer only supports 0: 1
+duplicate constant: Gdk.KEY_m and Gdk.KEY_M both map to keyM: 1
 duplicate constant: Gdk.KEY_mabovedot and Gdk.KEY_Mabovedot both map to keyMabovedot: 1
 duplicate constant: Gdk.KEY_n and Gdk.KEY_N both map to keyN: 1
 duplicate constant: Gdk.KEY_nacute and Gdk.KEY_Nacute both map to keyNacute: 1
@@ -360,21 +361,18 @@ moved to Paintable.new_empty: 1
 duplicate constant: Gdk.KEY_Armenian_ayb and Gdk.KEY_Armenian_AYB both map to keyArmenianAyb: 1
 moved to TextureError.quark: 1
 moved to VulkanError.quark: 1
-parameter mime_types: array of TypeKind.string (later phase): 1
 duplicate constant: Gdk.KEY_Armenian_ben and Gdk.KEY_Armenian_BEN both map to keyArmenianBen: 1
-unsupported out parameter out_offsets (ffi.Pointer<ffi.Size>): 1
 override-incompatible with ancestor; renamed to getDisplayAppLaunchContext: 1
 duplicate constant: Gdk.KEY_Armenian_cha and Gdk.KEY_Armenian_CHA both map to keyArmenianCha: 1
-missing getter get_n-axes: 1
 duplicate constant: Gdk.KEY_Armenian_da and Gdk.KEY_Armenian_DA both map to keyArmenianDa: 1
+missing getter get_n-axes: 1
+duplicate constant: Gdk.KEY_Armenian_dza and Gdk.KEY_Armenian_DZA both map to keyArmenianDza: 1
 moved to events_get_angle: 1
 moved to events_get_center: 1
 moved to events_get_distance: 1
-unsupported out parameter axes (ffi.Pointer<ffi.Double>): 1
-getter get_geometry takes 1 args; props layer only supports 0: 1
-duplicate constant: Gdk.KEY_m and Gdk.KEY_M both map to keyM: 1
+duplicate constant: Gdk.KEY_lstroke and Gdk.KEY_Lstroke both map to keyLstroke: 1
 
-## First 50 entries
+## All 436 entries
 [constant] Gdk.KEY_Armenian_at — duplicate constant: Gdk.KEY_Armenian_at and Gdk.KEY_Armenian_AT both map to keyArmenianAt
 [constant] Gdk.KEY_Armenian_ayb — duplicate constant: Gdk.KEY_Armenian_ayb and Gdk.KEY_Armenian_AYB both map to keyArmenianAyb
 [constant] Gdk.KEY_Armenian_ben — duplicate constant: Gdk.KEY_Armenian_ben and Gdk.KEY_Armenian_BEN both map to keyArmenianBen
@@ -425,3 +423,389 @@ duplicate constant: Gdk.KEY_m and Gdk.KEY_M both map to keyM: 1
 [constant] Gdk.KEY_Cyrillic_dzhe — duplicate constant: Gdk.KEY_Cyrillic_dzhe and Gdk.KEY_Cyrillic_DZHE both map to keyCyrillicDzhe
 [constant] Gdk.KEY_Cyrillic_e — duplicate constant: Gdk.KEY_Cyrillic_e and Gdk.KEY_Cyrillic_E both map to keyCyrillicE
 [constant] Gdk.KEY_Cyrillic_ef — duplicate constant: Gdk.KEY_Cyrillic_ef and Gdk.KEY_Cyrillic_EF both map to keyCyrillicEf
+[constant] Gdk.KEY_Cyrillic_el — duplicate constant: Gdk.KEY_Cyrillic_el and Gdk.KEY_Cyrillic_EL both map to keyCyrillicEl
+[constant] Gdk.KEY_Cyrillic_em — duplicate constant: Gdk.KEY_Cyrillic_em and Gdk.KEY_Cyrillic_EM both map to keyCyrillicEm
+[constant] Gdk.KEY_Cyrillic_en — duplicate constant: Gdk.KEY_Cyrillic_en and Gdk.KEY_Cyrillic_EN both map to keyCyrillicEn
+[constant] Gdk.KEY_Cyrillic_en_descender — duplicate constant: Gdk.KEY_Cyrillic_en_descender and Gdk.KEY_Cyrillic_EN_descender both map to keyCyrillicEnDescender
+[constant] Gdk.KEY_Cyrillic_er — duplicate constant: Gdk.KEY_Cyrillic_er and Gdk.KEY_Cyrillic_ER both map to keyCyrillicEr
+[constant] Gdk.KEY_Cyrillic_es — duplicate constant: Gdk.KEY_Cyrillic_es and Gdk.KEY_Cyrillic_ES both map to keyCyrillicEs
+[constant] Gdk.KEY_Cyrillic_ghe — duplicate constant: Gdk.KEY_Cyrillic_ghe and Gdk.KEY_Cyrillic_GHE both map to keyCyrillicGhe
+[constant] Gdk.KEY_Cyrillic_ghe_bar — duplicate constant: Gdk.KEY_Cyrillic_ghe_bar and Gdk.KEY_Cyrillic_GHE_bar both map to keyCyrillicGheBar
+[constant] Gdk.KEY_Cyrillic_ha — duplicate constant: Gdk.KEY_Cyrillic_ha and Gdk.KEY_Cyrillic_HA both map to keyCyrillicHa
+[constant] Gdk.KEY_Cyrillic_ha_descender — duplicate constant: Gdk.KEY_Cyrillic_ha_descender and Gdk.KEY_Cyrillic_HA_descender both map to keyCyrillicHaDescender
+[constant] Gdk.KEY_Cyrillic_hardsign — duplicate constant: Gdk.KEY_Cyrillic_hardsign and Gdk.KEY_Cyrillic_HARDSIGN both map to keyCyrillicHardsign
+[constant] Gdk.KEY_Cyrillic_i — duplicate constant: Gdk.KEY_Cyrillic_i and Gdk.KEY_Cyrillic_I both map to keyCyrillicI
+[constant] Gdk.KEY_Cyrillic_i_macron — duplicate constant: Gdk.KEY_Cyrillic_i_macron and Gdk.KEY_Cyrillic_I_macron both map to keyCyrillicIMacron
+[constant] Gdk.KEY_Cyrillic_ie — duplicate constant: Gdk.KEY_Cyrillic_ie and Gdk.KEY_Cyrillic_IE both map to keyCyrillicIe
+[constant] Gdk.KEY_Cyrillic_io — duplicate constant: Gdk.KEY_Cyrillic_io and Gdk.KEY_Cyrillic_IO both map to keyCyrillicIo
+[constant] Gdk.KEY_Cyrillic_je — duplicate constant: Gdk.KEY_Cyrillic_je and Gdk.KEY_Cyrillic_JE both map to keyCyrillicJe
+[constant] Gdk.KEY_Cyrillic_ka — duplicate constant: Gdk.KEY_Cyrillic_ka and Gdk.KEY_Cyrillic_KA both map to keyCyrillicKa
+[constant] Gdk.KEY_Cyrillic_ka_descender — duplicate constant: Gdk.KEY_Cyrillic_ka_descender and Gdk.KEY_Cyrillic_KA_descender both map to keyCyrillicKaDescender
+[constant] Gdk.KEY_Cyrillic_ka_vertstroke — duplicate constant: Gdk.KEY_Cyrillic_ka_vertstroke and Gdk.KEY_Cyrillic_KA_vertstroke both map to keyCyrillicKaVertstroke
+[constant] Gdk.KEY_Cyrillic_lje — duplicate constant: Gdk.KEY_Cyrillic_lje and Gdk.KEY_Cyrillic_LJE both map to keyCyrillicLje
+[constant] Gdk.KEY_Cyrillic_nje — duplicate constant: Gdk.KEY_Cyrillic_nje and Gdk.KEY_Cyrillic_NJE both map to keyCyrillicNje
+[constant] Gdk.KEY_Cyrillic_o — duplicate constant: Gdk.KEY_Cyrillic_o and Gdk.KEY_Cyrillic_O both map to keyCyrillicO
+[constant] Gdk.KEY_Cyrillic_o_bar — duplicate constant: Gdk.KEY_Cyrillic_o_bar and Gdk.KEY_Cyrillic_O_bar both map to keyCyrillicOBar
+[constant] Gdk.KEY_Cyrillic_pe — duplicate constant: Gdk.KEY_Cyrillic_pe and Gdk.KEY_Cyrillic_PE both map to keyCyrillicPe
+[constant] Gdk.KEY_Cyrillic_schwa — duplicate constant: Gdk.KEY_Cyrillic_schwa and Gdk.KEY_Cyrillic_SCHWA both map to keyCyrillicSchwa
+[constant] Gdk.KEY_Cyrillic_sha — duplicate constant: Gdk.KEY_Cyrillic_sha and Gdk.KEY_Cyrillic_SHA both map to keyCyrillicSha
+[constant] Gdk.KEY_Cyrillic_shcha — duplicate constant: Gdk.KEY_Cyrillic_shcha and Gdk.KEY_Cyrillic_SHCHA both map to keyCyrillicShcha
+[constant] Gdk.KEY_Cyrillic_shha — duplicate constant: Gdk.KEY_Cyrillic_shha and Gdk.KEY_Cyrillic_SHHA both map to keyCyrillicShha
+[constant] Gdk.KEY_Cyrillic_shorti — duplicate constant: Gdk.KEY_Cyrillic_shorti and Gdk.KEY_Cyrillic_SHORTI both map to keyCyrillicShorti
+[constant] Gdk.KEY_Cyrillic_softsign — duplicate constant: Gdk.KEY_Cyrillic_softsign and Gdk.KEY_Cyrillic_SOFTSIGN both map to keyCyrillicSoftsign
+[constant] Gdk.KEY_Cyrillic_te — duplicate constant: Gdk.KEY_Cyrillic_te and Gdk.KEY_Cyrillic_TE both map to keyCyrillicTe
+[constant] Gdk.KEY_Cyrillic_tse — duplicate constant: Gdk.KEY_Cyrillic_tse and Gdk.KEY_Cyrillic_TSE both map to keyCyrillicTse
+[constant] Gdk.KEY_Cyrillic_u — duplicate constant: Gdk.KEY_Cyrillic_u and Gdk.KEY_Cyrillic_U both map to keyCyrillicU
+[constant] Gdk.KEY_Cyrillic_u_macron — duplicate constant: Gdk.KEY_Cyrillic_u_macron and Gdk.KEY_Cyrillic_U_macron both map to keyCyrillicUMacron
+[constant] Gdk.KEY_Cyrillic_u_straight — duplicate constant: Gdk.KEY_Cyrillic_u_straight and Gdk.KEY_Cyrillic_U_straight both map to keyCyrillicUStraight
+[constant] Gdk.KEY_Cyrillic_u_straight_bar — duplicate constant: Gdk.KEY_Cyrillic_u_straight_bar and Gdk.KEY_Cyrillic_U_straight_bar both map to keyCyrillicUStraightBar
+[constant] Gdk.KEY_Cyrillic_ve — duplicate constant: Gdk.KEY_Cyrillic_ve and Gdk.KEY_Cyrillic_VE both map to keyCyrillicVe
+[constant] Gdk.KEY_Cyrillic_ya — duplicate constant: Gdk.KEY_Cyrillic_ya and Gdk.KEY_Cyrillic_YA both map to keyCyrillicYa
+[constant] Gdk.KEY_Cyrillic_yeru — duplicate constant: Gdk.KEY_Cyrillic_yeru and Gdk.KEY_Cyrillic_YERU both map to keyCyrillicYeru
+[constant] Gdk.KEY_Cyrillic_yu — duplicate constant: Gdk.KEY_Cyrillic_yu and Gdk.KEY_Cyrillic_YU both map to keyCyrillicYu
+[constant] Gdk.KEY_Cyrillic_ze — duplicate constant: Gdk.KEY_Cyrillic_ze and Gdk.KEY_Cyrillic_ZE both map to keyCyrillicZe
+[constant] Gdk.KEY_Cyrillic_zhe — duplicate constant: Gdk.KEY_Cyrillic_zhe and Gdk.KEY_Cyrillic_ZHE both map to keyCyrillicZhe
+[constant] Gdk.KEY_Cyrillic_zhe_descender — duplicate constant: Gdk.KEY_Cyrillic_zhe_descender and Gdk.KEY_Cyrillic_ZHE_descender both map to keyCyrillicZheDescender
+[constant] Gdk.KEY_Eth — duplicate constant: Gdk.KEY_Eth and Gdk.KEY_ETH both map to keyEth
+[constant] Gdk.KEY_Greek_alpha — duplicate constant: Gdk.KEY_Greek_alpha and Gdk.KEY_Greek_ALPHA both map to keyGreekAlpha
+[constant] Gdk.KEY_Greek_beta — duplicate constant: Gdk.KEY_Greek_beta and Gdk.KEY_Greek_BETA both map to keyGreekBeta
+[constant] Gdk.KEY_Greek_chi — duplicate constant: Gdk.KEY_Greek_chi and Gdk.KEY_Greek_CHI both map to keyGreekChi
+[constant] Gdk.KEY_Greek_delta — duplicate constant: Gdk.KEY_Greek_delta and Gdk.KEY_Greek_DELTA both map to keyGreekDelta
+[constant] Gdk.KEY_Greek_epsilon — duplicate constant: Gdk.KEY_Greek_epsilon and Gdk.KEY_Greek_EPSILON both map to keyGreekEpsilon
+[constant] Gdk.KEY_Greek_eta — duplicate constant: Gdk.KEY_Greek_eta and Gdk.KEY_Greek_ETA both map to keyGreekEta
+[constant] Gdk.KEY_Greek_gamma — duplicate constant: Gdk.KEY_Greek_gamma and Gdk.KEY_Greek_GAMMA both map to keyGreekGamma
+[constant] Gdk.KEY_Greek_iota — duplicate constant: Gdk.KEY_Greek_iota and Gdk.KEY_Greek_IOTA both map to keyGreekIota
+[constant] Gdk.KEY_Greek_kappa — duplicate constant: Gdk.KEY_Greek_kappa and Gdk.KEY_Greek_KAPPA both map to keyGreekKappa
+[constant] Gdk.KEY_Greek_lambda — duplicate constant: Gdk.KEY_Greek_lambda and Gdk.KEY_Greek_LAMBDA both map to keyGreekLambda
+[constant] Gdk.KEY_Greek_lamda — duplicate constant: Gdk.KEY_Greek_lamda and Gdk.KEY_Greek_LAMDA both map to keyGreekLamda
+[constant] Gdk.KEY_Greek_mu — duplicate constant: Gdk.KEY_Greek_mu and Gdk.KEY_Greek_MU both map to keyGreekMu
+[constant] Gdk.KEY_Greek_nu — duplicate constant: Gdk.KEY_Greek_nu and Gdk.KEY_Greek_NU both map to keyGreekNu
+[constant] Gdk.KEY_Greek_omega — duplicate constant: Gdk.KEY_Greek_omega and Gdk.KEY_Greek_OMEGA both map to keyGreekOmega
+[constant] Gdk.KEY_Greek_omicron — duplicate constant: Gdk.KEY_Greek_omicron and Gdk.KEY_Greek_OMICRON both map to keyGreekOmicron
+[constant] Gdk.KEY_Greek_phi — duplicate constant: Gdk.KEY_Greek_phi and Gdk.KEY_Greek_PHI both map to keyGreekPhi
+[constant] Gdk.KEY_Greek_pi — duplicate constant: Gdk.KEY_Greek_pi and Gdk.KEY_Greek_PI both map to keyGreekPi
+[constant] Gdk.KEY_Greek_psi — duplicate constant: Gdk.KEY_Greek_psi and Gdk.KEY_Greek_PSI both map to keyGreekPsi
+[constant] Gdk.KEY_Greek_rho — duplicate constant: Gdk.KEY_Greek_rho and Gdk.KEY_Greek_RHO both map to keyGreekRho
+[constant] Gdk.KEY_Greek_sigma — duplicate constant: Gdk.KEY_Greek_sigma and Gdk.KEY_Greek_SIGMA both map to keyGreekSigma
+[constant] Gdk.KEY_Greek_tau — duplicate constant: Gdk.KEY_Greek_tau and Gdk.KEY_Greek_TAU both map to keyGreekTau
+[constant] Gdk.KEY_Greek_theta — duplicate constant: Gdk.KEY_Greek_theta and Gdk.KEY_Greek_THETA both map to keyGreekTheta
+[constant] Gdk.KEY_Greek_upsilon — duplicate constant: Gdk.KEY_Greek_upsilon and Gdk.KEY_Greek_UPSILON both map to keyGreekUpsilon
+[constant] Gdk.KEY_Greek_xi — duplicate constant: Gdk.KEY_Greek_xi and Gdk.KEY_Greek_XI both map to keyGreekXi
+[constant] Gdk.KEY_Greek_zeta — duplicate constant: Gdk.KEY_Greek_zeta and Gdk.KEY_Greek_ZETA both map to keyGreekZeta
+[constant] Gdk.KEY_Macedonia_dse — duplicate constant: Gdk.KEY_Macedonia_dse and Gdk.KEY_Macedonia_DSE both map to keyMacedoniaDse
+[constant] Gdk.KEY_Macedonia_gje — duplicate constant: Gdk.KEY_Macedonia_gje and Gdk.KEY_Macedonia_GJE both map to keyMacedoniaGje
+[constant] Gdk.KEY_Macedonia_kje — duplicate constant: Gdk.KEY_Macedonia_kje and Gdk.KEY_Macedonia_KJE both map to keyMacedoniaKje
+[constant] Gdk.KEY_Serbian_dje — duplicate constant: Gdk.KEY_Serbian_dje and Gdk.KEY_Serbian_DJE both map to keySerbianDje
+[constant] Gdk.KEY_Serbian_dze — duplicate constant: Gdk.KEY_Serbian_dze and Gdk.KEY_Serbian_DZE both map to keySerbianDze
+[constant] Gdk.KEY_Serbian_je — duplicate constant: Gdk.KEY_Serbian_je and Gdk.KEY_Serbian_JE both map to keySerbianJe
+[constant] Gdk.KEY_Serbian_lje — duplicate constant: Gdk.KEY_Serbian_lje and Gdk.KEY_Serbian_LJE both map to keySerbianLje
+[constant] Gdk.KEY_Serbian_nje — duplicate constant: Gdk.KEY_Serbian_nje and Gdk.KEY_Serbian_NJE both map to keySerbianNje
+[constant] Gdk.KEY_Serbian_tshe — duplicate constant: Gdk.KEY_Serbian_tshe and Gdk.KEY_Serbian_TSHE both map to keySerbianTshe
+[constant] Gdk.KEY_Thorn — duplicate constant: Gdk.KEY_Thorn and Gdk.KEY_THORN both map to keyThorn
+[constant] Gdk.KEY_Ukrainian_ghe_with_upturn — duplicate constant: Gdk.KEY_Ukrainian_ghe_with_upturn and Gdk.KEY_Ukrainian_GHE_WITH_UPTURN both map to keyUkrainianGheWithUpturn
+[constant] Gdk.KEY_Ukrainian_i — duplicate constant: Gdk.KEY_Ukrainian_i and Gdk.KEY_Ukrainian_I both map to keyUkrainianI
+[constant] Gdk.KEY_Ukrainian_ie — duplicate constant: Gdk.KEY_Ukrainian_ie and Gdk.KEY_Ukrainian_IE both map to keyUkrainianIe
+[constant] Gdk.KEY_Ukrainian_yi — duplicate constant: Gdk.KEY_Ukrainian_yi and Gdk.KEY_Ukrainian_YI both map to keyUkrainianYi
+[constant] Gdk.KEY_Ukranian_i — duplicate constant: Gdk.KEY_Ukranian_i and Gdk.KEY_Ukranian_I both map to keyUkranianI
+[constant] Gdk.KEY_Ukranian_je — duplicate constant: Gdk.KEY_Ukranian_je and Gdk.KEY_Ukranian_JE both map to keyUkranianJe
+[constant] Gdk.KEY_Ukranian_yi — duplicate constant: Gdk.KEY_Ukranian_yi and Gdk.KEY_Ukranian_YI both map to keyUkranianYi
+[constant] Gdk.KEY_a — duplicate constant: Gdk.KEY_a and Gdk.KEY_A both map to keyA
+[constant] Gdk.KEY_aacute — duplicate constant: Gdk.KEY_aacute and Gdk.KEY_Aacute both map to keyAacute
+[constant] Gdk.KEY_abelowdot — duplicate constant: Gdk.KEY_abelowdot and Gdk.KEY_Abelowdot both map to keyAbelowdot
+[constant] Gdk.KEY_abreve — duplicate constant: Gdk.KEY_abreve and Gdk.KEY_Abreve both map to keyAbreve
+[constant] Gdk.KEY_abreveacute — duplicate constant: Gdk.KEY_abreveacute and Gdk.KEY_Abreveacute both map to keyAbreveacute
+[constant] Gdk.KEY_abrevebelowdot — duplicate constant: Gdk.KEY_abrevebelowdot and Gdk.KEY_Abrevebelowdot both map to keyAbrevebelowdot
+[constant] Gdk.KEY_abrevegrave — duplicate constant: Gdk.KEY_abrevegrave and Gdk.KEY_Abrevegrave both map to keyAbrevegrave
+[constant] Gdk.KEY_abrevehook — duplicate constant: Gdk.KEY_abrevehook and Gdk.KEY_Abrevehook both map to keyAbrevehook
+[constant] Gdk.KEY_abrevetilde — duplicate constant: Gdk.KEY_abrevetilde and Gdk.KEY_Abrevetilde both map to keyAbrevetilde
+[constant] Gdk.KEY_acircumflex — duplicate constant: Gdk.KEY_acircumflex and Gdk.KEY_Acircumflex both map to keyAcircumflex
+[constant] Gdk.KEY_acircumflexacute — duplicate constant: Gdk.KEY_acircumflexacute and Gdk.KEY_Acircumflexacute both map to keyAcircumflexacute
+[constant] Gdk.KEY_acircumflexbelowdot — duplicate constant: Gdk.KEY_acircumflexbelowdot and Gdk.KEY_Acircumflexbelowdot both map to keyAcircumflexbelowdot
+[constant] Gdk.KEY_acircumflexgrave — duplicate constant: Gdk.KEY_acircumflexgrave and Gdk.KEY_Acircumflexgrave both map to keyAcircumflexgrave
+[constant] Gdk.KEY_acircumflexhook — duplicate constant: Gdk.KEY_acircumflexhook and Gdk.KEY_Acircumflexhook both map to keyAcircumflexhook
+[constant] Gdk.KEY_acircumflextilde — duplicate constant: Gdk.KEY_acircumflextilde and Gdk.KEY_Acircumflextilde both map to keyAcircumflextilde
+[constant] Gdk.KEY_adiaeresis — duplicate constant: Gdk.KEY_adiaeresis and Gdk.KEY_Adiaeresis both map to keyAdiaeresis
+[constant] Gdk.KEY_ae — duplicate constant: Gdk.KEY_ae and Gdk.KEY_AE both map to keyAe
+[constant] Gdk.KEY_agrave — duplicate constant: Gdk.KEY_agrave and Gdk.KEY_Agrave both map to keyAgrave
+[constant] Gdk.KEY_ahook — duplicate constant: Gdk.KEY_ahook and Gdk.KEY_Ahook both map to keyAhook
+[constant] Gdk.KEY_amacron — duplicate constant: Gdk.KEY_amacron and Gdk.KEY_Amacron both map to keyAmacron
+[constant] Gdk.KEY_aogonek — duplicate constant: Gdk.KEY_aogonek and Gdk.KEY_Aogonek both map to keyAogonek
+[constant] Gdk.KEY_aring — duplicate constant: Gdk.KEY_aring and Gdk.KEY_Aring both map to keyAring
+[constant] Gdk.KEY_atilde — duplicate constant: Gdk.KEY_atilde and Gdk.KEY_Atilde both map to keyAtilde
+[constant] Gdk.KEY_b — duplicate constant: Gdk.KEY_b and Gdk.KEY_B both map to keyB
+[constant] Gdk.KEY_babovedot — duplicate constant: Gdk.KEY_babovedot and Gdk.KEY_Babovedot both map to keyBabovedot
+[constant] Gdk.KEY_c — duplicate constant: Gdk.KEY_c and Gdk.KEY_C both map to keyC
+[constant] Gdk.KEY_c_h — duplicate constant: Gdk.KEY_c_h and Gdk.KEY_C_H both map to keyCH
+[constant] Gdk.KEY_cabovedot — duplicate constant: Gdk.KEY_cabovedot and Gdk.KEY_Cabovedot both map to keyCabovedot
+[constant] Gdk.KEY_cacute — duplicate constant: Gdk.KEY_cacute and Gdk.KEY_Cacute both map to keyCacute
+[constant] Gdk.KEY_ccaron — duplicate constant: Gdk.KEY_ccaron and Gdk.KEY_Ccaron both map to keyCcaron
+[constant] Gdk.KEY_ccedilla — duplicate constant: Gdk.KEY_ccedilla and Gdk.KEY_Ccedilla both map to keyCcedilla
+[constant] Gdk.KEY_ccircumflex — duplicate constant: Gdk.KEY_ccircumflex and Gdk.KEY_Ccircumflex both map to keyCcircumflex
+[constant] Gdk.KEY_ch — duplicate constant: Gdk.KEY_ch and Gdk.KEY_CH both map to keyCh
+[constant] Gdk.KEY_d — duplicate constant: Gdk.KEY_d and Gdk.KEY_D both map to keyD
+[constant] Gdk.KEY_dabovedot — duplicate constant: Gdk.KEY_dabovedot and Gdk.KEY_Dabovedot both map to keyDabovedot
+[constant] Gdk.KEY_dcaron — duplicate constant: Gdk.KEY_dcaron and Gdk.KEY_Dcaron both map to keyDcaron
+[constant] Gdk.KEY_dead_a — duplicate constant: Gdk.KEY_dead_a and Gdk.KEY_dead_A both map to keyDeadA
+[constant] Gdk.KEY_dead_e — duplicate constant: Gdk.KEY_dead_e and Gdk.KEY_dead_E both map to keyDeadE
+[constant] Gdk.KEY_dead_i — duplicate constant: Gdk.KEY_dead_i and Gdk.KEY_dead_I both map to keyDeadI
+[constant] Gdk.KEY_dead_o — duplicate constant: Gdk.KEY_dead_o and Gdk.KEY_dead_O both map to keyDeadO
+[constant] Gdk.KEY_dead_schwa — duplicate constant: Gdk.KEY_dead_schwa and Gdk.KEY_dead_SCHWA both map to keyDeadSchwa
+[constant] Gdk.KEY_dead_u — duplicate constant: Gdk.KEY_dead_u and Gdk.KEY_dead_U both map to keyDeadU
+[constant] Gdk.KEY_dstroke — duplicate constant: Gdk.KEY_dstroke and Gdk.KEY_Dstroke both map to keyDstroke
+[constant] Gdk.KEY_e — duplicate constant: Gdk.KEY_e and Gdk.KEY_E both map to keyE
+[constant] Gdk.KEY_eabovedot — duplicate constant: Gdk.KEY_eabovedot and Gdk.KEY_Eabovedot both map to keyEabovedot
+[constant] Gdk.KEY_eacute — duplicate constant: Gdk.KEY_eacute and Gdk.KEY_Eacute both map to keyEacute
+[constant] Gdk.KEY_ebelowdot — duplicate constant: Gdk.KEY_ebelowdot and Gdk.KEY_Ebelowdot both map to keyEbelowdot
+[constant] Gdk.KEY_ecaron — duplicate constant: Gdk.KEY_ecaron and Gdk.KEY_Ecaron both map to keyEcaron
+[constant] Gdk.KEY_ecircumflex — duplicate constant: Gdk.KEY_ecircumflex and Gdk.KEY_Ecircumflex both map to keyEcircumflex
+[constant] Gdk.KEY_ecircumflexacute — duplicate constant: Gdk.KEY_ecircumflexacute and Gdk.KEY_Ecircumflexacute both map to keyEcircumflexacute
+[constant] Gdk.KEY_ecircumflexbelowdot — duplicate constant: Gdk.KEY_ecircumflexbelowdot and Gdk.KEY_Ecircumflexbelowdot both map to keyEcircumflexbelowdot
+[constant] Gdk.KEY_ecircumflexgrave — duplicate constant: Gdk.KEY_ecircumflexgrave and Gdk.KEY_Ecircumflexgrave both map to keyEcircumflexgrave
+[constant] Gdk.KEY_ecircumflexhook — duplicate constant: Gdk.KEY_ecircumflexhook and Gdk.KEY_Ecircumflexhook both map to keyEcircumflexhook
+[constant] Gdk.KEY_ecircumflextilde — duplicate constant: Gdk.KEY_ecircumflextilde and Gdk.KEY_Ecircumflextilde both map to keyEcircumflextilde
+[constant] Gdk.KEY_ediaeresis — duplicate constant: Gdk.KEY_ediaeresis and Gdk.KEY_Ediaeresis both map to keyEdiaeresis
+[constant] Gdk.KEY_egrave — duplicate constant: Gdk.KEY_egrave and Gdk.KEY_Egrave both map to keyEgrave
+[constant] Gdk.KEY_ehook — duplicate constant: Gdk.KEY_ehook and Gdk.KEY_Ehook both map to keyEhook
+[constant] Gdk.KEY_emacron — duplicate constant: Gdk.KEY_emacron and Gdk.KEY_Emacron both map to keyEmacron
+[constant] Gdk.KEY_eng — duplicate constant: Gdk.KEY_eng and Gdk.KEY_ENG both map to keyEng
+[constant] Gdk.KEY_eogonek — duplicate constant: Gdk.KEY_eogonek and Gdk.KEY_Eogonek both map to keyEogonek
+[constant] Gdk.KEY_eth — duplicate constant: Gdk.KEY_eth and Gdk.KEY_ETH both map to keyEth
+[constant] Gdk.KEY_etilde — duplicate constant: Gdk.KEY_etilde and Gdk.KEY_Etilde both map to keyEtilde
+[constant] Gdk.KEY_ezh — duplicate constant: Gdk.KEY_ezh and Gdk.KEY_EZH both map to keyEzh
+[constant] Gdk.KEY_f — duplicate constant: Gdk.KEY_f and Gdk.KEY_F both map to keyF
+[constant] Gdk.KEY_fabovedot — duplicate constant: Gdk.KEY_fabovedot and Gdk.KEY_Fabovedot both map to keyFabovedot
+[constant] Gdk.KEY_g — duplicate constant: Gdk.KEY_g and Gdk.KEY_G both map to keyG
+[constant] Gdk.KEY_gabovedot — duplicate constant: Gdk.KEY_gabovedot and Gdk.KEY_Gabovedot both map to keyGabovedot
+[constant] Gdk.KEY_gbreve — duplicate constant: Gdk.KEY_gbreve and Gdk.KEY_Gbreve both map to keyGbreve
+[constant] Gdk.KEY_gcaron — duplicate constant: Gdk.KEY_gcaron and Gdk.KEY_Gcaron both map to keyGcaron
+[constant] Gdk.KEY_gcedilla — duplicate constant: Gdk.KEY_gcedilla and Gdk.KEY_Gcedilla both map to keyGcedilla
+[constant] Gdk.KEY_gcircumflex — duplicate constant: Gdk.KEY_gcircumflex and Gdk.KEY_Gcircumflex both map to keyGcircumflex
+[constant] Gdk.KEY_h — duplicate constant: Gdk.KEY_h and Gdk.KEY_H both map to keyH
+[constant] Gdk.KEY_hcircumflex — duplicate constant: Gdk.KEY_hcircumflex and Gdk.KEY_Hcircumflex both map to keyHcircumflex
+[constant] Gdk.KEY_hstroke — duplicate constant: Gdk.KEY_hstroke and Gdk.KEY_Hstroke both map to keyHstroke
+[constant] Gdk.KEY_i — duplicate constant: Gdk.KEY_i and Gdk.KEY_I both map to keyI
+[constant] Gdk.KEY_iacute — duplicate constant: Gdk.KEY_iacute and Gdk.KEY_Iacute both map to keyIacute
+[constant] Gdk.KEY_ibelowdot — duplicate constant: Gdk.KEY_ibelowdot and Gdk.KEY_Ibelowdot both map to keyIbelowdot
+[constant] Gdk.KEY_ibreve — duplicate constant: Gdk.KEY_ibreve and Gdk.KEY_Ibreve both map to keyIbreve
+[constant] Gdk.KEY_icircumflex — duplicate constant: Gdk.KEY_icircumflex and Gdk.KEY_Icircumflex both map to keyIcircumflex
+[constant] Gdk.KEY_idiaeresis — duplicate constant: Gdk.KEY_idiaeresis and Gdk.KEY_Idiaeresis both map to keyIdiaeresis
+[constant] Gdk.KEY_igrave — duplicate constant: Gdk.KEY_igrave and Gdk.KEY_Igrave both map to keyIgrave
+[constant] Gdk.KEY_ihook — duplicate constant: Gdk.KEY_ihook and Gdk.KEY_Ihook both map to keyIhook
+[constant] Gdk.KEY_imacron — duplicate constant: Gdk.KEY_imacron and Gdk.KEY_Imacron both map to keyImacron
+[constant] Gdk.KEY_iogonek — duplicate constant: Gdk.KEY_iogonek and Gdk.KEY_Iogonek both map to keyIogonek
+[constant] Gdk.KEY_itilde — duplicate constant: Gdk.KEY_itilde and Gdk.KEY_Itilde both map to keyItilde
+[constant] Gdk.KEY_j — duplicate constant: Gdk.KEY_j and Gdk.KEY_J both map to keyJ
+[constant] Gdk.KEY_jcircumflex — duplicate constant: Gdk.KEY_jcircumflex and Gdk.KEY_Jcircumflex both map to keyJcircumflex
+[constant] Gdk.KEY_k — duplicate constant: Gdk.KEY_k and Gdk.KEY_K both map to keyK
+[constant] Gdk.KEY_kana_a — duplicate constant: Gdk.KEY_kana_a and Gdk.KEY_kana_A both map to keyKanaA
+[constant] Gdk.KEY_kana_e — duplicate constant: Gdk.KEY_kana_e and Gdk.KEY_kana_E both map to keyKanaE
+[constant] Gdk.KEY_kana_i — duplicate constant: Gdk.KEY_kana_i and Gdk.KEY_kana_I both map to keyKanaI
+[constant] Gdk.KEY_kana_o — duplicate constant: Gdk.KEY_kana_o and Gdk.KEY_kana_O both map to keyKanaO
+[constant] Gdk.KEY_kana_tsu — duplicate constant: Gdk.KEY_kana_tsu and Gdk.KEY_kana_TSU both map to keyKanaTsu
+[constant] Gdk.KEY_kana_tu — duplicate constant: Gdk.KEY_kana_tu and Gdk.KEY_kana_TU both map to keyKanaTu
+[constant] Gdk.KEY_kana_u — duplicate constant: Gdk.KEY_kana_u and Gdk.KEY_kana_U both map to keyKanaU
+[constant] Gdk.KEY_kana_ya — duplicate constant: Gdk.KEY_kana_ya and Gdk.KEY_kana_YA both map to keyKanaYa
+[constant] Gdk.KEY_kana_yo — duplicate constant: Gdk.KEY_kana_yo and Gdk.KEY_kana_YO both map to keyKanaYo
+[constant] Gdk.KEY_kana_yu — duplicate constant: Gdk.KEY_kana_yu and Gdk.KEY_kana_YU both map to keyKanaYu
+[constant] Gdk.KEY_kcedilla — duplicate constant: Gdk.KEY_kcedilla and Gdk.KEY_Kcedilla both map to keyKcedilla
+[constant] Gdk.KEY_l — duplicate constant: Gdk.KEY_l and Gdk.KEY_L both map to keyL
+[constant] Gdk.KEY_lacute — duplicate constant: Gdk.KEY_lacute and Gdk.KEY_Lacute both map to keyLacute
+[constant] Gdk.KEY_lbelowdot — duplicate constant: Gdk.KEY_lbelowdot and Gdk.KEY_Lbelowdot both map to keyLbelowdot
+[constant] Gdk.KEY_lcaron — duplicate constant: Gdk.KEY_lcaron and Gdk.KEY_Lcaron both map to keyLcaron
+[constant] Gdk.KEY_lcedilla — duplicate constant: Gdk.KEY_lcedilla and Gdk.KEY_Lcedilla both map to keyLcedilla
+[constant] Gdk.KEY_lstroke — duplicate constant: Gdk.KEY_lstroke and Gdk.KEY_Lstroke both map to keyLstroke
+[constant] Gdk.KEY_m — duplicate constant: Gdk.KEY_m and Gdk.KEY_M both map to keyM
+[constant] Gdk.KEY_mabovedot — duplicate constant: Gdk.KEY_mabovedot and Gdk.KEY_Mabovedot both map to keyMabovedot
+[constant] Gdk.KEY_n — duplicate constant: Gdk.KEY_n and Gdk.KEY_N both map to keyN
+[constant] Gdk.KEY_nacute — duplicate constant: Gdk.KEY_nacute and Gdk.KEY_Nacute both map to keyNacute
+[constant] Gdk.KEY_ncaron — duplicate constant: Gdk.KEY_ncaron and Gdk.KEY_Ncaron both map to keyNcaron
+[constant] Gdk.KEY_ncedilla — duplicate constant: Gdk.KEY_ncedilla and Gdk.KEY_Ncedilla both map to keyNcedilla
+[constant] Gdk.KEY_ntilde — duplicate constant: Gdk.KEY_ntilde and Gdk.KEY_Ntilde both map to keyNtilde
+[constant] Gdk.KEY_o — duplicate constant: Gdk.KEY_o and Gdk.KEY_O both map to keyO
+[constant] Gdk.KEY_oacute — duplicate constant: Gdk.KEY_oacute and Gdk.KEY_Oacute both map to keyOacute
+[constant] Gdk.KEY_obarred — duplicate constant: Gdk.KEY_obarred and Gdk.KEY_Obarred both map to keyObarred
+[constant] Gdk.KEY_obelowdot — duplicate constant: Gdk.KEY_obelowdot and Gdk.KEY_Obelowdot both map to keyObelowdot
+[constant] Gdk.KEY_ocaron — duplicate constant: Gdk.KEY_ocaron and Gdk.KEY_Ocaron both map to keyOcaron
+[constant] Gdk.KEY_ocircumflex — duplicate constant: Gdk.KEY_ocircumflex and Gdk.KEY_Ocircumflex both map to keyOcircumflex
+[constant] Gdk.KEY_ocircumflexacute — duplicate constant: Gdk.KEY_ocircumflexacute and Gdk.KEY_Ocircumflexacute both map to keyOcircumflexacute
+[constant] Gdk.KEY_ocircumflexbelowdot — duplicate constant: Gdk.KEY_ocircumflexbelowdot and Gdk.KEY_Ocircumflexbelowdot both map to keyOcircumflexbelowdot
+[constant] Gdk.KEY_ocircumflexgrave — duplicate constant: Gdk.KEY_ocircumflexgrave and Gdk.KEY_Ocircumflexgrave both map to keyOcircumflexgrave
+[constant] Gdk.KEY_ocircumflexhook — duplicate constant: Gdk.KEY_ocircumflexhook and Gdk.KEY_Ocircumflexhook both map to keyOcircumflexhook
+[constant] Gdk.KEY_ocircumflextilde — duplicate constant: Gdk.KEY_ocircumflextilde and Gdk.KEY_Ocircumflextilde both map to keyOcircumflextilde
+[constant] Gdk.KEY_odiaeresis — duplicate constant: Gdk.KEY_odiaeresis and Gdk.KEY_Odiaeresis both map to keyOdiaeresis
+[constant] Gdk.KEY_odoubleacute — duplicate constant: Gdk.KEY_odoubleacute and Gdk.KEY_Odoubleacute both map to keyOdoubleacute
+[constant] Gdk.KEY_oe — duplicate constant: Gdk.KEY_oe and Gdk.KEY_OE both map to keyOe
+[constant] Gdk.KEY_ograve — duplicate constant: Gdk.KEY_ograve and Gdk.KEY_Ograve both map to keyOgrave
+[constant] Gdk.KEY_ohook — duplicate constant: Gdk.KEY_ohook and Gdk.KEY_Ohook both map to keyOhook
+[constant] Gdk.KEY_ohorn — duplicate constant: Gdk.KEY_ohorn and Gdk.KEY_Ohorn both map to keyOhorn
+[constant] Gdk.KEY_ohornacute — duplicate constant: Gdk.KEY_ohornacute and Gdk.KEY_Ohornacute both map to keyOhornacute
+[constant] Gdk.KEY_ohornbelowdot — duplicate constant: Gdk.KEY_ohornbelowdot and Gdk.KEY_Ohornbelowdot both map to keyOhornbelowdot
+[constant] Gdk.KEY_ohorngrave — duplicate constant: Gdk.KEY_ohorngrave and Gdk.KEY_Ohorngrave both map to keyOhorngrave
+[constant] Gdk.KEY_ohornhook — duplicate constant: Gdk.KEY_ohornhook and Gdk.KEY_Ohornhook both map to keyOhornhook
+[constant] Gdk.KEY_ohorntilde — duplicate constant: Gdk.KEY_ohorntilde and Gdk.KEY_Ohorntilde both map to keyOhorntilde
+[constant] Gdk.KEY_omacron — duplicate constant: Gdk.KEY_omacron and Gdk.KEY_Omacron both map to keyOmacron
+[constant] Gdk.KEY_ooblique — duplicate constant: Gdk.KEY_ooblique and Gdk.KEY_Ooblique both map to keyOoblique
+[constant] Gdk.KEY_oslash — duplicate constant: Gdk.KEY_oslash and Gdk.KEY_Oslash both map to keyOslash
+[constant] Gdk.KEY_otilde — duplicate constant: Gdk.KEY_otilde and Gdk.KEY_Otilde both map to keyOtilde
+[constant] Gdk.KEY_p — duplicate constant: Gdk.KEY_p and Gdk.KEY_P both map to keyP
+[constant] Gdk.KEY_pabovedot — duplicate constant: Gdk.KEY_pabovedot and Gdk.KEY_Pabovedot both map to keyPabovedot
+[constant] Gdk.KEY_q — duplicate constant: Gdk.KEY_q and Gdk.KEY_Q both map to keyQ
+[constant] Gdk.KEY_r — duplicate constant: Gdk.KEY_r and Gdk.KEY_R both map to keyR
+[constant] Gdk.KEY_racute — duplicate constant: Gdk.KEY_racute and Gdk.KEY_Racute both map to keyRacute
+[constant] Gdk.KEY_rcaron — duplicate constant: Gdk.KEY_rcaron and Gdk.KEY_Rcaron both map to keyRcaron
+[constant] Gdk.KEY_rcedilla — duplicate constant: Gdk.KEY_rcedilla and Gdk.KEY_Rcedilla both map to keyRcedilla
+[constant] Gdk.KEY_s — duplicate constant: Gdk.KEY_s and Gdk.KEY_S both map to keyS
+[constant] Gdk.KEY_sabovedot — duplicate constant: Gdk.KEY_sabovedot and Gdk.KEY_Sabovedot both map to keySabovedot
+[constant] Gdk.KEY_sacute — duplicate constant: Gdk.KEY_sacute and Gdk.KEY_Sacute both map to keySacute
+[constant] Gdk.KEY_scaron — duplicate constant: Gdk.KEY_scaron and Gdk.KEY_Scaron both map to keyScaron
+[constant] Gdk.KEY_scedilla — duplicate constant: Gdk.KEY_scedilla and Gdk.KEY_Scedilla both map to keyScedilla
+[constant] Gdk.KEY_schwa — duplicate constant: Gdk.KEY_schwa and Gdk.KEY_SCHWA both map to keySchwa
+[constant] Gdk.KEY_scircumflex — duplicate constant: Gdk.KEY_scircumflex and Gdk.KEY_Scircumflex both map to keyScircumflex
+[constant] Gdk.KEY_t — duplicate constant: Gdk.KEY_t and Gdk.KEY_T both map to keyT
+[constant] Gdk.KEY_tabovedot — duplicate constant: Gdk.KEY_tabovedot and Gdk.KEY_Tabovedot both map to keyTabovedot
+[constant] Gdk.KEY_tcaron — duplicate constant: Gdk.KEY_tcaron and Gdk.KEY_Tcaron both map to keyTcaron
+[constant] Gdk.KEY_tcedilla — duplicate constant: Gdk.KEY_tcedilla and Gdk.KEY_Tcedilla both map to keyTcedilla
+[constant] Gdk.KEY_thorn — duplicate constant: Gdk.KEY_thorn and Gdk.KEY_THORN both map to keyThorn
+[constant] Gdk.KEY_tslash — duplicate constant: Gdk.KEY_tslash and Gdk.KEY_Tslash both map to keyTslash
+[constant] Gdk.KEY_u — duplicate constant: Gdk.KEY_u and Gdk.KEY_U both map to keyU
+[constant] Gdk.KEY_uacute — duplicate constant: Gdk.KEY_uacute and Gdk.KEY_Uacute both map to keyUacute
+[constant] Gdk.KEY_ubelowdot — duplicate constant: Gdk.KEY_ubelowdot and Gdk.KEY_Ubelowdot both map to keyUbelowdot
+[constant] Gdk.KEY_ubreve — duplicate constant: Gdk.KEY_ubreve and Gdk.KEY_Ubreve both map to keyUbreve
+[constant] Gdk.KEY_ucircumflex — duplicate constant: Gdk.KEY_ucircumflex and Gdk.KEY_Ucircumflex both map to keyUcircumflex
+[constant] Gdk.KEY_udiaeresis — duplicate constant: Gdk.KEY_udiaeresis and Gdk.KEY_Udiaeresis both map to keyUdiaeresis
+[constant] Gdk.KEY_udoubleacute — duplicate constant: Gdk.KEY_udoubleacute and Gdk.KEY_Udoubleacute both map to keyUdoubleacute
+[constant] Gdk.KEY_ugrave — duplicate constant: Gdk.KEY_ugrave and Gdk.KEY_Ugrave both map to keyUgrave
+[constant] Gdk.KEY_uhook — duplicate constant: Gdk.KEY_uhook and Gdk.KEY_Uhook both map to keyUhook
+[constant] Gdk.KEY_uhorn — duplicate constant: Gdk.KEY_uhorn and Gdk.KEY_Uhorn both map to keyUhorn
+[constant] Gdk.KEY_uhornacute — duplicate constant: Gdk.KEY_uhornacute and Gdk.KEY_Uhornacute both map to keyUhornacute
+[constant] Gdk.KEY_uhornbelowdot — duplicate constant: Gdk.KEY_uhornbelowdot and Gdk.KEY_Uhornbelowdot both map to keyUhornbelowdot
+[constant] Gdk.KEY_uhorngrave — duplicate constant: Gdk.KEY_uhorngrave and Gdk.KEY_Uhorngrave both map to keyUhorngrave
+[constant] Gdk.KEY_uhornhook — duplicate constant: Gdk.KEY_uhornhook and Gdk.KEY_Uhornhook both map to keyUhornhook
+[constant] Gdk.KEY_uhorntilde — duplicate constant: Gdk.KEY_uhorntilde and Gdk.KEY_Uhorntilde both map to keyUhorntilde
+[constant] Gdk.KEY_umacron — duplicate constant: Gdk.KEY_umacron and Gdk.KEY_Umacron both map to keyUmacron
+[constant] Gdk.KEY_uogonek — duplicate constant: Gdk.KEY_uogonek and Gdk.KEY_Uogonek both map to keyUogonek
+[constant] Gdk.KEY_uring — duplicate constant: Gdk.KEY_uring and Gdk.KEY_Uring both map to keyUring
+[constant] Gdk.KEY_utilde — duplicate constant: Gdk.KEY_utilde and Gdk.KEY_Utilde both map to keyUtilde
+[constant] Gdk.KEY_v — duplicate constant: Gdk.KEY_v and Gdk.KEY_V both map to keyV
+[constant] Gdk.KEY_w — duplicate constant: Gdk.KEY_w and Gdk.KEY_W both map to keyW
+[constant] Gdk.KEY_wacute — duplicate constant: Gdk.KEY_wacute and Gdk.KEY_Wacute both map to keyWacute
+[constant] Gdk.KEY_wcircumflex — duplicate constant: Gdk.KEY_wcircumflex and Gdk.KEY_Wcircumflex both map to keyWcircumflex
+[constant] Gdk.KEY_wdiaeresis — duplicate constant: Gdk.KEY_wdiaeresis and Gdk.KEY_Wdiaeresis both map to keyWdiaeresis
+[constant] Gdk.KEY_wgrave — duplicate constant: Gdk.KEY_wgrave and Gdk.KEY_Wgrave both map to keyWgrave
+[constant] Gdk.KEY_x — duplicate constant: Gdk.KEY_x and Gdk.KEY_X both map to keyX
+[constant] Gdk.KEY_xabovedot — duplicate constant: Gdk.KEY_xabovedot and Gdk.KEY_Xabovedot both map to keyXabovedot
+[constant] Gdk.KEY_y — duplicate constant: Gdk.KEY_y and Gdk.KEY_Y both map to keyY
+[constant] Gdk.KEY_yacute — duplicate constant: Gdk.KEY_yacute and Gdk.KEY_Yacute both map to keyYacute
+[constant] Gdk.KEY_ybelowdot — duplicate constant: Gdk.KEY_ybelowdot and Gdk.KEY_Ybelowdot both map to keyYbelowdot
+[constant] Gdk.KEY_ycircumflex — duplicate constant: Gdk.KEY_ycircumflex and Gdk.KEY_Ycircumflex both map to keyYcircumflex
+[constant] Gdk.KEY_ydiaeresis — duplicate constant: Gdk.KEY_ydiaeresis and Gdk.KEY_Ydiaeresis both map to keyYdiaeresis
+[constant] Gdk.KEY_ygrave — duplicate constant: Gdk.KEY_ygrave and Gdk.KEY_Ygrave both map to keyYgrave
+[constant] Gdk.KEY_yhook — duplicate constant: Gdk.KEY_yhook and Gdk.KEY_Yhook both map to keyYhook
+[constant] Gdk.KEY_ytilde — duplicate constant: Gdk.KEY_ytilde and Gdk.KEY_Ytilde both map to keyYtilde
+[constant] Gdk.KEY_z — duplicate constant: Gdk.KEY_z and Gdk.KEY_Z both map to keyZ
+[constant] Gdk.KEY_zabovedot — duplicate constant: Gdk.KEY_zabovedot and Gdk.KEY_Zabovedot both map to keyZabovedot
+[constant] Gdk.KEY_zacute — duplicate constant: Gdk.KEY_zacute and Gdk.KEY_Zacute both map to keyZacute
+[constant] Gdk.KEY_zcaron — duplicate constant: Gdk.KEY_zcaron and Gdk.KEY_Zcaron both map to keyZcaron
+[constant] Gdk.KEY_zstroke — duplicate constant: Gdk.KEY_zstroke and Gdk.KEY_Zstroke both map to keyZstroke
+[callable] Gdk.colorStateGetOklab — moved to ColorState.get_oklab
+[callable] Gdk.colorStateGetOklch — moved to ColorState.get_oklch
+[callable] Gdk.colorStateGetRec2100Linear — moved to ColorState.get_rec2100_linear
+[callable] Gdk.colorStateGetRec2100Pq — moved to ColorState.get_rec2100_pq
+[callable] Gdk.colorStateGetSrgb — moved to ColorState.get_srgb
+[callable] Gdk.colorStateGetSrgbLinear — moved to ColorState.get_srgb_linear
+[callable] Gdk.contentFormatsParse — moved to ContentFormats.parse
+[callable] Gdk.dmabufErrorQuark — moved to DmabufError.quark
+[callable] Gdk.dragActionIsUnique — moved to DragAction.is_unique
+[callable] Gdk.events_get_angle — brought to GdkEvent as eventsGetAngle
+[callable] Gdk.events_get_center — brought to GdkEvent as eventsGetCenter
+[callable] Gdk.events_get_distance — brought to GdkEvent as eventsGetDistance
+[callable] Gdk.glErrorQuark — moved to GLError.quark
+[callable] Gdk.paintableNewEmpty — moved to Paintable.new_empty
+[callable] Gdk.pangoLayoutGetClipRegion — introspectable=0
+[callable] Gdk.pangoLayoutLineGetClipRegion — introspectable=0
+[callable] Gdk.textureErrorQuark — moved to TextureError.quark
+[callable] Gdk.vulkanErrorQuark — moved to VulkanError.quark
+[method] GdkContentFormats.toString — name collision
+[method] GdkRGBA.toString — name collision
+[renamed] GdkAppLaunchContext.getDisplay — override-incompatible with ancestor; renamed to getDisplayAppLaunchContext
+[property] GdkCairoContext.display — construct-only or no public setter; emitting getter only
+[property] GdkCairoContext.surface — construct-only or no public setter; emitting getter only
+[property] GdkClipboard.display — construct-only or no public setter; emitting getter only
+[method] GdkContentDeserializer.getUserData — name collision
+[virtual] GdkContentProvider.attach_clipboard — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.content_changed — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.detach_clipboard — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.get_value — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.ref_formats — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.ref_storable_formats — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.write_mime_type_async — virtual method; the class struct layout is not in the GIR
+[virtual] GdkContentProvider.write_mime_type_finish — virtual method; the class struct layout is not in the GIR
+[method] GdkContentSerializer.getUserData — name collision
+[property] GdkCursor.fallback — construct-only or no public setter; emitting getter only
+[property] GdkCursor.hotspot-x — construct-only or no public setter; emitting getter only
+[property] GdkCursor.hotspot-y — construct-only or no public setter; emitting getter only
+[property] GdkCursor.name — construct-only or no public setter; emitting getter only
+[property] GdkCursor.texture — construct-only or no public setter; emitting getter only
+[property] GdkDevice.display — construct-only or no public setter; emitting getter only
+[property] GdkDevice.has-cursor — construct-only or no public setter; emitting getter only
+[property] GdkDevice.n-axes — missing getter get_n-axes
+[property] GdkDevice.name — construct-only or no public setter; emitting getter only
+[property] GdkDevice.num-touches — construct-only or no public setter; emitting getter only
+[property] GdkDevice.product-id — construct-only or no public setter; emitting getter only
+[property] GdkDevice.seat — construct-only or no public setter; emitting getter only
+[property] GdkDevice.source — construct-only or no public setter; emitting getter only
+[property] GdkDevice.vendor-id — construct-only or no public setter; emitting getter only
+[property] GdkDeviceTool.axes — construct-only or no public setter; emitting getter only
+[property] GdkDeviceTool.hardware-id — construct-only or no public setter; emitting getter only
+[property] GdkDeviceTool.serial — construct-only or no public setter; emitting getter only
+[property] GdkDeviceTool.tool-type — construct-only or no public setter; emitting getter only
+[callable] GdkDisplay.mapKeycode — parameter keys: array of KeymapKey: the layout of the element is not emitted, so the elements cannot be read out of the array
+[callable] GdkDisplay.mapKeyval — parameter keys: array of KeymapKey: the layout of the element is not emitted, so the elements cannot be read out of the array
+[method] GdkDmabufTexture.toString — name collision
+[property] GdkDmabufTexture.color-state — construct-only or no public setter; emitting getter only
+[property] GdkDmabufTexture.height — construct-only or no public setter; emitting getter only
+[property] GdkDmabufTexture.width — construct-only or no public setter; emitting getter only
+[property] GdkDrag.actions — construct-only or no public setter; emitting getter only
+[property] GdkDrag.content — construct-only or no public setter; emitting getter only
+[property] GdkDrag.device — construct-only or no public setter; emitting getter only
+[property] GdkDrag.formats — construct-only or no public setter; emitting getter only
+[property] GdkDrag.selected-action — construct-only or no public setter; emitting getter only
+[property] GdkDrag.surface — construct-only or no public setter; emitting getter only
+[property] GdkDrawContext.display — construct-only or no public setter; emitting getter only
+[property] GdkDrawContext.surface — construct-only or no public setter; emitting getter only
+[property] GdkDrop.actions — construct-only or no public setter; emitting getter only
+[property] GdkDrop.device — construct-only or no public setter; emitting getter only
+[property] GdkDrop.drag — construct-only or no public setter; emitting getter only
+[property] GdkDrop.formats — construct-only or no public setter; emitting getter only
+[property] GdkDrop.surface — construct-only or no public setter; emitting getter only
+[callable] GdkEvent.getAngle — moved to events_get_angle
+[callable] GdkEvent.getCenter — moved to events_get_center
+[callable] GdkEvent.getDistance — moved to events_get_distance
+[property] GdkGLContext.shared-context — construct-only or no public setter; emitting getter only
+[property] GdkGLContext.display — construct-only or no public setter; emitting getter only
+[property] GdkGLContext.surface — construct-only or no public setter; emitting getter only
+[method] GdkGLTexture.toString — name collision
+[property] GdkGLTexture.color-state — construct-only or no public setter; emitting getter only
+[property] GdkGLTexture.height — construct-only or no public setter; emitting getter only
+[property] GdkGLTexture.width — construct-only or no public setter; emitting getter only
+[method] GdkMemoryTexture.toString — name collision
+[property] GdkMemoryTexture.color-state — construct-only or no public setter; emitting getter only
+[property] GdkMemoryTexture.height — construct-only or no public setter; emitting getter only
+[property] GdkMemoryTexture.width — construct-only or no public setter; emitting getter only
+[property] GdkMonitor.display — construct-only or no public setter; emitting getter only
+[property] GdkMonitor.geometry — getter get_geometry takes 1 args; props layer only supports 0
+[property] GdkSeat.display — construct-only or no public setter; emitting getter only
+[property] GdkSurface.display — construct-only or no public setter; emitting getter only
+[property] GdkSurface.frame-clock — construct-only or no public setter; emitting getter only
+[method] GdkTexture.toString — name collision
+[property] GdkTexture.color-state — construct-only or no public setter; emitting getter only
+[property] GdkTexture.height — construct-only or no public setter; emitting getter only
+[property] GdkTexture.width — construct-only or no public setter; emitting getter only
+[property] GdkVulkanContext.display — construct-only or no public setter; emitting getter only
+[property] GdkVulkanContext.surface — construct-only or no public setter; emitting getter only
+[virtual] GdkPaintable.get_current_image — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPaintable.get_flags — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPaintable.get_intrinsic_aspect_ratio — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPaintable.get_intrinsic_height — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPaintable.get_intrinsic_width — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPaintable.snapshot — virtual method; the class struct layout is not in the GIR

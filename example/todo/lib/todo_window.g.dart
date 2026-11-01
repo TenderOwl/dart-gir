@@ -149,7 +149,7 @@ mixin _$TodoWindowTemplate on GtkApplicationWindow {
     final widgetClass = getWidgetClass(widget);
     if (widgetClass == null) {
       throw StateError(
-        'gtk_templates: could not resolve widget class for $runtimeType',
+        'gir_gtk_templates: could not resolve widget class for $runtimeType',
       );
     }
     // The template lives on the *native* class and GTK allows

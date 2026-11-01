@@ -631,6 +631,28 @@ final class GrapheneVec4 implements ffi.Finalizable {
     );
   }
 
+  /// Stores the components of the given #graphene_vec4_t into an array
+  /// of floating point values.
+  static final _grapheneVec4ToFloat =
+      girGrapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+            >
+          >('graphene_vec4_to_float')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+          >();
+  List<double> toFloat() {
+    final _out0 = calloc<ffi.Float>(4);
+    try {
+      _grapheneVec4ToFloat(this.handle, _out0);
+      final _list_out0 = <double>[for (var i = 0; i < 4; i++) _out0[i]];
+      return _list_out0;
+    } finally {
+      calloc.free(_out0);
+    }
+  }
+
   /// Retrieves a pointer to a #graphene_vec4_t with all its
   /// components set to 1.
   static final _grapheneVec4One =

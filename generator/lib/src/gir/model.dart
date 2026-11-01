@@ -112,11 +112,21 @@ class GirArrayInfo {
   const GirArrayInfo({
     this.lengthParameterIndex,
     this.zeroTerminated = false,
+    this.fixedSize,
     required this.elementType,
   });
 
   final int? lengthParameterIndex;
   final bool zeroTerminated;
+
+  /// The number of elements the array holds, when the GIR states it
+  /// (`fixed-size="4"`).
+  ///
+  /// A *caller-allocated* array with a fixed size has a known length
+  /// before the call — the wrapper can allocate the buffer itself and
+  /// copy the elements out after the call.
+  final int? fixedSize;
+
   final GirTypeRef elementType;
 }
 

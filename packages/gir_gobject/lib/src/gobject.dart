@@ -405,7 +405,7 @@ class GObject implements ffi.Finalizable {
     List<String?>? names,
     ffi.Pointer<ffi.Void> values,
   ) {
-    withNativeStringList(names, (nativeNames) {
+    withNativeStringList(names, (nativeNames, nativeNamesLen) {
       _gObjectGetv(this.handle, nProperties, nativeNames, values);
     });
   }

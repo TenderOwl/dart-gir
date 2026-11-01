@@ -107,7 +107,10 @@ class GSimpleProxyResolver extends GObject implements GProxyResolver {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setIgnoreHosts([List<String?>? ignoreHosts]) {
-    withNativeStringList(ignoreHosts, (nativeIgnoreHosts) {
+    withNativeStringList(ignoreHosts, (
+      nativeIgnoreHosts,
+      nativeIgnoreHostsLen,
+    ) {
       _gSimpleProxyResolverSetIgnoreHosts(this.handle, nativeIgnoreHosts);
     });
   }
@@ -172,7 +175,10 @@ class GSimpleProxyResolver extends GObject implements GProxyResolver {
     String? defaultProxy,
     List<String?>? ignoreHosts,
   ]) {
-    return withNativeStringList(ignoreHosts, (nativeIgnoreHosts) {
+    return withNativeStringList(ignoreHosts, (
+      nativeIgnoreHosts,
+      nativeIgnoreHostsLen,
+    ) {
       return withNativeString(defaultProxy, (nativeDefaultProxy) {
         return GProxyResolver.fromPointer(
           _gSimpleProxyResolverNew(

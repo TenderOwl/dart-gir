@@ -502,7 +502,7 @@ class GTlsConnection extends GIOStream {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setAdvertisedProtocols([List<String?>? protocols]) {
-    withNativeStringList(protocols, (nativeProtocols) {
+    withNativeStringList(protocols, (nativeProtocols, nativeProtocolsLen) {
       _gTlsConnectionSetAdvertisedProtocols(this.handle, nativeProtocols);
     });
   }

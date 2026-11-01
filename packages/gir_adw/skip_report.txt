@@ -1,10 +1,10 @@
 # Skip report for package gir_adw (Adw 1)
-Total skipped: 233
+Total skipped: 235
 
 ## By category
 property: 204
-callable: 14
-signal: 8
+virtual: 14
+callable: 10
 renamed: 6
 method: 1
 
@@ -12,9 +12,8 @@ method: 1
 construct-only or no public setter; emitting getter only: 76
 missing getter get_height-request: 58
 missing getter get_width-request: 58
+virtual method; the class struct layout is not in the GIR: 14
 introspectable=0: 4
-unsupported return type: Gdk.DragAction: 4
-inout parameter position: 3
 missing getter get_item-type: 3
 missing getter get_n-items: 3
 moved to AccentColor.to_rgba: 1
@@ -25,13 +24,10 @@ moved to LengthUnit.from_px: 1
 moved to LengthUnit.to_px: 1
 name collision: 1
 override-incompatible with ancestor; renamed to activateActionRow: 1
-unsupported arg type at index 0: gpointer: 1
 override-incompatible with ancestor; renamed to getSizeAvatar: 1
 getter get_size was renamed; call the renamed method directly: 1
 missing getter get_default-height: 1
 missing getter get_default-width: 1
-parameter tags: array of TypeKind.string (later phase): 1
-unsupported return type: NavigationPage: 1
 setter set_visible_page parameter type does not match property type; skipping: 1
 override-incompatible with ancestor; renamed to getNamePreferencesPage: 1
 override-incompatible with ancestor; renamed to setNamePreferencesPage: 1
@@ -39,10 +35,8 @@ getter get_name was renamed; call the renamed method directly: 1
 override-incompatible with ancestor; renamed to getDirectionSplitButton: 1
 override-incompatible with ancestor; renamed to setDirectionSplitButton: 1
 getter get_direction was renamed; call the renamed method directly: 1
-unsupported return type: TabPage: 1
-unsupported return type: TabView: 1
 
-## First 50 entries
+## All 235 entries
 [callable] Adw.accentColorToRgba — moved to AccentColor.to_rgba
 [callable] Adw.accentColorToStandaloneRgba — moved to AccentColor.to_standalone_rgba
 [callable] Adw.breakpointConditionParse — moved to BreakpointCondition.parse
@@ -58,15 +52,16 @@ unsupported return type: TabView: 1
 [property] AdwAboutDialog.css-name — construct-only or no public setter; emitting getter only
 [property] AdwAboutDialog.height-request — missing getter get_height-request
 [property] AdwAboutDialog.width-request — missing getter get_width-request
+[virtual] AdwActionRow.activate — virtual method; the class struct layout is not in the GIR
 [renamed] AdwActionRow.activate — override-incompatible with ancestor; renamed to activateActionRow
 [property] AdwActionRow.css-name — construct-only or no public setter; emitting getter only
 [property] AdwActionRow.height-request — missing getter get_height-request
 [property] AdwActionRow.width-request — missing getter get_width-request
+[virtual] AdwAlertDialog.response — virtual method; the class struct layout is not in the GIR
 [property] AdwAlertDialog.css-name — construct-only or no public setter; emitting getter only
 [property] AdwAlertDialog.height-request — missing getter get_height-request
 [property] AdwAlertDialog.width-request — missing getter get_width-request
 [property] AdwAnimation.widget — construct-only or no public setter; emitting getter only
-[signal] AdwApplication.open — unsupported arg type at index 0: gpointer
 [renamed] AdwAvatar.getSize — override-incompatible with ancestor; renamed to getSizeAvatar
 [property] AdwAvatar.size — getter get_size was renamed; call the renamed method directly
 [property] AdwAvatar.css-name — construct-only or no public setter; emitting getter only
@@ -93,3 +88,187 @@ unsupported return type: TabView: 1
 [property] AdwCarousel.css-name — construct-only or no public setter; emitting getter only
 [property] AdwCarousel.height-request — missing getter get_height-request
 [property] AdwCarousel.width-request — missing getter get_width-request
+[property] AdwCarouselIndicatorDots.css-name — construct-only or no public setter; emitting getter only
+[property] AdwCarouselIndicatorDots.height-request — missing getter get_height-request
+[property] AdwCarouselIndicatorDots.width-request — missing getter get_width-request
+[property] AdwCarouselIndicatorLines.css-name — construct-only or no public setter; emitting getter only
+[property] AdwCarouselIndicatorLines.height-request — missing getter get_height-request
+[property] AdwCarouselIndicatorLines.width-request — missing getter get_width-request
+[property] AdwClamp.css-name — construct-only or no public setter; emitting getter only
+[property] AdwClamp.height-request — missing getter get_height-request
+[property] AdwClamp.width-request — missing getter get_width-request
+[property] AdwClampScrollable.css-name — construct-only or no public setter; emitting getter only
+[property] AdwClampScrollable.height-request — missing getter get_height-request
+[property] AdwClampScrollable.width-request — missing getter get_width-request
+[property] AdwComboRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwComboRow.height-request — missing getter get_height-request
+[property] AdwComboRow.width-request — missing getter get_width-request
+[virtual] AdwDialog.close_attempt — virtual method; the class struct layout is not in the GIR
+[virtual] AdwDialog.closed — virtual method; the class struct layout is not in the GIR
+[property] AdwDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwDialog.height-request — missing getter get_height-request
+[property] AdwDialog.width-request — missing getter get_width-request
+[property] AdwEntryRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwEntryRow.height-request — missing getter get_height-request
+[property] AdwEntryRow.width-request — missing getter get_width-request
+[property] AdwEnumListModel.enum-type — construct-only or no public setter; emitting getter only
+[property] AdwEnumListModel.item-type — missing getter get_item-type
+[property] AdwEnumListModel.n-items — missing getter get_n-items
+[property] AdwExpanderRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwExpanderRow.height-request — missing getter get_height-request
+[property] AdwExpanderRow.width-request — missing getter get_width-request
+[property] AdwFlap.css-name — construct-only or no public setter; emitting getter only
+[property] AdwFlap.height-request — missing getter get_height-request
+[property] AdwFlap.width-request — missing getter get_width-request
+[property] AdwHeaderBar.css-name — construct-only or no public setter; emitting getter only
+[property] AdwHeaderBar.height-request — missing getter get_height-request
+[property] AdwHeaderBar.width-request — missing getter get_width-request
+[property] AdwInlineViewSwitcher.css-name — construct-only or no public setter; emitting getter only
+[property] AdwInlineViewSwitcher.height-request — missing getter get_height-request
+[property] AdwInlineViewSwitcher.width-request — missing getter get_width-request
+[property] AdwLayout.content — construct-only or no public setter; emitting getter only
+[property] AdwLayoutSlot.id — construct-only or no public setter; emitting getter only
+[property] AdwLayoutSlot.css-name — construct-only or no public setter; emitting getter only
+[property] AdwLayoutSlot.height-request — missing getter get_height-request
+[property] AdwLayoutSlot.width-request — missing getter get_width-request
+[property] AdwLeaflet.css-name — construct-only or no public setter; emitting getter only
+[property] AdwLeaflet.height-request — missing getter get_height-request
+[property] AdwLeaflet.width-request — missing getter get_width-request
+[property] AdwLeafletPage.child — construct-only or no public setter; emitting getter only
+[virtual] AdwMessageDialog.response — virtual method; the class struct layout is not in the GIR
+[property] AdwMessageDialog.default-height — missing getter get_default-height
+[property] AdwMessageDialog.default-width — missing getter get_default-width
+[property] AdwMessageDialog.fullscreened — construct-only or no public setter; emitting getter only
+[property] AdwMessageDialog.maximized — construct-only or no public setter; emitting getter only
+[property] AdwMessageDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwMessageDialog.height-request — missing getter get_height-request
+[property] AdwMessageDialog.width-request — missing getter get_width-request
+[property] AdwMultiLayoutView.css-name — construct-only or no public setter; emitting getter only
+[property] AdwMultiLayoutView.height-request — missing getter get_height-request
+[property] AdwMultiLayoutView.width-request — missing getter get_width-request
+[virtual] AdwNavigationPage.hidden — virtual method; the class struct layout is not in the GIR
+[virtual] AdwNavigationPage.hiding — virtual method; the class struct layout is not in the GIR
+[virtual] AdwNavigationPage.showing — virtual method; the class struct layout is not in the GIR
+[virtual] AdwNavigationPage.shown — virtual method; the class struct layout is not in the GIR
+[property] AdwNavigationPage.css-name — construct-only or no public setter; emitting getter only
+[property] AdwNavigationPage.height-request — missing getter get_height-request
+[property] AdwNavigationPage.width-request — missing getter get_width-request
+[property] AdwNavigationSplitView.css-name — construct-only or no public setter; emitting getter only
+[property] AdwNavigationSplitView.height-request — missing getter get_height-request
+[property] AdwNavigationSplitView.width-request — missing getter get_width-request
+[property] AdwNavigationView.css-name — construct-only or no public setter; emitting getter only
+[property] AdwNavigationView.height-request — missing getter get_height-request
+[property] AdwNavigationView.width-request — missing getter get_width-request
+[property] AdwOverlaySplitView.css-name — construct-only or no public setter; emitting getter only
+[property] AdwOverlaySplitView.height-request — missing getter get_height-request
+[property] AdwOverlaySplitView.width-request — missing getter get_width-request
+[property] AdwPasswordEntryRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwPasswordEntryRow.height-request — missing getter get_height-request
+[property] AdwPasswordEntryRow.width-request — missing getter get_width-request
+[property] AdwPreferencesDialog.visible-page — setter set_visible_page parameter type does not match property type; skipping
+[property] AdwPreferencesDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwPreferencesDialog.height-request — missing getter get_height-request
+[property] AdwPreferencesDialog.width-request — missing getter get_width-request
+[property] AdwPreferencesGroup.css-name — construct-only or no public setter; emitting getter only
+[property] AdwPreferencesGroup.height-request — missing getter get_height-request
+[property] AdwPreferencesGroup.width-request — missing getter get_width-request
+[renamed] AdwPreferencesPage.getName — override-incompatible with ancestor; renamed to getNamePreferencesPage
+[renamed] AdwPreferencesPage.setName — override-incompatible with ancestor; renamed to setNamePreferencesPage
+[property] AdwPreferencesPage.name — getter get_name was renamed; call the renamed method directly
+[property] AdwPreferencesPage.css-name — construct-only or no public setter; emitting getter only
+[property] AdwPreferencesPage.height-request — missing getter get_height-request
+[property] AdwPreferencesPage.width-request — missing getter get_width-request
+[property] AdwPreferencesRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwPreferencesRow.height-request — missing getter get_height-request
+[property] AdwPreferencesRow.width-request — missing getter get_width-request
+[property] AdwPropertyAnimationTarget.object — construct-only or no public setter; emitting getter only
+[property] AdwPropertyAnimationTarget.pspec — construct-only or no public setter; emitting getter only
+[property] AdwShortcutLabel.css-name — construct-only or no public setter; emitting getter only
+[property] AdwShortcutLabel.height-request — missing getter get_height-request
+[property] AdwShortcutLabel.width-request — missing getter get_width-request
+[property] AdwShortcutsDialog.css-name — construct-only or no public setter; emitting getter only
+[property] AdwShortcutsDialog.height-request — missing getter get_height-request
+[property] AdwShortcutsDialog.width-request — missing getter get_width-request
+[property] AdwShortcutsSection.item-type — missing getter get_item-type
+[property] AdwShortcutsSection.n-items — missing getter get_n-items
+[property] AdwSidebar.css-name — construct-only or no public setter; emitting getter only
+[property] AdwSidebar.height-request — missing getter get_height-request
+[property] AdwSidebar.width-request — missing getter get_width-request
+[property] AdwSpinRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwSpinRow.height-request — missing getter get_height-request
+[property] AdwSpinRow.width-request — missing getter get_width-request
+[property] AdwSpinner.css-name — construct-only or no public setter; emitting getter only
+[property] AdwSpinner.height-request — missing getter get_height-request
+[property] AdwSpinner.width-request — missing getter get_width-request
+[renamed] AdwSplitButton.getDirection — override-incompatible with ancestor; renamed to getDirectionSplitButton
+[renamed] AdwSplitButton.setDirection — override-incompatible with ancestor; renamed to setDirectionSplitButton
+[property] AdwSplitButton.direction — getter get_direction was renamed; call the renamed method directly
+[property] AdwSplitButton.css-name — construct-only or no public setter; emitting getter only
+[property] AdwSplitButton.height-request — missing getter get_height-request
+[property] AdwSplitButton.width-request — missing getter get_width-request
+[property] AdwSpringAnimation.widget — construct-only or no public setter; emitting getter only
+[property] AdwSqueezer.css-name — construct-only or no public setter; emitting getter only
+[property] AdwSqueezer.height-request — missing getter get_height-request
+[property] AdwSqueezer.width-request — missing getter get_width-request
+[property] AdwSqueezerPage.child — construct-only or no public setter; emitting getter only
+[property] AdwStatusPage.css-name — construct-only or no public setter; emitting getter only
+[property] AdwStatusPage.height-request — missing getter get_height-request
+[property] AdwStatusPage.width-request — missing getter get_width-request
+[property] AdwStyleManager.display — construct-only or no public setter; emitting getter only
+[property] AdwSwipeTracker.swipeable — construct-only or no public setter; emitting getter only
+[property] AdwSwitchRow.css-name — construct-only or no public setter; emitting getter only
+[property] AdwSwitchRow.height-request — missing getter get_height-request
+[property] AdwSwitchRow.width-request — missing getter get_width-request
+[property] AdwTabBar.css-name — construct-only or no public setter; emitting getter only
+[property] AdwTabBar.height-request — missing getter get_height-request
+[property] AdwTabBar.width-request — missing getter get_width-request
+[property] AdwTabButton.css-name — construct-only or no public setter; emitting getter only
+[property] AdwTabButton.height-request — missing getter get_height-request
+[property] AdwTabButton.width-request — missing getter get_width-request
+[property] AdwTabOverview.css-name — construct-only or no public setter; emitting getter only
+[property] AdwTabOverview.height-request — missing getter get_height-request
+[property] AdwTabOverview.width-request — missing getter get_width-request
+[property] AdwTabPage.child — construct-only or no public setter; emitting getter only
+[property] AdwTabPage.parent — construct-only or no public setter; emitting getter only
+[property] AdwTabView.css-name — construct-only or no public setter; emitting getter only
+[property] AdwTabView.height-request — missing getter get_height-request
+[property] AdwTabView.width-request — missing getter get_width-request
+[property] AdwTimedAnimation.widget — construct-only or no public setter; emitting getter only
+[property] AdwToastOverlay.css-name — construct-only or no public setter; emitting getter only
+[property] AdwToastOverlay.height-request — missing getter get_height-request
+[property] AdwToastOverlay.width-request — missing getter get_width-request
+[property] AdwToggleGroup.css-name — construct-only or no public setter; emitting getter only
+[property] AdwToggleGroup.height-request — missing getter get_height-request
+[property] AdwToggleGroup.width-request — missing getter get_width-request
+[property] AdwToolbarView.css-name — construct-only or no public setter; emitting getter only
+[property] AdwToolbarView.height-request — missing getter get_height-request
+[property] AdwToolbarView.width-request — missing getter get_width-request
+[property] AdwViewStack.css-name — construct-only or no public setter; emitting getter only
+[property] AdwViewStack.height-request — missing getter get_height-request
+[property] AdwViewStack.width-request — missing getter get_width-request
+[property] AdwViewStackPage.child — construct-only or no public setter; emitting getter only
+[property] AdwViewStackPages.item-type — missing getter get_item-type
+[property] AdwViewStackPages.n-items — missing getter get_n-items
+[property] AdwViewSwitcher.css-name — construct-only or no public setter; emitting getter only
+[property] AdwViewSwitcher.height-request — missing getter get_height-request
+[property] AdwViewSwitcher.width-request — missing getter get_width-request
+[property] AdwViewSwitcherBar.css-name — construct-only or no public setter; emitting getter only
+[property] AdwViewSwitcherBar.height-request — missing getter get_height-request
+[property] AdwViewSwitcherBar.width-request — missing getter get_width-request
+[property] AdwViewSwitcherSidebar.css-name — construct-only or no public setter; emitting getter only
+[property] AdwViewSwitcherSidebar.height-request — missing getter get_height-request
+[property] AdwViewSwitcherSidebar.width-request — missing getter get_width-request
+[property] AdwViewSwitcherTitle.css-name — construct-only or no public setter; emitting getter only
+[property] AdwViewSwitcherTitle.height-request — missing getter get_height-request
+[property] AdwViewSwitcherTitle.width-request — missing getter get_width-request
+[property] AdwWindowTitle.css-name — construct-only or no public setter; emitting getter only
+[property] AdwWindowTitle.height-request — missing getter get_height-request
+[property] AdwWindowTitle.width-request — missing getter get_width-request
+[property] AdwWrapBox.css-name — construct-only or no public setter; emitting getter only
+[property] AdwWrapBox.height-request — missing getter get_height-request
+[property] AdwWrapBox.width-request — missing getter get_width-request
+[virtual] AdwSwipeable.get_cancel_progress — virtual method; the class struct layout is not in the GIR
+[virtual] AdwSwipeable.get_distance — virtual method; the class struct layout is not in the GIR
+[virtual] AdwSwipeable.get_progress — virtual method; the class struct layout is not in the GIR
+[virtual] AdwSwipeable.get_snap_points — virtual method; the class struct layout is not in the GIR
+[virtual] AdwSwipeable.get_swipe_area — virtual method; the class struct layout is not in the GIR

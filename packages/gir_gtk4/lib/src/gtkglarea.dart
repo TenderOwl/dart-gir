@@ -475,6 +475,23 @@ class GtkGLArea extends GtkWidget
     _gtkGlAreaSetUseEs(this.handle, useEs ? 1 : 0);
   }
 
+  /// Emitted when the widget is being realized.
+  ///
+  /// This allows you to override how the GL context is created.
+  /// This is useful when you want to reuse an existing GL context,
+  /// or if you want to try creating different kinds of GL options.
+  ///
+  /// If context creation fails then the signal handler can use
+  /// [method@Gtk.GLArea.set_error] to register a more detailed error
+  /// of how the construction failed.
+  int onCreateContext(GdkGLContext? Function() callback) {
+    return _connectSignal_o_0_gdkglcontext(
+      this.handle,
+      'create-context',
+      callback,
+    );
+  }
+
   /// Emitted every time the contents of the `GtkGLArea` should be redrawn.
   ///
   /// The @context is bound to the @area prior to emitting this function,

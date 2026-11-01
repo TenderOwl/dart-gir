@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io' show Directory, File, FileLock, FileMode, Platform;
 import 'dart:typed_data';
@@ -301,7 +302,7 @@ void gStrfreev(Pointer<Pointer<Utf8>> list) {
   );
 }
 
-/// Copies a NULL-terminated `char **` into a Dart list.
+/// Copies a `char **` into a Dart list.
 ///
 /// The strings are copied, so the native array may be released
 /// afterwards — pass `free: true` when the GIR says the callee handed
@@ -311,20 +312,40 @@ void gStrfreev(Pointer<Pointer<Utf8>> list) {
 ///
 /// A NULL array is a Dart `null`, not an empty list — GLib uses NULL to
 /// mean "no list at all".
+///
+/// [length] is the element count when the caller knows it. GLib's GIR
+/// binds a `char **` to the parameter that carries its count — an OUT
+/// parameter for a callee-allocated array (`g_key_file_get_string_list`
+/// and its `gsize *length`), an IN parameter for a caller-provided one
+/// (`g_key_file_set_string_list`). Without [length] the array is read
+/// until its NULL terminator, which is the `GStrv` convention; with it
+/// the read stops after [length] elements, so an array that carries no
+/// terminator is read correctly.
+///
+/// [free] releases the array *and* its strings (`g_strfreev`) — what
+/// `transfer-ownership="full"` means for a `gchar **` in GLib.
+/// [freeArray] releases the array alone (`g_free`) and leaves the
+/// strings alone — what `transfer-ownership="container"` means.
 List<String>? stringListFromNative(
   Pointer<Pointer<Utf8>> list, {
   bool free = false,
+  bool freeArray = false,
+  int? length,
 }) {
   if (list == nullptr) return null;
   final out = <String>[];
   var i = 0;
-  while (true) {
+  while (length == null || i < length) {
     final element = list[i];
     if (element == nullptr) break;
     out.add(element.toDartString());
     i++;
   }
-  if (free) gStrfreev(list);
+  if (free) {
+    gStrfreev(list);
+  } else if (freeArray) {
+    gFree(list.cast());
+  }
   return out;
 }
 
@@ -344,6 +365,24 @@ Pointer<Uint8> gMalloc(int size) {
       .asFunction<Pointer<Void> Function(int)>()
       .call(size)
       .cast<Uint8>();
+}
+
+/// Copies a Dart [String] into a **GLib-allocated** NUL-terminated buffer.
+///
+/// GLib takes ownership of a signal's string return value
+/// (`g_value_take_string`) and releases it with `g_free` — so the buffer
+/// has to come from `g_malloc`, not from Dart's allocator. A Dart string
+/// copied with `toNativeUtf8` is freed with `malloc.free` and would
+/// crash the GValue's `g_free`.
+Pointer<Utf8> gStrdupLike(String value) {
+  final bytes = utf8.encode(value);
+  final buffer = gMalloc(bytes.length + 1);
+  final target = buffer.cast<Uint8>();
+  for (var i = 0; i < bytes.length; i++) {
+    target[i] = bytes[i];
+  }
+  target[bytes.length] = 0;
+  return buffer.cast<Utf8>();
 }
 
 /// Runs [body] with [data] mirrored into a GLib-allocated native buffer.
@@ -397,6 +436,25 @@ Uint8List bytesFromNative(Pointer<Uint8> buffer, int length) {
   if (length > 0) out.setRange(0, length, buffer.asTypedList(length));
   gFree(buffer.cast());
   return out;
+}
+
+/// Converts a native NUL-terminated UTF-8 string to a Dart [String].
+///
+/// A callee-allocated buffer — `g_spawn_sync`'s `standard_output`, for
+/// instance — is native memory the garbage collector cannot see. The GIR
+/// hands it over with `transfer-ownership="full"`, so the caller owns it
+/// and has to release it; copying it into a Dart string and freeing the
+/// original leaves the user with plain Dart memory and no lifetime
+/// rules.
+///
+/// The size of the buffer is not stated anywhere in the signature, so
+/// the string ends at the first NUL. A child process that writes a NUL
+/// into its output therefore yields a shorter string than it wrote.
+String? nulTerminatedStringFromNative(Pointer<Uint8> buffer) {
+  if (buffer == nullptr) return null;
+  final value = buffer.cast<Utf8>().toDartString();
+  gFree(buffer.cast());
+  return value;
 }
 
 /// Converts a native NUL-terminated UTF-8 string to a Dart [String].
@@ -454,12 +512,18 @@ T castTo<T extends Object>(
 ///   non-null array.
 /// * Null elements inside the list become NULL slots in the array;
 ///   only the non-null allocations are tracked for freeing.
+///
+/// [body] receives the array *and* its element count. The count is the
+/// number of slots the caller asked for — the terminator is not
+/// counted. A C function that takes the count (`g_key_file_set_string_list`
+/// and its `gsize length`) reads exactly that many slots; one that does
+/// not reads until the terminator.
 R withNativeStringList<R>(
   List<String?>? values,
-  R Function(Pointer<Pointer<Utf8>> argv) body,
+  R Function(Pointer<Pointer<Utf8>> argv, int length) body,
 ) {
   if (values == null) {
-    return body(nullptr);
+    return body(nullptr, 0);
   }
   final argc = values.length;
   final argv = calloc<Pointer<Utf8>>(argc + 1);
@@ -476,12 +540,39 @@ R withNativeStringList<R>(
       }
     }
     argv[argc] = nullptr; // explicit NULL terminator
-    return body(argv);
+    return body(argv, argc);
   } finally {
     for (final p in strs) {
       calloc.free(p);
     }
     calloc.free(argv);
+  }
+}
+
+/// Runs [body] with [value] marshalled to native memory and its **byte**
+/// length reported.
+///
+/// This is the companion of [withNativeString] for the C APIs that take a
+/// string *and* its length (`g_regex_match_full` and its `gssize
+/// string_len`). The count the C side expects is a byte count, not a
+/// character count: a Dart string of four characters can be six UTF-8
+/// bytes, and passing the character count would truncate the string on
+/// the C side.
+///
+/// The length excludes the NUL terminator, and the string is released
+/// when [body] returns.
+R withNativeStringBytes<R>(
+  String? value,
+  R Function(Pointer<Utf8> ptr, int length) body,
+) {
+  if (value == null) {
+    return body(nullptr, 0);
+  }
+  final bytes = value.toNativeUtf8();
+  try {
+    return body(bytes, bytes.length - 1);
+  } finally {
+    malloc.free(bytes.cast());
   }
 }
 
@@ -578,6 +669,33 @@ T? cachedObject<T extends Object>(int address) {
   }
   if (entries.isEmpty) _objectCache.remove(address);
   return null;
+}
+
+/// Every Dart object registered for [address] that is a [T], in the order
+/// they were registered.
+///
+/// [cachedObject] returns the first match. This returns all of them, for
+/// the rare case where the first match is not the one the caller wants —
+/// an address that was freed and handed out again holds the wrapper of
+/// the *old* object next to the wrapper of the new one, and the caller
+/// may need to tell them apart.
+List<T> cachedObjects<T extends Object>(int address) {
+  final entries = _objectCache[address];
+  if (entries == null) return const [];
+  final found = <T>[];
+  for (var i = 0; i < entries.length; i++) {
+    final hit = entries[i].target;
+    if (hit == null) {
+      // The Dart object is gone; the address may be reused by a later
+      // object, so the stale entry goes.
+      entries.removeAt(i);
+      i--;
+      continue;
+    }
+    if (hit is T) found.add(hit);
+  }
+  if (entries.isEmpty) _objectCache.remove(address);
+  return found;
 }
 
 /// Registers [object] under [address].

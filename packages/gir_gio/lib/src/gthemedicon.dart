@@ -83,6 +83,31 @@ class GThemedIcon extends GObject implements GIcon {
     });
   }
 
+  /// Creates a new themed icon for @iconnames.
+  static final _gThemedIconNewFromNames =
+      girGioLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Int32,
+              )
+            >
+          >('g_themed_icon_new_from_names')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>, int)
+          >();
+  factory GThemedIcon.fromNames([List<String?>? iconnames]) {
+    return withNativeStringList(iconnames, (
+      nativeIconnames,
+      nativeIconnamesLen,
+    ) {
+      return GThemedIcon.fromPointer(
+        _gThemedIconNewFromNames(nativeIconnames, nativeIconnamesLen),
+        owned: true,
+      );
+    });
+  }
+
   /// Creates a new themed icon for @iconname, and all the names
   /// that can be created by shortening @iconname at '-' characters.
   ///

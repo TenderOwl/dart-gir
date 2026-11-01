@@ -6,3 +6,7 @@ analyzer:
     # `<GtkWidget*>`); keep this override so emitted docs don't
     # get flagged.
     unintended_html_in_doc_comment: ignore
+    # `GType` mirrors the `static int get GType` accessor the generator
+    # emits for every GIR class — GLib's own name for it. The
+    # lowerCamelCase convention is intentionally broken here.
+    non_constant_identifier_names: ignore

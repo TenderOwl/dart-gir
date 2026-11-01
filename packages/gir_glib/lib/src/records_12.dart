@@ -329,6 +329,51 @@ final class GIOChannel {
     });
   }
 
+  /// Replacement for g_io_channel_read() with the new API.
+  static final _gIoChannelReadChars =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_io_channel_read_chars')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  (GIOStatus, int) readChars(Uint8List buf) {
+    return withNativeBytes(buf, (_bytesBuf0, _bytesLen0) {
+      final _out0 = malloc<ffi.Size>();
+      final _error = calloc<ffi.Pointer<ffi.Void>>();
+      try {
+        final _ret = _gIoChannelReadChars(
+          this.handle,
+          _bytesBuf0,
+          _bytesLen0,
+          _out0,
+          _error,
+        );
+        if (_error.value != ffi.nullptr) {
+          throw GlibException.fromError(_error.value);
+        }
+        return (GIOStatus.fromValue(_ret), _out0.value);
+      } finally {
+        malloc.free(_out0);
+        calloc.free(_error);
+      }
+    });
+  }
+
   /// Reads a line, including the terminating character(s),
   /// from a #GIOChannel into a newly-allocated string.
   /// @str_return will contain allocated memory if the return

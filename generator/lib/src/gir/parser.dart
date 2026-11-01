@@ -486,6 +486,7 @@ class GirParser {
               child.getAttribute('length') ?? '',
             ),
             zeroTerminated: _bool(child, 'zero-terminated', defaultValue: true),
+            fixedSize: int.tryParse(child.getAttribute('fixed-size') ?? ''),
             elementType: element,
           ),
         );

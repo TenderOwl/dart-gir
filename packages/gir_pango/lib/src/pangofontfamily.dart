@@ -144,6 +144,51 @@ class PangoFontFamily extends GObject implements GListModel {
     return (_pangoFontFamilyIsVariable(this.handle)) != 0;
   }
 
+  /// Lists the different font faces that make up @family.
+  ///
+  /// The faces in a family share a common design, but differ in slant, weight,
+  /// width and other aspects.
+  ///
+  /// Note that the returned faces are not in any particular order, and
+  /// multiple faces may have the same name or characteristics.
+  ///
+  /// `PangoFontFamily` also implemented the [iface@Gio.ListModel] interface
+  /// for enumerating faces.
+  static final _pangoFontFamilyListFaces =
+      girPangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Void>>>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_font_family_list_faces')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Void>>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  List<PangoFontFace> listFaces() {
+    final _out0 = calloc<ffi.Pointer<ffi.Pointer<ffi.Void>>>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoFontFamilyListFaces(this.handle, _out0, _out1);
+      final _list_out0 = (_out0.value == ffi.nullptr
+          ? <PangoFontFace>[]
+          : <PangoFontFace>[
+              for (var i = 0; i < _out1.value; i++)
+                PangoFontFace.fromPointer(_out0.value[i]),
+            ]);
+      return _list_out0;
+    } finally {
+      gFree(_out0.value.cast());
+      malloc.free(_out1);
+    }
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

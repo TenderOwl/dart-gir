@@ -1,12 +1,11 @@
 # Skip report for package gir_graphene (Graphene 1.0)
-Total skipped: 34
+Total skipped: 30
 
 ## By category
-callable: 34
+callable: 30
 
 ## By reason
-unsupported out parameter dest (ffi.Pointer<ffi.Float>): 3
-parameter vertices: array of TypeKind.record (later phase): 2
+parameter vertices: unbound array of TypeKind.record: the signature carries no length: 2
 moved to Box.empty: 1
 moved to Box.infinite: 1
 moved to Box.minus_one: 1
@@ -33,11 +32,10 @@ moved to Vec4.x_axis: 1
 moved to Vec4.y_axis: 1
 moved to Vec4.z_axis: 1
 moved to Vec4.zero: 1
-parameter planes: array of TypeKind.record (later phase): 1
-unsupported out parameter v (ffi.Pointer<ffi.Float>): 1
-parameter points: array of TypeKind.record (later phase): 1
+parameter planes: unbound array of TypeKind.record: the signature carries no length: 1
+parameter points: unbound array of TypeKind.record: the signature carries no length: 1
 
-## First 50 entries
+## All 30 entries
 [callable] Graphene.boxEmpty — moved to Box.empty
 [callable] Graphene.boxInfinite — moved to Box.infinite
 [callable] Graphene.boxMinusOne — moved to Box.minus_one
@@ -64,11 +62,7 @@ parameter points: array of TypeKind.record (later phase): 1
 [callable] Graphene.vec4YAxis — moved to Vec4.y_axis
 [callable] Graphene.vec4ZAxis — moved to Vec4.z_axis
 [callable] Graphene.vec4Zero — moved to Vec4.zero
-[callable] GrapheneBox.getVertices — parameter vertices: array of TypeKind.record (later phase)
-[callable] GrapheneFrustum.getPlanes — parameter planes: array of TypeKind.record (later phase)
-[callable] GrapheneMatrix.toFloat — unsupported out parameter v (ffi.Pointer<ffi.Float>)
-[callable] GrapheneQuad.initFromPoints — parameter points: array of TypeKind.record (later phase)
-[callable] GrapheneRect.getVertices — parameter vertices: array of TypeKind.record (later phase)
-[callable] GrapheneVec2.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)
-[callable] GrapheneVec3.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)
-[callable] GrapheneVec4.toFloat — unsupported out parameter dest (ffi.Pointer<ffi.Float>)
+[callable] GrapheneBox.getVertices — parameter vertices: unbound array of TypeKind.record: the signature carries no length
+[callable] GrapheneFrustum.getPlanes — parameter planes: unbound array of TypeKind.record: the signature carries no length
+[callable] GrapheneQuad.initFromPoints — parameter points: unbound array of TypeKind.record: the signature carries no length
+[callable] GrapheneRect.getVertices — parameter vertices: unbound array of TypeKind.record: the signature carries no length

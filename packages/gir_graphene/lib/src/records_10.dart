@@ -514,6 +514,27 @@ final class GrapheneVec2 implements ffi.Finalizable {
     );
   }
 
+  /// Stores the components of @v into an array.
+  static final _grapheneVec2ToFloat =
+      girGrapheneLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+            >
+          >('graphene_vec2_to_float')
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Float>)
+          >();
+  List<double> toFloat() {
+    final _out0 = calloc<ffi.Float>(2);
+    try {
+      _grapheneVec2ToFloat(this.handle, _out0);
+      final _list_out0 = <double>[for (var i = 0; i < 2; i++) _out0[i]];
+      return _list_out0;
+    } finally {
+      calloc.free(_out0);
+    }
+  }
+
   /// Retrieves a constant vector with (1, 1) components.
   static final _grapheneVec2One =
       girGrapheneLookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(

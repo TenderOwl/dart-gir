@@ -451,7 +451,7 @@ final _gEnvironGetenv =
           )
         >();
 String? environGetenv(List<String?>? envp, String variable) {
-  return withNativeStringList(envp, (nativeEnvp) {
+  return withNativeStringList(envp, (nativeEnvp, nativeEnvpLen) {
     return withNativeString(variable, (nativeVariable) {
       return stringFromNative(
         (_gEnvironGetenv(nativeEnvp, nativeVariable.cast<Utf8>())).cast(),
@@ -488,7 +488,7 @@ List<String> environSetenv(
   String value,
   bool overwrite,
 ) {
-  return withNativeStringList(envp, (nativeEnvp) {
+  return withNativeStringList(envp, (nativeEnvp, nativeEnvpLen) {
     return withNativeString(variable, (nativeVariable) {
       return withNativeString(value, (nativeValue) {
         return stringListFromNative(
@@ -523,7 +523,7 @@ final _gEnvironUnsetenv =
           )
         >();
 List<String> environUnsetenv(List<String?>? envp, String variable) {
-  return withNativeStringList(envp, (nativeEnvp) {
+  return withNativeStringList(envp, (nativeEnvp, nativeEnvpLen) {
     return withNativeString(variable, (nativeVariable) {
       return stringListFromNative(
         _gEnvironUnsetenv(nativeEnvp, nativeVariable.cast<Utf8>()),

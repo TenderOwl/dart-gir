@@ -205,6 +205,70 @@ class GIBaseInfo {
     return (_giBaseInfoIsDeprecated(this.handle)) != 0;
   }
 
+  /// Iterate over all attributes associated with this node.
+  ///
+  /// The iterator structure is typically stack allocated, and must have its first
+  /// member initialized to `NULL`.  Attributes are arbitrary namespaced key–value
+  /// pairs which can be attached to almost any item.  They are intended for use
+  /// by software higher in the toolchain than bindings, and are distinct from
+  /// normal GIR annotations.
+  ///
+  /// Both the @name and @value should be treated as constants
+  /// and must not be freed.
+  ///
+  /// ```c
+  /// void
+  /// print_attributes (GIBaseInfo *info)
+  /// {
+  /// GIAttributeIter iter = GI_ATTRIBUTE_ITER_INIT;
+  /// const char *name;
+  /// const char *value;
+  /// while (gi_base_info_iterate_attributes (info, &iter, &name, &value))
+  /// {
+  /// g_print ("attribute name: %s value: %s", name, value);
+  /// }
+  /// }
+  /// ```
+  static final _giBaseInfoIterateAttributes =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+              )
+            >
+          >('gi_base_info_iterate_attributes')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+            )
+          >();
+  (bool, String, String) iterateAttributes(GIAttributeIter iterator) {
+    final _out0 = malloc<ffi.Pointer<Utf8>>();
+    final _out1 = malloc<ffi.Pointer<Utf8>>();
+    try {
+      final _ret = _giBaseInfoIterateAttributes(
+        this.handle,
+        iterator.handle,
+        _out0,
+        _out1,
+      );
+      return (
+        (_ret) != 0,
+        stringFromNative(_out0.value.cast(), free: true)!,
+        stringFromNative(_out1.value.cast(), free: true)!,
+      );
+    } finally {
+      malloc.free(_out0);
+      malloc.free(_out1);
+    }
+  }
+
   /// Increases the reference count of @info.
   static final _giBaseInfoRef =
       girGiRepository3Lookup<

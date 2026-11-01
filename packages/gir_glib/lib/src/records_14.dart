@@ -786,6 +786,79 @@ final class GKeyFile implements ffi.Finalizable {
     });
   }
 
+  /// Returns the values associated with @key under @group_name
+  /// translated in the given @locale if available.
+  ///
+  /// If @locale is `C` then the untranslated value is returned (since GLib 2.84).
+  ///
+  /// If @locale is `NULL` then the current locale is assumed.
+  ///
+  /// If @locale is to be non-`NULL`, or if the current locale will change over
+  /// the lifetime of the [struct@GLib.KeyFile], it must be loaded with
+  /// [flags@GLib.KeyFileFlags.KEEP_TRANSLATIONS] in order to load strings for all
+  /// locales.
+  ///
+  /// If @key cannot be found then [error@GLib.KeyFileError.KEY_NOT_FOUND] is
+  /// returned. If the values associated
+  /// with @key cannot be interpreted or no suitable translations
+  /// can be found then the untranslated values are returned. The
+  /// returned array is `NULL`-terminated, so @length may optionally
+  /// be `NULL`.
+  static final _gKeyFileGetLocaleStringList =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_key_file_get_locale_string_list')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  List<String> getLocaleStringList(
+    String groupName,
+    String key, [
+    String? locale,
+  ]) {
+    return withNativeString(groupName, (nativeGroupName) {
+      return withNativeString(key, (nativeKey) {
+        return withNativeString(locale, (nativeLocale) {
+          final _out0 = malloc<ffi.Size>();
+          final _error = calloc<ffi.Pointer<ffi.Void>>();
+          try {
+            final _ret = _gKeyFileGetLocaleStringList(
+              this.handle,
+              nativeGroupName.cast<Utf8>(),
+              nativeKey.cast<Utf8>(),
+              nativeLocale.cast<Utf8>(),
+              _out0,
+              _error,
+            );
+            if (_error.value != ffi.nullptr) {
+              throw GlibException.fromError(_error.value);
+            }
+            return stringListFromNative(_ret, free: true, length: _out0.value)!;
+          } finally {
+            malloc.free(_out0);
+            calloc.free(_error);
+          }
+        });
+      });
+    });
+  }
+
   /// Returns the name of the start group of the file.
   static final _gKeyFileGetStartGroup =
       girGlibLookup<
@@ -844,6 +917,57 @@ final class GKeyFile implements ffi.Finalizable {
           }
           return stringFromNative((_ret).cast(), free: true)!;
         } finally {
+          calloc.free(_error);
+        }
+      });
+    });
+  }
+
+  /// Returns the values associated with @key under @group_name.
+  ///
+  /// If the key cannot be found, [error@GLib.KeyFileError.KEY_NOT_FOUND] is
+  /// returned. If the @group_name cannot be found,
+  /// [error@GLib.KeyFileError.GROUP_NOT_FOUND] is returned.
+  static final _gKeyFileGetStringList =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('g_key_file_get_string_list')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  List<String> getStringList(String groupName, String key) {
+    return withNativeString(groupName, (nativeGroupName) {
+      return withNativeString(key, (nativeKey) {
+        final _out0 = malloc<ffi.Size>();
+        final _error = calloc<ffi.Pointer<ffi.Void>>();
+        try {
+          final _ret = _gKeyFileGetStringList(
+            this.handle,
+            nativeGroupName.cast<Utf8>(),
+            nativeKey.cast<Utf8>(),
+            _out0,
+            _error,
+          );
+          if (_error.value != ffi.nullptr) {
+            throw GlibException.fromError(_error.value);
+          }
+          return stringListFromNative(_ret, free: true, length: _out0.value)!;
+        } finally {
+          malloc.free(_out0);
           calloc.free(_error);
         }
       });
@@ -1141,7 +1265,10 @@ final class GKeyFile implements ffi.Finalizable {
     List<String?>? searchDirs,
     GKeyFileFlags flags,
   ) {
-    return withNativeStringList(searchDirs, (nativeSearchDirs) {
+    return withNativeStringList(searchDirs, (
+      nativeSearchDirs,
+      nativeSearchDirsLen,
+    ) {
       return withNativeString(file, (nativeFile) {
         final _out0 = malloc<ffi.Pointer<Utf8>>();
         final _error = calloc<ffi.Pointer<ffi.Void>>();
@@ -1780,6 +1907,59 @@ final class GKeyFile implements ffi.Finalizable {
     });
   }
 
+  /// Associates a list of string values for @key and @locale under
+  /// @group_name.
+  ///
+  /// If @locale is `C` then the untranslated value is set (since GLib 2.84).
+  ///
+  /// If the translation for @key cannot be found then it is created.
+  static final _gKeyFileSetLocaleStringList =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Size,
+              )
+            >
+          >('g_key_file_set_locale_string_list')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+            )
+          >();
+  void setLocaleStringList(
+    String groupName,
+    String key,
+    String locale, [
+    List<String?>? list,
+  ]) {
+    withNativeStringList(list, (nativeList, nativeListLen) {
+      withNativeString(groupName, (nativeGroupName) {
+        withNativeString(key, (nativeKey) {
+          withNativeString(locale, (nativeLocale) {
+            _gKeyFileSetLocaleStringList(
+              this.handle,
+              nativeGroupName.cast<Utf8>(),
+              nativeKey.cast<Utf8>(),
+              nativeLocale.cast<Utf8>(),
+              nativeList,
+              nativeListLen,
+            );
+          });
+        });
+      });
+    });
+  }
+
   /// Associates a new string value with @key under @group_name.
   ///
   /// If @key cannot be found then it is created.
@@ -1814,6 +1994,47 @@ final class GKeyFile implements ffi.Finalizable {
             nativeGroupName.cast<Utf8>(),
             nativeKey.cast<Utf8>(),
             nativeString.cast<Utf8>(),
+          );
+        });
+      });
+    });
+  }
+
+  /// Associates a list of string values for @key under @group_name.
+  ///
+  /// If @key cannot be found then it is created.
+  /// If @group_name cannot be found then it is created.
+  static final _gKeyFileSetStringList =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Size,
+              )
+            >
+          >('g_key_file_set_string_list')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+            )
+          >();
+  void setStringList(String groupName, String key, [List<String?>? list]) {
+    withNativeStringList(list, (nativeList, nativeListLen) {
+      withNativeString(groupName, (nativeGroupName) {
+        withNativeString(key, (nativeKey) {
+          _gKeyFileSetStringList(
+            this.handle,
+            nativeGroupName.cast<Utf8>(),
+            nativeKey.cast<Utf8>(),
+            nativeList,
+            nativeListLen,
           );
         });
       });

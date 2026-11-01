@@ -1,32 +1,31 @@
 # Skip report for package gir_glib (GLib 2.0)
-Total skipped: 323
+Total skipped: 283
 
 ## By category
-callable: 304
+callable: 266
 alias: 13
 constant: 2
-callback: 2
 method: 1
 constructor: 1
 
 ## By reason
 introspectable=0: 98
 aliases are resolved to their target: 13
-return: array of TypeKind.string (later phase): 6
-parameter string: array of TypeKind.string (later phase): 6
-parameter strv: array of TypeKind.string (later phase): 3
-return: unknown type: time_t: 3
-unsupported out parameter out (ffi.Pointer<ffi.Uint8>): 2
-array parameter in callback signature: 2
-inout parameter rc: 2
-unsupported out parameter standard_output (ffi.Pointer<ffi.Uint8>): 2
-unsupported out parameter end (ffi.Pointer<ffi.Uint8>): 2
-parameter stamp: unknown type: time_t: 2
-parameter list: array of TypeKind.string (later phase): 2
-inout parameter location: 2
-parameter entries: array of TypeKind.record (later phase): 2
 name collision: 2
-moved to Hook.destroy_link: 1
+parameter out: a byte buffer with no length binding: the signature does not state how long the buffer is: 2
+parameter end: a byte buffer with no length binding: the signature does not state how long the buffer is: 2
+parameter location: inout parameter of a pointer to a pointer: the callee allocates the pointee: 2
+parameter entries: unbound array of TypeKind.record: the signature carries no length: 2
+moved to HashTable.size: 1
+moved to ByteArray.append: 1
+moved to ByteArray.free: 1
+moved to ByteArray.free_to_bytes: 1
+moved to ByteArray.new: 1
+moved to ByteArray.new_take: 1
+moved to ByteArray.prepend: 1
+moved to ByteArray.ref: 1
+moved to ByteArray.remove_index: 1
+moved to ByteArray.remove_index_fast: 1
 moved to ByteArray.remove_range: 1
 moved to ByteArray.set_size: 1
 moved to ByteArray.sized_new: 1
@@ -51,7 +50,6 @@ moved to Date.valid_year: 1
 moved to Dir.make_tmp: 1
 moved to Error.domain_register: 1
 moved to Error.domain_register_static: 1
-parameter filename_charsets: array of TypeKind.string (later phase): 1
 moved to HashTable.add: 1
 moved to HashTable.contains: 1
 moved to HashTable.destroy: 1
@@ -67,13 +65,13 @@ moved to HashTable.ref: 1
 moved to HashTable.remove: 1
 moved to HashTable.remove_all: 1
 moved to HashTable.replace: 1
-moved to HashTable.size: 1
+duplicate constant: GLib.CSET_a_2_z and GLib.CSET_A_2_Z both map to csetA2Z: 1
 moved to HashTable.steal: 1
 moved to HashTable.steal_all: 1
 moved to HashTable.steal_extended: 1
 moved to HashTable.unref: 1
 moved to Hook.destroy: 1
-duplicate constant: GLib.CSET_a_2_z and GLib.CSET_A_2_Z both map to csetA2Z: 1
+moved to Hook.destroy_link: 1
 moved to Hook.free: 1
 moved to Hook.insert_before: 1
 moved to Hook.insert_sorted: 1
@@ -87,8 +85,6 @@ moved to KeyFile.error_quark: 1
 moved to List.pop_allocator: 1
 moved to List.push_allocator: 1
 introspectable=0 (C macro; use log_set_handler_full): 1
-moved to AsyncQueue.new: 1
-parameter func: callback LogWriterFunc has unsupported signature: 1
 moved to MainContext.default: 1
 moved to MainContext.get_thread_default: 1
 moved to MainContext.ref_thread_default: 1
@@ -101,8 +97,6 @@ moved to Once.init_enter_pointer: 1
 moved to Once.init_leave: 1
 moved to Once.init_leave_pointer: 1
 moved to PathBuf.equal: 1
-inout parameter err: 1
-moved to AsyncQueue.new_full: 1
 moved to Regex.check_replacement: 1
 moved to Regex.error_quark: 1
 moved to Regex.escape_nul: 1
@@ -121,21 +115,18 @@ moved to Sequence.set: 1
 moved to Sequence.sort_changed: 1
 moved to Sequence.sort_changed_iter: 1
 moved to Sequence.swap: 1
-parameter argvp: array of TypeKind.string (later phase): 1
 moved to SList.pop_allocator: 1
 moved to SList.push_allocator: 1
 moved to Source.remove: 1
 moved to Source.remove_by_funcs_user_data: 1
 moved to Source.remove_by_user_data: 1
 moved to Source.set_name_by_id: 1
-inout parameter text: 1
-parameter ascii_alternates: array of TypeKind.string (later phase): 1
-moved to Thread.error_quark: 1
+moved to AsyncQueue.new: 1
 moved to Thread.exit: 1
 moved to ThreadPool.get_max_idle_time: 1
 moved to ThreadPool.get_max_unused_threads: 1
 moved to ThreadPool.get_num_unused_threads: 1
-unparseable int value: 18446744073709551615: 1
+moved to ThreadPool.set_max_idle_time: 1
 moved to ThreadPool.set_max_unused_threads: 1
 moved to ThreadPool.stop_unused_threads: 1
 moved to Thread.self: 1
@@ -169,7 +160,7 @@ moved to Uri.split_with_user: 1
 moved to Uri.unescape_bytes: 1
 moved to Uri.unescape_segment: 1
 moved to Uri.unescape_string: 1
-moved to BookmarkFile.error_quark: 1
+moved to AsyncQueue.new_full: 1
 moved to Variant.is_object_path: 1
 moved to Variant.is_signature: 1
 moved to Variant.parse: 1
@@ -180,28 +171,15 @@ moved to VariantType.checked_: 1
 moved to VariantType.string_get_depth_: 1
 moved to VariantType.string_is_valid: 1
 moved to VariantType.string_scan: 1
-moved to ByteArray.append: 1
-moved to ByteArray.free: 1
-moved to ByteArray.free_to_bytes: 1
-parameter added: unknown type: time_t: 1
-parameter groups: array of TypeKind.string (later phase): 1
-parameter modified: unknown type: time_t: 1
-parameter visited: unknown type: time_t: 1
-parameter timet: unknown type: time_t: 1
-unsupported out parameter buf (ffi.Pointer<ffi.Uint8>): 1
-moved to ByteArray.new: 1
-unsupported out parameter fds (ffi.Pointer<ffi.Void>): 1
-moved to ByteArray.new_take: 1
-moved to ByteArray.prepend: 1
-inout parameter argc: 1
-parameter arguments: array of TypeKind.string (later phase): 1
-moved to ByteArray.ref: 1
-inout parameter time_: 1
-moved to ByteArray.remove_index: 1
-moved to ByteArray.remove_index_fast: 1
-moved to ThreadPool.set_max_idle_time: 1
+parameter fds: array of PollFD: the layout of the element is not emitted, so the elements cannot be read out of the array: 1
+parameter text: inout buffer: the callee writes through the caller's memory, and the length it produced is only known after the call: 1
+unparseable int value: 18446744073709551615: 1
+parameter argv: inout parameter of a pointer to a pointer: the callee allocates the pointee: 1
+parameter arguments: inout parameter of a pointer to a pointer: the callee allocates the pointee: 1
+moved to BookmarkFile.error_quark: 1
+moved to Thread.error_quark: 1
 
-## First 50 entries
+## All 283 entries
 [constant] GLib.CSET_a_2_z — duplicate constant: GLib.CSET_a_2_z and GLib.CSET_A_2_Z both map to csetA2Z
 [constant] GLib.MAXUINT64 — unparseable int value: 18446744073709551615
 [callable] GLib.arrayNewTake — introspectable=0
@@ -210,10 +188,10 @@ moved to ThreadPool.set_max_idle_time: 1
 [callable] GLib.assertionMessageExpr — introspectable=0
 [callable] GLib.asyncQueueNew — moved to AsyncQueue.new
 [callable] GLib.asyncQueueNewFull — moved to AsyncQueue.new_full
-[callable] GLib.base64DecodeInplace — inout parameter text
+[callable] GLib.base64DecodeInplace — parameter text: inout buffer: the callee writes through the caller's memory, and the length it produced is only known after the call
 [callable] GLib.base64DecodeStep — introspectable=0
-[callable] GLib.base64EncodeClose — unsupported out parameter out (ffi.Pointer<ffi.Uint8>)
-[callable] GLib.base64EncodeStep — unsupported out parameter out (ffi.Pointer<ffi.Uint8>)
+[callable] GLib.base64EncodeClose — parameter out: a byte buffer with no length binding: the signature does not state how long the buffer is
+[callable] GLib.base64EncodeStep — parameter out: a byte buffer with no length binding: the signature does not state how long the buffer is
 [callable] GLib.bookmarkFileErrorQuark — moved to BookmarkFile.error_quark
 [callable] GLib.buildFilename — introspectable=0
 [callable] GLib.buildFilenameValist — introspectable=0
@@ -252,3 +230,236 @@ moved to ThreadPool.set_max_idle_time: 1
 [callable] GLib.datasetIdSetDataFull — introspectable=0
 [callable] GLib.dateGetDaysInMonth — moved to Date.get_days_in_month
 [callable] GLib.dateGetMondayWeeksInYear — moved to Date.get_monday_weeks_in_year
+[callable] GLib.dateGetSundayWeeksInYear — moved to Date.get_sunday_weeks_in_year
+[callable] GLib.dateGetWeeksInYear — moved to Date.get_weeks_in_year
+[callable] GLib.dateIsLeapYear — moved to Date.is_leap_year
+[callable] GLib.dateStrftime — moved to Date.strftime
+[callable] GLib.dateValidDay — moved to Date.valid_day
+[callable] GLib.dateValidDmy — moved to Date.valid_dmy
+[callable] GLib.dateValidJulian — moved to Date.valid_julian
+[callable] GLib.dateValidMonth — moved to Date.valid_month
+[callable] GLib.dateValidWeekday — moved to Date.valid_weekday
+[callable] GLib.dateValidYear — moved to Date.valid_year
+[callable] GLib.dirMakeTmp — moved to Dir.make_tmp
+[callable] GLib.errorDomainRegister — moved to Error.domain_register
+[callable] GLib.errorDomainRegisterStatic — moved to Error.domain_register_static
+[callable] GLib.fprintf — introspectable=0
+[callable] GLib.hashTableAdd — moved to HashTable.add
+[callable] GLib.hashTableContains — moved to HashTable.contains
+[callable] GLib.hashTableDestroy — moved to HashTable.destroy
+[callable] GLib.hashTableFind — moved to HashTable.find
+[callable] GLib.hashTableForeach — moved to HashTable.foreach
+[callable] GLib.hashTableForeachRemove — moved to HashTable.foreach_remove
+[callable] GLib.hashTableForeachSteal — moved to HashTable.foreach_steal
+[callable] GLib.hashTableGetKeysAsPtrArray — introspectable=0
+[callable] GLib.hashTableGetValuesAsPtrArray — introspectable=0
+[callable] GLib.hashTableInsert — moved to HashTable.insert
+[callable] GLib.hashTableLookup — moved to HashTable.lookup
+[callable] GLib.hashTableLookupExtended — moved to HashTable.lookup_extended
+[callable] GLib.hashTableNewSimilar — moved to HashTable.new_similar
+[callable] GLib.hashTableRef — moved to HashTable.ref
+[callable] GLib.hashTableRemove — moved to HashTable.remove
+[callable] GLib.hashTableRemoveAll — moved to HashTable.remove_all
+[callable] GLib.hashTableReplace — moved to HashTable.replace
+[callable] GLib.hashTableSize — moved to HashTable.size
+[callable] GLib.hashTableSteal — moved to HashTable.steal
+[callable] GLib.hashTableStealAll — moved to HashTable.steal_all
+[callable] GLib.hashTableStealAllKeys — introspectable=0
+[callable] GLib.hashTableStealAllValues — introspectable=0
+[callable] GLib.hashTableStealExtended — moved to HashTable.steal_extended
+[callable] GLib.hashTableUnref — moved to HashTable.unref
+[callable] GLib.hookDestroy — moved to Hook.destroy
+[callable] GLib.hookDestroyLink — moved to Hook.destroy_link
+[callable] GLib.hookFree — moved to Hook.free
+[callable] GLib.hookInsertBefore — moved to Hook.insert_before
+[callable] GLib.hookInsertSorted — moved to Hook.insert_sorted
+[callable] GLib.hookPrepend — moved to Hook.prepend
+[callable] GLib.hookUnref — moved to Hook.unref
+[callable] GLib.iconv — introspectable=0
+[callable] GLib.iconvOpen — introspectable=0
+[callable] GLib.idleAdd — introspectable=0 (C macro; use idle_add_full)
+[callable] GLib.idleAddOnce — introspectable=0
+[callable] GLib.ioAddWatch — introspectable=0 (C macro; use io_add_watch_full)
+[callable] GLib.ioChannelErrorFromErrno — moved to IOChannel.error_from_errno
+[callable] GLib.ioChannelErrorQuark — moved to IOChannel.error_quark
+[callable] GLib.keyFileErrorQuark — moved to KeyFile.error_quark
+[callable] GLib.listPopAllocator — moved to List.pop_allocator
+[callable] GLib.listPushAllocator — moved to List.push_allocator
+[callable] GLib.log — introspectable=0
+[callable] GLib.logSetDefaultHandler — introspectable=0
+[callable] GLib.logSetHandler — introspectable=0 (C macro; use log_set_handler_full)
+[callable] GLib.logStructured — introspectable=0
+[callable] GLib.logStructuredStandard — introspectable=0
+[callable] GLib.logv — introspectable=0
+[callable] GLib.mainContextDefault — moved to MainContext.default
+[callable] GLib.mainContextGetThreadDefault — moved to MainContext.get_thread_default
+[callable] GLib.mainContextRefThreadDefault — moved to MainContext.ref_thread_default
+[callable] GLib.markupCollectAttributes — introspectable=0
+[callable] GLib.markupPrintfEscaped — introspectable=0
+[callable] GLib.markupVprintfEscaped — introspectable=0
+[callable] GLib.memChunkInfo — moved to MemChunk.info
+[callable] GLib.mkdtemp — introspectable=0
+[callable] GLib.mkdtempFull — introspectable=0
+[callable] GLib.mkstemp — introspectable=0
+[callable] GLib.mkstempFull — introspectable=0
+[callable] GLib.mutexNew — introspectable=0
+[callable] GLib.nodePopAllocator — moved to Node.pop_allocator
+[callable] GLib.nodePushAllocator — moved to Node.push_allocator
+[callable] GLib.onceInitEnter — moved to Once.init_enter
+[callable] GLib.onceInitEnterImpl — moved to Once.init_enter_impl
+[callable] GLib.onceInitEnterPointer — moved to Once.init_enter_pointer
+[callable] GLib.onceInitLeave — moved to Once.init_leave
+[callable] GLib.onceInitLeavePointer — moved to Once.init_leave_pointer
+[callable] GLib.pathBufEqual — moved to PathBuf.equal
+[callable] GLib.patternMatch — introspectable=0
+[callable] GLib.patternMatchString — introspectable=0
+[callable] GLib.prefixError — introspectable=0
+[callable] GLib.print — introspectable=0
+[callable] GLib.printerr — introspectable=0
+[callable] GLib.printf — introspectable=0
+[callable] GLib.printfStringUpperBound — introspectable=0
+[callable] GLib.privateNew — introspectable=0
+[callable] GLib.propagatePrefixedError — introspectable=0
+[callable] GLib.ptrArrayFind — introspectable=0
+[callable] GLib.ptrArrayFindWithEqualFunc — introspectable=0
+[callable] GLib.ptrArrayNewFromArray — introspectable=0
+[callable] GLib.ptrArrayNewFromNullTerminatedArray — introspectable=0
+[callable] GLib.ptrArrayNewTake — introspectable=0
+[callable] GLib.ptrArrayNewTakeNullTerminated — introspectable=0
+[callable] GLib.regexCheckReplacement — moved to Regex.check_replacement
+[callable] GLib.regexErrorQuark — moved to Regex.error_quark
+[callable] GLib.regexEscapeNul — moved to Regex.escape_nul
+[callable] GLib.regexEscapeString — moved to Regex.escape_string
+[callable] GLib.regexMatchSimple — moved to Regex.match_simple
+[callable] GLib.regexSplitSimple — moved to Regex.split_simple
+[callable] GLib.returnIfFailWarning — introspectable=0
+[callable] GLib.sequenceForeachRange — moved to Sequence.foreach_range
+[callable] GLib.sequenceGet — moved to Sequence.get
+[callable] GLib.sequenceInsertBefore — moved to Sequence.insert_before
+[callable] GLib.sequenceMove — moved to Sequence.move
+[callable] GLib.sequenceMoveRange — moved to Sequence.move_range
+[callable] GLib.sequenceRangeGetMidpoint — moved to Sequence.range_get_midpoint
+[callable] GLib.sequenceRemove — moved to Sequence.remove
+[callable] GLib.sequenceRemoveRange — moved to Sequence.remove_range
+[callable] GLib.sequenceSet — moved to Sequence.set
+[callable] GLib.sequenceSortChanged — moved to Sequence.sort_changed
+[callable] GLib.sequenceSortChangedIter — moved to Sequence.sort_changed_iter
+[callable] GLib.sequenceSwap — moved to Sequence.swap
+[callable] GLib.setError — introspectable=0
+[callable] GLib.setPrintHandler — introspectable=0
+[callable] GLib.setPrinterrHandler — introspectable=0
+[callable] GLib.setUserDirs — introspectable=0
+[callable] GLib.slistPopAllocator — moved to SList.pop_allocator
+[callable] GLib.slistPushAllocator — moved to SList.push_allocator
+[callable] GLib.snprintf — introspectable=0
+[callable] GLib.sortArray — introspectable=0
+[callable] GLib.sourceRemoveFn — moved to Source.remove
+[callable] GLib.sourceRemoveByFuncsUserData — moved to Source.remove_by_funcs_user_data
+[callable] GLib.sourceRemoveByUserData — moved to Source.remove_by_user_data
+[callable] GLib.sourceSetNameById — moved to Source.set_name_by_id
+[callable] GLib.sprintf — introspectable=0
+[callable] GLib.strconcat — introspectable=0
+[callable] GLib.strdupPrintf — introspectable=0
+[callable] GLib.strdupVprintf — introspectable=0
+[callable] GLib.strjoin — introspectable=0
+[callable] GLib.testAddVtable — introspectable=0
+[callable] GLib.testBuildFilename — introspectable=0
+[callable] GLib.testCreateCase — introspectable=0
+[callable] GLib.testCreateSuite — introspectable=0
+[callable] GLib.testFailPrintf — introspectable=0
+[callable] GLib.testGetFilename — introspectable=0
+[callable] GLib.testGetRoot — introspectable=0
+[callable] GLib.testIncompletePrintf — introspectable=0
+[callable] GLib.testInit — introspectable=0
+[callable] GLib.testLogSetFatalHandler — introspectable=0
+[callable] GLib.testMaximizedResult — introspectable=0
+[callable] GLib.testMessage — introspectable=0
+[callable] GLib.testMinimizedResult — introspectable=0
+[callable] GLib.testSkipPrintf — introspectable=0
+[callable] GLib.threadCreate — introspectable=0
+[callable] GLib.threadCreateFull — introspectable=0
+[callable] GLib.threadErrorQuark — moved to Thread.error_quark
+[callable] GLib.threadExit — moved to Thread.exit
+[callable] GLib.threadForeach — introspectable=0
+[callable] GLib.threadGetInitialized — introspectable=0
+[callable] GLib.threadInit — introspectable=0
+[callable] GLib.threadInitWithErrorcheckMutexes — introspectable=0
+[callable] GLib.threadPoolGetMaxIdleTime — moved to ThreadPool.get_max_idle_time
+[callable] GLib.threadPoolGetMaxUnusedThreads — moved to ThreadPool.get_max_unused_threads
+[callable] GLib.threadPoolGetNumUnusedThreads — moved to ThreadPool.get_num_unused_threads
+[callable] GLib.threadPoolSetMaxIdleTime — moved to ThreadPool.set_max_idle_time
+[callable] GLib.threadPoolSetMaxUnusedThreads — moved to ThreadPool.set_max_unused_threads
+[callable] GLib.threadPoolStopUnusedThreads — moved to ThreadPool.stop_unused_threads
+[callable] GLib.threadSelf — moved to Thread.self
+[callable] GLib.threadYield — moved to Thread.yield
+[callable] GLib.timeValFromIso8601 — moved to TimeVal.from_iso8601
+[callable] GLib.timeoutAdd — introspectable=0 (C macro; use timeout_add_full)
+[callable] GLib.timeoutAddOnce — introspectable=0
+[callable] GLib.timeoutAddSeconds — introspectable=0 (C macro; use timeout_add_seconds_full)
+[callable] GLib.timeoutAddSecondsOnce — introspectable=0
+[callable] GLib.trashStackHeight — moved to TrashStack.height
+[callable] GLib.trashStackPeek — moved to TrashStack.peek
+[callable] GLib.trashStackPop — moved to TrashStack.pop
+[callable] GLib.trashStackPush — moved to TrashStack.push
+[callable] GLib.unicodeScriptFromIso15924 — moved to UnicodeScript.from_iso15924
+[callable] GLib.unicodeScriptToIso15924 — moved to UnicodeScript.to_iso15924
+[callable] GLib.uriBuild — moved to Uri.build
+[callable] GLib.uriBuildWithUser — moved to Uri.build_with_user
+[callable] GLib.uriErrorQuark — moved to Uri.error_quark
+[callable] GLib.uriEscapeBytes — moved to Uri.escape_bytes
+[callable] GLib.uriEscapeString — moved to Uri.escape_string
+[callable] GLib.uriIsValid — moved to Uri.is_valid
+[callable] GLib.uriJoin — moved to Uri.join
+[callable] GLib.uriJoinWithUser — moved to Uri.join_with_user
+[callable] GLib.uriListExtractUris — moved to Uri.list_extract_uris
+[callable] GLib.uriParse — moved to Uri.parse
+[callable] GLib.uriParseParams — moved to Uri.parse_params
+[callable] GLib.uriParseScheme — moved to Uri.parse_scheme
+[callable] GLib.uriPeekScheme — moved to Uri.peek_scheme
+[callable] GLib.uriResolveRelative — moved to Uri.resolve_relative
+[callable] GLib.uriSplit — moved to Uri.split
+[callable] GLib.uriSplitNetwork — moved to Uri.split_network
+[callable] GLib.uriSplitWithUser — moved to Uri.split_with_user
+[callable] GLib.uriUnescapeBytes — moved to Uri.unescape_bytes
+[callable] GLib.uriUnescapeSegment — moved to Uri.unescape_segment
+[callable] GLib.uriUnescapeString — moved to Uri.unescape_string
+[callable] GLib.utf8Validate — parameter end: a byte buffer with no length binding: the signature does not state how long the buffer is
+[callable] GLib.utf8ValidateLen — parameter end: a byte buffer with no length binding: the signature does not state how long the buffer is
+[callable] GLib.variantIsObjectPath — moved to Variant.is_object_path
+[callable] GLib.variantIsSignature — moved to Variant.is_signature
+[callable] GLib.variantParse — moved to Variant.parse
+[callable] GLib.variantParseErrorPrintContext — moved to Variant.parse_error_print_context
+[callable] GLib.variantParseErrorQuark — moved to Variant.parse_error_quark
+[callable] GLib.variantParserGetErrorQuark — moved to Variant.parser_get_error_quark
+[callable] GLib.variantTypeChecked — moved to VariantType.checked_
+[callable] GLib.variantTypeStringGetDepth — moved to VariantType.string_get_depth_
+[callable] GLib.variantTypeStringIsValid — moved to VariantType.string_is_valid
+[callable] GLib.variantTypeStringScan — moved to VariantType.string_scan
+[callable] GLib.vasprintf — introspectable=0
+[callable] GLib.vfprintf — introspectable=0
+[callable] GLib.vprintf — introspectable=0
+[callable] GLib.vsnprintf — introspectable=0
+[callable] GLib.vsprintf — introspectable=0
+[callable] GLib.warnMessage — introspectable=0
+[callable] GMainContext.query — parameter fds: array of PollFD: the layout of the element is not emitted, so the elements cannot be read out of the array
+[callable] GOnce.initEnter — parameter location: inout parameter of a pointer to a pointer: the callee allocates the pointee
+[callable] GOnce.initLeave — parameter location: inout parameter of a pointer to a pointer: the callee allocates the pointee
+[callable] GOptionContext.addMainEntries — parameter entries: unbound array of TypeKind.record: the signature carries no length
+[callable] GOptionContext.parse — parameter argv: inout parameter of a pointer to a pointer: the callee allocates the pointee
+[callable] GOptionContext.parseStrv — parameter arguments: inout parameter of a pointer to a pointer: the callee allocates the pointee
+[callable] GOptionGroup.addEntries — parameter entries: unbound array of TypeKind.record: the signature carries no length
+[method] GUri.toString — name collision
+[constructor] GVariant.handle — name collision
+[alias] DateDay — aliases are resolved to their target
+[alias] DateYear — aliases are resolved to their target
+[alias] MainContextPusher — aliases are resolved to their target
+[alias] MutexLocker — aliases are resolved to their target
+[alias] Pid — aliases are resolved to their target
+[alias] Quark — aliases are resolved to their target
+[alias] RWLockReaderLocker — aliases are resolved to their target
+[alias] RWLockWriterLocker — aliases are resolved to their target
+[alias] RecMutexLocker — aliases are resolved to their target
+[alias] RefString — aliases are resolved to their target
+[alias] Strv — aliases are resolved to their target
+[alias] Time — aliases are resolved to their target
+[alias] TimeSpan — aliases are resolved to their target

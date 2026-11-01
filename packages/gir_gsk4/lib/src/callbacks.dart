@@ -11,6 +11,24 @@ typedef GskParseErrorFunc = void Function(
   ffi.Pointer<ffi.Void>,
 );
 
+/// Type of the callback to iterate through the operations of a path.
+///
+/// For each operation, the callback is given the @op itself, the points
+/// that the operation is applied to in @pts, and a @weight for conic
+/// curves. The @n_pts argument is somewhat redundant, since the number
+/// of points can be inferred from the operation.
+///
+/// Each contour of the path starts with a @GSK_PATH_MOVE operation.
+/// Closed contours end with a @GSK_PATH_CLOSE operation.
+/// Pass a top-level or static Dart function. Closures are not supported.
+typedef GskPathForeachFunc = int Function(
+  int,
+  ffi.Pointer<ffi.Void>,
+  int,
+  double,
+  ffi.Pointer<ffi.Void>,
+);
+
 /// Prototype of the callback to iterate through the
 /// intersections of two paths.
 /// Pass a top-level or static Dart function. Closures are not supported.

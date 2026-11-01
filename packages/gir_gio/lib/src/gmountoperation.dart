@@ -358,11 +358,50 @@ class GMountOperation extends GObject {
     );
   }
 
+  /// Emitted when asking the user a question and gives a list of
+  /// choices for the user to choose from.
+  ///
+  /// If the message contains a line break, the first line should be
+  /// presented as a heading. For example, it may be used as the
+  /// primary text in a #GtkMessageDialog.
+  int onAskQuestion(
+    void Function(String message, List<String>? choices) callback,
+  ) {
+    return _connectSignal_v_2_s_o_string_liststring(
+      this.handle,
+      'ask-question',
+      callback,
+    );
+  }
+
   /// Emitted when the user has replied to the mount operation.
   int onReply(void Function(GMountOperationResult result) callback) {
     return _connectSignal_v_1_i_gmountoperationresult(
       this.handle,
       'reply',
+      callback,
+    );
+  }
+
+  /// Emitted when one or more processes are blocking an operation
+  /// e.g. unmounting/ejecting a #GMount or stopping a #GDrive.
+  ///
+  /// Note that this signal may be emitted several times to update the
+  /// list of blocking processes as processes close files. The
+  /// application should only respond with g_mount_operation_reply() to
+  /// the latest signal (setting #GMountOperation:choice to the choice
+  /// the user made).
+  ///
+  /// If the message contains a line break, the first line should be
+  /// presented as a heading. For example, it may be used as the
+  /// primary text in a #GtkMessageDialog.
+  int onShowProcesses(
+    void Function(String message, GArray processes, List<String>? choices)
+    callback,
+  ) {
+    return _connectSignal_v_3_s_o_o_string_garray_liststring(
+      this.handle,
+      'show-processes',
       callback,
     );
   }

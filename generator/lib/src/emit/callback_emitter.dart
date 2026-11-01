@@ -56,16 +56,48 @@ class CallbackEmitter {
       forReturn: true,
     );
     if (ret == null) return null;
-    final params = <String>[];
+    final params = userParams(cb, label: label);
+    if (params == null) return null;
+    return '$ret Function(${params.map((p) => p.type).join(', ')})';
+  }
+
+  /// The user-facing parameter list of [cb]: the type and the name of
+  /// each parameter.
+  ///
+  /// The destroy-notify trampoline a callable needs is built over the
+  /// callback's *own* signature — `GdkPixbufDestroyNotify` takes the
+  /// pixel buffer and the data, `GDestroyNotify` only the data — so the
+  /// trampoline needs the parameter list, not just the signature.
+  ///
+  /// Set [report] to false when the caller has already reported the
+  /// skip: the report counts entries, and a parameter the emitter cannot
+  /// express must be reported once.
+  List<({String type, String ffiType, String name})>? userParams(
+    GirCallback cb, {
+    String label = 'callback',
+    bool report = true,
+  }) {
+    final params = <({String type, String ffiType, String name})>[];
     for (final p in cb.parameters) {
       final typeName = _userFacingType(
         p.type,
         label: '$label parameter ${p.name}',
+        report: report,
       );
       if (typeName == null) return null;
-      params.add(typeName);
+      final ffiType = _ffiTypeFor(
+        p.type,
+        label: '$label parameter ${p.name}',
+        report: report,
+      );
+      if (ffiType == null) return null;
+      params.add((
+        type: typeName,
+        ffiType: ffiType,
+        name: escapeKeyword(toLowerCamel(p.name)),
+      ));
     }
-    return '$ret Function(${params.join(', ')})';
+    return params;
   }
 
   /// Builds an inline FFI signature for [cb] suitable for `Pointer.fromFunction<T>`
@@ -144,6 +176,7 @@ class CallbackEmitter {
     GirTypeRef? ref, {
     required String label,
     bool forReturn = false,
+    bool report = true,
   }) {
     if (ref == null) return 'void';
     if (ref.name != null) {
@@ -152,7 +185,9 @@ class CallbackEmitter {
     }
     final m = ctx.resolve(ref);
     if (m.kind == TypeKind.unsupported) {
-      ctx.report.skip('callback', label, m.reason ?? 'unsupported type');
+      if (report) {
+        ctx.report.skip('callback', label, m.reason ?? 'unsupported type');
+      }
       return null;
     }
     switch (m.kind) {
@@ -161,6 +196,7 @@ class CallbackEmitter {
       case TypeKind.boolean:
         return 'int'; // Dart FFI doesn't unify bool ↔ Int32 here
       case TypeKind.string:
+      case TypeKind.countedString:
         return 'ffi.Pointer<Utf8>';
       case TypeKind.classType:
       case TypeKind.interface:
@@ -176,20 +212,21 @@ class CallbackEmitter {
         // Already handled above by _resolveCallback.
         return null;
       case TypeKind.stringList:
+      case TypeKind.stringArrayPointer:
         return 'ffi.Pointer<ffi.Pointer<Utf8>>';
       case TypeKind.voidType:
         return 'void';
       case TypeKind.primitiveArray:
       case TypeKind.recordArray:
-        // Arrays are not used in callback signatures today; reject with
-        // a precise skip reason so the report carries the cause.
-        ctx.report.skip(
-          'callback',
-          label,
-          'array parameter in callback signature'
-              '${m.reason != null ? ' (${m.reason})' : ''}',
-        );
-        return null;
+        // An array parameter is a pointer to the first element. The
+        // mapping already carries the FFI type — `ffi.Pointer<ffi.Int32>`
+        // for an array of `gint`, `ffi.Pointer<ffi.Void>` for an array of
+        // records.
+        //
+        // The element count is *not* part of the signature: a callback
+        // that needs it takes it from a sibling parameter, the way
+        // `GskPathForeachFunc` takes `n_pts`.
+        return m.nativeType;
       case TypeKind.unsupported:
         return null;
     }
@@ -202,6 +239,7 @@ class CallbackEmitter {
     GirTypeRef? ref, {
     required String label,
     bool forReturn = false,
+    bool report = true,
   }) {
     if (ref == null) return 'ffi.Void';
     if (ref.name != null) {
@@ -210,7 +248,9 @@ class CallbackEmitter {
     }
     final (bridge, reason) = ctx.bridgeFor(ref, forReturn: forReturn);
     if (bridge == null) {
-      ctx.report.skip('callback', label, reason ?? 'unsupported type');
+      if (report) {
+        ctx.report.skip('callback', label, reason ?? 'unsupported type');
+      }
       return null;
     }
     return bridge.nativeType;

@@ -381,7 +381,10 @@ class GtkIconTheme extends GObject {
     GtkTextDirection direction,
     GtkIconLookupFlags flags,
   ) {
-    return withNativeStringList(fallbacks, (nativeFallbacks) {
+    return withNativeStringList(fallbacks, (
+      nativeFallbacks,
+      nativeFallbacksLen,
+    ) {
       return withNativeString(iconName, (nativeIconName) {
         return GtkIconPaintable.fromPointer(
           _gtkIconThemeLookupIcon(
@@ -423,7 +426,7 @@ class GtkIconTheme extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setResourcePath([List<String?>? path]) {
-    withNativeStringList(path, (nativePath) {
+    withNativeStringList(path, (nativePath, nativePathLen) {
       _gtkIconThemeSetResourcePath(this.handle, nativePath);
     });
   }
@@ -456,7 +459,7 @@ class GtkIconTheme extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setSearchPath([List<String?>? path]) {
-    withNativeStringList(path, (nativePath) {
+    withNativeStringList(path, (nativePath, nativePathLen) {
       _gtkIconThemeSetSearchPath(this.handle, nativePath);
     });
   }

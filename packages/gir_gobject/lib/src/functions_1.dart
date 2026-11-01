@@ -413,6 +413,94 @@ bool signalAccumulatorTrueHandled(
       0;
 }
 
+/// Adds an emission hook for a signal, which will get called for any emission
+/// of that signal, independent of the instance. This is possible only
+/// for signals which don't have %G_SIGNAL_NO_HOOKS flag set.
+final _gSignalAddEmissionHook =
+    girGobjectLookup<
+          ffi.NativeFunction<
+            ffi.UnsignedLong Function(
+              ffi.Uint32,
+              ffi.Uint32,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Uint32,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+              >,
+            )
+          >
+        >('g_signal_add_emission_hook')
+        .asFunction<
+          int Function(
+            int,
+            int,
+            ffi.Pointer<
+              ffi.NativeFunction<
+                ffi.Int32 Function(
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Uint32,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                )
+              >
+            >,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<
+              ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+            >,
+          )
+        >();
+int signalAddEmissionHook(
+  int signalId,
+  int detail,
+  int Function(
+    ffi.Pointer<ffi.Void>,
+    int,
+    ffi.Pointer<ffi.Void>,
+    ffi.Pointer<ffi.Void>,
+  )
+  hookFunc, [
+  ffi.Pointer<ffi.Void>? hookData,
+  void Function(ffi.Pointer<ffi.Void>)? dataDestroy,
+]) {
+  final _nc3 =
+      ffi.NativeCallable<
+        ffi.Int32 Function(
+          ffi.Pointer<ffi.Void>,
+          ffi.Uint32,
+          ffi.Pointer<ffi.Void>,
+          ffi.Pointer<ffi.Void>,
+        )
+      >.isolateLocal(hookFunc, exceptionalReturn: 0);
+  final _nc5 = dataDestroy == null
+      ? null
+      : ffi.NativeCallable<
+          ffi.Void Function(ffi.Pointer<ffi.Void>)
+        >.isolateLocal(dataDestroy);
+  try {
+    final _ret = _gSignalAddEmissionHook(
+      signalId,
+      detail,
+      _nc3.nativeFunction,
+      hookData ?? ffi.nullptr,
+      _nc5?.nativeFunction ?? ffi.nullptr,
+    );
+    return _ret;
+  } finally {
+    _nc3.close();
+    _nc5?.close();
+  }
+}
+
 /// Connects a closure to a signal for a particular object.
 ///
 /// If @closure is a floating reference (see g_closure_sink()), this function
@@ -933,16 +1021,4 @@ int signalLookup(String name, int itype) {
   return withNativeString(name, (nativeName) {
     return _gSignalLookup(nativeName.cast<Utf8>(), itype);
   });
-}
-
-/// Given the signal's identifier, finds its name.
-///
-/// Two different signals may have the same name, if they have differing types.
-final _gSignalName =
-    girGobjectLookup<
-          ffi.NativeFunction<ffi.Pointer<Utf8> Function(ffi.Uint32)>
-        >('g_signal_name')
-        .asFunction<ffi.Pointer<Utf8> Function(int)>();
-String? signalName(int signalId) {
-  return stringFromNative((_gSignalName(signalId)).cast(), free: false);
 }

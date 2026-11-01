@@ -163,7 +163,7 @@ class GtkDropDown extends GtkWidget
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   factory GtkDropDown.fromStrings([List<String?>? strings]) {
-    return withNativeStringList(strings, (nativeStrings) {
+    return withNativeStringList(strings, (nativeStrings, nativeStringsLen) {
       return GtkDropDown.fromPointer(
         gObjectRefSink(_gtkDropDownNewFromStrings(nativeStrings)),
         owned: true,

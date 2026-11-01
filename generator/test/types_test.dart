@@ -316,7 +316,10 @@ void main() {
       expect(m.kind, TypeKind.stringList);
     });
 
-    test('bound-length array stays unsupported', () {
+    test('bound-length string array resolves to stringList', () {
+      // The GIR binds the array to the sibling that carries its count.
+      // The C side reads exactly that many slots, so the wrapper absorbs
+      // the count and derives it from the list the caller passed.
       final m = resolver.resolve(
         const GirTypeRef(
           cType: 'gchar**',
@@ -327,8 +330,40 @@ void main() {
         ),
         currentNamespace: glib,
       );
-      expect(m.kind, TypeKind.unsupported);
-      expect(m.reason, contains('array'));
+      expect(m.kind, TypeKind.stringList);
+      expect(m.arrayLengthParameter, 2);
+    });
+
+    test('a counted string resolves to countedString', () {
+      // GLib's `(string, string_len)` pair: a single string whose *byte*
+      // length a sibling parameter carries.
+      final m = resolver.resolve(
+        const GirTypeRef(
+          cType: 'const gchar*',
+          array: GirArrayInfo(
+            lengthParameterIndex: 1,
+            elementType: GirTypeRef(name: 'utf8'),
+          ),
+        ),
+        currentNamespace: glib,
+      );
+      expect(m.kind, TypeKind.countedString);
+      expect(m.arrayLengthParameter, 1);
+    });
+
+    test('a pointer to a string array the callee allocates resolves', () {
+      // `gchar ***` — the callee allocates the `gchar **` and writes its
+      // address into the caller's slot.
+      final m = resolver.resolve(
+        const GirTypeRef(
+          cType: 'gchar***',
+          array: GirArrayInfo(
+            elementType: GirTypeRef(name: 'utf8', cType: 'gchar**'),
+          ),
+        ),
+        currentNamespace: glib,
+      );
+      expect(m.kind, TypeKind.stringArrayPointer);
     });
 
     test('array of non-string element is accepted as primitive array', () {

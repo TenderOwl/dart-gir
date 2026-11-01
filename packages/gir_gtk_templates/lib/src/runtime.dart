@@ -108,7 +108,9 @@ final _gStrdup =
 ///
 /// Throws a [StateError] when a *different* owner already claimed
 /// the type: GTK allows exactly one template per native class, and a
-/// Dart subclass does not create a new `GType`.
+/// Dart subclass that does not register a `GType` of its own does not
+/// create a new one. A class that registers a type of its own claims
+/// *that* type, and does not collide.
 ///
 /// The claim is **process-wide**: it lives in the type's `qdata`, so a
 /// second isolate of the same process sees it and does not install a
@@ -126,7 +128,37 @@ bool claimTemplateType(int widgetType, String owner) {
     'carries a template installed by `$existingOwner`. GTK allows one template '
     'per native class, and a Dart subclass does not register a GType of its '
     'own — so two Dart template classes cannot share the same native '
-    'widget type.',
+    'widget type. A class that registers a type of its own '
+    '(`registerDartType`) does not collide: its template lives on that type.',
+  );
+}
+
+/// Checks that [widget] is an instance of [expectedType].
+///
+/// A Dart class that registers a `GType` of its own carries its
+/// template on *that* type — GTK allows exactly one template per
+/// native class, and a type of its own is what lets two Dart classes
+/// with the same parent each have a template.
+///
+/// The widget therefore has to be an instance of the type the Dart
+/// class registered. A widget created through the parent's constructor
+/// is an instance of the *parent's* type, and the template would land
+/// on the parent's class — where another Dart class may already have
+/// put one.
+///
+/// Throws a [StateError] naming both types when the widget is not an
+/// instance of [expectedType].
+void requireOwnType(GtkWidget widget, int expectedType, String owner) {
+  final actualType = widgetTypeOf(widget);
+  if (actualType == expectedType) return;
+  final actualName = typeName(actualType) ?? 'GType $actualType';
+  final expectedName = typeName(expectedType) ?? 'GType $expectedType';
+  throw StateError(
+    'gir_gtk_templates: `$owner` was created as `$actualName`, not as '
+    '`$expectedName`. A widget that carries a template of its own has to be '
+    'created from its own type — construct it with '
+    '`$owner() : super.rawFromPointer(newDartInstance($owner.GType), '
+    'owned: true)`.',
   );
 }
 

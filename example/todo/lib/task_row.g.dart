@@ -82,11 +82,16 @@ mixin _$TaskRowTemplate on GtkBox {
     if (_instanceInitialized) return;
     _instanceInitialized = true;
     final widget = this as GtkWidget;
-    final widgetType = widgetTypeOf(widget);
+    // The class declares a native type of its own, so the
+    // template belongs to *that* type — and the widget has to
+    // be an instance of it.
+    final ownType = TaskRow.GType;
+    requireOwnType(widget, ownType, 'TaskRow');
+    final widgetType = ownType;
     final widgetClass = getWidgetClass(widget);
     if (widgetClass == null) {
       throw StateError(
-        'gtk_templates: could not resolve widget class for $runtimeType',
+        'gir_gtk_templates: could not resolve widget class for $runtimeType',
       );
     }
     // The template lives on the *native* class and GTK allows

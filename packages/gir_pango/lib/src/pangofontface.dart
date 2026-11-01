@@ -123,6 +123,44 @@ class PangoFontFace extends GObject {
     return (_pangoFontFaceIsSynthesized(this.handle)) != 0;
   }
 
+  /// List the available sizes for a font.
+  ///
+  /// This is only applicable to bitmap fonts. For scalable fonts, stores
+  /// %NULL at the location pointed to by @sizes and 0 at the location pointed
+  /// to by @n_sizes. The sizes returned are in Pango units and are sorted
+  /// in ascending order.
+  static final _pangoFontFaceListSizes =
+      girPangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Int32>>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_font_face_list_sizes')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Int32>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  List<int> listSizes() {
+    final _out0 = calloc<ffi.Pointer<ffi.Int32>>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoFontFaceListSizes(this.handle, _out0, _out1);
+      final _list_out0 = (_out0.value == ffi.nullptr
+          ? <int>[]
+          : <int>[for (var i = 0; i < _out1.value; i++) _out0.value[i]]);
+      return _list_out0;
+    } finally {
+      gFree(_out0.value.cast());
+      malloc.free(_out1);
+    }
+  }
+
   /// The notify signal is emitted on an object when one of its properties has
   /// its value set through g_object_set_property(), g_object_set(), et al.
   ///

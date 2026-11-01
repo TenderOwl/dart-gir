@@ -388,6 +388,25 @@ class AdwTabBar extends GtkWidget
     );
   }
 
+  /// Emitted when the dropped content is preloaded.
+  ///
+  /// In order for data to be preloaded, [property@TabBar:extra-drag-preload]
+  /// must be set to `TRUE`.
+  ///
+  /// The content must be of one of the types set up via
+  /// [method@TabBar.setup_extra_drop_target].
+  ///
+  /// See [property@Gtk.DropTarget:value].
+  int onExtraDragValue(
+    GdkDragAction Function(AdwTabPage page, GValue? value) callback,
+  ) {
+    return _connectSignal_f_2_o_o_gdkdragaction_adwtabpage_gvalue(
+      this.handle,
+      'extra-drag-value',
+      callback,
+    );
+  }
+
   /// Signals that all holders of a reference to the widget should release
   /// the reference that they hold.
   ///

@@ -95,6 +95,35 @@ final class GdkContentFormats implements ffi.Finalizable {
     return factory(handle);
   }
 
+  /// Creates a new `GdkContentFormats` from an array of mime types.
+  ///
+  /// The mime types must be valid and different from each other or the
+  /// behavior of the return value is undefined. If you cannot guarantee
+  /// this, use [struct@Gdk.ContentFormatsBuilder] instead.
+  static final _gdkContentFormatsNew =
+      girGdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Uint32,
+              )
+            >
+          >('gdk_content_formats_new')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>, int)
+          >();
+  factory GdkContentFormats([List<String?>? mimeTypes]) {
+    return withNativeStringList(mimeTypes, (
+      nativeMimeTypes,
+      nativeMimeTypesLen,
+    ) {
+      return GdkContentFormats.fromPointer(
+        _gdkContentFormatsNew(nativeMimeTypes, nativeMimeTypesLen),
+        owned: true,
+      );
+    });
+  }
+
   /// Creates a new `GdkContentFormats` for a given `GType`.
   static final _gdkContentFormatsNewForGtype =
       girGdk4Lookup<

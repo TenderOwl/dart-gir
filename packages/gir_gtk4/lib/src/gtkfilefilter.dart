@@ -175,7 +175,7 @@ class GtkFileFilter extends GtkFilter implements GtkBuildable {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void addMimeTypes([List<String?>? mimeTypes]) {
-    withNativeStringList(mimeTypes, (nativeMimeTypes) {
+    withNativeStringList(mimeTypes, (nativeMimeTypes, nativeMimeTypesLen) {
       _gtkFileFilterAddMimeTypes(this.handle, nativeMimeTypes);
     });
   }

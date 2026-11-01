@@ -69,6 +69,19 @@ class ClassTemplatePlan {
   /// fails the analyzer instead of silently dropping the arguments.
   final Map<String, List<String>> methodParameters;
 
+  /// Whether the class declares a `GType` of its own.
+  ///
+  /// A class that registers a native type — through
+  /// `registerDartType` — carries its template on *that* type. GTK
+  /// allows one template per native class, so a type of its own is
+  /// what lets two Dart classes with the same parent each have a
+  /// template of their own.
+  ///
+  /// The codegen claims the declared type instead of the type the
+  /// instance happens to have, and refuses an instance that is not one
+  /// of it.
+  final bool hasOwnType;
+
   const ClassTemplatePlan({
     required this.className,
     required this.parentType,
@@ -76,6 +89,7 @@ class ClassTemplatePlan {
     required this.children,
     required this.callbacks,
     this.methodParameters = const <String, List<String>>{},
+    this.hasOwnType = false,
   });
 }
 

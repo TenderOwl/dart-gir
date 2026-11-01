@@ -307,7 +307,7 @@ class AdwAboutWindow extends AdwWindow
             )
           >();
   void addAcknowledgementSection([String? name, List<String?>? people]) {
-    withNativeStringList(people, (nativePeople) {
+    withNativeStringList(people, (nativePeople, nativePeopleLen) {
       withNativeString(name, (nativeName) {
         _adwAboutWindowAddAcknowledgementSection(
           this.handle,
@@ -351,7 +351,7 @@ class AdwAboutWindow extends AdwWindow
             )
           >();
   void addCreditSection([String? name, List<String?>? people]) {
-    withNativeStringList(people, (nativePeople) {
+    withNativeStringList(people, (nativePeople, nativePeopleLen) {
       withNativeString(name, (nativeName) {
         _adwAboutWindowAddCreditSection(
           this.handle,
@@ -853,7 +853,7 @@ class AdwAboutWindow extends AdwWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setArtists([List<String?>? artists]) {
-    withNativeStringList(artists, (nativeArtists) {
+    withNativeStringList(artists, (nativeArtists, nativeArtistsLen) {
       _adwAboutWindowSetArtists(this.handle, nativeArtists);
     });
   }
@@ -982,7 +982,7 @@ class AdwAboutWindow extends AdwWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDesigners([List<String?>? designers]) {
-    withNativeStringList(designers, (nativeDesigners) {
+    withNativeStringList(designers, (nativeDesigners, nativeDesignersLen) {
       _adwAboutWindowSetDesigners(this.handle, nativeDesigners);
     });
   }
@@ -1041,7 +1041,7 @@ class AdwAboutWindow extends AdwWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDevelopers([List<String?>? developers]) {
-    withNativeStringList(developers, (nativeDevelopers) {
+    withNativeStringList(developers, (nativeDevelopers, nativeDevelopersLen) {
       _adwAboutWindowSetDevelopers(this.handle, nativeDevelopers);
     });
   }
@@ -1074,7 +1074,10 @@ class AdwAboutWindow extends AdwWindow
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setDocumenters([List<String?>? documenters]) {
-    withNativeStringList(documenters, (nativeDocumenters) {
+    withNativeStringList(documenters, (
+      nativeDocumenters,
+      nativeDocumentersLen,
+    ) {
       _adwAboutWindowSetDocumenters(this.handle, nativeDocumenters);
     });
   }

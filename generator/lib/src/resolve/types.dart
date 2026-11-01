@@ -21,7 +21,35 @@ enum TypeKind {
   voidType,
   primitiveArray,
   recordArray,
+  countedString,
+
+  /// A pointer to a string array the *callee* allocates — a `gchar ***`.
+  stringArrayPointer,
   unsupported,
+}
+
+/// The natural element type of a GIR array.
+///
+/// The GIR writes the element of a callee-allocated array with one extra
+/// star; see [TypeResolver.arrayElementShape] for the rule and for why
+/// it matters.
+class ArrayElementShape {
+  const ArrayElementShape({
+    required this.name,
+    required this.cType,
+    required this.isHandle,
+  });
+
+  /// The GIR name of the element — `gdouble`, `FontFamily`, `LogAttr`.
+  final String name;
+
+  /// The C type of one element — `double`, `PangoFontFamily *`.
+  final String cType;
+
+  /// `true` when the element is a *pointer*: the array holds pointers,
+  /// and the wrapper wraps what they point at instead of copying a
+  /// value out of the array.
+  final bool isHandle;
 }
 
 /// The result of resolving a [GirTypeRef] against the loaded namespaces.
@@ -292,6 +320,26 @@ class TypeResolver {
       kind: TypeKind.pointer,
       isPointer: true,
     ),
+    // The POSIX types the GIR names but does not describe. The widths are
+    // the LP64 Linux ones — `time_t` is a `long`, `pid_t` an `int` and
+    // `uid_t` an `unsigned int`. The GIR carries no width, so a platform
+    // with a different `time_t` would need the mapping revisited; the
+    // bindings target Linux.
+    'time_t': TypeMapping(
+      dartType: 'int',
+      nativeType: 'ffi.Int64',
+      kind: TypeKind.primitive,
+    ),
+    'pid_t': TypeMapping(
+      dartType: 'int',
+      nativeType: 'ffi.Int32',
+      kind: TypeKind.primitive,
+    ),
+    'uid_t': TypeMapping(
+      dartType: 'int',
+      nativeType: 'ffi.Uint32',
+      kind: TypeKind.primitive,
+    ),
   };
 
   /// Fallback mappings keyed by C type, consulted when the GIR name misses.
@@ -417,11 +465,33 @@ class TypeResolver {
   /// nullable at the Dart layer because GLib APIs accept either a NULL
   /// argv or a NULL-terminated array. The runtime helper
   /// `gir_ffi.withNativeStringList` handles the per-call marshalling.
-  static const _stringListMapping = TypeMapping(
+  ///
+  /// [lengthIdx] is the GIR's length binding: the 0-based index of the
+  /// sibling parameter that carries the count. It is `null` for the
+  /// NULL-terminated arrays and *may* name a parameter that does not
+  /// exist — GLib's GIR writes a length binding for arrays that have no
+  /// count at all — so the caller checks it against the parameter list.
+  static TypeMapping _stringListMapping(int? lengthIdx) => TypeMapping(
     dartType: 'List<String?>?',
     nativeType: 'ffi.Pointer<ffi.Pointer<Utf8>>',
     kind: TypeKind.stringList,
     isPointer: true,
+    arrayLengthParameter: lengthIdx,
+  );
+
+  /// Mapping for a *single* string whose byte length a sibling parameter
+  /// carries — GLib's `(string, length)` pair, which `g_regex_match_full`
+  /// and its siblings use.
+  ///
+  /// The C side reads `length` *bytes*, so the string may contain a NUL and
+  /// the count is part of the contract. The wrapper derives the count from
+  /// the string it marshals, so the sibling parameter is absorbed.
+  static TypeMapping _countedStringMapping(int lengthIdx) => TypeMapping(
+    dartType: 'String',
+    nativeType: 'ffi.Pointer<Utf8>',
+    kind: TypeKind.countedString,
+    isPointer: true,
+    arrayLengthParameter: lengthIdx,
   );
 
   static const Set<String> _unsupportedNames = {'va_list', girVarargsName};
@@ -437,26 +507,73 @@ class TypeResolver {
     'char**',
     'const char* const*',
     'const char**',
+    // `GStrv` is GLib's own typedef for `gchar **`.
+    'GStrv',
+  };
+
+  /// `c:type` strings of the GLib *containers* an array can be.
+  ///
+  /// These are not C arrays: the pointer addresses a `GPtrArray`, a
+  /// `GList` or the like, and the elements are reached through the
+  /// container's own API. A `char **` is a plain array of pointers and
+  /// can be marshalled; a `GPtrArray *` cannot.
+  static const Set<String> _glibContainerCtypes = {
+    'GPtrArray*',
+    'GArray*',
+    'GList*',
+    'GSList*',
+    'GHashTable*',
+    'GVariant*',
   };
 
   /// Whether [type] is an argv-style array of strings we can marshal.
   ///
-  /// Currently restricted to input-only arrays: bound-length arrays
-  /// (`<array length="N">` with N > 0) are rejected because the C side
-  /// reads `N` slots rather than scanning for a NULL terminator, and
-  /// strv-by-reference (`gchar***`) is rejected because it needs
-  /// bidirectional marshalling.
+  /// The C ABI for `gchar**` and `const gchar* const*` is identical on every
+  /// platform we target (the `const` is a C-level qualifier that does not
+  /// change the pointer representation), so we accept both.
+  ///
+  /// A *bound* array — one whose `<array length="N">` names a sibling
+  /// parameter that carries the count — is accepted too: the C side reads
+  /// exactly N slots rather than scanning for a NULL terminator, and the
+  /// emitter absorbs the count parameter and passes the list's length.
+  /// Whether the binding names a real parameter is checked by the caller,
+  /// which has the parameter list; GLib's GIR writes a length binding for
+  /// arrays that carry no count at all.
   static bool isStringListArray(GirTypeRef type) {
     final array = type.array;
     if (array == null) return false;
-    // `length="0"` in GLib's GIR files is the conventional way to mark a
-    // NULL-terminated string list (it shows up in `g_application_run`,
-    // `g_subprocess_*`, `g_spawn_*`). Treat it as "no length binding".
-    if (array.lengthParameterIndex != null && array.lengthParameterIndex! > 0) {
-      return false;
-    }
     final cType = type.cType;
     if (cType == null || !_stringListCtypes.contains(cType)) return false;
+    final elem = array.elementType;
+    final elemName = elem.name;
+    return elemName == 'utf8' ||
+        elemName == 'filename' ||
+        elem.cType == 'gchar*';
+  }
+
+  /// `c:type` spellings for a *single* string that carries an explicit
+  /// length — GLib's `(string, length)` pair.
+  static const Set<String> _countedStringCtypes = {
+    'gchar*',
+    'const gchar*',
+    'char*',
+    'const char*',
+  };
+
+  /// Whether [type] is a single string whose **byte** length a sibling
+  /// parameter carries.
+  ///
+  /// GLib's GIR models `g_regex_match_full`'s `(string, string_len)` pair
+  /// as an array of one string with a length binding: the C side reads
+  /// `string_len` bytes, so the count is part of the contract and the
+  /// string may contain a NUL.
+  static bool isCountedString(GirTypeRef type) {
+    final array = type.array;
+    if (array == null) return false;
+    final lengthIdx = array.lengthParameterIndex;
+    if (lengthIdx == null || lengthIdx <= 0) return false;
+    final cType = type.cType;
+    if (cType == null || !_countedStringCtypes.contains(cType)) return false;
     final elem = array.elementType;
     final elemName = elem.name;
     return elemName == 'utf8' ||
@@ -478,6 +595,68 @@ class TypeResolver {
     'const gchar**',
     'const guchar**',
   };
+
+  /// Whether [p] is an OUT parameter holding a **NUL-terminated** byte
+  /// buffer the callee allocates.
+  ///
+  /// The shape is `gchar **` with `transfer-ownership="full"` and *no*
+  /// length binding: the C function allocates the buffer, terminates it
+  /// with a NUL, and nothing in the signature states its size. The
+  /// wrapper measures the buffer with `strlen` and hands the caller a
+  /// `String`.
+  ///
+  /// This is the shape of `g_spawn_sync`'s `standard_output`.
+  static bool isNulTerminatedByteBufferOut(
+    GirTypeRef? ref, {
+    required GirTransferOwnership transfer,
+    required GirParameterDirection direction,
+    required bool callerAllocates,
+  }) {
+    if (direction != GirParameterDirection.out) return false;
+    // `caller-allocates="0"` — the callee allocates the buffer.
+    if (callerAllocates) return false;
+    // The caller owns the buffer and has to release it.
+    if (transfer != GirTransferOwnership.full) return false;
+    final array = ref?.array;
+    if (array == null) return false;
+    final cType = ref!.cType;
+    // `gchar **` — the callee writes the buffer pointer into the slot.
+    if (cType != 'gchar**' && cType != 'char**') return false;
+    if (!_byteNames.contains(array.elementType.name)) return false;
+    // A length binding would give the exact size; this shape has none.
+    return array.lengthParameterIndex == null && array.fixedSize == null;
+  }
+
+  /// Whether [ref] is the `end` shape of `g_utf8_validate`.
+  ///
+  /// The GIR declares `const gchar **end` as an out parameter of bytes,
+  /// but the C signature writes a *pointer into the input string* — the
+  /// end of the valid data. There is no buffer to copy, and nothing to
+  /// release.
+  static bool isBorrowedEndPointer(
+    GirTypeRef? ref,
+    GirTransferOwnership transfer,
+  ) {
+    if (transfer != GirTransferOwnership.none) return false;
+    final cType = ref?.cType;
+    return cType == 'const gchar**' || cType == 'const char**';
+  }
+
+  /// Whether [ref] is the `out` shape of `g_base64_encode_step`.
+  ///
+  /// The GIR declares `gchar *out` as a callee-allocated out parameter,
+  /// but the C signature takes a *caller-provided* buffer: the caller
+  /// sizes it — from the length of the input — and the function writes
+  /// the encoded bytes into it. The GIR's `transfer-ownership="full"`
+  /// says the opposite, and no size appears anywhere in the signature.
+  static bool isCallerProvidedBufferOut(
+    GirTypeRef? ref,
+    GirTransferOwnership transfer,
+  ) {
+    if (transfer != GirTransferOwnership.full) return false;
+    final cType = ref?.cType;
+    return cType == 'gchar*' || cType == 'char*';
+  }
 
   /// The GIR names of the byte-sized element types.
   static const Set<String> _byteNames = {'guint8', 'guchar', 'gchar'};
@@ -556,6 +735,44 @@ class TypeResolver {
     return _unsignedByteNames.contains(array.elementType.name);
   }
 
+  /// The natural element type of a GIR array.
+  ///
+  /// The GIR writes the element type of a **callee-allocated** array with
+  /// one extra star — `PangoFontFamily **` for an array of
+  /// `PangoFontFamily *`, `double *` for an array of `double` — while a
+  /// **caller-allocated** array names the element directly (`float` for
+  /// `float[2]`, `PangoLogAttr` for `PangoLogAttr[5]`). The natural
+  /// element type is therefore the element's `c:type` with one star
+  /// removed, but only for the callee-allocated shape.
+  ///
+  /// The distinction matters because it decides what the wrapper has to
+  /// copy out of the native array: a *handle* element (a pointer to an
+  /// object or a record) is wrapped, a *value* element is copied.
+  static ArrayElementShape? arrayElementShape(
+    GirTypeRef ref, {
+    required bool callerAllocates,
+  }) {
+    final array = ref.array;
+    if (array == null) return null;
+    final elem = array.elementType;
+    final cType = elem.cType;
+    if (cType == null || cType.isEmpty) return null;
+    final natural = callerAllocates ? cType : _stripStar(cType);
+    if (natural.isEmpty) return null;
+    return ArrayElementShape(
+      name: elem.name ?? '',
+      cType: natural,
+      // The element is a handle when the natural type is a pointer: the
+      // array holds pointers, and the wrapper wraps what they point at
+      // instead of copying a value.
+      isHandle: natural.endsWith('*'),
+    );
+  }
+
+  /// Removes one trailing star from a C type.
+  static String _stripStar(String cType) =>
+      cType.endsWith('*') ? cType.substring(0, cType.length - 1) : cType;
+
   /// Whether [p] is a `GDestroyNotify`-style callback parameter.
   ///
   /// The GIR spells the type `DestroyNotify` (GLib), `GLib.DestroyNotify`
@@ -600,6 +817,189 @@ class TypeResolver {
       if (isDestroyNotify(sibling)) return false;
     }
     return true;
+  }
+
+  /// Whether [p] is a **caller-provided byte buffer the callee fills**.
+  ///
+  /// The GIR marks such a parameter `direction="out"` because the callee
+  /// writes into it, but `caller-allocates="1"` says the *storage* is the
+  /// caller's. This is the shape of `g_input_stream_read`'s `buffer` and
+  /// its `gsize count`, of `g_socket_receive`'s `buffer` and its `gsize
+  /// size`, and of `g_io_channel_read_chars`' `buf`.
+  ///
+  /// From the Dart side the parameter is an *input*: the caller hands
+  /// over a `Uint8List` and the callee fills it. The byte count is the
+  /// list's length, so the count parameter is absorbed.
+  static bool isCallerProvidedByteBuffer(
+    GirParameter p,
+    List<GirParameter> siblings,
+  ) {
+    if (p.direction != GirParameterDirection.out) return false;
+    if (!p.callerAllocates) return false;
+    if (!isByteArrayElement(p.type)) return false;
+    final array = p.type!.array!;
+    final lengthIdx = array.lengthParameterIndex;
+    if (lengthIdx == null || lengthIdx <= 0) return false;
+    if (lengthIdx >= siblings.length) return false;
+    final length = siblings[lengthIdx];
+    if (length.direction != GirParameterDirection.in_) return false;
+    if (!_byteLengthNames.contains(length.type?.name)) return false;
+    return true;
+  }
+
+  /// The GIR names accepted for the length sibling of a string array or
+  /// a counted string.
+  ///
+  /// The count the C side reads is an integer — the number of elements of
+  /// a `char **`, or the number of *bytes* of a counted string.
+  static const Set<String> _stringLengthNames = {
+    'gsize',
+    'gssize',
+    'guint',
+    'gint',
+    'guint8',
+    'guchar',
+    'gint8',
+    'guint16',
+    'gint16',
+    'guint32',
+    'gint32',
+    'guint64',
+    'gint64',
+    'glong',
+    'gulong',
+    'gshort',
+    'gushort',
+    'gintptr',
+    'guintptr',
+  };
+
+  /// The 0-based index of the parameter that carries the length of [p],
+  /// when [p] is a string array or a counted string whose count a
+  /// sibling parameter carries.
+  ///
+  /// Returns `null` when there is no such binding. That is the case for
+  /// the NULL-terminated arrays — the C side scans for the terminator, so
+  /// there is no count to absorb — and for a binding that does not name
+  /// a usable IN integer.
+  ///
+  /// [siblings] is the callable's full parameter list: the GIR's
+  /// `<array length="N">` index is the 0-based position of the count
+  /// parameter in it, with the instance parameter left out.
+  static int? stringCountBinding(GirParameter p, List<GirParameter> siblings) {
+    if (p.direction != GirParameterDirection.in_) return null;
+    final type = p.type;
+    if (type == null) return null;
+    final isList = isStringListArray(type);
+    // A counted string is a string with a length binding; a string list
+    // is an array of strings. The two never overlap — the C types differ
+    // (`gchar*` against `gchar**`).
+    if (!isList && !isCountedString(type)) return null;
+    final lengthIdx = type.array?.lengthParameterIndex;
+    // `length="0"` marks an array that is not length-bound — the GIR
+    // convention for NUL-terminated arrays.
+    if (lengthIdx == null || lengthIdx <= 0) return null;
+    if (lengthIdx >= siblings.length) return null;
+    final length = siblings[lengthIdx];
+    if (length.direction != GirParameterDirection.in_) return null;
+    if (!_stringLengthNames.contains(length.type?.name)) return null;
+    return lengthIdx;
+  }
+
+  /// The 0-based index of the OUT parameter that carries the element
+  /// count of a `char **` *return*, when the GIR binds the two together.
+  ///
+  /// The GIR binds a callee-allocated string array to the parameter that
+  /// holds its count: `g_key_file_get_string_list` and its `gsize
+  /// *length`, `g_irepository_enumerate_versions` and its `gint
+  /// *n_versions_out`. The count is read out of the OUT slot the callee
+  /// filled, and the array is read for exactly that many elements.
+  ///
+  /// Returns `null` when the array carries no count — the wrapper reads
+  /// it until its NULL terminator instead.
+  static int? stringListReturnCountIndex(
+    GirTypeRef type,
+    List<GirParameter> siblings,
+  ) {
+    if (!isStringListArray(type)) return null;
+    final lengthIdx = type.array?.lengthParameterIndex;
+    if (lengthIdx == null || lengthIdx <= 0) return null;
+    if (lengthIdx >= siblings.length) return null;
+    final length = siblings[lengthIdx];
+    if (length.direction != GirParameterDirection.out) return null;
+    if (!_stringLengthNames.contains(length.type?.name)) return null;
+    return lengthIdx;
+  }
+
+  /// `c:type` strings of a *pointer to* a string array — a `gchar ***`.
+  ///
+  /// The C function allocates the `gchar **` and writes its address into
+  /// the caller's slot: `g_shell_parse_argv`'s `argvp`,
+  /// `g_settings_schema_source_list_schemas`' `non_relocatable`.
+  static const Set<String> _stringArrayPointerCtypes = {
+    'gchar***',
+    'const gchar***',
+  };
+
+  /// Whether [ref] is a pointer to a string array the *callee* allocates.
+  ///
+  /// The GIR models `gchar **` parameters as
+  /// `<array c:type="gchar***"><type name="utf8" c:type="gchar**"/></array>`
+  /// — the array's element is a `gchar **`, and the whole thing is a
+  /// pointer to it. The callee allocates the array and writes its
+  /// address into the caller's slot.
+  static bool isStringArrayPointer(GirTypeRef ref) {
+    final array = ref.array;
+    if (array == null) return false;
+    final cType = ref.cType;
+    if (cType == null || !_stringArrayPointerCtypes.contains(cType)) {
+      return false;
+    }
+    final elem = array.elementType;
+    if (elem.cType == 'gchar**' || elem.cType == 'const gchar**') return true;
+    // The GIR sometimes omits the element's `c:type` — the array's own
+    // `gchar ***` already says the element is a `gchar **`.
+    if (elem.cType == null) {
+      return elem.name == 'utf8' || elem.name == 'filename';
+    }
+    return false;
+  }
+
+  /// The inout parameters whose C type is a pointer to a *pointer*.
+  ///
+  /// The GIR spells these inconsistently — `g_once_init_enter`'s
+  /// `location` is a `gpointer *` in C but `void*` in the GIR, and
+  /// `g_irepository_base_info_iterate_attributes`' `iterator` is a
+  /// `GIAttributeIter **` in C but `GIAttributeIter*` in the GIR — so
+  /// the table is keyed by the pair (GIR type name, `c:type`).
+  ///
+  /// The callee allocates the pointee there and hands it over; a wrapper
+  /// would have to release memory it did not allocate. These stay
+  /// skipped, with the reason naming the shape.
+  static const Set<(String, String)> _inoutPointerToPointer = {
+    ('Error', 'GError**'),
+    ('utf8', 'const char**'),
+    ('gpointer', 'gpointer*'),
+    ('gpointer', 'void*'),
+    ('AttributeIter', 'GIAttributeIter*'),
+  };
+
+  /// Whether [p] is an inout parameter whose C type is a pointer to a
+  /// *pointer* — the callee allocates the pointee.
+  static bool isInoutPointerToPointer(GirParameter p) {
+    if (p.direction != GirParameterDirection.inout) return false;
+    final type = p.type;
+    if (type == null) return false;
+    final array = type.array;
+    if (array != null) {
+      // A `char ***` — a pointer to a pointer to a string array.
+      final cType = type.cType;
+      return cType == 'char***' || cType == 'gchar***';
+    }
+    final name = type.name;
+    final cType = type.cType;
+    if (name == null || cType == null) return false;
+    return _inoutPointerToPointer.contains((name, cType));
   }
 
   /// The GIR records the generator emits as real `ffi.Struct`s.
@@ -688,6 +1088,9 @@ class TypeResolver {
     for (final p in fn.parameters) {
       if (!isByteArrayElement(p.type)) continue;
       if (isByteArrayIn(p, fn.parameters) && !isAsync(fn)) continue;
+      if (isCallerProvidedByteBuffer(p, fn.parameters) && !isAsync(fn)) {
+        continue;
+      }
       result.add(p);
     }
     return result;
@@ -850,7 +1253,23 @@ class TypeResolver {
     required GirNamespace currentNamespace,
   }) {
     if (type.isArray) {
-      if (isStringListArray(type)) return _stringListMapping;
+      if (isStringListArray(type)) {
+        return _stringListMapping(type.array!.lengthParameterIndex);
+      }
+      if (isCountedString(type)) {
+        return _countedStringMapping(type.array!.lengthParameterIndex!);
+      }
+      if (isStringArrayPointer(type)) {
+        // A `gchar ***`: the callee allocates the `gchar **` and writes
+        // its address into the caller's slot. The emitter handles the
+        // OUT direction of this shape.
+        return const TypeMapping(
+          dartType: 'List<String>?',
+          nativeType: 'ffi.Pointer<ffi.Pointer<ffi.Pointer<Utf8>>>',
+          kind: TypeKind.stringArrayPointer,
+          isPointer: true,
+        );
+      }
       final array = type.array!;
       final elem = array.elementType;
       // Reject elements we cannot identify — neither GIR name nor C type
@@ -880,24 +1299,37 @@ class TypeResolver {
           case TypeKind.classType:
           case TypeKind.interface:
             return _arrayStructMapping(elemMap, lengthIdx);
+          case TypeKind.union:
+            return const TypeMapping.unsupported(
+              'array of unions: the union layout is not emitted',
+            );
           default:
             return TypeMapping.unsupported(
-              'array of ${elemMap.kind} (later phase)',
+              'array of ${elemMap.kind}: no Dart mapping for the element',
             );
         }
       }
       // Unbound array: the C side reads whatever the caller provides.
       // Only primitive/enum element types make sense without an explicit
       // length — anything more complex stays unsupported.
+      if (type.cType != null && _glibContainerCtypes.contains(type.cType)) {
+        return TypeMapping.unsupported(
+          'array of ${type.cType}: a GLib container, not a C array',
+        );
+      }
       switch (elemMap.kind) {
         case TypeKind.primitive:
         case TypeKind.boolean:
         case TypeKind.enumeration:
         case TypeKind.bitfield:
           return _unboundedArrayMapping(elemMap);
+        case TypeKind.union:
+          return const TypeMapping.unsupported(
+            'array of unions: the union layout is not emitted',
+          );
         default:
           return TypeMapping.unsupported(
-            'array of ${elemMap.kind} (later phase)',
+            'unbound array of ${elemMap.kind}: the signature carries no length',
           );
       }
     }

@@ -703,7 +703,7 @@ final _gContentTypeSetMimeDirs =
         >('g_content_type_set_mime_dirs')
         .asFunction<void Function(ffi.Pointer<ffi.Pointer<Utf8>>)>();
 void contentTypeSetMimeDirs([List<String?>? dirs]) {
-  withNativeStringList(dirs, (nativeDirs) {
+  withNativeStringList(dirs, (nativeDirs, nativeDirsLen) {
     _gContentTypeSetMimeDirs(nativeDirs);
   });
 }

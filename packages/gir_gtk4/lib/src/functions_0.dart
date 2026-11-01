@@ -291,7 +291,10 @@ final _gtkDisablePortalInterfaces =
         >('gtk_disable_portal_interfaces')
         .asFunction<void Function(ffi.Pointer<ffi.Pointer<Utf8>>)>();
 void disablePortalInterfaces([List<String?>? portalInterfaces]) {
-  withNativeStringList(portalInterfaces, (nativePortalInterfaces) {
+  withNativeStringList(portalInterfaces, (
+    nativePortalInterfaces,
+    nativePortalInterfacesLen,
+  ) {
     _gtkDisablePortalInterfaces(nativePortalInterfaces);
   });
 }

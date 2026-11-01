@@ -279,6 +279,114 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
         owned: true,
       );
 
+  /// Creates a new #GdkPixbuf out of in-memory image data.
+  ///
+  /// Currently only RGB images with 8 bits per sample are supported.
+  ///
+  /// Since you are providing a pre-allocated pixel buffer, you must also
+  /// specify a way to free that data.  This is done with a function of
+  /// type `GdkPixbufDestroyNotify`.  When a pixbuf created with is
+  /// finalized, your destroy notification function will be called, and
+  /// it is its responsibility to free the pixel array.
+  ///
+  /// See also: [ctor@GdkPixbuf.Pixbuf.new_from_bytes]
+  /// The destroy notify the callee calls when it is done
+  /// with the buffer it took over.
+  ///
+  /// The notify outlives the call, so the trampoline is
+  /// permanent — a scoped `NativeCallable` would be closed
+  /// before the notify fires.
+  static final _gdkPixbufNewFromDataDestroyFnCallbacks =
+      <void Function(ffi.Pointer<ffi.Uint8>, ffi.Pointer<ffi.Void>)>[];
+  static void _gdkPixbufNewFromDataDestroyFnTrampoline(
+    ffi.Pointer<ffi.Uint8> pixels,
+    ffi.Pointer<ffi.Void> data,
+  ) {
+    if (_gdkPixbufNewFromDataDestroyFnCallbacks.isEmpty) return;
+    final fn = _gdkPixbufNewFromDataDestroyFnCallbacks.removeAt(0);
+    fn(pixels, data);
+  }
+
+  static final _gdkPixbufNewFromDataDestroyFnPtr =
+      ffi.Pointer.fromFunction<
+        ffi.Void Function(ffi.Pointer<ffi.Uint8>, ffi.Pointer<ffi.Void>)
+      >(_gdkPixbufNewFromDataDestroyFnTrampoline);
+  static final _gdkPixbufNewFromData =
+      girGdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Uint8>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Void Function(
+                      ffi.Pointer<ffi.Uint8>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+              )
+            >
+          >('gdk_pixbuf_new_from_data')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              ffi.Pointer<ffi.Uint8>,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Void Function(
+                    ffi.Pointer<ffi.Uint8>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+
+  /// The callee takes over `data`: keep it valid until the destroy notify runs.
+  /// The `GBytes` variant [fromBytes] owns the buffer for the duration of the call — prefer it.
+  factory GdkPixbuf.fromData(
+    ffi.Pointer<ffi.Uint8> data,
+    GdkColorspace colorspace,
+    bool hasAlpha,
+    int bitsPerSample,
+    int width,
+    int height,
+    int rowstride, [
+    void Function(ffi.Pointer<ffi.Uint8>, ffi.Pointer<ffi.Void>)? destroyFn,
+    ffi.Pointer<ffi.Void>? destroyFnData,
+  ]) {
+    if (destroyFn != null) {
+      _gdkPixbufNewFromDataDestroyFnCallbacks.add(destroyFn);
+    }
+    return GdkPixbuf.fromPointer(
+      _gdkPixbufNewFromData(
+        data,
+        colorspace.value,
+        hasAlpha ? 1 : 0,
+        bitsPerSample,
+        width,
+        height,
+        rowstride,
+        destroyFn == null ? ffi.nullptr : _gdkPixbufNewFromDataDestroyFnPtr,
+        destroyFnData ?? ffi.nullptr,
+      ),
+      owned: true,
+    );
+  }
+
   /// Creates a new pixbuf by loading an image from a file.
   ///
   /// The file format is detected automatically.
@@ -781,7 +889,7 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   factory GdkPixbuf.fromXpmData([List<String?>? data]) {
-    return withNativeStringList(data, (nativeData) {
+    return withNativeStringList(data, (nativeData, nativeDataLen) {
       final _ret = _gdkPixbufNewFromXpmData(nativeData);
       return GdkPixbuf.fromPointer(_ret, owned: true);
     });
@@ -1556,8 +1664,14 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     List<String?>? optionKeys,
     List<String?>? optionValues,
   ]) {
-    return withNativeStringList(optionKeys, (nativeOptionKeys) {
-      return withNativeStringList(optionValues, (nativeOptionValues) {
+    return withNativeStringList(optionKeys, (
+      nativeOptionKeys,
+      nativeOptionKeysLen,
+    ) {
+      return withNativeStringList(optionValues, (
+        nativeOptionValues,
+        nativeOptionValuesLen,
+      ) {
         return withNativeString(type_, (nativeType_) {
           final _out0 = calloc<ffi.Pointer<ffi.Uint8>>();
           final _out1 = malloc<ffi.Size>();
@@ -1583,6 +1697,112 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
             malloc.free(_out0);
             malloc.free(_out1);
             calloc.free(_error);
+          }
+        });
+      });
+    });
+  }
+
+  /// Vector version of `gdk_pixbuf_save_to_callback()`.
+  ///
+  /// Saves pixbuf to a callback in format @type, which is currently "jpeg",
+  /// "png", "tiff", "ico" or "bmp".
+  ///
+  /// If @error is set, `FALSE` will be returned.
+  ///
+  /// See [method@GdkPixbuf.Pixbuf.save_to_callback] for more details.
+  static final _gdkPixbufSaveToCallbackv =
+      girGdkPixbufLookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<
+                  ffi.NativeFunction<
+                    ffi.Int32 Function(
+                      ffi.Pointer<ffi.Uint8>,
+                      ffi.Size,
+                      ffi.Pointer<ffi.Void>,
+                      ffi.Pointer<ffi.Void>,
+                    )
+                  >
+                >,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Pointer<ffi.Pointer<ffi.Void>>,
+              )
+            >
+          >('gdk_pixbuf_save_to_callbackv')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<
+                ffi.NativeFunction<
+                  ffi.Int32 Function(
+                    ffi.Pointer<ffi.Uint8>,
+                    ffi.Size,
+                    ffi.Pointer<ffi.Void>,
+                    ffi.Pointer<ffi.Void>,
+                  )
+                >
+              >,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              ffi.Pointer<ffi.Pointer<ffi.Void>>,
+            )
+          >();
+  bool saveToCallbackv(
+    int Function(
+      ffi.Pointer<ffi.Uint8>,
+      int,
+      ffi.Pointer<ffi.Void>,
+      ffi.Pointer<ffi.Void>,
+    )
+    saveFunc,
+    ffi.Pointer<ffi.Void>? userData,
+    String type_, [
+    List<String?>? optionKeys,
+    List<String?>? optionValues,
+  ]) {
+    return withNativeStringList(optionKeys, (
+      nativeOptionKeys,
+      nativeOptionKeysLen,
+    ) {
+      return withNativeStringList(optionValues, (
+        nativeOptionValues,
+        nativeOptionValuesLen,
+      ) {
+        return withNativeString(type_, (nativeType_) {
+          final _nc1 =
+              ffi.NativeCallable<
+                ffi.Int32 Function(
+                  ffi.Pointer<ffi.Uint8>,
+                  ffi.Size,
+                  ffi.Pointer<ffi.Void>,
+                  ffi.Pointer<ffi.Void>,
+                )
+              >.isolateLocal(saveFunc, exceptionalReturn: 0);
+          final _error = calloc<ffi.Pointer<ffi.Void>>();
+          try {
+            final _ret = _gdkPixbufSaveToCallbackv(
+              this.handle,
+              _nc1.nativeFunction,
+              userData ?? ffi.nullptr,
+              nativeType_.cast<Utf8>(),
+              nativeOptionKeys,
+              nativeOptionValues,
+              _error,
+            );
+            if (_error.value != ffi.nullptr) {
+              throw GlibException.fromError(_error.value);
+            }
+            return (_ret) != 0;
+          } finally {
+            calloc.free(_error);
+            _nc1.close();
           }
         });
       });
@@ -1627,8 +1847,14 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     List<String?>? optionValues,
     GCancellable? cancellable,
   ]) {
-    return withNativeStringList(optionKeys, (nativeOptionKeys) {
-      return withNativeStringList(optionValues, (nativeOptionValues) {
+    return withNativeStringList(optionKeys, (
+      nativeOptionKeys,
+      nativeOptionKeysLen,
+    ) {
+      return withNativeStringList(optionValues, (
+        nativeOptionValues,
+        nativeOptionValuesLen,
+      ) {
         return withNativeString(type_, (nativeType_) {
           final _error = calloc<ffi.Pointer<ffi.Void>>();
           try {
@@ -1719,8 +1945,11 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     callback,
     ffi.Pointer<ffi.Void>? userData,
   ]) {
-    withNativeStringList(optionKeys, (nativeOptionKeys) {
-      withNativeStringList(optionValues, (nativeOptionValues) {
+    withNativeStringList(optionKeys, (nativeOptionKeys, nativeOptionKeysLen) {
+      withNativeStringList(optionValues, (
+        nativeOptionValues,
+        nativeOptionValuesLen,
+      ) {
         withNativeString(type_, (nativeType_) {
           final _nc6 = callback == null
               ? null
@@ -1791,8 +2020,8 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     final id = ++_saveToStreamvAsyncCallbackSeq;
     _saveToStreamvAsyncCallbackRegistry[id] = callback;
     final _data = malloc<ffi.IntPtr>()..value = id;
-    withNativeStringList(optionKeys, (optionKeys) {
-      withNativeStringList(optionValues, (optionValues) {
+    withNativeStringList(optionKeys, (optionKeys, optionKeysLen) {
+      withNativeStringList(optionValues, (optionValues, optionValuesLen) {
         withNativeString(type, (type) {
           _gdkPixbufSaveToStreamvAsync(
             this.handle,
@@ -1845,8 +2074,14 @@ class GdkPixbuf extends GObject implements GIcon, GLoadableIcon {
     List<String?>? optionKeys,
     List<String?>? optionValues,
   ]) {
-    return withNativeStringList(optionKeys, (nativeOptionKeys) {
-      return withNativeStringList(optionValues, (nativeOptionValues) {
+    return withNativeStringList(optionKeys, (
+      nativeOptionKeys,
+      nativeOptionKeysLen,
+    ) {
+      return withNativeStringList(optionValues, (
+        nativeOptionValues,
+        nativeOptionValuesLen,
+      ) {
         return withNativeString(filename, (nativeFilename) {
           return withNativeString(type_, (nativeType_) {
             final _error = calloc<ffi.Pointer<ffi.Void>>();

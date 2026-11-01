@@ -1,19 +1,19 @@
 # Skip report for package gir_gtk_source5 (GtkSource 5)
-Total skipped: 219
+Total skipped: 246
 
 ## By category
 property: 195
-callable: 16
+virtual: 34
+callable: 11
 renamed: 4
 method: 2
-signal: 2
 
 ## By reason
 construct-only or no public setter; emitting getter only: 35
+virtual method; the class struct layout is not in the GIR: 34
 missing getter get_height-request: 11
 missing getter get_width-request: 11
-inout parameter iter: 5
-return: array of TypeKind.interface (later phase): 3
+return: array of GPtrArray*: a GLib container, not a C array: 3
 missing getter get_lines: 3
 missing getter get_weight-set: 2
 name collision: 2
@@ -23,7 +23,6 @@ missing getter get_priority: 2
 missing getter get_title: 2
 missing getter get_font-desc: 2
 missing getter get_im-module: 2
-unsupported return type: utf8: 2
 missing getter get_background-set: 2
 missing getter get_foreground-set: 2
 missing getter get_scale: 2
@@ -32,7 +31,8 @@ missing getter get_strikethrough: 2
 missing getter get_strikethrough-set: 2
 missing getter get_underline-set: 2
 missing getter get_weight: 2
-missing getter get_italic-set: 1
+missing getter get_line-background: 1
+missing getter get_cursor-position: 1
 missing getter get_minimum-word-size: 1
 missing getter get_proposals-batch-size: 1
 missing getter get_scan-batch-size: 1
@@ -45,29 +45,28 @@ missing getter get_hover-delay: 1
 override-incompatible with ancestor; renamed to insertAfterHoverDisplay: 1
 getter get_text takes 3 args; props layer only supports 0: 1
 missing getter get_remember-info-visibility: 1
-missing getter get_select-on-show: 1
 getter get_background takes 1 args; props layer only supports 0: 1
 missing getter get_buffer: 1
 missing getter get_background: 1
-missing getter get_show-icons: 1
+missing getter get_select-on-show: 1
 missing getter get_bold: 1
 missing getter get_bold-set: 1
 missing getter get_foreground: 1
-moved to Encoding.get_utf8: 1
+missing getter get_show-icons: 1
 missing getter get_italic: 1
+missing getter get_italic-set: 1
 moved to Encoding.get_all: 1
-missing getter get_line-background: 1
 missing getter get_line-background-set: 1
 missing getter get_pango-underline: 1
+moved to Encoding.get_utf8: 1
 missing getter get_paintable: 1
 moved to FileLoaderError.quark: 1
 moved to FileSaverError.quark: 1
-introspectable=0 (C macro; use scheduler_add_full): 1
 missing getter get_underline-color: 1
 missing getter get_underline-color-set: 1
+introspectable=0 (C macro; use scheduler_add_full): 1
 moved to Encoding.get_current: 1
 moved to Encoding.get_default_candidates: 1
-missing getter get_cursor-position: 1
 missing getter get_draw-spaces: 1
 missing getter get_draw-spaces-set: 1
 missing getter get_accumulative-margin: 1
@@ -101,8 +100,8 @@ missing getter get_left-margin: 1
 missing getter get_left-margin-set: 1
 missing getter get_letter-spacing: 1
 missing getter get_letter-spacing-set: 1
+missing getter get_line-height: 1
 missing getter get_input-purpose: 1
-missing getter get_line-height-set: 1
 missing getter get_name: 1
 missing getter get_overline: 1
 missing getter get_overline-rgba: 1
@@ -148,9 +147,9 @@ missing getter get_wrap-mode: 1
 missing getter get_wrap-mode-set: 1
 override-incompatible with ancestor; renamed to getGutterView: 1
 missing getter get_input-hints: 1
-missing getter get_line-height: 1
+missing getter get_line-height-set: 1
 
-## First 50 entries
+## All 246 entries
 [callable] GtkSource.encodingGetAll — moved to Encoding.get_all
 [callable] GtkSource.encodingGetCurrent — moved to Encoding.get_current
 [callable] GtkSource.encodingGetDefaultCandidates — moved to Encoding.get_default_candidates
@@ -160,10 +159,9 @@ missing getter get_line-height: 1
 [callable] GtkSource.fileSaverErrorQuark — moved to FileSaverError.quark
 [callable] GtkSource.schedulerAdd — introspectable=0 (C macro; use scheduler_add_full)
 [method] GtkSourceEncoding.toString — name collision
-[callable] GtkSourceBuffer.backwardIterToSourceMark — inout parameter iter
-[callable] GtkSourceBuffer.forwardIterToSourceMark — inout parameter iter
-[callable] GtkSourceBuffer.iterBackwardToContextClassToggle — inout parameter iter
-[callable] GtkSourceBuffer.iterForwardToContextClassToggle — inout parameter iter
+[virtual] GtkSourceAnnotationProvider.populate_hover_async — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceAnnotationProvider.populate_hover_finish — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceBuffer.bracket_matched — virtual method; the class struct layout is not in the GIR
 [property] GtkSourceBuffer.cursor-position — missing getter get_cursor-position
 [property] GtkSourceBuffer.tag-table — construct-only or no public setter; emitting getter only
 [property] GtkSourceBuffer.text — getter get_text takes 3 args; props layer only supports 0
@@ -179,10 +177,10 @@ missing getter get_line-height: 1
 [property] GtkSourceCompletionCell.height-request — missing getter get_height-request
 [property] GtkSourceCompletionCell.width-request — missing getter get_width-request
 [property] GtkSourceCompletionContext.completion — construct-only or no public setter; emitting getter only
-[callable] GtkSourceCompletionSnippets.listAlternates — return: array of TypeKind.interface (later phase)
+[callable] GtkSourceCompletionSnippets.listAlternates — return: array of GPtrArray*: a GLib container, not a C array
 [property] GtkSourceCompletionSnippets.priority — missing getter get_priority
 [property] GtkSourceCompletionSnippets.title — missing getter get_title
-[callable] GtkSourceCompletionWords.listAlternates — return: array of TypeKind.interface (later phase)
+[callable] GtkSourceCompletionWords.listAlternates — return: array of GPtrArray*: a GLib container, not a C array
 [property] GtkSourceCompletionWords.minimum-word-size — missing getter get_minimum-word-size
 [property] GtkSourceCompletionWords.priority — missing getter get_priority
 [property] GtkSourceCompletionWords.proposals-batch-size — missing getter get_proposals-batch-size
@@ -201,3 +199,200 @@ missing getter get_line-height: 1
 [property] GtkSourceGutter.css-name — construct-only or no public setter; emitting getter only
 [property] GtkSourceGutter.height-request — missing getter get_height-request
 [property] GtkSourceGutter.width-request — missing getter get_width-request
+[virtual] GtkSourceGutterRenderer.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.begin — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.change_buffer — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.change_view — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.end — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.query_activatable — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.query_data — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceGutterRenderer.snapshot_line — virtual method; the class struct layout is not in the GIR
+[renamed] GtkSourceGutterRenderer.activate — override-incompatible with ancestor; renamed to activateGutterRenderer
+[property] GtkSourceGutterRenderer.lines — missing getter get_lines
+[property] GtkSourceGutterRenderer.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceGutterRenderer.height-request — missing getter get_height-request
+[property] GtkSourceGutterRenderer.width-request — missing getter get_width-request
+[property] GtkSourceGutterRendererPixbuf.lines — missing getter get_lines
+[property] GtkSourceGutterRendererPixbuf.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceGutterRendererPixbuf.height-request — missing getter get_height-request
+[property] GtkSourceGutterRendererPixbuf.width-request — missing getter get_width-request
+[renamed] GtkSourceGutterRendererText.measure — override-incompatible with ancestor; renamed to measureGutterRendererText
+[property] GtkSourceGutterRendererText.markup — missing getter get_markup
+[property] GtkSourceGutterRendererText.text — missing getter get_text
+[property] GtkSourceGutterRendererText.lines — missing getter get_lines
+[property] GtkSourceGutterRendererText.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceGutterRendererText.height-request — missing getter get_height-request
+[property] GtkSourceGutterRendererText.width-request — missing getter get_width-request
+[property] GtkSourceHover.hover-delay — missing getter get_hover-delay
+[renamed] GtkSourceHoverDisplay.insertAfter — override-incompatible with ancestor; renamed to insertAfterHoverDisplay
+[property] GtkSourceHoverDisplay.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceHoverDisplay.height-request — missing getter get_height-request
+[property] GtkSourceHoverDisplay.width-request — missing getter get_width-request
+[property] GtkSourceMap.font-desc — missing getter get_font-desc
+[property] GtkSourceMap.im-module — missing getter get_im-module
+[property] GtkSourceMap.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceMap.height-request — missing getter get_height-request
+[property] GtkSourceMap.width-request — missing getter get_width-request
+[property] GtkSourceMark.category — construct-only or no public setter; emitting getter only
+[property] GtkSourceMark.left-gravity — construct-only or no public setter; emitting getter only
+[property] GtkSourceMark.name — construct-only or no public setter; emitting getter only
+[property] GtkSourceMarkAttributes.background — getter get_background takes 1 args; props layer only supports 0
+[property] GtkSourcePrintCompositor.buffer — construct-only or no public setter; emitting getter only
+[method] GtkSourceRegion.toString — name collision
+[property] GtkSourceRegion.buffer — construct-only or no public setter; emitting getter only
+[property] GtkSourceSearchContext.buffer — construct-only or no public setter; emitting getter only
+[property] GtkSourceSearchContext.settings — construct-only or no public setter; emitting getter only
+[property] GtkSourceSnippet.buffer — missing getter get_buffer
+[property] GtkSourceStyle.background — missing getter get_background
+[property] GtkSourceStyle.background-set — missing getter get_background-set
+[property] GtkSourceStyle.bold — missing getter get_bold
+[property] GtkSourceStyle.bold-set — missing getter get_bold-set
+[property] GtkSourceStyle.foreground — missing getter get_foreground
+[property] GtkSourceStyle.foreground-set — missing getter get_foreground-set
+[property] GtkSourceStyle.italic — missing getter get_italic
+[property] GtkSourceStyle.italic-set — missing getter get_italic-set
+[property] GtkSourceStyle.line-background — missing getter get_line-background
+[property] GtkSourceStyle.line-background-set — missing getter get_line-background-set
+[property] GtkSourceStyle.pango-underline — missing getter get_pango-underline
+[property] GtkSourceStyle.scale — missing getter get_scale
+[property] GtkSourceStyle.scale-set — missing getter get_scale-set
+[property] GtkSourceStyle.strikethrough — missing getter get_strikethrough
+[property] GtkSourceStyle.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkSourceStyle.underline-color — missing getter get_underline-color
+[property] GtkSourceStyle.underline-color-set — missing getter get_underline-color-set
+[property] GtkSourceStyle.underline-set — missing getter get_underline-set
+[property] GtkSourceStyle.weight — missing getter get_weight
+[property] GtkSourceStyle.weight-set — missing getter get_weight-set
+[property] GtkSourceStyleScheme.id — construct-only or no public setter; emitting getter only
+[property] GtkSourceStyleSchemeChooserButton.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceStyleSchemeChooserButton.height-request — missing getter get_height-request
+[property] GtkSourceStyleSchemeChooserButton.width-request — missing getter get_width-request
+[property] GtkSourceStyleSchemeChooserWidget.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceStyleSchemeChooserWidget.height-request — missing getter get_height-request
+[property] GtkSourceStyleSchemeChooserWidget.width-request — missing getter get_width-request
+[property] GtkSourceStyleSchemePreview.scheme — construct-only or no public setter; emitting getter only
+[property] GtkSourceStyleSchemePreview.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceStyleSchemePreview.height-request — missing getter get_height-request
+[property] GtkSourceStyleSchemePreview.width-request — missing getter get_width-request
+[property] GtkSourceTag.draw-spaces — missing getter get_draw-spaces
+[property] GtkSourceTag.draw-spaces-set — missing getter get_draw-spaces-set
+[property] GtkSourceTag.accumulative-margin — missing getter get_accumulative-margin
+[property] GtkSourceTag.allow-breaks — missing getter get_allow-breaks
+[property] GtkSourceTag.allow-breaks-set — missing getter get_allow-breaks-set
+[property] GtkSourceTag.background — construct-only or no public setter; emitting getter only
+[property] GtkSourceTag.background-full-height — missing getter get_background-full-height
+[property] GtkSourceTag.background-full-height-set — missing getter get_background-full-height-set
+[property] GtkSourceTag.background-rgba — missing getter get_background-rgba
+[property] GtkSourceTag.background-set — missing getter get_background-set
+[property] GtkSourceTag.direction — missing getter get_direction
+[property] GtkSourceTag.editable — missing getter get_editable
+[property] GtkSourceTag.editable-set — missing getter get_editable-set
+[property] GtkSourceTag.fallback — missing getter get_fallback
+[property] GtkSourceTag.fallback-set — missing getter get_fallback-set
+[property] GtkSourceTag.family — missing getter get_family
+[property] GtkSourceTag.family-set — missing getter get_family-set
+[property] GtkSourceTag.font — missing getter get_font
+[property] GtkSourceTag.font-desc — missing getter get_font-desc
+[property] GtkSourceTag.font-features — missing getter get_font-features
+[property] GtkSourceTag.font-features-set — missing getter get_font-features-set
+[property] GtkSourceTag.foreground — construct-only or no public setter; emitting getter only
+[property] GtkSourceTag.foreground-rgba — missing getter get_foreground-rgba
+[property] GtkSourceTag.foreground-set — missing getter get_foreground-set
+[property] GtkSourceTag.indent — missing getter get_indent
+[property] GtkSourceTag.indent-set — missing getter get_indent-set
+[property] GtkSourceTag.insert-hyphens — missing getter get_insert-hyphens
+[property] GtkSourceTag.insert-hyphens-set — missing getter get_insert-hyphens-set
+[property] GtkSourceTag.invisible — missing getter get_invisible
+[property] GtkSourceTag.invisible-set — missing getter get_invisible-set
+[property] GtkSourceTag.justification — missing getter get_justification
+[property] GtkSourceTag.justification-set — missing getter get_justification-set
+[property] GtkSourceTag.language — missing getter get_language
+[property] GtkSourceTag.language-set — missing getter get_language-set
+[property] GtkSourceTag.left-margin — missing getter get_left-margin
+[property] GtkSourceTag.left-margin-set — missing getter get_left-margin-set
+[property] GtkSourceTag.letter-spacing — missing getter get_letter-spacing
+[property] GtkSourceTag.letter-spacing-set — missing getter get_letter-spacing-set
+[property] GtkSourceTag.line-height — missing getter get_line-height
+[property] GtkSourceTag.line-height-set — missing getter get_line-height-set
+[property] GtkSourceTag.name — missing getter get_name
+[property] GtkSourceTag.overline — missing getter get_overline
+[property] GtkSourceTag.overline-rgba — missing getter get_overline-rgba
+[property] GtkSourceTag.overline-rgba-set — missing getter get_overline-rgba-set
+[property] GtkSourceTag.overline-set — missing getter get_overline-set
+[property] GtkSourceTag.paragraph-background — construct-only or no public setter; emitting getter only
+[property] GtkSourceTag.paragraph-background-rgba — missing getter get_paragraph-background-rgba
+[property] GtkSourceTag.paragraph-background-set — missing getter get_paragraph-background-set
+[property] GtkSourceTag.pixels-above-lines — missing getter get_pixels-above-lines
+[property] GtkSourceTag.pixels-above-lines-set — missing getter get_pixels-above-lines-set
+[property] GtkSourceTag.pixels-below-lines — missing getter get_pixels-below-lines
+[property] GtkSourceTag.pixels-below-lines-set — missing getter get_pixels-below-lines-set
+[property] GtkSourceTag.pixels-inside-wrap — missing getter get_pixels-inside-wrap
+[property] GtkSourceTag.pixels-inside-wrap-set — missing getter get_pixels-inside-wrap-set
+[property] GtkSourceTag.right-margin — missing getter get_right-margin
+[property] GtkSourceTag.right-margin-set — missing getter get_right-margin-set
+[property] GtkSourceTag.rise — missing getter get_rise
+[property] GtkSourceTag.rise-set — missing getter get_rise-set
+[property] GtkSourceTag.scale — missing getter get_scale
+[property] GtkSourceTag.scale-set — missing getter get_scale-set
+[property] GtkSourceTag.sentence — missing getter get_sentence
+[property] GtkSourceTag.sentence-set — missing getter get_sentence-set
+[property] GtkSourceTag.show-spaces — missing getter get_show-spaces
+[property] GtkSourceTag.show-spaces-set — missing getter get_show-spaces-set
+[property] GtkSourceTag.size — missing getter get_size
+[property] GtkSourceTag.size-points — missing getter get_size-points
+[property] GtkSourceTag.size-set — missing getter get_size-set
+[property] GtkSourceTag.stretch — missing getter get_stretch
+[property] GtkSourceTag.stretch-set — missing getter get_stretch-set
+[property] GtkSourceTag.strikethrough — missing getter get_strikethrough
+[property] GtkSourceTag.strikethrough-rgba — missing getter get_strikethrough-rgba
+[property] GtkSourceTag.strikethrough-rgba-set — missing getter get_strikethrough-rgba-set
+[property] GtkSourceTag.strikethrough-set — missing getter get_strikethrough-set
+[property] GtkSourceTag.style — missing getter get_style
+[property] GtkSourceTag.style-set — missing getter get_style-set
+[property] GtkSourceTag.tabs — missing getter get_tabs
+[property] GtkSourceTag.tabs-set — missing getter get_tabs-set
+[property] GtkSourceTag.text-transform — missing getter get_text-transform
+[property] GtkSourceTag.text-transform-set — missing getter get_text-transform-set
+[property] GtkSourceTag.underline — missing getter get_underline
+[property] GtkSourceTag.underline-rgba — missing getter get_underline-rgba
+[property] GtkSourceTag.underline-rgba-set — missing getter get_underline-rgba-set
+[property] GtkSourceTag.underline-set — missing getter get_underline-set
+[property] GtkSourceTag.variant — missing getter get_variant
+[property] GtkSourceTag.variant-set — missing getter get_variant-set
+[property] GtkSourceTag.weight — missing getter get_weight
+[property] GtkSourceTag.weight-set — missing getter get_weight-set
+[property] GtkSourceTag.word — missing getter get_word
+[property] GtkSourceTag.word-set — missing getter get_word-set
+[property] GtkSourceTag.wrap-mode — missing getter get_wrap-mode
+[property] GtkSourceTag.wrap-mode-set — missing getter get_wrap-mode-set
+[virtual] GtkSourceView.line_mark_activated — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceView.move_lines — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceView.move_words — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceView.push_snippet — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceView.show_completion — virtual method; the class struct layout is not in the GIR
+[renamed] GtkSourceView.getGutter — override-incompatible with ancestor; renamed to getGutterView
+[property] GtkSourceView.im-module — missing getter get_im-module
+[property] GtkSourceView.css-name — construct-only or no public setter; emitting getter only
+[property] GtkSourceView.height-request — missing getter get_height-request
+[property] GtkSourceView.width-request — missing getter get_width-request
+[property] GtkSourceVimIMContext.input-hints — missing getter get_input-hints
+[property] GtkSourceVimIMContext.input-purpose — missing getter get_input-purpose
+[virtual] GtkSourceCompletionProposal.get_typed_text — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.activate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.display — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.get_priority — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.get_title — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.is_trigger — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.key_activates — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.list_alternates — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.populate_async — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.populate_finish — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceCompletionProvider.refilter — virtual method; the class struct layout is not in the GIR
+[callable] GtkSourceCompletionProvider.listAlternates — return: array of GPtrArray*: a GLib container, not a C array
+[virtual] GtkSourceHoverProvider.populate — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceHoverProvider.populate_async — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceHoverProvider.populate_finish — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceIndenter.indent — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceIndenter.is_trigger — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceStyleSchemeChooser.get_style_scheme — virtual method; the class struct layout is not in the GIR
+[virtual] GtkSourceStyleSchemeChooser.set_style_scheme — virtual method; the class struct layout is not in the GIR

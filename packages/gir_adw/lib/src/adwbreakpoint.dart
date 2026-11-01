@@ -222,7 +222,7 @@ class AdwBreakpoint extends GObject implements GtkBuildable {
     List<String?>? names,
     ffi.Pointer<ffi.Void> values,
   ) {
-    withNativeStringList(names, (nativeNames) {
+    withNativeStringList(names, (nativeNames, nativeNamesLen) {
       _adwBreakpointAddSettersv(
         this.handle,
         nSetters,

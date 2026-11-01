@@ -782,6 +782,33 @@ class GDBusObjectManagerClient extends GObject
     });
   }
 
+  /// Emitted when one or more D-Bus properties on proxy changes. The
+  /// local cache has already been updated when this signal fires. Note
+  /// that both @changed_properties and @invalidated_properties are
+  /// guaranteed to never be %NULL (either may be empty though).
+  ///
+  /// This signal exists purely as a convenience to avoid having to
+  /// connect signals to all interface proxies managed by @manager.
+  ///
+  /// This signal is emitted in the thread-default main context
+  /// (see [method@GLib.MainContext.push_thread_default])
+  /// that @manager was constructed in.
+  int onInterfaceProxyPropertiesChanged(
+    void Function(
+      GDBusObjectProxy objectProxy,
+      GDBusProxy interfaceProxy,
+      GVariant changedProperties,
+      List<String>? invalidatedProperties,
+    )
+    callback,
+  ) {
+    return _connectSignal_v_4_o_o_o_o_gdbusobjectproxy_gdbusproxy_gvariant_liststring(
+      this.handle,
+      'interface-proxy-properties-changed',
+      callback,
+    );
+  }
+
   /// Emitted when a D-Bus signal is received on @interface_proxy.
   ///
   /// This signal exists purely as a convenience to avoid having to

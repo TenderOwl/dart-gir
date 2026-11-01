@@ -136,6 +136,8 @@ SignalSignature _voidVoidSignature() => SignalSignature(
   trampolineFfiType:
       'ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)',
   callbackType: 'void Function()',
+  callbackReturnType: 'void',
+  returnMarshal: (_) => '',
   argNames: const [],
   argMarshals: const [],
 );
@@ -271,12 +273,12 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
   b.writeln(') {');
   b.writeln('  final id = userData.cast<ffi.IntPtr>().value;');
   b.writeln('  final cb = _signalRegistry_$bucketId[id]!;');
-  final hasFrees = sig.shapes.contains(FfiShape.string);
   if (sig.marshallerReturn == ReturnShape.void_) {
     b.writeln('  cb(${sig.argMarshals.join(', ')});');
-  } else if (hasFrees) {
-    // Capture the result so transfer-none strings can still be freed
-    // before returning (a bare `return cb(...)` would skip the frees).
+  } else {
+    // Capture the result: the transfer-none strings have to be freed
+    // before returning (a bare `return cb(...)` would skip the frees),
+    // and a string or object return is converted on the way out.
     b.writeln('  final result = cb(${sig.argMarshals.join(', ')});');
   }
   // Free `transfer-none` strings after the callback returns: the closure
@@ -290,10 +292,8 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
       b.writeln('  if (($pname) != ffi.nullptr) gFree(($pname).cast());');
     }
   }
-  if (sig.marshallerReturn != ReturnShape.void_ && hasFrees) {
-    b.writeln('  return result;');
-  } else if (sig.marshallerReturn != ReturnShape.void_) {
-    b.writeln('  return cb(${sig.argMarshals.join(', ')});');
+  if (sig.marshallerReturn != ReturnShape.void_) {
+    b.writeln('  return ${sig.returnMarshal('result')};');
   }
   b.writeln('}');
   b.writeln();
@@ -304,12 +304,7 @@ void _emitBucket(StringBuffer b, String bucketId, SignalSignature sig) {
     '/// Per-package singleton. Never closed — must stay reachable for',
   );
   b.writeln('/// as long as any connection in this bucket is alive.');
-  final exceptionalReturn = switch (sig.marshallerReturn) {
-    ReturnShape.void_ => '',
-    ReturnShape.int || ReturnShape.uint => ', exceptionalReturn: 0',
-    ReturnShape.bool_ => ', exceptionalReturn: false',
-    ReturnShape.double_ => ', exceptionalReturn: 0.0',
-  };
+  final exceptionalReturn = sig.marshallerReturn.exceptionalReturn;
   b.writeln(
     'final _signalCallable_$bucketId = ffi.NativeCallable<${sig.trampolineFfiType}>.isolateLocal(_signalTrampoline_$bucketId$exceptionalReturn);',
   );

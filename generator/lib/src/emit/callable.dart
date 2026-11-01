@@ -186,6 +186,20 @@ class CallableEmitter {
       absorbedOutIndices.add(p.type!.array!.lengthParameterIndex!);
     }
 
+    // A `char **` *return* whose element count a sibling OUT parameter
+    // carries — `g_key_file_get_string_list` and its `gsize *length`.
+    // The count is absorbed: the list knows its own length, so it is not
+    // a separate element of the returned record. The array is read for
+    // exactly that many elements, because a `gchar **` is not always
+    // NULL-terminated.
+    final retCountIndex = fn.returnType == null
+        ? null
+        : TypeResolver.stringListReturnCountIndex(
+            fn.returnType!,
+            fn.parameters,
+          );
+    if (retCountIndex != null) absorbedOutIndices.add(retCountIndex);
+
     // Caller-provided byte arrays: the caller owns the buffer and a
     // sibling parameter carries the byte count. The count is absorbed —
     // it is the length of the `Uint8List` — and the buffer is mirrored
@@ -201,7 +215,14 @@ class CallableEmitter {
     if (!hasAsyncScope) {
       for (var i = 0; i < fn.parameters.length; i++) {
         final p = fn.parameters[i];
-        if (!TypeResolver.isByteArrayIn(p, fn.parameters)) continue;
+        // A caller-provided byte buffer: either handed *to* the callee
+        // (`g_bytes_new`'s `data`) or filled *by* it (`g_input_stream_read`'s
+        // `buffer` — the GIR marks that one `direction="out"` because the
+        // callee writes into it, but the storage is the caller's).
+        final provided =
+            TypeResolver.isByteArrayIn(p, fn.parameters) ||
+            TypeResolver.isCallerProvidedByteBuffer(p, fn.parameters);
+        if (!provided) continue;
         final lengthIdx = p.type!.array!.lengthParameterIndex!;
         // Two byte arrays sharing one length sibling would have to agree
         // on a count — leave the second one a raw pointer rather than
@@ -211,6 +232,28 @@ class CallableEmitter {
       }
     }
     final absorbedInIndices = byteArrayByLengthIndex.keys.toSet();
+
+    // String arrays and counted strings whose length a sibling parameter
+    // carries — GLib's `(list, length)` and `(string, string_len)` pairs.
+    // The count is absorbed: the C side reads the length of the list (or
+    // the *byte* length of the string) the caller passed, so the count
+    // does not appear in the Dart signature.
+    //
+    // The map is keyed by the *count* parameter's index and holds the
+    // index of the array (or string) it belongs to.
+    final stringCountByIndex = <int, int>{};
+    for (var i = 0; i < fn.parameters.length; i++) {
+      final p = fn.parameters[i];
+      final countIdx = TypeResolver.stringCountBinding(p, fn.parameters);
+      if (countIdx == null) continue;
+      // Two arrays sharing one count sibling would have to agree on a
+      // count — leave the second one alone rather than pass a wrong
+      // length. A byte array already claims the sibling, too.
+      if (stringCountByIndex.containsKey(countIdx)) continue;
+      if (byteArrayByLengthIndex.containsKey(countIdx)) continue;
+      stringCountByIndex[countIdx] = i;
+    }
+    absorbedInIndices.addAll(stringCountByIndex.keys);
 
     for (var i = 0; i < fn.parameters.length; i++) {
       final p = fn.parameters[i];
@@ -222,13 +265,21 @@ class CallableEmitter {
         callerAllocates: p.callerAllocates,
         byteArrayIn: byteArrayByLengthIndex.containsValue(i),
         relativeTo: relativeTo,
+        siblings: fn.parameters,
       );
       if (bridge == null) {
         ctx.report.skip('callable', label, 'parameter ${p.name}: $reason');
         return null;
       }
       bridges[i] = bridge;
-      switch (p.direction) {
+      // A caller-provided byte buffer the callee *fills* — `g_input_stream_read`'s
+      // `buffer` — is an input from the Dart side: the caller owns the
+      // storage, so the parameter is passed in and filled in place.
+      final effectiveDirection =
+          bridge.isByteArrayIn && p.direction == GirParameterDirection.out
+          ? GirParameterDirection.in_
+          : p.direction;
+      switch (effectiveDirection) {
         case GirParameterDirection.in_:
           final paramName = escapeKeyword(toLowerCamel(p.name));
           final inParam = _InParam(paramName, bridge, paramIndex: i)
@@ -264,8 +315,28 @@ class CallableEmitter {
             }
           }
         case GirParameterDirection.inout:
-          ctx.report.skip('callable', label, 'inout parameter ${p.name}');
-          return null;
+          // The **caller-allocated rule**. The GIR's ownership annotation
+          // for an inout parameter is demonstrably wrong — it claims the
+          // callee takes the storage over — so the annotation is ignored
+          // and the caller keeps it.
+          //
+          // * A **scalar or enum**: the wrapper allocates the slot, seeds
+          //   it with the caller's value and reads the updated value back
+          //   after the call. The read-back rides the OUT machinery — it
+          //   is part of the wrapper's return value.
+          // * A **handle**: the caller passes the object and the callee
+          //   writes through the pointer in place. The Dart object *is*
+          //   the memory, so the caller sees the change — the ordinary IN
+          //   shape does the job.
+          final paramName = escapeKeyword(toLowerCamel(p.name));
+          final inParam = _InParam(paramName, bridge, paramIndex: i);
+          ins.add(inParam);
+          if (bridge.isInoutScalar) {
+            outs.add(
+              _OutParam('_out${outs.length}', p.name, bridge, paramIndex: i)
+                ..slotParam = paramName,
+            );
+          }
         case GirParameterDirection.out:
           // Both `caller-allocates="0"` (function allocates) and
           // `caller-allocates="1"` (caller allocates) reduce to the
@@ -273,7 +344,7 @@ class CallableEmitter {
           // read back the value after the call. The wrapper frees
           // the buffer in `finally` (always — the caller never sees
           // the raw pointer).
-          if (bridge.outPointee == null) {
+          if (bridge.outPointee == null && !bridge.isOutArray) {
             ctx.report.skip(
               'callable',
               label,
@@ -285,6 +356,17 @@ class CallableEmitter {
             _OutParam('_out${outs.length}', p.name, bridge, paramIndex: i)
               ..absorbed = absorbedOutIndices.contains(i),
           );
+      }
+    }
+
+    // The element count of an OUT array is consumed by the array: the
+    // list the wrapper returns knows its own length, so the count does
+    // not appear in the returned record.
+    for (final o in outs) {
+      final countIndex = o.bridge.outArrayCountIndex;
+      if (countIndex == null) continue;
+      for (final other in outs) {
+        if (other.paramIndex == countIndex) other.absorbed = true;
       }
     }
 
@@ -309,6 +391,7 @@ class CallableEmitter {
       transfer: fn.returnTransfer,
       forReturn: true,
       relativeTo: relativeTo,
+      stringListCountExpr: _retCountExpr(retCountIndex, outs),
     );
     if (retBridge == null) {
       ctx.report.skip('callable', label, 'return: $retReason');
@@ -345,8 +428,17 @@ class CallableEmitter {
     for (var i = 0; i < fn.parameters.length; i++) {
       final p = fn.parameters[i];
       final bridge = bridges[i]!;
-      if (p.direction == GirParameterDirection.out) {
+      if (p.direction == GirParameterDirection.out && !bridge.isByteArrayIn) {
         final o = outs.firstWhere((o) => o.name == p.name);
+        if (bridge.isOutArray) {
+          // An OUT array: the C parameter is the array pointer itself
+          // (the caller allocates the buffer) or a slot the callee
+          // writes the array pointer into (the callee allocates it).
+          nativeParams.add(bridge.nativeType);
+          dartParams.add(bridge.nativeType);
+          argExprs.add(o.varName);
+          continue;
+        }
         // Native FFI parameter: the inner pointer type. For
         // record/class OUT params allocated as `calloc<Uint8>(N)`, the
         // buffer is `Pointer<Uint8>` and we cast at the call site.
@@ -363,7 +455,11 @@ class CallableEmitter {
         final inP = ins.firstWhere(
           (x) => x.name == escapeKeyword(toLowerCamel(p.name)),
         );
-        if (bridge.isString) {
+        if (bridge.isCountedString) {
+          // The `withNativeStringBytes` helper hands out the marshalled
+          // string as a `Pointer<Utf8>` already — no cast needed here.
+          argExprs.add(inP.nativeVar);
+        } else if (bridge.isString) {
           argExprs.add('${inP.nativeVar}.cast<Utf8>()');
         } else if (bridge.isStringList) {
           // The native signature uses `Pointer<Pointer<Utf8>>`, but the
@@ -373,15 +469,22 @@ class CallableEmitter {
         } else if (bridge.isNullableScalarPointer) {
           // The slot the emitter allocated for this nullable scalar.
           argExprs.add(outs.firstWhere((o) => o.name == p.name).varName);
+        } else if (bridge.isInoutScalar) {
+          // The slot the emitter allocated for this inout scalar: the
+          // caller seeds it, the callee writes through it.
+          argExprs.add(outs.firstWhere((o) => o.name == p.name).varName);
         } else if (bridge.isByteArrayIn) {
           // The native buffer the `withNativeBytes` helper allocated for
           // this byte array.
           argExprs.add(_bytesBufferVar(i));
         } else if (inP.absorbed) {
-          // The byte count of a caller-provided byte array: the length
-          // the helper computed from the `Uint8List`.
+          // The count of a caller-provided byte array, of a string array
+          // or of a counted string: the length the helper computed.
+          final byteOwner = byteArrayByLengthIndex[inP.paramIndex];
           argExprs.add(
-            _bytesLengthVar(byteArrayByLengthIndex[inP.paramIndex]!),
+            byteOwner != null
+                ? _bytesLengthVar(byteOwner)
+                : _stringCountVar(ins[stringCountByIndex[inP.paramIndex]!]),
           );
         } else if (destroyByParam.containsKey(i)) {
           // A destroy notify the callee calls after the call: the native
@@ -686,19 +789,49 @@ class CallableEmitter {
             'if ($slot != null) ${o.varName}.value = '
             '${o.bridge.toNative(slot)};',
           );
+        } else if (o.bridge.isInoutScalar) {
+          // An inout scalar: the slot always exists and always carries
+          // the caller's value — the callee reads it and may write
+          // through it.
+          final slot = o.slotParam!;
+          core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
+          core.add('${o.varName}.value = ${o.bridge.toNative(slot)};');
         } else if (o.bridge.outAllocSize != null) {
           ctx.usesGirFfi = true;
           core.add(
             'final ${o.varName}Anchor = HeapAnchor.allocate(${o.bridge.outAllocSize});',
           );
           core.add('final ${o.varName} = ${o.varName}Anchor.buffer;');
-        } else if (o.bridge.outPointee == 'ffi.Pointer<ffi.Void>' ||
-            o.bridge.outExtractBytes != null) {
+        } else if (o.bridge.outSlotIsCalloc) {
           // A pointer-sized slot is zeroed: the C function is allowed
           // to leave the out parameter untouched, and an uninitialized
           // pointer would be a wild read. A byte buffer's slot counts —
           // the callee writes the buffer pointer into it.
           core.add('final ${o.varName} = calloc<${o.bridge.outPointee}>();');
+        } else if (o.bridge.isOutArray) {
+          // An OUT array.
+          //
+          // * The **caller** allocates the buffer: the array has a known
+          //   length — a fixed size, or the capacity the caller passes —
+          //   so the wrapper allocates it and copies the elements out
+          //   after the call.
+          // * The **callee** allocates the array: the wrapper passes a
+          //   pointer-sized slot the callee writes the array pointer
+          //   into.
+          if (o.bridge.outArrayCallerAllocated) {
+            final element = o.bridge.outArrayElementIsHandle
+                ? 'ffi.Pointer<ffi.Void>'
+                : o.bridge.outArrayElementNativeType!;
+            core.add(
+              'final ${o.varName} = calloc<$element>'
+              '(${_outArrayCountExpr(o, outs, ins)});',
+            );
+          } else {
+            final pointer = o.bridge.outArrayElementIsHandle
+                ? 'ffi.Pointer<ffi.Pointer<ffi.Void>>'
+                : 'ffi.Pointer<${o.bridge.outArrayElementNativeType}>';
+            core.add('final ${o.varName} = calloc<$pointer>();');
+          }
         } else {
           core.add('final ${o.varName} = malloc<${o.bridge.outPointee}>();');
         }
@@ -729,6 +862,18 @@ class CallableEmitter {
           cleanup.add(
             '  if (${o.varName} != ffi.nullptr) malloc.free(${o.varName});',
           );
+        } else if (o.bridge.isOutArray) {
+          if (o.bridge.outArrayCallerAllocated) {
+            // The wrapper allocated the buffer: it releases it.
+            cleanup.add('  calloc.free(${o.varName});');
+          } else {
+            // The callee allocated the array: the caller owns it (the
+            // GIR's `transfer-ownership` says the array is handed over
+            // for every value but `none`), and GLib's allocator is the
+            // one that freed it.
+            ctx.usesGirFfi = true;
+            cleanup.add('  gFree(${o.varName}.value.cast());');
+          }
         } else {
           cleanup.add('  malloc.free(${o.varName});');
         }
@@ -759,6 +904,26 @@ class CallableEmitter {
         body.add('    throw GlibException.fromError(_error.value);');
         body.add('  }');
       }
+      // An OUT array is copied into a Dart list before the wrapper hands
+      // it to the caller: the native array is released right after, and
+      // the garbage collector cannot see native memory.
+      for (final o in outs) {
+        if (!o.bridge.isOutArray) continue;
+        final countExpr = _outArrayCountExpr(o, outs, ins);
+        // The callee writes the array pointer into the slot; the caller
+        // allocated the buffer itself.
+        final arrayVar = o.bridge.outArrayCallerAllocated
+            ? o.varName
+            : '${o.varName}.value';
+        final extract = o.bridge.outExtractArray!(arrayVar, countExpr);
+        // A callee that leaves the array alone writes NULL into the slot —
+        // an empty list, not a read through a null pointer.
+        final list = o.bridge.outArrayCallerAllocated
+            ? extract
+            : '($arrayVar == ffi.nullptr '
+                  '? <${o.bridge.outArrayElementType}>[] : $extract)';
+        body.add('  final ${_outListVar(o)} = $list;');
+      }
       if (retBridge.isVoid) {
         if (outs.isNotEmpty) body.add('  return ${_outsOnlyExpr(outs)};');
       } else {
@@ -776,8 +941,12 @@ class CallableEmitter {
       }
     }
 
-    // Wrap string parameters in withNativeString scopes.
-    final stringIns = ins.where((p) => p.bridge.isString).toList();
+    // Wrap string parameters in withNativeString scopes. A *counted*
+    // string — one whose byte length a sibling parameter carries — is
+    // excluded here: it gets its own scope below.
+    final stringIns = ins
+        .where((p) => p.bridge.isString && !p.bridge.isCountedString)
+        .toList();
     final returnsValue = !(retBridge.isVoid && outs.isEmpty);
     var bodyLines = core;
     for (var i = stringIns.length - 1; i >= 0; i--) {
@@ -791,18 +960,41 @@ class CallableEmitter {
       ];
     }
 
+    // Wrap counted strings in withNativeStringBytes scopes. The helper
+    // reports the *byte* length of the string — the count the C side
+    // reads — and releases the native copy afterwards.
+    final countedStringIns = ins
+        .where((p) => p.bridge.isCountedString)
+        .toList();
+    for (var i = countedStringIns.length - 1; i >= 0; i--) {
+      final p = countedStringIns[i];
+      final inner = bodyLines.map((l) => l.isEmpty ? l : '  $l').join('\n');
+      final ret = returnsValue ? 'return ' : '';
+      bodyLines = [
+        '$ret withNativeStringBytes(${p.name}, '
+            '(${p.nativeVar}, ${_stringCountVar(p)}) {',
+        inner,
+        '});',
+      ];
+    }
+
     // Wrap argv-style string-list parameters in withNativeStringList
     // scopes. Done after withNativeString so the nesting reflects the
     // user-facing call order: outer-most call corresponds to the first
     // (leftmost) string-list param. The lambda param type is inferred
     // from the helper signature.
+    //
+    // The helper hands out the element count as well: a C function that
+    // takes the count reads exactly that many slots, one that does not
+    // reads until the terminator.
     final listIns = ins.where((p) => p.bridge.isStringList).toList();
     for (var i = listIns.length - 1; i >= 0; i--) {
       final p = listIns[i];
       final inner = bodyLines.map((l) => l.isEmpty ? l : '  $l').join('\n');
       final ret = returnsValue ? 'return ' : '';
       bodyLines = [
-        '$ret withNativeStringList(${p.name}, (${p.nativeVar}) {',
+        '$ret withNativeStringList(${p.name}, '
+            '(${p.nativeVar}, ${_stringCountVar(p)}) {',
         inner,
         '});',
       ];
@@ -838,27 +1030,47 @@ class CallableEmitter {
     // already be closed by then.
     for (final d in destroyNotifies) {
       final staticPrefix = staticMember || classMember ? 'static ' : '';
+      // The trampoline follows the callback's *own* signature.
+      // `GDestroyNotify` takes the data alone; `GdkPixbufDestroyNotify`
+      // takes the pixel buffer and the data. The C function pointer has
+      // to match the type the callee expects, so the shape comes from
+      // the callback declaration and not from a hard-coded one.
+      final params = d.inParam.bridge.callbackParams ?? const [];
+      final userSig = d.inParam.bridge.wrapperType.replaceAll('?', '');
+      final ffiSig = d.inParam.bridge.callbackFfiSignature ?? userSig;
+      // The trampoline's own signature is the FFI one: `Pointer.fromFunction`
+      // needs the C types. The registry holds the *user-facing* callback —
+      // the two agree on every parameter but a boolean, which the
+      // convention renders as an `int`.
+      final paramList = params.map((p) => '${p.ffiType} ${p.name}').join(', ');
+      final argList = params
+          .map(
+            (p) => p.ffiType == 'ffi.Bool' && p.type == 'int'
+                ? '${p.name} ? 1 : 0'
+                : p.name,
+          )
+          .join(', ');
       b.writeln('/// The destroy notify the callee calls when it is done');
       b.writeln('/// with the buffer it took over.');
       b.writeln('///');
       b.writeln('/// The notify outlives the call, so the trampoline is');
       b.writeln('/// permanent — a scoped `NativeCallable` would be closed');
       b.writeln('/// before the notify fires.');
-      b.writeln(
-        '${staticPrefix}final ${d.registryName} = '
-        '<void Function(ffi.Pointer<ffi.Void>)>[];',
-      );
-      b.writeln(
-        '${staticPrefix}void ${d.trampolineName}(ffi.Pointer<ffi.Void> data) {',
-      );
+      b.writeln('${staticPrefix}final ${d.registryName} = <$userSig>[];');
+      // The trampoline is a Dart function: a C `void` return is Dart's
+      // `void`, not `ffi.Void`.
+      final ffiReturn = ffiSig.contains(' Function(')
+          ? ffiSig.substring(0, ffiSig.indexOf(' Function('))
+          : 'ffi.Void';
+      final returnType = ffiReturn == 'ffi.Void' ? 'void' : ffiReturn;
+      b.writeln('$staticPrefix$returnType ${d.trampolineName}($paramList) {');
       b.writeln('  if (${d.registryName}.isEmpty) return;');
       b.writeln('  final fn = ${d.registryName}.removeAt(0);');
-      b.writeln('  fn(data);');
+      b.writeln('  fn($argList);');
       b.writeln('}');
       b.writeln(
         '${staticPrefix}final ${d.ptrName} = '
-        'ffi.Pointer.fromFunction<'
-        'ffi.Void Function(ffi.Pointer<ffi.Void>)>('
+        'ffi.Pointer.fromFunction<$ffiSig>('
         '${d.trampolineName});',
       );
     }
@@ -881,6 +1093,7 @@ class CallableEmitter {
   /// in a sibling OUT slot — the `outs` list is complete by the time
   /// this runs, so the sibling is found through its parameter index.
   String _outExpr(_OutParam o, List<_OutParam> outs) {
+    if (o.bridge.isOutArray) return _outListVar(o);
     final bytes = o.bridge.outExtractBytes;
     if (bytes != null) {
       final lengthIndex = o.bridge.outByteBufferLengthIndex!;
@@ -888,6 +1101,29 @@ class CallableEmitter {
       return bytes(o.varName, lengthOut.varName);
     }
     return o.bridge.outExtract!(o.varName);
+  }
+
+  /// The local holding the Dart list an OUT array was copied into.
+  static String _outListVar(_OutParam o) => '_list${o.varName}';
+
+  /// The expression that yields the element count of the OUT array [o].
+  ///
+  /// Three shapes:
+  ///
+  /// * a fixed size (`fixed-size="4"`) — a literal;
+  /// * a sibling **in** parameter — the capacity the caller passes;
+  /// * a sibling **out** parameter — the slot the callee filled.
+  String _outArrayCountExpr(
+    _OutParam o,
+    List<_OutParam> outs,
+    List<_InParam> ins,
+  ) {
+    final countIndex = o.bridge.outArrayCountIndex;
+    if (countIndex == null) return '${o.bridge.outArrayFixedCount}';
+    if (o.bridge.outArrayCountIsInput) {
+      return ins.firstWhere((x) => x.paramIndex == countIndex).name;
+    }
+    return '${outs.firstWhere((x) => x.paramIndex == countIndex).varName}.value';
   }
 
   String _outsOnlyExpr(List<_OutParam> outs) {
@@ -916,6 +1152,26 @@ class CallableEmitter {
   /// The local name of the byte count the `withNativeBytes` helper hands
   /// to the call for the byte array at parameter index [index].
   static String _bytesLengthVar(int index) => '_bytesLen$index';
+
+  /// The local name of the element count the marshalling helper hands to
+  /// the call for the string array or counted string [owner].
+  ///
+  /// `withNativeStringList` reports the number of elements of the list,
+  /// `withNativeStringBytes` the number of *bytes* of the string.
+  static String _stringCountVar(_InParam owner) => '${owner.nativeVar}Len';
+
+  /// The expression that yields the element count of a `char **` return.
+  ///
+  /// The GIR binds a callee-allocated string array to the OUT parameter
+  /// that holds its count. The count is read out of the slot the callee
+  /// filled — after the call, so the value is there.
+  static String? _retCountExpr(int? countIndex, List<_OutParam> outs) {
+    if (countIndex == null) return null;
+    for (final o in outs) {
+      if (o.paramIndex == countIndex) return '${o.varName}.value';
+    }
+    return null;
+  }
 
   /// `dart:core` type names that a class member must not shadow (a member
   /// named `int` makes the type `int` unusable inside the class body).

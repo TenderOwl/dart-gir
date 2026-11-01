@@ -95,7 +95,7 @@ class GtkStringList extends GObject implements GListModel, GtkBuildable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   factory GtkStringList([List<String?>? strings]) {
-    return withNativeStringList(strings, (nativeStrings) {
+    return withNativeStringList(strings, (nativeStrings, nativeStringsLen) {
       return GtkStringList.fromPointer(
         _gtkStringListNew(nativeStrings),
         owned: true,
@@ -205,7 +205,7 @@ class GtkStringList extends GObject implements GListModel, GtkBuildable {
             )
           >();
   void splice(int position, int nRemovals, [List<String?>? additions]) {
-    withNativeStringList(additions, (nativeAdditions) {
+    withNativeStringList(additions, (nativeAdditions, nativeAdditionsLen) {
       _gtkStringListSplice(this.handle, position, nRemovals, nativeAdditions);
     });
   }

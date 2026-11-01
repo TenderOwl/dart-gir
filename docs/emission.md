@@ -1241,3 +1241,104 @@ platform, unlike `DynamicLibrary.executable()`, which throws
 Both symbols come from the *same* handle: a buffer handed to a callee
 that takes ownership has to be allocated by the allocator that callee
 releases it with.
+
+## The counted shapes of a string
+
+Three GIR shapes carry a length beside the string, and each one has its
+own rule. The GIR binds the two together with `<array length="N">`,
+where `N` is the **0-based position of the length parameter in the
+callable's parameter list** — the instance parameter is not part of it.
+`length="0"` marks an array that is *not* length-bound: the GIR's
+convention for a NULL-terminated array.
+
+### A counted string
+
+`<array length="1" c:type="const gchar*"><type name="utf8"/></array>`
+beside a `gssize string_len` — the shape of `g_regex_match_full` and its
+five siblings.
+
+The C side reads `string_len` **bytes**, not characters: a Dart string
+of three characters can be five UTF-8 bytes, and a character count would
+cut the string in the middle of a multi-byte character. The wrapper
+therefore derives the count from the string — `withNativeStringBytes`
+reports the UTF-8 byte length, the terminator excluded — and the length
+parameter stays in the native call while disappearing from the Dart
+signature.
+
+### A string array with a count
+
+`<array length="3" c:type="gchar**">` beside a `gsize length` — the
+shape of `g_key_file_set_string_list`.
+
+The C side reads exactly `length` slots rather than scanning for a
+terminator. The count is the length of the list the caller passed, so
+it stays in the native call and disappears from the Dart signature. The
+array is allocated with a NULL terminator after the last element, so a
+callee that frees it with `g_strfreev` still can.
+
+### A string array whose count the callee reports
+
+`<array length="2" c:type="gchar**">` beside an **OUT** `gsize *length`
+— the shape of `g_key_file_get_string_list`.
+
+A `gchar **` is not always NULL-terminated: `g_bookmark_file_get_applications`
+returns an array of exactly `length` elements. The wrapper reads the
+count out of the OUT slot the callee filled and reads exactly that many
+elements. The count is absorbed — the list knows its own length — so it
+is not a separate element of the returned record.
+
+### A string array the callee allocates
+
+`<array c:type="gchar***"><type name="utf8" c:type="gchar**"/></array>`
+— the shape of `g_settings_schema_source_list_schemas`.
+
+The C function allocates the `gchar **` and writes its address into the
+caller's slot. The wrapper allocates the slot, hands it over, and reads
+the array out of it after the call. The array is released the way the
+GIR's transfer annotation says: `g_strfreev` for `transfer="full"` — the
+array *and* its strings — and `g_free` for `transfer="container"`, which
+hands over the array alone.
+
+## The caller-allocated rule for `inout`
+
+The GIR's ownership annotations for an `inout` parameter are
+demonstrably wrong. `gtk_source_buffer_forward_iter_to_source_mark`'s
+`iter` is marked `transfer-ownership="full"`, but GTK does not take
+ownership of the iterator. The annotation is therefore **ignored**: the
+caller keeps the storage, and the wrapper never releases what the
+callee wrote through the pointer.
+
+Two shapes are emitted:
+
+* A **scalar or enum** the callee reads and writes through the pointer.
+  The wrapper allocates the slot, seeds it with the caller's value, and
+  reads the updated value back after the call. The read-back rides the
+  OUT machinery, so the updated value is part of the wrapper's return
+  value.
+
+  ```dart
+  // gtk_editable_insert_text(editable, text, length, &position)
+  final (newPosition) = editable.insertText(text, length, position);
+  ```
+
+* A **handle** — a class, a record, an interface. The caller passes the
+  object and the callee writes through the pointer in place. The Dart
+  object *is* the memory, so the caller sees the change.
+
+A pointer to a **pointer** stays skipped: the callee allocates the
+pointee there, and a wrapper would have to release memory it did not
+allocate. The reason in the skip report names the shape.
+
+## A byte buffer the caller provides and the callee fills
+
+The GIR marks such a parameter `direction="out"` because the callee
+writes into it, but `caller-allocates="1"` says the storage is the
+caller's — the shape of `g_input_stream_read`'s `buffer` and its `gsize
+count`.
+
+From the Dart side the parameter is an *input*: the caller hands over a
+`Uint8List` and the callee fills it. The byte count is the list's
+length, so the count parameter is absorbed, and what the callee wrote
+comes back into the list — `withNativeBytes` copies the native buffer
+back into the Dart list.
+

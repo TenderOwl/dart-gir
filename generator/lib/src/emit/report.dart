@@ -45,7 +45,12 @@ class GenerationReport {
   }
 
   /// Renders the report as text for `skip_report.txt`.
-  String format(String title, {int maxEntries = 50}) {
+  ///
+  /// The report lists **every** entry: it is a deliverable, not a debug
+  /// artifact, and the documented workflow is to grep it for the symbol that
+  /// is missing. The summary sections carry the counts; the detail section is
+  /// the complete list.
+  String format(String title) {
     final b = StringBuffer()
       ..writeln('# Skip report for $title')
       ..writeln('Total skipped: $totalSkipped')
@@ -66,8 +71,8 @@ class GenerationReport {
     }
     b
       ..writeln()
-      ..writeln('## First $maxEntries entries');
-    for (final e in entries.take(maxEntries)) {
+      ..writeln('## All ${entries.length} entries');
+    for (final e in entries) {
       b.writeln(e.toString());
     }
     return b.toString();

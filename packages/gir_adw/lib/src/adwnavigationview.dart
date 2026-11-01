@@ -552,6 +552,44 @@ class AdwNavigationView extends GtkWidget
     _adwNavigationViewReplace(this.handle, pages, nPages);
   }
 
+  /// Replaces the current navigation stack with pages with the tags @tags.
+  ///
+  /// The last page becomes the visible page.
+  ///
+  /// Replacing the navigation stack has no animation.
+  ///
+  /// If [method@NavigationView.add] hasn't been called for any pages that are no
+  /// longer in the navigation stack, they are automatically removed.
+  ///
+  /// @n_tags can be 0, in that case no page will be visible after calling this
+  /// method. This can be useful for removing all pages from @self.
+  ///
+  /// The [signal@NavigationView::replaced] signal will be emitted.
+  ///
+  /// See [method@NavigationView.replace] and [property@NavigationPage:tag].
+  static final _adwNavigationViewReplaceWithTags =
+      girAdwLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.Int32,
+              )
+            >
+          >('adw_navigation_view_replace_with_tags')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<Utf8>>,
+              int,
+            )
+          >();
+  void replaceWithTags([List<String?>? tags]) {
+    withNativeStringList(tags, (nativeTags, nativeTagsLen) {
+      _adwNavigationViewReplaceWithTags(this.handle, nativeTags, nativeTagsLen);
+    });
+  }
+
   /// Sets whether @self should animate page transitions.
   ///
   /// Gesture-based transitions are always animated.
@@ -617,6 +655,25 @@ class AdwNavigationView extends GtkWidget
           .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
   void setVhomogeneous(bool vhomogeneous) {
     _adwNavigationViewSetVhomogeneous(this.handle, vhomogeneous ? 1 : 0);
+  }
+
+  /// Emitted when a push shortcut or a gesture is triggered.
+  ///
+  /// To support the push shortcuts and gestures, the application is expected to
+  /// return the page to push in the handler.
+  ///
+  /// This signal can be emitted multiple times for the gestures, for example
+  /// when the gesture is cancelled by the user. As such, the application must
+  /// not make any irreversible changes in the handler, such as removing the page
+  /// from a forward stack.
+  ///
+  /// Instead, it should be done in the [signal@NavigationView::pushed] handler.
+  int onGetNextPage(AdwNavigationPage? Function() callback) {
+    return _connectSignal_o_0_adwnavigationpage(
+      this.handle,
+      'get-next-page',
+      callback,
+    );
   }
 
   /// Emitted after @page has been popped from the navigation stack.

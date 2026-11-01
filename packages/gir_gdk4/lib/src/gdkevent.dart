@@ -53,6 +53,42 @@ class GdkEvent {
         'gdk_event_get_type',
       ).asFunction<int Function()>()();
 
+  /// Extracts all axis values from an event.
+  ///
+  /// To find out which axes are used, use [method@Gdk.DeviceTool.get_axes]
+  /// on the device tool returned by [method@Gdk.Event.get_device_tool].
+  static final _gdkEventGetAxes =
+      girGdk4Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Pointer<ffi.Double>>,
+                ffi.Pointer<ffi.Uint32>,
+              )
+            >
+          >('gdk_event_get_axes')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<ffi.Double>>,
+              ffi.Pointer<ffi.Uint32>,
+            )
+          >();
+  (bool, List<double>) getAxes() {
+    final _out0 = calloc<ffi.Pointer<ffi.Double>>();
+    final _out1 = malloc<ffi.Uint32>();
+    try {
+      final _ret = _gdkEventGetAxes(this.handle, _out0, _out1);
+      final _list_out0 = (_out0.value == ffi.nullptr
+          ? <double>[]
+          : <double>[for (var i = 0; i < _out1.value; i++) _out0.value[i]]);
+      return ((_ret) != 0, _list_out0);
+    } finally {
+      gFree(_out0.value.cast());
+      malloc.free(_out1);
+    }
+  }
+
   /// Extract the axis value for a particular axis use from
   /// an event structure.
   ///

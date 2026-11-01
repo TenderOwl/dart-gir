@@ -18,7 +18,7 @@ Seventeen packages, released **in lockstep**:
 | `gir_gio` | Gio 2.0 | files, async, D-Bus, networking, applications |
 | `gir_gdk_pixbuf` | GdkPixbuf 2.0 | image loading and pixel formats |
 | `gir_pango` | Pango 1.0 | text shaping, fonts, layout |
-| `gir_dart_gobject` | — | `registerDartType` — a native identity for a Dart class |
+| `gir_dart_gobject` | — | `registerDartType` — a native identity for a Dart class: signals, properties, interfaces and virtual functions |
 | `gir_gdk4` | Gdk 4.0 | display, input, GL / Vulkan contexts |
 | `gir_gsk4` | Gsk 4.0 | render nodes and effects |
 | `gir_gtk4` | Gtk 4.0 | widgets, dialogs, actions, settings |
@@ -78,11 +78,28 @@ A symbol that appears there is not bound, and 1.0 does not promise that
 it will be. The counts move with the upstream GIR files, so the report —
 not a version number — is the contract.
 
-The known gaps at 1.0 are the array residue, the exotic OUT buffers, the
-`inout` parameters, and the properties whose GIR getter has no
-single-value form. Each is documented in
-[skip-categories.md](./skip-categories.md), and each is a *missing
+The known gaps are stated by the report itself, category by category, in
+[skip-categories.md](./skip-categories.md). Each entry is a *missing
 symbol*, not a wrong one.
+
+Two of them are worth naming here, because they are structural rather
+than accidental:
+
+- **The virtual methods.** A virtual method is a slot in the class
+  struct, and the GIR does not describe those structs. Every one of
+  them is reported — 981 of them — and a curated slice is wired by hand
+  in `packages/gir_dart_gobject`: `GObject.constructed`,
+  `GObject.dispose`, `GObject.finalize`, and `GtkWidget.snapshot`,
+  `GtkWidget.measure` and `GtkWidget.size_allocate`. Their offsets live
+  in a hand-written ABI table that is cross-checked against the
+  installed C headers.
+- **The `inout` parameters.** The GIR's ownership annotations for an
+  `inout` parameter are demonstrably wrong, so the annotation is ignored
+  and the caller keeps the storage. A *scalar* the callee reads and
+  writes through the pointer is seeded with the caller's value and read
+  back afterwards; a *handle* is passed as it is. A wrong lifetime rule
+  is worse than no binding, so a handle-shaped `inout` stays skipped —
+  with the reason in the report.
 
 **Windows and macOS.** The loader knows every platform's file names —
 the table is in `generator/lib/src/resolve/platform_libraries.dart` — but

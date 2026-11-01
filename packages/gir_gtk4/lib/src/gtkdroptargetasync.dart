@@ -202,12 +202,36 @@ class GtkDropTargetAsync extends GtkEventController {
     return _connectSignal_b_1_o_gdkdrop(this.handle, 'accept', callback);
   }
 
+  /// Emitted on the drop site when the pointer enters the widget.
+  ///
+  /// It can be used to set up custom highlighting.
+  int onDragEnter(
+    GdkDragAction Function(GdkDrop drop, double x, double y) callback,
+  ) {
+    return _connectSignal_f_3_o_d_d_gdkdragaction_gdkdrop_double_double(
+      this.handle,
+      'drag-enter',
+      callback,
+    );
+  }
+
   /// Emitted on the drop site when the pointer leaves the widget.
   ///
   /// Its main purpose it to undo things done in
   /// `GtkDropTargetAsync`::drag-enter.
   int onDragLeave(void Function(GdkDrop drop) callback) {
     return _connectSignal_v_1_o_gdkdrop(this.handle, 'drag-leave', callback);
+  }
+
+  /// Emitted while the pointer is moving over the drop target.
+  int onDragMotion(
+    GdkDragAction Function(GdkDrop drop, double x, double y) callback,
+  ) {
+    return _connectSignal_f_3_o_d_d_gdkdragaction_gdkdrop_double_double(
+      this.handle,
+      'drag-motion',
+      callback,
+    );
   }
 
   /// Emitted on the drop site when the user drops the data onto the widget.

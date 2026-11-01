@@ -848,7 +848,8 @@ bool _signalTrampoline_b_1_o_gdkevent(
 ) {
   final id = userData.cast<ffi.IntPtr>().value;
   final cb = _signalRegistry_b_1_o_gdkevent[id]!;
-  return cb(GdkEvent.fromPointer(event));
+  final result = cb(GdkEvent.fromPointer(event));
+  return result;
 }
 
 /// Per-package singleton. Never closed — must stay reachable for
@@ -980,7 +981,8 @@ bool _signalTrampoline_b_1_o_cairoregion(
 ) {
   final id = userData.cast<ffi.IntPtr>().value;
   final cb = _signalRegistry_b_1_o_cairoregion[id]!;
-  return cb(CairoRegion.fromPointer(region));
+  final result = cb(CairoRegion.fromPointer(region));
+  return result;
 }
 
 /// Per-package singleton. Never closed — must stay reachable for

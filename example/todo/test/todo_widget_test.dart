@@ -285,6 +285,23 @@ void main() {
       expect(listItems.first.getItem(), same(window.tasks.getObject(0)));
     });
 
+    test('the row is an instance of its own native type', () {
+      final window = newWindow();
+
+      window.tasks.append(TaskObject(content: 'write the docs'));
+      window.present();
+      _pumpMainLoop();
+
+      final row = listItems.first.getChild() as TaskRow;
+
+      // The row registers a `GType` of its own, so its template lives on
+      // *that* type — and the instance is one of it, not of `GtkBox`.
+      expect(_nativeTypeName(row), 'TaskRow');
+      expect(_nativeTypeName(row), isNot('GtkBox'));
+      // …and it is still a `GtkBox`: the registered type derives from it.
+      expect(typeIsA(TaskRow.GType, GtkBox.GType), isTrue);
+    });
+
     test('a row is built for every task', () {
       final window = newWindow();
 

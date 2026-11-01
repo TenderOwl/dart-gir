@@ -1,30 +1,24 @@
 # Skip report for package gir_gdk_pixbuf (GdkPixbuf 2.0)
-Total skipped: 19
+Total skipped: 24
 
 ## By category
+virtual: 12
 property: 9
-callback: 5
-callable: 4
+callable: 2
 method: 1
 
 ## By reason
+virtual method; the class struct layout is not in the GIR: 12
 construct-only or no public setter; emitting getter only: 7
-array parameter in callback signature: 5
 moved to PixbufError.quark: 1
-parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature: 1
 shadowed by get_pixels_with_length: 1
-parameter save_func: callback PixbufSaveFunc has unsupported signature: 1
 name collision: 1
 missing getter get_pixel-bytes: 1
 getter get_pixels is not emitted (shadowed by get_pixels_with_length): 1
 
-## First 50 entries
+## All 24 entries
 [callable] GdkPixbuf.pixbufErrorQuark — moved to PixbufError.quark
-[callback] GdkPixbufDestroyNotify parameter pixels — array parameter in callback signature
-[callable] GdkPixbuf.fromData — parameter destroy_fn: callback PixbufDestroyNotify has unsupported signature
 [callable] GdkPixbuf.getPixels — shadowed by get_pixels_with_length
-[callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature
-[callable] GdkPixbuf.saveToCallbackv — parameter save_func: callback PixbufSaveFunc has unsupported signature
 [method] GdkPixbuf.toString — name collision
 [property] GdkPixbuf.bits-per-sample — construct-only or no public setter; emitting getter only
 [property] GdkPixbuf.colorspace — construct-only or no public setter; emitting getter only
@@ -35,6 +29,15 @@ getter get_pixels is not emitted (shadowed by get_pixels_with_length): 1
 [property] GdkPixbuf.pixels — getter get_pixels is not emitted (shadowed by get_pixels_with_length)
 [property] GdkPixbuf.rowstride — construct-only or no public setter; emitting getter only
 [property] GdkPixbuf.width — construct-only or no public setter; emitting getter only
-[callback] GdkPixbufDestroyNotify parameter pixels — array parameter in callback signature
-[callback] GdkPixbufModuleIncrementLoadFunc parameter buf — array parameter in callback signature
-[callback] GdkPixbufSaveFunc parameter buf — array parameter in callback signature
+[virtual] GdkPixbufAnimation.get_iter — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimation.get_size — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimation.get_static_image — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimation.is_static_image — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimationIter.advance — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimationIter.get_delay_time — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimationIter.get_pixbuf — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufAnimationIter.on_currently_loading_frame — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufLoader.area_prepared — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufLoader.area_updated — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufLoader.closed — virtual method; the class struct layout is not in the GIR
+[virtual] GdkPixbufLoader.size_prepared — virtual method; the class struct layout is not in the GIR

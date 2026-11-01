@@ -8484,7 +8484,7 @@ class GFile implements ffi.Finalizable {
             ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   static GFile newBuildFilenamev([List<String?>? args]) {
-    return withNativeStringList(args, (nativeArgs) {
+    return withNativeStringList(args, (nativeArgs, nativeArgsLen) {
       return GFile.fromPointer(
         _gFileNewBuildFilenamev(nativeArgs),
         owned: true,

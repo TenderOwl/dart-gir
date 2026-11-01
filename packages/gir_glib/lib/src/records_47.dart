@@ -412,6 +412,30 @@ final class GVariant implements ffi.Finalizable {
     return GVariant.copyReference(_gVariantNewBytestring(string));
   }
 
+  /// Constructs an array of bytestring #GVariant from the given array of
+  /// strings.
+  ///
+  /// If @length is -1 then @strv is %NULL-terminated.
+  static final _gVariantNewBytestringArray =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.IntPtr,
+              )
+            >
+          >('g_variant_new_bytestring_array')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>, int)
+          >();
+  factory GVariant.bytestringArray([List<String?>? strv]) {
+    return withNativeStringList(strv, (nativeStrv, nativeStrvLen) {
+      return GVariant.copyReference(
+        _gVariantNewBytestringArray(nativeStrv, nativeStrvLen),
+      );
+    });
+  }
+
   /// Creates a new dictionary entry #GVariant. @key and @value must be
   /// non-%NULL. @key must be a value of a basic type (ie: not a container).
   ///
@@ -710,6 +734,33 @@ final class GVariant implements ffi.Finalizable {
     });
   }
 
+  /// Constructs an array of object paths #GVariant from the given array of
+  /// strings.
+  ///
+  /// Each string must be a valid #GVariant object path; see
+  /// g_variant_is_object_path().
+  ///
+  /// If @length is -1 then @strv is %NULL-terminated.
+  static final _gVariantNewObjv =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.IntPtr,
+              )
+            >
+          >('g_variant_new_objv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>, int)
+          >();
+  factory GVariant.objv([List<String?>? strv]) {
+    return withNativeStringList(strv, (nativeStrv, nativeStrvLen) {
+      return GVariant.copyReference(
+        _gVariantNewObjv(nativeStrv, nativeStrvLen),
+      );
+    });
+  }
+
   /// Creates a D-Bus type signature #GVariant with the contents of
   /// @string.  @string must be a valid D-Bus type signature.  Use
   /// g_variant_is_signature() if you're not sure.
@@ -744,6 +795,30 @@ final class GVariant implements ffi.Finalizable {
     return withNativeString(string, (nativeString) {
       return GVariant.copyReference(
         _gVariantNewString(nativeString.cast<Utf8>()),
+      );
+    });
+  }
+
+  /// Constructs an array of strings #GVariant from the given array of
+  /// strings.
+  ///
+  /// If @length is -1 then @strv is %NULL-terminated.
+  static final _gVariantNewStrv =
+      girGlibLookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Void> Function(
+                ffi.Pointer<ffi.Pointer<Utf8>>,
+                ffi.IntPtr,
+              )
+            >
+          >('g_variant_new_strv')
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Pointer<Utf8>>, int)
+          >();
+  factory GVariant.strv([List<String?>? strv]) {
+    return withNativeStringList(strv, (nativeStrv, nativeStrvLen) {
+      return GVariant.copyReference(
+        _gVariantNewStrv(nativeStrv, nativeStrvLen),
       );
     });
   }

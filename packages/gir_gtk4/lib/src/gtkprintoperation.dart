@@ -723,6 +723,25 @@ class GtkPrintOperation extends GObject implements GtkPrintOperationPreview {
     );
   }
 
+  /// Emitted when displaying the print dialog.
+  ///
+  /// If you return a widget in a handler for this signal it will be
+  /// added to a custom tab in the print dialog. You typically return a
+  /// container widget with multiple widgets in it.
+  ///
+  /// The print dialog owns the returned widget, and its lifetime is not
+  /// controlled by the application. However, the widget is guaranteed
+  /// to stay around until the [signal@Gtk.PrintOperation::custom-widget-apply]
+  /// signal is emitted on the operation. Then you can read out any
+  /// information you need from the widgets.
+  int onCreateCustomWidget(GObject? Function() callback) {
+    return _connectSignal_o_0_gobject(
+      this.handle,
+      'create-custom-widget',
+      callback,
+    );
+  }
+
   /// Emitted right before ::begin-print if you added
   /// a custom widget in the ::create-custom-widget handler.
   ///

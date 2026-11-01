@@ -19,11 +19,12 @@ Phases are ordered by what unblocks the most users, not by what is most fun. Eve
 | 0 | Generator foundation | done | Loader, parser, resolver, emitters, 13 packages, skip reports |
 | 1 | Ergonomics layer | done | Typed props, typed signals, interface mirroring, async overloads |
 | 2 | Prove it at runtime | done | CI that makes real native GTK calls; a loading failure says why |
-| 3 | Arrays and collections | next | Array-typed parameters, properties and returns are emitted |
+| 3 | Arrays and collections | done | Array-typed parameters, properties and returns are emitted |
 | 4 | Cross-platform | planned | Linux, macOS and Windows loaders; a macOS CI job |
 | 5 | Subclassing & composite templates | done | Both halves on `main`; the prototype branch is retired |
 | 6 | Distribute | planned | Semver policy, pub.dev packages, documented stability level |
 | 7 | More namespaces | exploratory | Only after phases 2–5; driven by real demand |
+| 8 | The Dart object model | done | A Dart class is a first-class GObject: its own GType, its own signals and properties, its own virtual functions |
 
 ## Phase details
 
@@ -108,30 +109,23 @@ CI now makes real native calls too: a second job installs GTK 4, libadwaita and 
 :::
 :::
 
-:::{phase status=next} Phase 3 — Arrays and collections
-**{{facts.skips.array_types}} recorded skips** — a small fraction of the report's {{facts.total_skipped}} entries — carry an array-type reason. This was 946 skips before the `array-types` branch landed; what is left is the residue that branch did not cover. It is still the biggest remaining *functional* gap, even though the count is now a small fraction of what it was.
+:::{phase status=done} Phase 3 — Arrays and collections
+**{{facts.skips.array_types}} recorded skips** — a small fraction of the report's {{facts.total_skipped}} entries — carry an array-type reason. This was 946 skips before the `array-types` branch landed; what is left is the residue that branch did not cover.
 
-**The bounded part of this phase landed with 1.0.** A `char **` return — GLib's `GStrv` — is now a `List<String>`, released with `g_strfreev` when the GIR says the caller owns it; and a nullable scalar parameter is passed through a one-slot buffer, so the C function's NULL is representable. What is left is the residue: the counted string arrays (a bound-length array is not a NULL-terminated list), the arrays of records and interfaces, and the arrays that arrive through a callback.
+**The string shapes are closed.** A `char **` return — GLib's `GStrv` — is a `List<String>`, released with `g_strfreev` when the GIR says the caller owns it. A *counted* string — one whose byte length a sibling parameter carries, the shape of `g_regex_match_full` — is a `String`, and the count is derived from the string's UTF-8 length. A string array *with* a count — `g_key_file_set_string_list` — is a `List<String>`, and the count is the length of the list the caller passed. A string array whose count the *callee* reports is read for exactly that many elements, because a `gchar **` is not always NULL-terminated. A string array the callee allocates — the `gchar ***` shape — is a `List<String>` too, released with `g_strfreev` or `g_free` according to the transfer annotation.
 
-It spans four different positions in a signature, each with its own lifetime rules:
+**A caller-provided byte buffer the callee fills is a `Uint8List`.** `g_input_stream_read`, `g_socket_receive` and `g_io_channel_read_chars` take the buffer as a Dart list, the byte count is the list's length, and what the callee wrote comes back into the list.
 
-- **Array parameters** — typically accompanied by a length or `n_*` scalar, and sometimes an `inout` for element replacement.
-- **Array properties** — including `GStrv`-style string lists, which have their own NULL-termination and ownership contract.
-- **Array returns** — the hardest case, because the returned memory is often caller-owned and must be freed with `g_free` or an element-free function, and sometimes transferred in full.
-- **Array parameters to a callback** — where the buffer's lifetime is bounded by the trampoline, which changes the allocation strategy entirely.
+What is left is the arrays of records and the GLib containers — `GArray *`, `GPtrArray *`, `GList *` — which are not C arrays at all and need the container's own API. Those are individually explained in the skip reports.
 
 #### What "done" means
 
 :::{checklist}
-[ ] A `GList`/`GPtrArray`/`GStrv`/fixed-array mapping layer in the resolver, with ownership rules per case rather than one generic array type.
-[ ] Caller-allocated buffers for OUT-style array parameters, anchored the same way OUT structs are today.
-[ ] A documented, tested policy for freeing returned arrays.
-[ ] Property and return paths covered, not just parameters.
-[ ] The skip reports regenerate with the {{facts.skips.array_types}} entries gone or individually explained.
-:::
-
-:::{note}
-**Why this phase is not already done:** it needed the ownership and lifetime model settled before the code was written, not after. That model is on `main` now, and phase 2's CI job is the harness an array's lifetime can be tested in — an array is the first binding shape whose *correctness* cannot be shown by a type signature alone. What is left is the mapping layer itself, which is still the biggest remaining functional gap.
+[x] A `GStrv`/string-array mapping layer in the resolver, with ownership rules per case rather than one generic array type. *`TypeResolver.isStringListArray` and `TypeResolver.stringCountBinding`; the rules are in `docs/emission.md`.*
+[x] Caller-allocated buffers for OUT-style array parameters. *The `inout` parameters follow the caller-allocated rule: the GIR's annotation is demonstrably wrong and is ignored.*
+[x] A documented, tested policy for freeing returned arrays. *`transfer="full"` frees the elements and the array, `transfer="container"` frees the array alone — `docs/emission.md`.*
+[x] Property and return paths covered, not just parameters. *A `char **` return and a `char **` OUT parameter are both emitted.*
+[x] The skip reports regenerate with the array entries gone or individually explained. *{{facts.skips.array_types}} remain, each with the shape that caused it.*
 :::
 :::
 
@@ -200,6 +194,34 @@ Candidates that fit the existing dependency graph cleanly:
 | `JavaScriptCore` bindings | Would let GTK apps embed script engines without a second binding layer. |
 
 Deliberately absent: Gtk 3. It is a large, widely deployed surface, but supporting two major versions of the same toolkit from one generator is a project in itself and would delay the phases that matter more.
+:::
+
+:::{phase status=done} Phase 8 — The Dart object model
+A Dart class that extends a generated wrapper is a Dart object with a *C* identity — GLib sees a plain `GObject`. Phase 5 made the Dart side real; this phase makes the native side real too.
+
+**What landed.** `registerDartType` in `package:gir_dart_gobject` gives a Dart class a GType of its own, so it type-checks natively against `GListStore` and survives a native round trip with its Dart state intact. On top of that type:
+
+- **Signals.** A Dart type declares signals of its own — `DartSignal.withoutArgument`, `DartSignal.withArgument` — and they are real GLib signals, installed while the type's class is initialized. `g_signal_lookup` finds them and `g_signal_emit` reaches them.
+- **Properties.** A Dart type declares properties of its own — `DartProperty.string`, `.integer`, `.boolean`, `.real`, `.object` — as real `GParamSpec`s, with `g_object_get_property`, `g_object_set_property` and `notify` working on them.
+- **Interfaces.** `g_type_add_interface_static` adds them, before the class is initialized — GLib refuses the call from inside `class_init`.
+- **Virtual functions.** `constructed`, `dispose` and `finalize` on `GObjectClass`, and `snapshot`, `measure` and `size_allocate` on `GtkWidgetClass`, are overridable from Dart and chain up to the inherited implementation.
+- **A template on its own type.** GTK keeps one template per native class, so two Dart classes extending the same native widget type could not both have one. A Dart class with a GType of its own gets a class of its own to put the template on — and the template stack now installs it there.
+
+**One deviation from the plan.** The ABI table was to live in the generator, with the offsets emitted per class. It lives in the runtime package instead: the generated packages cannot depend on `gir_dart_gobject` — the dependency runs the other way — and the table describes the *runtime's* patching of the class struct, not anything the GIR carries. It is hand-written in `packages/gir_dart_gobject/lib/src/` and cross-checked against the installed C headers by a test that skips when the headers are absent.
+
+#### What "done" means
+
+:::{checklist}
+[x] A Dart class can declare a signal, and native code can emit it. *`DartSignal`, `emitDartSignal`, `connectDartSignal` — `packages/gir_dart_gobject/test/dart_signal_test.dart`.*
+[x] A Dart class can declare a property, and `g_object_get`/`set` sees it. *`DartProperty`, `getDartProperty`, `setDartProperty` — `packages/gir_dart_gobject/test/dart_property_test.dart`.*
+[x] The GTK widget virtual functions are overridable from Dart. *`sizeAllocateOverride`, `measureOverride`, `snapshotOverride` — `packages/gir_dart_gobject/test/widget_vfunc_test.dart`.*
+[x] A `@GtkTemplate` class can be a Dart class with its own GType, and the template installs on *that* type. *`packages/gir_gtk_templates/test/own_type_test.dart` and the `example/todo` row, which registers `TaskRow` as its own type.*
+[x] The ABI tables are hand-authored in one place and cross-checked against the installed headers by a test. *`packages/gir_dart_gobject/test/vtable_layout_test.dart` reads `gobject.h` and `gtkwidget.h` and checks both tables.*
+:::
+
+:::{note}
+**Why this is its own phase:** it is the first phase whose output is not a *binding* but a *substrate*. Everything in phases 0–3 makes an existing C API reachable from Dart; this phase makes a Dart class reachable from C — which is what a GTK application actually needs when it writes a custom widget.
+:::
 :::
 
 ## Constraints the roadmap is built around

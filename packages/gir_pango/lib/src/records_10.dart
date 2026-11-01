@@ -225,6 +225,54 @@ final class PangoLayoutLine implements ffi.Finalizable {
     return _pangoLayoutLineGetStartIndex(this.handle);
   }
 
+  /// Gets a list of visual ranges corresponding to a given logical range.
+  ///
+  /// This list is not necessarily minimal - there may be consecutive
+  /// ranges which are adjacent. The ranges will be sorted from left to
+  /// right. The ranges are with respect to the left edge of the entire
+  /// layout, not with respect to the line.
+  static final _pangoLayoutLineGetXRanges =
+      girPangoLookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Int32,
+                ffi.Int32,
+                ffi.Pointer<ffi.Pointer<ffi.Int32>>,
+                ffi.Pointer<ffi.Int32>,
+              )
+            >
+          >('pango_layout_line_get_x_ranges')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Int32>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+  List<int> getXRanges(int startIndex, int endIndex) {
+    final _out0 = calloc<ffi.Pointer<ffi.Int32>>();
+    final _out1 = malloc<ffi.Int32>();
+    try {
+      _pangoLayoutLineGetXRanges(
+        this.handle,
+        startIndex,
+        endIndex,
+        _out0,
+        _out1,
+      );
+      final _list_out0 = (_out0.value == ffi.nullptr
+          ? <int>[]
+          : <int>[for (var i = 0; i < _out1.value; i++) _out0.value[i]]);
+      return _list_out0;
+    } finally {
+      gFree(_out0.value.cast());
+      malloc.free(_out1);
+    }
+  }
+
   /// Converts an index within a line to a X position.
   static final _pangoLayoutLineIndexToX =
       girPangoLookup<
@@ -373,234 +421,5 @@ final class PangoLogAttr {
   /// (which produced this object) remains the owner.
   T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
     return factory(handle);
-  }
-}
-
-/// A `PangoMatrix` specifies a transformation between user-space
-/// and device coordinates.
-///
-/// The transformation is given by
-///
-/// ```
-/// x_device = x_user * matrix->xx + y_user * matrix->xy + matrix->x0;
-/// y_device = x_user * matrix->yx + y_user * matrix->yy + matrix->y0;
-/// ```
-final class PangoMatrix implements ffi.Finalizable {
-  /// Wraps the native object at [handle].
-  ///
-  /// The same native pointer always yields the same Dart object.
-  factory PangoMatrix.fromPointer(
-    ffi.Pointer<ffi.Void> handle, {
-    bool owned = false,
-  }) {
-    final cached = cachedObject<PangoMatrix>(handle.address);
-    if (cached != null) {
-      if (owned) {
-        if (cached.owned) {
-          // The cached wrapper owns a reference of its own: the new one is
-          // a surplus and goes back.
-          _releaseMatrix(handle);
-        } else {
-          // The cached wrapper owns nothing: it adopts the reference.
-          matrixFinalizer.attach(cached, handle, detach: cached);
-          ;
-          cached.owned = true;
-        }
-      }
-      return cached;
-    }
-    return PangoMatrix.rawFromPointer(handle, owned: owned);
-  }
-  PangoMatrix.rawFromPointer(this.handle, {this.owned = false}) {
-    registerDartObject(this, handle.address);
-    if (owned) {
-      matrixFinalizer.attach(this, handle, detach: this);
-    }
-  }
-  final ffi.Pointer<ffi.Void> handle;
-  bool owned;
-
-  /// Releases an owned `PangoMatrix` with `pango_matrix_free`.
-  ///
-  /// The finalizer runs when the wrapper is collected, so a
-  /// reference the GIR hands over is released exactly once.
-  static final matrixFinalizer = ffi.NativeFinalizer(
-    girPangoLookup<
-      ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-    >('pango_matrix_free'),
-  );
-
-  static final _releaseMatrix =
-      girPangoLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('pango_matrix_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-
-  /// Re-wraps this wrapper's [handle] as [T] via [factory].
-  ///
-  /// Use this when another wrapper returns this class's
-  /// instance but the caller needs the destination class's
-  /// methods. Pass the destination class's `fromPointer` as
-  /// the callback, e.g. `wrapper.cast<GFile>(GFile.fromPointer)`.
-  /// The handle is forwarded as-is; the original wrapper
-  /// (which produced this object) remains the owner.
-  T cast<T extends Object>(T Function(ffi.Pointer<ffi.Void>) factory) {
-    return factory(handle);
-  }
-
-  /// Changes the transformation represented by @matrix to be the
-  /// transformation given by first applying transformation
-  /// given by @new_matrix then applying the original transformation.
-  static final _pangoMatrixConcat =
-      girPangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-            >
-          >('pango_matrix_concat')
-          .asFunction<
-            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
-          >();
-  void concat(PangoMatrix newMatrix) {
-    _pangoMatrixConcat(this.handle, newMatrix.handle);
-  }
-
-  /// Copies a `PangoMatrix`.
-  static final _pangoMatrixCopy =
-      girPangoLookup<
-            ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)
-            >
-          >('pango_matrix_copy')
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-  PangoMatrix? copy() {
-    final _ret = _pangoMatrixCopy(this.handle);
-    return (_ret) == ffi.nullptr
-        ? null
-        : PangoMatrix.fromPointer(_ret, owned: true);
-  }
-
-  /// Free a `PangoMatrix`.
-  static final _pangoMatrixFree =
-      girPangoLookup<
-            ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
-          >('pango_matrix_free')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-  void free() {
-    if (owned) {
-      // The caller releases the reference — the collector must not.
-      matrixFinalizer.detach(this);
-      owned = false;
-    }
-    _pangoMatrixFree(this.handle);
-  }
-
-  /// Returns the scale factor of a matrix on the height of the font.
-  ///
-  /// That is, the scale factor in the direction perpendicular to the
-  /// vector that the X coordinate is mapped to.  If the scale in the X
-  /// coordinate is needed as well, use [method@Pango.Matrix.get_font_scale_factors].
-  static final _pangoMatrixGetFontScaleFactor =
-      girPangoLookup<
-            ffi.NativeFunction<ffi.Double Function(ffi.Pointer<ffi.Void>)>
-          >('pango_matrix_get_font_scale_factor')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getFontScaleFactor() {
-    return _pangoMatrixGetFontScaleFactor(this.handle);
-  }
-
-  /// Calculates the scale factor of a matrix on the width and height of the font.
-  ///
-  /// That is, @xscale is the scale factor in the direction of the X coordinate,
-  /// and @yscale is the scale factor in the direction perpendicular to the
-  /// vector that the X coordinate is mapped to.
-  ///
-  /// Note that output numbers will always be non-negative.
-  static final _pangoMatrixGetFontScaleFactors =
-      girPangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(
-                ffi.Pointer<ffi.Void>,
-                ffi.Pointer<ffi.Double>,
-                ffi.Pointer<ffi.Double>,
-              )
-            >
-          >('pango_matrix_get_font_scale_factors')
-          .asFunction<
-            void Function(
-              ffi.Pointer<ffi.Void>,
-              ffi.Pointer<ffi.Double>,
-              ffi.Pointer<ffi.Double>,
-            )
-          >();
-  (double, double) getFontScaleFactors() {
-    final _out0 = malloc<ffi.Double>();
-    final _out1 = malloc<ffi.Double>();
-    try {
-      _pangoMatrixGetFontScaleFactors(this.handle, _out0, _out1);
-      return (_out0.value, _out1.value);
-    } finally {
-      malloc.free(_out0);
-      malloc.free(_out1);
-    }
-  }
-
-  /// Gets the slant ratio of a matrix.
-  ///
-  /// For a simple shear matrix in the form:
-  ///
-  /// 1 λ
-  /// 0 1
-  ///
-  /// this is simply λ.
-  static final _pangoMatrixGetSlantRatio =
-      girPangoLookup<
-            ffi.NativeFunction<ffi.Double Function(ffi.Pointer<ffi.Void>)>
-          >('pango_matrix_get_slant_ratio')
-          .asFunction<double Function(ffi.Pointer<ffi.Void>)>();
-  double getSlantRatio() {
-    return _pangoMatrixGetSlantRatio(this.handle);
-  }
-
-  /// Changes the transformation represented by @matrix to be the
-  /// transformation given by first rotating by @degrees degrees
-  /// counter-clockwise then applying the original transformation.
-  static final _pangoMatrixRotate =
-      girPangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Double)
-            >
-          >('pango_matrix_rotate')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, double)>();
-  void rotate(double degrees) {
-    _pangoMatrixRotate(this.handle, degrees);
-  }
-
-  /// Changes the transformation represented by @matrix to be the
-  /// transformation given by first scaling by @sx in the X direction
-  /// and @sy in the Y direction then applying the original
-  /// transformation.
-  static final _pangoMatrixScale =
-      girPangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Double, ffi.Double)
-            >
-          >('pango_matrix_scale')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, double, double)>();
-  void scale(double scaleX, double scaleY) {
-    _pangoMatrixScale(this.handle, scaleX, scaleY);
-  }
-
-  /// Changes the transformation represented by @matrix to be the
-  /// transformation given by first translating by (@tx, @ty)
-  /// then applying the original transformation.
-  static final _pangoMatrixTranslate =
-      girPangoLookup<
-            ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Double, ffi.Double)
-            >
-          >('pango_matrix_translate')
-          .asFunction<void Function(ffi.Pointer<ffi.Void>, double, double)>();
-  void translate(double tx, double ty) {
-    _pangoMatrixTranslate(this.handle, tx, ty);
   }
 }

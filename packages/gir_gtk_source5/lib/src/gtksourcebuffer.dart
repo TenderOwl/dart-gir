@@ -158,6 +158,39 @@ class GtkSourceBuffer extends GtkTextBuffer {
         owned: true,
       );
 
+  /// Moves `iter` to the position of the previous [class@Mark] of the given
+  /// category.
+  ///
+  /// Returns %TRUE if `iter` was moved. If `category` is NULL, the
+  /// previous source mark can be of any category.
+  static final _gtkSourceBufferBackwardIterToSourceMark =
+      girGtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_source_buffer_backward_iter_to_source_mark')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  bool backwardIterToSourceMark(GtkTextIter iter, [String? category]) {
+    return withNativeString(category, (nativeCategory) {
+      return (_gtkSourceBufferBackwardIterToSourceMark(
+            this.handle,
+            iter.handle,
+            nativeCategory.cast<Utf8>(),
+          )) !=
+          0;
+    });
+  }
+
   /// Changes the case of the text between the specified iterators.
   ///
   /// Since 5.4, this function will update the position of `start` and
@@ -273,6 +306,39 @@ class GtkSourceBuffer extends GtkTextBuffer {
           >();
   void ensureHighlight(GtkTextIter start, GtkTextIter end) {
     _gtkSourceBufferEnsureHighlight(this.handle, start.handle, end.handle);
+  }
+
+  /// Moves `iter` to the position of the next [class@Mark] of the given
+  /// `category`.
+  ///
+  /// Returns %TRUE if `iter` was moved. If `category` is NULL, the
+  /// next source mark can be of any category.
+  static final _gtkSourceBufferForwardIterToSourceMark =
+      girGtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_source_buffer_forward_iter_to_source_mark')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  bool forwardIterToSourceMark(GtkTextIter iter, [String? category]) {
+    return withNativeString(category, (nativeCategory) {
+      return (_gtkSourceBufferForwardIterToSourceMark(
+            this.handle,
+            iter.handle,
+            nativeCategory.cast<Utf8>(),
+          )) !=
+          0;
+    });
   }
 
   /// Get all defined context classes at @iter.
@@ -467,6 +533,78 @@ class GtkSourceBuffer extends GtkTextBuffer {
     return (_ret) == ffi.nullptr
         ? null
         : GtkSourceStyleScheme.fromPointer(_ret);
+  }
+
+  /// Moves backward to the next toggle (on or off) of the context class.
+  ///
+  /// If no matching context class toggles are found, returns %FALSE, otherwise %TRUE.
+  /// Does not return toggles located at @iter, only toggles after @iter. Sets
+  /// @iter to the location of the toggle, or to the end of the buffer if no
+  /// toggle is found.
+  ///
+  /// See the [class@Buffer] description for the list of default context classes.
+  static final _gtkSourceBufferIterBackwardToContextClassToggle =
+      girGtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_source_buffer_iter_backward_to_context_class_toggle')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  bool iterBackwardToContextClassToggle(GtkTextIter iter, String contextClass) {
+    return withNativeString(contextClass, (nativeContextClass) {
+      return (_gtkSourceBufferIterBackwardToContextClassToggle(
+            this.handle,
+            iter.handle,
+            nativeContextClass.cast<Utf8>(),
+          )) !=
+          0;
+    });
+  }
+
+  /// Moves forward to the next toggle (on or off) of the context class.
+  ///
+  /// If no matching context class toggles are found, returns %FALSE, otherwise %TRUE.
+  /// Does not return toggles located at @iter, only toggles after @iter. Sets
+  /// @iter to the location of the toggle, or to the end of the buffer if no
+  /// toggle is found.
+  ///
+  /// See the [class@Buffer] description for the list of default context classes.
+  static final _gtkSourceBufferIterForwardToContextClassToggle =
+      girGtkSource5Lookup<
+            ffi.NativeFunction<
+              ffi.Int32 Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+              )
+            >
+          >('gtk_source_buffer_iter_forward_to_context_class_toggle')
+          .asFunction<
+            int Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+            )
+          >();
+  bool iterForwardToContextClassToggle(GtkTextIter iter, String contextClass) {
+    return withNativeString(contextClass, (nativeContextClass) {
+      return (_gtkSourceBufferIterForwardToContextClassToggle(
+            this.handle,
+            iter.handle,
+            nativeContextClass.cast<Utf8>(),
+          )) !=
+          0;
+    });
   }
 
   /// Check if the class @context_class is set on @iter.

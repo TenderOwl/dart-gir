@@ -121,6 +121,7 @@ class CodegenInput {
     required this.callbacks,
     required this.signals,
     this.methodParameters = const <String, List<String>>{},
+    this.hasOwnType = false,
     this.partOfPath = 'app.dart',
   });
 
@@ -161,6 +162,7 @@ class CodegenInput {
           .toList(),
       signals: xmlSignals,
       methodParameters: plan.methodParameters,
+      hasOwnType: plan.hasOwnType,
       partOfPath: partOfPath,
     );
   }
@@ -179,6 +181,15 @@ class CodegenInput {
   /// user's method: the *types* come from the binding's callback
   /// type (Dart infers them), the *names* from the user's method.
   final Map<String, List<String>> methodParameters;
+
+  /// Whether the user's class declares a native type of its own.
+  ///
+  /// A class that registers a `GType` — through `registerDartType` —
+  /// carries its template on *that* type, and the widget has to be an
+  /// instance of it. GTK allows one template per native class, so a
+  /// type of its own is what lets two Dart classes with the same
+  /// parent each have a template.
+  final bool hasOwnType;
 
   /// Basename (no directory) of the user file the generated
   /// mixin is a `part of`. Required.
@@ -342,7 +353,22 @@ void _emitMixin(StringBuffer buffer, CodegenInput input) {
   buffer.writeln('    if (_instanceInitialized) return;');
   buffer.writeln('    _instanceInitialized = true;');
   buffer.writeln('    final widget = this as GtkWidget;');
-  buffer.writeln('    final widgetType = widgetTypeOf(widget);');
+  if (input.hasOwnType) {
+    buffer.writeln(
+      '    // The class declares a native type of its own, so the',
+    );
+    buffer.writeln(
+      '    // template belongs to *that* type — and the widget has to',
+    );
+    buffer.writeln('    // be an instance of it.');
+    buffer.writeln('    final ownType = ${input.className}.GType;');
+    buffer.writeln(
+      "    requireOwnType(widget, ownType, '${input.className}');",
+    );
+    buffer.writeln('    final widgetType = ownType;');
+  } else {
+    buffer.writeln('    final widgetType = widgetTypeOf(widget);');
+  }
   buffer.writeln('    final widgetClass = getWidgetClass(widget);');
   buffer.writeln('    if (widgetClass == null) {');
   buffer.writeln('      throw StateError(');
@@ -519,16 +545,22 @@ String packageForType(String typeName) {
 ///
 ///   - `GtkWidget`, `getWidgetClass` — `package:gir_gtk4/gir_gtk4.dart`
 ///   - `gbytesFromString`, `widgetTypeOf`, `prepareTemplateXml`,
-///     `claimTemplateType`, `GBytes` —
+///     `claimTemplateType`, `requireOwnType`, `GBytes` —
 ///     `package:gir_gtk_templates/gir_gtk_templates.dart`
 ///   - the parent widget type and every child type — the
 ///     package that declares them.
 ///
 /// [typeNames] carries the parent type and the child types.
-Set<String> requiredImports(Iterable<String> typeNames) {
+/// [extra] carries the imports the *user's* code needs — the runtime
+/// that registers a native type of its own, for instance.
+Set<String> requiredImports(
+  Iterable<String> typeNames, {
+  Iterable<String> extra = const [],
+}) {
   final packages = <String>{
     'package:gir_gtk4/gir_gtk4.dart',
     'package:gir_gtk_templates/gir_gtk_templates.dart',
+    ...extra,
   };
   for (final typeName in typeNames) {
     packages.add(packageForType(typeName));
@@ -545,9 +577,13 @@ Set<String> requiredImports(Iterable<String> typeNames) {
 /// as an "undefined name" error in the *generated* file — far
 /// from the cause. Checking up front turns that into an
 /// actionable message.
-List<String> checkRequiredImports(String source, Iterable<String> typeNames) {
+List<String> checkRequiredImports(
+  String source,
+  Iterable<String> typeNames, {
+  Iterable<String> extra = const [],
+}) {
   final missing = <String>[];
-  for (final package in requiredImports(typeNames)) {
+  for (final package in requiredImports(typeNames, extra: extra)) {
     if (!source.contains("'$package'")) {
       missing.add(package);
     }

@@ -21,5 +21,31 @@
 /// that comes back out of a `GtkListItem` is the very object that went in.
 library;
 
+export 'src/dart_gobject.dart' show DartGObject;
+export 'src/construction.dart' show newDartInstance;
 export 'src/gtype_registry.dart'
     show registerDartType, registeredDartTypes, dartTypeOf;
+export 'src/properties.dart'
+    show
+        DartProperty,
+        DartPropertyKind,
+        dartPropertySpec,
+        dartPropertyValueType,
+        getDartProperty,
+        setDartProperty;
+export 'src/signals.dart'
+    show
+        DartSignal,
+        DartSignalArgument,
+        DartSignalHandler,
+        dartSignalId,
+        emitDartSignal,
+        connectDartSignal;
+export 'src/vtable.dart'
+    show GObjectVtable, VfuncOverride, installGObjectVfuncs;
+export 'src/widget_vfuncs.dart'
+    show
+        GtkWidgetVtable,
+        measureOverride,
+        sizeAllocateOverride,
+        snapshotOverride;

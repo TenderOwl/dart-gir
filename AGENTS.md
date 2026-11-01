@@ -11,7 +11,7 @@ GIR-based Dart FFI bindings for GObject libraries (GLib, GTK4, Libadwaita, Cairo
 - Build the site:      `dart run tool/build_site.dart` (renders `site_src/pages/*.md` → `site/*.html`; `--check` fails if the committed output is stale, `--serve` builds and serves `site/` locally)
 - Refresh the facts:   `dart run tool/collect_facts.dart` (re-derives `site_src/data/facts.json` from the repository)
 - Build the API reference: `dart run tool/build_api_docs.dart` (runs `dart doc` per package into `site/docs/` — gitignored, not committed)
-- Run all tests:       `dart test generator example/gtk4_examples example/notepad example/todo packages/gir_dart_gobject packages/gir_gdk4 packages/gir_gio packages/gir_ffi packages/gir_glib packages/gir_gobject packages/gir_gtk4 packages/gir_gtk_source5 packages/gir_gtk_templates packages/gir_gtk_templates_builder test` (from the workspace root)
+- Run all tests:       `dart test generator example/gtk4_examples example/notepad example/todo packages/gir_dart_gobject packages/gir_gdk4 packages/gir_gio packages/gir_ffi packages/gir_glib packages/gir_gobject packages/gir_graphene packages/gir_gtk4 packages/gir_gtk_source5 packages/gir_gtk_templates packages/gir_gtk_templates_builder test` (from the workspace root)
 - Per-package test:    `cd packages/<name> && dart test`
 - Lint / analyze:      `dart analyze` (root enforces `package:lints/recommended.yaml`; sub-packages use `core.yaml` with project-specific overrides — see [Code style](#code-style))
 - Format:              `dart format .`
@@ -27,10 +27,10 @@ Dart SDK: ^3.13.4 (resolves to the Flutter-bundled Dart at `/home/meamka/Project
 - `generator/` — `gir_generator` package. `bin/generate.dart` is the CLI; `lib/src/` is split into `emit/` (Dart code emission), `gir/` (XML loading & parsing), `resolve/` (type/symbol resolution)
 - `generator/test/` — generator unit tests (`emitter_test`, `loader_test`, `naming_test`, `parser_test`, `types_test`)
 - `packages/gir_ffi/` — handwritten runtime helpers shared by every generated package (string marshalling, the wrapper cache, `HeapAnchor`, `keepAlive`)
-- `packages/gir_dart_gobject/` — handwritten runtime for Dart classes with a native type: `registerDartType(name, parentType)` registers a GType with GLib so a Dart subclass of `GObject` has a native identity
+- `packages/gir_dart_gobject/` — handwritten runtime for Dart classes with a native type: `registerDartType(name, parentType, {vfuncs, signals, properties, interfaces, overrides})` registers a GType with GLib — and the signals, properties, interfaces and virtual functions it declares — so a Dart subclass of `GObject` has a native identity; `newDartInstance(type)` creates an instance of it
 - `packages/<lib>/` — generated FFI binding packages: `gir_adw`, `gir_cairo`, `gir_gdk4`, `gir_gdk_pixbuf`, `gir_gi_repository3`, `gir_gio`, `gir_glib`, `gir_gobject`, `gir_graphene`, `gir_gsk4`, `gir_gtk4`, `gir_gtk_source5`, `gir_pango`. Each declares path-deps on its lower-level dependencies
 - `packages/<lib>/skip_report.txt` — per-package record of symbols the generator could not emit; regenerate after fixing the generator
-- `packages/gir_gtk_templates/` — handwritten runtime for the composite-template stack: the `@GtkTemplate` / `@GtkTemplateChild` / `@GtkTemplateCallback` annotations, `getWidgetClass`, `widgetTypeOf`, `prepareTemplateXml`, `claimTemplateType`, `snakeCase`, and the `GBytes` re-export
+- `packages/gir_gtk_templates/` — handwritten runtime for the composite-template stack: the `@GtkTemplate` / `@GtkTemplateChild` / `@GtkTemplateCallback` annotations, `getWidgetClass`, `widgetTypeOf`, `prepareTemplateXml`, `claimTemplateType`, `requireOwnType`, `snakeCase`, and the `GBytes` re-export
 - `packages/gir_gtk_templates_builder/` — the `build_runner` builder for that stack: AST scanner, pure codegen, the `Builder`, and a standalone CLI
 - `example/` — consumer examples, each a workspace member: `gtk4_examples/` (small GTK4 demos), `notepad/` (imperative UI), `todo/` (uses `@GtkTemplate` and the generated part file). They resolve against the root lock file and are covered by the root `dart analyze`. **No package may live inside another package's directory** — Dart's workspace refuses a member nested inside another member, so `example/` itself holds no `pubspec.yaml`
 - `site_src/` — the project's site sources (not a package — no `pubspec.yaml`, so it does not join the workspace). `pages/*.md` holds one Markdown source per page, `data/packages.json` the curated package list, `data/facts.json` the derived facts, `assets/style.css` the design system
@@ -174,6 +174,53 @@ first (`gobjectFinalizer.detach(widget)`). GTK's selection models
 dispose the model they wrap, so the model has to outlive the
 selection. See [docs/dart-gobjects.md](docs/dart-gobjects.md) for the
 whole story, and `example/todo` for the worked example.
+
+### What a Dart type can carry
+
+`registerDartType(name, parentType, {vfuncs, signals, properties,
+interfaces, overrides})` registers the type **and** what it declares:
+
+- **signals** — `DartSignal.withoutArgument` / `.withArgument(kind, …)`;
+  real GLib signals, installed in the type's `class_init`.
+- **properties** — `DartProperty.string` / `.integer` / `.boolean` /
+  `.real` / `.object`; real `GParamSpec`s. The property's
+  `set_property` / `get_property` slots are patched **before** the
+  property is installed — `g_object_base_class_init` resets them to
+  `NULL`, and GLib refuses a writable property without a
+  `set_property`.
+- **interfaces** — `g_type_add_interface_static`, after
+  `g_type_register_static` and **before** the class is initialized.
+- **overrides** — the virtual functions: `GObject.constructed` /
+  `dispose` / `finalize`, and `GtkWidget.snapshot` / `measure` /
+  `size_allocate` through `measureOverride`, `snapshotOverride` and
+  `sizeAllocateOverride`. Each chains up to the inherited
+  implementation.
+
+**Rule: the ABI table is hand-written, in the runtime package.** The
+class struct's layout is not in the GIR — the GIR lists a class's
+virtual methods alphabetically, the C struct declares them in vtable
+order. The offsets live in `packages/gir_dart_gobject/lib/src/` and are
+cross-checked against the installed headers by
+`packages/gir_dart_gobject/test/vtable_layout_test.dart`. They are *not*
+in the generator: the generated packages cannot depend on
+`gir_dart_gobject` — the dependency runs the other way.
+
+**Rule: a GObject carrying a Dart callback must not be finalized while
+the isolate shuts down.** GObject would call back into a VM that is
+already tearing itself down, and the VM aborts. The virtual-function
+wiring is therefore opt-in, and a type that opts in has to release its
+objects before the isolate ends.
+
+**Rule: the template stack installs on the type the class registers.**
+GTK keeps one template per *native* class, so two Dart classes
+extending the same native widget type could not both have a template.
+A class that declares a `GType` of its own gets a class of its own —
+and the widget has to be an instance of it, which is what
+`newDartInstance(type, constructProperties: …)` is for. The builder's
+scanner recognizes the `GType` accessor and emits the own-type path;
+the generated mixin refuses an instance of the wrong type and says
+which constructor to use instead. See
+[docs/templates.md](docs/templates.md#51-a-template-on-the-dart-classs-own-type).
 
 ## Ownership comes from the GIR
 
@@ -381,8 +428,8 @@ The full design is in [docs/site.md](docs/site.md).
 ## Testing instructions
 
 - **All tests, one command** (from the workspace root):
-  `dart test generator example/gtk4_examples example/notepad example/todo packages/gir_dart_gobject packages/gir_gdk4 packages/gir_gio packages/gir_ffi packages/gir_glib packages/gir_gobject packages/gir_gtk4 packages/gir_gtk_source5 packages/gir_gtk_templates packages/gir_gtk_templates_builder test`
-  — 549 passed, 1 skipped. The skip is a generator test that needs a resolved `ParamSpec` type; the native GTK suites skip themselves when the machine has no display (see below).
+  `dart test generator example/gtk4_examples example/notepad example/todo packages/gir_dart_gobject packages/gir_gdk4 packages/gir_gio packages/gir_ffi packages/gir_glib packages/gir_gobject packages/gir_graphene packages/gir_gtk4 packages/gir_gtk_source5 packages/gir_gtk_templates packages/gir_gtk_templates_builder test`
+  — 622 passed, 1 skipped. The skip is a generator test that needs a resolved `ParamSpec` type; the native GTK suites skip themselves when the machine has no display (see below).
 - **Why the explicit list?** `dart test` with no argument runs only the *root* package's own `test/` directory, which now holds the site generator's suite. The generator tests, the template-package tests and the per-package smoke tests live in their own packages' `test/` directories, so they have to be named. `dart pub workspace run` does not exist in this Dart SDK — `dart pub workspace` only offers `list`.
 - **Per package:** `cd <package> && dart test` works for any workspace member.
 - **Generator tests** live in `generator/test/` and also run as part of the all-tests command.

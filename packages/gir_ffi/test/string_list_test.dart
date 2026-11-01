@@ -40,7 +40,7 @@ void main() {
   });
 
   test('reads the strings of a NULL-terminated array', () {
-    final result = withNativeStringList(['alpha', 'beta'], (argv) {
+    final result = withNativeStringList(['alpha', 'beta'], (argv, argc) {
       return stringListFromNative(argv);
     });
 
@@ -48,7 +48,7 @@ void main() {
   });
 
   test('an empty array is an empty list', () {
-    final result = withNativeStringList(<String?>[], (argv) {
+    final result = withNativeStringList(<String?>[], (argv, argc) {
       return stringListFromNative(argv);
     });
 
@@ -58,6 +58,7 @@ void main() {
   test('the first NULL ends the array', () {
     final result = withNativeStringList(<String?>['alpha', null, 'beta'], (
       argv,
+      argc,
     ) {
       return stringListFromNative(argv);
     });
@@ -66,7 +67,7 @@ void main() {
   });
 
   test('releases a GLib-allocated array when asked to', () {
-    final result = withNativeStringList(['alpha', 'beta'], (argv) {
+    final result = withNativeStringList(['alpha', 'beta'], (argv, argc) {
       // The copy is GLib's own allocation — `g_strfreev` is the
       // deallocator that goes with it.
       final copy = _gStrdupv

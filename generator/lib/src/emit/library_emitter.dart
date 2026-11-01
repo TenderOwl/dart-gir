@@ -349,6 +349,13 @@ void syncRootPubspec(String rootDir) {
   file.writeAsStringSync('${out.join('\n')}\n');
 }
 
+/// Directory names that hold build output rather than source.
+///
+/// A Flutter application built in place leaves a `build` tree behind;
+/// the `build-dir` name is what the Flutter Linux desktop build uses.
+/// Neither is a workspace member.
+const _buildOutputDirectories = {'build', 'build-dir', 'ephemeral'};
+
 /// Every directory under [rootDir] that holds a `pubspec.yaml`,
 /// relative to [rootDir] and sorted.
 ///
@@ -356,6 +363,12 @@ void syncRootPubspec(String rootDir) {
 ///
 /// Directories that are *inside* another package are skipped: a
 /// workspace member may not be nested inside another member.
+///
+/// Build output is skipped as well: a Flutter application that was
+/// built in place leaves a `build`/`build-dir` tree behind, and the
+/// Dart SDK it vendored carries a `pubspec.yaml` of its own. That
+/// directory is not a workspace member — it is a build artifact — and
+/// listing it would break `dart pub get`.
 List<String> _workspaceMembers(String rootDir) {
   final root = Directory(rootDir);
   if (!root.existsSync()) return const [];
@@ -367,6 +380,8 @@ List<String> _workspaceMembers(String rootDir) {
     // cache of the workspace packages, and `.git` is not Dart at all.
     final segments = entity.path.split('/');
     if (segments.any((s) => s.startsWith('.'))) continue;
+    // Skip build output — see the doc comment above.
+    if (segments.any(_buildOutputDirectories.contains)) continue;
     if (!File('${entity.path}/pubspec.yaml').existsSync()) continue;
     packages.add(entity.path);
   }

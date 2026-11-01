@@ -106,6 +106,44 @@ class GIRepository extends GObject {
           .asFunction<ffi.Pointer<ffi.Void> Function()>();
   GIRepository() : this.rawFromPointer(_giRepositoryNew(), owned: true);
 
+  /// Obtain an unordered list of versions (either currently loaded or
+  /// available) for @namespace_ in this @repository.
+  ///
+  /// The list is guaranteed to be `NULL` terminated. The `NULL` terminator is not
+  /// counted in @n_versions_out.
+  static final _giRepositoryEnumerateVersions =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gi_repository_enumerate_versions')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  List<String> enumerateVersions(String namespace) {
+    return withNativeString(namespace, (nativeNamespace) {
+      final _out0 = malloc<ffi.Size>();
+      try {
+        final _ret = _giRepositoryEnumerateVersions(
+          this.handle,
+          nativeNamespace.cast<Utf8>(),
+          _out0,
+        );
+        return stringListFromNative(_ret, free: true, length: _out0.value)!;
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
   /// Searches for the enum type corresponding to the given [type@GLib.Error]
   /// domain.
   ///
@@ -221,6 +259,98 @@ class GIRepository extends GObject {
     });
   }
 
+  /// Retrieves all (transitive) versioned dependencies for
+  /// @namespace_.
+  ///
+  /// The returned strings are of the form `namespace-version`.
+  ///
+  /// Note: @namespace_ must have already been loaded using a function
+  /// such as [method@GIRepository.Repository.require] before calling this
+  /// function.
+  ///
+  /// To get only the immediate dependencies for @namespace_, use
+  /// [method@GIRepository.Repository.get_immediate_dependencies].
+  ///
+  /// The list is guaranteed to be `NULL` terminated. The `NULL` terminator is not
+  /// counted in @n_dependencies_out.
+  static final _giRepositoryGetDependencies =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gi_repository_get_dependencies')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  List<String> getDependencies(String namespace) {
+    return withNativeString(namespace, (nativeNamespace) {
+      final _out0 = malloc<ffi.Size>();
+      try {
+        final _ret = _giRepositoryGetDependencies(
+          this.handle,
+          nativeNamespace.cast<Utf8>(),
+          _out0,
+        );
+        return stringListFromNative(_ret, free: true, length: _out0.value)!;
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
+  /// Return an array of the immediate versioned dependencies for @namespace_.
+  /// Returned strings are of the form `namespace-version`.
+  ///
+  /// Note: @namespace_ must have already been loaded using a function
+  /// such as [method@GIRepository.Repository.require] before calling this
+  /// function.
+  ///
+  /// To get the transitive closure of dependencies for @namespace_, use
+  /// [method@GIRepository.Repository.get_dependencies].
+  ///
+  /// The list is guaranteed to be `NULL` terminated. The `NULL` terminator is not
+  /// counted in @n_dependencies_out.
+  static final _giRepositoryGetImmediateDependencies =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gi_repository_get_immediate_dependencies')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  List<String> getImmediateDependencies(String namespace) {
+    return withNativeString(namespace, (nativeNamespace) {
+      final _out0 = malloc<ffi.Size>();
+      try {
+        final _ret = _giRepositoryGetImmediateDependencies(
+          this.handle,
+          nativeNamespace.cast<Utf8>(),
+          _out0,
+        );
+        return stringListFromNative(_ret, free: true, length: _out0.value)!;
+      } finally {
+        malloc.free(_out0);
+      }
+    });
+  }
+
   /// This function returns a particular metadata entry in the
   /// given namespace @namespace_.
   ///
@@ -332,6 +462,56 @@ class GIRepository extends GObject {
     });
   }
 
+  /// Look up the implemented interfaces for @gtype.
+  ///
+  /// This function cannot fail per se; but for a totally ‘unknown’
+  /// [type@GObject.Type], it may return 0 implemented interfaces.
+  ///
+  /// The semantics of this function are designed for a dynamic binding,
+  /// where in certain cases (such as a function which returns an
+  /// interface which may have ‘hidden’ implementation classes), not all
+  /// data may be statically known, and will have to be determined from
+  /// the [type@GObject.Type] of the object.  An example is
+  /// [func@Gio.File.new_for_path] returning a concrete class of
+  /// `GLocalFile`, which is a [type@GObject.Type] we see at runtime, but
+  /// not statically.
+  static final _giRepositoryGetObjectGtypeInterfaces =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Void Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Size,
+                ffi.Pointer<ffi.Size>,
+                ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Void>>>,
+              )
+            >
+          >('gi_repository_get_object_gtype_interfaces')
+          .asFunction<
+            void Function(
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<ffi.Pointer<ffi.Pointer<ffi.Void>>>,
+            )
+          >();
+  List<GIInterfaceInfo> getObjectGtypeInterfaces(int gtype) {
+    final _out0 = malloc<ffi.Size>();
+    final _out1 = calloc<ffi.Pointer<ffi.Pointer<ffi.Void>>>();
+    try {
+      _giRepositoryGetObjectGtypeInterfaces(this.handle, gtype, _out0, _out1);
+      final _list_out1 = (_out1.value == ffi.nullptr
+          ? <GIInterfaceInfo>[]
+          : <GIInterfaceInfo>[
+              for (var i = 0; i < _out0.value; i++)
+                GIInterfaceInfo.fromPointer(_out1.value[i]),
+            ]);
+      return _list_out1;
+    } finally {
+      malloc.free(_out0);
+      gFree(_out1.value.cast());
+    }
+  }
+
   /// Returns the current search path [class@GIRepository.Repository] will use when
   /// loading typelib files.
   ///
@@ -363,6 +543,54 @@ class GIRepository extends GObject {
     } finally {
       malloc.free(_out0);
     }
+  }
+
+  /// This function returns an array of paths to the
+  /// shared C libraries associated with the given namespace @namespace_.
+  ///
+  /// There may be no shared library path associated, in which case this
+  /// function will return `NULL`.
+  ///
+  /// Note: The namespace must have already been loaded using a function
+  /// such as [method@GIRepository.Repository.require] before calling this
+  /// function.
+  ///
+  /// The list is internal to [class@GIRepository.Repository] and should not be
+  /// freed, nor should its string elements.
+  ///
+  /// The list is guaranteed to be `NULL` terminated. The `NULL` terminator is not
+  /// counted in @out_n_elements.
+  static final _giRepositoryGetSharedLibraries =
+      girGiRepository3Lookup<
+            ffi.NativeFunction<
+              ffi.Pointer<ffi.Pointer<Utf8>> Function(
+                ffi.Pointer<ffi.Void>,
+                ffi.Pointer<Utf8>,
+                ffi.Pointer<ffi.Size>,
+              )
+            >
+          >('gi_repository_get_shared_libraries')
+          .asFunction<
+            ffi.Pointer<ffi.Pointer<Utf8>> Function(
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<Utf8>,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+  List<String>? getSharedLibraries(String namespace) {
+    return withNativeString(namespace, (nativeNamespace) {
+      final _out0 = malloc<ffi.Size>();
+      try {
+        final _ret = _giRepositoryGetSharedLibraries(
+          this.handle,
+          nativeNamespace.cast<Utf8>(),
+          _out0,
+        );
+        return stringListFromNative(_ret, free: false, length: _out0.value);
+      } finally {
+        malloc.free(_out0);
+      }
+    });
   }
 
   /// If namespace @namespace_ is loaded, return the full path to the

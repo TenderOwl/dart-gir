@@ -211,7 +211,7 @@ class GtkSourceStyleSchemeManager extends GObject {
             void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Pointer<Utf8>>)
           >();
   void setSearchPath([List<String?>? path]) {
-    withNativeStringList(path, (nativePath) {
+    withNativeStringList(path, (nativePath, nativePathLen) {
       _gtkSourceStyleSchemeManagerSetSearchPath(this.handle, nativePath);
     });
   }

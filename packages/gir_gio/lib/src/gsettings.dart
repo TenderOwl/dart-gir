@@ -1741,7 +1741,7 @@ class GSettings extends GObject {
             )
           >();
   bool setStrv(String key, [List<String?>? value]) {
-    return withNativeStringList(value, (nativeValue) {
+    return withNativeStringList(value, (nativeValue, nativeValueLen) {
       return withNativeString(key, (nativeKey) {
         return (_gSettingsSetStrv(
               this.handle,
@@ -1904,6 +1904,32 @@ class GSettings extends GObject {
     withNativeString(property, (nativeProperty) {
       _gSettingsUnbind(object.handle, nativeProperty.cast<Utf8>());
     });
+  }
+
+  /// Emitted once per change event that affects this settings object.
+  ///
+  /// You should connect to this signal
+  /// only if you are interested in viewing groups of changes before they
+  /// are split out into multiple emissions of the [signal@Gio.Settings::changed] signal.
+  /// For most use cases it is more appropriate to use the [signal@Gio.Settings::changed] signal.
+  ///
+  /// In the event that the change event applies to one or more specified
+  /// keys, @keys will be an array of [alias@GLib.Quark]s of length @n_keys.  In the
+  /// event that the change event applies to the [class@Gio.Settings] object as a
+  /// whole (ie: potentially every key has been changed) then @keys will
+  /// be `NULL` and @n_keys will be `0`.
+  ///
+  /// The default handler for this signal invokes the [signal@Gio.Settings::changed] signal
+  /// for each affected key.  If any other connected handler returns
+  /// true then this default functionality will be suppressed.
+  int onChangeEvent(
+    bool Function(ffi.Pointer<ffi.Void> keys, int nKeys) callback,
+  ) {
+    return _connectSignal_b_2_o_i_ffipointerffivoid_int(
+      this.handle,
+      'change-event',
+      callback,
+    );
   }
 
   /// Emitted when a key has potentially changed.

@@ -113,6 +113,62 @@ final text = buffer.getText(iter, buffer.getEndIter(), false);
 **This feature has a scar on it.** The first implementation malloc'd 8 bytes for a 32-byte struct — `free(): invalid next size` — and then freed the backing buffer before the returned wrapper had dereferenced it, producing a SEGV inside `gtk_text_iter_get_buffer`. Both are recorded in the changelog, and both now have end-to-end tests. It is a good illustration of why pointer lifetime belongs in the generator rather than in application code.
 :::
 
+## A Dart class is a first-class GObject
+
+A Dart class that extends a generated wrapper used to be invisible to the native side: GLib saw a plain `GObject`, GTK saw its parent, and the class could not carry a signal, a property, an interface, a virtual function or a template of its own. `package:gir_dart_gobject` gives it a **native identity** and everything that hangs off one.
+
+```dart title="a Dart class with a native type"
+class TaskObject extends DartGObject {
+  static int get GType => registerDartType(
+    'TaskObject',
+    GObject.GType,
+    signals: {
+      'completed': DartSignal.withoutArgument((self) {
+        (self! as TaskObject).onCompleted();
+      }),
+    },
+    properties: {
+      'content': DartProperty.string(
+        getter: (self) => (self! as TaskObject).content,
+        setter: (self, value) => (self! as TaskObject).content = value!,
+      ),
+    },
+  );
+}
+```
+
+- **The signals are real signals.** They are declared while the type's class is initialized, the way a native class declares its own — `g_signal_lookup` finds them and `g_signal_emit` reaches them.
+- **The properties are real properties.** A real `GParamSpec`, installed with `g_object_class_install_property`: `g_object_get_property`, `g_object_set_property` and `notify` all work on them.
+- **The interfaces are real interfaces.** Added with `g_type_add_interface_static`, before the class is initialized — GLib refuses the call from inside `class_init`.
+- **The virtual functions answer.** `constructed`, `dispose` and `finalize` on `GObjectClass`; `snapshot`, `measure` and `size_allocate` on `GtkWidgetClass`. Each override chains up to the inherited implementation.
+- **The template can live on the type.** GTK keeps one template per *native* class, so two Dart classes extending the same native widget type could not both have a template. A Dart class with a GType of its own has a class of its own to put it on.
+
+```dart title="a template on the Dart class's own type"
+@GtkTemplate(source: GtkTemplateFile('data/task_row.ui'))
+class TaskRow extends GtkBox with _$TaskRowTemplate {
+  static int get GType => registerDartType('TaskRow', GtkBox.GType);
+
+  TaskRow()
+      : super.rawFromPointer(
+          newDartInstance(
+            GType,
+            constructProperties: {
+              'orientation': GtkOrientation.horizontal.value,
+            },
+          ),
+          owned: true,
+        ) {
+    initTemplate();
+  }
+}
+```
+
+`newDartInstance` is `g_object_newv` with the type's own construct properties — the only way to set a construct-only property, because GLib refuses to set one after the fact. The builder's scanner recognizes the `GType` accessor and emits the own-type path; the generated mixin refuses an instance that is not one of the type, and says which constructor to use instead.
+
+:::{note variant=plain} The one rule
+A GObject that carries a Dart callback must not be finalized while the isolate shuts down: GObject would call back into a VM that is already tearing itself down, and the VM aborts the process. The virtual-function wiring is opt-in for that reason, and a type that opts in has to release its objects before the isolate ends. See `docs/dart-gobjects.md`.
+:::
+
 ## The plumbing you stop doing by hand
 
 :::{cols}
@@ -161,6 +217,7 @@ Every symbol the generator cannot emit is written to `packages/<lib>/skip_report
 | Override-incompatible — emitted under a renamed method | {{facts.skips.override_incompatible}} | Largely handled: the entry names the renamed method to call. |
 | inout parameter | {{facts.skips.inout_parameter}} | Real, and deliberately so. The GIR's ownership annotations for these parameters are wrong — GTK does not take ownership of the iterator that `gtk_source_buffer_forward_iter_to_source_mark` writes into — so binding them would mean releasing memory the generator does not own. Use the `_get` / `_set` sibling instead. |
 | Alias resolved to its target | {{facts.skips.alias_resolved}} | Benign. The symbol exists, just under its target name. |
+| Virtual method — the class struct layout is not in the GIR | {{facts.skips.virtual_method}} | Structural, and reported for every one of them. A virtual method is a slot in the class struct, and the GIR does not describe those structs. A curated slice is wired by hand — `constructed`, `dispose`, `finalize`, and `GtkWidget.snapshot`, `measure`, `size_allocate`. |
 | Unsupported return type | {{facts.skips.unsupported_return_type}} | Real — mostly array returns. |
 | Unsupported argument type | {{facts.skips.unsupported_argument_type}} | Real. The parameter's C type has no Dart equivalent yet. |
 | Duplicate declaration owned by an earlier namespace | {{facts.skips.duplicate_declaration}} | Benign. The symbol exists, just in the package that owns it. |
@@ -184,10 +241,12 @@ Three gaps that used to be in that table are now closed, and they are no longer 
 Stated up front so nobody has to discover it by hitting it:
 
 :::{checklist}
-[ ] Array and collection returns / parameters are the biggest remaining hole ({{facts.skips.array_types}} recorded skips, down from 946 before the `array-types` work landed).
-[ ] Dart-level subclassing of generated wrappers is on `main` — but it is a Dart-side contract only: a subclass does not register a `GType` of its own, so it cannot be used as a template parent. See the [roadmap](roadmap.html) and `docs/subclassing.md`.
+[ ] Array and collection returns / parameters are the biggest remaining hole ({{facts.skips.array_types}} recorded skips, down from 946 before the `array-types` work landed). The string shapes are closed — a counted string, a bound string list, a callee-allocated string array and a caller-provided byte buffer are all emitted — what is left is the arrays of records and the GLib containers.
+[x] Dart-level subclassing of generated wrappers is on `main`, and a Dart subclass **can** register a `GType` of its own: `registerDartType` in `package:gir_dart_gobject` gives it a native identity, so it type-checks natively against `GListStore` and survives a native round trip. See the [roadmap](roadmap.html) and `docs/dart-gobjects.md`.
+[x] A Dart class can answer GObject's virtual calls. `DartGObject` in `package:gir_dart_gobject` wires `constructed`, `dispose` and `finalize` to Dart through a hand-authored ABI table that a test cross-checks against the installed header. The wiring is opt-in, because a GObject with a Dart callback must not be finalized while the isolate shuts down.
+[x] A Dart class can declare signals and properties of its own, implement a GObject interface, and answer `GtkWidget.snapshot`, `measure` and `size_allocate`. A `@GtkTemplate` class with a GType of its own carries its template on *that* type, so two Dart classes extending the same native widget type can each have one. See the [roadmap](roadmap.html) and `docs/dart-gobjects.md`.
 [ ] Composite templates are on `main`: `packages/gir_gtk_templates` and `packages/gir_gtk_templates_builder`, with a worked example in `example/todo/` and the design written up in `docs/templates.md`. Blueprint and GResource templates, and Meson/gettext packaging, belong to the application rather than to the bindings, and stay out of scope.
-[ ] Unions and bitfields are parsed but not emitted as first-class Dart types.
+[x] Unions and bitfields are emitted: a union is an opaque wrapper around the C union, and a bitfield is a flag class with named members.
 [x] All seventeen packages are published on pub.dev under the `gir_` prefix, released in lockstep. The working tree stays a workspace; `tool/release.dart` assembles the publication copies.
 [ ] Linux is the only platform the runtime is exercised on. The loader knows the Windows and macOS file names, but only Linux is executed and tested — and on macOS the library directory also has to be on the loader path.
 [x] CI runs the native suites: a second job installs GTK 4, libadwaita and GtkSourceView and drives the bindings against the real libraries under a virtual display.
